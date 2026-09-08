@@ -21,10 +21,18 @@ different countries — and that case is already mishandled today, since the
 global groupby collapses it to a single row and `_first_non_empty` picks one of
 the two countries arbitrarily. `find_cross_country_urls` reports those rows
 rather than leaving the question open.
+
+The same argument fixes the grain of the cache. `_prepared/.state.json` records
+the shards each country was last prepared from, and a country whose shards are
+unchanged is skipped — but the unit has to be the whole country, because one
+changed source can move the median of a group whose other members did not
+change. `write_products_input` unions every prepared country off disk rather
+than only the recomputed ones, so a skipped country still reaches the output.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
@@ -40,6 +48,14 @@ from prices.enrich.stages.prepare import prepare_input
 logger = logging.getLogger(__name__)
 
 PREPARED_DIR = config.ENRICH_DIR / "_prepared"
+
+# Sidecar mapping `region/subregion/country` to the identity of the shards that
+# country was last prepared from, so an unchanged country is not recomputed.
+# It carries the same weakness as outputs/prices/raw/.state.json — a shard
+# rewritten to the same mtime and the same size reads as unchanged — on purpose:
+# two different cache-validity rules in one pipeline is the harder thing to
+# reason about, and `--rebuild` is the escape hatch for both.
+STATE_FILE = ".state.json"
 
 # What prepare_input actually reads. url_hash, product_id and wayback are in the
 # shard but unused here, so they are never paid for. input_hash IS read: it is
@@ -66,6 +82,41 @@ PREPARE_COLUMNS = (
     "details",
     "unit",
 )
+
+
+def _state_path(out_dir: Path) -> Path:
+    return out_dir / STATE_FILE
+
+
+def _load_state(out_dir: Path) -> dict:
+    path = _state_path(out_dir)
+    if path.exists():
+        try:
+            return json.loads(path.read_text())
+        except json.JSONDecodeError:
+            logger.warning("state file %s is corrupt; ignoring", path)
+    return {}
+
+
+def _save_state(out_dir: Path, state: dict) -> None:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    _state_path(out_dir).write_text(json.dumps(state, indent=2, sort_keys=True))
+
+
+def _signature(country_shards: Sequence[partition.Shard]) -> list:
+    """A country's identity: every member shard's (path, mtime, size).
+
+    Not concatenate's (max mtime, count) pair: a country is a set of shards
+    written by independent source runs, and a source that is dropped or moved
+    changes neither of those two numbers reliably."""
+    out = []
+    for shard in sorted(country_shards, key=lambda s: s.key):
+        try:
+            stat = shard.path.stat()
+        except OSError:  # vanished between select and here — treat as changed
+            return []
+        out.append([str(shard.path), stat.st_mtime, stat.st_size])
+    return out
 
 
 def prepared_path(key: Sequence[str], out_dir: Optional[Path] = None) -> Path:
@@ -137,32 +188,65 @@ def run(
     workers: int = 1,
     write_union: bool = True,
     union_target: Optional[Path] = None,
+    force: bool = False,
 ) -> list[Path]:
-    """Prepare every selected country, largest first and bounded by memory.
+    """Prepare every selected country whose shards changed, largest first and
+    bounded by memory. Returns the countries actually recomputed.
 
     Largest-first alone is what broke: `pool.map` over countries sorted by size
     starts the biggest ones together, and japan — 3.32 GB of shard, 13.3 GB
     resident once pandas has it — was OOM-killed 38 seconds into a 6-worker run,
     taking the pool down with it. Admission is therefore by bytes in flight, so
     japan runs alone and the long tail of small countries still fans out wide.
+
+    `force` prepares every selected country regardless of the state file.
     """
     selected = partition.select(selectors, root)
     if not selected:
         logger.warning("[prepare] no shards matched %s", selectors)
         return []
+    prepared_dir = out_dir or PREPARED_DIR
     groups = partition.group_by(selected, "country")
-    jobs = [
-        (sum(s.size for s in group), (group, key, out_dir))
-        for key, group in sorted(groups.items())
-    ]
+    state = _load_state(prepared_dir)
+    # Countries outside this run keep their entry, exactly as concatenate
+    # carries a selector-excluded source forward: dropping it would make the
+    # next unscoped run redo everything the selector happened to miss.
+    new_state = dict(state)
+
+    jobs = []
+    pending: dict[str, tuple[str, list]] = {}
+    n_skipped = 0
+    for key, group in sorted(groups.items()):
+        name = "/".join(key)
+        signature = _signature(group)
+        if (
+            not force
+            and signature
+            and state.get(name) == signature
+            and prepared_path(key, out_dir).exists()
+        ):
+            n_skipped += 1
+            continue
+        pending[str(prepared_path(key, out_dir))] = (name, signature)
+        jobs.append((sum(s.size for s in group), (group, key, out_dir)))
+
     budget = partition.memory_budget_bytes()
     logger.info(
-        "[prepare] %d countries, %d workers, %.2f GB in flight at once",
+        "[prepare] %d countries (%d unchanged), %d workers, %.2f GB in flight "
+        "at once",
         len(jobs),
+        n_skipped,
         workers,
         budget / 1e9,
     )
     written = partition.run_budgeted(jobs, _prepare_one, workers, budget)
+    # Recorded from what came back, not from what was queued, so a country whose
+    # worker died is prepared again next run rather than cached as done.
+    for path in written:
+        entry = pending.get(str(path))
+        if entry is not None:
+            new_state[entry[0]] = entry[1]
+    _save_state(prepared_dir, new_state)
 
     if write_union:
         write_products_input(out_dir, union_target)

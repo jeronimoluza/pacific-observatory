@@ -80,6 +80,10 @@ def corpus(tmp_path: Path) -> Path:
     return root
 
 
+def prepared_path_for(out_dir: Path, key: str) -> Path:
+    return prepare_shards.prepared_path(key.split("/"), out_dir)
+
+
 def normalise(df: pd.DataFrame) -> pd.DataFrame:
     return df.sort_values("input_hash", ignore_index=True)[
         ["input_hash", "product_name_original", "country", "price", "n_rows"]
@@ -218,6 +222,78 @@ def test_a_scoped_rerun_overlays_rather_than_truncating(corpus, tmp_path, union_
 
     assert set(after["country"]) == set(before["country"])
     pd.testing.assert_frame_equal(normalise(after), normalise(before))
+
+
+def test_an_unchanged_country_is_not_prepared_again(corpus, tmp_path):
+    """The whole point: the second run recomputes nothing."""
+    out_dir = tmp_path / "_prepared"
+    first = prepare_shards.run(root=corpus, out_dir=out_dir)
+    assert len(first) == 4
+    stamps = {p: p.stat().st_mtime_ns for p in first}
+
+    assert prepare_shards.run(root=corpus, out_dir=out_dir) == []
+    assert {p: p.stat().st_mtime_ns for p in first} == stamps
+
+
+def test_a_changed_shard_recomputes_its_whole_country(corpus, tmp_path):
+    """Country, not source: `input_hash` falls back to (name, country,
+    currency), so a changed source can move the median of a group whose other
+    members did not change."""
+    out_dir = tmp_path / "_prepared"
+    prepare_shards.run(root=corpus, out_dir=out_dir)
+
+    shard = corpus / "eap" / "pacific" / "fiji" / "shop_b.parquet"
+    frame = shards.read_shard(shard)
+    frame.loc[frame["product_name"] == "Rice 1kg", "price"] = "50"
+    shards.write_shard(frame, shard)
+
+    again = prepare_shards.run(root=corpus, out_dir=out_dir)
+    assert [p.stem for p in again] == ["fiji"]
+
+    fiji = pd.read_parquet(prepared_path_for(out_dir, "eap/pacific/fiji"))
+    rice = fiji[fiji["product_name_original"] == "Rice 1kg"]
+    # shop_a 10 and shop_b 50 are one URL-less group; the median moved with it.
+    assert float(rice["price"].iloc[0]) == 30.0
+
+
+def test_a_deleted_prepared_parquet_is_rebuilt(corpus, tmp_path):
+    out_dir = tmp_path / "_prepared"
+    prepare_shards.run(root=corpus, out_dir=out_dir)
+    prepared_path_for(out_dir, "eap/pacific/tonga").unlink()
+    assert [p.stem for p in prepare_shards.run(root=corpus, out_dir=out_dir)] == [
+        "tonga"
+    ]
+
+
+def test_force_prepares_everything_again(corpus, tmp_path):
+    out_dir = tmp_path / "_prepared"
+    prepare_shards.run(root=corpus, out_dir=out_dir)
+    assert len(prepare_shards.run(root=corpus, out_dir=out_dir, force=True)) == 4
+
+
+def test_a_scoped_run_does_not_invalidate_the_countries_it_skipped(corpus, tmp_path):
+    """A selector-excluded country keeps its state entry, or the next unscoped
+    run redoes every country the selector happened to miss."""
+    out_dir = tmp_path / "_prepared"
+    prepare_shards.run(root=corpus, out_dir=out_dir)
+    prepare_shards.run(["eap/pacific/fiji"], root=corpus, out_dir=out_dir, force=True)
+    assert prepare_shards.run(root=corpus, out_dir=out_dir) == []
+
+
+def test_a_failed_run_caches_nothing_as_done(corpus, tmp_path, monkeypatch):
+    """A run that dies must leave every country to be prepared again, so the
+    state has to be written from what finished rather than from what started."""
+    out_dir = tmp_path / "_prepared"
+
+    def boom(args):
+        raise RuntimeError("worker died")
+
+    monkeypatch.setattr(prepare_shards, "_prepare_one", boom)
+    with pytest.raises(RuntimeError):
+        prepare_shards.run(root=corpus, out_dir=out_dir)
+    monkeypatch.undo()
+
+    assert len(prepare_shards.run(root=corpus, out_dir=out_dir)) == 4
 
 
 def test_union_of_nothing_writes_nothing(tmp_path, union_target):

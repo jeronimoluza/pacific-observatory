@@ -194,7 +194,9 @@ def process_command(
                 write_monolith=write_monolith and not selectors,
             )
         elif name == "prepare":
-            prepare_shards.run(selectors=selectors, workers=workers)
+            prepare_shards.run(
+                selectors=selectors, workers=workers, force=rebuild
+            )
         elif name == "classify":
             classify_stage.run(backend=backend, workers=workers, selectors=selectors)
         else:
