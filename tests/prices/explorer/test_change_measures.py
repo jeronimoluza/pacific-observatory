@@ -88,6 +88,54 @@ def test_the_group_change_is_the_mean_of_the_leaves_log_changes():
     assert out.loc[("01.1.1", 12), "k"] == 1
 
 
+def test_it_is_the_MEAN_of_the_log_changes_and_not_the_median():
+    """Three leaves at +0%, +10% and +100% over a year.
+
+    mean of (ln 1, ln 1.1, ln 2) = 0.26281912 -> +30.0591%
+    median of the same three      = 0.09531018 -> +10.000%
+
+    The mean is what "everything is equally weighted" means, and it is the only
+    one of the two that decomposes: the group's change is the sum of each
+    leaf's share of it. The median would answer a different question and quietly
+    discard the leaf that moved.
+    """
+    ex = _exploded(
+        {
+            ("a", "01.1.1", "2025-01"): 2.00,
+            ("a", "01.1.1", "2026-01"): 2.00,
+            ("a", "01.1.2", "2025-01"): 4.00,
+            ("a", "01.1.2", "2026-01"): 4.40,
+            ("a", "01.1.3", "2025-01"): 5.00,
+            ("a", "01.1.3", "2026-01"): 10.00,
+        }
+    )
+    out = aggregate._lagged_changes(ex, TAX).set_index(["node", "lag"])
+    assert out.loc[("01.1", 12), "k"] == 3
+    assert out.loc[("01.1", 12), "lr"] == pytest.approx(0.26281912, abs=1e-8)
+    assert np.expm1(out.loc[("01.1", 12), "lr"]) * 100 == pytest.approx(
+        30.0591, abs=1e-3
+    )
+    assert np.expm1(out.loc[("01.1", 12), "lr"]) * 100 != pytest.approx(10.0, abs=0.5)
+
+
+def test_the_geo_change_uses_the_mean_while_the_chain_still_uses_the_median():
+    """A pre-existing divergence, documented rather than silently harmonised.
+
+    `geo._chain` takes the MEDIAN of the log relatives -- chosen so a single
+    cents-for-units item cannot move a link by ln 100 -- while
+    `aggregate._chained_index` takes the mean. The new change measure uses the
+    mean in both modules; the chain is left exactly as it was.
+    """
+    import inspect
+
+    from prices.explorer import geo as geo_mod
+
+    assert '"median"' in inspect.getsource(geo_mod._chain)
+    assert '"mean"' in inspect.getsource(geo_mod._lagged)
+    assert '"mean"' in inspect.getsource(aggregate._lagged_changes)
+    assert '"mean"' in inspect.getsource(aggregate._chained_index)
+
+
 def test_only_leaves_priced_in_BOTH_periods_are_counted():
     """A leaf that appears only at t must not enter the average at all."""
     ex = _exploded(
