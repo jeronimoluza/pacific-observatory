@@ -559,17 +559,22 @@ def prices_publish(region, subregion, out_path):
 
 
 @prices.command("explorer")
+@_region_opt
 @click.option("--out", "out_path", default=None, help="Override the output HTML path.")
-def prices_explorer(out_path):
+def prices_explorer(region, out_path):
     """Render the interactive unit-value explorer dashboard.
 
     Writes outputs/prices/global_prices_explorer.html from the build parquet:
     a world price-level ranking, a COICOP hierarchy browser, per-country
     profiles and a local/USD/FX decomposition. Self-contained, offline.
+
+    With --region only that region's countries are shown, but every "vs world"
+    yardstick stays global -- pair it with --out so the regional build does not
+    overwrite the unrestricted one.
     """
     from prices.explorer import run as _explorer_run
 
-    _explorer_run(out_path)
+    _explorer_run(out_path, region)
 
 
 @prices.command("consumable")
