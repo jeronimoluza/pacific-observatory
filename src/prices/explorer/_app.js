@@ -367,6 +367,13 @@ function changeMonths() {
 function horizonKey(months, f) {
   return String(months === 1 && f === "Q" ? 3 : months);
 }
+/* How far apart two observations may sit and still be linked by the chain.
+   Published by the build so this reading cannot drift from the constant that
+   produced it; the fallback is for a payload built before it was. */
+function gapMonths(f) {
+  var g = DATA.qa.link_gap_months || {};
+  return g[f] != null ? g[f] : (f === "Q" ? 1 : 3);
+}
 function measureKind() {
   return S.gmeasure === "level" ? "level"
     : S.gmeasure === "index" ? "index" : "change";
@@ -625,9 +632,28 @@ function renderWorldTrends() {
     "priced <b>both in that " + word + " and " + changeLabel(months, word) + "</b>, in the " +
     "same country — items priced in only one of the two are left out entirely, so the " +
     "line answers “what did the same shopping do”, not “what is on the shelf now”.");
-  if (isIndex) warn.push("Only items priced in <b>two consecutive " + word + "s</b> in the " +
-    "same country are linked — the strictest reading, and the thinnest. The whole line " +
-    "hangs off the base " + word + ", which is itself one thin reading.");
+  if (isIndex) {
+    warn.push("Only items priced in <b>two consecutive " + word + "s</b> in the " +
+      "same country are linked — the strictest reading, and the thinnest. The whole line " +
+      "hangs off the base " + word + ", which is itself one thin reading.");
+    /* Disclosure, not a fix: a link is allowed to span a gap, and the whole
+       move is booked onto the later period. Nothing is interpolated, so the
+       alternative would be to drop the link, not to invent the missing month. */
+    var gap = gapMonths(f);
+    if (gap > 1) warn.push("A link may span up to <b>" + gap + " " + word + "s</b>, and the " +
+      "entire move is booked onto the later one — so a " + gap + "-" + word + " rise can " +
+      "appear as a single " + word + "'s. <b>Nothing is interpolated</b>: an empty " + word +
+      " stays empty rather than being filled in.");
+  }
+  if (isLevel) warn.push("This level is <b>fitted, not observed</b>: " +
+    esc(DATA.qa.fitted_level || "a two-way fixed-effects model on log price") +
+    ", whose period effect is the level with the item mix held fixed. It uses every item " +
+    "that recurs at all, not only items that recur in consecutive periods — which is why " +
+    "it exists — but it is a model output, and a point can stand where no single shop was " +
+    "observed that " + word + ".");
+  if (kindM === "change") warn.push("Nothing here is interpolated or modelled: each point is " +
+    "two observations of the same item, exactly " + (months === 1 ? "one " + word : months +
+    " months") + " apart. A " + word + " with no match simply has no point.");
   if (S.gsmooth) warn.push("Showing a <b>" + S.gsmooth + "-" + word +
     " trailing average</b>: turning points lag by about half that.");
   if (thin.length) warn.push("Too few " + word + "s to draw: <b>" +
@@ -659,7 +685,7 @@ function renderWorldTrends() {
                 n + " item cells"); });
             return out.length > 1 ? out : []; } } } },
       scales:{ y:{ grid:{color:RULE},
-          title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode]
+          title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode] + " (fitted)"
             : isIndex ? "Index, " + (baseP || lo) + " = 100"
             : "% change vs " + changeLabel(months, word)} },
         x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
@@ -1730,7 +1756,13 @@ window.APP = APP;
     return '<div><div class="l">' + r[0] + '</div><div class="v">' + r[1] + "</div></div>"; }).join("");
   document.getElementById("aboutFoot").innerHTML =
     "Generated " + m.generated + ". A cell needs " + m.min_cell_obs +
-    "+ observations before it is shown at all.";
+    "+ observations before it is shown at all. <b>No missing month is ever filled in.</b> " +
+    "Some of these gaps are collection artefacts rather than quiet markets, and an imputed " +
+    "price would be indistinguishable on screen from a measured one — so a gap stays a gap. " +
+    "The two places that come closest are said out loud where they are used: the base-100 " +
+    "chain may link across up to " + gapMonths("M") + " months and books the whole move onto " +
+    "the later one, and the US$ price level is a fitted model output rather than an observed " +
+    "median.";
   document.getElementById("foot").innerHTML =
     "Generated " + m.generated + " · " + m.n_obs.toLocaleString() +
     " trusted unit values · cells need " + m.min_cell_obs + "+ observations";

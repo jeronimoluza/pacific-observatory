@@ -16,6 +16,7 @@ import json
 import sys
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 SRC = Path(__file__).resolve().parents[3] / "src"
@@ -293,6 +294,9 @@ def make_payload() -> dict:
                 "share_last_12m": 0.6,
                 "min_link_leaves": 8,
             },
+            "link_gap_months": {"chain": 3, "M": 3, "Q": 1},
+            "fitted_level": "two-way fixed effects on log price (item + period)",
+            "interpolated": False,
         },
     }
 
@@ -333,3 +337,74 @@ def page(browser, explorer_html):
     yield pg
     assert not errors, "JS errors on the page: " + json.dumps(errors)
     pg.close()
+
+
+# ===================================================================== build
+# A synthetic corpus run through the real `build_payload`, so the assertions
+# below exercise the build's own filters rather than a copy of them written
+# into the hand-built payload above.
+
+TAX_BUILD = {
+    "01": {"t": "Food", "p": None, "lvl": 1, "leaf": False},
+    "01.1": {"t": "Cereals", "p": "01", "lvl": 2, "leaf": False},
+    "01.1.1": {"t": "Rice", "p": "01.1", "lvl": 3, "leaf": True},
+    "01.1.2": {"t": "Bread", "p": "01.1", "lvl": 3, "leaf": True},
+    "01.1.3": {"t": "Pasta", "p": "01.1", "lvl": 3, "leaf": True},
+    "01.1.4": {"t": "Noodles", "p": "01.1", "lvl": 3, "leaf": True},
+}
+BUILD_LEAVES = ["01.1.1", "01.1.2", "01.1.3", "01.1.4"]
+BUILD_CMETA = {
+    "aa": {"name": "Aa", "region": "R1", "subregion": "S1"},
+    "bb": {"name": "Bb", "region": "R1", "subregion": "S1"},
+    "cc": {"name": "Cc", "region": "R2", "subregion": "S2"},
+    "dd": {"name": "Dd", "region": "R2", "subregion": "S2"},
+}
+OBS_PER_CELL = 3
+
+
+def _observations() -> pd.DataFrame:
+    """A corpus dense enough to clear every gate the build applies."""
+    months = ["2024-%02d" % m for m in range(1, 13)]
+    months += ["2025-%02d" % m for m in range(1, 13)]
+    months += ["2026-%02d" % m for m in range(1, 7)]
+    rows = []
+    for ci, country in enumerate(BUILD_CMETA):
+        for i, p in enumerate(months):
+            for j, code in enumerate(BUILD_LEAVES):
+                for _ in range(OBS_PER_CELL):
+                    rows.append(
+                        {
+                            "country": country,
+                            "currency": "USD",
+                            "source": "shop%d" % (ci % 2),
+                            "observation_date": pd.Timestamp(p + "-15"),
+                            "coicop_code": code,
+                            "pricing_basis": "retail",
+                            "standard_unit": "kg",
+                            "unit_value_local": (2.0 + j + ci) * (1.01**i),
+                            "unit_value_usd": (2.0 + j + ci) * (1.01**i),
+                            "mass_source": "declared",
+                            "qa_status": "trusted",
+                            "product_name": "thing",
+                            "fx_rate": 1.0,
+                        }
+                    )
+    df = pd.DataFrame(rows)
+    df["is_modelled"] = False
+    df["is_derived"] = False
+    df["period"] = df.observation_date.dt.to_period("M").astype(str)
+    return df
+
+
+@pytest.fixture
+def built(monkeypatch):
+    from prices.explorer import aggregate
+
+    monkeypatch.setattr(aggregate, "load_taxonomy", lambda: TAX_BUILD)
+    monkeypatch.setattr(
+        aggregate,
+        "load_country_meta",
+        lambda: {k: dict(v, iso3=k.upper()) for k, v in BUILD_CMETA.items()},
+    )
+    monkeypatch.setattr(aggregate, "load_observations", _observations)
+    return aggregate.build_payload()

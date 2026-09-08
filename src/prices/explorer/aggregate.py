@@ -23,6 +23,7 @@ from prices.explorer.sources import (
     CHANGE_LAGS,
     COMPARABLE_UNITS,
     FE_MIN_PAIRS,
+    FREQ_MAX_GAP,
     COUNTRY_DEFECT_SHARE,
     MAX_LINK_GAP_MONTHS,
     MIN_BASKET_LEAVES,
@@ -485,6 +486,22 @@ def build_payload(region: str | None = None) -> dict:
         "modelled_sources": sorted(MODELLED_SOURCES),
         "plausible_bounds": PLAUSIBLE_USD,
         "min_basket_leaves": MIN_BASKET_LEAVES,
+        # Nothing here is interpolated -- a gap stays a gap, because some of
+        # these gaps are collection artefacts and an imputed value would be
+        # indistinguishable on screen from a measured price move. Two existing
+        # behaviours come close enough to need saying out loud, so they are
+        # published rather than left in the source:
+        #
+        # `link_gap_months` -- a chain link may span this many periods, and the
+        # WHOLE log relative is booked onto the later one. A three-month move
+        # then reads as a one-month move on the monthly chain.
+        #
+        # `fitted_level` -- the US$ level at a geography is a two-way
+        # fixed-effects FITTED value, not an observed median. That is
+        # model-based, and the client labels it as such.
+        "link_gap_months": {"chain": MAX_LINK_GAP_MONTHS, **FREQ_MAX_GAP},
+        "fitted_level": "two-way fixed effects on log price (item + period)",
+        "interpolated": False,
     }
 
     recent = trusted.period.max()

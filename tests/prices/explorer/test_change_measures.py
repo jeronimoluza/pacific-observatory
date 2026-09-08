@@ -215,52 +215,7 @@ def test_the_measure_exists_at_every_geography_the_gates_allow():
 
 
 # ------------------------------------------------------------- whole payload
-
-
-def _observations() -> pd.DataFrame:
-    """A corpus dense enough to clear every gate the build applies."""
-    months = ["2024-%02d" % m for m in range(1, 13)]
-    months += ["2025-%02d" % m for m in range(1, 13)]
-    months += ["2026-%02d" % m for m in range(1, 7)]
-    rows = []
-    for ci, country in enumerate(CMETA):
-        for i, p in enumerate(months):
-            for j, code in enumerate(LEAVES):
-                for _ in range(OBS_PER_CELL):
-                    rows.append(
-                        {
-                            "country": country,
-                            "currency": "USD",
-                            "source": "shop%d" % (ci % 2),
-                            "observation_date": pd.Timestamp(p + "-15"),
-                            "coicop_code": code,
-                            "pricing_basis": "retail",
-                            "standard_unit": "kg",
-                            "unit_value_local": (2.0 + j + ci) * (1.01**i),
-                            "unit_value_usd": (2.0 + j + ci) * (1.01**i),
-                            "mass_source": "declared",
-                            "qa_status": "trusted",
-                            "product_name": "thing",
-                            "fx_rate": 1.0,
-                        }
-                    )
-    df = pd.DataFrame(rows)
-    df["is_modelled"] = False
-    df["is_derived"] = False
-    df["period"] = df.observation_date.dt.to_period("M").astype(str)
-    return df
-
-
-@pytest.fixture
-def built(monkeypatch):
-    monkeypatch.setattr(aggregate, "load_taxonomy", lambda: TAX)
-    monkeypatch.setattr(
-        aggregate,
-        "load_country_meta",
-        lambda: {k: dict(v, iso3=k.upper()) for k, v in CMETA.items()},
-    )
-    monkeypatch.setattr(aggregate, "load_observations", _observations)
-    return aggregate.build_payload()
+# `built` runs the real build over a synthetic corpus; see conftest.
 
 
 def test_the_payload_carries_a_populated_changes_block(built):
