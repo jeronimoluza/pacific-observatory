@@ -25,11 +25,22 @@ Method (one code path for snapshot and observations):
     inflation/seasonality, so a legitimately drifting cell is not flagged.
     Snapshot degenerates naturally: all rows share one period, so the month
     median equals the cell median and this is plain cross-sectional MAD.
-  - robust score: median +/- k*MAD on the pooled residuals (k=3.0), matching
-    the classify-base-item convention. MAD==0 (no spread) -> abstain, never
-    flag: precision-first, we under-cover rather than mis-reject.
+  - robust score in WILL'S UNITS: robust_sd = 1.4826*MAD, the consistent sigma
+    estimator for a normal population, and uv_robust_z = residual / robust_sd.
+    The threshold is |robust_z| > k with k=5.0, which is Will's stated rule of
+    2026-08-31 verbatim. MAD==0 (no spread) -> abstain, never flag:
+    precision-first, we under-cover rather than mis-reject.
+
+    This column used to divide by the RAW MAD and default to k=3.0. Those are
+    not the same rule: 3.0 raw MADs is |robust_z| = 2.02, so the shipped audit
+    was 2.5x TIGHTER than the spec it claimed to implement, and the number in
+    the column could not be read against the threshold Will wrote down.
+    Correcting the scale and the constant together is one change, not two --
+    changing either alone silently moves the operating point.
   - thin cells (pooled n < min_n) get their trust withheld (flag), never
-    scored -- too few rows to estimate a distribution.
+    scored -- too few rows to estimate a distribution. min_n is 3, not 5: three
+    baseline rows is the least that yields a non-degenerate MAD, and at 5 the
+    corpus withheld 348,545 rows it had never actually judged.
 
 BASELINE vs SCORED (``baseline_mask``). "Normal" must be defined by rows that
 measured their own quantity. A typical-mass conversion divides price by a single
@@ -49,7 +60,7 @@ flagged -- the same posture already taken for thin cells, and the honest answer
 for a conversion with nothing to check it against. Passing no mask keeps the
 historical behaviour exactly (every row is its own baseline).
 
-Non-destructive: adds four columns, drops nothing. The consumable deliverable
+Non-destructive: adds five columns, drops nothing. The consumable deliverable
 is the rows where Layer-1 trust_level=="high" AND Layer-2 trust_uv=="high";
 everything else is quarantined for human triage, never auto-fabricated.
 """
@@ -61,6 +72,10 @@ import pandas as pd
 
 NEW_COLS = ["uv_robust_z", "uv_cell_n", "uv_outlier", "uv_thin", "trust_uv"]
 
+# MAD -> sigma for a normal population. Without it `uv_robust_z` is in raw-MAD
+# units and cannot be compared to the |z| > 5 Will specified.
+MAD_TO_SIGMA = 1.4826
+
 
 def flag_uv_outliers(
     df: pd.DataFrame,
@@ -68,8 +83,8 @@ def flag_uv_outliers(
     group_cols: tuple[str, ...] = ("coicop_code", "country"),
     period_col: str = "observation_date",
     value_col: str = "unit_value_local",
-    k: float = 3.0,
-    min_n: int = 5,
+    k: float = 5.0,
+    min_n: int = 3,
     baseline_mask: pd.Series | None = None,
 ) -> pd.DataFrame:
     """Score every auditable row against its cell, estimated from baseline rows.
@@ -132,7 +147,9 @@ def flag_uv_outliers(
     mad = work["_mad"]
     z = pd.Series(np.nan, index=work.index)
     has_spread = mad.notna() & (mad > 0)
-    z[has_spread] = (work["_resid"] - work["_cell_med"])[has_spread] / mad[has_spread]
+    z[has_spread] = (work["_resid"] - work["_cell_med"])[has_spread] / (
+        MAD_TO_SIGMA * mad[has_spread]
+    )
 
     thin = cell_n < min_n
     z[thin.values] = np.nan
