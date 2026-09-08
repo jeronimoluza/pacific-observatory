@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carrefour_ro
+url: https://carrefour.ro/
+language: ro
+cadence: weekly
+channel: hypermarket
+notes: |
+  page family: PDP (sitemap walker to individual product pages; JSON-LD
+  Product block + microdata BreadcrumbList parsed from raw HTML, no
+  Playwright).
+
+  Shard/AI_NOTES round-1 mislabeled this "VTEX" -- wrong platform.
+  robots.txt names "Disable Magento Standard" and the homepage contains
+  "Magento" but no "VTEX" string. Verified live 2026-09-06: VTEX
+  catalog_system REST endpoints all 404 with the site's own Next.js 404
+  body; the Magento /graphql endpoint is Cloudflare-blocked ("Request
+  forbidden by administrative rules", 403 on all curl_cffi profiles).
+  This is a headless Magento backend behind a custom Next.js storefront
+  with GraphQL walled off.
+
+  Walks https://carrefour.ro/pub/sitemap/sitemap.xml ->
+  sitemap_002.xml (~38,630 canonical PDP urls under /produse/<slug>-
+  <catId>-<sku>/). Each PDP server-renders application/ld+json Product
+  with real price/currency/availability -- confirmed live: sku 14524989
+  "Ciocolata Ragusa For Friends cu lapte si alune 132g" RON 44.99.
+  Category from the microdata BreadcrumbList
+  (li[itemprop="itemListElement"] span[itemprop="name"]).
+
+  Some SKUs (mostly apparel/appliances, e.g. sku 63514982 "Pantaloni TEX
+  dama") carry "price": 0 in JSON-LD -- these are dropped rather than
+  shipped as a zero price.

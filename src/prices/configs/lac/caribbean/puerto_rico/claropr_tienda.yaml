@@ -1,0 +1,38 @@
+scaffolding: spider
+spider: claropr_tienda
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://tienda.claropr.com
+language: es
+currency: USD
+cadence: weekly
+notes: |
+  API. claropr.com (the main telecom site) renders no prices anywhere
+  server-side on its Prepago/Pospago plan pages -- pure marketing copy, a
+  "Ver Planes y Precios" button with no machine-readable target. The
+  actual storefront is a separate SPA at tienda.claropr.com (device
+  sales: phones, tablets, laptops, consoles, accessories), also
+  client-rendered with no prices in raw HTML.
+
+  Backend found via Playwright network capture:
+  POST https://tienda.claropr.com/api/Catalogue/listCatalogue, body
+  {"catalogId":18,"pageNo":1,"pageItems":300,"creditClass":"C",
+  "orderBy":7,"news":0,"offers":"0","categoryID":"0","brand":"",
+  "filter":"","price":"","labels":[]}. Verified live 2026-09-06: 200, no
+  auth beyond an Origin header, returns ALL 7 sub-catalogs in one call
+  (Postpago phones/Internet+Telefonía bundles/Internet Inalámbrico/
+  Tablets/Laptops/Consolas/Accesorios, 82 products total) -- pageItems:300
+  with brand/categoryID/price all blank returns the full unfiltered set,
+  not a curated homepage rail.
+
+  creditClass selects a financing tier (site defaults "C") which changes
+  the displayed installment breakdown but NOT regular_price (cash price),
+  which this spider emits (falling back from salePrice when a sale is
+  active) -- stable across credit tiers.
+
+  Currency USD, matches countries.yaml.
+
+  Test run (--max-items 30): rows returned across multiple sub-catalogs
+  with clean USD prices (e.g. phones $1,519.99 list, accessories lower).

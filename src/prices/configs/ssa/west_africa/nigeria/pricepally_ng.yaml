@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: pricepally_ng
+url: https://pricepally.com/
+language: en
+currency: NGN
+cadence: weekly
+archive_prefix: "pricepally.com/products/"
+archive_path_re: '^/products/[^/?]+$'
+notes: |
+  Page family: API (no HTML page is ever fetched at collection time). First-
+  party online grocery store serving Lagos/Abuja/Port Harcourt/Ibadan.
+  Homepage ships an empty Next.js/RSC shell (no __NEXT_DATA__, no links in
+  raw HTML) -- recovered by Playwright network trace of the front-end,
+  which calls a wide-open Meilisearch instance at
+  meilisearch.pricepally.com/multi-search (indexUid=products). The
+  Authorization: Bearer token is a Meilisearch "search-only" public key
+  shipped in every visitor's page load, not a secret; curl_cffi with just
+  that header + Origin/Referer gets a clean 200 with no auth wall.
+  ~1000-product catalog (estimatedTotalHits) spanning most of divisions
+  01-13 (fruits, grains, proteins, household, etc) -- paginated by
+  offset/limit, no category walk needed. Prices are Medusa.js commerce
+  `raw_amount` integers in kobo (minor units) -- divided by 100 to get
+  naira; spot-checked (Kiwi, 1 Dozen variant, raw_amount 2649900 -> NGN
+  26,499.00, consistent with premium/imported fruit pricing in Lagos).
+  A product with multiple pack-size variants (e.g. "1 Dozen" vs "6
+  Pieces") is emitted as one row per variant, with the variant id folded
+  into the url fragment so DuplicationPipeline's url-dedup does not
+  collapse variants into a single row.
+  Verified live 2026-09-06, --max-items test run.

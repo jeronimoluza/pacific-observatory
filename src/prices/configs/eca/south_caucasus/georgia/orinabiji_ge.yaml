@@ -1,0 +1,59 @@
+scaffolding: spider
+spider: orinabiji_ge
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://2nabiji.ge/
+language: ka
+currency: GEL
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  Ori Nabiji ("2 Nabiji") -- Georgian supermarket chain; 2nabiji.ge is its
+  online store, explicitly advertised as carrying the full in-store
+  assortment at in-store prices. 14 root departments / 238 categories / 190
+  leaves: fruit & vegetables, drinks, dry grocery, tea-coffee-cocoa, bakery,
+  confectionery & ice cream, snacks, canned goods, sausages, eggs & dairy,
+  meat & semi-finished, seafood, plus home care/hygiene and pet food.
+
+  Supersedes the Georgia inventory's dead-end note ("same Next.js SPA-shell
+  signature as bigmarket.ge; not probed past that"). The catalog is behind a
+  fully open JSON API on catalog-api.orinabiji.ge; the calls only appear when
+  a CATEGORY page is traced, not the homepage:
+    GET  /catalog/api/categories/thin?lang=ge
+    POST /catalog/api/products/search?lang=ge&sortField=isInStock&sortDirection=-1
+         {"skip": N, "limit": 50, "categoryIds": ["<leaf id>"]}
+  The site itself posts the entire subtree of category ids at once; this
+  spider queries one leaf at a time instead, so each product lands on exactly
+  one shelf and the `category` breadcrumb is meaningful.
+
+  Price: `stock.price` is the base price and `discount.price` the live
+  promotional price. The spider emits the EFFECTIVE price (discount when
+  present and > 0, else base) so rows match the shelf. Plain GEL decimals,
+  not minor units -- verified on "ღვინო თეთრი თელიანი ველი 0,75ლ"
+  (stock.price 10.95, discount.price 7.99).
+
+  `/ge/product/<nameSlug>` is a genuine server-rendered route
+  (page "/[lang]/product/[product-slug]"; og:title carries the real product
+  title; a bogus slug 404s), so `url` here is a real permalink, unlike the
+  sibling agrohub_ge.
+
+  Rule-19 same-shelf check vs the existing Georgian manifests: Ori Nabiji is
+  an independent chain (its own warehouses and its own "Kari"/"orinabiji.ge"
+  backend), disjoint from goodwill_ge, europroduct_ge, zgapari_ge,
+  domino_ge and the Wolt-hosted carrefour_wolt_ge -- different operator,
+  different product-id namespace (barCode/productId GUIDs).
+
+  Spider parses: API (catalog-api.orinabiji.ge JSON; the emitted `url`
+  permalinks are real pages but are never fetched by the spider).
+
+  Test run 2026-09-05 (--max-items 60, closespider-timeout 300): 83 rows written,
+  83 distinct product_id, 83 distinct url,
+  13 categories touched, 0 blank names, 0 zero/negative prices,
+  100% GEL. Price range 0.19-24.95, median 2.49. Product names
+  eyeballed against the rendered site: real SKUs, not boilerplate.
+  NOTE the standing --max-items trap: a capped run drains only the
+  last-enqueued categories, so the category mix in a capped test is NOT
+  representative of the catalog. The full category tree is listed above.

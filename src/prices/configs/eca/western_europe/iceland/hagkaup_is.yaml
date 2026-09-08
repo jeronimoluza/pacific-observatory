@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: hagkaup_is
+url: https://www.hagkaup.is/
+language: is
+cadence: weekly
+archive_prefix: "mcprod.mobileapp.is/graphql"
+notes: |
+  Hagkaup -- national Icelandic supermarket chain (Hagar hf group).
+
+  Magento 2 storefront. Verified live 2026-09-06 with curl_cffi
+  impersonate=chrome124: category listing pages ARE server-rendered
+  (product cards, name, and price all present in raw HTML -- Icelandic
+  "kr." currency suffix, e.g. "1.424 kr."), so a plain HTML scrape would
+  have worked too, but a cleaner backend was available: the site's own
+  /graphql returns 405, while a separate shared backend at
+  mcprod.mobileapp.is/graphql (same "mcprod.<domain>" Magento-Cloud media
+  API naming convention seen elsewhere in this repo, e.g. hyperone_eg) is
+  wide open with no auth and answers the standard categoryList ->
+  products(filter:{category_id}) GraphQL shape directly. Uses the shared
+  `_magento_base.MagentoGraphQLBaseSpider` unmodified.
+
+  Root category id=2 exposes top-level sections (Leikföng/toys,
+  Fatnaður/clothing, Sérvara/health&household, Snyrtivara/cosmetics,
+  Veisluréttir/party food, Fermingar, etc.) with real product_count
+  values in the thousands -- a genuine wide catalogue, not a promo flyer.
+
+  currency ISK per countries.yaml (Icelandic krona; site displays "kr."
+  with no ambiguity since Iceland is the only ISK-using market this
+  spider touches). Some categories (observed on Snyrtivara/cosmetics)
+  return `final_price.value` with several fraction digits (e.g.
+  6120.576) rather than a whole krona -- this is the platform's own raw
+  GraphQL value (same field every Magento source in this repo reads
+  unmodified), not a scraping artifact; the site's own display layer
+  rounds it for the shopper.
+
+  Page family parsed: API (spider reads the GraphQL endpoint directly,
+  never fetches a category HTML page, even though the HTML page would
+  also have worked).
+
+  End-to-end test `.venv/bin/po prices collect --source hagkaup_is
+  --max-items 100`: see test run notes in the onboarding results log for
+  row count and sample record.

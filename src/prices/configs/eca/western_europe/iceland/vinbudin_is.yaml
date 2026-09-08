@@ -1,0 +1,86 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vinbudin_is
+url: https://www.vinbudin.is/heim/vorur/vorur.aspx
+language: is
+currency: ISK
+cadence: weekly
+channel: specialty-food
+archive_prefix: "vinbudin.is/heim/vorur/"
+archive_path_re: '^/heim/vorur/[^?]*'
+notes: |
+  Vínbúðin (ÁTVR) — Iceland's STATE ALCOHOL RETAIL MONOPOLY. Every alcoholic
+  beverage sold at retail in Iceland is sold through ÁTVR at a single
+  nationally-uniform price, so this is closer to an official national price
+  list for COICOP 02.1 than to one competitor's shelf. It is the first
+  division-02 price source of any kind for Iceland.
+
+  Probed and verified live 2026-09-05. Tier 1B. /heim/vorur/vorur.aspx is a
+  contentXXL / ASP.NET WebForms shell (58 KB of HTML with SIX price tokens on
+  it — a bare-curl read looks like a dead page); the grid is React and calls
+  an ASMX ScriptService discovered by a Playwright network trace:
+
+    GET /addons/origo/module/ajaxwebservices/search.asmx/DoSearch
+        ?&skip=<n>&count=<n>&orderBy=name%20asc
+
+  TWO TRAPS, both fatal if missed, both found by probing:
+
+  1. The GET must carry `Content-Type: application/json; charset=utf-8`.
+     Without it ASP.NET picks XML serialization and returns HTTP 500
+     "Cannot serialize interface System.Collections.IEnumerable" on EVERY
+     call — including from a warmed session with cookies and a Referer. That
+     500 reads as a dead endpoint, not as a missing request header, and it is
+     what the first four probe attempts here saw.
+  2. The payload is DOUBLE-ENCODED. The ScriptService envelope is
+     `{"d": "<json string>"}` and that string parses to
+     `{"data": [...], "total": <int>}`. One json.loads yields a str, not a
+     list, and silently looks like an empty result.
+
+  A companion `/search.asmx/js` proxy publishes the full method list
+  (DoSearch, GetCategoryTreeView, GetAllShops, GetProducers, ...) and is how
+  the parameter names were recovered without reading the minified bundle.
+
+  ENUMERABILITY (not just access) proven: skip=0 and skip=100 at count=100
+  return 100 distinct ProductIDs each with ZERO overlap, `total` reports
+  4,167 products, and count=500 is honoured. This is a walkable catalogue,
+  not a homepage carousel.
+
+  Prices are whole ISK krónur in `ProductPrice` (float) — no minor-unit
+  scaling, confirmed against the rendered page. `ProductCategory.name`
+  (red / white / beer / ...) is emitted as `category`.
+
+  coicop_codes deliberately LEFT UNSET even though the whole catalogue is
+  alcohol. The catalogue spans 02.1.1.0 (spirits), 02.1.2.1/02.1.2.2 (wine)
+  and 02.1.3.0 (beer); declaring all four would resolve, per ADR-0002's
+  `resolved_code`, to the parent node "02.1" — which is not a taxonomy leaf,
+  so the narrow short-circuit would not fire anyway and the manifest would
+  only add a load-time warning. "02.1 Alcoholic beverages" is in fact the
+  exact anti-pattern named in prices/enrich/coicop_codes.py's own docstring.
+  The classifier separates wine / beer / spirits from the product name and
+  the emitted category, which is what is wanted here.
+
+  channel: specialty-food — a single-category off-licence, not a grocer.
+
+  SPIDER PAGE FAMILY: API. The spider never fetches an HTML page; emitted
+  URLs are synthetic permalinks into the site's own product-detail route and
+  cannot be used to validate the archive regex locally.
+
+  VERIFICATION RUN 2026-09-05 (--max-items 60, closed at 100 on the first
+  API page): 100 rows, 100 distinct product_id, 100 distinct url, 0 blank
+  names, 0 non-positive prices, currency 100% ISK, price range 599-106,680
+  ISK, median 7,999. Category mix strong 46 / red 29 / white 19 / rose 3 /
+  beer 1 / liqueur 1 / bubbly 1 — the whole sample is division 02.1, as
+  expected from a state alcohol monopoly.
+
+  Top price eyeballed rather than assumed: "50 ara Old School Single Malt,
+  Signatory i holki" at 106,680 ISK (~EUR 730) for a 50-year-old single malt
+  is plausible, not a 100x error.
+
+  PDP URL SHAPE WAS WRONG IN THE FIRST DRAFT AND IS FIXED. The emitted
+  permalink is /heim/vorur/stoek-vara.aspx/?productid=<id> with a HYPHEN.
+  The underscore spelling (stoek_vara.aspx) 404s. The spider never fetches
+  these URLs, so nothing in the run would ever have surfaced this — it was
+  caught by re-fetching an emitted URL by hand, which is the only check that
+  can catch it for an API-family spider.

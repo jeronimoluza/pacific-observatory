@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: hypermarket
+spider: carrefour_be
+url: https://www.carrefour.be/
+language: nl
+currency: EUR
+cadence: weekly
+notes: |
+  Carrefour Belgium (carrefour.be) — hypermarket, Salesforce Commerce
+  Cloud (Demandware) storefront (confirmed via /on/demandware.store/Sites-
+  carrefour-be-Site/... URLs on the homepage). Front page and PDPs clear at
+  200 with curl_cffi impersonate="chrome124" — no WAF challenge observed
+  despite server: cloudflare.
+
+  Search-UpdateGrid?cgid=<anything> returns a fixed 72-item grid regardless
+  of the cgid value (not usable for category enumeration), but
+  /sitemap_index.xml -> /nl/sitemap_N.xml (5 shards) lists ~100k direct PDP
+  urls (nl and fr duplicates of the same SKU set). Spider walks the /nl/
+  PDP urls only (stride-sampled, every 5th) to avoid double-counting the
+  fr duplicates. Each PDP carries a schema.org/Product JSON-LD block
+  (name, sku, offers.price, offers.priceCurrency=EUR). Verified live
+  2026-09-06: "Brie Coeur de Lion Kaas", EUR 6.25, sku 00080032; "Komkommer"
+  (cucumber), EUR 1.05, product id 00841036. Page family: PDP only (spider
+  never touches a listing/category page).

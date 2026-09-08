@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: losmejoresproductos_es
+url: https://losmejoresproductos.es/
+language: es
+cadence: weekly
+channel: marketplace
+archive_prefix: "losmejoresproductos.es/precios/"
+archive_path_re: '^/precios/[a-z]+/[a-z0-9-]+/?$'
+notes: |
+  listing. Independent price-tracking site with matched-product discipline
+  (identical brand/format/size tracked head-to-head across Mercadona,
+  Carrefour and DIA). No WAF. /precios/ is an index of 122
+  <store>/<category>/ pages (re-verified 2026-09-06: 43 carrefour + 41 dia
+  + 38 mercadona); each is a server-rendered HTML table
+  (table.lmp-ptable) with product name, size, price and price/unit per
+  row -- store and category come from the page's own URL path, not the
+  row. channel: marketplace (same product compared across multiple
+  first-party retailers, not a single retailer's own catalog).
+
+  Re-verified live 2026-09-06: /precios/carrefour/aceite/ -> 200, 91
+  products, first row "Aceite de girasol para freir Carrefour garrafa 5
+  l." EUR 8,29 (EUR 1,66/l).

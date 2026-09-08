@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ebaa_ks
+url: https://e-baa.com/
+language: sq
+cadence: weekly
+channel: dept-store
+archive_prefix: "e-baa.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Re-verified live 2026-09-06. Candidate URL https://www.e-baa.com/ (with
+  www) returns Cloudflare 526 "Invalid SSL certificate" across all five
+  curl_cffi profiles (chrome124/chrome120/chrome131/safari17_0/firefox133)
+  -- the www subdomain's origin cert is broken. The bare domain
+  https://e-baa.com/ (no www) is fully live and unaffected: 200 on all
+  profiles.
+
+  Next.js storefront, PDP HTML is server-rendered (no JSON-LD, no
+  __NEXT_DATA__ -- uses RSC streaming, so selectors target the rendered
+  DOM directly: h1 for name, span.text-lg.font-semibold.text-primary for
+  price, nav[aria-label='Breadcrumb'] last <a> for category).
+
+  Category-page pagination is broken (?page=2 on /products/category/teknika
+  returns the identical 24 items as page 1), so the spider walks the
+  sitemap instead: https://panel.e-baa.com/sitemaps/products.xml lists 685
+  product slugs; the public storefront serves the same slug at
+  https://e-baa.com/products/<slug>. Confirmed live: two spot-checked PDPs
+  (an air cooler, a QLED TV) both 200 with real EUR prices (99.00, 499.00).
+
+  AI_NOTES said "no grocery aisle" and described the catalogue as
+  homeware/garden/cosmetics/toys only -- broader in practice: appliances
+  (fridges, washing machines, TVs, phones), small kitchen appliances,
+  furniture, garden/pool gear, toys, personal-care items. Non-food across
+  the board either way. channel: dept-store (broad, non-grocery-led).
+  coicop_codes left unset -- wide catalogue, classifier assigns leaves.
+
+  Page family parsed: PDP (sitemap-seeded; the spider never fetches a
+  category/listing page for data, only for occasional manual spot checks).
+
+  End-to-end test `.venv/bin/po prices collect --source ebaa_ks
+  --max-items 20`: see onboarding results log for row count and sample
+  record.

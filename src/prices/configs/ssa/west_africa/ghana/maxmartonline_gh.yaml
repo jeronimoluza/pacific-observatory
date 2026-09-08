@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: maxmartonline_gh
+url: https://maxmartonline.com/
+language: en
+cadence: weekly
+channel: hypermarket
+notes: |
+  page family: listing (category ?pagesize=&pagenumber=N pages only; PDP
+  requests happen too, since the sitemap mixes both, but they simply
+  yield zero regex matches).
+
+  Standard nopCommerce storefront (meta name=generator content=
+  nopCommerce, same platform family as winners_mu), but this theme does
+  NOT mark leaf categories with class="lastLevelCategory" -- the
+  mega-menu is store-department info content, and its
+  category-navigation-list is empty in raw HTML (Playwright trace found
+  no XHR populating it). Walks the flat sitemap.xml instead (8,131 urls,
+  mixing category pages like /yoghurts with individual PDPs, no id
+  prefix to tell them apart from the URL) and requests every one with
+  ?pagesize=75&pagenumber=1 -- category responses carry
+  <body class="category-page-body"> and product-item cards; PDP
+  responses carry <body class="product-details-page-body"> and produce
+  zero matches, so no separate classification step is needed.
+
+  Confirmed live 2026-09-06: /yoghurts, productid 720 "Waitrose Essential
+  Baby Cotton Wool Pleat 200g" GHS 66.90 -- price span carries an
+  explicit currency in-line ("66.90 (GHS)"), confirming countries.yaml's
+  GHS default with no guessing.

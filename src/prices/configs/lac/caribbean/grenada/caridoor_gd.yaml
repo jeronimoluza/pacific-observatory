@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: caridoor_gd
+url: https://www.caridoor.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.caridoor.com/product/"
+archive_path_re: '^/product/[^/?#]+/?$'
+notes: |
+  Discovery lead caridoor.com (2026-09-06). Plain (non-impersonated) curl
+  gets a Cloudflare "Just a moment..." JS-challenge shell -- the repo's
+  pinned curl_cffi profile (chrome124) clears it with a clean 200 on both
+  the homepage and the Store API, confirmed by manual probe before writing
+  the spider (no per-spider IMPERSONATE_PROFILE override needed).
+
+  "The Caribbean at Your Door" -- one shared USD-priced WooCommerce catalog
+  serving multiple Eastern Caribbean islands (no per-country storefront
+  split visible in the Store API response; assigned to Grenada per the
+  discovery lead's country tag). ~249 products, grocery/frozen/meat/
+  seafood/pantry categories. Standard versioned Store API namespace
+  (/wp-json/wc/store/v1/products), zero auth, currency_minor_unit=2.
+
+  Test run: 249 rows, e.g. "Goat /lbs" USD 7.59.

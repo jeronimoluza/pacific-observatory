@@ -1,0 +1,20 @@
+scaffolding: spider
+spider: dirk_nl
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.dirk.nl/
+language: nl
+currency: EUR
+cadence: weekly
+coicop_codes: null
+notes: |
+  Page family: sitemap -> PDP (spider never fetches a category listing page).
+  Discounter chain (value tier), Nuxt/Vue SSR storefront. Catalog fully
+  enumerable via /products-sitemap.xml (7,384 product URLs, 2026-09-06).
+  Each PDP carries a schema.org Product JSON-LD block; note the site's own
+  markup uses a non-standard capitalised "Price" key on the Offer object
+  in addition to lowercase "price" -- spider checks both. Verified live
+  2026-09-06: "Broccoli" mpn=4431, EUR 2.30. No WAF encountered (plain
+  curl_cffi chrome124 works, 200 on every path tried).

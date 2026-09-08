@@ -1,0 +1,78 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sid_shop_bg
+url: https://www.sid-shop.com/
+language: bg
+currency: EUR
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.sid-shop.com/"
+archive_path_re: '^/[a-z0-9\-]+$'
+notes: |
+  С и Д Комерсиал / sid-shop.com — Sofia-based online ALCOHOL retailer
+  (wine, rakia, whisky, rum, brandy, beer). Onboarded for COICOP division 02,
+  which Bulgaria's existing eight manifests reach only incidentally:
+  ogimarket_bg and tmarketonline_bg are general grocers, gracia_cosmetics_bg
+  is perfumery, and the five eurostat_* fetchers are energy and PLI
+  aggregates.
+
+  Country attribution does NOT rest on the .com TLD: the site's own
+  Organization JSON-LD names "С и Д Комерсиал ООД" at бул. Ботевградско шосе
+  247, София, postal code 1839.
+
+  Probed live 2026-09-05. Tier 1A, Magento 2 (Stenik theme), server-rendered,
+  no anti-bot, no JS.
+
+  SITEMAP IS NOT AT /sitemap.xml — that path 404s. Magento writes it to
+  /media/sitemap.xml and robots.txt is what points there. 9,543 product URLs,
+  all bare single-segment slugs (hence the archive_path_re).
+
+  TWO EXTRACTION TRAPS, both handled:
+  1. The Product JSON-LD has name, sku, mpn (an EAN) and offers but NO
+     `category` key. The category path exists only in the rendered breadcrumb,
+     marked up as schema.org BreadcrumbList MICRODATA (itemprop="name" inside
+     .breadcrumbs .items) rather than as a JSON-LD node — a JSON-LD-only
+     reader emits null categories for the whole catalogue and never errors.
+     The spider reads the DOM breadcrumb and drops the leading "Начало" crumb.
+  2. `offers` is a LIST, not an object, and `price` is a float, not a string.
+     Both shapes must be handled or every row is silently dropped.
+
+  CURRENCY: EUR — Bulgaria's January 2026 euro changeover; the site's own
+  offers.priceCurrency says EUR and wins over the stale BGN default in
+  countries.yaml (same trap as tmarketonline_bg, gracia_cosmetics_bg).
+
+  `coicop_codes` is left UNSET even though the catalogue is alcohol-dominated.
+  It spans wine (02.1.2.x), spirits (02.1.1.0) and beer (02.1.3.0), so a
+  single-class declaration would resolve to the non-leaf "02.1" that ADR-0002
+  warns about — the narrow short-circuit would not fire anyway and the
+  manifest would only add a load-time warning. The catalogue also carries a
+  non-alcoholic drinks tail. Classifier assigns leaves per product.
+
+  channel: specialty-food — a drinks specialist, not a grocer.
+
+  SPIDER PAGE FAMILY: PDP only (sitemap-driven; category grids never fetched).
+
+  SITEMAP ORDERING TRAP (cost one whole test run). Magento's sitemap mixes
+  9,407 single-segment PRODUCT slugs with 136 multi-segment CATEGORY and CMS
+  pages (/alkoholni-napitki/uiski/amerikansko, /about,
+  /priklyuchili-kampanii/8-mart). Products come FIRST in the file and the
+  category tail comes LAST -- but Scrapy's default scheduler is LIFO, so the
+  crawl starts at the tail. The first test run spent its entire 240s budget
+  emitting "no Product JSON-LD" warnings against category pages and scraped
+  TWO rows. The spider now keeps depth-1 paths only. Nothing about the run
+  looked like a failure; it just looked slow.
+
+  VERIFICATION RUN 2026-09-05 (--max-items 60, closed at 62): 9,407 product
+  urls discovered, 62 rows, 62 distinct product_id, 62 distinct url, 0
+  ERRORs, 0 blank names, 0 null categories, 0 non-positive prices, currency
+  100% EUR, price range 1.10-787.70 EUR, median 33.50, and 53 of 62 rows
+  carry a real GTIN from the JSON-LD `mpn` field. Top-level category mix:
+  Алкохолни напитки 52, Специални предложения 8, Архивни продукти 1, Други 1
+  -- so ~84% of the sample is explicitly under the alcohol tree, with the
+  remainder promo/archive buckets that still hold alcohol SKUs. Sample rows:
+  "Узо Кавала Мини" EUR 1.49, "Уиски Лафройг 12 Г." EUR 89.90, "Текила 1800
+  Гуачимонтон" EUR 139.98 (GTIN 7501035013889) -- eyeballed against the
+  storefront, no minor-unit error.
+

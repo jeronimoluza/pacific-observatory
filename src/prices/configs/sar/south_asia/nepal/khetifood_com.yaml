@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: khetifood_com
+url: https://khetifood.com/
+language: en
+currency: NPR
+cadence: weekly
+archive_prefix: "khetifood.com/index.php?route=product/product"
+archive_path_re: 'route=product/product.*product_id=\d+'
+notes: |
+  OpenCart storefront with clean route-based category URLs
+  (`?route=product/category&path=<id>`). Server-rendered, no JS needed.
+
+  Verified live 2026-09-06: GET ?route=product/category&path=215 -> 200,
+  ~17 `div.product-thumb` cards incl. "DHUNGRI" (local dried-fish/
+  condiment item) Rs. 270.00, "Ghee" (Cow Ghee 500gm) Rs. 650.00. 20
+  category paths found on the homepage nav; spider re-crawls the homepage
+  each run to discover categories rather than a hardcoded list.
+
+  AI_NOTES confirmed: every card carries an explicit unit in its
+  description text ("SKU: 500gm", "per 1kg" etc.), and product names
+  include strong local items (dhungri, ghee, timur/local-spice SKUs).
+
+  GOTCHA (from candidate brief): small overall catalogue -- expect modest
+  but real row counts (candidate note recorded 23 items in "groceries" at
+  check time; combined across all 20 categories this is materially more).
+
+  Test run (--max-items 10): 10 items, NPR prices in plausible range.

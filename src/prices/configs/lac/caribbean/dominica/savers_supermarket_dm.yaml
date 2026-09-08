@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: savers_supermarket_dm
+url: https://backend.caribeeats.com/api/business/savers-supermarket-
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Onboarded 2026-09-05. Savers Supermarket (Portsmouth, Dominica) on the
+  CaribeEats delivery aggregator. Page family parsed: API (single
+  unauthenticated GET to /api/business/<slug> returns the whole catalogue;
+  no listing or PDP page is ever fetched, and the emitted url is a synthetic
+  endpoint + '#<product_id>' fragment that is not browsable -- it cannot be
+  used to validate an archive regex, same caveat as the other CaribeEats
+  sources in this repo).
+
+  Discovery: the 2026-09-01 Dominica pass walked only the platform's
+  "roseau-dominica" region (id 1767) and explicitly left the
+  "portsmouth-dominica" region (id 17672) uninvestigated. Re-enumerated
+  2026-09-05 with a plain unauthenticated
+  GET /api/businesses?region_id=17672 (no Playwright, no geolocation grant
+  -- the location gate the earlier notes describe applies only to the
+  `service_id=groceries&lat=&lng=` variant of that call, which returns an
+  empty list). That listing surfaced Savers Supermarket, business_type_id=10.
+
+  Catalogue verified live 2026-09-05: 3,536 SKUs across 76 categories --
+  "Groceries" 1,153, plus produce, frozen goods, snacks, drinks, bakery and
+  a toiletries/pet-care/home-goods minority. This is by a wide margin the
+  largest genuine food catalogue found for Dominica on any platform, and the
+  country's first supermarket-channel source (previously: island_liquor_dm,
+  division 02 only, 42 SKUs; tropicart_dm, marketplace).
+
+  Payload `currency` is XCD, matching countries.yaml dominica. coicop_codes
+  left unset -- wide supermarket catalogue, classifier assigns per-leaf.

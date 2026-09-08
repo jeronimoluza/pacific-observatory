@@ -1,0 +1,49 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: alko_fi
+url: https://www.alko.fi/fi/tuotteet
+language: fi
+cadence: weekly
+timeout: 5400
+archive_prefix: "www.alko.fi/api/search/product"
+notes: |
+  Alko -- Finnish state alcohol retail monopoly, administered/regulated
+  prices, complete catalogue (11,223 products).
+
+  coicop_codes deliberately LEFT UNSET even though the whole catalogue is
+  alcohol: it spans 02.1.1.0 (spirits), 02.1.2.1/02.1.2.2 (wine) and
+  02.1.3.0 (beer). Declaring all four resolves, per ADR-0002's
+  resolved_code, to the parent node "02.1" -- not a taxonomy leaf, so the
+  narrow short-circuit would not fire anyway (same trap already documented
+  on vinbudin_is.yaml, Iceland's equivalent state alcohol monopoly). The
+  classifier separates wine/beer/spirits from product_name and the emitted
+  category, which is what is wanted here.
+
+  Next.js app; the product grid is not server-rendered (a plain fetch of
+  /fi/tuotteet has no product markup). Found the real data source via a
+  Playwright network trace: POST /api/search/product?lang=fi is an Azure
+  Cognitive Search index (`@odata.count` signature) fronting the whole
+  catalogue, no auth, plain JSON body {"top": N, "skip": N}. Verified live
+  2026-09-06 with curl_cffi impersonate=chrome124: 200, full product
+  records (id, name, price EUR, volume, mainGroupName/productGroupName
+  categories, ABV, country). A Playwright hit surfaced a transient Azure
+  Front Door WAF JS challenge (.azwaf/jsc/..., an afd_azwaf_tok retry) on
+  the very first request of that browser session, but every direct
+  curl_cffi request in this probe -- all 5 impersonation profiles on the
+  page, plus the API POST itself -- returned a clean 200 with no
+  challenge; not a real block, just occasional edge-side bot-scoring
+  noise that self-resolves.
+
+  price is already a plain EUR float (administered retail price) -- no
+  minor-unit or symbol-parsing risk. category is Finnish mainGroupName
+  joined with productGroupName (e.g. "viinit / valkoviinit").
+
+  Page family parsed: API (spider reads the JSON search endpoint directly,
+  never fetches a category HTML page).
+
+  End-to-end test `.venv/bin/po prices collect --source alko_fi
+  --max-items 100`: see test run notes in the onboarding results log for
+  row count and sample record.

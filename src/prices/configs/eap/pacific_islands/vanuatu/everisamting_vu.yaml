@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: everisamting_vu
+url: https://everisamting.com/
+archive_prefix: "everisamting.com/ad/"
+archive_path_re: '^/ad/[a-z0-9-]+/[a-z0-9-]+$'
+language: en
+cadence: weekly
+notes: |
+  Vanuatu's self-described "#1 classified site" (Port Vila, Vanuatu). 19
+  categories walked via `/ads/<slug>?page=N` (plural "ads" -- the sibling
+  singular `/category/<slug>` route 500s with a Laravel routing error,
+  confirmed live 2026-09-06, do not use it). Listing cards carry name +
+  price + category directly, no PDP fetch needed -- page family is
+  `listing`. Pagination stops on an empty page (0 cards); vehicles has 8
+  populated pages, page 9 returns 0.
+
+  Price format "1,850,000 VT" -- comma-grouped, VT suffix; currency
+  hardcoded VUV (never parsed from the "VT" suffix itself, per rule 8).
+  product_name comes from the listing-card `img::attr(alt)` (full title);
+  the `h2 > a` anchor text is truncated with "..." and deliberately not
+  used as primary. Wide category spread (vehicles, electronics, property,
+  fashion, jobs, services, agriculture...) -> coicop_classification=
+  classifier, not source_curated. channel=marketplace since this is a
+  peer-to-peer classifieds board, not a first-party retailer.
+
+  Verified 2026-09-06: test run (--max-items 5) returned valid rows with
+  non-null product_id/name/price/url, price magnitude matches the rendered
+  page (720,000 VT Land Cruiser PDP == 720,000 VT on its own listing card).

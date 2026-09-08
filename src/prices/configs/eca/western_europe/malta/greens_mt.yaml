@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: greens_mt
+url: https://greens.com.mt/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "greens.com.mt/productdetails"
+archive_path_re: '^/productdetails\?pid=\d+'
+notes: |
+  page family: API. Shard AI_NOTES guessed WooCommerce (wrong) - actual
+  storefront is a "Krystal CMS" ASP.NET WebForms build. Live JSON API at
+  /apiservices/retail/sync/productlist, bearer-token guarded, but the token
+  is rendered inline in every category page's `getProductList('<token>',...)`
+  call, so a plain curl_cffi GET (chrome124) mints a usable token with no
+  Playwright and no cookie dependency (verified token works cookie-free in
+  a completely separate HTTP session). Must hit the www. host. One request
+  per top-level category at NumberOfRecords=500 (largest category observed:
+  276, Butcher) rather than paging. Currency EUR. Verified live 2026-09-06:
+  Butcher alone returned 276 SKUs, e.g. "Affumicato Sausage" EUR 14.00.
+  GROUP_1..GROUP_3 fields give a 3-level breadcrumb, kept as category.

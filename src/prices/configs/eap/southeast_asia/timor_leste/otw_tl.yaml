@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes:
+  - "11.1.1"
+spider: otw_tl
+url: https://otw-tl.com/foods/
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: "otw-tl.com/restorante/"
+archive_path_re: "^/restorante/[^/?]+"
+notes: |
+  OTW is a Dili (Timor-Leste) food-delivery marketplace aggregating many
+  restaurants; every item is a prepared restaurant meal (COICOP 11.1.1),
+  hence source_curated rather than the classifier. Previously recorded
+  blocked (HTTP 403 on WebFetch, June 2026); re-probed 2026-09-06 with
+  curl_cffi impersonate=chrome124 and the whole site is open with no
+  anti-bot at all now (200 on every profile, homepage/category/restaurant
+  pages, USD prices in raw HTML). Restaurant discovery walks the
+  `/load-more-restorantes/?kategoriaproduto=comida&page=N` AJAX endpoint
+  (JSON envelope with an escaped HTML fragment) until it returns an empty
+  fragment; each restaurant page lists its menu as `div.product-item`
+  cards (name/category/price all server-rendered, no restaurant-name
+  heading present in static HTML). Only the `comida` (food) category
+  filter was probed — other kategoriaproduto values may exist and are
+  not yet explored.

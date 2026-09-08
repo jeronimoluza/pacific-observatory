@@ -1,0 +1,45 @@
+scaffolding: spider
+spider: waitrose
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://www.waitrose.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+archive_prefix: "www.waitrose.com/ecom/products/"
+archive_path_re: '^/ecom/products/[^/?]+/[^/?]+$'
+notes: |
+  Waitrose -- premium-tier UK supermarket (John Lewis Partnership).
+  Discovery lead (wave 4, bare hostname `waitrose.com`, triage Verdict
+  "SUSPECT", AI_NOTES: "Premium tier", no further detail).
+
+  Homepage is a dead end (window.__PRELOADED_STATE__ carries only empty
+  app-bootstrap state, no catalogue), but the nav's
+  /ecom/shop/browse/<dept> department pages are plain server-rendered
+  product grids with real prices, reachable via curl_cffi
+  impersonate=chrome124 with NO postcode/branch selection required --
+  same pattern as morrisons.com in this wave, unlike Tesco/ASDA/Ocado
+  (confirmed BLOCKED).
+
+  Selectors: each tile is <article data-testid="product-pod"
+  data-product-id="N" data-product-name="..."> -- id/name are attributes
+  on the tile itself. Price sits inside a nested
+  <span class="redText___...">£D.DD</span> behind
+  data-test="product-pod-price", not immediately adjacent, so the price
+  regex uses a bounded lookahead window. PDP href is
+  /ecom/products/<slug>/<id>-<variant-ids>.
+
+  ~3 of every 4 tiles on /ecom/shop/browse/groceries are promotional
+  banner cards with no product-pod-price -- silently skipped, not a
+  breakage signal.
+
+  Page family parsed: department listing pages only (groceries, offers;
+  entertaining was tried and yields 0 -- editorial/landing page, no
+  product-pod tiles; PDP never fetched). Full Waitrose department nav is
+  much larger -- worth widening later.
+
+  Test run 2026-09-06 (--max-items 10): passed, real GBP prices (£1.95-
+  £30.50), 0 blank names, matches the rendered page.

@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: elakolije_rs
+url: https://elakolije.rs/
+language: sr
+currency: RSD
+cadence: weekly
+channel: supermarket
+archive_prefix: "elakolije.rs/"
+archive_path_re: '^/[0-9]+/proizvod/[^/?]+$'
+notes: |
+  page family: API. Largest DOMESTIC Serbian chain (190+ stores,
+  16,000+ articles, Serbia's first online grocery service). Bespoke PHP
+  storefront; homepage mega-menu SSRs every category link directly
+  (~284 unique category ids across all tree levels) but the product
+  grid (#artikli_lista) is an empty client-JS placeholder.
+  Playwright network trace (2026-09-06) found: POST
+  /api/api.php?action=artikli, body {"sifkla":"<categoryId>",
+  "offset":0,"limit":200,...}, header x-api-key=<static client key,
+  baked into page JS, not a per-session token> + x-requested-with:
+  XMLHttpRequest. Works cold with no cookies. limit=200 safely exceeds
+  every observed leaf's true count (verified: category 1000110
+  "Tradicionalno voce" -> exactly 11 rows, matching the menu's own "(11)"
+  count), so no offset pagination needed. Walking the full mixed-level
+  id list causes some redundant hits but no bad data -- dedup keys on
+  each product's own PDP link.
+  Verified live: category 1000110 -> "JABUKA AJDARED" 149.99 RSD/kg.
+  Test run 2026-09-06: --max-items 5 returned 5 rows with real RSD prices.

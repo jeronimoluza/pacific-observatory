@@ -1,0 +1,27 @@
+scaffolding: fetcher
+module: eap.pacific_islands.new_zealand.mbie_nz_fuel
+function: fetch_mbie_nz_fuel
+source_key: mbie_nz_fuel
+fallback_date: 2026-06-01
+channel: null
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: tabular_download
+url: https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-statistics-and-modelling/energy-statistics/weekly-fuel-price-monitoring
+language: en
+currency: NZD
+cadence: weekly
+coicop_codes: ["07.2.2.1", "07.2.2.2"]
+notes: |
+  MBIE (Ministry of Business, Innovation & Employment) publishes a plain,
+  keyless CSV of weekly retail fuel prices back to 2004:
+  https://www.mbie.govt.nz/assets/Data-Files/Energy/Weekly-fuel-price-monitoring/weekly-table.csv
+  Verified live 2026-09-06: 35,010 rows, tidy long format (Week, Date, Fuel,
+  Variable, Value, Unit, Status), through week 2026w35 (2026-08-28). Keeps
+  only Variable=="Adjusted retail price" rows for the 3 tracked retail
+  fuels (Diesel, Regular Petrol, Premium Petrol 95R); drops Fuel=="NA" rows
+  (series-wide inputs: Dubai crude price, NZD/USD FX). Value is NZD cents
+  per litre in the source, converted to NZD/L (÷100) to match pipeline
+  convention. fallback_date set recent since the full 2004-present history
+  is available on every run (no incremental-only endpoint). Narrow
+  single-class source (07.2.2.0 fuels), short-circuits the classifier.

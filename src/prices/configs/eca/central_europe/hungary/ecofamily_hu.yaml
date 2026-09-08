@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ecofamily_hu
+url: https://www.ecofamily.hu/
+language: hu
+currency: HUF
+cadence: weekly
+channel: specialty-food
+archive_prefix: "ecofamily.hu/p/"
+archive_path_re: '^/p/[^/?]+$'
+notes: |
+  page family: PDP. Nationwide food + drogerie delivery on the UNAS
+  webshop platform (Hungarian SaaS, unrelated to Shopify/WooCommerce).
+  robots.txt -> sitemap.xml -> single gzipped urlset
+  (sitemap-ecofamily_hu-1.xml.gz, ~17.8k urls: 950 /c/ category pages,
+  14,055 /p/ PDPs) -- confirmed live 2026-09-06. Server sends
+  content-type: application/x-gzip with NO Content-Encoding header, so
+  the spider must gunzip response.body itself (Scrapy does not
+  auto-decompress). Each PDP carries schema.org/Product JSON-LD
+  (name/offers.price/offers.priceCurrency) + a BreadcrumbList whose last
+  item is the leaf category, same shape as butlon_com. Verified live:
+  "Bref Deluxe Delicate Magnolia WC frissito 3 x 50 g" HUF 1590,
+  breadcrumb Haztartas > Tisztitoszerek > WC tisztito, fertotlenito > WC
+  illatosito. (An open AJAX category-listing endpoint also exists --
+  `?action=cat_art_list&ajax=1&page=N` -- but the PDP sitemap gives full
+  catalog coverage more simply.)
+  Test run 2026-09-06: --max-items 5 returned 5 rows with real HUF prices.

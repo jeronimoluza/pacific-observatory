@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: comparaloo_es
+url: https://comparaloo.es/
+language: es
+cadence: weekly
+channel: marketplace
+archive_prefix: "comparaloo.es/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  PDP (product detail page). Multi-category, multi-retailer price
+  comparison site (84 stores per shard AI_NOTES; also runs an explicit
+  false-discount / Omnibus Art.6a detector, not itself scraped here). No
+  WAF. PDPs are server-rendered Next.js pages carrying a clean
+  application/ld+json Product block (name, offers.price, offers
+  .priceCurrency, offers.seller.name = first-party retailer). Grocery PDP
+  URLs are enumerated via sitemap-supermarket.xml (10.6MB, tens of
+  thousands of <loc> entries) -- the /groceries category page itself is
+  client-rendered RSC with no product links in static HTML, so the sitemap
+  is the catalog walk, not a category crawl.
+
+  Re-verified live 2026-09-06: sitemap-supermarket.xml -> 200, 10.6MB;
+  sample PDP (Sedovin galletas danesas de mantequilla Royal Ballet 454g)
+  -> 200, JSON-LD price 5.88 EUR, seller "Sedovin". channel: marketplace
+  (aggregates first-party retailers' own catalogs across many divisions).

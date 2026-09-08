@@ -1,0 +1,28 @@
+scaffolding: fetcher
+module: eap.east_asia.south_korea.kepco_kr_tariff
+function: fetch_kepco_kr_tariff
+source_key: kepco_kr_tariff
+fallback_date: 2012-01-01
+channel: null
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: html_scrape
+url: https://home.kepco.co.kr/kepco/front/html/CY/E/E/CYEEHP00101.html
+language: ko
+currency: KRW
+cadence: irregular
+coicop_codes: ["04.5.1.0"]
+notes: |
+  KEPCO (Korea Electric Power Corporation) residential electricity tariff,
+  scraped live from a plain server-rendered HTML page (no JS, no auth) --
+  pandas.read_html parses two 6-tier tables (저압 low-voltage and 고압
+  high-voltage residential), each with a basic monthly fee (기본요금) and a
+  per-kWh energy charge (전력량 요금) per usage band. Each table carries its
+  own "적용일자" (effective-date) stamp in the page, parsed live so a real
+  rate revision is picked up automatically. Verified live 2026-09-06: both
+  tables stamped 2013-01-14, values e.g. 100kWh-band low-voltage = 400 KRW
+  basic fee + 59.10 KRW/kWh. fallback_date is set well before that stamp so
+  run 1 captures the current schedule. Only residential ("주택용 전력")
+  schedules are emitted -- commercial/industrial schedules live on separate
+  pages, out of scope for a household basket. Narrow single-class source
+  (04.5.1.0 electricity), short-circuits the classifier.

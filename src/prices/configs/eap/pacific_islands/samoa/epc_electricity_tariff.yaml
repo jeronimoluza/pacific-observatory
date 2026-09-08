@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: epc_electricity_tariff
+module: eap.pacific_islands.samoa.epc_electricity_tariff
+function: fetch_epc_electricity_tariff
+url: https://www.epc.ws/electricity-rates/
+language: en
+cadence: irregular
+fallback_date: "2020-01-01"
+notes: |
+  Electric Power Corporation (Samoa state utility) electricity-rates page,
+  plain server-rendered HTML tables (no JS, no PDF). Each consumer class's
+  tariff is an <h5> heading followed by a <table> (kwh/units band -> Total
+  Cost per Unit, WST). Four tariff tables extracted: Non-Domestic
+  Prepaid (flat $1.02/unit), Non-Domestic Postpaid (flat $1.05/unit),
+  Domestic Prepaid (tiered: 1-50 kWh @ $0.52, 51+ @ $0.63), Domestic
+  Postpaid (flat $0.67/unit, effective 1 Nov 2023). Two other headings on
+  the page have NO table and are skipped: "TARIFF FOR 100 LARGEST
+  CONSUMERS" (an embedded image with no text layer) and a "domestic tariff
+  unaffected" prose-only notice.
+  Verified live 2026-09-06, --max-items test run.

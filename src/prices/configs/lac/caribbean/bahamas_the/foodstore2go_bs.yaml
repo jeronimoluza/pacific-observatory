@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: foodstore2go_bs
+url: https://foodstore2go.com/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "foodstore2go.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Onboarded 2026-09-05. Foodstore2Go, Nassau / Paradise Island grocery
+  delivery. Page family parsed: API live (/products.json), PDP for archived
+  HTML via the shared _shopify_base.parse_html chain.
+
+  Vanilla Shopify, enumerability verified live 2026-09-05: 862 products
+  across 4 pages of /products.json?limit=250&page=N, pages disjoint, clean
+  termination. Food-led at real Bahamian shelf prices -- produce
+  (Cauliflower 6.25, Grapefruit 2.75, Kiwi 2.75), dairy (Lactaid, Kraft
+  shredded cheeses), pantry (Campbell's, Prego, Smucker's), plus a
+  substantial division-02 tail (Kalik Bottles 33.60, Modelo 24pk, Maker's
+  Mark, Patron, Woodbridge). Minor non-food tail: ~6 "simple, virtual" spa
+  services sold as delivery add-ons, and disposables -- left in, since the
+  classifier routes them out of divisions 01/02 by product name.
+
+  Currency USD, declared by Shopify.currency ({"active":"USD"}). BSD is
+  pegged 1:1 to USD; the country's other sources (`solomonsfreshmarkets_bs`,
+  `kellysbahamas_bs`) record BSD because their platform declares BSD. This
+  one declares USD, so USD is what is recorded.
+
+  NOT a duplicate of foodstore2goexpress.com (same operator, WooCommerce
+  Store API): that site holds only 22 products total, of which 7 names
+  overlap this catalogue -- a thin second surface, rejected as a separate
+  source rather than shipped to inflate the count.

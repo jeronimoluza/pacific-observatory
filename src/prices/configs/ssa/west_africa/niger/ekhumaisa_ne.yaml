@@ -1,0 +1,40 @@
+scaffolding: spider
+spider: ekhumaisa_ne
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://take.app/ekhumaisaexpressmarke
+language: fr
+currency: XOF
+cadence: weekly
+notes: |
+  API. Shard host "e-khumaisa.com" does NOT resolve in DNS (checked
+  against 8.8.8.8 and 1.1.1.1) despite the business advertising that exact
+  URL on TikTok/Instagram/Facebook -- domain-recovery pattern applied: the
+  real storefront runs on the "Take App" West-African e-commerce SaaS
+  platform at https://take.app/ekhumaisaexpressmarke.
+
+  The storefront page is a Next.js app rendering NO product data
+  server-side (only i18n label strings + store metadata are in the RSC
+  payload). A Playwright network-capture on a category page surfaced the
+  backend: GET https://take.app/api/stores/<storeId>/products/recommendation
+  (storeId = cmj5wh1u9000j04johrttdmtc, found both in that network request
+  and JSON-escaped in the homepage's own RSC payload paired with
+  "alias":"ekhumaisaexpressmarke"). Despite the "recommendation" name this
+  returns the WHOLE catalog, not a curated rail -- verified live
+  2026-09-06: 485 distinct products in one unpaginated call spanning
+  electronics accessories, rice/groceries, cosmetics -- a wide
+  cross-COICOP catalog. Prices are plain XOF integers, no minor-unit
+  division (e.g. "Riz Basmati Danu 1kg" = 1650 XOF matches the site).
+
+  channel: dept-store -- Take App is a shared multi-tenant storefront SaaS
+  (like Shopify), but this manifest scopes to the single ekhumaisa store
+  via its storeId, which sells one seller's own cross-division catalog
+  (electronics, groceries, cosmetics) rather than aggregating other
+  sellers -- distinct from directresto_ne (a genuine multi-vendor
+  aggregator, tagged channel: marketplace).
+
+  Test run (--max-items 30): rows returned with clean XOF prices and
+  French product names (rice, cosmetics, phone accessories), confirming
+  the endpoint works end to end.

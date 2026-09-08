@@ -1,0 +1,32 @@
+scaffolding: fetcher
+module: ssa.central_africa.central_african_republic.icasees_car_cpi
+function: fetch_icasees_car_cpi
+source_key: icasees_car_cpi
+fallback_date: 2014-12-01
+channel: null
+coicop_classification: publisher_labeled
+analytical_role: cpi_benchmark
+extraction_pattern: tabular_download
+url: https://www.icasees.org/index.php/publications/tableau-de-bord/statistiques-structurelles/statistiques-economiques/statistiques-des-prix/ihpc-bulletin-mensuel-des-prix-des-menage
+language: fr
+currency: XAF
+cadence: monthly
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+notes: |
+  ICASEES (national statistics office) publishes a monthly IHPC (Indice
+  Harmonisé des Prix à la Consommation) workbook as a plain, keyless XLSX
+  download from its Joomla edocman document library. Verified live
+  2026-09-06: 4-sheet workbook, `Données` sheet wide (IND1..IND14 rows x
+  2015M1..2026M4 monthly columns, 136 months). IND1 (all-items headline)
+  and IND14 (year-on-year inflation rate, not an index level) are dropped;
+  IND2..IND13 map 1:1 to the 12 COICOP-1999-style divisions via the
+  `Métadonnées` sheet's own "Indicateur" labels (mapped by label text, not
+  row position, in the fetcher's `_COICOP_MAP`). Per the workbook's own
+  `Notes_Methodologiques` sheet, the series had a base change in Jan 2020
+  (old base ~1981 -> new base ~2019); this specific file has ALREADY
+  applied ICASEES's own published reconciliation coefficient (4.12919) to
+  the pre-2020 cells so the full 2015-2026 series sits on one consistent
+  `2019=100` base (unreconciled originals kept separately in the sheet's
+  own `Archive_Base1981_Brute` tab, not used here). `coicop_classification:
+  publisher_labeled` since ICASEES's own division grouping is used
+  directly, no local re-derivation.

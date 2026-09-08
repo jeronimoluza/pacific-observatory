@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: toppartika_lv
+url: https://etop.lv/lv/visi-akcijas-produkti
+language: lv
+cadence: weekly
+channel: supermarket
+archive_prefix: "etop.lv/lv/visi-akcijas-produkti"
+archive_path_re: '^/lv/visi-akcijas-produkti/?$'
+notes: |
+  listing (single page, all current promotions). Top! Veikali -- national
+  discount chain, part of the Baltic "top!" retail group. Angular
+  Universal SSR -- _ngcontent attributes present in a cold curl_cffi GET,
+  no Playwright needed. No WAF.
+
+  Gotcha: the brand's public-facing domain www.toppartika.lv
+  intermittently 301-redirects the entire host (including /) to bare
+  etop.lv -- confirmed both ways live within one session. etop.lv is the
+  platform's real domain (identical page bytes, same Angular app), not a
+  CDN alias, and it resolved consistently across repeated re-checks, so
+  the spider and this manifest target etop.lv directly rather than depend
+  on which way toppartika.lv's redirect happens to point on a given day.
+
+  /lv/visi-akcijas-produkti server-renders every current-promotion product
+  inside <app-product-box-preview> components (name in p.product-name,
+  price in div.euros span). Naive substring counting badly overstates
+  product count on this page -- the inlined critical-CSS <style> block
+  repeats class-name selectors hundreds of times (218 raw
+  "product-card-wrap" substring hits vs. 32 real DOM elements via
+  scrapy.Selector) -- always parse with CSS/XPath here, never str.count()
+  or a raw regex over the HTML. No stable per-product id is exposed
+  (Angular jsaction routing, no <a href> on the card); product_id is null.
+
+  Also TLS-fingerprint-sensitive to the exact impersonation version -- the
+  project-wide default chrome120 gets a 301; chrome124 clears clean.
+  Spider disables RandomBrowserMiddleware and pins chrome124 explicitly.
+
+  Re-verified live 2026-09-06: GET https://etop.lv/lv/visi-akcijas-produkti
+  -> 200, 1.13MB, 40 app-product-box-preview elements.

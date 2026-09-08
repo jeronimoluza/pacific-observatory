@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: peridomicilio_cr
+url: https://www.peridomicilio.com/
+language: es
+currency: CRC
+cadence: weekly
+notes: |
+  Page family: API (no HTML page is ever fetched at collection time; `url`
+  is a synthesized `?sku=<sku>#<sku>` identity, not a real browsable PDP
+  route -- no archive_prefix/archive_path_re set).
+  Same platform and recovery path as megasuper_cr in this same directory:
+  bare Next.js shell -> shared LatAm "Instaleap"/"Moira Engine" GraphQL
+  backend at nextgentheadless.instaleap.io/api/v3, tenant-specific
+  `dpl-api-key` shipped client-side (public, not secret). clientId
+  PERI_DOMICILIOS, storeReference 133. Front page 403s on plain curl UA but
+  clears cleanly with curl_cffi impersonate="chrome124" (TLS fingerprint,
+  not a real WAF).
+  24 top-level categories from GetCategoryTree span most of COICOP
+  divisions 01-13 (produce F15, meat/fish F16, pantry F1, dairy/eggs F12,
+  bakery F2, deli/cheese F14, frozen F13, beverages F4/F5, snacks F3,
+  personal care F7, pharmacy F6, household F9, paper F11, baby F8, pet F10,
+  cigarettes F21, sports F23). Prices in whole colones (e.g. avocado/kilo
+  CRC 2,090 -- plausible CR retail price).
+  Verified live 2026-09-06, --max-items test run.

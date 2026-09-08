@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: colruyt_be
+url: https://www.collectandgo.be/
+language: nl
+currency: EUR
+cadence: weekly
+notes: |
+  Colruyt (colruyt.be) — Belgium's price-leader supermarket chain.
+  colruyt.be itself is a corporate/brand site (React/Vue widgets, no
+  product data); its real online grocery storefront is Collect&Go
+  (collectandgo.be, click-and-collect). collectandgo.be/sitemap.xml lists
+  dedicated product sitemaps (sitemap-nl_BE-product-{1,2,3}.xml.gz, ~5k
+  urls each, plus fr_FR duplicates). No anti-bot — plain curl_cffi clears
+  at 200. Each PDP carries a schema.org/Product JSON-LD block with a real
+  EUR price. Verified live 2026-09-06: "CAMPINA Halfvol Brik 1L", EUR
+  1.45, sku 3074457345616855893. Spider walks the nl_BE product shards
+  only (stride-15 sampled) to avoid double-counting the fr_FR duplicates.
+  Page family: PDP only.

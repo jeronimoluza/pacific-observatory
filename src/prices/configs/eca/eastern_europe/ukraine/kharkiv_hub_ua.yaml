@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: kharkiv_hub_ua
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://kharkiv.zakaz.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 14400
+notes: |
+  Kharkiv hub -- ONE source covering two storefronts served from the same
+  Klochkivska hub: Kharkiv Market (store 482320001) and Vostorg (48231001).
+
+  WHY MERGED (measured 2026-09-06): 620 of 621 category slugs are identical
+  and every shared EAN carries an IDENTICAL price (29/29 here, 405/406 on a
+  same-shelf sample), against 0% identical for every pair spanning this hub
+  and the Kyiv MEGAMARKET group. Two sources would have double-counted the
+  shared assortment in publish.py's n_obs, which has no source dimension.
+
+  The spider walks both stores in order and emits each ean/sku exactly once,
+  first store wins. web_url is per-storefront so url-dedup cannot collapse
+  the twins; _zakaz_base dedups on ean/sku in multi-store mode.
+
+  Runs on the Zakaz.ua white-label e-grocery platform (shared base
+  `_zakaz_base.ZakazBaseSpider`) -- see megamarket_group_ua.yaml for the
+  platform discovery note and the kopiyky->UAH price scale.
+
+  Supersedes the two single-banner configs kharkiv_market_ua / vostorg_ua,
+  which were never committed.

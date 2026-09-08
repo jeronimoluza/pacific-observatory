@@ -1,0 +1,44 @@
+scaffolding: spider
+spider: carrefour_es
+channel: hypermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.carrefour.es/supermercado
+language: es
+currency: EUR
+cadence: weekly
+coicop_codes: null
+notes: |
+  P4 surplus (Spain already reaches 5 sources); shipped anyway as a
+  bonus -- easy win once probed.
+
+  Custom Node/Express storefront, NOT the Next.js stack used by
+  carrefour_pl. Every page (homepage and category listing alike) embeds
+  `window.__INITIAL_STATE__ = {...}`; category pages carry the live
+  product grid at `productCardList.results.items` (24 items/page) with
+  the true total at `productCardList.results.pagination.total_results`.
+  Pagination is `?offset=N` on the category URL -- verified live that
+  `?page=2` is a no-op (returns offset 0 again, same first item) but
+  `?offset=24` returns a disjoint item set.
+
+  No WAF encountered on category/listing pages: plain curl_cffi
+  chrome124 and firefox133 both clear at 200. This is a DIFFERENT tenant
+  from `leroymerlin.es` (403, Akamai/PerimeterX JS challenge, same
+  shard) and `amazon.es` (200 but a bot-detection JS shell, 2.1KB) --
+  do not generalize "Spain P4 surplus = blocked" from those two.
+
+  Walks 9 top-level category slugs from the homepage nav
+  (`/supermercado/<slug>/<catid>/c`): bebe, bebidas, congelados,
+  cuidado-personal-e-higiene, drogueria-y-limpieza, frescos,
+  la-despensa, mascotas, parafarmacia. `coicop_classification:
+  classifier` / `coicop_codes: null` because this is a general
+  supermarket spanning many divisions, same convention as carrefour_pl.
+
+  Live test 2026-09-06: `frescos` category alone reports
+  total_results=1008; first-page fetch returned 24 real items with
+  name/price/url (e.g. "Barra de pan ..." 0,45 EUR). Did not verify the
+  EU Article 6a "lowest price in 30 days" field the shard's AI_NOTES
+  flagged -- not present in the `productCardList` item shape sampled
+  (only `price`, `app_price`, `price_per_unit`); may exist on the PDP,
+  not consumed here.

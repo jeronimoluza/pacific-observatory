@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: ananas_ba
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://ananas.ba/kategorije/hrana-i-pice
+language: bs
+currency: BAM
+cadence: weekly
+coicop_codes: null
+notes: |
+  Page family: API (category pages are fetched only to harvest the
+  category tree; all product data comes from the Algolia query endpoint).
+  Multi-seller marketplace -- major national storefront with a strong
+  "Hrana i piće" (Food & drink) vertical. Category pages are Next.js SSR
+  but the product grid itself is client-side Algolia (index
+  prod_merchant_inventories_ba_bos, app id Y1BSBVJ7AC), found via
+  Playwright network trace. The API key embedded in the request URL is a
+  public search-only key -- no auth, no session, works cold from
+  curl_cffi. Verified live: page=0/page=1 of the "Pivo" (beer) leaf return
+  disjoint hits (nbHits=52, nbPages=2 @ hitsPerPage=48), e.g. "Tuborg pivo
+  0.33L flašica - pakovanje 24 komada" BAM 34.80, merchant "EKO" (this is
+  a marketplace: merchant.displayName carries the real first-party
+  seller, `channel: marketplace` set accordingly per the skill's
+  marketplace-catalog caveat). Category walk is a two-hop crawl: root
+  "Hrana i piće" page -> each depth-2 child page (Piće, Kafa, Čaj, ...) ->
+  Algolia query per depth-3 leaf using product.categories.lvl2 filter. No
+  WAF encountered (plain curl_cffi chrome124 works throughout).

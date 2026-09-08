@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gurkerl_at
+url: https://www.gurkerl.at/en-AT/
+language: de
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: API (sitemap walker + JSON card endpoint, no page ever
+  fetched for its rendered HTML).
+
+  Gurkerl.at is the Rohlik Group's Austrian storefront (sibling to
+  rohlik_cz/CZ and kifli_hu/HU on the same Next.js platform, different
+  per-country category-id space). The top-level category tree is not
+  embedded in the homepage payload and the header nav only exposes ~20
+  thematic/promo sub-categories on a bare fetch -- not a usable full
+  department walk. Instead walks the un-blocked, unauthenticated
+  sitemap_products.xml (2.4MB) for every product's canonical PDP url
+  (`https://www.gurkerl.at/{productId}-{slug}`), then batches ids through
+  /api/v1/products/card?products=<id>...&categoryType=normal (100-id
+  batches, confirmed live 2026-09-06).
+
+  Confirmed live 2026-09-06: productId 972 "Heineken" EUR 1.79/500ml;
+  productId 1450 "Baileys Original Irish Cream Liqueur" EUR 17.99/0.7l --
+  both re-checked against the API response, no minor-unit scaling (EUR
+  decimal, not integer minor units).
+
+  No breadcrumb/category available from either the sitemap or the card
+  endpoint -- category left null. 17,000+ SKU catalog per prior AI_NOTES;
+  spider caps the sitemap walk at 8,000 products as a safety limit.

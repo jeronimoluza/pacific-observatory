@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: knuspr_de
+url: https://www.knuspr.de/
+language: de
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: API (sitemap walker + JSON card endpoint, no page ever
+  fetched for its rendered HTML).
+
+  Knuspr.de is the Rohlik Group's German storefront -- same Next.js
+  platform and API shape as rohlik_cz/CZ, kifli_hu/HU, gurkerl_at/AT, just
+  a different per-country category/product-id space. Walks the
+  unauthenticated sitemap_products.xml (2.2MB, ~15,175 product URLs of the
+  form https://www.knuspr.de/{productId}-{slug}), then batches ids through
+  /api/v1/products/card?products=<id>...&categoryType=normal (100-id
+  batches, Referer header required, confirmed live 2026-09-06).
+
+  Confirmed live 2026-09-06: productId 125861 "Pfand € 0,15" EUR 0.15
+  (deposit/bottle-return SKU -- real catalog entries confirmed in the
+  test-run item sample). No minor-unit scaling (EUR decimal, not integer
+  minor units). No breadcrumb/category available from either the sitemap
+  or the card endpoint -- category left null, same limitation as
+  gurkerl_at.

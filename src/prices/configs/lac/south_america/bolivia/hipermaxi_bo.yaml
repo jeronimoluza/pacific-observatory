@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hipermaxi_bo
+url: https://www.hipermaxi.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.hipermaxi.com/santa-cruz/hipermaxi-roca-y-coronado/producto/"
+archive_path_re: '^/santa-cruz/hipermaxi-roca-y-coronado/producto/[^/]+/[^/?]+'
+notes: |
+  page family: PDP. Largest Bolivian supermarket chain (shard AI_NOTES,
+  P4 surplus - Bolivia already at 5 sources). Next.js storefront; category
+  grid pages (/categoria/<slug>) return 200 under plain curl_cffi but ship
+  ZERO product links server-side - the grid hydrates client-side against a
+  catalog API sitting behind Radware Bot Manager (Playwright network trace
+  showed an api.hcaptcha.com/checksiteconfig call keyed to
+  validate.perfdrive.com, Radware's bot-mgmt domain, firing on category
+  load). Out of scope this pass. The HOMEPAGE does server-render a
+  "popular products" rail with ~54 distinct /producto/ links spanning
+  dairy, beverages, meat, cleaning and snacks; every PDP itself is plain
+  server-rendered HTML with a clean schema.org Product JSON-LD block
+  (sku/name/offers.price/offers.priceCurrency=BOB), no auth needed.
+  This spider is therefore a curated ~54-SKU homepage-seeded subset, NOT a
+  full catalog walk - a follow-up pass would need to crack the Radware
+  category API (or Playwright-render + intercept it) to reach the full
+  catalog. Single branch used throughout: santa-cruz/hipermaxi-roca-y-
+  coronado. Verified live 2026-09-06: e.g. "Nutella 371 gr" BOB 146.00.

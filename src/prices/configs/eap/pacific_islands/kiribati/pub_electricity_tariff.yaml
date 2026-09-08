@@ -1,0 +1,49 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: ki_pub_electricity_tariff
+module: eap.pacific_islands.kiribati.pub_electricity_tariff
+function: fetch_ki_pub_electricity_tariff
+url: "https://pub.com.ki/pub-tariff-and-prices/"
+language: en
+currency: AUD
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Kiribati Public Utilities Board (PUB) -- regulated electricity tariff,
+  "PUB Tariff and Prices" page. Discovered as a bare hostname lead
+  (pub.com.ki) with no prior triage; PUB is South Tarawa's sole electricity,
+  water and sanitation utility, a genuine gap-filler (Kiribati previously
+  had zero utility-tariff coverage).
+
+  The page itself ships an EMPTY <table> shell (WordPress Ninja Tables
+  plugin, class nt_type_ajax_table) -- the actual rows load client-side via
+  an unauthenticated AJAX call to wp-admin/admin-ajax.php
+  (action=wp_ajax_ninja_tables_public_action&target_action=get-all-data)
+  using a public nonce embedded in the page's own inline JS config
+  (a `data_request_url` string inside each table's settings JSON). The
+  fetcher scrapes that URL fresh off the page every run rather than
+  hardcoding the nonce or table id, since Ninja Tables nonces rotate.
+
+  Verified live 2026-09-06: table header "Electricity Tariff from 1 April
+  2026" (13 raw rows) yields 9 rows with a numeric $-prefixed tariff after
+  dropping 4 non-priced rows -- 2 "POA" (Price on Application) new-connection
+  fees, 1 blank callout-fee row, and 1 footnote sentence (the Lifeline-rate
+  explanation) that carries no tariff cell. Domestic residential is a
+  2-tier block rate (up to 130 kWh/month at $0.15/kWh "Lifeline" rate; above
+  that $0.50/kWh up to 300 kWh/month, $0.80/kWh beyond); Commercial ($0.80),
+  Industrial and Government & SOE ($1.02) are flat per-kWh rates; the
+  remainder are flat-fee reconnection/CIU-replacement charges (not per-kWh,
+  emitted with unit=null).
+
+  Kiribati has no domestic currency -- countries.yaml confirms AUD, matching
+  the page's "$" prefix.
+
+  SCOPE NOTE: the same page also carries separate Water Services and
+  Sanitation Services Ninja Tables (distinct table ids, same AJAX pattern).
+  This manifest covers electricity only, per the onboarding skill's "two
+  shapes on one site" rule -- a sibling water/sanitation source would be a
+  separate module + YAML if added later.

@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: auchan_pt
+url: https://www.auchan.pt/
+language: pt
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.auchan.pt/on/demandware.store/Sites-AuchanPT-Site/pt_PT/"
+archive_path_re: '^/on/demandware\.store/Sites\-AuchanPT\-Site/pt_PT/Search\-UpdateGrid'
+notes: |
+  Verified live 2026-09-06 via curl_cffi impersonate=chrome124 (no WAF
+  challenge observed despite cloudflare in front). Salesforce Commerce
+  Cloud (Demandware), same platform family as continente_pt and
+  pingodoce_pt. Department landing pages (/pt/<slug>/) are marketing
+  pages with no inline products; the real catalogue is the SFCC
+  Search-UpdateGrid?cgid=<slug>&start=N&sz=24 AJAX endpoint, itself
+  plain server-rendered HTML. Each tile carries a data-urls JSON
+  (absoluteProductUrl) plus a data-gtm JSON (name/id/price/brand/
+  category). Walks 11 top-level department slugs (alimentacao,
+  produtos-frescos, animais, beleza-e-higiene, casa-e-jardim,
+  limpeza-e-cuidados-do-lar, o-mundo-do-bebe, saude-e-bem-estar,
+  eletrodomesticos, tecnologia, papelaria-livraria-e-experiencias) used
+  directly as cgid. Confirmed real pagination: start=0 and start=24 on
+  cgid=mercearia return disjoint product-id sets. Sample: 'ATUM POSTA
+  AUCHAN AO NATURAL 120 (84)G' EUR 0.89. Page family: API (SFCC grid
+  endpoint, never a browsable department page).

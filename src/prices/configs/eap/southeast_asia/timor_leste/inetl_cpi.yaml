@@ -1,0 +1,50 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
+channel: null
+source_key: tl_inetl_cpi
+module: eap.southeast_asia.timor_leste.inetl_cpi
+function: fetch_tl_inetl_cpi
+url: https://inetl-ip.gov.tl/category/documents-publication/consumer-price-index-documents/
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  INETL (Instituto Nacional de Estatistica Timor-Leste) publishes a
+  monthly WordPress post "CPI Time Series <Month> <Year>" (found via
+  wp-json/wp/v2/posts search, slug prefix "cpi-time-series-"), each
+  embedding an xlsx workbook that re-publishes the FULL national index
+  history to date (not just the latest month). Sheet "Timor-Leste"
+  (national; Dili/Baucau/Other subnational sheets are not used) holds
+  one row per INETL code (column 0) / label (column 1), with one date
+  per column from column 4 onward.
+
+  Page family: xlsx attachment on a listing post (`listing` + workbook,
+  no HTML table).
+
+  Verified live 2026-09-06 via curl_cffi (impersonate=chrome124, no
+  anti-bot). Latest post at fetch time: cpi-time-series-may-2026,
+  workbook "May-2026-Time-Series-CPI-Series-3new.xlsx" carrying 166
+  monthly columns Dec-2012 through May-2026. Test run with fallback_date
+  2020-01-01: 745 rows (10 divisions x ~75 months from 2020-02 through
+  2026-05 -- fallback_date is exclusive so 2020-01 itself is dropped).
+
+  Only whole-number codes ("1".."10") are kept as COICOP divisions
+  01-10 (zero-padded). INETL's basket does not carry separate lines for
+  COICOP 11 (Restaurants and hotels) or 12 (Miscellaneous goods and
+  services) -- a real gap in the source, not a fetcher bug. Two codes
+  are dropped as unmappable: 'a' (ALL GROUPS headline -- no sanctioned
+  all-items COICOP sentinel, same choice as zamstats_cpi.py) and '0'
+  (appears twice, "Tradeable"/"Non-Tradeable" -- an INETL cross-cut,
+  not a COICOP grouping). Subdivision rows (e.g. "1.1", "1.12") are
+  also skipped -- division-level only.
+
+  The level-index block (rows 2 through the first blank-code row) is
+  parsed; a second "Monthly Change" (% change) block further down the
+  same sheet repeats the same code list and is never reached because
+  the parser stops at the first blank code.
+
+  Base period 2018-08=100 (confirmed by locating the first 100.0 value
+  in the ALL GROUPS row of the 2026-09-06 pull).

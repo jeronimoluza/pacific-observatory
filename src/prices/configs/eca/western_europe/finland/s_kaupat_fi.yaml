@@ -1,0 +1,55 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: s_kaupat_fi
+url: https://www.s-kaupat.fi/
+language: fi
+cadence: weekly
+channel: supermarket
+timeout: 5400
+archive_prefix: "api.s-kaupat.fi/"
+notes: |
+  S-kaupat (S Group) -- Finland's most popular online grocery, widest
+  delivery options including robot delivery per the triage AI_NOTES.
+
+  Next.js app; the storefront's own pages are client-fetched (no product
+  markup in raw HTML). Found the real backend via a Playwright network
+  trace of a live search: api.s-kaupat.fi is an Apollo GraphQL endpoint
+  using PERSISTED queries (GET with a sha256Hash, not POST with query
+  text) -- both operations used here are already registered server-side,
+  so the spider never sends GraphQL query text, just the hash + variables.
+  Verified live 2026-09-06 with curl_cffi impersonate=chrome124: 200, no
+  auth/session/cookie needed.
+
+  Two things found by probing: (1) the RemoteFilteredProducts operation
+  (hash 85a4eed2f0a1e3269ac49b94276ca952922568369d85ddd5dcee34481e4c0f91)
+  is wired for keyword search (queryString:"banaani") but ALSO accepts a
+  bare `slug` category-path variable with queryString:"" -- lets the whole
+  catalogue be walked category-by-category instead of needing a keyword
+  per request (queryString must still be present as an empty string or
+  the API 400s asking for the required variable). (2) pagination is a
+  plain from/limit offset pair -- confirmed genuinely distinct product ids
+  between from=0 and from=24 on the same category, zero overlap.
+
+  31 top-level category slugs are hardcoded from the storefront nav
+  (https://www.s-kaupat.fi/tuotteet lists /tuotteet/<slug> links) rather
+  than fetched at runtime, since the list is stable and short.
+
+  storeId="513971200" is the site's own default store (Helsinki-area S
+  Group store) -- prices are single-store, not a national average. The
+  triage GOTCHA ("Finnish-only interface; no official multi-language
+  service") was about UI language, not multi-store pricing; per-store
+  crawls are future work, not done in this pass.
+
+  price is a plain EUR float (product.price); product.ean (GTIN barcode)
+  is used as product_id since it is stable and globally unique unlike the
+  internal sokId. category comes from hierarchyPath[0].name (deepest
+  node), Finnish free text.
+
+  Page family parsed: API (spider reads the GraphQL endpoint directly,
+  never fetches a category HTML page).
+
+  End-to-end test `.venv/bin/po prices collect --source s_kaupat_fi
+  --max-items 100`: see test run notes in the onboarding results log for
+  row count and sample record.

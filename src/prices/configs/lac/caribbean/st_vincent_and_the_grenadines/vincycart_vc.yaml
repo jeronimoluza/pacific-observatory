@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: vincycart_vc
+url: https://vincycart.com/products
+language: en
+currency: XCD
+cadence: weekly
+archive_prefix: "vincycart.com/"
+archive_path_re: '^/products(?:/[^/?]+)?/?$'
+notes: |
+  VincyCart, an online grocery-delivery store for St Vincent and the
+  Grenadines. Plain server-rendered HTML (custom PHP/Laravel app, a
+  `_token` CSRF field is present on the add-to-cart form but not
+  required for GET browsing; no anti-bot). Prices in EC$ (XCD),
+  card markup: a.card-title (name+PDP url), span.text-danger "EC$X.XX"
+  (price), hidden input name="product_variation_id" (product id).
+
+  Catalog is small and finite -- the listing page's own caption reads
+  "Showing 1-9 of 34 results" (verified 2026-09-06) -- so this walks
+  plain /products?page=N directly (no category_id filtering needed;
+  category-filtered pages return the SAME 34-item universe, just
+  narrowed) until a page contributes zero new product ids.
+
+  St Vincent had exactly one prior source (ckgreaves_vc) before this
+  pass -- this is the country's second.
+
+  Page family: listing only (/products?page=N); this spider never
+  visits a PDP.
+
+  Verified live 2026-09-06 (--max-items 5, full run): 34 rows, all
+  distinct product_variation_id, 0 blank names, 0 zero/negative
+  prices, all XCD. Sample: "Johnson and Johnson Baby Soap 75g" EC$7.99,
+  "Blue Wash Liquid Laundry Detergent 1.7L" EC$26.45.

@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: market242_cg
+url: https://242market.com/
+language: fr
+cadence: monthly
+archive_prefix: "242market.com/"
+archive_path_re: '^/\d+-[a-z0-9-]+\.html$'
+notes: |
+  242 Market is a Congo Republic (Congo-Brazzaville) grocery e-commerce
+  site framed as a diaspora gifting service ("la plateforme qui
+  rapproche la diaspora congolaise de ses proches" -- buyers abroad pay
+  for groceries delivered to family in Congo). PrestaShop-family PDP
+  with clean schema.org microdata (itemprop price/priceCurrency/sku,
+  breadcrumb category). No anti-bot; verified live 2026-09-06 with plain
+  curl. `/sitemap.xml` lists all 533 PDP urls directly, used as the
+  crawl seed instead of category pages.
+
+  CURRENCY CAVEAT: prices are denominated in EUR, not XAF (Congo
+  Republic's currency per countries.yaml) -- the diaspora buyer pays in
+  EUR for delivery inside Congo, so this may carry a remittance-service
+  markup rather than being a 1:1 organic local retail price. Emitted as
+  EUR (the site's own explicit currency) per the "site's stated currency
+  wins over the country default" convention; downstream PPP analysis
+  should treat this source with that caveat in mind, same population as
+  mbote_cg (Congo's other retailer_sku source, which prices natively in
+  XAF and does not carry this caveat).
+
+  Test run (`--max-items 5`): 9 rows before the item cap closed the
+  spider (78 PDPs fetched, ~11.5% yield -- some sitemap URLs are
+  out-of-stock/no-price pages, not extraction failures), e.g. "CHIPS
+  PINGLES" EUR 4.49, "SEMOULE FINE 500g" EUR 3.20. Sitemap has 533 total
+  PDP urls (fresh vegetables, frozen meat, fish, groceries -- COICOP
+  01.1).

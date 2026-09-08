@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: convenience
+spider: merokirana_com
+url: https://merokirana.com/
+language: en
+currency: NPR
+cadence: weekly
+notes: |
+  "Kirana"-branded online grocery, NRs prices across categories with a
+  shopping-list ordering model (per candidate AI_NOTES) -- channel=
+  convenience.
+
+  Page family: API. Create-react-app SPA over a proprietary POST-based
+  query protocol called "Semantro"
+  (`semantro-web-interface/query`, multipart/form-data with one `data`
+  JSON-LD-flavoured field). PLATFORM FINGERPRINT worth recording for
+  future passes: this is the only site seen using Semantro. Action names
+  (`listBaseCategories`, `listCategoryProducts`, `getProductData`, ...)
+  were recovered from `actionName` strings in the shipped
+  `static/js/main.*.js` bundle.
+
+  Two-step harvest, because the category-listing action omits price:
+  `listCategoryProducts` (paged via pageLimit.start/end) gives product
+  id/name/brand/tags only; `getProductData` (one call per product) gives
+  `price` + `priceCurrency` ("NRs."). This means one extra request per
+  product versus a single-call catalog walk -- acceptable at this
+  catalogue's size, but scales linearly with SKU count.
+
+  Verified live 2026-09-06: `listBaseCategories` -> 9 top-level categories
+  incl. "Grocery", "Bakery & Dairy", "Beverage". `listCategoryProducts`
+  for "Grocery" -> 20 products e.g. "Navaras Kwati, 500gm".
+  `getProductData` for one -> price 1650.0 NRs (olive oil 1L). curl_cffi
+  `CurlMime` multipart POST works cold, no cookies/session needed; the
+  spider builds the multipart body by hand since Scrapy's FormRequest
+  doesn't support arbitrary multipart parts.
+
+  Test run (--max-items 10): 10 items, NPR prices in plausible range.

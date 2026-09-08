@@ -1,0 +1,56 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: qualitycuts_ug
+url: https://qualitycuts.biz/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "qualitycuts.biz/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  New source (2026-09-05 SSA div-01/02 sweep). Quality Cuts is a Kampala
+  premium butchery chain (Forest Mall Lugogo By-Pass, Crane Plaza Kisementi,
+  Imperial Shopping Mall Entebbe) running a real WooCommerce e-store.
+
+  Probed live 2026-09-05 with curl_cffi impersonate=chrome124, no WAF. The
+  WooCommerce Store API is NOT available here — /wp-json/wc/store/v1/products
+  returns a 113-byte `rest_no_route` 404 — so the spider walks the sitemap
+  instead: /sitemap.xml -> product-sitemap.xml, 606 <loc> entries of which
+  605 are PDPs under /product/<slug>/ (the 606th is /shop/, which the
+  /product/ regex excludes). Page family parsed: PDP.
+
+  Each PDP embeds a schema.org Product node inside an @graph whose `offers`
+  is a LIST rather than a bare object — the shared `_woo_base.parse_html`
+  chain already takes offers[0], so no source-specific handling was needed.
+  Verified sample: "Beef Chilli Sausage (1kg)" sku 4081, offers[0].price
+  "22000", priceCurrency "UGX" (~US$6/kg — sane), matching the on-page
+  woocommerce-Price-amount rendering. Prices are whole shillings; no
+  minor-unit division applies on this path (the JSON-LD carries a decimal,
+  not the Store API integer).
+
+  KNOWN LIMITATION: `category` comes out null on every row. The PDP's
+  Product node carries no `category` property — the breadcrumb lives in a
+  separate BreadcrumbList node of the same @graph, which the shared parse
+  chain does not read. Left as-is rather than patching the shared base for
+  one source; the product names are descriptive enough for the classifier
+  ("Beef Chilli Sausage (1kg)", "Twinnings_EnglishBreakfast 250G").
+
+  Test run 2026-09-05 (--max-items 60): 62 rows, 62 distinct URLs, currency
+  100% UGX, price range 12,500-157,500 UGX (median 32,700). Sample rows:
+  "Beef Biltong 300G" 45,000; "Twinnings_Lemon&Ginger 30G" 12,500;
+  "Pasquer Desvignes Chablis" 157,500 — note the wine, so this source also
+  emits COICOP division 02.1 rows, not only 01.
+
+  Range is butchery + charcuterie + speciality coffee and teas (beef, chicken
+  and pork cuts, sausages, bacon, ground/whole-bean coffee, loose teas) —
+  narrow food/drink, hence `channel: specialty-food`. It complements Uganda's
+  existing sources rather than duplicating them: `elyahwehventures_ug` and
+  `supermarket_co_ug` are general grocery, and `supermarket_co_ug` quotes USD
+  while this one quotes UGX.
+
+  `coicop_codes` left unset: the catalogue spans 01.1.2 (meat), 01.1.9
+  (prepared/processed) and 01.2.1/01.2.3 (coffee, tea) — more than one
+  3-digit class, so wide by the narrowness rule; the classifier assigns the
+  leaf per product.

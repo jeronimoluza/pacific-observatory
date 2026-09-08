@@ -1,0 +1,34 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: hu_gvh_arfigyelo
+module: eca.central_europe.hungary.gvh_arfigyelo_hu
+function: fetch_hu_gvh_arfigyelo
+url: https://arfigyelo.gvh.hu/
+language: hu
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Statutory price database run by the Hungarian Competition Authority
+  (GVH) under Act L of 2025, Chapter V -- retailers are LEGALLY OBLIGED to
+  upload the next day's prices by end of the preceding day. THE SINGLE
+  MOST VALUABLE SOURCE per the candidate list's own notes: 5,000+ products
+  in 140 categories across 1,817 stores of 6 national chains + 3 drugstore
+  chains. NOT a scrape of shops -- this is the ground truth other Hungarian
+  retailer scrapes should be validated against; coverage is the mandated
+  basket, not a full assortment.
+  Vue/Vite SPA; Playwright network trace (2026-09-06) found a wide-open
+  JSON backend: GET /api/categories (42 "level 2" category ids) -> GET
+  /api/products-by-category/<level2_id>, which already returns the full
+  flattened product list for that subtree (matches the real page's own
+  network calls: observed hits on ids 2001/2010/2014/2015/2046).
+  Each product carries pricesOfChainStores[].prices[] with a `type`
+  (NORMAL/PRIOR/LOYALTY = napi ar/korabbi ar/torzsvasarloi ar per GVH's
+  three-price design) and an `amount` in HUF; chain name + price type are
+  recorded in `notes` since PriceObservation has no dedicated chain column.
+  Verified live: category 2010 "Sajt" -> "S-Budget pulykasonkas omlesztett
+  sajt 100 g" -> Spar, NORMAL, HUF 135.
+  Test run 2026-09-06 (--cutoff 2020-01-01): returned rows with real HUF
+  prices across multiple categories.

@@ -1,0 +1,90 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: glotelho_cm
+url: https://glotelho.cm/
+language: fr
+cadence: weekly
+channel: dept-store
+archive_prefix: "glotelho.cm/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Cameroon's largest first-party online retailer (own SKU codes ending
+  "CM", own showrooms, Adobe-Commerce/Magento 2 catalogue behind a Nuxt
+  storefront). Broad and NOT grocery-led -- electronics, appliances,
+  fashion and books dominate -- hence channel: dept-store per the GLOSSARY
+  test (first-party, broad, non-grocery-led), not supermarket.
+
+  SCOPE: deliberately scoped to the two genuine food-and-beverage top-level
+  departments, because this pass's mandate is COICOP division 01/02 and the
+  rest of the catalogue is already well represented by other channels:
+    supermarche-1266  "Supermarché"  grocery shelf
+    la-cave-1351      "La Cave"      soft drinks, juices, beer, wine, spirits
+  The two overlap (products carry category_links for both), so the spider
+  de-duplicates on Magento product id across categories.
+
+  DISCOVERY (Playwright network trace, 2026-09-05). The Nuxt front end talks
+  to two backends on the same page load:
+    1. https://site.glotelho.cm/rest/fr/V1/products?searchCriteria[...]
+       Magento 2 REST -- requires a static `Authorization: Bearer <token>`
+       baked into the storefront. NOT used: a rotated token would silently
+       zero the source.
+    2. https://glotelho.cm/api/v1/products/category  <-- what the spider uses
+       The storefront's own same-origin BFF. POST JSON, no auth of any kind,
+       no cookie, no CSRF -- only content-type: application/json and
+       x-locale: fr. Returns the identical Magento product objects.
+
+    POST /api/v1/products/category
+    {"categoryId":"1266","attributes":[],"pageNumber":N,"pageSize":100,
+     "sort":"created_at"}
+    -> {"success":true,"data":{"items":[...],"total_count":359}}
+
+  ENUMERABILITY PROVEN, not assumed: page 1 and page 2 at pageSize=100 on
+  category 1266 share ZERO product ids, so this paginates for real rather
+  than re-serving a fixed page (the Magento short-page truncation trap in
+  known_blockers.md). `total_count` is authoritative and is used as the
+  pagination stop.
+
+  Verified live 2026-09-05: category 1266 total_count=359, category 1351
+  total_count=439.
+
+  FULL UNCAPPED TEST RUN 2026-09-05: **797 rows**, finish_reason=finished
+  (natural termination, not a cap). That number is exactly right and is the
+  best evidence this source is complete: 359 + 439 = 798 minus the ONE
+  product that carries category_links for both trees. 797 distinct
+  product_ids, 797 distinct URLs, 100% XAF, 0 blank names, 0 non-positive
+  prices, and the per-category split in the output (Supermarché 359 / La
+  Cave 438) matches the API's own total_count exactly. Derive the expected
+  row count from the source before believing a row count.
+
+  Roughly 520 of the 797 rows carry an obvious food/drink token. Samples:
+  "Whisky Monkey Shoulder – 40% alc – 100 cl" 30,612 XAF; "Huile de Palme
+  Raffinée CEL'OR enrichie en vit A" 23,750 XAF; "Sardines à l'huile
+  végétale pimentées Family" 500 XAF; "Lait de croissance Nestlé NIDO 1+
+  900g" 18,562 XAF; "Pack Riz Africana 5 kg + 10 Sardines Pimentées"
+  18,187 XAF; "Boisson énergisante X-ray 50 cl" 875 XAF. A minority of
+  rows in these two departments are non-food (car-care aerosols, household
+  cleaning) -- the classifier sorts those out.
+
+  CURRENCY XAF, matching countries.yaml. Magento `price` is a plain decimal
+  in MAJOR units here (875 / 6987 / 30612 FCFA all check against the
+  rendered page) -- there is no minor-unit divide, unlike WooCommerce's
+  Store API. Rows whose `price` is null (Magento bundle/configurable parents
+  that carry no top-level price) are dropped rather than emitted at 0.
+
+  Page family parsed: **API** -- the spider never fetches a browsable page.
+  The emitted `url` is the customer-facing PDP SYNTHESIZED from the Magento
+  `url_key` + product id (`/product/<url_key>-<id>`). Unlike comoresenligne_km
+  and boutiqueacm_mc, that synthesis WAS verified out of band: two emitted
+  URLs from the test run were fetched directly and both returned HTTP 200
+  with a full PDP (~390 KB) --
+  /product/royal-s-colonel-xxx-rum-75cl-42-8-65156 and
+  /product/whisky-monkey-shoulder-40-alc-100-cl-73681. So the archive prefix
+  and regex above are grounded in real, resolvable page URLs even though the
+  spider itself never requests them.
+
+  Cameroon's third retailer_sku food source alongside
+  express_market_supermarket_cm / express_market_bakery_cm, and the first
+  one with an alcohol shelf (COICOP 02.1), which nothing else in the country
+  covers.

@@ -1,0 +1,90 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: af_nsia_kabul_prices
+module: menaap.afghanistan.afghanistan.nsia_kabul_prices
+function: fetch_af_nsia_kabul_prices
+url: https://gsia.gov.af:8443/index.php/wp-json/wp/v2/media?search=%D9%82%D9%84%D9%85
+language: en
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  Discovered 2026-09-05. Afghanistan National Statistics and Information
+  Authority (NSIA) -- weekly average retail prices for ~50 food and
+  non-food items in Kabul city, in afghani.
+
+  The public nsia.gov.af is an Angular SPA with no price endpoint. The
+  publications live on a WordPress instance at gsia.gov.af:8443, whose
+  REST media index enumerates every published file:
+  /index.php/wp-json/wp/v2/media?search=قلم&per_page=100&page=N -- 201
+  media rows, of which 118 are the weekly XLSX workbooks.
+
+  **verify=False is required and is scoped to this host.** gsia.gov.af
+  serves an incomplete certificate chain, so a verifying client fails the
+  TLS handshake outright and there is no alternative hostname. The
+  fetcher suppresses urllib3's InsecureRequestWarning inside a
+  `warnings.catch_warnings()` block rather than globally.
+
+  DATING: observation_date is the SURVEY WEEK read out of each workbook's
+  own English title line, which every one of the 115 readable workbooks
+  carries in the form "Kabul City Food and Non-Food Items Weekly Average
+  Prices For <First|Second|Third|Fourth|Last> [Week] of <Month> <Year>".
+  The week ordinal maps to a day-of-month (1st->01, 2nd->08, 3rd->15,
+  4th->22, Last->29). Filenames are NOT used: they carry an Afghan solar
+  Hijri week label ("هفته اول سنبله ۱۴۰۵" = first week of Sunbula 1405).
+
+  The publication date was tried first and is measurably wrong: the 118
+  workbooks share only 90 distinct publication dates, because NSIA
+  regularly uploads two survey weeks on one day ("Third Week of July
+  2024" and "Fourth Week of July 2024" were both published 2024-08-01).
+  That collapsed 1,228 of 5,672 rows onto colliding observation_hash
+  values in the first run. It survives as a fallback for the 3 workbooks
+  whose English title will not parse (logged as a warning each run), and
+  as a cheap pre-filter -- a title date never trails publication by more
+  than ~5 weeks, so only workbooks published after `cutoff - 45 days` are
+  downloaded and the exact filter is then applied on the parsed title
+  date. On an incremental run that is 8 downloads instead of 118.
+
+  Rows are de-duplicated on observation_hash before returning, because
+  `append_observations` de-dupes a new batch against what is already on
+  disk but not against itself.
+
+  Full backfill 2026-09-05: **5,377 rows**, 50 distinct items, **109
+  distinct weekly dates 2023-11-22 to 2026-08-22**, exactly 49-50 rows per
+  date, 0 duplicate observation_hash, 0 zero/null prices, all AFN, range
+  5.91-15,169.69. Immediate re-run returned 0 new rows (idempotent).
+  Each row's `notes` carries the workbook's own English title verbatim.
+
+  Layout verified identical on workbooks published 2025-01-05, 2025-11-24
+  and 2026-08-30 (58 x 15, single sheet): a title block, a two-tier
+  header whose English tier reads `Previews Year | Previews Month |
+  Previews Week` (percent changes) then `Current Week | Previews Week |
+  Previews Month` (average prices), then ~50 rows of
+  `No | Items | Unit | Quality`. Column indices are NOT hardcoded: the
+  parser finds the header row by the literal "Current Week" and the label
+  row by "Items", so a re-ordered workbook degrades to a logged skip
+  rather than silently mis-columned rows.
+
+  Only the "Current Week" column is emitted -- the "Previews Week" and
+  "Previews Month" columns restate observations the earlier workbooks
+  already carry, and emitting them would duplicate rows under a different
+  date.
+
+  Verified sample (workbook published 2026-08-30): High Quality Thin Rice
+  (Pakistani) 143.77 AFN/Kg; Mutton (With Bone) 494.70/Kg; Liquid Milk
+  (Everyday) 20.00/Pack; 'Egg (Imported) 10.00/per egg; Vegetabel oil
+  (Hayat) 143.30/Kg. Roughly items 1-33 of 50 are COICOP division 01/02;
+  the tail is housing fuel, personal care and household goods. No alcohol
+  and no tobacco, as expected for Afghanistan.
+
+  The 2020-era files matching the same search term are an older format
+  pandas cannot open ("Excel file format cannot be determined"); they are
+  skipped with a warning rather than special-cased.
+
+  channel: null (non-retail, official statistics office), consistent with
+  the sibling wfp_prices manifest for this country.
+  coicop_classification: classifier -- item_name is free-text English
+  commodity labels with a quality qualifier, same treatment as
+  wfp_prices; coicop_codes unset.

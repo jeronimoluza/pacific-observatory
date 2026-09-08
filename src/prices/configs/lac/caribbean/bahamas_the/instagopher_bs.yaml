@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: instagopher_bs
+url: https://instagopher.com/
+language: en
+currency: BSD
+cadence: weekly
+channel: supermarket
+archive_prefix: "instagopher.com/"
+archive_path_re: '^/[a-z0-9\-]+$'
+notes: |
+  Onboarded 2026-09-05. Instagopher, Nassau / Paradise Island online
+  grocery. Page family parsed: listing (Magento Luma category pages; the
+  card carries name + data-price-amount + PDP href, so no PDP fetch is
+  needed). Note the archive regex above is deliberately loose: this
+  storefront's PDP URLs are bare single-segment slugs at the domain root
+  (/1-dozen-eggs, /anchor-salted-butter), indistinguishable by shape from
+  its CMS pages -- the archive side will need the page's own markup, not the
+  path, to tell them apart.
+
+  Platform probe 2026-09-05: /graphql returns Magento's 404 error page (no
+  GraphQL surface), no REST catalog. Category HTML is fully server-rendered
+  with `class="product-item-link"` anchors and `data-price-amount`
+  attributes -> MagentoSSRBaseSpider, no bespoke code.
+
+  Enumerability proven, not assumed: /beverages/wine/red-wine returns 24
+  named cards with 24 prices, and ?p=2 of the same listing returns 24
+  DIFFERENT products (checked by name). The shared base stops paginating a
+  branch when a page yields zero fresh product urls, which is the guard
+  against Magento's re-served-last-page loop.
+
+  Two roots only (`beverages`, `groceries`) with 56 sub-paths, all linked
+  from the homepage, so category discovery is done by regex off the homepage
+  rather than a hardcoded list that would rot. Division-02 depth is
+  unusually good for a grocery site: beer, wine (red/white/rose/sparkling/
+  fortified/non-alcoholic), rum, gin, vodka, whiskey, tequila, champagne and
+  liqueurs are each their own leaf category.
+
+  Currency BSD (pegged 1:1 to USD). Unlike `foodstore2go_bs` -- also
+  Bahamas, onboarded the same day -- this storefront declares no ISO code
+  anywhere, so it follows the existing `solomonsfreshmarkets_bs` /
+  `kellysbahamas_bs` convention of recording BSD rather than assuming USD.

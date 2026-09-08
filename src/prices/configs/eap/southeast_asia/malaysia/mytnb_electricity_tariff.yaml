@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: my_mytnb_electricity_tariff
+module: eap.southeast_asia.malaysia.mytnb_electricity_tariff
+function: fetch_my_mytnb_electricity_tariff
+url: https://www.mytnb.com.my/tariff/index.html?lang=en
+language: en
+cadence: irregular
+fallback_date: 2018-01-01
+notes: |
+  Tenaga Nasional Berhad (TNB) regulated electricity tariff schedule
+  (government-approved, Energy Commission Malaysia). The page is an
+  Angular SPA -- raw HTML ships almost no content -- so the fetcher renders
+  it with Playwright (6s settle) rather than a plain HTTP GET.
+
+  Once hydrated, the page holds ~30 tables covering every customer class
+  (Domestic, Non-Domestic LV/MV/HV, Agriculture, Water & Sewerage Operator,
+  Street Lighting, Traction, Bulk, TES, Backfeed, Ultra High Voltage). Only
+  the "Domestic General Tariff" / "Domestic ToU Tariff" table is taken here
+  -- the one that prices household electricity -- everything else is a
+  commercial/industrial/institutional class that would need its own
+  onboarding judgment.
+
+  Charges are published in sen (1/100 MYR) for per-kWh rates; price_local
+  is normalized to whole MYR (divide by 100), same pattern as the Fiji/EFL
+  cents-to-dollars fetcher. Flat monthly retail charges are already in RM
+  and pass through unscaled.
+
+  Verified live 2026-09-06: 18 rows, effective_from 2025-07-01 ("New Rates
+  (1 July 2025)" per the page's own column header). New COICOP 04.5.1
+  electricity-tariff source for Malaysia -- no prior electricity tariff
+  config existed in this country dir.

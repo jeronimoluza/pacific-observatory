@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: fj_efl_electricity_tariff
+module: eap.pacific_islands.fiji.efl_electricity_tariff
+function: fetch_fj_efl_electricity_tariff
+url: "https://efl.com.fj/your-home/electricity-tariffs-and-rates/"
+language: en
+cadence: irregular
+fallback_date: 2015-01-01
+notes: |
+  Energy Fiji Limited (EFL) regulated electricity tariff schedule, combined
+  from four static WordPress pages (Domestic, Small Business, Other,
+  Maximum Demand), all stamped "effective as of 1st October 2019" by the
+  source. 16 line items verified live 2026-09-06: 1 domestic headline rate
+  + 3 small-business + 3 other (places of worship / schools / street
+  lights) + 9 maximum-demand (3 demand bands x demand-charge/energy-charge/
+  excess-reactive-energy).
+
+  The Domestic page's own HTML table is internally confusing -- a "Govt
+  Subsidy Yes/No" table where both rows show the same 34.01 cents figure,
+  contradicting the page's own prose (subsidized customers pay 17.67
+  cents/unit for the first 100 units). The fetcher skips that table and
+  takes only the unambiguous prose headline rate (34.01 cents/kWh) rather
+  than guess at the source's intent.
+
+  Cents-denominated rates are normalized to whole FJD (divide by 100);
+  price_local is always FJD regardless of billing unit (kWh/kW/kVarh),
+  which is recorded in `unit`. These are administered RATES used to compute
+  a bill, not shelf prices for a discrete purchased item -- same caveat
+  class as Vanuatu's ura_electricity_tariff.yaml.
+
+  fallback_date backdated to 2015 to be safe even though the only observed
+  effective date is 2019-10-01; cadence is irregular (rates change when the
+  Fiji Commerce Commission issues a new determination).

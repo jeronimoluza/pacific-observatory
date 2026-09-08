@@ -1,0 +1,26 @@
+scaffolding: fetcher
+module: eap.east_asia.taiwan_china.cpc_tw_fuel
+function: fetch_cpc_tw_fuel
+source_key: cpc_tw_fuel
+fallback_date: 2026-08-01
+channel: fuel-station
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: rest_api
+url: https://vipmbr.cpc.com.tw/openData/MainProdListPrice_English
+language: en
+currency: TWD
+cadence: weekly
+coicop_codes: ["07.2.2.1", "07.2.2.2"]
+notes: |
+  CPC Corporation (Taiwan's state oil company) publishes its retail
+  gasoline/diesel list prices through a genuine open, keyless REST API
+  registered on Taiwan's national open-data portal (data.gov.tw dataset
+  6339, "中油主產品牌價"). Endpoint verified live 2026-09-06, returns ~7-13
+  JSON records; fetcher keeps only the 5 retail self-service-station
+  gasoline/diesel grades (92/95/98 unleaded, 95E3 gasohol, premium diesel)
+  and drops marine fuel, industrial fuel oil, and contract/fleet-card
+  prices. Dates are ROC calendar (YYYMMDD, e.g. "1150907" = 2026-09-07),
+  parsed by adding 1911 to the leading year digits. No historical endpoint
+  found -- current-snapshot only, hence a recent fallback_date. Narrow
+  single-class source (07.2.2 fuels), short-circuits the classifier.

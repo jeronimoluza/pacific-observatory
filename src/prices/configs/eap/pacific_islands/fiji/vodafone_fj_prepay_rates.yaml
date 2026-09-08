@@ -1,0 +1,39 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+channel: null
+source_key: fj_vodafone_prepay_rates
+module: eap.pacific_islands.fiji.vodafone_fj_prepay_rates
+function: fetch_fj_vodafone_prepay_rates
+url: "https://vodafone.com.fj/personal/price-plans/rates-price-plan/prepay-call-rates"
+language: en
+currency: FJD
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Vodafone Fiji official prepay rate card: two static, server-rendered HTML
+  tables ("Standard Prepay Sims" and "Bula Packs & Tourist Sims"), no JS/API
+  needed. Covers local on-/off-net voice, call forwarding, customer-care
+  calls, SMS, MMS, and mobile internet (per-MB). Verified live 2026-09-06:
+  29 line items across both tables.
+
+  No effective-date is published on the page -- it is a "current rate" page
+  Vodafone edits in place, not a dated tariff order (same class as FSM's
+  fsmtc_tariff.yaml). Modelled as a daily period_kind=snapshot at scrape
+  time; a rate change surfaces as a new observation_date row with a
+  different price on the next run.
+
+  One row ("Calls to Vodafone Customer Care") packs Peak/Off-Peak rates
+  into a single cell separated by " | " -- the fetcher splits this into two
+  line items rather than dropping or averaging.
+
+  coicop_codes: 08.1.0, matching the established convention for other
+  Pacific mobile-tariff sources in this repo (our_telekom_plans.yaml,
+  vodafone_vu_wao.yaml, tuvalu_telecom_4g.yaml) rather than fsmtc_tariff's
+  08.3.0 -- single narrow class, so this source short-circuits the
+  classifier.
+
+  Currency is FJD (Fiji dollar), matching countries.yaml and the page's own
+  "$" prices (Fiji's only "$"-denominated currency).

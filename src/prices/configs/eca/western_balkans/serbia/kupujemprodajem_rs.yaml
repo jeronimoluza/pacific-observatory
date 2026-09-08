@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kupujemprodajem_rs
+url: https://www.kupujemprodajem.com/
+language: sr
+cadence: weekly
+channel: marketplace
+notes: |
+  Page family: listing. KupujemProdajem ("I buy, I sell") is Serbia's
+  largest general classifieds marketplace -- server-rendered Next.js
+  pages, no anti-bot, curl_cffi clears every category page at 200.
+
+  Homepage lists ~66 top-level category links (/<slug>/kategorija/<id>),
+  including nekretnine-izdavanje (real estate for rent) and
+  nekretnine-prodaja (for sale) alongside electronics/appliances/
+  vehicles/furniture. A CrawlSpider follows these; each category page
+  embeds its ad cards directly in the HTML (no further pagination probed
+  this pass -- one category fetch already clears the shipping bar).
+
+  Verified live 2026-09-06: bela-tehnika-i-kucni-aparati (white goods)
+  returned 195 ad cards in one fetch. Prices are mixed EUR/RSD
+  ("130 €" / "3.000 din", "." as thousands separator, no decimals seen);
+  non-numeric "Kontakt" (contact for price) and "Kupujem" (want-to-buy)
+  rows are dropped. Currency is read per-ad from the price text rather
+  than assumed, since both circulate on the same site.
+
+  coicop_classification: classifier -- general classifieds (durables,
+  vehicles, furniture, real-estate rentals all mixed), no single COICOP
+  prefix; coicop_codes left unset. channel: marketplace (seller-authored
+  titles, individual sellers -- same treatment as olx_ba/khmer24_kh).
+
+  ?page=N and ?strana=2 query params were tried against a category URL
+  and returned the identical page (not real pagination for this site);
+  breadth instead comes from crawling all ~66 top-level categories.

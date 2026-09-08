@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gategrocer_ug
+url: https://gategrocer.com/
+language: en
+cadence: weekly
+channel: fresh-market
+archive_prefix: "gategrocer.com/"
+archive_path_re: '^/products/[^/]+/'
+notes: |
+  New source (2026-09-05 SSA div-01/02 sweep). Uganda's two pre-existing
+  retail sources are `elyahwehventures_ug` and `supermarket_co_ug`, the
+  latter quoting USD rather than UGX; GateGrocer is a domestic, UGX-quoted
+  Kampala fresh-grocery delivery service (legal entity "Marudisha Printers &
+  General Supplies Limited", Plot 55 Kinawataka, Nakawa Division; serves
+  Ntinda, Kololo, Kira, Bukoto, Naalya, Najjera, Mbuya, Bugolobi).
+
+  Probed live 2026-09-05 with curl_cffi impersonate=chrome124. NOT WordPress
+  and not any off-the-shelf platform — a bespoke server-rendered site. Two
+  facts make it near-free to scaffold anyway: (1) the single flat
+  /sitemap.xml enumerates the whole catalogue (189 URLs, of which 167 are
+  PDPs under /products/<slug>/), and (2) every PDP embeds a schema.org
+  Product JSON-LD node carrying name, sku, category and
+  offers.price/priceCurrency. So the spider reuses `_woo_sitemap_base`
+  (sitemap walk + the shared JSON-LD -> OpenGraph -> Woo-DOM parse chain)
+  even though there is no WooCommerce here. Page family parsed: PDP.
+
+  Sample verified against the rendered page: "Sweet Melon" (category
+  "Fruits", sku 66f15de0efd719ebb9dd0150) = 7000 UGX. priceCurrency is
+  stated as UGX in the markup, so no currency forcing is needed. Prices are
+  whole shillings — no minor-unit division, and none applies since this path
+  reads the JSON-LD decimal, not the Woo Store API integer.
+
+  Catalogue is fruit, vegetables, herbs, spices, pantry staples, grains,
+  legumes, nuts, seeds and weekly produce baskets — essentially all COICOP
+  01, dominated by fresh produce, hence `channel: fresh-market`. Ordering is
+  finalised over WhatsApp, but the web catalogue carries real per-SKU list
+  prices, which is what matters here.
+
+  `coicop_codes` left unset: food-only but spanning several 3-digit classes
+  (01.1.1, 01.1.6, 01.1.7, 01.1.9), which is wide by the narrowness rule.

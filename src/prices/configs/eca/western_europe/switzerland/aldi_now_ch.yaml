@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: aldi_now_ch
+url: https://www.aldi-now.ch/
+language: de
+currency: CHF
+cadence: weekly
+notes: |
+  ALDI's Swiss online grocery delivery storefront. Server-rendered,
+  custom platform (no Next.js/Nuxt marker). Category listing pages (page
+  family: listing) render ~20 `<product-item>` cards each; every card
+  also carries a Google-Analytics `onclick="return
+  GA_onAddToCart([{...}])"` blob with clean structured JSON (item_name,
+  item_id, price, item_brand, item_category/2/3) -- parsed directly
+  instead of the visual markup.
+
+  Category discovery: /sitemap.xml lists both category and product paths
+  (no sitemap-index). Fetched live each run; only LEAF categories (no
+  child path also present in the sitemap) are walked, same approach as
+  spar_si, to avoid re-fetching the same products via every ancestor
+  category. Verified live 2026-09-06: 1421 category paths (1344 leaves),
+  7955 distinct product paths.
+
+  Verified live 2026-09-06: GET /de/genussmittel -> 20 GA_onAddToCart
+  blobs, e.g. item_id 720990 "THE KING Blue Zigaretten" CHF 5.99. Cross-
+  checked against a PDP (/de/milsani-high-protein-shots-erdbeere/662130002)
+  where the rendered `volume-price__price` also reads CHF 3.69 -- category-
+  page price and PDP price agree, no minor-unit discrepancy.
+
+  GOTCHA (from candidate brief): checkout adds a 2.5% picking fee plus
+  CHF 1.50 transport-material fee on top of the listed price. This
+  spider records the listed shelf price, not the checkout total.
+
+  Test run (--max-items 20): 20 items, CHF prices in plausible range.

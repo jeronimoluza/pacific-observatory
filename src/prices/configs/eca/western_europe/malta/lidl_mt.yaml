@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: lidl_mt
+url: https://www.lidl.com.mt/
+language: en
+currency: EUR
+cadence: weekly
+notes: |
+  Lidl Malta (lidl.com.mt) — same storefront platform as lidl.ie and
+  lidl.sk (see known_blockers.md). Unlike lidl.ie, where sampled PDPs
+  mostly carry NO price field at all, Malta's PDPs consistently carry a
+  real EUR price in schema.org/Product JSON-LD, even though availability
+  is always "InStoreOnly" — this is Lidl's rotating weekly-offer leaflet
+  mirrored as PDP pages, not a delivery storefront (same shape as other
+  already-onboarded leaflet/promo sources). /static/sitemap.xml ->
+  /p/export/MT/en/product_sitemap.xml.gz lists 458 PDP urls (small,
+  rotating range). Verified live 2026-09-06: 5/5 sampled PDPs had a real
+  price, e.g. "Orvieto Classico DOP", EUR 3.79. Page family: PDP only.

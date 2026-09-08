@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: epicentrk_ua
+url: https://epicentrk.ua/
+language: uk
+cadence: weekly
+channel: home-improvement
+coicop_codes: null
+notes: |
+  Epicentr K's own domain (general-merchandise hardware/DIY/electronics
+  big-box) -- distinct from the existing epicentr_food_ua spider, which
+  reads the Zakaz.ua platform's separate FOOD-only "epicentr" storefront
+  (confirmed 2026-09-06: the zakaz.ua "epicentr" chain has exactly one
+  FOOD-format store; zero catalog overlap between the two sources).
+
+  Nuxt 2 SSR: the listing page's window.__NUXT__ payload is wrapped in an
+  IIFE with single/double-letter minified args (Nuxt payload
+  de-duplication), not parseable via regex -- Playwright's page.evaluate
+  is used to read the real object back out (deobfuscation, not a WAF
+  workaround -- curl_cffi impersonate=chrome124 gets 200 with no block).
+  data[0].listingProducts carries id/productId, name, price (whole UAH,
+  verified against a rendered HP laptop PDP: 33999 UAH), url, categoryId.
+
+  Page family: listing only (product data embedded per-category page, no
+  PDP fetch, no separate API call). Categories crawled this pass:
+  avtoshiny (tires), keramicheskaya-plitka-i-keramogranit (tiles/
+  construction materials), konstruktory-lego (toys), noutbuki (laptops),
+  sportivnye-tovary (sport goods) -- taken from the homepage footer nav,
+  not a full site-wide category tree walk (deferred).
+
+  Test run 2026-09-06 (--max-items 20): 180 items across 3 of the 5
+  categories (closespider_itemcount stopped the run after the 3rd
+  category's page finished draining -- production run without the cap
+  would hit all 5), 180 distinct product_id, 0 blank names, 0
+  zero/negative prices, 100% UAH. Sample: "Конструктор LEGO Minecraft
+  Будинок для поросят 21268" 714 UAH, "Конструктор LEGO Technic
+  Koenigsegg Jesko Absolut" 1993.3 UAH.

@@ -1,0 +1,56 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: freshmart_pr
+url: https://online.freshmartpr.com/
+language: es
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "online.freshmartpr.com/online/freshmarthatorey/shop/"
+archive_path_re: '^/online/[^/]+/shop/all\?pid='
+notes: |
+  Onboarded 2026-09-05. Freshmart PR, the island's natural/organic
+  supermarket chain (5 stores). Page family parsed: API. The spider never
+  parses a storefront page for prices -- it reads the homepage once only to
+  lift the platform's bootstrap config, then walks XML sitemaps for product
+  ids and hits a JSON endpoint per id. The urls it emits are the SPA's own
+  `?pid=` deep links, which render client-side only and therefore CANNOT be
+  used to validate an archive regex locally (same caveat as the CaribeEats
+  sources).
+
+  Platform: "NoQ" (noq-servers.net), an Ember SPA white-label grocery
+  platform. Not Freshop (probed: app_key guesses freshmart / freshmartpr /
+  freshmart_pr / fresh_mart all return "app_key is invalid"), not
+  WooCommerce, not Shopify. An AWS WAF captcha SDK is loaded on the
+  storefront, but the API host is not behind it.
+
+  How it works, all verified live 2026-09-05:
+    * `<script id="init_config">` on the homepage carries
+      {"oId":"780","protocol":"https://","host":"production-us-1.noq-servers.net",
+       "apiPath":"/api/v1/application"} -- read at runtime so a platform
+      redeploy that moves the host does not silently zero the spider.
+    * /sitemap.xml is an index of 11 sitemaps: one franchise file plus TWO
+      PER STORE for 5 stores. Product entries are
+      /online/<store>/shop/all?pid=<uuid>.
+    * `GET {api}/products/{pid}` is plain unauthenticated JSON -- no cookie,
+      no token, no challenge -- returning Name, Price, PriceRegular,
+      UnitPrice, MeasureCode, a Categories path and IsAlcohol/IsTobacco.
+
+  ONE STORE ONLY, deliberately: STORE_SLUG=freshmarthatorey (Hato Rey, San
+  Juan). Product uuids are per-store instances, NOT shared -- Hato Rey has
+  6,551 pids and Carolina 6,672 with ZERO overlap -- so scraping all five
+  sitemaps would emit ~33k rows for ~6.5k distinct SKUs and over-weight this
+  chain in every downstream average. The other four store slugs
+  (freshmartaguadilla, freshmartcarolina, freshmartplazoleta169,
+  freshmartmealplans) are one-line additions if per-store price dispersion
+  inside PR ever becomes the question.
+
+  Currency USD, matching countries.yaml puerto_rico and the "$" the
+  storefront renders. coicop_codes unset -- wide supermarket catalogue.
+
+  Distinct from PR's four existing supermarket sources: `selectos_pr`
+  (Freshop/NCR), `pueblo_pr` + `amigo_pr` (one shared Alpine.js backend, two
+  banners), `supermax_pr` (bespoke jQuery). Different chain, different
+  platform, different shelf.

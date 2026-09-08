@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cortilia_it
+url: https://www.cortilia.it/
+language: it
+cadence: weekly
+channel: supermarket
+notes: |
+  Cortilia -- Italian farm-to-table online grocer (named producers,
+  farm-gate delivery). Next.js storefront; category pages are client-routed
+  and carry no product data server-side (e.g. /di-stagione 404s on direct
+  fetch), but a Playwright network trace found a clean, unauthenticated
+  JSON REST backend at api.cortilia.it:
+    GET /store-api/v1/catalog/catalog_cassina/aisles
+        -> 15 aisles x ~9 categories each = 140 aisle/category pairs
+    GET /store-api/v1/catalog/catalog_cassina/aisles/{aisle}/categories/{cat}
+        -> full category listing in one call, no pagination needed
+        (confirmed: productstoshow == productcount even above 200, e.g.
+        "essenziali" returned all 278 of 278)
+
+  Default catalog "catalog_cassina" resolves without any address/CAP input
+  -- verified live 2026-09-06, unlike carrefour.it and hemkop.se on this
+  same pass which both require a delivery-zone selection before the
+  catalog renders.
+
+  Products commonly appear in more than one aisle (e.g. "in-evidenza" is a
+  curated cross-cut of the others); spider dedupes by variant id. One row
+  per pack-size variant.
+
+  Page family: API (spider reads api.cortilia.it JSON endpoints directly,
+  never fetches an HTML page).
+
+  Test run 2026-09-06: 60s partial crawl, 300+ items, e.g. "Melone retato
+  BIO 1,4 kg" EUR 4.87 (sale price) matching the site's displayed
+  discounted price.

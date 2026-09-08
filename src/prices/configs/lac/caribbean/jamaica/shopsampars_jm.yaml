@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopsampars_jm
+url: https://www.shopsampars.com/
+language: en
+cadence: weekly
+channel: wholesale
+notes: |
+  Page family: PDP (JSON-LD Product node), discovered via the Yoast
+  sitemap's product-sitemap.xml / product-sitemap2.xml / product-sitemap3.xml
+  (~2,980 URLs). Two application/ld+json blocks per PDP: a Yoast SEO graph
+  (no Product node) and a WooCommerce graph carrying Product + BreadcrumbList.
+  The Product node's offers[0].price/priceCurrency already carry the site's
+  own JMD-converted price (WooCommerce Currency Switcher plugin) - the raw
+  USD base amount sits one level down under priceSpecification and is NOT
+  used. Confirmed real product: "BEEF STEW BONELESS KG" JMD 1566.50,
+  matching AI_NOTES' per-kg meat pricing claim. Self-service wholesale
+  grocer per AI_NOTES, so channel=wholesale rather than supermarket.

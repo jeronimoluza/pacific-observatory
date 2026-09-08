@@ -1,0 +1,48 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: divico_sx
+url: https://www.divico.shop/
+language: en
+currency: USD
+cadence: weekly
+channel: wholesale
+archive_prefix: "www.divico.shop/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Onboarded 2026-09-05. DIVICO Cash & Carry, Sint Maarten. Page family
+  parsed: API live (/products.json), PDP for archived HTML (the shared
+  _shopify_base.parse_html chain).
+
+  Vanilla Shopify. Enumerability verified live 2026-09-05 (curl_cffi
+  chrome124): /products.json?limit=250&page=N returns 12 full pages, 3,000
+  products, page N and N+1 fully disjoint, empty page 13. Three PDPs
+  re-fetched cold returned 200 with og:price:amount matching the JSON
+  variant price (the one apparent mismatch, WF WATER 70PK, is a
+  multi-variant product where the page defaults to the single-bottle
+  variant at 0.50 and the JSON row for the 70-pack is 14.78 -- the base
+  emits one row per variant, so both are correct).
+
+  Locality: the store's own meta description says "Located in the island of
+  Sint Maarten"; operator phone +1-721-544-3003, delivery zone Cole Bay /
+  Simpson Bay / Philipsburg / Cupecoy / Mullet Bay. In-country shelf
+  pricing, not a diaspora shipper.
+
+  Currency USD, declared machine-readably by Shopify.currency
+  ({"active":"USD","rate":"1.0"}) -- NOT the ANG in countries.yaml. Sint
+  Maarten is dollarised; the country's other source `costuless_sx` records
+  ANG because that platform renders the guilder symbol. Both are right for
+  their own storefront.
+
+  channel: wholesale -- self-described cash-and-carry "at wholesale prices",
+  and the catalogue carries case/pack sizes ("S.Pellegrino PET Bottle 24 /
+  50CL", "HAM PICNICS ... / KG") next to single units. coicop_codes unset:
+  wide grocery + household catalogue, classifier assigns per-leaf.
+
+  Discovery note for the next pass: cmsxm.net (Carrefour Market / Le Grand
+  Marche, flagged as this country's "strong Tier-2 lead" by the St Martin
+  inventory) was probed the same day and is DEAD for prices -- its
+  WooCommerce Store API answers 200 with 1,077 products but every single one
+  reports price "0" (477/477 checked across 5 pages), and the PDP HTML
+  carries no price text either. It is an online catalogue without prices.

@@ -1,0 +1,71 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: ki_mcic_price_control
+module: eap.pacific_islands.kiribati.mcic_price_control
+function: fetch_ki_mcic_price_control
+url: "http://mtcic.gov.ki/price-order/"
+language: en
+currency: AUD
+cadence: irregular
+fallback_date: 2015-01-01
+notes: |
+  Kiribati Ministry of Commerce, Industry and Cooperatives (MCIC) -- Price
+  (Regulation) Orders made under the Prices Ordinance (Cap 75). Kiribati's
+  FIRST item-level food and tobacco price source: the country has zero
+  scrapeable retail e-commerce (Punjas Kiribati is a corporate site, MOEL's
+  Wix storefront has dead "Shop Now" links, everything else is a Facebook
+  page), so before this manifest its only div-01/02 signal was the NSO CPI
+  index plus cost-of-living survey publishers.
+
+  Each Order gazettes a maximum WHOLESALE and maximum RETAIL price for ~120
+  named branded packs. Verified live 2026-09-05: 689 rows, 79% of them
+  COICOP division 01 or 02 -- flour (75), rice (143), sugar (134), potatoes
+  (5), powdered milk (77), infant/formula milk (47), breakfast cereals (20),
+  Sunquick cordial (10), bottled baby food (25), tobacco (10). The
+  remaining 21% is a non-food tail the Ordinance also controls: exercise
+  books, bar soap, benzene, kerosene, engine oil, bicycles, batteries,
+  mosquito nets. Prices are AUD (Kiribati uses the Australian dollar).
+
+  Rows are disaggregated by the island groups the Order prices separately:
+  Gilbert Group, Christmas Island, Tabuaeran & Teraina, and (in the
+  single-region Line Group Order) Line & Phoenix Group.
+
+  CAVEAT 1 -- administered ceiling, not a shelf price. These are the legal
+  MAXIMUM a Kiribati retailer may charge, so realized prices sit at or
+  below them. Hence analytical_role=official_avg and channel=null (per the
+  schema rule); this source adds real div-01/02 coverage but does NOT move
+  the food-channel count.
+
+  CAVEAT 2 -- only a minority of the archive is machine-readable. 21 Order
+  PDFs are linked from /price-order/ (measured 2026-09-05); 6 carry no
+  parseable date in the filename, and 12 of the remaining 15 yield no
+  extractable table -- 11 are scanned images with zero text layer, and
+  price-control-22nd-june-2018.pdf has a text layer but no ruled table so
+  pdfplumber's table extractor returns nothing. This environment has no OCR
+  installed. Every skip population is logged explicitly, never silently.
+  The scanned set includes the newest Order,
+  price-regulation-order-no-1-of-2024-2.pdf, so only 3 Orders parse, the
+  newest usable vintage is 2022-06-14, and `cutoff` will pin there until
+  either a future Order ships with a text layer or an OCR path is added. The
+  fetcher resolves whatever is linked on /price-order/ at run time rather
+  than hardcoding filenames, so a new machine-readable Order is picked up
+  without a code change -- that live re-resolution is the staleness guard.
+
+  CAVEAT 3 -- layout is not stable across vintages. 2022 Orders publish
+  either one island group in 5 columns or three in 13; the parser reads the
+  region banner above the "Wholesale" header row and derives the number of
+  4-column blocks from the row width instead of assuming one shape. Only
+  the retail column is emitted as price_local; the matching wholesale
+  figure is carried in `notes`, and the two trailing per-kg / per-lb /
+  per-piece columns are deliberately dropped because they restate the same
+  price and would double-count.
+
+  CAVEAT 4 -- the source's text layer inserts stray spaces inside numbers
+  ("4 6.00", "0 .85"). Those are stripped before parsing and every value is
+  bounds-checked. 5 of 684 rows still show wholesale > retail (e.g.
+  "Thailand VHP 50kg (110lb) 72.90 / 64.00"); those are typos in the
+  gazetted PDF itself, not extraction damage, and are left as published
+  rather than silently repaired.

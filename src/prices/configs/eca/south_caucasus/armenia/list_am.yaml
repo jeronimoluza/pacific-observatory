@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: list_am
+url: https://www.list.am/
+language: en
+currency: AMD
+cadence: weekly
+archive_prefix: "www.list.am/en/item/"
+archive_path_re: '^/en/item/\d+$'
+notes: |
+  Page family: listing (category cards carry name+price directly; no PDP
+  fetch needed at collection time -- `url` is a constructed permalink).
+  Armenia's largest general classifieds marketplace (cars, real estate,
+  electronics, food, jobs, services, animals, etc). Plain `curl` UA gets a
+  Cloudflare challenge; curl_cffi impersonate="chrome124" clears cleanly
+  (TLS-fingerprint gate, not a real WAF -- matches the skill doc's known
+  case for this exact site).
+  10 top-level categories walked (`/en/category/<id>`, pagination via
+  `?n=<page>`, confirmed distinct listing ids page 1 vs page 2). Prices are
+  majority AMD (֏ symbol, symbol AFTER the amount, e.g. "4,000֏") but
+  vehicles/real-estate frequently list in USD ($ symbol BEFORE the amount,
+  e.g. "$6,800") -- both symbol positions handled, currency taken from
+  whichever symbol is present (falls back to AMD if neither found).
+  coicop_classification: classifier (general classifieds, no single COICOP
+  class applies, same treatment as olx_ba/tayara_tn) -- coicop_codes left
+  unset. channel: marketplace (seller-authored titles, e.g. bilingual
+  Armenian/Russian produce and liquor listings).
+  Verified live 2026-09-06, --max-items test run.

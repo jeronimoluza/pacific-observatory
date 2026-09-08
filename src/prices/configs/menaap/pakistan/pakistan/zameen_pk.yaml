@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1.0"]
+spider: zameen_pk
+url: https://www.zameen.com/
+language: en
+currency: PKR
+cadence: weekly
+channel: real-estate
+archive_prefix: "www.zameen.com/Property/"
+archive_path_re: '^/Property/[^/?]+-\d+-\d+-1\.html$'
+notes: |
+  Page family: listing. Rental listings only (04.1.1 short-circuit) --
+  sale listings under /Homes/ are excluded, same convention as
+  mubawab_ma/avito_ma.
+
+  Server-rendered, no WAF -- curl_cffi chrome124 clears
+  /Rentals/<City>-<cityId>-<page>.html with a plain 200. Listing cards use
+  CSS-modules hashed class names (rebuild-fragile) but stable aria-label
+  attributes survive builds: span[aria-label="Currency"],
+  span[aria-label="Price"], div[aria-label="Location"].
+
+  Re-verified live 2026-09-06: GET /Rentals/Lahore-1-1.html -> 200, 1.38MB,
+  25 <li> cards. Page 2 returns a disjoint 25-card set (0 overlap) -- real
+  pagination, confirmed. Sample: 10-marla house, Nawab Town Lahore, PKR
+  1.25 Lakh/month (Lakh=1e5, applied by the spider's unit multiplier;
+  Crore=1e7 also handled for safety though it only appears on /Homes/
+  sale pages, not /Rentals/).
+
+  City list: only city ids verified live (Lahore=1, Karachi=2,
+  Islamabad=3, Faisalabad=15) are used; other guessed ids 404'd within
+  probe budget.

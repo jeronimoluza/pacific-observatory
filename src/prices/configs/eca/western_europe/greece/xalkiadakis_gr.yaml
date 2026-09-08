@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: xalkiadakis_gr
+url: https://xalkiadakis.gr/
+language: el
+cadence: weekly
+channel: supermarket
+timeout: 5400
+archive_prefix: "xalkiadakis.gr/"
+notes: |
+  Chalkiadakis is a Crete supermarket chain. The candidate URL in the
+  triage sheet, chalkiadakis.gr, is a dead 1990s-era Microsoft FrontPage
+  frameset site (windows-1253 charset, no online shop). The live catalogue
+  is at xalkiadakis.gr (no leading "ch") -- found via a targeted web
+  search after the seed domain resolved to that legacy brochure page.
+
+  Verified live 2026-09-06 with curl_cffi impersonate=chrome124: 200,
+  server-rendered Laravel/Livewire storefront, no JS execution needed.
+  Homepage links ~250 `/category/<slug>` pages spanning the full grocery
+  assortment (allantika/delicatessen, fresh produce, bakery, dairy,
+  household, health/beauty, baby, etc).
+
+  Each category page renders product cards in `div.product-card` with
+  server-rendered brand, title and price text (e.g. "3.42€", HTML entities
+  already resolved). No explicit product-id attribute on the card; the
+  numeric filename in the product image src
+  (`https://xalkiadakis.gr/products/<id>_300x300.jpg`) is used as
+  product_id instead.
+
+  Pagination is plain `?page=N` (Laravel default): page N+1 past the last
+  page returns HTTP 200 with zero `div.product-card` blocks, so the spider
+  stops on an empty page rather than needing a separate "last page"
+  marker. Verified on a 175-item category: page 5 returns the trailing 19
+  items, page 6 returns 0 cards.
+
+  Page family parsed: listing (category pages only; PDP not fetched,
+  price/name/id all come from the category card).
+
+  End-to-end test `.venv/bin/po prices collect --source xalkiadakis_gr
+  --max-items 100`: see test run notes in the onboarding results log for
+  row count and sample record.

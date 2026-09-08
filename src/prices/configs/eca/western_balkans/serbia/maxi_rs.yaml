@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: maxi_rs
+url: https://www.maxi.rs/
+language: sr
+currency: RSD
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.maxi.rs/"
+archive_path_re: '^/[^/]+/c/[0-9]+$'
+notes: |
+  page family: API. Maxi's OWN website (distinct from the already-onboarded
+  maxi_wolt_rs, a single Belgrade branch reached via the Wolt marketplace).
+  GOTCHA per source list: Maxi's FAQ states online promotions MAY DIFFER
+  from in-store -- this is the online-channel price series.
+  SAP Commerce Cloud (Hybris) + Next.js + Apollo GraphQL storefront.
+  Akamai Bot Manager behavioral challenge (sec-if-cpt-container) hits
+  chrome124/chrome120 curl_cffi impersonation inconsistently on category
+  pages; firefox133 cleared it 6/6 tries live 2026-09-06 -- spider pins
+  IMPERSONATE_BROWSERS to firefox133.
+  Playwright network trace found the storefront hits a GraphQL persisted
+  query directly as GET /api/v1/?operationName=GetCategoryProductSearch&
+  variables=...&extensions={"persistedQuery":{"sha256Hash":"d8bff391..."}}
+  -- needs only an `apollo-require-preflight: true` header to clear an
+  Apollo CSRF guard, no cookies/session required. pageSize capped (100
+  fails BAD_USER_INPUT; 20, what the real page uses, works). Response
+  carries pagination.totalPages for clean termination. 16 top-level
+  category codes are SSR'd in the homepage nav and hardcoded (stable
+  taxonomy). Verified live: category 02 "Mlecni proizvodi i jaja" (dairy),
+  470 products/24 pages; "Mleko sterilizovano Maxi 2,8%mm 1l" RSD 99.99.
+  Test run 2026-09-06: --max-items 5 returned 5 rows with real RSD prices.

@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: thulo_com_np
+url: https://thulo.com.np/supermarket
+language: en
+currency: NPR
+cadence: weekly
+notes: |
+  Multi-vendor grocery marketplace -- each product card names its own
+  seller storefront (e.g. "Pasal 101" at pasal101.thulo.com.np) and a
+  seller location (e.g. "Lalitpur"), so channel=marketplace (per
+  GLOSSARY.md's aggregator split), not a single first-party retailer.
+  AI_NOTES's "named vendor attribution" is exactly this.
+
+  Page family: API (JSON-wrapped HTML). /supermarket immediately fetches
+  `/thulo-product/shop?category=394&maxp=35670` (394 = the "Supermarket"
+  top-level category id, hardcoded client-side -- no separate category-
+  list endpoint found via Playwright network capture). That endpoint
+  returns `application/json` with a single `grid` key holding an HTML
+  fragment; plain curl_cffi with no special headers gets the same
+  response cold.
+
+  Verified live 2026-09-06: page=1 -> 22 cards, e.g. "Maghe Special Combo
+  Set 3" रू 2810. `&page=N` paginates a real, deep catalog (distinct
+  product sets confirmed across pages 1-32 and again at 50/80); the feed
+  runs dry between page 80 (8 distinct products) and page 120 (0) --
+  spider stops at the first empty page. Confirms and extends AI_NOTES's
+  "31 pages of supermarket lines" (a conservative undercount).
+
+  Test run (--max-items 10): 10 items, distinct product_ids, NPR prices
+  in plausible range.

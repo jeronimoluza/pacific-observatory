@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: caribeshop_nevis
+url: https://backend.caribeeats.com/api/business/caribeshop-nevis
+language: en
+cadence: weekly
+channel: marketplace
+notes: |
+  Onboarded 2026-09-05. CaribeShop Nevis, the CaribeEats-operated
+  general-goods storefront for the Nevis half of the country -- handed
+  forward as the single best next candidate by the 2026-09-01 pass that
+  shipped `rams_stkitts`. Page family parsed: API (whole catalogue in one
+  unauthenticated GET; synthetic '#<product_id>' urls, not browsable).
+
+  1,166 SKUs / 57 categories verified live 2026-09-05, ~65% food-led by
+  product count (Breakfast-Cereals 79, cooking oil, Beverages, Snacks,
+  Prepared Foods, Fresh Fruits & Vegetables, Dairy, Coffee, Frozen) against
+  a Pet Supplies / Personal Care / Cleaners minority. Channel is
+  `marketplace` rather than `supermarket`: it is a platform-operated
+  general-goods shop with several single-item junk categories ("Test
+  Category", "vehicle", "Takeout"), not a physical grocery banner.
+
+  CURRENCY RESOLVED. The payload reports USD, which the previous pass
+  flagged as suspicious (Nevis uses XCD like St Kitts). Cross-checked
+  2026-09-05 against `rams_stkitts` (XCD payload) on the 13 product names
+  the two catalogues share verbatim: median price ratio caribeshop-nevis /
+  rams-st-kitts = 0.354, i.e. 1/2.82 against the fixed 1:2.70 XCD/USD peg.
+  The USD label is therefore REAL, not a platform misconfiguration -- this
+  storefront genuinely prices in USD. The shared base spider reads currency
+  from the payload, so no override is needed.
+
+  Distinct from `rams_stkitts` (a physical St Kitts supermarket banner on
+  the same platform, XCD, different island, different shelf).
+  Sibling slugs `rams-supermarket-nevis` and `valu-mart-iga-nevis` were both
+  probed 2026-09-05 and are DEAD (`categories: []`, 0 products).

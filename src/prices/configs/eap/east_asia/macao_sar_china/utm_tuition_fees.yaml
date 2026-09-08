@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["10.4.0.0"]
+channel: null
+source_key: mo_utm_tuition_fees
+module: eap.east_asia.macao_sar_china.utm_tuition_fees
+function: fetch_mo_utm_tuition_fees
+url: https://www.utm.edu.mo/admission/en/undergraduate_programmes/fees/index.html
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  UTM's homepage has no direct fees link -- found via
+  utm.edu.mo/iftadmission/degree-programmes (UTM absorbed the former
+  Institute for Tourism Studies, IFT; the two share admissions
+  infrastructure). Verified live 2026-09-06: 200, one clean HTML table,
+  no PDF needed.
+
+  Table has a spurious merged-header first row (repeats "Bachelor's
+  Degree Programmes" across every column, a pandas.read_html rowspan
+  artifact) which is dropped by fee-type-name matching; the next 3 rows
+  are genuinely tabular: {Annual tuition fee, Full tuition fee within
+  normal study duration, Tuition fee per credit} x {Macao SAR students,
+  Mainland China/HK/Taiwan students, other places' students} -- 9 rows.
+  Sample: Annual tuition fee 37,500 / 112,000 / 120,000 MOP; per-credit
+  1,290 / 3,830 / 4,100 MOP.
+
+  No explicit effective-date field -- academic year parsed from the
+  page's own heading ("Tuition Fee of Academic Year 2026/2027") ->
+  effective_from = 2026-09-01, matching the sibling um_tuition_fees.py's
+  convention for the same gap.
+
+  Currency MOP, matches countries.yaml.
+
+  Test run (`prices collect --source utm_tuition_fees`): 9 rows written,
+  values match the rendered page verbatim.

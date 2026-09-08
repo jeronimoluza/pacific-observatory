@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1.0"]
+channel: real-estate
+spider: property_vu
+url: https://property.vu/residential/for-rent
+archive_prefix: "property.vu/residential/for-rent/"
+archive_path_re: '^/residential/for-rent/[a-z0-9-]+$'
+language: en
+cadence: weekly
+notes: |
+  Alliance Real Estate Vanuatu, Port Vila residential rental listings
+  (OSProperty Joomla component). Vanuatu inventory (2026-08-05) recorded
+  this candidate at a now-404 path; live path confirmed 2026-09-06 is
+  `/residential/for-rent`. Single page, no pagination controls -- 12
+  listings confirmed live, all with price present directly on the listing
+  card (page family: listing; no PDP fetch performed). Price format
+  "VT  290,000 /Per month" -> VUV, monthly rentals, COICOP 04.1.1.0 (actual
+  rental payments for main residence) -- narrow single-code source,
+  short-circuits the classifier. product_id is the site's own "AR######"
+  reference badge.
+
+  Scope: for-rent only. for-sale listings exist on the same platform
+  (`/residential/for-sale`) but are a different COICOP concept (imputed
+  purchase vs a paid rental) and are not scraped here.
+
+  Verified 2026-09-06: test run returned 12/12 valid rows, all distinct
+  product_id/url, prices VUV 65,000-450,000/month range, 0 blank names.

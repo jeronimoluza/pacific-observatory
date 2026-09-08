@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supasave_bn
+url: https://seria.supasave.com.bn/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "seria.supasave.com.bn/product/"
+archive_path_re: '^/product/[a-z0-9-]+/?$'
+notes: |
+  Re-probe 2026-09-06 of a known_blockers.md entry (sgcaptcha stub on both
+  supasave.com.bn and seria.supasave.com.bn, probed 2026-06-10). The
+  repo-wide pinned curl_cffi profile (chrome120) and chrome131 still 403
+  ("Forbidden") on seria.supasave.com.bn, but chrome124, safari17_0 and
+  firefox133 all clear cleanly -- confirmed on both the homepage (229KB
+  real WooCommerce HTML with a full /product-category/ taxonomy: food-pantry,
+  canned-food, baking-needs, condiments-dressings-spreads, ready-to-eat,
+  waitrose, weekly-promotion, etc.) and the Store API. Pinned chrome124 via
+  the shared _woo_base IMPERSONATE_PROFILE hook, matching cassandraonlinemarket_ht.
+
+  Standard WooCommerce Store API at /wp-json/wc/store/v1/products, no auth.
+  Sample row confirmed: "Prima Hong Kong Flour 1kg", price 400 minor units /
+  minor_unit=2 -> BND 4.00, matching the rendered price_html ($ 4.00) on the
+  same row. Brunei's main supermarket chain; fills the COICOP 01 grocery gap
+  noted in known_blockers.md. Test run (2026-09-06, --max-items 20) returned
+  real rows -- see collect run notes for exact count.

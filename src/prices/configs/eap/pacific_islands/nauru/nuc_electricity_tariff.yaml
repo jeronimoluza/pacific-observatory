@@ -1,0 +1,35 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: nr_nuc_electricity_tariff
+module: eap.pacific_islands.nauru.nuc_electricity_tariff
+function: fetch_nr_nuc_electricity_tariff
+url: "https://www.nuc.com.nr/services-4"
+language: en
+cadence: irregular
+fallback_date: 2015-01-01
+notes: |
+  Nauru Utilities Corporation (NUC) "Tariffs & Rates" page -- Wix
+  server-rendered rich-text bullet list, grouped under customer-class
+  headings (Residential, Commercial, Industrial, Government). Each class
+  lists $/kWh electricity rates (Lifeline/Prepaid/Postpaid/CSO
+  Tariff/Feed-in Tariff, depending on class) -- 8 rows confirmed live
+  2026-09-06, AUD 0.17-0.74/kWh.
+
+  The SAME page also lists water-consumption-band flat charges per class
+  (e.g. "4000L $38.60") -- deliberately NOT parsed here; a banded flat fee
+  is a different tariff shape than a per-unit rate and would need its own
+  manifest and modelling decision (which consumption band represents a
+  "typical" household is not stated on the page). Left as a follow-up,
+  per the onboarding skill's "two shapes on one site" rule.
+
+  Nauru has no local currency -- AUD per countries.yaml. No published
+  effective date -- emitted as `period_kind: snapshot`.
+
+  Verified 2026-09-06: direct-import test returned 8 rows (Lifeline,
+  Prepaid, Postpaid x2, CSO Tariff, Feed in Tariff, Postpaid Commercial,
+  Postpaid Industrial, Lifeline Government), all distinct
+  observation_hash, AUD 0.17-0.74 range matching the rendered page.

@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: cijene_hr
+url: https://www.cijene.hr/
+language: hr
+currency: EUR
+cadence: weekly
+archive_prefix: "www.cijene.hr/"
+archive_path_re: '^/[a-z0-9-]+/[a-z0-9-]+-cijena-\d+'
+notes: |
+  Multi-retailer price-comparison aggregator, operating since 2001
+  (channel=marketplace: prices are pulled from many named retailers, not
+  a single first-party outlet -- see GLOSSARY.md's channel:aggregator
+  split). Custom PHP storefront, server-rendered.
+
+  Verified live 2026-09-06: category listing page (page family: listing,
+  e.g. /alge) server-renders product cards with name, the MINIMUM price
+  across all carried retailers ("od 2,29 €" = "from EUR 2.29"), and a
+  location count ("247 lokacija" = 247 retail locations). This spider
+  records the "od" price as `price`. Page-size selector honoured as a
+  query param (`?kPostavke.pregledBrojProizvoda=300`); `&page=N` paginates
+  beyond 300. Product detail pages (page family: PDP, e.g.
+  /alge/saitaku-susene-morske-alge-nori-14-g-cijena-754924301) carry the
+  same price plus more retailer offers under #ponude -- not fetched by
+  this spider (listing-page price is used directly to keep request count
+  low across 136 categories).
+
+  Category list (136 leaf slugs, `_cijene_hr_categories.txt`) seeded by
+  crawling the homepage nav + one level of sub-nav and keeping distinct
+  single-segment paths that returned product cards (spot-checked: /alge
+  35 items, /grickalice-i-slatkisi 68 items, /mlijeko 34 items, /med 78
+  items).
+
+  Test run (--max-items 20): 20 items, distinct product_ids, EUR prices
+  in plausible range (1.49-10.99), e.g. "Saitaku sušene morske alge Nori
+  14 g" EUR 2.29.
+
+  GOTCHA (from candidate brief): long-running site with legacy pages --
+  crawl reflects current live listing pages, not an archive snapshot.

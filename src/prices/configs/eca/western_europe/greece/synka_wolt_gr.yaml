@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: synka_wolt_gr
+url: https://wolt.com/en/grc/chania/venue/synka-supermarket
+language: el
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/grc/chania/venue/"
+archive_path_re: '^/en/grc/chania/venue/[^/?]+'
+notes: |
+  SYN.KA (Crete regional chain) via the Wolt delivery marketplace. The
+  candidate URL in the triage sheet, synka-super.gr, does not resolve
+  (DNS NXDOMAIN). The brand's real site is synka-sm.gr, but it is a
+  WordPress brochure with no online catalogue -- its /orders/ page
+  (verified live 2026-09-06) states online ordering only happens via
+  the Wolt and efood marketplaces (phone ordering is the other option).
+  efood.gr is Cloudflare-walled (403 "Just a moment..." across all 5
+  curl_cffi impersonation profiles: chrome124/chrome120/chrome131/
+  safari17_0/firefox133), so Wolt is the only reachable observation.
+
+  Venue slug found via web search (site:wolt.com synka), since SYN.KA runs
+  several branch-specific Wolt venues across Crete (Chania, Rethymno,
+  Ierapetra) -- picked the Chania "Livadia" branch
+  (en/grc/chania/venue/synka-supermarket). Uses the shared
+  `_wolt_base.WoltBaseSpider` (same pattern as ab_vassilopoulos_wolt_gr,
+  carrefour_wolt_ge). channel:marketplace per scope rules (Wolt is a
+  delivery aggregator, not the retailer itself); analytical_role stays
+  retailer_sku since every item is a real SYN.KA SKU.
+
+  Page family parsed: API (Wolt's server-rendered React-Query JSON blob,
+  not conventional HTML markup).
+
+  End-to-end test `.venv/bin/po prices collect --source synka_wolt_gr
+  --max-items 100`: see test run notes in the onboarding results log for
+  row count and sample record.

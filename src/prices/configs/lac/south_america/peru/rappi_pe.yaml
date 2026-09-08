@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rappi_pe
+url: https://www.rappi.com.pe/
+language: es
+currency: PEN
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.rappi.com.pe/tiendas/"
+archive_path_re: '^/tiendas/[^/?]+(?:/[^/?]+)?$'
+notes: |
+  page family: listing (aisle-listing pages; SSR embeds full product rows,
+  no separate PDP fetch). Delivery aggregator, market vertical
+  (GOTCHA: platform markup likely -- price is Rappi's marked-up in-app
+  price, not the store's own shelf price; channel:marketplace reflects
+  this). Walk: /lima/tiendas/tipo/market (store directory, __NEXT_DATA__
+  fallback.storeGroups[*].stores[] with storeId+friendlyURL) ->
+  /tiendas/<friendlyURL> (store home, fallback.aisles_tree_response ->
+  top-level aisles with friendly_url) -> /tiendas/<friendlyURL>/<aisle>
+  (fallback.sub_aisles_response.data.components[render=="aisle"] ->
+  resource.products[], full rows with price/real_price/category_name/
+  in_stock). Verified live 2026-09-06: store 64816 "Greta Market
+  Saludable" aisle vitaminas-y-suplementos -> "Vivir Psyllium Husk Doypack
+  284g" PEN 42.50 (real_price 50, discounted). Test run 2026-09-06:
+  --max-items 5 returned 5 rows with real PEN prices.

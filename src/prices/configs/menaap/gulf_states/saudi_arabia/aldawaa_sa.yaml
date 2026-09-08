@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aldawaa_sa
+url: https://www.al-dawaa.com/
+language: ar
+cadence: weekly
+channel: pharmacy
+notes: |
+  Re-verified live 2026-09-06. Candidate GOTCHA said "not production-
+  approved until live status, public price access, delivery geography and
+  lawful collection are verified" -- live status and public price access
+  are now confirmed: the storefront is SAP Commerce Cloud (Hybris) with a
+  Spartacus Angular frontend; the live page's own
+  <meta name="occ-backend-base-url"> names the OCC REST backend
+  (https://stgprevapi.al-dawaa.com -- this is the tenant's real internal
+  hostname read straight off the production page, not a guess).
+
+  GET /occ/v2/aldawaa/products/search?query=<kw>&pageSize=N&currentPage=P
+  &fields=FULL with Accept: application/json returns fully unauthenticated
+  JSON -- no cookie, no session token, no auth header. Verified with
+  curl_cffi impersonate=chrome124. Enumerability confirmed past the
+  homepage-carousel trap: query=vitamin -> totalResults 623 / totalPages
+  125 at pageSize=5, and currentPage=0 vs currentPage=1 (pageSize=10)
+  returned zero overlapping product codes.
+
+  No public category-tree endpoint responded (timed out after 20s), so the
+  spider walks a fixed pharmacy/health/beauty keyword list
+  (`_aldawaa_sa_keywords.txt`, 40 terms) instead, 5 pages x 20 items per
+  keyword -- same shape as the daraz_np keyword-seeded pattern.
+
+  price.value is a plain decimal SAR float straight from the payload
+  (matches countries.yaml's SAR default, but read off the response rather
+  than assumed). coicop_codes left unset -- pharmacy catalogue spans
+  medicines, vitamins, baby, personal care and cosmetics; classifier
+  assigns leaves per product.
+
+  Page family parsed: API (spider reads the OCC JSON search endpoint
+  directly; never fetches a rendered category or product page).
+
+  End-to-end test `.venv/bin/po prices collect --source aldawaa_sa
+  --max-items 20`: see onboarding results log for row count and sample
+  record.

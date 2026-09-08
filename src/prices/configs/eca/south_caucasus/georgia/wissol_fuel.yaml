@@ -1,0 +1,39 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["07.2.2.1", "07.2.2.2", "07.2.2.3"]
+channel: null
+source_key: ge_wissol_fuel
+module: eca.south_caucasus.georgia.wissol_fuel
+function: fetch_ge_wissol_fuel
+url: https://wissol.ge/ka/fuel-prices
+language: ka
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Wissol Petroleum Georgia -- one of Georgia's largest fuel retail chains.
+  Discovery lead was `smart.ge`, Wissol's loyalty-card portal (Webflow
+  site, shares `wissol-staging.css` and cross-links with wissol.ge); the
+  actual fuel-price page lives on the parent brand's own domain,
+  wissol.ge/ka/fuel-prices.
+
+  The page also drives a 30-day price-history chart off
+  `https://api.wissol.ge/fuelpricehistory/?days=30`, an open JSON endpoint
+  with no auth -- but that subdomain's IP times out at the TCP layer from
+  this vantage point (same symptom hit on several other hosts this run),
+  so the fetcher does not depend on it and reads only the current static
+  page. Re-check the API subdomain from a different network if daily
+  backfill is ever wanted.
+
+  Each product renders 3-4x across responsive breakpoints in raw HTML;
+  only the `div.popup[id^="prices-"]` detail containers are de-duplicated
+  1:1 with products. Most products publish both a "standard" pump price
+  and a cheaper "self-service" price -- both are emitted as separate rows.
+
+  Verified live 2026-09-06: 8 products / 14 rows (8 standard + 6
+  self-service). Mapped to the deepest COICOP leaves under 07.2.2 (Fuels
+  and lubricants for personal transport): petrol grades -> 07.2.2.2,
+  diesel grades -> 07.2.2.1, the LPG line item ("Wissol Gas" auto-gas,
+  not a household cylinder refill) -> 07.2.2.3 (Other fuels). New source
+  for Georgia -- no prior fuel-price config existed in this country dir.

@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1"]
+channel: null
+source_key: swa_water_tariff
+module: eap.pacific_islands.samoa.swa_water_tariff
+function: fetch_swa_water_tariff
+url: https://samoawaterauthority.ws/our-services/rates-tariffs/
+language: en
+cadence: irregular
+fallback_date: "2020-01-01"
+notes: |
+  Samoa Water Authority (state utility) rates-tariffs page, plain
+  server-rendered HTML -- NOT `<table>` elements (pandas.read_html finds
+  zero), rows live in Visual-Composer "Ultimate Pricing Table" widgets
+  (`div.ult_pricing_table_wrap`, h3=step/plan label, h5=consumption band or
+  fee description, `<strong>$X.XX</strong>`=price). 18 blocks extracted
+  across 5 top-level sections: Water Tariff (2 back-to-back tiered plans,
+  $0.61/$1.34/$1.74 + $16 flat, then $1.42/$1.82 + $25.60 flat -- GOTCHA:
+  the page never textually labels which plan is domestic vs commercial,
+  so this fetcher numbers them Plan 1/Plan 2 rather than guessing),
+  Wastewater Tariff (2 steps, $3.50/$5.90), Water Truck Service Fees (4
+  volume-based delivery fees, $200-$1000), Service Disconnection/Survey
+  fees ($20-$70), NEW ACCOUNT/CONNECTION APPLICATION fees ($200-$500,
+  road-crossing surcharges). WST currency matches countries.yaml.
+  Verified live 2026-09-06, --max-items test run.

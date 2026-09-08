@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coliscom_km
+url: https://www.coliscom.fr/products.json
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.coliscom.fr/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  Page family: API (spider reads products.json, never fetches a
+  www.coliscom.fr page in either direction).
+
+  Discovery lead re-probe 2026-09-06 (shard w3_shard02, bare hostname
+  "coliscom.fr" with no prior triage). Shopify storefront (shop handle
+  "tiboutik-re", theme id 41). Standard unauthenticated /products.json
+  catalog, no anti-bot. 250 products on page 1 alone (limit=250) --
+  general household/grocery goods (cookware, diapers, ... sampled).
+
+  LOCALITY-TRAP CHECK: Shopify.country on the homepage reads "RE" (La
+  Reunion) -- looked like a diaspora store serving a different country at
+  first glance. But the site's own market/localization selector
+  explicitly lists "Comores" (data-value="KM") as a live market with its
+  own currency block, alongside La Reunion and Mayotte -- a genuine
+  multi-market Indian-Ocean grocery-delivery operator, not a mislabeled
+  foreign-entity store. Confirmed from selector markup, not inferred from
+  marketing copy ("livraison a domicile de courses dans l'Ocean Indien").
+
+  CURRENCY GOTCHA ("declared wins"): countries.yaml defaults Comoros to
+  KMF, but the site prices and bills in EUR for every market including
+  Comores -- confirmed from the localization selector's currency line
+  ("EUR", "e") next to the Comores option. Declared currency wins over
+  the assumed local default (same precedent as tongamarket/NZD,
+  niront/USD).
+
+  Test run (2026-09-06, --max-items 20) returned real rows, e.g. "Lot de
+  2 Marmites en fonte alu O 26/32cm" EUR 68.90, "20 Couches 4-9 kg
+  Marmailles Plus" EUR 9.48 -- see collect run notes for exact count.

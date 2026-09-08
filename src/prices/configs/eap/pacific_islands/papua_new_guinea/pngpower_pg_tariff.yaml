@@ -1,0 +1,45 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: pg_pngpower_tariff
+module: eap.pacific_islands.papua_new_guinea.pngpower_pg_tariff
+function: fetch_pg_pngpower_tariff
+url: https://pngpower.com.pg/
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  PNG Power Ltd (PPL) -- national electricity utility, integrated
+  generation/transmission/distribution. pngpower.com.pg is a bare React/
+  Vite SPA with no server-rendered content and no /api/tariff endpoint
+  (the JSON API that exists is an outage/map tracker, unrelated). The
+  tariff schedule PDF path is only discoverable by reading the app's JS
+  bundle for the literal id "tariff-schedule-download":
+  /docs/revised-2026-amended-tariff-schedule-2nd-quarter.pdf. No archive
+  of past schedules is discoverable -- this is a single-document snapshot
+  fetcher (re-run picks up whatever PDF is linked whenever PPL revises the
+  bundle). Confirmed live 2026-09-06.
+
+  The PDF page is two-column (tariff table on the left ~48% width, an
+  "Excluded Services" definitions panel on the right); pdftotext -layout
+  and pdfplumber's default extract_text() both bleed the right column's
+  prose into the table. Fixed by filtering page characters to x0 < 405
+  before extract_text(layout=True) -- the table's own rightmost column
+  ("NEW TARIFFS") ends at x1~=392; the right panel's first word starts at
+  x0~=422.
+
+  Only the main "SCHEDULE OF 2025 (OLD) & 2026 (NEW) ELECTRICITY TARIFFS"
+  table (sections A Industrial / B General Supply / C Domestic / D Public
+  Lighting) is emitted, 36 rows, effective 2026-04-01 (parsed from the
+  PDF's own "...from the 1st of April 2026" sentence). The document's
+  second table ("Schedule Services" -- one-off connection/reconnection/
+  meter-testing fees) is NOT emitted; it's a different row shape
+  (per-event administrative charge, not a recurring per-kWh/month
+  price) and mixing it in would misrepresent the 04.5.1 series. Only the
+  NEW (2026) column is emitted as price_local; the OLD (2025) figure for
+  the same line is carried in notes. toea/kWh values divided by 100 to
+  Kina/kWh; Kina/* values emitted as-is. Test run (fallback_date=
+  2020-01-01) produced 36 rows.

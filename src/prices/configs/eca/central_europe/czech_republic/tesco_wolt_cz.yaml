@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tesco_wolt_cz
+url: https://wolt.com/en/cze/prague/venue/tesco-hypermarket-narodni
+language: cs
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/cze/prague/venue/"
+archive_path_re: '^/en/cze/prague/venue/[^/?]+'
+notes: |
+  Tesco Hypermarket (Narodni, Prague) on the Wolt delivery marketplace.
+  Same SSR query-state walk as tesco_wolt_sk / albert_wolt_cz (shared base
+  `_wolt_base.py`): venue page -> category-listing (15 top-level categories,
+  most with subcategories) -> per-leaf-category `/items/<slug>` page 1.
+
+  Original P4 lead was itesco.cz directly, but www.itesco.cz sits behind an
+  Akamai/Azure Application Gateway WAF (404 challenge page with Akamai
+  bot-manager script tags on every path including the storefront search) --
+  not solvable with curl_cffi across the 5-profile ladder. Found the Tesco
+  venue instead by grepping the Wolt Prague city page
+  (wolt.com/en/cze/prague) for a "tesco" slug, same discovery move that
+  produced tesco_wolt_sk in Bratislava.
+
+  Confirmed live 2026-09-06: /venue/tesco-hypermarket-narodni -> 200,
+  category-listing returns 15 top-level / ~90 leaf categories. Sample from
+  ovoce-4 (fruit): "Banán kg" CZK 43.50, "Pomeranče skládané kg" CZK 53.90,
+  "Tesco Citróny 500g" CZK 43.50 -- 36 items in this one leaf alone.
+  Hypermarket format -> full-line, not convenience-scale.
+
+  coicop_divisions: 01
+  divisions_basis: sampled_rows (one leaf category sampled directly; full
+  category tree plausibly spans 01/02/05/12/13 like other Wolt supermarket
+  manifests but was not walked)

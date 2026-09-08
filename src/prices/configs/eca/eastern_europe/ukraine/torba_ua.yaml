@@ -1,0 +1,45 @@
+scaffolding: spider
+spider: torba_ua
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://torba.zakaz.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  Торба -- western-Ukrainian supermarket chain (Rivne, Chernivtsi, Ivano-
+  Frankivsk). Rivne is pinned because it carries the largest of the three
+  catalogs (644 leaves vs 518 / 455).
+
+  Pinned store: Torba Rivne (store_id 482867220).
+  644 leaf categories, ~8,922 declared items.
+
+  Runs on the Zakaz.ua white-label e-grocery platform (shared base
+  `_zakaz_base.ZakazBaseSpider`). Discovery finding 2026-09-05: the
+  known_blockers.md entry recording zakaz.ua as a genuine 403 is true only of
+  the MARKETING ROOT (https://zakaz.ua/). Every per-chain storefront
+  subdomain and the platform API host `stores-api.zakaz.ua` answer HTTP 200
+  anonymously -- no cookies, no Origin/Referer, no TLS impersonation
+  (verified with a header-free GET). Flow: GET /stores/ for the chain->store
+  map, GET /stores/<id>/categories/ for the tree, then
+  GET /stores/<id>/categories/<cat>/products/?page=N (30 per page) until an
+  empty results array. Price is returned in MINOR UNITS (kopiyky) and is
+  divided by 100 in the base class -- verified against a rendered PDP.
+  web_url is the store-independent canonical permalink, so
+  DuplicationPipeline's url-dedup collapses the platform's promo-shelf
+  cross-listing rather than emitting it as duplicate rows.
+
+  Spider parses: API (stores-api.zakaz.ua JSON; no storefront page is ever
+  fetched, so the collected `url` values are PDP permalinks the spider never
+  requested -- they cannot be used to validate an archive regex locally).
+  Test run 2026-09-05 (--max-items 60, closespider-timeout 300): 138 rows
+  written, 138 distinct product_id, 138 distinct url, 8 categories touched,
+  0 blank names, 0 zero/negative prices, 100% UAH. Price range 9.90-922.50
+  UAH, median 111.90. (Rows exceed --max-items because CLOSESPIDER_ITEMCOUNT
+  stops the engine only after the in-flight pages drain.) Sample names
+  eyeballed: all real food/beverage SKUs with Ukrainian titles, not
+  boilerplate.

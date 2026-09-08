@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mercatoronline_si
+url: https://mercatoronline.si/
+language: sl
+cadence: weekly
+channel: supermarket
+archive_prefix: "mercatoronline.si/izdelek/"
+archive_path_re: '^/izdelek/\d+/[^/?]+'
+notes: |
+  Verified live 2026-09-06 via curl_cffi impersonate=chrome124 (all 5
+  mandatory profiles clear cleanly). Custom PHP storefront ("Mercator
+  3.0"). /brskaj category browsing is a hash-fragment SPA with no
+  server-side product data -- dead end. /sitemap.xml is open (declared
+  in robots.txt) and lists every PDP directly (/izdelek/<id>/<slug>,
+  ~3.2MB of <loc> entries 2026-09-06). PDP price is NOT in the visible
+  .lib-product-price span (empty, client-JS-filled; confirmed via a
+  Playwright network trace that no dedicated price XHR fires) -- it
+  instead lives in a GTM analyticsObject JSON already embedded
+  server-side in the raw HTML (item_id/item_name/currency/item_brand/
+  item_category(1-3)/price), confirmed via plain curl_cffi GET. Sample:
+  'Margarina, Zvijezda, 250 g' EUR 1.09 (id 22419); re-fetched twice,
+  stable. PC30 (Omnibus 30-day-low) field ships empty in the same raw
+  HTML and was not located this pass -- deferred, current price only.
+  Page family: PDP (spider reads only PDP pages, discovered via the
+  sitemap; never touches a browsable category listing).

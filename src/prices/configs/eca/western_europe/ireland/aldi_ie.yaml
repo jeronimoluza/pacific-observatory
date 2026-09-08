@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: aldi_ie
+url: https://www.aldi.ie/
+language: en
+currency: EUR
+cadence: weekly
+notes: |
+  Aldi Ireland (aldi.ie / groceries.aldi.ie, Nuxt SPA). Triage GOTCHA
+  claimed "limited online range; aggregators report only ~247 SKUs" --
+  checked directly and this is WRONG: asl.api.aldi.ie/commerce/v2/
+  product-category-tree (open, no auth) lists a full grocery taxonomy
+  (Fresh Food, Food Cupboard, Chilled Food, Alcohol, Drinks, Frozen Food,
+  Bakery, Health & Beauty, Baby & Toddler, Pet Care, ...) alongside
+  SpecialBuys. Category listing pages (www.aldi.ie/<top-slug>/<leaf-slug>)
+  are server-rendered Tier 1A HTML with a real price directly in the
+  markup (product-tile__price .base-price__regular) -- no API call needed
+  at scrape time. Verified live 2026-09-06: category specialbuys tile
+  brand LACURA, name "Lip Balm", price €4.49. Spider enumerates leaf
+  categories from the category-tree API (stride-sampled) and parses
+  product tiles directly off each listing page. Page family: listing only
+  (category grids; the same tile also embeds enough for a PDP so PDPs are
+  never fetched).

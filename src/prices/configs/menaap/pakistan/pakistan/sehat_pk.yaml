@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: sehat_pk
+url: https://sehat.com.pk/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: PKR
+cadence: weekly
+coicop_codes: null
+archive_prefix: "sehat.com.pk/products/"
+archive_path_re: '^/products/[^/?]+\.html$'
+notes: |
+  Page family: listing (category pages). Legacy server-rendered PHP
+  storefront (cart.php?action=add&product_id=<id> add-to-cart links). No
+  WAF -- curl_cffi chrome124 clears every page with a plain 200.
+
+  Re-verified live 2026-09-06: GET
+  /categories/Consumer-products/Baby-Care/ -> 200, 302KB, 16 product `<li>`
+  blocks, 10/16 carrying a visible price (the other 6 show none -- likely
+  out-of-stock/call-for-price, skipped rather than guessed). Sample:
+  "Baby Lotion 1's" Rs.1,049.49, product_id=43556 (pulled from the card's
+  own cart.php add-to-cart link, not the PDP URL which carries no numeric
+  id). Real pagination confirmed via ?page=2..6 links on the category page.
+
+  Categories favour OTC/consumer-goods leaves over Prescription-Drugs-*
+  leaves -- several Rx categories on this site show no price at all
+  without an account/prescription upload, which would silently zero out
+  those pages. Currency PKR matches countries.yaml.

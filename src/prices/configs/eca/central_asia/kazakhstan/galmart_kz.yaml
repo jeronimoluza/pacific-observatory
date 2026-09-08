@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: galmart_kz
+url: https://galmart.kz/
+language: ru
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: both (a plain GET on any catalog page for cookies/csrf
+  token + the full category sidebar links; the actual product data comes
+  from an XHR-style POST to that same url).
+
+  Django storefront. Plain GET of a category-listing page returns mostly
+  unrendered template placeholders (`class="product${id}"`); real product
+  cards only come from a POST to the SAME url with
+  `X-Requested-With: XMLHttpRequest` + the page's `csrfmiddlewaretoken` +
+  `ordering=&page=<n>` form body -- confirmed live 2026-09-06 via
+  Playwright network-capture, then reproduced with a bare curl_cffi
+  session (GET once for cookies+token, POST for data; the SAME csrf token
+  works across every leaf's POST in one session, no per-page refetch
+  needed). No delivery-address selection was required despite the CSV's
+  GOTCHA note -- the leaf category urls already encode a store/department
+  path and return real products immediately.
+
+  Category sidebar on any catalog page carries the FULL tree as plain
+  `<a href="/catalog/items/{a}/{b}/{c}">` links -- 383 leaf 3-segment urls
+  confirmed live 2026-09-06 (matches AI_NOTES' "extremely deep category
+  tree", e.g. mare/camel/goat milk as separate leaves). Empty POST body
+  on a page means past the end of that leaf's results.
+
+  Confirmed live 2026-09-06: leaf /catalog/items/1/26/144, product 9843
+  "Полуфабрикат баранины ребра" (lamb ribs) 6,872 KZT -- data-price is a
+  plain KZT integer, no minor-unit scaling.

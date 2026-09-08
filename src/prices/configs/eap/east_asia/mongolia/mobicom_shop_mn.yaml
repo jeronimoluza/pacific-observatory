@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mobicom_shop_mn
+url: https://www.mobicom.mn/
+language: mn
+cadence: weekly
+channel: electronics
+archive_prefix: "www.mobicom.mn/shop"
+archive_path_re: '^/shop.*$'
+notes: |
+  Discovery lead "mobicom.mn" (Mongolia's largest mobile operator). The
+  public storefront is a statically-exported Next.js app with empty
+  pageProps — no product data anywhere in the HTML. Playwright network
+  trace of the "new number" signup flow surfaced the real backend: a
+  Strapi CMS on the sibling host osa.mobicom.mn, called with zero auth.
+  `GET /api/products` returns the device shop's entire catalogue (handsets,
+  tablets, accessories) in one unpaginated response — confirmed page=1 and
+  page=2 return byte-identical data, so no pagination loop is needed.
+  Prices are plain integer MNT (e.g. iPhone 17 -> 4,249,000 MNT current /
+  4,509,000 MNT list). First electronics-channel source for Mongolia
+  (existing sources are groceries/pharmacy/general marketplace).
+
+  Test run 2026-09-06: single GET, 98 rows, all with name/price/category,
+  price range ~150,000-13,000,000 MNT across 3 categories (Handset,
+  Accessories, Tablet).

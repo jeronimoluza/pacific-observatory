@@ -1,0 +1,38 @@
+scaffolding: spider
+spider: 4321property_mo
+channel: real-estate
+coicop_classification: source_curated
+coicop_codes: ["04.1.1.0"]
+analytical_role: retailer_sku
+extraction_pattern: scrapy_listing
+url: https://www.4321property.com/macau/
+language: en
+currency: MOP
+cadence: weekly
+notes: |
+  listing. 4321 Property is a small international real-estate classifieds
+  site. Its Macao section carries both For-Sale and For-Rent listings;
+  this spider scopes to RENT only (Rental=rent) -- COICOP 04.1.1 (actual
+  rentals paid by tenants), matching this repo's propertyguru_sg
+  convention. Sale listings are property-purchase transactions
+  (investment, not consumption) and are intentionally excluded.
+
+  Listing search results at
+  www.4321property.com/search/?Rental=rent&Country=macau&page=N already
+  embed price, bedroom count, property type and city inline -- no PDP
+  crawl needed. Card markup is not selector-clean (heavy duplicated
+  inline-style/onclick for mobile/desktop variants), so extraction uses a
+  regex window anchored on each card's id="adid<ID>" marker.
+
+  Pagination verified live 2026-09-06: Macao has exactly 3 pages of rental
+  listings (18 + 18 + 14 = 50 total); page 4 302-redirects to a DIFFERENT
+  top-level site (4321.co.il, the platform's Israel country TLD, apparently
+  reused once a country's listings run out) rather than an empty results
+  page -- allowed_domains guards against following that redirect, and the
+  spider also stops once a page yields zero ad ids.
+
+  Currency MOP confirmed inline ("MOP 19,000"), matches countries.yaml.
+
+  Test run (--max-items 30): rows returned across pages 1-2 with clean
+  MOP prices, bedroom counts and city names (e.g. "Apartment for rent,
+  Macau" 19,000 MOP, 3 bedrooms).

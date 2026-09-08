@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: home-improvement
+spider: brico_be
+url: https://www.brico.be/
+language: fr
+currency: EUR
+cadence: weekly
+notes: |
+  Brico Belgium (brico.be) — DIY / home-improvement retailer. Homepage and
+  category-hub pages (/fr/<...>/wc1/) are fully client-rendered with no
+  product links or price text in server HTML, and no open API was found
+  for category enumeration. /sitemap.xml ->
+  /fr/bricoproductpagessitemapindex{1..8}.xml (+ /nl/ duplicates) lists
+  ~50k direct PDP urls per shard (~400k total across fr). Spider walks the
+  /fr/ PDP sitemap shards only (stride-40 sampled) — each PDP carries a
+  schema.org/Product JSON-LD block with a real EUR price. Verified live
+  2026-09-06: PDP ".../peinture-murale-perfection-mur-plafond-blanc-mat-10l/
+  5299353" has price 59.99 EUR. Page family: PDP only (spider never
+  fetches a listing/category page).

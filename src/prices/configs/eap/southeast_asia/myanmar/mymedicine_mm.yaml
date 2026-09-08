@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: pharmacy
+spider: mymedicine
+url: https://mymedicine.com.mm/shop
+language: en
+cadence: daily
+archive_prefix: "mymedicine.com.mm/shop/"
+archive_path_re: "^/shop/[^/?]+-\\d+$"
+notes: |
+  Odoo eCommerce (o_wsale) storefront for a Myanmar online pharmacy.
+  Previously recorded as Cloudflare-blocked in known_blockers.md (bare curl
+  403, confirmed June 2026); re-probed 2026-09-06 with curl_cffi
+  impersonate=chrome124 and returns clean 200s on the homepage and every
+  /shop category/product page with real prices in raw HTML (Tier 1A).
+  MEDiCARE (medicarehb.com.mm) is also live and unblocked; kept as a
+  separate complementary source, not a substitute.

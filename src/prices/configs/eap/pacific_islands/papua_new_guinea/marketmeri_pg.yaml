@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: marketmeri_pg
+url: https://www.marketmeri.com/real-estate/for-rent
+language: en
+cadence: weekly
+channel: marketplace
+notes: |
+  PNG's leading general classifieds site (est. 2012). Wide COICOP coverage
+  -- classifier assigns the leaf per listing, no coicop_codes declared.
+  Server-rendered HTML, no WAF/JS hydration -- confirmed live 2026-09-06
+  with curl_cffi impersonate=chrome124. Page family: LISTING only (never
+  fetches a per-property PDP). Three category landings crawled, each
+  paginated via ?page=<n>: real-estate/for-rent (COICOP 04.1.1 rentals),
+  vehicles (07.1.1), high-tech (09.1 electronics). All three share one
+  card DOM (div.listing-wrapper-grid); price is read from the card's
+  "Contact Seller" button's data-price attribute (clean numeric) rather
+  than reparsing the display text ("K 950", "K 45,000"). Currency PGK
+  (countries.yaml default, matches displayed "K" symbol). Test run
+  (--max-items 5) verified 60 items across the 3 category landings
+  (one page each) with prices matching the rendered page.

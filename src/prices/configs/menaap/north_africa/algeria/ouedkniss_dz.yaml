@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ouedkniss_dz
+url: https://www.ouedkniss.com/
+language: fr
+currency: DZD
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.ouedkniss.com/"
+archive_path_re: '^/[^/]+-d\d+$'
+notes: |
+  Probed live 2026-09-06. Ouedkniss is Algeria's largest general classifieds
+  marketplace (private-seller ads + some verified stores) across real
+  estate, vehicles, electronics, appliances, clothing, food, services. The
+  React SPA (/s, category pages, homepage) ships an identical empty shell
+  every time — no SSR data — and GraphQL introspection at
+  https://api.ouedkniss.com/graphql is INTROSPECTION_DISABLED. The query
+  itself is not access-controlled though: captured live via Playwright
+  network trace on /s (operation SearchAnnouncementsQuery) and replays
+  cleanly over plain curl_cffi with just Origin/Referer headers, no
+  cookies, no auth.
+
+  The bare search (categorySlug=null, q=null) returns zero results by
+  design, not a block — you must pass a categorySlug. Verified against
+  electronique_electromenager: page1 vs page2 had ZERO id overlap across
+  48-item pages, lastPage=839 for that category alone — genuine pagination,
+  not a flat-cap re-serve. Prices are plain DZD integers (no minor-unit
+  trap observed).
+
+  Spider walks the 15 top-level LISTING_MENU categories (from the
+  menuFetch query) rather than one category, for COICOP breadth across the
+  classifier's basket divisions instead of just electronics; excludes
+  offres_demandes_emploi (jobs — no retail price semantics). PDP URL
+  pattern confirmed from the SPA's own route-preload map:
+  ^/[^/]+-d\d+$ (slug + "-d" + announcement id).
+
+  This is a classifieds marketplace, not a retailer catalog — prices
+  reflect seller-asked prices (mix of new and used goods), not fixed
+  retail. channel: marketplace per the skill's doctrine for this shape.
+  Page family: API (spider reads GraphQL only, never fetches an HTML page;
+  the emitted `url` is a permalink it never itself fetched).

@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1.0"]
+channel: real-estate
+spider: imyanmarhouse_mm
+url: https://www.imyanmarhouse.com/en/rent
+archive_prefix: "imyanmarhouse.com/en/rent/"
+archive_path_re: '^/en/rent/\d+$'
+language: en
+cadence: weekly
+notes: |
+  iMyanmarHouse rental listings. Myanmar inventory (2026-08-05) recorded
+  this as BLOCKED (405 on /en/rent) and deferred in favour of
+  ShweProperty/property.com.mm. Re-probed 2026-09-06: the site now returns
+  a clean 200 with full server-rendered listing cards -- the earlier block
+  has cleared (cause unknowable in retrospect; current state is simply
+  live). No PDP fetch needed -- price, name, and location are all present
+  on the listing card (page family: listing).
+
+  Price format: "100 Lakh (Kyats)" (Lakh = 100,000, MMK) and "7,500 (US
+  Dollar)" both present on the SAME listing page -- currency read
+  per-listing from which pattern matches, never hardcoded, same mix
+  pattern as property_com_mm. COICOP 04.1.1.0 (actual rental payments for
+  main residence) -- narrow, short-circuits the classifier.
+
+  Single page, 20 listings confirmed live 2026-09-06; no pagination
+  parameter found in this listing view's markup -- deepening this is a
+  documented follow-up, same limitation as property_com_mm.
+
+  Verified 2026-09-06: test run returned valid rows with distinct
+  product_id/url, both MMK (Lakh x100,000) and USD prices present.

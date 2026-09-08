@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: metro_cy
+url: https://www.metro.com.cy/gr/current_offers
+language: el
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.metro.com.cy/gr/current_offers"
+archive_path_re: '^/gr/current_offers/?$'
+notes: |
+  listing (single page, all categories). Metro Cyprus runs no online
+  store -- the homepage carries only a physical store locator
+  (/gr/stores) -- but publishes a weekly "current offers" leaflet page
+  that is fully server-rendered on one URL: all 46 category tabs' items
+  are present in the HTML at once (the tabs only filter client-side, they
+  do not lazy-load). No WAF.
+
+  Each item is a `div.product_item <CATEGORY> <brand...>` block; the
+  numeric id embedded in its leaflet image URL
+  (photoproxy.metro.com.cy/leaflet/<id>.webp) is the only stable
+  per-item identifier and is used as product_id. Category comes from the
+  first class token on product_item.
+
+  Re-verified live 2026-09-06: GET -> 200, 1.4MB, 943 offer blocks across
+  all 46 categories (FRESHMEAT, MILK, PET, STATIONERY, HOUSEWARE, ...),
+  e.g. "Olympos Milk 3.7% Epilegmenes Farmes 1L" EUR 1.70 (was EUR 1.90).
+  Weekly cadence: page content refreshes with the leaflet, so
+  archive_path_re matches only this one URL (no per-product PDP exists).
+
+  Gotcha: url is given a #<id> fragment per item since all 943 rows share
+  one page URL -- DuplicationPipeline dedups on item["url"], collapsing
+  the whole run to 1 kept item on first test before this fix.

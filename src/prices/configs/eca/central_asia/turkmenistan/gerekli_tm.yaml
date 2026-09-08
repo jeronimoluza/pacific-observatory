@@ -1,0 +1,51 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gerekli_tm
+url: https://gerekli.tm/
+language: ru
+cadence: weekly
+channel: marketplace
+timeout: 10800
+archive_prefix: "gerekli.tm"
+archive_path_re: '^/(?:ru|tk)/products/[^/]+/?$'
+notes: |
+  Discovered 2026-09-05. "Gerekli — крупнейший маркетплейс в
+  Туркменистане" (Ashgabat). CS-Cart Multi-Vendor backend (Android
+  package com.simtech.multivendor.mk) behind a Next.js App Router front
+  end. Rare live, un-walled domestic catalogue for one of the world's most
+  closed internet markets: robots.txt is `Allow: /`, curl_cffi
+  impersonate=chrome124 returns 200 on every path tried, no challenge.
+
+  Tier 1A via the sitemap. https://gerekli.tm/sitemap.xml is one 12.5 MB
+  urlset with 26,594 <loc>s: 13,290 Russian product permalinks under
+  /ru/products/<slug> plus their 13,290 Turkmen /tk/ mirrors. Only /ru/ is
+  crawled, so each product is visited exactly once. Category listing pages
+  hydrate client-side and are not used; no JSON API was reachable (the
+  bundled chunks expose only /api/feedback and Firebase).
+
+  Each PDP server-renders a schema.org Product ld+json with name, sku,
+  category and offers.price/priceCurrency in MAJOR units (TMT). This
+  matters: the same product appears in the React flight payload as
+  `fields.price` in TMT*100 (vase = JSON-LD 559 TMT vs fields.price
+  55900), so extraction goes through the shared `rows_from_jsonld` helper
+  and never touches the React payload.
+
+  Measured on 20 randomly-sampled product URLs 2026-09-05: 19/20 yield a
+  priced Product node; the miss was an out-of-stock air conditioner whose
+  Product node the server drops. Verified rows: 'Рожковая кофемашина
+  Ardesto YCM-E1500' 1975 TMT; 'Шампунь Emeron Hijab Anti Dandruff 170 мл'
+  21 TMT; 'Регистратор Hikvision' 1827 TMT; 'Развивашки Котик' 10 TMT.
+
+  Catalogue skew: appliances / home / perfume dominate, but there is a
+  real division-01 tail (кофе в зернах Bristot/Melitta/Minges 1 kg,
+  горячий шоколад, сиропы для напитков) -- ~1,447 of 13,290 slugs carry a
+  food-ish token. Tagged channel: marketplace because it is a
+  multi-vendor platform, not a first-party grocer.
+
+  Product names are Russian even though the official language is Turkmen;
+  `language: ru` is deliberate (the /tk/ mirror carries the Turkmen
+  titles but is not crawled).
+
+  Parses: PDPs only -- the sitemap is the listing.

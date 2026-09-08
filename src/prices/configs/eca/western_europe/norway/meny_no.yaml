@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: meny_no
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://meny.no/nettbutikk
+language: "no"
+currency: NOK
+cadence: weekly
+coicop_codes: null
+notes: |
+  Page family: API (spider never fetches a page, only the NorgesGruppen
+  product API). National chain with a client-hydrated storefront, but the
+  same NorgesGruppen-wide product API already used by spar_no.py serves
+  this chain too under a different chainId. Network traced live with
+  Playwright 2026-09-06: GET
+  https://platform-rest-prod.ngdata.no/api/products/1300/7080001150488
+  ?page=N&page_size=1000&full_response=true&fieldset=maximal
+  &showNotForSale=true -- chainId=1300 (Meny), storeId=7080001150488, no
+  auth header, same Elasticsearch hits.hits[]._source shape as spar_no.
+  Verified live: hits.total=11,814 products; "Bananer" ean=4011 ->
+  NOK 5.98, "Norsk agurk" ean=4595 -> NOK 29.90. PDP URL prefix confirmed
+  live as /varer/<slugifiedUrl> (200 on
+  meny.no/varer/frukt-gront/frukt/bananer/bananer-4011). No WAF
+  encountered on the API host.

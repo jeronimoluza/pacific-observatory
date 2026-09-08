@@ -1,0 +1,47 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mohasbeza_et
+url: https://mohasbeza.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "mohasbeza.com/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  New source (2026-09-05 SSA div-01/02 sweep). Ethiopia previously had
+  `aradamart_et` (Wix Stores) and `deliver_addis` on the retail side.
+  Mohasbeza is an Addis Ababa online grocery ("Best Online Groceries
+  Shopping Store Ethiopia") on WooCommerce with the Woostify theme.
+
+  TLS TRAP — read before re-probing. This tenant's Cloudflare edge 403s
+  EVERY Chrome and Safari curl_cffi profile (chrome120, chrome124,
+  chrome131, safari17_0 all return the 6,192-byte "Checking your browser"
+  interstitial) and returns 200 on **firefox133**. That is the reverse of
+  the usual recovery direction documented in the skill, where chrome124
+  rescues a chrome120 403 — so a probe that only walks the Chrome profiles
+  would wrongly record this as a hard WAF block. The spider pins firefox133
+  via the three-part override (RandomBrowserMiddleware disabled, matching
+  Firefox User-Agent, IMPERSONATE_PROFILE) modelled on `libdelivery_lr`.
+
+  Once past the edge the standard (versioned) Store API is wide open:
+  GET /wp-json/wc/store/v1/products?per_page=100 -> HTTP 200,
+  x-wp-total=187, x-wp-totalpages=2, no auth. currency_code ETB matches
+  countries.yaml; currency_minor_unit=2, so the shared base divides by 100
+  (API "34500" for Sunflower Oil 1L = ETB 345.00; "600000" for Pop Corn
+  20KG = ETB 6,000.00 — both sane at ~135 ETB/USD).
+
+  Category counts confirm a food-dominant catalogue: Pantry & Food Staples
+  131, Spices-Hurbs 40, Cleaning & Laundry 25, Takeaway containers 22,
+  flour 10, Food Oils 8, Butter 5, coffee 5, Oats 5, Rice 5, Ketchup 3,
+  macaroni 3, Milk 3, Tea 3, Tuna 3, Pasta 2, Sugar 1 — so `channel:
+  supermarket` (packaged grocery depth, first-party inventory), not
+  fresh-market. `coicop_codes` unset: the catalogue is wide within division
+  01 and also carries division-05 cleaning goods, so the classifier assigns
+  leaves per product.
+
+  `language: en` rather than `am`: product names are written in English
+  with occasional Amharic (Ge'ez) glosses appended (e.g. "Pop Corn-ፈንዲሻ
+  20KG"), so the English tier-a unit regexes are the right variant — same
+  call as `aradamart_et`.

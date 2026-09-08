@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["11.1.1.2"]
+channel: other
+spider: nomnoms_gi
+url: https://www.nomnoms.gi/
+language: en
+currency: GIP
+cadence: weekly
+notes: |
+  NomNoms, Gibraltar's multi-restaurant food-ordering/delivery
+  aggregator ("Gibraltar's Ultimate Foody App"). The public site is a
+  bare custom SPA shell -- every route (including /order) renders an
+  empty <div class="app"></div>, no server-rendered content anywhere.
+  The real backend is an UNAUTHENTICATED POST RPC at
+  /api-new/api.php: p=homeRestaurants lists 80 restaurants
+  (id/name/categories); p=getMenuItems&id=<id> returns each
+  restaurant's menu (item_name, price1, section, available). Currency
+  GIP per countries.yaml -- the site only ever displays a bare "£"
+  symbol, never a machine-readable currency code, so the country
+  default is used per convention rather than guessing GBP off the
+  symbol. Every row is a prepared restaurant meal --
+  narrow single-COICOP (11.1.1.2) source_curated, channel=other (same
+  convention as hotpepper_jp).
+
+  Page family: API only, no HTML page is ever fetched by this spider --
+  no archive_prefix/archive_path_re set (the collected URLs are
+  synthetic /restaurant/<id> permalinks, not real browsable pages; the
+  live catalog only exists via the JSON RPC).
+
+  Response quirk: every key in both endpoints' JSON is duplicated under
+  a positional index (e.g. "name" and "1" hold the same value) -- an
+  artifact of the PHP backend; only named keys are read.
+
+  Verified live 2026-09-06 via `prices collect --source nomnoms_gi
+  --max-items 5`: 9 rows across 3 restaurants (Mr Noodles, Island Food
+  Court, Loco) before the item-count closer fired -- e.g. "Prawn
+  Crackers" GIP 3.95, "Full English Breakfast" GIP 10.00, "Lokito
+  Classic Cheese Bacon 2 Patty Burger" GIP 11.50. homeRestaurants lists
+  80 restaurants total, so an uncapped run is a much larger catalog
+  than this smoke test exercised.

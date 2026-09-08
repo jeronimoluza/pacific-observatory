@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+channel: null
+source_key: mm_mytel_vas_packages
+module: eap.southeast_asia.myanmar.mytel_vas_packages
+function: fetch_mm_mytel_vas_packages
+url: "https://apis.mytel.com.mm/mytel-website/api/v1/get-vas-package"
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Mytel (Myanmar telecom) VAS data/voice/combo packages. mytel.com.mm is an
+  Angular SPA shipping almost no static content (4.8KB shell, matches the
+  Myanmar inventory's "near-empty body" note) -- the catalog lives behind
+  an open JSON API discovered via a Playwright network trace of the
+  homepage: `POST apis.mytel.com.mm/mytel-website/api/v1/get-vas-package`
+  with an empty `{}` body. Requires `Origin`/`Referer: https://mytel.com.mm`
+  headers or the reverse proxy 405s a bare curl -- no auth token needed.
+  "Playwright to discover, plain HTTP to scrape" pattern.
+
+  26 packages across 6 groups confirmed live 2026-09-06 (Entertainment
+  Packs, Data pack, Just For You, Combo, Voice, International). No
+  currency field in the payload -- hardcoded MMK (Mytel's domestic plans
+  are Kyat-only; values match MMK magnitude, e.g. 999, 1999). No published
+  effective date -- emitted as `period_kind: snapshot`.
+
+  Verified 2026-09-06: direct-import test returned 26 rows, MMK price
+  range matching the site's own displayed values, all distinct
+  observation_hash.

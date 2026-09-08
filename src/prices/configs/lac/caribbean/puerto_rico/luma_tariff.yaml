@@ -1,0 +1,57 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: pr_luma_tariff
+module: lac.caribbean.puerto_rico.luma_tariff
+function: fetch_pr_luma_tariff
+url: https://www.lumapr.com/tarifas/
+language: es
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  LUMA Energy publishes the "Libro de Tarifas del Servicio Eléctrico en
+  Puerto Rico" PDF (rates are set by the PR Energy Bureau, LUMA just
+  distributes them), linked from lumapr.com/tarifas/. Fetcher re-resolves
+  the PDF link each run (filename is year-stamped, e.g.
+  "FY2027-Tariff-Book-Modifications_Spanish.pdf", verified live
+  2026-09-06: 200, 630KB, 85 pages, genuinely text-based).
+
+  Extracts all THREE genuinely-residential household tariffs in the book
+  -- GRS (Servicio Residencial General, the standard rate), LRS (Servicio
+  Residencial Especial, Nutritional Assistance Program households), RH3
+  (Servicio Residencial Proyectos Públicos, public housing) -- via regex
+  anchored to each designation's section (located by "DESIGNACIÓN:\n<CODE>"
+  through the next "DESIGNACI..." heading, so a future section reorder
+  can't silently pick up a different tariff's numbers). Other designations
+  in the book (USSL, PPBB, GSS, etc.) are commercial/industrial/unmetered
+  classes, out of scope for the household basket -- same convention as
+  sp_group_tariff.py excluding Singapore's High-Tension/EHT supplies.
+
+  Six rows emitted per run (customer charge + first-tier <=425kWh/mo
+  energy charge, x3 designations) -- e.g. GRS customer $8.00/mo + energy
+  $0.08648/kWh; LRS customer $5.00/mo + energy $0.03002/kWh; RH3 customer
+  $4.00/mo + energy $0.03170/kWh. BASE rate only -- each designation is
+  also subject to ~12 riders (FCA fuel-purchase adjustment, PPCA
+  purchased-power adjustment, subsidies, etc.) that dominate the actual
+  bill and change monthly; not captured here, no stable "current" value
+  exists for them (each has its own separate rider schedule). The second
+  energy-charge tier (consumption above 425 kWh/month) is also not
+  captured -- GRS/LRS/RH3 differ on tier-1 but share the same $0.08648
+  tier-2 rate, so tier-1 is the one that actually distinguishes the three
+  classes. Recorded as a known limitation, not silently dropped.
+
+  No prior-tariff archive found -- snapshots the CURRENT book each run
+  (period_kind: effective_from). The PDF's own "Fecha de entrada en
+  vigor:" field renders blank via pdfplumber's text layer (likely an
+  adjacent-cell/form value it doesn't recover), so effective_from is
+  approximated from the PDF URL's upload year-month
+  (.../uploads/2026/07/... -> 2026-07-01).
+
+  Currency USD matches countries.yaml (PR's native currency).
+
+  Test run verified live 2026-09-06 (`prices collect --source luma_tariff`):
+  all 3 designations located and parsed, 6 rows written to
+  price_observations.csv.

@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+spider: bantudelice_cg
+url: https://bantudelice.cg/
+language: fr
+cadence: monthly
+archive_prefix: "bantudelice.cg/plat/"
+archive_path_re: '^/plat/\d+/[a-z0-9-]+$'
+notes: |
+  BantuDelice is a Brazzaville (Congo Republic) restaurant food-delivery
+  marketplace. No anti-bot, plain curl 200s. `/sitemap.xml` and
+  `/robots.txt` both 404 to a custom error page, so this spider seeds
+  from `/restaurants` (8 restaurants at fetch time, no pagination) and
+  reads each `/restaurant/view/<id>` page's server-rendered menu inline
+  (`.product-name` / `.product-price ... FCFA` card pairs, canonical
+  item link `/plat/<id>/<slug>`) -- no separate PDP fetch needed.
+  Currency FCFA = XAF, Congo Republic's currency per countries.yaml.
+
+  channel: other -- the Channel enum (src/prices/enrich/schemas.py) has
+  no dedicated restaurant/food-delivery value; catalog is prepared meals
+  and drinks (COICOP 11.1.1-ish), left to the classifier rather than
+  forced narrow since the two families (meals vs drinks) don't share a
+  single COICOP class.
+
+  Test run (`--max-items 5`, all 8 restaurants queued concurrently): 75
+  rows before the item cap closed the spider (concurrent overshoot is
+  expected Scrapy behaviour), e.g. "Pondu au Poulet" XAF 5,000,
+  "Capitaine Braise" XAF 8,500, "Jus de Bissap" XAF 1,000 -- real
+  Congolese dish names and plausible restaurant-meal prices.

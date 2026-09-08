@@ -1,0 +1,59 @@
+scaffolding: spider
+spider: agrohub_ge
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://agrohub.ge/
+language: ka
+currency: GEL
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  Agrohub -- Tbilisi full-line online supermarket (shop 1, Marshal Gelovani
+  Ave. 22). Next.js SPA over a plain, unauthenticated REST API at
+  api.agrohub.ge. 30 top-level departments including a real grocery spine
+  (Dairy & eggs, Bakery, Bread, Confectionery, Fruit & vegetables, Fresh meat
+  and fish, Meat/fish products, Dry grocery, Alcoholic beverages,
+  Non-alcoholic drinks, Sweets, Snacks, Coffee & tea, Frozen) plus hygiene,
+  household and pet food.
+
+  Platform finding 2026-09-05: api.agrohub.ge is the SAME "lemondo"
+  white-label API family as market.extra.ge's api.moitane.ge backend
+  (identical /v1/Categories, /v1/Banners/v2, /v1/Products/* routes). The
+  Georgia inventory records extra.ge as a promising lead whose
+  products-by-category endpoint could not be found because only the homepage
+  was traced. The endpoint is
+  `/v1/Products/GetGroupedProducts?ShopId=1&ParentCategoryId=<id>
+  &DiscountAsc=true&PageNumber=N&PageSize=50`, and it is visible only when a
+  CATEGORY page is rendered. It is open on Agrohub with no auth; on extra.ge
+  the same trace still did not fire (its category route needs in-app
+  navigation), so extra.ge remains unbuilt -- but the route shape is now
+  known for whoever picks it up.
+
+  Gotcha: send `Accept-Language: ka-GE` on every call. Without it the API
+  returns ENGLISH category names while product names stay Georgian, which
+  would silently produce a mixed-language `category` field. `/v1/Shops` and
+  `/v1/Products?ShopId=1` both 401 anonymously and are not needed.
+
+  Prices are plain GEL decimals, NOT minor units; `previousPrice` is the
+  struck-through pre-promotion price and is ignored in favour of `price`
+  (what a shopper pays today). `/product/<id>` is NOT a storefront route
+  (Next.js resolves it to page "/"), so `url` is synthesized as the owning
+  department page plus a `#<product_id>` fragment (globus_online_kg
+  precedent) -- distinct per product, so DuplicationPipeline's url-dedup
+  still works.
+
+  Spider parses: API (api.agrohub.ge JSON only; no storefront HTML is ever
+  fetched, and the emitted `url` values are synthetic category+fragment
+  links, so they cannot validate an archive regex locally).
+
+  Test run 2026-09-05 (--max-items 60, closespider-timeout 300): 264 rows written,
+  264 distinct product_id, 264 distinct url,
+  14 categories touched, 0 blank names, 0 zero/negative prices,
+  100% GEL. Price range 0.55-118.95, median 10.80. Product names
+  eyeballed against the rendered site: real SKUs, not boilerplate.
+  NOTE the standing --max-items trap: a capped run drains only the
+  last-enqueued categories, so the category mix in a capped test is NOT
+  representative of the catalog. The full category tree is listed above.

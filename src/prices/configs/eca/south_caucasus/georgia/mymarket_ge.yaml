@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mymarket_ge
+url: https://mymarket.ge/
+language: ka
+currency: GEL
+cadence: weekly
+channel: marketplace
+notes: |
+  Page family: API. mymarket.ge (TNET group, sibling to myauto.ge) is a
+  Next.js SSR classifieds marketplace for new and secondhand goods
+  (electronics, appliances, furniture, business equipment). The public
+  site itself never needs to be fetched -- a fully open JSON API at
+  https://api.mymarket.ge answers with no auth/cookies/anti-bot:
+
+    GET  /api/ka/category?CatID=0                 -> flat list of ~12
+                                                       top-level categories
+    POST /api/ka/products {"CatID","Page","Limit"} -> paginated product hits
+
+  Verified live 2026-09-06: passing a TOP-LEVEL CatID (e.g. 2, "household
+  appliances") to /products returns items from its whole subtree (washing
+  machines, fridges, a wine cooler all in one page) -- no need to walk the
+  sub-category tree. Page 1 vs page 2 of a sub-category (CatID=3139) came
+  back with zero id overlap (28 items each) -- genuine pagination.
+
+  Each hit carries a plain numeric `price` in GEL and an `old_price` for
+  discounted items; the spider emits the current `price`.
+
+  coicop_classification: classifier -- durables/electronics/furniture mix,
+  no single COICOP prefix. channel: marketplace (seller-authored titles,
+  individual sellers -- new and secondhand goods, same treatment as
+  olx_ba/khmer24_kh).
+
+  Pagination capped at MAX_PAGES_PER_CAT=5 per top-level category (~140
+  items/category, ~12 categories) to bound runtime.

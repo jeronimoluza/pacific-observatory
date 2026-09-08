@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: br_aneel_electricity_tariff
+module: lac.south_america.brazil.aneel_electricity_tariff
+function: fetch_br_aneel_electricity_tariff
+url: https://dadosabertos.aneel.gov.br/dataset/tarifas-distribuidoras-energia-eletrica
+language: pt
+cadence: monthly
+fallback_date: 2010-01-01
+notes: |
+  ANEEL (national electricity regulator) open-data CKAN portal --
+  known_blockers.md had this host recorded as unreachable (curl exit
+  000, no TCP response, 2026-08-07 probe) under a "CDN connection-reset
+  at TCP layer" verdict. Re-verified live 2026-09-06 during a stale-WAF
+  re-probe: plain `requests.get` on both the CKAN package_search API and
+  the CSV resource download returns 200 immediately -- the earlier
+  outage was transient on ANEEL's side (or a since-fixed CKAN config
+  issue), not a bot/WAF block. No special TLS fingerprint needed.
+  Dataset "tarifas-distribuidoras-energia-eletrica" carries one CSV
+  (~89MB, 327k rows) with every homologated tariff order for every
+  distributor since 2010: TUSD (distribution-usage) + TE (energy)
+  components in R$/MWh, tagged by DscClasse/DscSubClasse/DscSubGrupo/
+  DscModalidadeTarifaria and an effective-date window. Fetcher filters
+  to the plain residential low-voltage non-time-of-use tariff
+  (Residencial / B1 / Residencial subclass / Convencional / "Tarifa de
+  Aplicação" base / no peak-offpeak split) -- 2,093 rows total across
+  all distributors and years 2010-2026, small enough to emit in full.
+  fallback_date=2010-01-01 captures the entire available history on
+  first run. This is the Division-04 Brazil per-distributor electricity
+  tariff lead the blocker note said would have been covered had the
+  host been reachable.
+  coicop_divisions: 04
+  divisions_basis: single_series (one tariff series -- electricity
+  retail -- per distributor)

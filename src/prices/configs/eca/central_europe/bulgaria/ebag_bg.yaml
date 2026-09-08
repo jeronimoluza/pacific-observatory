@@ -1,0 +1,64 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ebag_bg
+url: https://www.ebag.bg/
+language: bg
+currency: EUR
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.ebag.bg/"
+archive_path_re: '^/[^/]+/\d+$'
+notes: |
+  eBag.bg — Bulgaria's largest home-delivery online supermarket.
+
+  Probed live 2026-09-05. Tier 1A, no anti-bot: the homepage is a 10 KB SPA
+  shell (which reads like a dead site on a homepage-only probe), but every
+  PDP is fully server-rendered and carries one schema.org Product JSON-LD
+  node with name, sku, offers.price, offers.priceCurrency AND a full
+  ` > `-joined category path — the richest single surface on any candidate
+  probed in this cluster.
+
+  URL discovery: the sitemap index at /sitemap.xml lists BOTH an English
+  (/en/sitemap_products_en.xml) and a Bulgarian (/sitemap_products_bg.xml)
+  product sitemap over the SAME catalogue. Only the Bulgarian one is walked.
+  Walking both would emit every SKU twice under two different URLs, which the
+  DuplicationPipeline (which dedups on `url`, not on product id) would NOT
+  catch — see the url-dedup note on that pipeline. 21,107 Bulgarian product
+  URLs as of 2026-09-05.
+
+  Product URL shape is `/<slug>/<numeric-id>`, hence the archive_path_re.
+
+  CURRENCY: EUR — Bulgaria's January 2026 euro changeover; the site's own
+  offers.priceCurrency says EUR and wins over the stale BGN default in
+  countries.yaml (same trap as tmarketonline_bg, gracia_cosmetics_bg,
+  gladen_bg).
+
+  Assortment is wide: groceries and drinks dominate, but the catalogue also
+  carries a full pharmacy/cosmetics wing ("Аптека > ..."). `coicop_codes` is
+  therefore unset and the classifier assigns leaves per product. Random
+  sample of 4 PDPs 2026-09-05: Loacker dark chocolate EUR 2.50, Gerber baby
+  cereal EUR 6.80, Roshen Lovita biscuits EUR 1.50, a pharmacy glucose sachet
+  EUR 1.12 — three of four are division 01.
+
+  SPIDER PAGE FAMILY: PDP only — sitemap-driven, category grids are never
+  fetched.
+
+  SITEMAP XPATH TRAP, HIT AND FIXED BEFORE SHIPPING. The obvious
+  `//*[local-name()='loc']` matches TWICE per product on this sitemap: once
+  for the <url><loc> product page and once for the
+  <image:image><image:loc> thumbnail at /products/images/<id>/800. The first
+  test run therefore queued one image request per product; Scrapy returns
+  those as a bare Response, whose .xpath raises NotSupported inside the
+  callback. That run reported 61 rows AND 61 ERRORs — half the crawl budget
+  burned, and a structural row-count check would have called it a pass. The
+  spider now scopes to `//url/loc`.
+
+  VERIFICATION RUN 2026-09-05 (--max-items 60, closed at 62): 21,107 product
+  urls discovered, 62 rows, 62 distinct product_id, 62 distinct url, 0
+  ERRORs, 0 blank names, 0 null categories, 0 non-positive prices, currency
+  100% EUR, price range 0.86-29.55 EUR, median 2.49. Top-level category mix:
+  fruit & veg 16, bio 12, cosmetics/personal care 12, staples & canned 8,
+  dairy & eggs 7, frozen 3, charcuterie 1, bakery 1 — 80% division 01 in the
+  sample, which is what the wide/unset coicop_codes choice assumes.

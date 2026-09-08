@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1.0"]
+channel: real-estate
+spider: property_com_mm
+url: https://property.com.mm/
+archive_prefix: "property.com.mm/index.php/property/"
+archive_path_re: '^/index\.php/property/\d+/en/[a-z0-9_]+$'
+language: en
+cadence: weekly
+notes: |
+  Property.com.mm, Myanmar rental/sale portal (Yangon/Mandalay/Naypyidaw).
+  Search is a POST form (no GET query-string equivalent) --
+  `POST /index.php/en/6/browse` with `v_search_option_4=Rent` returns a
+  Rent-only result set. The site's own AJAX pagination
+  (`/index.php/frontend/ajax/en/6/<offset>`) is session-bound and loses the
+  Rent filter on a bare GET (confirmed even with a carried-over cookie
+  jar) -- this spider covers page 1 only (9 listings confirmed live
+  2026-09-06). Deepening pagination (replicate the session properly, or
+  find a GET-compatible filter param) is a documented follow-up, not
+  solved this pass.
+
+  Two-step crawl: price is NOT on the listing card, only on the PDP, in a
+  single `<div class="dtlprice">` node -- a "similar properties" sidebar
+  further down each PDP carries other listings' prices in a `price
+  dtlprice` (two-class) node, but the exact single-class match always
+  resolves in document order to the page's own property (verified: the
+  correct price is always the FIRST `.dtlprice` match on every sampled
+  PDP).
+
+  CURRENCY (rule 8): PDPs mix "120 Lkhs" (Lakh = 100,000, MMK) and "USD
+  8000" -- same per-listing mix pattern as ethiopiapropertycentre_et.
+  Currency is read per-item from which pattern matches, never hardcoded.
+  COICOP 04.1.1.0 (actual rental payments for main residence) -- narrow,
+  short-circuits the classifier.
+
+  Verified 2026-09-06: test run returned valid rows with distinct
+  product_id/url, MMK (Lkhs x100,000) and USD prices both present, name
+  and category populated from the listing card.

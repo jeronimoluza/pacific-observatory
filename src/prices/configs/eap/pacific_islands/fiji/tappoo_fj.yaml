@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tappoo_fj
+url: https://store.tappoo.com.fj
+language: en
+currency: FJD
+cadence: weekly
+channel: dept-store
+archive_prefix: "store.tappoo.com.fj/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  Tappoo Fiji's online storefront -- separate from the tappoo.com.fj
+  brochure/nav site, reached via its "Shop Online" link
+  (https://store.tappoo.com.fj). Shopify-hosted
+  (Shopify.shop="tappoostore.myshopify.com"), Shopify.country="FJ",
+  content-language en-FJ, so this is a genuine local (not diaspora) FJD
+  storefront. /products.json is the public catalog; sampled products span
+  sport jerseys and general merchandise, mixed department-store assortment
+  (not food-dominant), priced in FJD. Verified live 2026-09-06.

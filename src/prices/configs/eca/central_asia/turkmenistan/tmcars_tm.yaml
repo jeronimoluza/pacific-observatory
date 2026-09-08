@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tmcars_tm
+url: https://tmcars.info/
+language: ru
+currency: TMT
+cadence: weekly
+channel: marketplace
+timeout: 300
+archive_prefix: "tmcars.info/cars/"
+archive_path_re: '^/cars/\d+/[^/?]+'
+notes: |
+  page family: listing (server-rendered card grid; no PDP fetched).
+
+  Verified live 2026-09-06: tmcars.info is a Next.js (App Router/RSC)
+  vehicle classifieds marketplace for Turkmenistan, fully server-rendered
+  — curl_cffi chrome124 with no headers returns the complete card grid in
+  the raw HTML, no JS execution needed. Listing cards follow a stable
+  text pattern (price -> link -> title, in that order) extracted via
+  regex since the surrounding classes are unstable Tailwind utility
+  soup with no data-test hooks.
+
+  No working query-string pagination found: `?page=2`, `?p=2`,
+  `?offset=100`, `?skip=100`, `?pageNumber=2` all returned the identical
+  first ~100-listing page (deeper results are presumably behind an
+  internal RSC fetch triggered by client-side scroll, not a plain query
+  param). The spider instead walks two fixed listing pages, `/cars/all`
+  (general, ~100 items — mixes passenger cars with trucks/heavy
+  equipment, e.g. "Kamaz 6520", "Liugong 835n") and
+  `/cars/all/spestehnika` (special equipment), rather than a real
+  paginated crawl. Every item carries a distinct per-listing URL
+  (`/cars/<id>/<slug>`), so this is NOT the single-page-catalog
+  URL-collapse trap — DuplicationPipeline dedups on URL and each row's
+  URL differs.
+
+  Prices are plain TMT integers using "." as thousands separator (e.g.
+  "225.000 TMT" = 225,000 manat); "." and "," stripped before emitting.
+
+  coicop_classification left as classifier rather than narrowed to
+  07.1.1 (motor cars) — the catalog mixes passenger vehicles with
+  commercial trucks and construction/heavy equipment, which are not all
+  one COICOP class. channel: marketplace — seller-authored listing
+  titles.

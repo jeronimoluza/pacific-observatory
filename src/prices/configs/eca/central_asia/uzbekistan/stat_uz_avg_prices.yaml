@@ -1,0 +1,63 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: uz_stat_avg_prices
+module: eca.central_asia.uzbekistan.stat_uz_avg_prices
+function: fetch_uz_stat_avg_prices
+url: https://stat.uz/ru/ofitsialnaya-statistika/prices-and-indexes
+language: ru
+cadence: monthly
+fallback_date: 2012-12-01
+notes: |
+  National Statistics Committee of Uzbekistan (stat.uz) -- monthly average
+  observed prices for ~41 food commodities on farmers' markets: one national
+  series plus one per region (Karakalpakstan + 12 viloyats + Tashkent city),
+  2013-M01 to 2026-M07 inclusive.
+
+  Discovery is live, not hardcoded: the Russian "Цены и индексы" page renders
+  each dataset title immediately before its SDMX export trio
+  (`.csv`/`.xlsx`/`.pdf` on api.siat.stat.uz). The fetcher reads the page and
+  keeps every dataset titled "Динамика средних цен на отдельные товары на
+  [дехканских] рынках ...". The SDMX ids change when a table is republished,
+  so matching on the title is the stable key (same reasoning as the sibling
+  kg_nsc_avg_prices fetcher, which matches on `title=` for the same reason).
+
+  ONE VENUE SCOPE, deliberately. stat.uz publishes three overlapping national
+  series over the same 41 items and the same months -- "на рынках и в
+  магазинах" (id 1308, markets AND shops, 2021-), "на рынках" (id 1327,
+  markets, 2013-) and "в магазинах" (id 1329, shops, 2021-). Venue is not a
+  column in PRICE_COLUMNS, so ingesting all three would emit three different
+  prices under one identical (item_name, observation_date, subnational_area)
+  key and collide on observation_hash. Markets was chosen because it is the
+  only scope that has both the full 2013- history AND a per-region breakdown;
+  the shops and markets+shops series are a deliberate scope cut, and are the
+  obvious follow-up if a venue dimension is ever added.
+
+  Two header traps in the source CSVs, both live in the same file and both
+  handled: (1) the month marker alternates between the CYRILLIC М (U+041C)
+  and the LATIN M across year blocks -- `2021-М01` but `2022-M01`; a
+  Latin-only regex silently drops whole years. (2) Unobserved months are
+  written as `0.0`, not left blank, so a naive parse ships zero-price rows
+  (e.g. barley/wheat/corn/bran on id 1329 are 0.0 for all twelve 2021
+  months). Zeros and negatives are dropped.
+
+  Item names are emitted in Russian (`Klassifikator_ru`) to match
+  `language: ru`; the publisher's English label and the source dataset title
+  ride in `notes`. `unit` is left None: the publisher does not itemise it --
+  it is embedded in a few item names ("Молоко свежее (1 литр)", "Яйца (10
+  штук)", "Масло хлопковое (1 литр)") and implicitly per-kilogram otherwise,
+  so guessing it per item would be fabrication. Same treatment as
+  kg_nsc_avg_prices.
+
+  Item list is 100% division-01 food commodities except a small
+  animal-feed tail (Отруби/bran, Шрот/meal, Шелуха/husk, Комбикорм/compound
+  feed) that is not household consumption -- left in rather than filtered,
+  since `coicop_classification: classifier` means the downstream head decides
+  and a hand-filter here would be a second, undocumented opinion.
+
+  channel: null (non-retail, official statistics office), consistent with the
+  sibling stat.kg / stat.gov.kz manifests in this subregion. coicop_codes
+  unset because coicop_classification is `classifier` (item_name is
+  free-text commodity labels, same as wfp_prices and kg_nsc_avg_prices).

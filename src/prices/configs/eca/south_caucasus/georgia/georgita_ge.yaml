@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: georgita_ge
+url: https://georgita.ge/en/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: PDP (sitemap walker; no category browsing exists on this
+  storefront -- /en/shop is a static banner shell with no XHR).
+
+  Custom ASP.NET/IIS storefront. Walks the 1,536 English PDP urls listed
+  directly in sitemap.xml (/en/products/product/<hex-id>, a hashed id --
+  no id-walk possible, the sitemap is the only enumeration). Each PDP
+  server-renders name/price/category as plain text (no JSON-LD, no
+  client-side fetch).
+
+  Confirmed live 2026-09-06: /en/products/product/DA14CAEE4D -> 200,
+  "CARCHELEJO-SALAMI EXTRA WHITE TRIPE,GLUTEN FREE 2.5KG" GEL 7.20
+  (on-page currency symbol is the Georgian Lari sign, mapped to ISO GEL).
+  The PDP also lists 3-4 related products further down with their own
+  discounted-style price spans (class="new") -- extraction anchors on
+  the first plain (non-"new") price span, which is always the page's own
+  product.

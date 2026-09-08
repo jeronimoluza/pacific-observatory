@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: olx_ba
+url: https://olx.ba/
+language: bs
+currency: BAM
+cadence: weekly
+channel: marketplace
+timeout: 900
+archive_prefix: "olx.ba/artikal/"
+archive_path_re: '^/artikal/[^/?]+'
+notes: |
+  page family: API (open JSON search endpoint, no HTML page fetched at
+  collection time; the /artikal/<slug>-<id> URLs written to `url` are
+  permalinks constructed from the API response, never fetched by the
+  spider).
+
+  Verified live 2026-09-06: olx.ba is rebranded on-site as "PIK.ba"
+  (Nuxt SPA; homepage title "PIK.ba početna", footer "Copyright ©
+  2009-2026 Pik d.o.o."). Homepage itself ships an empty client-rendered
+  shell — the real catalog is served from a separate open API host,
+  https://api.olx.ba, found by grepping the Nuxt JS bundles for
+  "api.olx.ba". `/search?page=N` (curl_cffi chrome124, no auth/cookies)
+  returns 20 hits/page with `meta.total`=6,817,927 and `last_page`=340,897
+  at time of writing — a genuine nationwide general classifieds catalog
+  (vehicles, real estate, electronics, home goods, services, jobs).
+  Confirmed page 2 returns a distinct set of listing ids from page 1
+  (real pagination, not a fixed/cached page).
+
+  Each hit's `price` field is already a plain BAM integer/float (site
+  displays "1.350 KM" as `display_price`, discarded in favor of the raw
+  numeric `price`). `show_price: false` and non-positive prices
+  ("Po dogovoru"/negotiable, boosted-listing placeholders) are dropped.
+
+  coicop_classification: classifier — general classifieds mixing
+  vehicles/real-estate/electronics/services, no single COICOP prefix
+  applies; coicop_codes left unset. channel: marketplace — listing
+  titles are seller-authored, same treatment as tayara_tn (Tunisia) and
+  other classifieds sources.
+
+  Pagination capped at MAX_PAGES=150 in the spider (~3,000 listings),
+  matching the tayara_tn precedent, to bound runtime against the full
+  ~340,897-page catalog.

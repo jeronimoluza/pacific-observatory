@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: billa_at
+url: https://shop.billa.at/
+language: de
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: listing (category ?page=N SSR pages only; PDP never
+  fetched, price+name come off the listing tile).
+
+  Nuxt-rendered storefront, distinct build from billa_cz/billa_sk (same
+  REWE "ws-*" component naming, different URL shape: /kategorie/<slug>-
+  <id> here vs /produkty/<slug> in CZ). 584 leaf category slugs harvested
+  from https://shop.billa.at/sitemap.xml (homepage nav only exposes 4 of
+  them) -- listed in _billa_at_categories.txt. Pagination is clean and
+  INCREMENTAL (?page=N returns a disjoint 30-item set per page, unlike
+  billa_cz's cumulative SSR quirk) -- walk until a page returns < 30
+  tiles.
+
+  Confirmed live 2026-09-06: /kategorie/obst-und-gemuese-13751 -> 200, 295
+  products across 10 pages. Sample: "Ja! Natürlich Bananen"
+  (ja-natuerlich-bananen-00402489) EUR 2.39. Multi-buy conditional prices
+  ("ab 2 Flaschen") and unit price per 100g/kg/l noted in triage but not
+  captured -- single headline price only, matching the existing
+  billa_cz/billa_sk convention.

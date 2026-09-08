@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: coophaapsalu_ee
+url: https://coophaapsalu.ee/
+language: et
+currency: EUR
+cadence: weekly
+archive_prefix: "coophaapsalu.ee/toode/"
+archive_path_re: '^/toode/[^/?]+/?$'
+notes: |
+  DOMAIN RESOLUTION NOTE: the candidate handed to this pass was ecoop.ee
+  (Coop Estonia's national portal, AI_NOTES: "widest RURAL network in
+  Estonia"), but ecoop.ee itself is a corporate/marketing site -- store
+  locator, loyalty card, careers -- with no cart or per-product prices
+  anywhere on it. It explicitly states that online shopping is run by
+  independent regional cooperatives on their own domains/platforms, and
+  maps them: Haapsalu -> its own e-shop; Tallinn/Pärnu -> Wolt; Tartu ->
+  Bolt Food. Wolt and Bolt Food are third-party delivery marketplaces
+  (out of scope for a new source here -- already reachable via existing
+  aggregator-side coverage). coophaapsalu.ee is the one genuine first-
+  party e-shop in that list, so this manifest targets it instead,
+  following the "resolve to the real domain" step for supplied candidate
+  lists.
+
+  Standard WooCommerce Store API (shared `_woo_base.WooBaseSpider`, same
+  pattern as tus_si / barbora-style Estonian WooCommerce installs in this
+  repo). Verified live 2026-09-06: GET /wp-json/wc/store/v1/products?
+  per_page=1 -> 200, X-WP-Total header 10086 (large catalogue). Sample:
+  "Haapsalu säina äkise suupisted 400g" EUR 5.90 (prices.currency_minor_unit
+  2, standard cents scaling).
+
+  Test run (--max-items 10): 10 items, EUR prices in plausible range.

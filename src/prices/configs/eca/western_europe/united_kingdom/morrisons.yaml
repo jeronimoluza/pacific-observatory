@@ -1,0 +1,46 @@
+scaffolding: spider
+spider: morrisons
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://groceries.morrisons.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+archive_prefix: "groceries.morrisons.com/categories/"
+archive_path_re: '^/categories/[^/?]+(?:/[^/?]+)*/\d+$'
+notes: |
+  Morrisons -- UK "big four" supermarket. Discovery lead (wave 4, bare
+  hostname `morrisons.com`, triage Verdict "SUSPECT", AI_NOTES: "enterprise
+  stack behind CDN/WAF... last-resort build"). That read was wrong on
+  re-probe 2026-09-06: category pages are plain server-rendered HTML with
+  real prices, reachable via curl_cffi impersonate=chrome124 with NO
+  postcode/store selection required -- unlike Tesco, Waitrose, ASDA and
+  Ocado (all confirmed BLOCKED in the same wave: Tesco gates behind
+  "Sign in to start shopping", Ocado returns x-amzn-waf-action: challenge,
+  ASDA/Iceland trip Cloudflare/Akamai under headless Playwright).
+
+  The homepage does load an AWS WAF captcha SDK script defensively
+  (captcha-sdk.awswaf.com) but it was never triggered across ~10 plain GET
+  requests during probing/testing.
+
+  Category discovery: the homepage embeds the FULL category tree as JSON
+  in window.__INITIAL_STATE__.data.categories.categories (UUID-keyed,
+  fullURLPath + numeric retailerId per node). Live category URL is
+  /categories/<fullURLPath.lower()>/<retailerId>. 226 leaf categories
+  (children: []) extracted and hardcoded into
+  price_scraping/spiders/_morrisons_categories.txt -- spider does not
+  re-parse the homepage at runtime.
+
+  Selectors: each tile delimited by data-test="fop-body" (50/page); PDP
+  href="/products/<slug>/<numeric-id>", name via data-test="fop-title",
+  price via data-test="fop-price">£D.DD. No pagination found on sampled
+  categories -- appears to render full assortment (<=50 items) on one
+  page; breadth comes from the 226-category walk.
+
+  Page family parsed: category listing pages only (PDP never fetched).
+
+  Test run 2026-09-06 (--max-items 10): passed, real GBP prices (£0.78-
+  £13.33), 0 blank names, matches the rendered page.

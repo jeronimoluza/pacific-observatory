@@ -1,0 +1,55 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: reptil_market_wolt_mk
+url: https://wolt.com/en/mkd/skopje/venue/reptil-market-karposh-4
+language: mk
+cadence: weekly
+channel: supermarket
+archive_prefix: "wolt.com/en/mkd/skopje/venue/"
+archive_path_re: '^/en/mkd/skopje/venue/[^/?]+'
+notes: |
+  Reptil Market (Karposh 4, Skopje) — a first-party North Macedonian
+  supermarket chain, listed on Wolt with the venue tags
+  "Supermarket grocery". Same SSR query-state walk as lanoi_wolt_mk and the
+  other 16 Wolt venue spiders (shared base `_wolt_base.py`).
+
+  Discovered 2026-09-05 by enumerating the Wolt Skopje venue directory via
+  `GET https://consumer-api.wolt.com/v1/pages/front?lat=41.9981&lon=21.4254`
+  (144 venues returned with names and tags). Note that the browsable
+  `wolt.com/en/mkd/skopje/category/grocery` page is USELESS for this — it
+  returns 429 with a 1.1 MB body that contains zero `/venue/` links; the
+  consumer API is the only working directory surface.
+
+  Verified live 2026-09-05: the venue page's `query-state` blob resolves 209
+  leaf category slugs — by a wide margin the largest Wolt assortment in North
+  Macedonia (la-noi-shop, the existing manifest, is a much smaller
+  neighbourhood store). Full grocery range, so `coicop_codes` is unset and
+  the classifier assigns leaves per product.
+
+  channel: supermarket rather than marketplace. The repo is split on this for
+  Wolt venues (9 marketplace / 8 supermarket among existing Wolt manifests);
+  `supermarket` matches big_market_wolt_al and spar_wolt_al and is the honest
+  read here — the assortment is one retailer's own first-party catalogue, not
+  seller-authored marketplace listings, which is the property
+  enrich/census.py's EXCLUDED_CHANNELS is actually screening for.
+
+  Known base-class limitation (inherited, not a defect of this source): Wolt
+  SSR renders only page 1 of each category, so categories with more than 50
+  SKUs are undercounted. With 209 categories that still yields a wide
+  catalogue.
+
+  Prices are Wolt minor units (MKD x100), divided by the shared base.
+
+  SPIDER PAGE FAMILY: listing (venue + per-category item pages); no PDP is
+  ever fetched.
+
+  VERIFICATION RUN 2026-09-05 (--max-items 60, closed at 83 on the last
+  in-flight batch): 83 rows, 83 distinct product_id, 83 distinct url, 0 blank
+  names, 0 non-positive prices, currency 100% MKD, price range 21-550 MKD,
+  median 127. Categories in the sample are all food and all Macedonian:
+  ZIMNICA (preserves/ajvar) 18, KECAP 16, OCET (vinegar) 13, peas/beans/
+  djuvec 13, jam/marmalade 11, MED (honey) 5, compote 4, hot chocolate 3.
+  Sample rows: "Ajvar Ekstra Lut Diem 660g" 249 MKD, "Mama's Ajvar Blag 290g"
+  259 MKD — plausible shelf prices, no minor-unit error.

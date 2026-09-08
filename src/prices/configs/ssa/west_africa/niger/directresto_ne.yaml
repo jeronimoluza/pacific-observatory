@@ -1,0 +1,45 @@
+scaffolding: spider
+spider: directresto_ne
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://directresto.net
+language: fr
+currency: XOF
+cadence: weekly
+notes: |
+  API. "Direct GO" / directresto.net is a delivery aggregator for Niamey,
+  Niger. The web frontend is a bare Angular SPA shell with no server-
+  rendered content; the catalog lives on a same-brand API subdomain found
+  in the Angular bundle's environment object:
+  vendorsApiBase = https://services-api-v2.directresto.net/restaurants/
+  public/activities. Appending a category (RESTAURANT / GROCERIES / STORE)
+  plus a `page` query param and an `appversion: 6200` header (both
+  required -- the bare path or missing header/param 500s/400s) returns a
+  paginated list of vendors, each embedding its own `menuItems[]` with
+  `unitaryPrice` in XOF.
+
+  Verified live 2026-09-06: GROCERIES page 0 returns 10 vendors with
+  priced menuItems (soap, lotion, canned goods, rice, etc. -- general
+  household/grocery goods, not prepared meals); STORE page 0 returns 10
+  vendors (cosmetics/perfume shops, boutiques). This spider covers
+  GROCERIES + STORE only -- both are retail-goods categories spanning many
+  COICOP divisions, left to the classifier. RESTAURANT (prepared meals,
+  COICOP 11.1.1) is a different analytical shape (narrow/source_curated)
+  and intentionally NOT included here -- a future source could add it
+  separately using the same API base with category=RESTAURANT.
+
+  channel: marketplace -- the platform aggregates many independent small
+  vendor storefronts under one API, each with its own seller-authored
+  catalog, matching the marketplace semantics in the skill (not a single
+  retailer's own catalog).
+
+  Identity: no per-item PDP exists on this platform (in-app ordering flow,
+  not a classic storefront) -- DuplicationPipeline dedups on item["url"],
+  so a synthetic `#vendor/<id>/item/<id>` fragment is built per row.
+
+  Test run (--max-items 30): rows returned across both categories with
+  clean XOF prices (e.g. "Luxes Rejuvenating" savon 440 XOF, "Citron Lemon"
+  lait corporel 425 XOF), confirming both category endpoints and pagination
+  work end to end.

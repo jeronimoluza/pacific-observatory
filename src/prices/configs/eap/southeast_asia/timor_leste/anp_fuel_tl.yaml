@@ -1,0 +1,57 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+channel: fuel-station
+source_key: tl_anp_fuel
+module: eap.southeast_asia.timor_leste.anp_fuel_tl
+function: fetch_tl_anp_fuel
+url: https://www.anp.tl/category/daily-fuel-price/
+language: en
+cadence: irregular
+fallback_date: 2026-01-01
+notes: |
+  ANP (Autoridade Nacional do Petroleo, Timor-Leste's petroleum regulator)
+  publishes "Daily Fuel Price" bulletins as WordPress posts under
+  https://www.anp.tl/category/daily-fuel-price/, each embedding one PDF
+  ("Fuel-Prices-<date range>-English.pdf") with a single table: No. /
+  Municipality / Fuel Filling Stations / Petrol / Diesel, listing ~85
+  filling stations across all 13 municipalities. Bulletins cover a date
+  range (e.g. "16-20 July 2026") or a single day; observation_date is the
+  range's first day, period_kind: effective_from.
+
+  Page family: PDF table attachment, one per listing post (`listing` +
+  `PDF`, no HTML PDP).
+
+  Verified live 2026-09-06 via curl_cffi (impersonate=chrome124, no
+  anti-bot on this WordPress site). Full test run with fallback_date
+  2026-01-01 (fetches every bulletin on page 1 of the category listing,
+  April-July 2026): 1,896 rows after dedup (2,009 raw rows; 113 dropped
+  as exact duplicates -- ANP occasionally re-publishes an overlapping
+  date range, e.g. both "15-17 April" and "15-20 April" bulletins
+  starting 15 Apr with identical per-station prices, and a few Dili
+  stations share one printed name across distinct branches within a
+  single bulletin's own table, e.g. 3x "Realistik Fuel Unipessoal,
+  Lda, Sucursal"). Many rows carry blank Petrol/Diesel cells (station
+  did not report that period) and are skipped rather than emitting a
+  zero price. Price range $1.25-$1.65/L. Currency USD (Timor-Leste's official currency per countries.yaml)
+  despite the PDF's comma-decimal display ("$ 1,45" -> 1.45, NOT a
+  thousands separator -- all values are sub-$2/L). coicop_codes: 07.2.2
+  for both Petrol and Diesel, matching ewura_fuel_caps.yaml's
+  convention (07.2.2 itself is the class, not a leaf -- its children
+  07.2.2.1/07.2.2.2 split Diesel/Petrol -- but declaring the two child
+  leaves separately collapses to the non-leaf 07.2 group prefix under
+  the narrowness check's 4-char truncation, so this fetcher follows the
+  established one-code-per-class convention instead).
+
+  subnational_area = "<Municipality> - <Fuel Filling Station>" and is
+  deliberately in `_IDENT` alongside source_key/observation_date/
+  item_name -- omitting the per-station identity would collapse ~85
+  stations into one row per (date, item) per the wave-9 Mali defect
+  documented in ewura_fuel_caps.py.
+
+  cadence marked irregular rather than daily/weekly because bulletin
+  intervals vary (single-day posts interleave with multi-day ranges);
+  the fetcher walks the category's pagination (newest-first) and stops
+  once every post on a page is at/before cutoff.

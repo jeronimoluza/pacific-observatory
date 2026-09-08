@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: woolworths_au
+url: https://www.woolworths.com.au/
+language: en
+cadence: daily
+notes: |
+  Page family: API (spider never fetches a rendered category/PDP page --
+  a warm-up GET of one category page just seeds session cookies, then
+  every product record comes from the `/apis/ui/browse/category` JSON
+  endpoint).
+
+  Verified live 2026-09-06. Akamai fronts the whole site: plain `requests`
+  (no TLS impersonation) 403s with an Akamai "Access Denied" stub on BOTH
+  the homepage and the API. curl_cffi impersonate="chrome124" clears both
+  -- this repo's scrapy-impersonate RandomBrowserMiddleware applies that
+  automatically to every scrapy.Request (IMPERSONATE_BROWSERS=chrome120),
+  so no per-request meta is needed; Scrapy's own COOKIES_ENABLED carries
+  the homepage warm-up cookies into the POST.
+
+  The homepage/category pages themselves are an empty AEM (Adobe
+  Experience Manager) content shell -- no inline products -- so this is
+  Tier 1B (JSON API), not Tier 1A, despite the plain GET succeeding.
+  categoryId values (`1_XXXXXXX` per department) come from the homepage's
+  embedded navigation JSON; confirmed the API keys off `categoryId`, NOT
+  the `url`/`location` payload fields (a mismatched url/location with a
+  correct categoryId still returned that categoryId's real department).
+
+  Sibling AU supermarket coles_au is `active: false` (Incapsula
+  headless-detection wall, no bypass found) -- Woolworths is the working
+  half of Australia's supermarket duopoly in this corpus.
+
+  Test run (`--max-items 5`, 12 departments queued concurrently): 124
+  rows collected before CLOSESPIDER_ITEMCOUNT closed the spider (concurrent
+  requests overshoot the cap, which is expected Scrapy behaviour) --
+  e.g. "Huggies Ultra Dry Nappies Boys Size 6 (16kg+)" AUD 24.00,
+  "Little Bellies Organic Berry & Apple Softcorn" AUD 2.15 -- sane
+  decimal AUD values, no minor-unit error. Full run walks 12 top-level
+  departments x TotalRecordCount-driven pagination (pageSize=36).

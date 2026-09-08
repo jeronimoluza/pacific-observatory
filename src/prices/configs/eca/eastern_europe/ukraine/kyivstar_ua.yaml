@@ -1,0 +1,40 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+source_key: ua_kyivstar_tariffs
+module: eca.eastern_europe.ukraine.kyivstar_ua
+function: fetch_ua_kyivstar_tariffs
+url: https://kyivstar.ua/tariffs
+language: uk
+currency: UAH
+cadence: monthly
+fallback_date: 2024-01-01
+channel: null
+notes: |
+  Discovery lead (wave 3, bare hostname `kyivstar.ua`). Re-probed
+  2026-09-06 with curl_cffi impersonate=chrome124 -- clean HTTP 200; plain
+  `requests` also clears (no WAF/Cloudflare on this host).
+
+  Next.js SSR page embeds the full tariff catalogue as structured JSON in
+  a `<script id="__NEXT_DATA__" type="application/json">` block -- no
+  separate API call, no Playwright needed. Path to the tariff array:
+  `props.pageProps.data.pageData.dynamicZone[2].tariffs`, located by
+  recursively searching the payload for objects shaped like
+  `{externalCode, productPrice, ...}` rather than hard-coding the index
+  (a CMS block position that could shift on a redesign).
+
+  Each tariff's price lives at
+  `productPrice.priceVariants[0].recurringCharge.price` (the sibling
+  `regularPrice`/`price` fields one level up are always null -- do not
+  use them). Billing period varies per plan (`P_1M` month, `P_4W` 4
+  weeks for the Kids plan, `P_1Y` year for its annual variant) and is
+  mapped to `unit` per-row rather than assumed uniformly monthly.
+
+  All 7 observed plans are COICOP 08.3.2.0 (mobile telecom service
+  subscriptions) -- single-value COICOP map, source_curated.
+
+  Test run 2026-09-06 (direct fetcher call, cutoff backdated to
+  2024-01-01): 7 rows, all UAH, prices 220-2000 (per their respective
+  billing unit), 0 nulls.

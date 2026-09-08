@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: dept-store
+spider: sukasa_cr
+url: https://www.sukasa.co.cr/
+language: es
+currency: CRC
+cadence: weekly
+archive_prefix: "www.sukasa.co.cr/products/"
+archive_path_re: '^/products/[^/?]+$'
+notes: |
+  Page family: both (category listing + PDP). Home-goods / housewares
+  retailer (kitchen, bed/bath, furniture, appliances/"linea-blanca",
+  terrace/garden, entertainment electronics) -- cross-division durable-goods
+  catalog, tagged channel: dept-store. Built on the Costa Rican "nidux"
+  e-commerce platform (media.nidux.net CDN). No WAF -- curl_cffi
+  impersonate="chrome124" clears (verify=False needed for a local cert-chain
+  issue in the probing environment, not a site-side block). Category pages
+  are server-rendered with plain /products/<id>/<slug> links; PDPs carry a
+  clean schema.org Product JSON-LD block (name, sku, offers.price,
+  offers.priceCurrency=CRC) -- spot-checked (Oster 12-cup coffeemaker,
+  CRC 16,994.97, reasonable CR retail price).
+  GOTCHA: `?page=N` on a category URL does NOT paginate -- page 2 returns
+  byte-identical product links to page 1 (36 products per of 13 top-level
+  categories walked). This spider only reaches the first page per category;
+  a future pass could look for the AJAX/infinite-scroll mechanism serving
+  the rest of the catalog.
+  Verified live 2026-09-06, --max-items test run.

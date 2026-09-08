@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carib_brewery_nevis
+url: https://backend.caribeeats.com/api/business/carib-brewery-nevis
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Onboarded 2026-09-05. Carib Brewery's Nevis storefront on the CaribeEats
+  delivery aggregator. Page family parsed: API (whole catalogue in one
+  unauthenticated GET; synthetic '#<product_id>' urls).
+
+  69 SKUs / 2 categories verified live 2026-09-05: Alcoholic 13 (beers,
+  stouts, malt-based mixes -> COICOP 02.1) and Non-Alcoholic 56 (soft
+  drinks, malts, juices, bottled water -> COICOP 01.2). Two divisions, so
+  coicop_codes stays unset.
+
+  Payload `currency` is XCD, matching countries.yaml st_kitts_and_nevis.
+
+  The brewery's much smaller St Kitts listing (slug `carib-brewery`, 17
+  SKUs, XCD) was probed the same day and deliberately NOT onboarded as a
+  separate source -- it is the same brewery's shelf listed twice on one
+  platform, and shipping both would double-count it.

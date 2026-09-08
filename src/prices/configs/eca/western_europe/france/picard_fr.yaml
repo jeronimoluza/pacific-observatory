@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: picard_fr
+url: https://www.picard.fr/
+language: fr
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.picard.fr/rayons/"
+archive_path_re: '^/rayons/[a-z0-9-/]+$'
+notes: |
+  page family: listing. Salesforce Commerce Cloud (SFCC/Demandware)
+  storefront, no WAF - plain curl_cffi (chrome124) clears every /rayons/
+  page. Every category page at any depth embeds one data-gtm="{...}" JSON
+  blob per product tile (data-pid + item_name/category tree/price/
+  currency/item_format), so no PDP visit is needed. Leaf categories render
+  their FULL product count (verified: sort-dropdown's Search-UpdateGrid
+  sz=N always equals the tile count, e.g. 19/19 on aperitifs-froids);
+  intermediate pages show a teaser subset, which is harmless since the
+  same products resurface on their own leaf page and dedup is by product
+  URL. CrawlSpider follows every /rayons/ link found on every /rayons/
+  page rather than a hardcoded category tree. Currency EUR. Frozen-food
+  specialist - distinct category coverage per shard AI_NOTES. Verified
+  live 2026-09-06: aperitifs-froids leaf alone yielded 19 SKUs, e.g.
+  "PAIN SURPRISE CAMPAGNE" EUR 19.99.

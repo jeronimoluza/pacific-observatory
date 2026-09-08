@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: castorama_pl
+url: https://www.castorama.pl/
+language: pl
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.castorama.pl/departments/"
+archive_path_re: '^/departments/[^/?]+_CAPL\.prd$'
+notes: |
+  Page family: listing (category .cat pages). Server-rendered, no WAF --
+  curl_cffi chrome124 clears the front page with a plain 200. Category
+  pages carry product cards with clean data-testid attributes.
+
+  Re-verified live 2026-09-06: GET /artykuly-dla-zwierzat.cat -> 200, 1.3MB,
+  48 unique [data-testid="product"] cards, each with a data-ean="..."
+  attribute (clean product id). ?page=2 on the same category returns a
+  disjoint 48-product set (0 overlap with page 1) -- real pagination,
+  confirmed. Sample: EAN 5905289867892 'Zelowa mata chlodzaca dla zwierzat
+  Aio factory 50x90 cm niebieska 1szt' 36,48 zl.
+
+  Price is split across nested spans (whole part / "," / decimal part /
+  "\xa0" / "zl"), e.g.
+  <span data-testid="product-price">36<span>,<!-- -->48<!-- --> zl</span></span>
+  -- the spider joins all descendant ::text nodes under product-price and
+  regex-extracts digits+comma before parsing, since a naive ::text on the
+  outer span only returns "36".
+
+  Castorama's catalog is itself a marketplace layer (each card shows
+  "Sprzedaje i wysyla przedsiebiorca: <seller>" -- third-party sellers
+  fulfilling under the Castorama storefront) but prices/availability are
+  site-native, not scraped from elsewhere -- treated as a normal
+  retailer_sku source. Currency PLN matches countries.yaml.

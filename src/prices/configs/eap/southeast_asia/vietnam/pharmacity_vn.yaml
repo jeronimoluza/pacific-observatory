@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pharmacity_vn
+url: https://www.pharmacity.vn/
+language: vi
+cadence: weekly
+channel: pharmacy
+notes: |
+  Vietnam's largest pharmacy chain. Wide COICOP coverage (pharmaceuticals,
+  personal care, baby, cosmetics, supplements, medical devices) --
+  classifier assigns the leaf per product. Storefront is a Next.js SPA
+  that serves an app-level "not found" page for direct curl_cffi fetches
+  of any category path -- confirmed dead end on Tier 1A. A Playwright
+  network-capture probe (2026-09-06) found the real data source: a fully
+  open, unauthenticated JSON API at api-gateway.pharmacity.vn/pmc-ecm-
+  product/api/public/search/index, hit by the SPA for every category.
+  Confirmed working with a bare curl_cffi GET, no headers, no cookies --
+  textbook "Playwright to discover, plain HTTP to scrape". Page family:
+  API only (never fetches an HTML page in either direction; product
+  detail page URLs are not resolvable from this API -- direct guesses
+  at /<product-slug> 404, so `url` is synthesised as the category
+  listing URL + #<sku> fragment, unique per item, per the
+  DuplicationPipeline url-dedup gotcha).
+
+  Not every nav-menu category slug is valid against this API -- 23 of 31
+  tried (tim-mach, benh, thuong-hieu, vitamin-khoang-chat, and others)
+  404/500 "category slug not found" even though they're real site nav
+  links (probably a disease/brand taxonomy on a different backend). Only
+  8 slugs confirmed data.total > 0 are crawled: duoc-pham (5,999),
+  cham-soc-ca-nhan (443), cham-soc-sac-dep (484), cham-soc-suc-khoe (356),
+  me-va-be (109), san-pham-tien-loi (170), thiet-bi-y-te-2 (71),
+  thuc-pham-chuc-nang (675) -- roughly 8,300 products total. Currency VND,
+  plain integers (no minor-unit division -- VND has no subunit in
+  practice). Price taken from variants[0] (or the is_sale_unit=true
+  variant when present). Test run (--max-items 5) verified 5 items with
+  prices matching the API payload (e.g. Crestor 10mg, 317,800 VND).

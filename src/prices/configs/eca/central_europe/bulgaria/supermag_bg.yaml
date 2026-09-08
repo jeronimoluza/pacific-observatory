@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: supermag_bg
+url: https://www.supermag.bg/
+language: bg
+currency: BGN
+cadence: weekly
+notes: |
+  Supermag.bg — Sofia online supermarket (grocery + household + office
+  supplies). Legacy jQuery storefront; category pages ship a loading
+  spinner and hydrate via AJAX. Playwright network trace found
+  `GET /hash/products/index?type=products_list&nid=<category_id>` -- and
+  passing no/unrecognised `nid` does NOT error, it falls back to the FULL
+  catalog in one response, no auth, no pagination needed. Verified live
+  2026-09-06: 1,938 products in one ~1.3MB JSON call, e.g. "Кисело Мляко
+  Вереа 2% 400 г", BGN 1.89. Spider hits the endpoint once and yields
+  every product directly. Page family: API (single whole-catalog call,
+  no page ever fetched).

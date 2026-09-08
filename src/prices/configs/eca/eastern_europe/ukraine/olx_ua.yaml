@@ -1,0 +1,49 @@
+scaffolding: spider
+spider: olx_ua
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://www.olx.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+timeout: 21600
+notes: |
+  OLX Ukraine -- consumer-goods classifieds. Discovery lead (wave 3, bare
+  hostname `olx.ua`, canonical host `www.olx.ua`). Re-probed 2026-09-06
+  with curl_cffi impersonate=chrome124 -- clean HTTP 200, no UA-resident
+  IP needed.
+
+  Same OLX Group platform/frontend generation as olx.ro/olx.pl/olx.ba:
+  category listing pages are React SSR and embed the full result set as a
+  JSON-in-JS-string blob, `window.__PRERENDERED_STATE__= "<escaped
+  JSON>"`, at `listing.listing.ads[]` (unescaped via
+  `json.loads('"' + raw + '"')` before the inner JSON parse -- see
+  olx_ro.py for the same pattern).
+
+  Pagination is `?page=N`, 52 ads/page. Enumerability confirmed live
+  2026-09-06: `/uk/elektronika/` page 1 vs page 2 return disjoint ad-id
+  sets (0 overlap, first 5 ids differ entirely).
+
+  Each ad's `price.regularPrice` carries a clean numeric `value` + ISO
+  `currencyCode` (UAH) -- the human-readable `displayValue`
+  ("111 900 грн.") is present but unused.
+
+  Scoped in-spider to 6 consumer-goods top-level categories (elektronika,
+  dom-i-sad, hobbi-otdyh-i-sport, detskiy-mir, moda-i-stil, zhivotnye) --
+  real estate, transport/transport parts, jobs, services, short-term
+  rentals and barter/free-giveaway sections excluded as out of scope for
+  a retail price basket.
+
+  Page family parsed: listing only (individual ad PDPs never fetched;
+  `url` is the platform's own permalink from the listing payload).
+
+  channel: marketplace (classifieds -- seller-authored names, spans
+  multiple COICOP divisions per category); coicop_codes left unset,
+  coicop_classification: classifier.
+
+  Test run 2026-09-06 (--max-items 60, closespider-timeout 120): passed,
+  distinct product_id per row, 0 blank names, 0 zero/negative prices,
+  100% UAH.

@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["13.2.1.1"]
+spider: johnbull_bs
+url: https://johnbull.com/
+language: en
+currency: USD
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.johnbull.com/rolex/"
+archive_path_re: '^/rolex/[a-z0-9-]+-m\d[\w-]*$'
+notes: |
+  Re-verified live 2026-09-06. GOTCHA said "not production-approved until
+  live status, public price access ... verified" -- checked every non-
+  Rolex category page (jewelry, beauty-fragrance, time-pieces,
+  tudor-watches, panerai-watches, bvlgari, cartier, gucci, chopard,
+  iwc-schaffhausen, breitling, jaeger-lecoultre, leather-accessories) and
+  NONE render a price in raw HTML -- standard luxury-retail "contact us
+  for pricing". Only the Rolex sub-site (the "Rolex-V7" WordPress plugin,
+  a template shared by many authorized Rolex dealers) renders real USD
+  prices server-side, e.g. $64,900 on /rolex/watches. Tier 1A, no JS.
+
+  start_urls is a fixed list of Rolex model-family pages (there is no
+  crawlable "all models" index). Verified with curl_cffi
+  impersonate=chrome124: /rolex/datejust alone yields 6 priced variants
+  ($8,150-$17,700); across all 19 seed pages the spider recovers ~100+
+  rows (de-duplicated by product_id across overlapping overview/model
+  pages via the standard DuplicationPipeline).
+
+  Currency is explicit "$" with no BSD/other prefix on every observed
+  price; recorded as USD per countries.yaml (Bahamas is USD-pegged 1:1,
+  and John Bull's own price copy uses plain "$" with no other symbol
+  anywhere on the Rolex pages).
+
+  coicop_classification: source_curated, coicop_codes: ["13.2.1.1"]
+  ("Purchase of jewellery and watches" -- confirmed as a real COICOP leaf
+  via prices.enrich.coicop_taxonomy against the repo's own COICOP xlsx).
+  Narrow: the entire scraped surface is Rolex watches. channel: dept-store
+  because John Bull itself is a broad multi-category luxury retailer, even
+  though this pass only harvests the one vertical that publishes prices.
+
+  Page family parsed: listing (Rolex model-family collection/slider pages;
+  no PDP visited -- each card's price and model name are already inline on
+  the listing).
+
+  End-to-end test `.venv/bin/po prices collect --source johnbull_bs
+  --max-items 20`: see onboarding results log for row count and sample
+  record.

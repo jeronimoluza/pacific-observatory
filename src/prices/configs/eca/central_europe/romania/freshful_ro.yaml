@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: freshful_ro
+url: https://www.freshful.ro/
+language: ro
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: PDP (sitemap walker; price/name/breadcrumbs read out of
+  the server-rendered __NEXT_DATA__ React-Query cache, not a separate
+  API call and not DOM selectors).
+
+  Next.js storefront (eMAG's grocery arm). robots.txt names an
+  /api/v2/shop family but a Playwright network trace on a PDP shows no
+  client-side fetch for the product -- the full record (name, price,
+  currency, breadcrumbs, availability) is already embedded server-side
+  in __NEXT_DATA__ -> props.pageProps.dehydratedState.queries[] with
+  queryKey ["product", "<slug>"].
+
+  Confirmed live 2026-09-06: PDP /p/100075626-soligrano-mix-clatite-din-
+  mei-cu-afine-fara-gluten-71g -> 200, price 10.91, currency "Lei"
+  (mapped to ISO RON -- the field is a display string, not always an ISO
+  code), code "100075626".
+
+  Walks sitemap/products.xml (46,297 PDP urls) directly rather than
+  discovering categories -- the sitemap already lists the full catalog.
+  Deep discounts are common per AI_NOTES (up to -70%) -- only the current
+  effective `price` is captured, not `originalPrice`/promotional fields.

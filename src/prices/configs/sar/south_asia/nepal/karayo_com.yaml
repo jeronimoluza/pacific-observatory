@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: convenience
+spider: karayo_com
+url: https://www.karayo.com/
+language: en
+currency: NPR
+cadence: weekly
+notes: |
+  35-minute grocery delivery app for Kathmandu Valley, explicitly
+  positioned as a digitised "kirana pasal" (neighbourhood shop) --
+  channel=convenience rather than supermarket, matching that framing.
+
+  Page family: API. Next.js front end over a white-label "6amMart"
+  Laravel backend (`karayo.railar.com`, confirmed via the landing-page
+  payload literally naming "$6amMart$"). GOTCHA confirmed: the item API
+  needs a resolved zone/location before it returns anything --
+  `moduleId`/`zoneId` are sent as request HEADERS (not query params);
+  `moduleId=3` = "Grocery" module, `zoneId=[2]` = "Sanepa" zone, resolved
+  via `/api/v1/config/get-zone-id?lat=27.7172&lng=85.3240` (Kathmandu).
+  Without the correct zoneId the endpoint 200s with `total_size: 0` --
+  silently empty, not an error -- so the spider hardcodes the resolved
+  zone rather than re-resolving per run.
+
+  Verified live 2026-09-06: GET /api/v1/items/popular?limit=25&offset=1
+  with headers {moduleId: 3, zoneId: [2]} -> 200, total_size 643, e.g.
+  "Tomato - Tunnel" NPR 70 (unit_type "500 gm"). Paginates via `offset`
+  (confirmed distinct product sets across offset=1/2/3).
+
+  Test run (--max-items 10): 10 items, NPR prices in plausible range.

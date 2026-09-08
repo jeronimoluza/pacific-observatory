@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: trademe_property_rent_nz
+channel: real-estate
+coicop_classification: source_curated
+analytical_role: retailer_sku
+extraction_pattern: scrapy_listing
+url: https://www.trademe.co.nz/a/property/residential/rent/search
+language: en
+currency: NZD
+cadence: daily
+coicop_codes: ["04.1.1"]
+notes: |
+  Page family: API. TradeMe's Angular front-end renders search results
+  client-side; the actual listing data comes from a plain JSON endpoint
+  (api.trademe.co.nz/v1/search/property/rental.json) found via a Playwright
+  network trace on the rent-search page. No OAuth/API-key needed for this
+  anonymous search call -- only a client-generated
+  `x-trademe-uniqueclientid` header (any UUID) plus
+  `Referer: https://www.trademe.co.nz/`. TradeMe's formal developer API at
+  the same host DOES require registered app credentials for most endpoints
+  (401 "supply your application credentials" without the two headers
+  above) -- this specific search route is the public one the website
+  itself calls. Verified live 2026-09-06: ~11,900 NZ residential-rental
+  listings; page 1 vs page 2 share zero ListingIds, confirming genuine
+  pagination, not a fixed carousel. Narrow single-class source (04.1.1
+  actual rentals for housing), short-circuits the classifier. Emits
+  weekly rent (`RentPerWeek`) as price_local; product URL is synthesized
+  from ListingId (`/a/property/residential/rent/listing/<id>`) since the
+  API payload carries no direct listing URL field.

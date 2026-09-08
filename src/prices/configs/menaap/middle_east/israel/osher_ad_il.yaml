@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: il_osher_ad
+module: menaap.middle_east.israel.osher_ad_il
+function: fetch_il_osher_ad
+url: ftp://url.retail.publishedprices.co.il/
+language: he
+cadence: daily
+fallback_date: 2020-01-01
+channel: supermarket
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed, published via the
+  shared publishedprices.co.il FTPS aggregator portal (see rami_levy_il.yaml
+  for the shared-architecture note). Login "osherad", blank password,
+  government-published for public access. Fetches one representative branch's
+  PriceFull (full-catalog) snapshot per run, matching the shufersal/rami_levy
+  precedent of one branch rather than the chain's whole estate.
+  Verified live 2026-09-05: branch snapshot parses 6,771 real items with
+  plausible ILS prices. Large discount supermarket chain.
+  Currency ILS.
+
+  Discovered by re-probing the publishedprices login space for chains the
+  repo had not yet claimed -- the shufersal_il manifest flagged that the law
+  covers ~49 chains and only a handful were scaffolded.

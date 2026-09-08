@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0", "08.3.3.0", "08.3.4.0"]
+channel: null
+source_key: tcc_to
+module: eap.pacific_islands.tonga.tcc_to
+function: fetch_tcc_to
+url: https://www.tcc.to/prepaid-voice-plan/
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Verified live 2026-09-06. WordPress + Elementor site, fully server-rendered
+  (no JS/anti-bot). 11 "price-table" widgets on one page (Unet Plans, Super
+  Data Plans, Student SIM Plans, Oukka Plans, Night Owl Plans, Voice Plan,
+  ...), each a list of bundle lines like "$1.00 TOP | 400MB Data | valid
+  1hour" -- "TOP" is the site's own top-up abbreviation, not the currency
+  code; currency is set from countries.yaml (Tongan Pa'anga, ISO TOP) since
+  the site only ever shows a bare "$". Per-item COICOP-2018 leaf under 08.3
+  (Information and communication services), chosen from whether the bundle
+  line mentions Data/Minutes: Data+Minutes -> 08.3.4.0 (bundled), Minutes
+  only -> 08.3.2.0 (mobile comms, voice-only), Data only -> 08.3.3.0
+  (internet access). Test run via `po prices collect --source tcc_to`
+  returned rows for every widget (see items count in the shard results
+  line). Companion source tongapower_to covers electricity tariffs
+  (COICOP 04.5) for the same country.

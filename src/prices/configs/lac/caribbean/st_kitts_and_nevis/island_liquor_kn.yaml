@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: island_liquor_kn
+url: https://backend.caribeeats.com/api/business/island-liquor
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Onboarded 2026-09-05. Island Liquor St Kitts on the CaribeEats delivery
+  aggregator -- identified but deprioritised by the 2026-09-01 pass in
+  favour of the larger RAMS catalogue. Page family parsed: API (whole
+  catalogue in one unauthenticated GET; synthetic '#<product_id>' urls).
+
+  117 SKUs / 4 categories verified live 2026-09-05: Liquor 93, Cigarettes
+  14, Vape 9, JUUL 1 -- COICOP 02.1 (alcohol) and 02.2/02.3 (tobacco and
+  nicotine products). Two different 3-digit classes, so coicop_codes stays
+  unset and the classifier assigns per-leaf, matching `island_liquor_dm`.
+
+  CURRENCY VERIFIED. Payload reports USD against a country whose currency is
+  XCD. Cross-checked against `island_liquor_dm` (XCD payload) on the 19
+  product names the two share verbatim: median price ratio 0.37 = 1/2.70,
+  exactly the fixed XCD/USD peg. The USD label is real.
+
+  Distinct from `island_liquor_dm` (slug `island-liquor-dominica`) and
+  `island_liquor_gnd` (slug `island-liquor-gnd`).

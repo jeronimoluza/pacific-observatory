@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+channel: null
+source_key: mtn_ng_data_plans
+module: ssa.west_africa.nigeria.mtn_ng_data_plans
+function: fetch_mtn_ng_data_plans
+url: https://www.mtn.ng/data/data-plans/
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  MTN Nigeria prepaid data-bundle tariff page (mtn.ng/data/data-plans/).
+  Fully server-rendered HTML, no JS/anti-bot -- each bundle is a
+  `_card-deal prepaid-deal` div with a sub-heading (validity: Daily/2-Day/
+  Weekly/Monthly), a title (data allowance, e.g. "75MB"), and a price block
+  (`_card-deal__price-amount`, e.g. "75"). GOTCHA: the wrapping div also
+  carries a `data-price=200` attribute that is IDENTICAL across every card
+  on the page (confirmed: 75MB/75 naira and 3.5GB/1000 naira cards both
+  show data-price=200) -- it is a stale/default JS attribute, not the real
+  price; the real price is the `_card-deal__price-amount` text.
+  Verified live 2026-09-06: 47 bundle rows parsed (Daily/2-Day/Weekly/
+  Monthly tiers, 75MB @ N75 up to multi-GB monthly plans), zero
+  duplicate observation_hash. A few cards have no direct shop.mtn.ng href
+  (app-only "SMART BUNDLE" or a bare "#" anchor) -- source_url falls back
+  to the listing page itself for those rows. COICOP 08.1.0 (telephone and
+  internet access services).

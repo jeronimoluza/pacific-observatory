@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: khmer24_kh
+url: https://api.khmer24.com/
+language: km
+cadence: weekly
+channel: marketplace
+notes: |
+  Page family: API (spider reads api.khmer24.com JSON, never fetches a
+  www.khmer24.com page in either direction -- the public site is a Nuxt SPA
+  shell with no listing HTML at all via curl_cffi).
+
+  Re-probe 2026-09-06 of a known_blockers.md entry ("HTTP 403 + Cloudflare
+  Turnstile challenge page on curl with realistic Chrome UA", probed
+  2026-06-10). That verdict measured bare curl's TLS handshake: curl_cffi
+  with any of chrome124/chrome120/chrome131/safari17_0/firefox133 clears
+  the homepage at 200. The API backend (api.khmer24.com) has NO anti-bot
+  at all -- confirmed with GET /posts and GET /categories.
+
+  Pagination: `offset=` paginates with disjoint pages (confirmed: offsets
+  0/30/60/90 on category=67 "Cars for Sale" returned 120 distinct ids).
+  `page=` does NOT paginate -- same 30 rows regardless of page number --
+  so the spider uses offset only, capped at MAX_OFFSET=300/category as a
+  safety limit.
+
+  Scope: the full category tree (162 nodes, from /categories) is mostly
+  jobs (parent=2, no price field) and real-estate-for-sale/services. The
+  spider walks a curated set of consumer-goods leaf categories only
+  (phones, laptops, cameras, home appliances, consumer electronics, smart
+  watches, phone accessories, furniture, kitchenware, women's/men's
+  fashion) rather than the whole tree, so it emits genuine priced listings.
+
+  CAVEAT FOR ANALYSTS: these are individual sellers' secondhand-goods
+  asking prices (with occasional seller discounts -- emits `discount.
+  sale_price` over the listed price when present, since that's what a
+  buyer would pay), not a retailer's posted new-goods price. Closer in
+  kind to a real-estate listing spider's asking rents than to a
+  supermarket SKU feed. No explicit currency field in the payload;
+  sampled electronics prices ($300-1400 for phones) are unambiguously USD,
+  matching the same dual-currency convention already documented for
+  niront.yaml (also KH, also USD against a KHR countries.yaml default).

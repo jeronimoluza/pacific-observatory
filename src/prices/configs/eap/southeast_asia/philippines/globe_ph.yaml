@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0", "08.3.3.0", "08.3.4.0"]
+channel: null
+source_key: globe_ph
+module: eap.southeast_asia.philippines.globe_ph
+function: fetch_globe_ph
+url: https://www.globe.com.ph/prepaid/promos
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Verified live 2026-09-06. Server-rendered Bootstrap "card" widgets inside
+  a Swiper carousel (no JS needed to read the promo text -- confirmed via
+  curl_cffi). Front door 403s a plain `requests` session (TLS-fingerprint
+  block) so the fetcher uses curl_cffi impersonate="chrome124". Of ~20
+  cards on the page, most are category-navigation
+  tiles with no price; a fixed small set carry an actual offer (card-title
+  = plan name e.g. "Go+99", card-text's first line = data/price/validity
+  e.g. "20 GB Data | ₱99/7 Days"). Per-item COICOP-2018 leaf under 08.3
+  chosen from whether the offer text mentions Data vs Text/Minute/Call,
+  same convention as tcc_to (Tonga). Test run via `po prices collect
+  --source globe_ph` returned 9 rows (7x Go+ data-plus-texts bundles,
+  2x Globe Starlink satellite data plans). Note: pydantic emits the same
+  "not a taxonomy leaf" warning as tcc_to/mtn_rw_bundles for declaring 3
+  sibling leaves under one 08.3 group -- non-blocking, rows already carry
+  a correct per-item coicop_code.

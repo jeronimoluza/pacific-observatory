@@ -1,0 +1,65 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tobacco_lux_wolt_mk
+url: https://wolt.com/en/mkd/skopje/venue/tobacco-lux
+language: mk
+cadence: weekly
+channel: convenience
+archive_prefix: "wolt.com/en/mkd/skopje/venue/"
+archive_path_re: '^/en/mkd/skopje/venue/[^/?]+'
+notes: |
+  Tobacco LUX (Skopje) — a convenience/kiosk-format shop on Wolt carrying
+  alcohol alongside confectionery, snacks and soft drinks. Onboarded as a
+  division-01/02 mixed source for North Macedonia.
+
+  NAME IS MISLEADING AND WAS CHECKED. Despite "Tobacco" in the venue name and
+  the Wolt venue tags "alcohol wine", the assortment carries NO cigarettes or
+  tobacco products (COICOP 02.2) — the 20 resolved category slugs are:
+  ЕНЕРГЕТСКИ ПИЈАЛОЦИ, ДОМ АВТОМОБИЛ И ДОДАТОЦИ, ЖЕСТОКИ ПИЈАЛОЦИ (spirits),
+  БОНБОНИ И ГУМИ ЗА ЏВАКАЊЕ, ЧОКОЛАДИ И СЛАТКИ, ГРИЦКИ И СОЛЕНИ ЗАКУСКИ,
+  ГАЗИРАНИ ПИЈАЛОЦИ, ПИВО (beer), ВОДА, СОКОВИ И ЛАДЕН ЧАЈ,
+  ВИНО И ПЕНЛИВИ ВИНА (wine and sparkling wine), БИСКВИТИ ВАФЛИ И КРОАСАНИ,
+  УБАВИНА И НЕГА, ХИГИЕНА И НЕГА, КАФЕМАТ, КАФЕ И ЧАЈ,
+  ЗДРАВИ И ПРОТЕИНСКИ УЖИНИ, АЛБУМИ И СЛИКИЧКИ, НУДЛИ,
+  ЕЛЕКТРОНИКА И ДОДАТОЦИ. Do not cite this manifest as tobacco coverage;
+  COICOP 02.2 remains uncovered for North Macedonia.
+
+  What it DOES add is a beer + wine + spirits assortment (02.1.1 / 02.1.2 /
+  02.1.3) that none of North Macedonia's other manifests carry, plus a
+  snack/soft-drink tail in division 01.
+
+  Discovered 2026-09-05 from the Wolt Skopje venue directory
+  (`consumer-api.wolt.com/v1/pages/front?lat=41.9981&lon=21.4254`), the same
+  sweep that found reptil-market-karposh-4 and bistra-voda.
+
+  Uses the shared `_wolt_base.py` SSR query-state walk — verified working on
+  this venue, unlike bistra-voda, which has been migrated to Wolt's newer
+  "unified store page" layout and needed a different spider entirely (see
+  that manifest).
+
+  `coicop_codes` is left UNSET. The catalogue spans division 01 (snacks,
+  water, juice, coffee), 02.1 (three separate leaves) and even 05/09
+  (car accessories, collectible albums), so it is nowhere near a single class;
+  and the alcohol part alone would resolve to the non-leaf "02.1" that
+  ADR-0002 warns about. The classifier assigns leaves per product.
+
+  channel: convenience — a kiosk-format mixed shop, not an off-licence and
+  not a grocer. (Precedent: mymart_wolt_kz uses the same value for a Wolt
+  convenience venue.)
+
+  VERIFICATION RUN 2026-09-05 (--max-items 60, closed at 80 on the last
+  in-flight batch): 80 rows, 80 distinct product_id, 80 distinct url, 0 blank
+  names, 0 non-positive prices, currency 100% MKD, price range 15-920 MKD,
+  median 100. The 60-item cap fired before the alcohol categories were
+  reached, so the sample is confectionery (50), e-cigarette accessories and
+  electronics (26) and instant noodles (4); the alcohol categories above are
+  confirmed present in the venue's own category listing and will be walked in
+  an uncapped run.
+
+  Known base-class limitation (inherited): Wolt SSR renders only page 1 of
+  each category, so categories with more than 50 SKUs are undercounted.
+
+  SPIDER PAGE FAMILY: listing (venue + per-category item pages); no PDP is
+  ever fetched.

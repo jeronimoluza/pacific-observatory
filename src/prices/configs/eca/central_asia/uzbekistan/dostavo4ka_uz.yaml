@@ -1,0 +1,48 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dostavo4ka_uz
+url: https://dostavo4ka.uz/ru/
+language: ru
+cadence: weekly
+channel: supermarket
+archive_prefix: "dostavo4ka.uz"
+archive_path_re: '^/(?:ru|uz)/(?:category|product)/\d+/[^/]+\.html$'
+notes: |
+  Discovered 2026-09-05. Samarkand online grocery ("Интернет-магазин
+  продуктов питания в Самарканде"). PrestaShop "innovatory" theme on a
+  custom Java backend -- NOT stock PrestaShop URLs, so `_prestashop_base`
+  does not apply: categories live at /ru/category/<id>/<slug>.html and
+  products at /ru/product/<id>/<slug>.html, with Spring-Data pagination
+  `?page=N&size=N&sort=sorting,desc`.
+
+  Tier 1A: everything is server-rendered. curl_cffi impersonate=chrome124
+  -> 200, no challenge, robots.txt only disallows /search and /error.
+  /ru/category.html lists 61 categories, the large majority division
+  01/02: овощи и фрукты, мясо и мясные изделия, яйца/молоко и молочные
+  изделия, хлеб и хлебо-булочные изделия, бакалея, мука, соки,
+  газированные напитки, прохладительные напитки, энергетические напитки,
+  шоколадные изделия, печенье/вафли/пряники, сыры, брынза, йогурт,
+  мёд/варенье/джем/молоко сгущённое, восточные сладости, сухие завтраки,
+  семечки/чипсы/курт/попкорн, консервированная продукция, готовые блюда,
+  детское питание.
+
+  Card scoping is load-bearing: every product renders twice (desktop grid
+  + mobile grid), so the selector is anchored on
+  `#js-product-list .innovatoryProductGrid article.product-miniature`.
+  Category 105 has 128 `article.product-miniature` nodes page-wide but 64
+  inside the grid, and 64 is the real category size. `size=100` is
+  honoured by the backend so most categories arrive in one request.
+
+  Enumerability proven, not assumed: page 1 vs page 2 of category 105 at
+  size=12 share ZERO of 12/12 product ids. Verified sample rows: 'Огурцы
+  орзу сорт' 10 999 сум; 'Черешня-1кг' 80 000 сум; 'Абрикосы 1 кг' 59 900
+  сум; 'Арбуз, шт' 105 990 сум; 'Гранат отборный, вес' 39 990 сум.
+  Currency UZS matches countries.yaml; prices are integer sum with no
+  minor unit.
+
+  Parses: listing pages only -- name, price, product id and breadcrumb
+  category are all on the card, so PDPs are never fetched. The archive
+  regex therefore admits BOTH families, since Common Crawl holds the
+  /ru/product/ PDPs the spider itself never visits.

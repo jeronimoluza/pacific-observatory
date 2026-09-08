@@ -1,0 +1,47 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1.1", "04.4.3.1"]
+channel: null
+source_key: pr_aaa_water_tariff
+module: lac.caribbean.puerto_rico.aaa_water_tariff
+function: fetch_pr_aaa_water_tariff
+url: https://www.acueductospr.com/servicios/nuestra-estructura-tarifaria
+language: es
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  AAA (Autoridad de Acueductos y Alcantarillados) publishes its water/sewer
+  tariff as a Webflow CSS-grid page (div-based "tables", not <table>
+  elements -- pandas.read_html sees nothing; parsed with BeautifulSoup).
+
+  Page covers 4 customer classes (Residencial/Comercial/Industrial/
+  Gobierno), each under its own <h2>, each with 2 grids (base charge by
+  meter diameter + consumption charge by usage block). Fetcher walks the
+  page in DOM order tracking the current <h2> section and keeps only the
+  2 grids under "Cargo Base Residencial" -- the household-relevant class.
+
+  Verified live 2026-09-06: Residencial base-charge grid has 11 meter
+  sizes (½"/⅝" through 12", e.g. ½"&⅝" Agua $17.47/Alcantarillado $13.01);
+  consumption grid has 3 usage blocks (>10-15 m3, >15-25 m3, >25 m3, e.g.
+  Bloque 1 Agua $3.10/Alcantarillado $2.68 per 1000gal). Each row's third
+  "Agua y Alc." column is the literal sum of the other two (spot-checked
+  $17.47+$13.01=$30.48) and is skipped as a derived duplicate, same
+  convention as DACO fuel's "Promedio" column.
+
+  28 rows emitted (11 diameters + 3 blocks, x2 for water/sewer). Water
+  (04.4.1.1) and sewer (04.4.3.1) are different COICOP classes but
+  combined into ONE manifest -- each row carries its own correct leaf
+  code, same convention as puc_tariff.py (Micronesia) combining
+  thin-but-related utility tariffs on one page/customer-class/effective-
+  date rather than forcing a split.
+
+  No historical archive -- snapshots the CURRENT schedule each run
+  (period_kind: effective_from), parsed from the page's own "Efectiva
+  desde el 1 de julio de 2026" heading text.
+
+  Currency USD, matches countries.yaml.
+
+  Test run (`prices collect --source aaa_water_tariff`): 28 rows written,
+  values match the rendered page verbatim.

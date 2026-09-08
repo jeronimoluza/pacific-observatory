@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: freshmart_pe
+url: https://freshmart.pe/
+language: es
+currency: PEN
+cadence: weekly
+channel: specialty-food
+archive_prefix: "freshmart.pe/"
+archive_path_re: '^/producto/[^/?]+$'
+notes: |
+  page family: API. Organic/specialty grocer, bespoke JS front end (no
+  known platform). POST /api/search/product (action=shopping_search_product,
+  q="", id_comercio=4, limit=unlimited, page=N) is wide-open and
+  unauthenticated -- confirmed live 2026-09-06, 20 items/page, empty
+  data[] once pages exhaust (probed to page 500). Category ids on each
+  product do not resolve against the site's own /categoria/advanced-menu
+  tree, so category is left null. Test run 2026-09-06: --max-items 5
+  returned 5 rows with real PEN prices.

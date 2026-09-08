@@ -1,0 +1,106 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lynia_bj
+url: https://lynia-shop.com/
+language: fr
+cadence: weekly
+channel: dept-store
+archive_prefix: "lynia-shop.com/produits/"
+archive_path_re: '^/produits/[^/?]+/?$'
+notes: |
+  WordPress + WooCommerce (WoodMart theme) storefront trading in Cotonou,
+  priced in XOF (matches countries.yaml). Broad and first-party but NOT
+  grocery-led -- beauty/health, IT and consumer electronics dominate --
+  hence channel: dept-store per the GLOSSARY test.
+
+  Genuine grocery tree underneath (category ids and counts measured
+  2026-09-05 from the Store API's own categories endpoint):
+    518 Supermarché                        57
+    373 Thé et infusions                   23
+    502 Petit déjeuner, Cafetière          18
+    756 Café, thé et boissons sans alcool  15
+    758 Épicerie sucrée                    10
+    760 Bières, Vins et Spiritueux          9   <- COICOP 02.1
+    757 Alimentation bébé                   5
+    519 Epicerie                            3
+    520 Café, thé et boissons               3
+    759 Épicerie salée                      2
+
+  >>> THE ONE THING TO KNOW BEFORE DEBUGGING THIS SOURCE <<<
+  The site's bot wall is a **User-Agent** check, not TLS and not cookies.
+  - curl_cffi 403s on chrome124 / chrome120 / safari17_0, on every path
+    INCLUDING /wp-json/wc/store/v1/products. Title "Vérification en cours".
+  - A headless Chromium whose UA still contains "HeadlessChrome" hits the
+    SAME wall ("Vérification navigateur - Erreur rencontrée"), even after a
+    9-second homepage warm-up.
+  - Override the Playwright context UA to a plain Chrome 124 string and the
+    FIRST navigation -- straight to the REST endpoint, no warm-up, no
+    cookies -- returns 200 JSON, every time.
+  Two probe runs on this domain disagreed purely because one set a UA and
+  the other did not. The spider pins the UA via PLAYWRIGHT_CONTEXTS in
+  custom_settings, because Scrapy's USER_AGENT setting does not reach the
+  browser. If this source ever returns zero rows, check the UA first.
+
+  API: WooCommerce Store API, unauthenticated.
+    GET /wp-json/wc/store/v1/products?per_page=100&page=N
+    -> [{id, name, permalink, sku, categories, is_in_stock,
+         prices:{price, currency_code, currency_minor_unit}}]
+    X-WP-Total / X-WP-TotalPages are authoritative and drive the stop.
+
+  Verified live 2026-09-05: X-WP-Total = 1713, X-WP-TotalPages = 18 at
+  per_page=100. Page 1 and page 2 return DISJOINT id sets, so the catalogue
+  genuinely paginates rather than re-serving a fixed page.
+
+  FULL UNCAPPED TEST RUN 2026-09-05: **1,712 rows** over 18 pages,
+  finish_reason=finished (natural termination on X-WP-TotalPages, not a
+  cap). 1712 vs the header's 1713 means exactly ONE product carries no
+  price and was dropped. 100% XOF, 0 blank names, 0 non-positive prices.
+  Samples from the run: "Calcium Comprimés Vegan Fortement Dosés" 15400
+  XOF; "Boîte À Goûter Enfant Pat Patrouille" 8500 XOF; "Livre
+  Histoire-Géographie EMC 4e" 45500 XOF.
+
+  MINOR-UNIT TRAP HANDLED: the Store API returns integer minor units with a
+  `currency_minor_unit` exponent. Here that exponent is 0 for XOF, so the
+  integer already is the major-unit price -- but the spider divides by
+  10**exponent rather than hard-coding, so a plugin or currency change
+  cannot introduce a silent 100x error.
+
+  SCOPE: whole catalogue, unscoped. Food is a minority (~150 of 1,713
+  products) but non-food rows are wanted too and the classifier assigns
+  leaves per product.
+
+  >>> DO NOT OVERSELL THE FOOD COUNT <<< The category counts above are an
+  UPPER bound on division 01/02, not a measurement. Sampling the categories
+  directly on 2026-09-05 shows the "Supermarché" tree leads with gift
+  glassware, not groceries: its first six products are "Ensemble Carafe à
+  Whisky" 66,000 XOF and "Ensemble cadeau de verres à whisky" 18,600 XOF
+  (COICOP 05, glassware -- NOT 02.1) before any drinkable item. The genuine
+  01/02 rows underneath are real but fewer than 150: wine ("Vin rouge
+  Bordeaux 2019 Château les belles vignes" 5,500 XOF; "Collection Vins du
+  Sud - Coffret de vins rouge" 115,500 XOF), spirits ("Ensemble Saint James
+  Rhum & Poliakov Premium Vodka" 36,950 XOF), coffee capsules (Nespresso
+  Vertuo 50 Voltesso 47,700 XOF; Starbucks by Dolce Gusto 55,000 XOF) and
+  confectionery (Lindt assortments and moulages 5,600-6,900 XOF, an advent
+  calendar 39,900 XOF). Treat the classifier, not the site's own category
+  tree, as the authority on what is actually division 01/02 here.
+
+  Even so this is Benin's only beer/wine/spirits shelf in the corpus.
+
+  A capped test run samples newest-first and will therefore look non-food
+  (the 2026-09-05 test returned school supplies, books and vitamins) --
+  that is the site's recency ordering, not a broken spider.
+
+  Benin's fifth retailer_sku source, alongside bssd_bj, montsinai_bj,
+  nolmarket_bj, phcieduport_bj and yoboumarket_bj -- and the first that is
+  not a pure-food or pure-pharmacy site.
+
+  Page family parsed: **API**. The emitted row URL is the WooCommerce
+  `permalink`, which on this install is **/produits/<slug>/ (PLURAL)**, not
+  the WooCommerce default /produit/ -- confirmed against the test run's own
+  emitted URLs, e.g.
+  https://lynia-shop.com/produits/calcium-comprimes-vegan-fortement-doses/.
+  The archive prefix/regex above use the plural form. The spider never
+  fetches those pages itself, so the values were derived from the API's
+  permalink field rather than from a page this spider requested.

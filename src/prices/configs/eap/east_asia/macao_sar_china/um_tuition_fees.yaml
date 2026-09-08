@@ -1,0 +1,56 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["10.4.0.0"]
+channel: null
+source_key: mo_um_tuition_fees
+module: eap.east_asia.macao_sar_china.um_tuition_fees
+function: fetch_mo_um_tuition_fees
+url: https://reg.um.edu.mo/current-students/enrolment-and-examinations/tuition-and-other-fees-and-charges/
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  um.edu.mo's public "Fees" page is just an index of links into a single
+  registrar page holding ALL fee schedules as a Fusion-accordion, one
+  panel per programme family. Verified live 2026-09-06, three
+  undergraduate-level panels each embed a genuinely tabular
+  (pandas.read_html-parseable) "Student Type" -> MOP table:
+    Bachelor's Degree Programmes (4yr/5yr x local/non-local, full
+    programme): 150,000 / 490,400 / 187,500 / 613,000 MOP
+    Minor Programme (per credit, local/non-local): 1,150 / 3,850 MOP
+    Honours College Certificate Programme (full programme,
+    local/non-local): 20,940 / 69,900 MOP
+
+  GOTCHA found during onboarding: the page's own `id="<hash>"` anchors do
+  NOT mark the start of their section -- byte-offset checking showed the
+  Minor Programme's real per-credit table sits at an EARLIER position than
+  its own anchor id (inside what looks like the Bachelor's byte range).
+  Slicing raw HTML by anchor position and re-parsing fragments therefore
+  attributes tables to the WRONG heading. Fixed by running
+  pandas.read_html ONCE on the whole page (preserves true document order)
+  and selecting each table by its COLUMN HEADER signature instead of
+  position -- "Programme Type"+"Student Type" for Bachelor's, "per Credit"
+  for Minor, "Programme Full Tuition Fee#" AND NOT "Programme Type" for
+  Honours (a 4th table sharing the last signature exists further down the
+  page under an unrelated "Other Fees and Charges"/"AY2025/2026" heading;
+  taking only the first match skips it correctly). Full-programme fees
+  converted to a per-year figure using
+  the programme's own stated duration (4yr/5yr for Bachelor's; Honours
+  College divided by 4, since it's a certificate bolted onto a 4-year
+  degree) so rows are comparable; Minor Programme is left as its own
+  per-credit unit rather than invented into a per-year figure with no
+  stated credit load.
+
+  No effective-date field found on the page; the linked Bachelor's PDF's
+  filename ("...-2627-...") indicates AY2026/2027, so effective_from is
+  set to that academic year's start (2026-09-01) as a best-effort
+  estimate, documented rather than silently guessed.
+
+  Currency MOP, matches countries.yaml.
+
+  Test run (`prices collect --source um_tuition_fees`): 8 rows written
+  (4 Bachelor's + 2 Minor + 2 Honours), values verified against the
+  rendered page (Honours 20,940/69,900 full-programme -> 5,235/17,475
+  per-year; Minor 1,150/3,850 per-credit, unchanged).

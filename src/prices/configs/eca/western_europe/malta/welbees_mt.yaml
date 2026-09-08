@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: welbees_mt
+url: https://welbees.mt/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "welbees.mt/item/"
+archive_path_re: '^/item/[a-z0-9-]+/\d+'
+notes: |
+  page family: listing. Shard host `welbees.com.mt` does not resolve
+  (DNS NXDOMAIN, 5/5 curl_cffi profiles) and its claimed WooCommerce is
+  wrong. Live domain is welbees.mt (no .com) - a bespoke Tailwind
+  storefront, server-rendered, no WooCommerce/Store API at all. Plain
+  curl_cffi (chrome124) returns the full product grid, no Cloudflare
+  block despite a challenge-platform beacon on the page. Category pages
+  at /shop/category/<D-code>/<slug>?page=N; verified real pagination
+  (page=1 vs page=2 on Butcher Counter: 72 vs 72 fully disjoint product
+  codes, pages go to 3 for that category alone). 16 top-level categories
+  walked. Currency EUR.

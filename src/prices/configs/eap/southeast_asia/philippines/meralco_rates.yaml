@@ -1,0 +1,43 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: meralco_rates
+module: eap.southeast_asia.philippines.meralco_rates
+function: fetch_meralco_rates
+url: https://company.meralco.com.ph/news-and-advisories/rates-archives
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Verified live 2026-09-06. Meralco (Manila Electric Company) publishes the
+  "overall electricity rate for a typical household" (PHP/kWh, all-in:
+  generation + transmission + distribution + taxes + pass-through charges)
+  as a monthly press release at company.meralco.com.ph/news-and-advisories/
+  <lower|higher>-rates-<month>-<year>. The "rates-archives" listing page is
+  a Drupal Views block whose initial HTML carries only the newest article;
+  older months are revealed by repeatedly clicking a client-side "Show
+  More" button (no URL-based pagination or JSON API found), so the fetcher
+  renders the listing with Playwright and clicks Show More several times
+  before scraping every "... Rates this <Month> <Year>" link. Each article
+  page is itself plain server-rendered HTML (no JS needed to read it) and
+  is parsed with a regex tolerant of the two headline wordings seen live
+  ("to P<new> from P<old> per kWh in <PrevMonth>" vs "to P<new> per kWh
+  this month from P<old> per kWh last <PrevMonth>").
+
+  Test run via `po prices collect --source meralco_rates` returned 12
+  monthly rows spanning January 2025-August 2026 (one gap: no Rates
+  article was found for Jan-Jul 2026 in this listing despite both
+  guessed-URL spot-checks (lower-rates-january-2026,
+  lower-rates-august-2026) resolving live -- the archive listing itself
+  appears to skip some months rather than the articles being missing;
+  worth a follow-up if monthly continuity matters more than the current
+  ~12-month sample).
+
+  Only the single headline all-in residential rate is captured (COICOP
+  04.5.1.0). Meralco also publishes a full generation/transmission/
+  distribution/tax breakdown per customer class (residential/commercial/
+  industrial) -- a separate, more involved fetcher if that granularity is
+  wanted later.

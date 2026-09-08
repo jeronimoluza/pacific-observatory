@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["11.1.1.2"]
+channel: other
+spider: himawarisaipan_mp
+url: https://www.himawarisaipan.com/menu
+language: en
+currency: USD
+cadence: weekly
+archive_prefix: "himawarisaipan.com/"
+archive_path_re: '^/menu/?$'
+notes: |
+  Himawari Store & Restaurant, Saipan (Japanese restaurant + bakery).
+  Built on the "fbgcdn.com" website-builder platform, no anti-bot. A
+  single GET on /menu embeds ONE application/ld+json Restaurant object
+  whose `menu` field is a JSON-encoded STRING (needs a second
+  json.loads) decoding to hasMenu/hasMenuSection[]/hasMenuItem[], each
+  item an Offer{price, priceCurrency}. All items are prepared
+  restaurant/bakery goods -- narrow single-COICOP (11.1.1.2)
+  source_curated, channel=other (dining; same convention as
+  hotpepper_jp). Page family: single page, no listing/PDP split -- the
+  whole menu (211 items) is on one URL, so archive_path_re anchors
+  narrowly on /menu.
+
+  GOTCHA: all 211 items live on the SAME physical url. DuplicationPipeline
+  dedups on item["url"], so a bare shared url kept only the first item
+  and silently dropped the other 210 on the first pass (item_scraped_count
+  == 1, item_dropped_count == 210) -- fixed by appending a synthetic
+  `#item-N` fragment per emitted row.
+
+  Verified live 2026-09-06 (--max-items 5, single request yields the
+  whole page): 211 rows, all distinct names, all priced in USD, 0
+  zero/blank prices. Sample: "Fruit Cake" $23.00, "Strawberry Cake"
+  $30.00, "Rare Blueberry Cheese Cake" $49.00/$59.00 (two size variants
+  under the same name).

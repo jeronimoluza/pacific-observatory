@@ -1,0 +1,65 @@
+scaffolding: spider
+spider: lavka_ru
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://lavka.yandex.ru/
+language: ru
+currency: RUB
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  Yandex Lavka Russia -- the country's largest quick-commerce grocery
+  (dark-store delivery), pinned to a central-Moscow depot.
+
+  Supersedes the Russia inventory's "not pursued" row ("homepage embeds a
+  React-Query state dump with a Moscow default geolocation and category
+  tiles, but no product-level price data in that dump; the real catalog API
+  was not reverse-engineered this wave; deprioritized per the
+  inverse-correlation law"). No reverse-engineering was needed: this is the
+  SAME white-label Lavka platform already onboarded as `lavka_uz`
+  (lavka.yandex.uz) and `globus_online_kg` (globus-online.kg), so the
+  existing three-POST unlock transfers verbatim. The inverse-correlation law
+  did not apply here because the platform's defenses had already been solved
+  on two sibling deployments -- the cost was a currency and a lat/lon, not a
+  new anti-bot effort.
+
+  Flow (no auth, no TLS impersonation, plain Scrapy UA):
+    GET  /                          -> csrfToken from __page_props__-data
+    POST /api/v1/providers/geo/v1/geocode  (Red Square 3, 55.7539/37.6208)
+                                    -> city/street/house/buildingId
+    POST /api/v1/providers/v1/layout (layoutSlug=grocery) -> 74 categories
+    POST /api/v1/providers/v2/category (once per category id)
+                                    -> flat, server-deduplicated products[]
+
+  Difference from lavka_uz: the Russian layout gives each category BOTH a
+  `categoryInfo.id` hash and a `deepLink` slug. The `id` is what must be sent
+  as `categoryId` (verified live: 1,034 products returned for the first
+  category); the `deepLink` is used only for the Referer and the synthesized
+  product url.
+
+  Catalog is ADDRESS-PINNED -- a different address resolves to a different
+  depot and assortment -- so one fixed real central-Moscow point is pinned
+  for reproducibility, matching the single-city convention of the other
+  Russian sources. Pharmacy/pet/household categories are walked too since
+  they are part of the same depot assortment; channel is `supermarket`,
+  matching lavka_uz and globus_online_kg.
+
+  Product detail is a client-side modal, not a route, so `url` is
+  synthesized as the owning category page plus a `#<product_id>` fragment --
+  unique per product, so DuplicationPipeline's url-dedup does not collapse
+  distinct SKUs.
+
+  Spider parses: API (lavka.yandex.ru JSON; the emitted `url` values are
+  synthetic category+fragment links, not archivable permalinks).
+
+  Test run 2026-09-05 (--max-items 1500, closespider-timeout 240): 2109 rows written,
+  1842 distinct product_id, 2109 distinct url,
+  25 categories touched, 0 blank names, 0 zero/negative prices,
+  100% RUB. Price range 11.00-4019.00, median 181.00. Product names
+  eyeballed against the rendered site: real SKUs, not boilerplate.
+  NOTE the standing --max-items trap: a capped run drains only the
+  last-enqueued categories, so the category mix in a capped test is NOT
+  representative of the catalog. The full category tree is listed above.

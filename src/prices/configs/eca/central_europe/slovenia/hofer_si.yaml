@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hofer_si
+url: https://www.hofer.si/
+language: sl
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.hofer.si/izdelek/"
+archive_path_re: '^/izdelek/[^/?]+-\d+$'
+notes: |
+  Page family: listing (category pages). Nuxt 3 SSR storefront (Aldi Sued's
+  own platform, distinct from Lidl's Vue data-grid-data setup used for
+  lidl_si/lidl_rs). Category pages under /izdelki/<slug>/k/<id> embed the
+  full product batch in a
+  <script type="application/json" data-nuxt-data="nuxt-app" id="__NUXT_DATA__">
+  tag -- Nuxt's flattened "devalue" payload: a single JSON array where any
+  non-negative integer value is itself an index back into the same array.
+
+  Re-verified live 2026-09-06: GET
+  /izdelki/meso-mesni-izdelki-in-ribe/k/1588161418378160 -> 200, 529KB, 44
+  product dicts recovered. Sample: sku 000000000000191385 'File lososa'
+  (GOLDEN SEAFOOD), price.amountRelevant=261 -> EUR 2.61. PDP lives at
+  /izdelek/<urlSlugText>-<sku>. Currency EUR matches countries.yaml.
+
+  No page-2/pagination param found (?page=2 returns zero product dicts,
+  same bounded-first-SSR-batch shape already documented for lidl_si) --
+  this walks 34 category hub pages once each (from the homepage's own
+  /izdelki/*/k/* top nav), not a deep-paginated full catalog.

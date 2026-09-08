@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: limo_dj
+url: https://limoo.online/
+language: fr
+cadence: weekly
+channel: marketplace
+archive_prefix: "api.hyperzod.app/store/v1/search/merchant/products"
+archive_path_re: '^/store/v1/search/merchant/products'
+notes: |
+  page family: API. Shard URL limoo.online is a client-side SPA shell that
+  links out to the real storefront, www.limodjibouti.com (Hyperzod
+  multi-vendor marketplace SaaS, tenant_id=6966). Backend
+  api.hyperzod.app needs only an x-tenant:6966 header, no auth, no WAF.
+  Whole-marketplace walk: POST /store/v1/recommend/merchants (n<=100) to
+  enumerate merchants, then GET /store/v1/search/merchant/products?
+  merchant_id=<id>&page=N (Laravel pagination) per merchant - no category
+  filter needed, each row already flattens id/name/price/price_currency.
+  61 merchants seen 2026-09-06 (supermarkets, pharmacies, electronics,
+  restaurants, boutiques); "AlRayan Mall supermarché" alone has 1298
+  products. Genuine multi-vendor catalog (seller-authored names), tagged
+  channel: marketplace accordingly. Product URL is a best-effort
+  storefront link with a product_id query param (the frontend's true PDP
+  route wasn't recovered from the minified bundle) - stable/unique for
+  dedup but not necessarily browsable. Currency DJF, read per-row from
+  price_currency (matches countries.yaml).

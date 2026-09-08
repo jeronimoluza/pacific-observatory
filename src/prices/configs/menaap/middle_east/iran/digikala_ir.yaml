@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: digikala_ir
+url: https://www.digikala.com/
+language: fa
+currency: IRR
+cadence: weekly
+archive_prefix: "api.digikala.com/v1/categories/"
+notes: |
+  Iran's dominant general marketplace (channel=marketplace: many
+  third-party sellers plus Digikala's own first-party warehouse stock).
+  The public site is a bare Next.js SPA shell -- curl_cffi gets a
+  hydration-free document with no product HTML -- but the JSON data API
+  at api.digikala.com/v1/categories/<slug>/search/ has no anti-bot at all.
+
+  Verified live 2026-09-06: 18 confirmed category slugs (mobile-phone,
+  laptop, tablet, digital-camera, smart-watch, home-appliance,
+  personal-care, perfume, toothpaste, toaster, chocolate, canned-food,
+  pasta, dairy, cheese, diaper, rice, tea) each return 20 products/page
+  with plausible catalogue totals (rice: 3,043 items; tea: 7,346 items).
+  Many guessed slugs 404 -- this list is the confirmed-working subset,
+  deliberately spanning electronics, personal care and food.
+
+  Price unit ASSUMPTION: `default_variant.price.selling_price` is
+  recorded as IRR as-is. Not independently cross-checked against a
+  rendered product page (the SPA shell carries no server-side price
+  text); public third-party API docs reference a separately-named
+  `selling_price_tooman` field elsewhere in Digikala's API surface, which
+  is the basis for treating the plain `selling_price` as the Rial figure.
+  VERIFIED 2026-09-06 by magnitude cross-check on live collected rows:
+  Canon EOS 2000D 18-55mm kit at 780,000,000 => 78,000,000 Toman
+  (~USD 700 at the 2026 free-market rate), plausible for Iran's
+  import-taxed market; read as Toman it would imply ~USD 7,000 for an
+  entry-level DSLR. The same test holds on the 10kg rice and iPhone
+  figures below. `selling_price` is Rial, so no PRICE_MULTIPLIER is
+  applied here (unlike adibmarket_ir, whose API returns Toman and
+  multiplies by 10).
+
+  Test run (--max-items 40): 40 items across 2 categories, distinct
+  product_ids, e.g. "Apple iPhone 17 Pro Max ZAA ... 256GB" IRR
+  4,379,990,000; "برنج طارم ممتاز گلستان 10 کیلوگرم" (10kg rice) IRR
+  59,490,000.

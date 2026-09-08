@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: go_cv
+url: https://www.go.cv/
+language: pt
+cadence: weekly
+channel: marketplace
+notes: |
+  GO.cv -- Correios de Cabo Verde (national postal service) multi-vendor
+  marketplace, prices in CVE. Next.js storefront over a Vendure commerce
+  backend at api.go.cv, found via Playwright network trace 2026-09-06
+  (GET api.go.cv/shop-api?languageCode=pt, no auth/session needed).
+
+  Category tree served whole by the frontend's own proxy:
+    GET https://www.go.cv/api/site-categories?locale=pt
+        -> nested tree, 423 category slugs once flattened.
+  Product search is standard Vendure GraphQL against api.go.cv/shop-api,
+  keyed by collectionSlug, with working skip/take pagination (confirmed:
+  "bebidas" totalItems=5, returns exactly 5 for take=100).
+
+  CURRENCY-PRECISION GOTCHA: this channel's Vendure config uses ordinary
+  CENTS (divide raw value by 100), not thousandths -- confirmed live
+  2026-09-06 by cross-checking the API's raw value for "Biscoitos da Avó
+  Mila" (25000) against its rendered PDP at
+  https://www.go.cv/product/aa00-biscoitos-da-avo-mila, which displays
+  "250.00 CVE". Do not assume the /1000 divisor sometimes seen on other
+  Vendure channels -- it is configured per channel, not a platform
+  constant.
+
+  Category tree is deeply nested and a parent collection typically
+  includes its children's products, so results are deduped by productId
+  across the whole crawl.
+
+  Page family: API (spider reads api.go.cv GraphQL directly; the `url`
+  field it emits, https://www.go.cv/product/<slug>, is a real PDP the
+  spider itself never fetches).
+
+  Test run 2026-09-06: partial crawl (max-items cap), 200+ rows, e.g.
+  "Biscoitos da Avó Mila" 250.0 CVE and "Café do Fogo – Mosteiros |
+  Torrado Moído | 250g" 523.0 CVE, both matching the API's own displayed
+  currency and the cents-divisor above.

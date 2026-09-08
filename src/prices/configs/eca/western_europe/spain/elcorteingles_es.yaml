@@ -1,0 +1,47 @@
+scaffolding: spider
+spider: elcorteingles_es
+channel: hypermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.elcorteingles.es/supermercado/
+language: es
+currency: EUR
+cadence: weekly
+coicop_codes: null
+notes: |
+  P4 surplus (Spain already reaches 5 sources); shipped anyway as a
+  bonus -- easy win once probed. Shard AI_NOTES called this "premium
+  tier - upper bound of the Spanish distribution" -- confirmed live,
+  worth keeping for that reason alone.
+
+  Server-rendered "Moonshine" storefront (El Corte Inglés's own stack,
+  unrelated to any Next.js/Nuxt pattern seen elsewhere). Every category
+  page embeds `window.__MOONSHINE_STATE__ = {...}` with the live product
+  grid at `viewData.plp.products` (24 entries/page). The array is MIXED:
+  some entries are ad/sponsor slots with no `priceSpecification` key,
+  others are real products (`id`, `description`, `url`,
+  `priceSpecification.price`/`.salePrice`, category chain) -- the spider
+  filters on `priceSpecification` presence.
+
+  Pagination is a plain `/supermercado/<slug>/<n>/` path; the state
+  blob's own `viewData.plp.pagination.path_next` / `.totalPages` give the
+  walk directly. Live test 2026-09-06: `frescos` reports
+  totalPages=107 @ 24/page = ~2,558 products; page 1 and page 2 verified
+  to return disjoint product ids. No WAF encountered -- curl_cffi
+  chrome124, 200 throughout (pages run 1.8-7.3MB).
+
+  `priceSpecification.salePrice` is populated (and lower than `.price`)
+  when `has_discount` is true -- looked like it might be the EU Article
+  6a "lowest price in 30 days" field the shard's AI_NOTES flagged, but
+  this was NOT verified to carry that specific semantics (could just be
+  "current promo price") -- spider emits salePrice-or-price as a single
+  current shelf price only, no Article 6a claim made.
+
+  Walks 11 top-level category slugs from the homepage nav:
+  alimentacion-general, bebes, bebidas, congelados,
+  cuidado-personal-y-belleza, desayunos-dulces-y-pan,
+  drogueria-y-limpieza, frescos, lacteos, mascotas,
+  nutricion-y-bienestar. `coicop_classification: classifier` /
+  `coicop_codes: null` -- general supermarket, same convention as
+  carrefour_es / carrefour_pl.

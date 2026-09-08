@@ -1,0 +1,48 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: keretabrunei_bn
+url: https://www.keretabrunei.com/en/ads
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.keretabrunei.com/en/vehicle_listings/"
+archive_path_re: '^/en/vehicle_listings/[^/?]+/?$'
+notes: |
+  Page family: API (spider calls the /en/ads AJAX endpoint directly and
+  never fetches a /en/vehicle_listings/ ad-detail page -- the archive
+  prefix/regex above targets the individual ad PDP shape for Common Crawl
+  recovery, a different surface than what the live spider reads).
+
+  Discovery lead re-probe 2026-09-06 (shard w3_shard02, bare hostname
+  "keretabrunei.com" with no prior triage). Vehicle classifieds on the
+  CarGebeya Rails platform (`_CarGebeya_session` cookie). Public routes
+  (`/buy-car-<make>`, plain GET on `/en/ads`) return a literal JSON `null`
+  body -- looks dead/empty at first glance. Confirmed genuinely live via
+  the `/en/last_ad` RSS feed (a real current listing, "Toyota Vios ...
+  BND 7,500"). The `/en/ads` route is a Turbolinks/jQuery AJAX partial:
+  it only returns real content with `X-Requested-With: XMLHttpRequest` +
+  `Accept: text/javascript` headers, responding with a
+  `$('#ads-list').html('...')` JS-string blob of escaped listing-card
+  HTML. This is the "bare shell -- find the backend" pattern from the
+  prior wave, just manifesting as a header requirement rather than a
+  separate API host.
+
+  Pagination via `?page=N` on the same endpoint, confirmed disjoint (page
+  1 vs page 2 returned distinct ad ids in the probe).
+
+  Card markup (post JS-string-unescape): `a.common-ad-card[href]` wraps
+  `h4[title]` (year+make+model) and, when priced,
+  `div.ad-vehicle-price span.price` under a BND label (confirmed BND from
+  the ad-detail page's own currency dropdown: BND/USD only, BND default
+  -- matches countries.yaml). ~16 of 20 sampled cards carried a price;
+  unpriced ("POA") ads are skipped.
+
+  Test run (2026-09-06, --max-items 20) returned real rows, e.g. "2024
+  Toyota Corolla" BND 7,000, "2022 Toyota Land Cruiser" BND 17,000 -- see
+  collect run notes for exact count.
+
+  CAVEAT: used-vehicle classifieds asking prices, not new-vehicle retail
+  list prices -- same caveat class as bruneida_bn (same country) and
+  khmer24_kh/olx_ba for other general classifieds sources in this repo.

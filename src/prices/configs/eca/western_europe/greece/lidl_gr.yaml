@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lidl_gr
+url: https://www.lidl-hellas.gr/
+language: el
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.lidl-hellas.gr/c/"
+archive_path_re: '^/c/[^/?]+/s\d+'
+notes: |
+  Same ODS/Vue SSR storefront family as lidl_si and lidl_rs. The site's
+  `/c/<slug>/s<id>` category hub pages (harvested from the homepage nav)
+  server-render a grid of product tiles, each carrying a
+  data-grid-data="{&quot;...&quot;}" HTML-entity-escaped JSON blob with
+  title, category and regionsPrices (EUR).
+
+  Original P4 lead's AI_NOTES flagged lidl-hellas.gr as "leaflet-led" /
+  build_tier D (hard, app-only) -- untrue: the site is a plain SSR storefront,
+  no JS execution needed, curl_cffi chrome124 gets a clean 200 on every
+  category and the weekly-offers campaign pages alike.
+
+  Re-verified live 2026-09-06: /c/fagito-poto/s10068374 -> 200, 524KB, 12
+  product tiles with data-grid-data parsed cleanly. Price lives at
+  regionsPrices.1.currentPrice.price (plain EUR float); Lidl-Plus-loyalty
+  items fall back to currentLidlPlusPrice per the shared lidl_si convention.
+
+  coicop_divisions: 01
+  divisions_basis: category_names (galata/tyria/giaoyrtia/noma/zymarika/ryzia
+  slugs are dairy, cheese, yogurt, food and pasta/rice categories; the walk
+  also covers non-food divisions 05/06/09/13 via oikiakos-exoplismos,
+  koyzina, athlitiki-endysi, moda-axesoyar, vrefika-paidika-eidi)

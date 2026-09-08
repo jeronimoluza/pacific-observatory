@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: home-improvement
+spider: pevex_hr
+url: https://www.pevex.hr/
+language: hr
+currency: EUR
+cadence: weekly
+archive_prefix: "www.pevex.hr/"
+notes: |
+  Croatian hardware/home-improvement and electronics/appliance chain
+  (single first-party retailer, channel=home-improvement). Custom .NET-style
+  storefront, server-rendered category listing pages.
+
+  Verified live 2026-09-06: GET /elektronika/mobiteli-i-satovi/mobiteli ->
+  200, 20 product cards server-rendered with name, numeric id, brand and
+  price, e.g. "Mobitel Samsung Galaxy A27 5 g 6,7",6GB, 128GB, crni"
+  id=106408 EUR 349.90.
+
+  No pagination mechanism was found in the static HTML: `?index=N` and the
+  `page_size`/`sort`/`_price` params named in robots.txt's Disallow list did
+  not change the returned product set in testing, and no load-more/AJAX
+  endpoint was discoverable without a browser. This spider therefore takes
+  the ~20 products server-rendered per leaf category page as-is -- narrower
+  than a full catalogue crawl but still real per-category coverage across
+  400 categories.
+
+  Category list (400 leaf slugs, `_pevex_hr_categories.txt`) seeded from
+  https://www.pevex.hr/xml/sitemap_3_1.xml + sitemap_3_2.xml: collected all
+  distinct base paths (query string stripped) carrying a filter query
+  string (`?f=1&index=1&brand=...`), then kept only leaf paths (paths with
+  no other collected path as a strict sub-path).
+
+  Test run (--max-items 20, single category): 20 items, distinct
+  product_ids, EUR prices in a plausible range.

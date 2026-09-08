@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: doz_pl
+url: https://www.doz.pl/
+language: pl
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.doz.pl/p/"
+archive_path_re: '^/p/[^/?]+-\d+$'
+notes: |
+  Page family: listing (category /k/ pages). Server-rendered, no WAF --
+  curl_cffi chrome124 clears the front page with a plain 200.
+
+  Re-verified live 2026-09-06: GET /k/bol-4300 -> 200, 905KB, 24
+  .product-tile cards. Sample: data-gtm-product-id="202519" 'DOZ Product
+  Omega-3 1000, kapsulki miekkie, 60 szt.' price-major "32" + price-minor
+  "99 zl" -> PLN 32.99.
+
+  Price is split into two spans (.product-tile__price-major /
+  .product-tile__price-minor, the latter carrying both decimal digits and
+  the "zl" unit suffix) -- joined and regex-cleaned rather than parsed from
+  one node. Product id comes from the name-link's data-gtm-product-id
+  attribute. Currency PLN matches countries.yaml.

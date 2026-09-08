@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["07.2.2.1", "07.2.2.2", "07.2.2.3"]
+channel: null
+source_key: doe_ncr_pump_prices
+module: eap.southeast_asia.philippines.doe_ncr_pump_prices
+function: fetch_doe_ncr_pump_prices
+url: https://doe.gov.ph/data-and-prices/liquid-fuels/retail-pump-prices/ncr-pump-prices
+language: en
+cadence: weekly
+fallback_date: 2026-01-01
+notes: |
+  Verified live 2026-09-06. Department of Energy's weekly liquid-fuels price
+  survey. The "NCR Pump Prices" tab links one PDF per week hosted on
+  prod-cms.doe.gov.ph (no auth) in the pattern
+  ncr-price-monitoring-<MMDDYYYY>-pdf. Per-city per-brand survey table
+  (PETRON/SHELL/CALTEX/PHOENIX/TOTAL/FLYING V/UNIOIL/SEAOIL/PTT/INDEPENDENT)
+  for RON100/97/95/91 petrol grades plus DIESEL/DIESEL PLUS/KEROSENE, with
+  an OVERALL RANGE and COMMON PRICE column per (area, product). The
+  underlying PDF table has brand-column cells that span multiple product
+  rows, which defeats pdfplumber's cell/table extraction -- the fetcher
+  instead regexes the trailing "<low> - <high> <common>" triplet that
+  survives on ``page.extract_text()``'s per-line output, and drops rows
+  where the source itself published "#N/A" (brands disagreed too widely to
+  average) rather than fabricating a price.
+
+  Test run via `po prices collect --source doe_ncr_pump_prices` against the
+  2026-08-18 week bulletin returned real rows across ~14 Metro Manila
+  cities x up to 7 products (see items count in the shard results line).
+
+  Scope: NCR only. North/South Luzon, Visayas and Mindanao tabs on the same
+  site publish the identical PDF shape under a different filename prefix
+  (e.g. north-luzon-price-monitoring-...) -- a natural follow-up pass, not
+  attempted here.

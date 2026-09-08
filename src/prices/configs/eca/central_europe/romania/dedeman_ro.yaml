@@ -1,0 +1,44 @@
+scaffolding: spider
+spider: dedeman_ro
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://www.dedeman.ro/
+language: ro
+currency: RON
+cadence: weekly
+channel: home-improvement
+coicop_codes: null
+archive_prefix: "www.dedeman.ro/ro/"
+archive_path_re: '^/ro/[^/?]+/c/\d+$'
+notes: |
+  Dedeman -- Romania's largest hardware/home-improvement chain, Magento 2.
+  Discovery lead (wave 4, bare hostname `dedeman.ro`, triage tier "C -
+  engineering required" / Verdict "Directory/report"). Re-probed
+  2026-09-06: no anti-bot encountered on any request, `curl_cffi
+  impersonate=chrome124` clears cleanly; fully server-rendered, no
+  Playwright needed.
+
+  Category tree comes free from the homepage nav: 394 `/c/<id>` category
+  URLs are linked directly in the homepage's mega-menu HTML.
+  `CrawlSpider` + `LinkExtractor` (allow=`/ro/[a-z0-9-/]+/c/\d+$`) walks
+  them.
+
+  Price-selection trap: the theme wraps the active selling price in either
+  `<span class="special-price">` (item on sale, crossed-out original in a
+  sibling `<span class="old-price">`) or `<span class="final-price">` (no
+  discount). The `data-price-type` attribute reads backwards here -- a
+  plain non-discounted item's ONLY price is tagged
+  `data-price-type="oldPrice"`, not `finalPrice`. Selector must match on
+  the wrapper class (special-price > final-price), never the attribute.
+
+  No pagination observed: `?p=2` re-serves the identical product set on
+  sampled categories (no pager markup in raw HTML either) -- categories
+  appear single-page; breadth comes from the 394-category walk, not depth.
+
+  Page family parsed: category listing pages only (name + price both come
+  from the grid; PDP never fetched).
+
+  Test run 2026-09-06 (--max-items 10): passed, real RON prices (e.g.
+  139.00-2228.99 lei), 0 blank names, correct discount-aware price
+  selection verified against the rendered page.

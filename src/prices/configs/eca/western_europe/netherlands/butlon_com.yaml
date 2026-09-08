@@ -1,0 +1,22 @@
+scaffolding: spider
+spider: butlon_com
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.butlon.com/
+language: nl
+currency: EUR
+cadence: weekly
+coicop_codes: null
+notes: |
+  Page family: sitemap -> PDP (spider never fetches a category listing page).
+  Bulk-buying / anti-foodwaste online supermarket -- short-THT-date deals
+  and surplus stock, distinct pack-size economics from a regular
+  supermarket. Next.js storefront; catalog is fully enumerable via
+  /sitemap.xml, which lists 1,439 /p/<slug> product URLs directly (no
+  category crawl needed). Each PDP carries a schema.org Product/Offer
+  JSON-LD block with sku, price, priceCurrency, and a BreadcrumbList whose
+  last item is the category. Verified live 2026-09-06: "Appelsientje Kids
+  fruitdrink framboos 6-pack" sku=238160, EUR 2.49, category
+  "Frisdrank & Water". No WAF encountered (plain curl_cffi chrome124 works).

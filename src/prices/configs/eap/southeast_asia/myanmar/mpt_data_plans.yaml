@@ -1,0 +1,37 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+channel: null
+source_key: mm_mpt_data_plans
+module: eap.southeast_asia.myanmar.mpt_data_plans
+function: fetch_mm_mpt_data_plans
+url: "https://mpt.com.mm/en/packages-and-plans/"
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  MPT (Myanmar Post and Telecommunications) mobile data bundle plans.
+  Static server-rendered HTML, Visual Composer accordion of
+  `<ul class="pack_box"><li class="pack-li">` cards -- `Price : <n> Ks`,
+  `Data : <n> MB|GB`, `Validity : <n> day(s)` as plain text, no JS
+  rendering needed. Page family: html_scrape (single static page).
+
+  20 plan cards confirmed live 2026-09-06, MMK 199-37,889. A handful of
+  cards (the "A Kyite Kyi (Auto Renew)" app-only variants at 298 Ks/300
+  MB/1 day for YouTube/TikTok/Telegram) share identical name+price+data+
+  validity and are distinguished only by a styled "<App> Only" text line
+  -- folded into item_name to avoid an identity-hash collision.
+
+  No published effective date per plan -- emitted as `period_kind:
+  snapshot` at fetch time, same treatment as air_vanuatu_domestic.py.
+  COICOP 08.3.2.0 (mobile communication services) -- narrow, source_curated.
+  Note: many pre-existing telecom tariff manifests in this repo use
+  "08.1.0" as a shorthand, which the taxonomy loader flags as not a valid
+  leaf (08.1 is communication EQUIPMENT, not services) -- this manifest
+  uses the correct services leaf instead, not copying that pattern.
+
+  Verified 2026-09-06: direct-import test returned 20 rows, MMK 199-37,889,
+  all distinct observation_hash, currency MMK throughout (site displays
+  "Ks" only, never parsed as the currency code itself).

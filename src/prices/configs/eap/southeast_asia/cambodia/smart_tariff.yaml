@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: kh_smart_tariff
+module: eap.southeast_asia.cambodia.smart_tariff
+function: fetch_kh_smart_tariff
+url: https://www.smart.com.kh/plans
+language: en
+cadence: irregular
+fallback_date: 2026-01-01
+notes: |
+  Smart Axiata (Cambodia mobile carrier) plan-family cards on /plans are
+  server-rendered plain HTML (no JS/impersonation needed, confirmed live
+  2026-09-06): each card has an <img alt="<plan name>"> and a "Starts from
+  X USD/<period>" line, e.g. Smart 5G Data "1.5 USD/week", Smart M2M
+  "10 USD/6 months". Per-plan detail pages (/plans/<slug>) render their
+  full tier-by-tier price table client-side -- confirmed empty of price
+  text in the server HTML on /plans/5g-data -- so this fetcher only
+  captures the entry/"starts from" tier per plan family (5-6 rows/run).
+  Real, verifiable, non-zero pricing for a division (08 communication
+  services) with no other Cambodia coverage in this repo; revisit with
+  Playwright if the full per-tier table is wanted. Currency USD (as
+  quoted on-site; Cambodia telecom commonly quotes retail in USD).
+channel: null

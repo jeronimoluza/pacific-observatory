@@ -1,0 +1,92 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kuuza_km
+url: https://kuuzacomores.com/
+language: fr
+cadence: weekly
+channel: marketplace
+archive_prefix: "kuuzacomores.com/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  "La première MarketPlace des Comores" — a Laravel storefront selling for
+  several Comorian vendors (Kinaza, La Maison du Romarin, Wutamu, Ridaah,
+  Uzuri) alongside imported appliances and hi-tech. Comoros' SECOND source
+  of any kind.
+
+  WHY IT MATTERS BEYOND THE ROW COUNT: the country's only prior manifest,
+  comoresenligne_km, prices every product in EUR because it sells to the
+  diaspora — flagged in that manifest as an UNRATIFIED definitional call
+  that would return Comoros to zero if rejected. Kuuza prices in **KMF**,
+  the currency countries.yaml lists for Comoros. It is the first
+  domestic-currency price source the country has, so it de-risks
+  comoresenligne_km's open question rather than duplicating it.
+
+  Flagged as "still unchased" in the 2026-09-01 Comoros inventory
+  ("kuuzacomores.com — live, 200, ~83 KB, only 2 price tokens on the
+  landing page, needs an API hunt"). No API hunt was needed: the landing
+  page is thin but every PDP server-renders the price.
+
+  FEASIBILITY (probed 2026-09-05): no WAF at all — curl_cffi
+  impersonate=chrome124 returns 200 on the homepage, sitemaps, category
+  pages and PDPs alike. Tier 1A, no JS, no Playwright.
+
+  ENUMERATION: /sitemap.xml is a sitemap INDEX; the product shards are
+  products-YYYY-MM.xml, one per month the catalogue grew. Walking all 19
+  shards gives **361 product URLs** site-wide (measured 2026-09-05, per
+  shard: 2026-09=2, 2026-08=44, 2026-07=6, 2026-06=35, 2026-05=21,
+  2026-04=1, 2026-03=5, 2026-02=5, 2026-01=11, 2025-12=19, 2025-11=10,
+  2025-10=21, 2025-09=11, 2025-08=7, 2025-07=27, 2025-06=95, 2025-05=7,
+  2025-04=31, 2024-12=3). 361 is the authoritative expected row count —
+  derive the expectation from the source before believing a row count, per
+  the identity-trap lesson recorded on comoresenligne_km.
+
+  EXTRACTION: every PDP carries three application/ld+json blocks (WebSite,
+  BreadcrumbList, Product). The Product block has name, sku, category,
+  description, image and an Offer with price + priceCurrency "KMF" +
+  availability. Prices are plain decimals in MAJOR units (1200 / 3800 /
+  210000 all check against the rendered page); no minor-unit divide.
+
+  Samples verified live 2026-09-05:
+    Cumin Moulu 80g             1,200 KMF  (cat "Epices des Comores")
+    Romarin Séché 100g          3,800 KMF  (cat "Maison du Romarin")
+    Congélateur 198 L Berklays  210,000 KMF (cat "Congélateurs")
+
+  FULL UNCAPPED TEST RUN 2026-09-05: **360 rows**, finish_reason=finished
+  (natural termination). Expected 361 from the sitemap shards, so exactly
+  ONE product was dropped — it carries no usable Product JSON-LD price.
+  360 distinct URLs, 100% KMF, 0 blank names, 0 non-positive prices.
+  NOTE: `sku` is NOT perfectly unique (359 distinct skus across 360 rows);
+  dedup rides on the URL, which is unique.
+
+  SCOPE: the whole catalogue, deliberately UNSCOPED — same call as
+  comoresenligne_km.
+
+  >>> BE PRECISE ABOUT THE FOOD COUNT: IT IS 13 ROWS, NOT ~20 <<<
+  Measured on the full 360-row run, the genuinely EDIBLE items are exactly
+  13, all local spices and dried herbs: Curcuma Moulu Bio 650 KMF, Cumin
+  Moulu 80g 1,200, Coriandre Moulu 80g 1,200, Ubu wa tahaniwa 1,500,
+  Fouka Cannelle Bio 2,000, Gingembre Moulu Bio 2,000, Romarin Séché 50g
+  2,000, Romarin en poudre 50g 2,200, Vanille des Comores Tube 5 gousses
+  3,000, Romarin Séché 100g 3,800, Vanille Tube 10 gousses 5,500,
+  Cardamone 50g SALASABIL ART 6,000, Vanille Sachet 250g 17,500.
+  Everything else in the "Maison du Romarin" / "Wutamu" / "La Savonnerie"
+  categories is SOAP and skincare made from those same botanicals — a
+  keyword scan for romarin/gingembre/curcuma over this catalogue returns
+  mostly savons and huiles capillaires, not food. The other ~347 rows are
+  appliances, home textiles, cosmetics and hi-tech.
+
+  So do NOT count this as a meaningful COICOP-01 win. Its real value is
+  (a) 360 clean KMF-priced rows for a country that had exactly 1 source,
+  and (b) resolving the EUR-vs-KMF question hanging over
+  comoresenligne_km. Non-food rows are wanted anyway and the classifier
+  assigns leaves per product, so no category filter is applied.
+
+  channel: marketplace — the site sells for multiple distinct Comorian
+  vendor brands under one platform, which is the GLOSSARY marketplace test.
+
+  Page family parsed: **PDP**. The sitemap product URLs and the emitted
+  row URLs are the same customer-facing /products/<slug> permalinks, so the
+  archive prefix/regex above were derived from URLs the spider actually
+  fetches (unlike comoresenligne_km, whose row URLs are API routes).

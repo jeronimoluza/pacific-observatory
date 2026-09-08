@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kapruka_com
+url: https://www.kapruka.com/
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+notes: |
+  JSP server-rendered category pages at /online/grocery/price/<slug>, each
+  embedding one <script type="application/ld+json"> Product block per SKU
+  (no auth). Verified live 2026-09-06: dairy_products page carries 30
+  Product blocks (of 80 total per the page's own counter). Pagination
+  (?page=N / ?pageNo=N) is a no-op — server returns byte-identical HTML;
+  the remaining items load via client-side AJAX this spider does not
+  drive, so each of the 26 grocery categories yields only its first page
+  (~30 SKUs). Kapruka quotes its whole catalog in USD (positions itself as
+  a global gift-delivery service into Sri Lanka) even though goods are
+  fulfilled locally — emitted as USD to match offers.priceCurrency.

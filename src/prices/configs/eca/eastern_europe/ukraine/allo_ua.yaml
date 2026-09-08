@@ -1,0 +1,50 @@
+scaffolding: spider
+spider: allo_ua
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://allo.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: electronics
+coicop_codes: null
+timeout: 21600
+notes: |
+  ALLO -- Ukrainian electronics/appliances marketplace ("national
+  marketplace"). Discovery lead (wave 3, bare hostname `allo.ua`).
+  known_blockers.md had it as an untouched Cloudflare-suspect; re-probed
+  2026-09-06 with curl_cffi impersonate=chrome124 across the full 5-profile
+  ladder -- clean HTTP 200 on chrome124 with no UA-resident IP needed
+  (server header is cloudflare but the GET challenge is not engaged).
+
+  Server-rendered HTML (Magento-based storefront, `.html` PDP suffix).
+  Category listing embeds one `div[data-product-id]` per product with a
+  `product-card__title` anchor (name + url) and a `div.v-pb__cur span.sum`
+  current-price node (a sibling `div.v-pb__old` carries the crossed-out
+  price on discounted items -- always ignored). Currency is UAH-only
+  (symbol always "₴").
+
+  Pagination is Magento `?p=N`, NOT `?page=N` (`?page=N` silently no-ops
+  and re-serves page 1). `?p=N` past the last real page does not go empty
+  -- it re-serves the LAST page verbatim (verified identical product-id
+  sets at p=50 and p=100 on `naushniki`), the classic Magento
+  pagination-loop trap. The spider stops on an empty page OR a page whose
+  product-id set is identical to the previous page's.
+
+  211 category slugs (`_allo_ua_categories.txt`) pulled from 2 of the
+  site's own ~20 category-sitemap shards (`/ru/<slug>/` locations
+  translated to `/ua/`, per-city variants stripped). Partial slice of the
+  full mega-menu; some slugs are pure hub pages with 0 product cards
+  (e.g. `mobilnye-telefony-i-sredstva-svyazi`) and just cost one wasted
+  request each. Verified leaf categories: `televizory`, `naushniki` (60
+  cards each).
+
+  Page family parsed: listing only (PDP never fetched).
+
+  Kyiv catalogue (Ukrainian convention for city-priced sources, no city
+  selector needed).
+
+  Test run 2026-09-06 (--max-items 60, closespider-timeout 120): passed,
+  distinct product_id per row, 0 blank names, 0 zero/negative prices, 100%
+  UAH.

@@ -1,0 +1,54 @@
+scaffolding: spider
+spider: megamarket_group_ua
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://megamarket.zakaz.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  MEGAMARKET group -- ONE source covering four Kyiv storefronts of a single
+  operator: MEGAMARKET (store 482676003, Поділ), ULTRAMARKET (48277602,
+  Kosmopolit DRIVE), Za Raz (482778002) and AlcoHub (482779002). They sit at
+  the same three addresses (Surykova / Kosmopolit / Podol).
+
+  WHY MERGED (measured 2026-09-06): these are not independent price quotes.
+  Whenever one EAN appears in two of the banners it carries an IDENTICAL
+  price -- megamarket x ultramarket 1/1, ultramarket x zaraz 12/12, zaraz x
+  alcohub 20/20, plus 28/30 and 34/38 on a same-shelf sample. Every pair
+  spanning this group and the Kharkiv hub was 0% identical (0/1, 0/3, 0/5),
+  so the effect is the operator and not the Zakaz platform. Published as four
+  sources they would have quadruple-counted every shared SKU: publish.py
+  aggregates on (coicop_code, country, standard_unit) with n_obs = size and
+  no source dimension, so duplicate quotes drag the median AND can lift a
+  cell past MIN_OBS_PER_CELL on the strength of one real observation.
+
+  Each banner still contributes a distinct slice of assortment (AlcoHub is an
+  alcohol specialist, 136 leaf categories against MEGAMARKET's 781), which is
+  why the group is crawled in full rather than reduced to its flagship. The
+  spider walks all four stores in order and emits each ean/sku exactly once,
+  first store wins.
+
+  NOTE web_url is per-storefront, not store-independent: the same EAN is
+  megamarket.zakaz.ua/uk/products/<slug>--<ean>/ under one banner and
+  ultramarket.zakaz.ua/... under another. DuplicationPipeline's url-dedup
+  therefore CANNOT collapse banner twins; _zakaz_base dedups on ean/sku in
+  multi-store mode instead.
+
+  Runs on the Zakaz.ua white-label e-grocery platform (shared base
+  `_zakaz_base.ZakazBaseSpider`). Discovery finding 2026-09-05: the
+  known_blockers.md entry recording zakaz.ua as a genuine 403 is true only of
+  the MARKETING ROOT (https://zakaz.ua/). Every per-chain storefront
+  subdomain and the platform API host `stores-api.zakaz.ua` answer HTTP 200
+  anonymously -- no cookies, no Origin/Referer, no TLS impersonation. Flow:
+  GET /stores/<id>/categories/ for the tree, then
+  GET /stores/<id>/categories/<cat>/products/?page=N (30 per page) until an
+  empty results array. Price is returned in MINOR UNITS (kopiyky) and is
+  divided by 100 in the base class.
+
+  Supersedes the four single-banner configs megamarket_ua / ultramarket_ua /
+  zaraz_ua / alcohub_ua, which were never committed.

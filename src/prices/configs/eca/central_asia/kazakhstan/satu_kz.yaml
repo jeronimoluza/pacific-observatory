@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: satu_kz
+url: https://satu.kz/
+language: ru
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+notes: |
+  Satu.kz -- Kazakhstan's largest general/B2B marketplace. Server-rendered
+  HTML, stable data-qaid attributes, no WAF (curl_cffi impersonate=chrome124,
+  200). Verified live 2026-09-06.
+
+  Each product tile ([data-qaid="qa_product_tile"]) carries data-product-id,
+  a [data-qaid="product_link"] anchor (name+href), and
+  [data-qaid="product_price"] with a clean numeric data-qaprice attribute
+  (KZT, no separators to strip).
+
+  Top-level nav categories (Odezhda, Bytovaya-tehnika, Mebel, Stroitelstvo,
+  ...) are hub pages with ZERO product tiles -- they only link to leaf
+  categories. Four confirmed leaf categories with live tiles hard-coded
+  this pass: Noutbuki (laptops), Smartfony (phones), Holodilniki (fridges),
+  Velosipedy (bicycles) -- a full hub->leaf tree walk is deferred.
+
+  Pagination is a `;<n>` URL-path suffix (satu.kz/Noutbuki;2), confirmed
+  from the page's own next_page link -- not a query param.
+
+  Page family: listing only (name/price/id all embedded per card, no PDP
+  fetch). Wide/classifier: source spans electronics, appliances, sport,
+  clothing, home goods -- narrow coicop_codes would misrepresent it.
+
+  Test run 2026-09-06 (--max-items 20): 26 items across all 4 categories
+  (some page-2 duplicate URLs correctly dropped by DuplicationPipeline --
+  the `;2` pagination occasionally re-serves a few page-1 rows), 26
+  distinct product_id, 0 blank names, 0 zero/negative prices, 100% KZT.
+  Sample: "Ноутбук Lenovo ThinkBook 15 G2 ITL 15.6" 398380 KZT,
+  "Велосипед Cube ATTENTION SL 29" 449900 KZT, "Смартфон Poco C85"
+  79000 KZT. Note: Smartfony redirects (301) to Mobilnye-telefony.

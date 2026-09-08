@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+source_key: kh_odc_fuel
+module: eap.southeast_asia.cambodia.odc_fuel_prices
+function: fetch_kh_odc_fuel
+url: https://data.opendevelopmentcambodia.net/en/dataset/retail-fuel-price-at-station
+language: en
+cadence: daily
+fallback_date: 2026-01-01
+notes: |
+  Open Development Cambodia (NGO open-data portal) runs a CKAN instance
+  hosting a "Retail fuel prices in Cambodia" dataset, manually transcribed
+  from Ministry of Commerce price-notification PDFs. Confirmed live
+  2026-09-06 via the public CKAN datastore_search API (no auth):
+  https://data.opendevelopmentcambodia.net/api/3/action/datastore_search
+  ?resource_id=a5bcac01-eec8-43b4-b43d-8b4f5d98c262&limit=1000 -- 187 daily
+  rows, fields im_date/regu_gas/diesel_gas/moc_no/reference, prices in
+  KHR/L. moc.gov.kh itself exposes a richer commodity-price + CPI GraphQL
+  API (graphql.moc.gov.kh/graphql) that was under maintenance on
+  2026-09-06 -- worth a fetcher of its own once it's back up.
+channel: null

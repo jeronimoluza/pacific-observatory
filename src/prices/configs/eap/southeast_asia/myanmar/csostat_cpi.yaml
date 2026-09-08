@@ -1,0 +1,35 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01"]
+channel: null
+source_key: mm_csostat_cpi
+module: eap.southeast_asia.myanmar.csostat_cpi
+function: fetch_mm_csostat_cpi
+url: "https://www.csostat.gov.mm/Content/pdf/PriceAnalysis/p3.1MA02.xlsx"
+language: en
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  Myanmar Central Statistical Organization (CSO), table 3.1 "Consumer
+  Price Index (Union) and Rate of Inflation", Base 2012=100. XLSX linked
+  from `/MonthlyPublication/PriceAnalysis`. Only the `Food_Index` column
+  (COICOP 01) is emitted -- the headline all-items `CPI` column is dropped
+  per the onboarding skill's open design question (no sanctioned headline
+  sentinel), and `Non_Food_Index` is dropped because it is a residual
+  spanning nearly every other division with no single honest COICOP code
+  (unlike vnso_cpi.py's narrower "Miscellaneous" catch-all).
+
+  **STALE, flagged loudly**: the XLSX's own `Last-Modified` header is
+  2022-12-16 and the embedded data stops at June 2022 (13 months from June
+  2021), despite the surrounding page being labelled a monthly
+  publication. This is a real, confirmed finding from this onboarding pass
+  (2026-09-06), not a fetcher bug -- CSO appears to have stopped updating
+  this specific file years ago while the page itself remains live. The
+  fetcher is idempotent against this (returns None once the historical
+  window is ingested); worth a periodic re-check in case CSO resumes.
+
+  Verified 2026-09-06: direct-import test returned 13 rows (2021-06
+  through 2022-06), Food_Index values 182-213 (base 2012=100), all
+  distinct observation_hash.

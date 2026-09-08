@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mega_image_ro
+url: https://www.mega-image.ro/
+language: ro
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: API (persisted-query GraphQL, no page ever fetched for
+  its rendered HTML).
+
+  Ahold Delhaize's Romanian banner (robots.txt Sitemap points at
+  delhaizesitemapindex.xml; Play Store package ro.delhaize). Corporate
+  homepage has no visible shop nav, but the storefront runs a Next.js app
+  with an Apollo persisted-query GraphQL API at /api/v1/. Category pages
+  call GetCategoryProductSearch (found via Playwright network trace),
+  which 400s "potential CSRF" unless an apollo-require-preflight (or
+  x-apollo-operation-name) header is set -- no cookie/session otherwise.
+  Verified live 2026-09-06 with plain curl_cffi.
+
+  372 leaf category codes harvested from the gzipped Delhaize sitemap
+  (delhaizesitemap-0.xml.gz, <xhtml:link href=".../c/<code>"/>; 452 total
+  codes reduced to leaves by dropping any code that is a string-prefix of
+  another) -- listed in _mega_image_ro_categories.txt.
+
+  Confirmed live 2026-09-06: category 006001003 "Tablete de ciocolata",
+  code 39614 "Ciocolata amaruie 85% cacao 80g" RON 14.99 (price.value,
+  decimal RON). AI_NOTES' loyalty/CONNECT tiered price exists in the
+  payload (wasPrice/promo fields) but not captured -- single headline
+  price only, matching the billa_at/billa_cz convention.

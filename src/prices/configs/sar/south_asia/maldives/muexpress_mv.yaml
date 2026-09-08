@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: muexpress_mv
+url: https://www.muexpress.mv/shop
+language: en
+currency: MVR
+cadence: daily
+archive_prefix: "muexpress.mv/"
+archive_path_re: '^/shop(?:/[^/?]+)?/?$'
+notes: |
+  Mu Express, a general online grocery/household-goods store in the
+  Maldives. Standard Odoo webshop, plain server-rendered HTML (no
+  anti-bot, no JS needed), itemprop="price"/"priceCurrency"/"name"
+  microdata per card (MVR). Extensive category tree (appliances, baby,
+  food, home) -- a real general catalog, not a stub.
+
+  Pagination is /shop?page=N, 20 cards/page. Odoo does NOT return an
+  empty page past the end -- it CLAMPS and re-serves the same last-page
+  product set forever (page=1000 and page=1001 confirmed identical,
+  8-item set). Stopping condition here is "this page contributed zero
+  new product-template ids", not an empty-page check -- same failure
+  class as the Magento pagination loop noted elsewhere in this project.
+
+  PDP-style urls carry a `?page=N` query suffix past page 1
+  (`/shop/<slug>-<id>?page=2`) which the card-parsing regex strips
+  before extracting the numeric template id.
+
+  Page family: listing only (/shop and /shop?page=N) -- this spider
+  never visits a PDP, all fields come off the listing card.
+
+  Verified live 2026-09-06: --max-items 5 run closed at 20 rows (page 1,
+  correctly capped by CLOSESPIDER_ITEMCOUNT). An uncapped run reached
+  page 34 / ~680 rows before being killed at a 90s wall-clock budget,
+  still finding 20 new products every page with no sign of the clamp
+  loop -- the catalog is materially deeper than one page suggests.
+  Sample: "Weiyuan Electric Fruit Blender WJ01" MVR 1,200.00, "Almarai
+  Juice 235ml Orange" MVR 9.00.

@@ -1,0 +1,51 @@
+scaffolding: spider
+spider: brauhaus_li
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://brauhaus.li/
+language: de
+currency: CHF
+cadence: monthly
+channel: specialty-food
+coicop_codes: null
+timeout: 7200
+notes: |
+  Liechtensteiner Brauhaus (Schaan) -- the country's own brewery, "Bier aus
+  Liechtenstein seit 2007", selling direct from its WooCommerce shop.
+  Genuinely domestic, so the wave-13 Swiss-chain locality question does not
+  apply. This is Liechtenstein's THIRD food-and-beverage source and its only
+  COICOP 02.1.1 (beer) source.
+
+  Found by probing Liechtenstein drinks producers by domain after wave 13
+  concluded the country's F&B options were exhausted at two sources. That
+  conclusion was reached against supermarkets and the Swiss chains; small
+  domestic PRODUCERS were the untried axis, and one of them is a standard,
+  wide-open WooCommerce install.
+
+  Standard WooCommerce Store API at /wp-json/wc/store/v1/products, no auth.
+  Prices are integer minor units, currency_minor_unit 2, currency_code CHF --
+  all handled by the shared `_woo_base.WooBaseSpider` ("350" -> CHF 3.50 for
+  a 0.33l can, matching the rendered shop).
+
+  Small catalog by design: 30 SKUs, the brewery's whole range -- Spezialbier,
+  Club bier, Naturradler, an alcohol-free line, a caffeinated mate soft drink
+  (Viva Alpina), and a Liechtensteiner Single Malt Whisky. That spans COICOP
+  02.1.1 (beer), 02.1.3 (spirits) AND 01.2.2 (soft drinks), i.e. two
+  different 3-digit classes, so the source is WIDE by the narrowness rule and
+  coicop_codes is left unset for the classifier.
+
+  Rule-19 same-shelf check: no overlap risk against ospelt_li (meat/deli,
+  Shopify) or hofkellerei_li (the Princely wine estate, bespoke "XSite" CMS)
+  -- different companies, different products, different id namespaces.
+
+  Spider parses: API (WooCommerce Store API JSON; `permalink` gives real
+  /product/<slug>/ URLs and _woo_base carries a parse_html hook for archived
+  PDPs).
+
+  Test run 2026-09-05 (--max-items 60, closespider-timeout 300): 30 rows --
+  the WHOLE catalog, not a capped slice (per_page=100 returned 30 and page 2 is
+  empty). 30 distinct product_id, 30 distinct url, 0 blank names,
+  0 zero/negative prices, 100% CHF. Price range CHF 1.85-79.90 (0.33l can to a
+  0.5l single malt), median 2.50. Minor-unit scaling spot-checked
+  against the rendered shop.

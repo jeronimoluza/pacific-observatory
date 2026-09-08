@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: flaschenpost_de
+url: https://www.flaschenpost.de/
+language: de
+cadence: weekly
+channel: specialty-food
+notes: |
+  page family: both (PDP HTML shell read only for its embedded productId,
+  then the JSON pricing API is the actual data source).
+
+  PDP is a client-rendered Vue SPA (no price in raw HTML). Playwright
+  network-capture (2026-09-06) found the real endpoint:
+  /php-product-api/v1/products/pdp/warehouse/1?ids=<productId> (plain
+  HTTP, no auth, warehouse=1/Berlin hardcoded). Endpoint does NOT batch --
+  repeated `ids=` params and `ids[]=` syntax both silently drop to one
+  result -- so this is a two-hop-per-product crawl: fetch sitemap_p.xml
+  (~4,150 PDP URLs) -> fetch each PDP shell for its embedded productId ->
+  fetch the pricing API per id. Some sitemap URLs 404 (discontinued SKUs
+  still enumerated) and are skipped.
+
+  Confirmed live 2026-09-06: productId 5648 "Mio Mio Mate Zero" EUR 12.99
+  (masterVariant.price.value.centAmount=1299, fractionDigits=2 ->
+  divide by 100, not a raw decimal). Beverage specialist per AI_NOTES.

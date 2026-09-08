@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: masoutis_gr
+url: https://www.masoutis.gr/
+language: el
+cadence: weekly
+channel: supermarket
+timeout: 5400
+archive_prefix: "www.masoutis.gr/api/eshop/"
+notes: |
+  Masoutis -- Northern Greece supermarket chain (Athens-based chains
+  already covered by this repo skew the Greek series south; this is a
+  useful geographic counterweight per the triage notes).
+
+  Angular SPA (raw HTML is a shell, no product markup) backed by an open
+  JSON API. Verified live 2026-09-06 via Playwright network trace + direct
+  curl_cffi replay: GET /api/eshop/GetCred returns a fresh
+  {Uid, Usl, Key} triple (no login/cookie needed), echoed back as the
+  uid/usl/key request headers on every POST. POST body also carries a
+  hardcoded, client-bundle-visible app key "PassKey": "Sc@NnSh0p" (same
+  value for every visitor -- not a scraped secret).
+
+  Two-step walk: POST
+  /api/eshop/GetScanNShopMenuAllLevelsAutoScheduler (body
+  {"PassKey":"Sc@NnSh0p"}) returns the full category menu (~300 leaf rows,
+  HeaderMenuItem + MenuItemcode); POST
+  /api/eshop/GetPromoItemWithListCouponsSubCategoriesAutoPromosv2 with
+  Itemcode="<header>,<subitem>" returns up to 50 items for that leaf.
+  Despite the endpoint name ("Promo"/"Coupons"), it is the general
+  item-listing endpoint for the whole catalogue -- verified on
+  Kreopwleio/Kotopoula (Butchery/Chicken): 50 regular-priced items with
+  StartPrice == PosPrice, not an offers-only feed. No working pagination
+  parameter found ("Page":"2" is silently ignored); categories cap at 50
+  items/leaf. Several menu rows are virtual cross-cutting views (offers,
+  new, organic, vegan, own-brand, gluten/lactose-free) that overlap the
+  base grocery categories -- duplicate items share the same product_id/url
+  and are deduped downstream by DuplicationPipeline.
+
+  Page family parsed: API (spider reads JSON endpoints directly, never
+  fetches a category HTML page).
+
+  End-to-end test `.venv/bin/po prices collect --source masoutis_gr
+  --max-items 100`: see test run notes in the onboarding results log for
+  row count and sample record.

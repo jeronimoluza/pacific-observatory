@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: tommy_hr
+url: https://www.tommy.hr/
+language: hr
+currency: EUR
+cadence: weekly
+archive_prefix: "www.tommy.hr/proizvodi/"
+archive_path_re: '^/proizvodi/[^/?]+/?$'
+notes: |
+  Major Croatian supermarket chain with its own web shop. Next.js Pages
+  Router storefront over a Sylius Shop API v2 backend
+  (`/api/v2/shop/products/<code>` referenced as `@id`, not called
+  directly). Page family: PDP -- each `/proizvodi/<slug>` page is server-
+  rendered and embeds the full product object (React Query cache) in
+  `<script id="__NEXT_DATA__">`.
+
+  Verified live 2026-09-06: GET /proizvodi/jabuka-granny-smith-1-kg -> 200,
+  dehydratedState.queries[0].state.data gives code "291577", name "Jabuka
+  Granny Smith 1 kg", variants[0].price 109 (EUR, integer CENTS -> 1.09;
+  confirmed against the rendered page, not thousandths), breadcrumb
+  "voce-i-povrce/voce/jabuka-granny-smith-1-kg" (first segment used as
+  `category`).
+
+  URL seeding: /sitemap.xml -> sitemap-0.xml (4773 `/proizvodi/` URLs) +
+  sitemap-1.xml (415 more) = ~5188 product pages total.
+
+  Test run (--max-items 10): 10 items, EUR prices in plausible range
+  (e.g. apple EUR 1.09/kg, mortadella, granny smith, etc.), 0 minor-unit
+  anomalies against rendered page.

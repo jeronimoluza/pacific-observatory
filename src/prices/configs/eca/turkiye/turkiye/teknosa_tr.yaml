@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: teknosa_tr
+url: https://www.teknosa.com/
+language: tr
+currency: TRY
+cadence: weekly
+channel: electronics
+timeout: 600
+archive_prefix: "www.teknosa.com/"
+archive_path_re: '-p-\d+/?$'
+notes: |
+  page family: listing (category pages carry an embedded per-page
+  analytics data-layer JSON blob with price; no PDP fetched at
+  collection time).
+
+  Verified live 2026-09-06: teknosa.com is Türkiye's electronics
+  big-box retailer, server-rendered, no Akamai/Cloudflare challenge on
+  either category or PDP pages with curl_cffi chrome124. Category HTML
+  embeds `"listing": {"items": [{"id", "name", "taxonomy", "currency",
+  "unit_price", "unit_sale_price", "url"}, ...]}` — extracted via regex
+  (id -> name -> ...taxonomy... -> currency -> unit_price ->
+  unit_sale_price -> url, fixed field order) since the surrounding page
+  is not standalone JSON. `unit_sale_price` (post-discount, what the
+  customer pays) is used as price; cross-checked against one PDP's
+  embedded application/ld+json Product/Offer block (same TRY price, no
+  minor-unit or discount-vs-list mismatch).
+
+  Category pagination is `?page=N` (0-indexed); confirmed page=0 and
+  page=1 return majority-disjoint id sets (some sponsored/pinned items
+  repeat, real catalog items do not) — a real paginating catalog, not a
+  fixed page.
+
+  Walks a fixed set of 5 broad top-level category slugs (cep-telefonu,
+  bilgisayar-tablet, beyaz-esya-ankastre, elektrikli-ev-aletleri,
+  televizyonlar), each capped at MAX_PAGES_PER_CATEGORY=15 — general
+  electronics/appliance catalog, not a food source, so full category-tree
+  discovery was not worth the crawl budget for this pass.
+
+  coicop_classification: classifier — wide catalog spans many COICOP
+  leaves (05.x white goods, 08.x/09.x consumer electronics);
+  coicop_codes left unset. channel: electronics.

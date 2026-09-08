@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: plodine_hr
+url: https://www.plodine.hr/
+language: hr
+currency: EUR
+cadence: weekly
+notes: |
+  National Croatian supermarket chain. No reachable online store --
+  `/prodavaonice` and `/supermarketi` are store-locator pages only, and no
+  cart/checkout flow exists on the site. What IS reachable and server-
+  rendered is a set of rotating weekly promotional-catalogue pages under
+  `/akcije/<id>/<slug>` (page family: listing; e.g. "Vikend ponuda"
+  weekend offer, "XXL tjedan"), each a plain HTML grid of
+  `article.card` blocks with product name, quantity/unit text, and price
+  -- no JS needed.
+
+  Verified live 2026-09-06: /akcije/47/tjedna-ponuda/xxl-tjedan -> 200, 44
+  cards incl. "Pečeno pile" (roast chicken) EUR 5.49; /akcije/10/vikend-
+  ponuda -> 11 more. 7 distinct `/akcije/...` links found on the homepage
+  nav at probe time; the spider also crawls the homepage each run to pick
+  up newly rotated promo slugs beyond the hardcoded seed list.
+
+  SCOPE CAVEAT: this is a weekly-promo feed (discounted items only), not a
+  full catalogue -- Plodine has no reachable per-SKU online store. Row
+  volume will be modest (dozens per run, refreshed weekly) and skewed
+  toward promotional pricing rather than shelf price.
+
+  Test run (--max-items 10): 10 items, EUR prices in plausible range.

@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: myexcellentstores_tt
+url: https://www.myexcellentstores.com/
+language: en
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.myexcellentstores.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Excellent Stores TT -- department store, largest in T&T (Movietowne POS,
+  C3 Centre San Fernando, Brentwood Mall Chaguanas + online). Candidate URL
+  excellentstores.com is a parked/for-sale GoDaddy domain, and
+  excellentstorestt.com is a bare redirect stub -- the live storefront is
+  myexcellentstores.com (found via web search 2026-09-06). Standard Shopify
+  tenant: GET /products.json?limit=250&page=1 -> HTTP 200, page 2 returns a
+  distinct product set (confirmed enumerable, not a homepage carousel).
+  Shopify.currency active=TTD matches countries.yaml. Whole-catalog walk
+  (no category filter) via _shopify_base.py. Page family: API.

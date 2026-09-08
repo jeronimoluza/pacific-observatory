@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kritikos_sm_gr
+url: https://www.kritikos-sm.gr/
+language: el
+cadence: weekly
+channel: supermarket
+timeout: 5400
+archive_prefix: "www.kritikos-sm.gr/categories/"
+notes: |
+  SUPERMARKET Kritikos — national Greek chain. Verified live 2026-09-06
+  with curl_cffi impersonate=chrome124: 200, server-rendered Next.js
+  storefront (CSS-module class names, but the price table itself is
+  present in the raw HTML -- no JS execution needed).
+
+  Category seed comes from /sitemap.xml, which lists 158 `/categories/...`
+  URLs (top-level sections and their subcategory pages, e.g.
+  /categories/manabikh/ and /categories/manabikh/frouta/). Each page
+  server-renders every matching product in
+  `div.ProductListItem_productItem__*` blocks with a stable product id
+  (the PDP anchor's `id` attribute), name, and final price -- observed
+  140 products on a single top-level category page with no pagination
+  markup present, so pages are fetched once each rather than paginated.
+  `category` is taken from the page's own `<h1>`.
+
+  Page family parsed: listing only (category pages; PDP not fetched).
+
+  End-to-end test `.venv/bin/po prices collect --source kritikos_sm_gr
+  --max-items 100`: see test run notes in the onboarding results log for
+  row count and sample record.

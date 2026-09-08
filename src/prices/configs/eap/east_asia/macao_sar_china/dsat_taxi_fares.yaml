@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.3.2.2"]
+channel: null
+source_key: mo_dsat_taxi_fares
+module: eap.east_asia.macao_sar_china.dsat_taxi_fares
+function: fetch_mo_dsat_taxi_fares
+url: https://www.dsat.gov.mo/dsat/subpage.aspx?a_id=1610600672&lang=en
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  DSAT (Transport Bureau) publishes the regulated taxi tariff as a plain
+  HTML table (not a PDF) -- verified live 2026-09-06: 200, clean
+  two-column table, pandas.read_html parses directly. Two colspan=2
+  section-header rows ("Fares (MOP)" / "Additional fee") drop out
+  naturally since their second column isn't numeric.
+
+  8 rows recovered: "First 1600m" 21.00 MOP, "Every 220m" 2.00,
+  waiting-time surcharge (per 55s) 2.00, baggage-compartment surcharge
+  3.00, Taipa-Coloane +2.00, Macao-Coloane +5.00, airport/ferry
+  terminal/Hengqin port boarding +8.00, University of Macau Hengqin campus
+  boarding +5.00.
+
+  No prior-tariff archive on the page -- snapshots the CURRENT schedule
+  each run (period_kind: effective_from), using the page's own "Last
+  modified: DD-MM-YYYY" footer date.
+
+  Note: the shard's given host "dsat.gov.mo" does not resolve directly --
+  the working host is "www.dsat.gov.mo" (with www).
+
+  coicop_classification: source_curated -- COICOP 07.3.2.2 (passenger
+  transport by taxi and hired vehicle with driver), single narrow class.
+
+  Test run (`prices collect --source dsat_taxi_fares`): 8 rows written to
+  price_observations.csv, values match the rendered page verbatim.

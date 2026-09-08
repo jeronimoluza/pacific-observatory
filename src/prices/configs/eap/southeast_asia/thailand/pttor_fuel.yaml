@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2.1", "07.2.2.2"]
+channel: null
+source_key: th_pttor_fuel
+module: eap.southeast_asia.thailand.pttor_fuel
+function: fetch_th_pttor_fuel
+url: https://www.pttor.com/news/oil-price
+language: th
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  PTT Oil and Retail Business (PTTOR) -- the PTT Station forecourt
+  network. The apex domain (pttor.com, no www) fails DNS resolution;
+  www.pttor.com is the live host. The oil-price page embeds a
+  `latestFallbackPrices` JS object directly in HTML (a client-side
+  fallback for a separate WordPress admin-ajax `fetch_regional_oil_prices`
+  action that needs province/district/month/year params for the
+  *regional* history table) -- this fetcher regexes the simpler embedded
+  blob rather than the regional AJAX endpoint. Plain `requests`, no TLS
+  impersonation needed.
+
+  9 items at onboarding (2026-09-06): diesel B20/plain diesel, gasohol
+  E20/91/95, plain gasoline (เบนซิน), Super Power GSH95/Diesel/X99 --
+  all vehicle motor fuels, no kerosene/LPG, so narrow single-COICOP
+  (07.2.2) source_curated. Each item DOES carry its own priceDate in
+  the blob (unlike bangchak_fuel), used directly as observation_date.
+
+  Distinct national retailer from bangchak_fuel.yaml (Bangchak
+  Corporation) -- two independent fuel companies, not duplicates.
+
+  Verified live 2026-09-06: fetch_th_pttor_fuel(date(2020,1,1)) -> 9
+  rows, all THB, priceDate 2026-09-02 (page runs a few days behind
+  today), price range 33.72-50.48.

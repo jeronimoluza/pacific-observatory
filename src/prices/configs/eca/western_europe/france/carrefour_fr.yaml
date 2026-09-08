@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carrefour_fr
+url: https://www.carrefour.fr/
+language: fr
+currency: EUR
+cadence: weekly
+channel: hypermarket
+notes: |
+  Page family: listing (category "rayon" pages, /r/<slug>). No PDP visit
+  needed -- price, title and product id are all present on the rayon
+  listing tile.
+
+  Verified live 2026-09-06: the repo-wide pinned curl_cffi profile
+  (settings.py IMPERSONATE_BROWSERS=chrome120) 403s on this Cloudflare-
+  fronted tenant, as do chrome124 and chrome131. safari17_0 and firefox133
+  both clear at 200 -- this manifest's spider pins
+  custom_settings["IMPERSONATE_BROWSERS"]=["safari17_0"].
+
+  /r/boissons page 1 vs page 2 (?page=N) returned disjoint sets of 28-30
+  product titles each (confirmed real pagination, not a homepage-carousel
+  trap). Sampled prices: "Boisson The Glace Peche LIPTON" EUR 1.65,
+  "Boisson Aux Fruits Tropical OASIS" EUR 9.00.
+
+  Of the three French hypermarket giants probed the same pass, carrefour.fr
+  was the only one with price in the raw server-rendered HTML with no
+  further gate -- auchan.fr renders the same product-thumbnail markup but
+  hides price behind a client-side "Afficher le prix" (show price) action
+  requiring a store/drive selection; monoprix.fr's real catalog
+  (courses.monoprix.fr) is an SPA whose API is behind an AWS WAF captcha
+  challenge SDK. Both left DEFERRED, not built this pass.
+
+  CrawlSpider follows /r/ rayon links (category tree) plus their own
+  ?page=N pagination.

@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: pharmacy
+spider: medicarehb_mm
+url: https://medicarehb.com.mm/
+timeout: 3600
+archive_prefix: "medicarehb.com.mm/?product="
+archive_path_re: '^/\?product=[a-z0-9-]+$'
+language: en
+cadence: weekly
+notes: |
+  MEDiCARE, Myanmar online pharmacy (medicines, OTC, personal care,
+  skincare, mother & baby). Category archive pages (`/?product_cat=<slug>`)
+  render zero product cards over plain HTTP -- the grid is client-side
+  only there; the WooCommerce Store API (`/wp-json/wc/store/v1/products/`)
+  200s but silently returns the homepage HTML, not JSON. The one working
+  server-rendered surface is WordPress's native search,
+  `/?s=<query>&post_type=product&paged=N`, using the theme's normal
+  WooCommerce loop template. Page family: listing (search-results loop),
+  no PDP fetch performed -- price, name, category and product_id are all
+  present in the card. Seeded with a single broad query (`s=a`), which
+  matched 93 pages of results (~16-20 cards/page) during a live probe --
+  functions as a whole-catalog walk given the category browse route is
+  unusable.
+
+  HOST IS FLAKY: roughly half of plain-curl probes during onboarding hit a
+  bare connection failure (curl exit 28, 0 bytes) that cleared on retry
+  seconds later, with no discernible pattern. curl_cffi impersonation made
+  this WORSE (100% timeout) -- an exception to the usual "curl_cffi first"
+  rule; the spider deliberately does not force browser impersonation.
+  `timeout: 3600` plus low concurrency / high retry counts in the spider's
+  own custom_settings account for this.
+
+  Currency: prices show a trailing "Ks" (Kyat) glyph -- hardcoded MMK per
+  countries.yaml, never parsed from the glyph. Sale items render
+  <del>original</del> <ins>current</ins>; the spider takes the LAST price
+  amount on the card, which is the effective current price in both the
+  sale and non-sale case.
+
+  Verified 2026-09-06: test run (--max-items 5) returned valid rows with
+  distinct product_id/url, MMK prices in the low-thousands-to-tens-of-
+  thousands range matching the rendered search page.

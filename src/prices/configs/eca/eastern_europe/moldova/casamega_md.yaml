@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: casamega_md
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://casamega.md/
+language: ro
+currency: MDL
+cadence: weekly
+coicop_codes: null
+notes: |
+  Page family: category listing only (name/price both present on the
+  listing card, no PDP fetch needed). CS-Cart storefront (Ultimate 2 "ut2"
+  theme, `ty-*` Templater/Tygh classes), fully server-rendered -- no JSON
+  needed, plain regex-over-HTML on `class="product-title"` anchors +
+  nearby `ty-price-num` price spans. Verified live: "Cafea L'OR Espresso
+  Colombia, capsule, 10 buc" MDL 64.05. Pagination is a plain `/page-N/`
+  path segment (verified up to page-7 on one category). Category
+  discovery walks the ~17 top-level department links on the homepage nav
+  (mixed Romanian/Russian slugs, e.g. produse-alimentare, chay-i-kofe) --
+  a broad partial catalogue rather than the full subcategory tree, since
+  the homepage nav does not expose deeper children in one fetch. Live:
+  full "Produse alimentare" tree (alcohol, coffee, confectionery, snacks,
+  pasta) per the shard's AI_NOTES. No WAF encountered (plain curl_cffi
+  chrome124 works, 200 throughout).

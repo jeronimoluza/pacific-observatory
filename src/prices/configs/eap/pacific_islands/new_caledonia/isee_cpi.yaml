@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: nc_isee_cpi
+module: eap.pacific_islands.new_caledonia.isee_cpi
+function: fetch_nc_isee_cpi
+url: https://isee.nc/indices
+language: fr
+cadence: monthly
+fallback_date: 2010-01-01
+notes: |
+  Institut de la Statistique et des Études Économiques (ISEE) de
+  Nouvelle-Calédonie -- detailed monthly consumer price index, published as
+  an XLS ("historique indice détaillé" sheet) linked from the rolling
+  /indices landing page. Rows already carry the publisher's own COICOP-style
+  codes (01, 01.1, 01.1.1, ... down to leaf level), base 100 = December 2021.
+
+  The XLS download path is dated by month
+  (/sites/default/files/YYYY-MM/indiceprix-mois.xls) so the fetcher
+  re-resolves the current link from /indices on every run rather than
+  hardcoding a URL that would go stale.
+
+  Verified live 2026-09-06: 158 COICOP-coded rows for 2026-07, the latest
+  fully-published month at probe time. Only the latest month is emitted per
+  run (snapshot pattern, no backfill) -- division-01's own row is used to
+  detect which column is the latest populated one, since the sheet layout
+  padded a handful of not-yet-published trailing month columns. Headline
+  aggregate rows ("Indice général", "Indice hors tabac", "Indice hors tabac
+  hors loyer") are dropped -- no sanctioned all-items sentinel in this
+  pipeline yet, same call made for BPS Indonesia / SingStat / GCC-Stat CPI.

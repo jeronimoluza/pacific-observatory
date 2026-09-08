@@ -1,0 +1,40 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: tj_stattj_cpi
+module: eca.central_asia.tajikistan.stattj_cpi
+function: fetch_tj_stattj_cpi
+url: https://www.stat.tj/en/analytical-tables/
+language: en
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  Wave discovery lead stat.tj (2026-09-06). The Agency on Statistics under
+  the President of RT is a plain WordPress site (no anti-bot); its
+  "Analytical Tables" page (/en/analytical-tables/) links straight to
+  XLSX workbooks under wp-content/uploads. "CPI by 546 Items, <start
+  year>-<latest>" is a single wide sheet: column A holds a machine-
+  translated item/group label at any indent level, columns hold year
+  (label-only) + 12-month blocks of month-over-month index values
+  (previous month = 100, NOT a fixed calendar base -- values cluster
+  ~95-115). Only the 12 COICOP-division aggregate rows are emitted
+  (matched by exact label text, not row number, since the sheet is
+  re-uploaded yearly and item rows shift); the ~500 nested item/subgroup
+  rows are dropped, same scope choice as bz_sib_cpi.py.
+
+  pricetool.stat.tj (linked from the homepage as a "price tool" card) is a
+  dead IIS app -- every path 404s, including /, /Default.aspx, /Home --
+  not used by this fetcher.
+
+  www.stat.tj sits behind a WAF/CDN that periodically resets TLS
+  handshakes to non-browser clients; verify=False is set defensively
+  (same class of fix as ubos_cpi.py / vnso_cpi.py) though the download
+  itself succeeded with a standard requests session in testing.
+
+  Test run 2026-09-06: 1644 rows (137 months x 12 divisions, uniformly
+  complete -- no division has gaps), Feb 2015 - Jun 2026 (fallback_date
+  2015-01-01 is an exclusive cutoff, so the Jan-2015 column is skipped on
+  a first run).

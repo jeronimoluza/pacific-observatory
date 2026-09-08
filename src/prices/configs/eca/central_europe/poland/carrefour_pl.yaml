@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: carrefour_pl
+channel: hypermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.carrefour.pl/
+language: pl
+currency: PLN
+cadence: weekly
+coicop_codes: null
+notes: |
+  Page family: category listing only (spider never fetches a PDP -- prices
+  are embedded in the category listing's own __NEXT_DATA__ blob).
+  Next.js SSR: every category page ships the full product list (name, EAN
+  code, price, category) in a __NEXT_DATA__ JSON blob at
+  props.initialState.products.data.content -- no hydration needed.
+  Pagination is a plain ?page=N param; verified live page 1 vs page 2 of
+  /artykuly-spozywcze return disjoint product sets (totalCount 4,815 @
+  60/page = 81 pages). Walks ~14 top-level category slugs discovered from
+  the homepage nav, each paginated to its declared totalPages.
+
+  EU Price Indication Directive Article 6a field IS present:
+  actualSku.lowestAmount.actualGrossPrice carries the lowest price in the
+  preceding 30 days (verified: one SKU showed current 5.29 zl vs. a 30-day
+  low of 4.59 zl). Not consumed by this spider -- only the current shelf
+  price (actualSku.amount.actualGrossPrice) is emitted -- but flagged here
+  for a future bounded-price-history pass. No WAF encountered (plain
+  curl_cffi chrome124 works, 200 throughout).

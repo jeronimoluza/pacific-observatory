@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kostur_is
+url: https://kostur.is/
+language: is
+cadence: weekly
+channel: supermarket
+archive_prefix: "kostur.is/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Kostur — Icelandic warehouse-format grocery retailer (Dalvegur, Kópavogur),
+  a full-assortment food and household store rather than a specialist.
+  WordPress/WooCommerce with the public, unauthenticated Store API open:
+
+    GET /wp-json/wc/store/v1/products?per_page=100&page=<n>
+
+  Verified live 2026-09-05: HTTP 200, `x-wp-total: 911`, `x-wp-totalpages: 10`.
+  The API's own response states currency_code ISK and currency_minor_unit 0,
+  matching countries.yaml, so no minor-unit division applies (the shared
+  WooBaseSpider honours the reported exponent regardless).
+
+  Wide catalogue (grocery, condiments, household, some general merchandise),
+  so `coicop_codes` is unset and the classifier assigns leaves per product.
+
+  Iceland's third grocery manifest after kronan_is (Krónan, search-API walk)
+  and netto_is (Nettó, weekly-offers page only, 34 rows). Distinct tenant,
+  distinct catalogue — checked against the known bonus.is gift-card trap
+  documented on vaxtarvorur_is: this store returns hundreds of varied real
+  SKUs, not a one-SKU stub.
+
+  SPIDER PAGE FAMILY: API (Store API JSON). The archive fields describe the
+  human-facing WooCommerce PDP route, which the shared WooBaseSpider.parse_html
+  fallback chain (JSON-LD -> og/product meta -> WooCommerce DOM) can read.
+
+  VERIFICATION RUN 2026-09-05 (--max-items 60, closed at 100 on the first
+  API page): 100 rows, 100 distinct product_id, 100 distinct url, 0 blank
+  names, 0 non-positive prices, currency 100% ISK, price range 198-8,498 ISK,
+  median 898. Categories are real ` > `-joined WooCommerce paths
+  ("Kryddvara > Matvara > Thurrvara", "Arstid > Hudvorur > Snyrtivara >
+  Sturtusapa"), confirming a mixed food-and-household assortment rather than
+  a single aisle. Icelandic characters round-trip intact.

@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+spider: vnpt_vn
+url: https://vnpt.vn/di-dong
+language: vi
+cadence: irregular
+channel: null
+notes: |
+  VNPT -- Vietnam's state-owned telecom carrier. Mobile plan tariffs
+  (COICOP 08.3.0, telecommunication services). Contrary to a prior
+  inventory note calling VNPT's plan pages "SPA-loaded" (grouped with
+  Viettel's cookie-challenge and MobiFone's SPA), /di-dong is plainly
+  server-rendered -- confirmed live 2026-09-06 with curl_cffi
+  impersonate=chrome124, no WAF, no Playwright needed. All plan cards
+  across every tab (prepaid, postpaid, SIM kits, data-only, VAS) render
+  into one HTML response -- tabs are CSS-toggled client-side, not
+  separate fetches -- so a single page fetch yields all ~15 current
+  plans. Card DOM: div.card.card-item, plan code in h3.head a.title
+  (e.g. "SODA155"), price in div.desc p.tag strong (e.g. "155.000
+  đ/30 ngày"). Currency VND, dot-grouped thousands. Test run
+  (--max-items 5) verified 15 items with prices matching the rendered
+  page (e.g. SODA155 = 155,000 VND).

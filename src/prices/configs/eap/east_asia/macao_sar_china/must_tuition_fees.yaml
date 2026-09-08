@@ -1,0 +1,48 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["10.4.0.0"]
+channel: null
+source_key: mo_must_tuition_fees
+module: eap.east_asia.macao_sar_china.must_tuition_fees
+function: fetch_mo_must_tuition_fees
+url: https://www.must.edu.mo/file/tuition-fee.html
+language: chinese_traditional
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  MUST (Macau University of Science and Technology) publishes a "先修班及
+  學士學位課程學費表" (Foundation Year and Bachelor's Degree Tuition Fee
+  Table) PDF linked from must.edu.mo/file/tuition-fee.html -- verified
+  live 2026-09-06: 200, 407KB, 2 pages, genuinely text-based (not
+  scanned).
+
+  Page 1 is a one-line-per-programme table (programme name, duration in
+  years, annual fee, total fee) for programmes with a UNIFORM per-year
+  fee across their duration. Regex matches 27 of ~33 listed programmes:
+  the 1-year foundation programme ($41,800/yr) plus 26 four-year
+  bachelor's programmes ($41,800-$51,200/yr depending on discipline, art
+  programmes highest).
+
+  6 programmes intentionally NOT captured: Traditional Chinese Medicine
+  (5yr, tiered $45,000/yr then $38,000 in yr5), Clinical Medicine (6yr,
+  $85,000/yr yrs1-5, yr6 fee set per placement hospital), Pharmacy (5yr,
+  tiered $50,400 then $36,000) -- these span multiple PDF text lines with
+  irregular structure the single-line regex correctly skips rather than
+  mis-parsing.
+
+  Only the Macao-residents schedule is fetched (a separate "non-Macao
+  residents" PDF exists on the same page with different, typically
+  higher, rates -- out of scope for this manifest to keep row semantics
+  uniform per source).
+
+  Effective date read from the PDF's own footer ("2026年6月17日生效" =
+  effective 2026-06-17).
+
+  Currency MOP ("澳門幣"), matches countries.yaml.
+
+  Test run (`prices collect --source must_tuition_fees`): 27 rows written
+  to price_observations.csv, spot-checked against the PDF text verbatim
+  (e.g. "理學學士" (BSc) 41,800 MOP/yr, "藝術學-藝術設計學士" (Art & Design)
+  51,200 MOP/yr).

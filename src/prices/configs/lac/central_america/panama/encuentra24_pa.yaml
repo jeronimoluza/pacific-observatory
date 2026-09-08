@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: encuentra24_pa
+url: https://www.encuentra24.com/panama-es
+language: es
+currency: USD
+cadence: weekly
+channel: marketplace
+notes: |
+  Page family: listing. Encuentra24 is a Central America-wide classifieds
+  marketplace; this manifest covers only its Panama storefront
+  (/panama-es/...). Server-rendered Next.js pages, no anti-bot -- plain
+  curl_cffi clears every category and paginated page at 200.
+
+  A curated set of top-level category paths is walked directly rather than
+  crawled via link-following, so non-priced categories (job postings,
+  courses, "yo busco"/want-ads) are excluded up front. Pagination is a
+  `.<N>` URL suffix; verified live 2026-09-06 that page 1 vs page 2 of
+  bienes-raices-alquiler returned zero id overlap (20 listings each) --
+  genuine pagination, not a fixed page.
+
+  Every listing card shares one site-wide component template regardless
+  of category (spot-checked on bienes-raices-alquiler AND autos-usados) --
+  <h3 class="card_title"> for the title, <span class="card_price"> for
+  the price (React splits "$"/" "/"1,599" across HTML comment
+  placeholders, stripped before parsing). Prices are USD ("$1,599" etc --
+  Panama's other legal tender, the PAB balboa, is pegged 1:1 to USD and
+  not separately displayed here).
+
+  bienes-raices-alquiler (real-estate rentals, COICOP 04.1.1 asking rents)
+  is the standout find -- a division most retailer-SKU sources never
+  reach. Property-FOR-SALE categories are deliberately excluded from the
+  curated list (not a consumption price); want-to-buy/want-a-job rows have
+  no seller-set price and are silently skipped by the card_price parser.
+
+  coicop_classification: classifier -- durables/electronics/furniture/
+  real-estate-rentals mix, no single COICOP prefix; coicop_codes left
+  unset. channel: marketplace (seller-authored titles).
+
+  Test run 2026-09-06 (--max-items 15): real listings across categories,
+  e.g. "Alquilo Casa Ph Vallarta Semi Amoblada" USD 1,599/mo.

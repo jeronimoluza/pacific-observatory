@@ -1,0 +1,35 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+channel: null
+source_key: sg_singtel_sim_only
+module: eap.southeast_asia.singapore.singtel_sim_only
+function: fetch_sg_singtel_sim_only
+url: https://www.singtel.com/personal/products-services/mobile/sim-only-plans
+language: en
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  Singtel's SIM Only plans page is plain server-rendered React HTML -- no
+  anti-bot, curl_cffi gets the full page on the first try. Verified live
+  2026-09-06: 200, 362KB, 5 named plan cards (Enhanced Lite, Enhanced
+  Core, Priority Plus, Priority Ultra, Seniors SIM Only Plan) each
+  embedding a promotional AND regular monthly rate as plain "$X.XX/mth"
+  text next to the plan-name heading (e.g. Enhanced Lite $24.50/$35.00;
+  Seniors plan has only one price shown, no promo/regular split).
+
+  9 rows emitted (4 plans x promo+regular, + 1 Seniors single price).
+  Site's own class names are styled-components hashes that will change on
+  a future deploy -- if this returns 0 rows, re-check the hash suffix
+  against a fresh page fetch first.
+
+  No archive of prior pricing -- snapshots the CURRENT catalog each run
+  (period_kind: effective_from = scrape date, page carries no own
+  effective-date field).
+
+  Currency SGD, matches countries.yaml.
+
+  Test run (`prices collect --source singtel_sim_only`): 9 rows written,
+  values match the rendered page verbatim.

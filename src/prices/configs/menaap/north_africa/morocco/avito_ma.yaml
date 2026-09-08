@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: avito_ma
+url: https://www.avito.ma/
+language: fr
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+notes: |
+  Avito.ma general classifieds marketplace -- server-rendered Next.js
+  listing pages carry a full __NEXT_DATA__ JSON blob with every ad
+  already embedded (subject, price/oldPrice, category.formatted, href
+  canonical PDP url), so the spider parses listing pages only and never
+  fetches an individual ad page. Page family: listing (API-shaped data
+  embedded in HTML, no separate API call). Verified live 2026-09-06,
+  curl_cffi impersonate=chrome124, no WAF.
+
+  Two broad top-level categories crawled: "market" (Informatique,
+  Maison et Jardin, Habillement et Mode, Sport, Loisirs, Bebe,
+  Animalerie -- COICOP divisions 03/05/09/12) and used cars
+  (voitures_d_occasion-a_vendre, division 07). Wide/classifier because
+  the source spans most consumer divisions except food -- narrow
+  coicop_codes would misrepresent it. Real-estate rentals deliberately
+  excluded: already covered narrowly by mubawab_ma (04.1.1).
+
+  Pagination is a `?o=<n>` query param (confirmed distinct listId sets
+  between page 1 and `?o=2`). Prices are asking prices for used/secondhand
+  goods, not new-retail prices -- a caveat for the downstream PPP basket,
+  not a scraping defect.
+
+  Test run 2026-09-06 (--max-items 30): 52 items (CLOSESPIDER_ITEMCOUNT
+  drains in-flight pages), 52 distinct product_id, 0 blank names, 0
+  zero/negative prices, 100% MAD. Sample: "Volkswagen T-Roc" 332000 MAD
+  (used cars), "Lit electrique avec matelas simple" 9800 MAD (Maison et
+  Jardin - Meuble), "Casque gaming Black Shark V2 X" 299 MAD
+  (Informatique - Gaming). Category breadcrumbs present on every row.

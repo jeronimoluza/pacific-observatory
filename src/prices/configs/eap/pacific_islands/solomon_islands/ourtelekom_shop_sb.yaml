@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ourtelekom_shop_sb
+url: https://shop.ourtelekom.com.sb/
+language: en
+cadence: weekly
+channel: electronics
+archive_prefix: "shop.ourtelekom.com.sb/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Discovery lead "telekom.com.sb" — that exact hostname 404s (TLS handshake
+  fails on https; http redirects to a bare Apache 404 page). The live brand
+  is "Our Telekom" (Solomon Telekom) at ourtelekom.com.sb, already covered
+  by the existing `our_telekom_plans` fetcher (SSR mobile/data tariff page).
+
+  This is a SEPARATE, previously-uncovered catalogue: ourtelekom.com.sb/shop/
+  redirects to shop.ourtelekom.com.sb, a standard WordPress 7.1 /
+  WooCommerce 9.9.7 storefront selling handsets. Probed live 2026-09-06:
+  GET /wp-json/wc/store/v1/products?per_page=5 -> HTTP 200, x-wp-total=41,
+  zero auth, standard (versioned) Store API namespace. currency_code SBD,
+  currency_minor_unit=2 (e.g. Samsung XCover 7 = "367600" -> SBD 3,676.00).
+  Small catalogue (41 SKUs, all phones/accessories) but genuine first-party
+  retail pricing — first electronics-channel source for Solomon Islands.
+
+  Test run 2026-09-06: single page, 41 rows, 100% SBD, all with
+  name/price/url populated.

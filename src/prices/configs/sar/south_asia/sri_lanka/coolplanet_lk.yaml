@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coolplanet_lk
+url: https://coolplanet.lk/
+language: en
+cadence: weekly
+channel: fashion
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth, clean 200.
+  Verified live 2026-09-06: real SKUs, e.g. "Lemon Capsule MODANO Crew Neck
+  Tees - Yellow" LKR 2690.00, "Lemon Capsule MODANO Casual Skirt" LKR
+  5490.00. Fashion/apparel only (no products.json for kapruka.com — that
+  site is a different, non-Shopify platform).

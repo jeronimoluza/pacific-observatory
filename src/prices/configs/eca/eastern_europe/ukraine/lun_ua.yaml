@@ -1,0 +1,46 @@
+scaffolding: spider
+spider: lun_ua
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+url: https://lun.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: real-estate
+coicop_codes: ["04.1.1.0"]
+timeout: 21600
+notes: |
+  LUN -- Ukraine's largest real-estate listings aggregator. Discovery lead
+  (wave 3, bare hostname `lun.ua`). Re-probed 2026-09-06 with curl_cffi
+  impersonate=chrome124 -- clean HTTP 200, no UA-resident IP needed.
+
+  Server-rendered React SSR, hashed CSS-module class names (the hash
+  segment is build-specific -- selectors match on the stable `__price` /
+  `__title` class suffix, not the full string). Cards carry no plain
+  `<a href>` to the PDP (navigation is client-side JS off a `<button>`
+  using a `data-event-options="...page_id:<id>|..."` attribute) -- the
+  PDP url is reconstructed as `https://lun.ua/realty/<page_id>`, verified
+  live by cross-checking a reconstructed url's `<title>` and price text
+  against the exact card that carried that `page_id`.
+
+  Pagination is `?page=N`, 24 distinct listings/page. Enumerability
+  confirmed live 2026-09-06: `/rent/kyiv/flats` page 1 vs page 2 return
+  fully disjoint id sets.
+
+  Each page's JSON-LD block is aggregate SEO markup only
+  (`AggregateOffer` with `lowPrice`/`highPrice`/`offerCount` for the
+  whole collection, no per-listing urls) -- not used, same gotcha as
+  olx_ro.
+
+  Scoped to Kyiv long-term flat rentals (`/rent/kyiv/flats`) only.
+  `coicop_codes: ["04.1.1.0"]` -- narrow source, short-circuits the
+  classifier; `pricing_basis` is monthly. Listings priced "Договірна"
+  (negotiable, no numeric price) are dropped.
+
+  Page family parsed: listing only (the reconstructed `/realty/<id>` PDP
+  url is never fetched by the spider).
+
+  Test run 2026-09-06 (--max-items 60, closespider-timeout 120): passed,
+  distinct product_id per row, 0 blank names, 0 zero/negative prices,
+  100% UAH.

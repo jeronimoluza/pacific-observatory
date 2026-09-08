@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: instashop_kz
+url: https://instashop.kz/
+language: ru
+cadence: weekly
+channel: marketplace
+notes: |
+  page family: API (category tree + paginated products endpoint; the
+  server-rendered /en/catalog page shows a fixed, non-paginating 25-item
+  grid and was NOT used).
+
+  Quick-commerce aggregator (51+ stores in Almaty per AI_NOTES, prices
+  "as in store"). `/en/catalog?page=2` returned the identical 25 items in
+  testing -- real pagination is client-side against a clean
+  unauthenticated JSON API found via Playwright network-capture
+  (2026-09-06): GET /api/catalog/categories?lang=ru (51 top-level
+  categories / 239 leaf subcategories) then GET
+  /api/catalog/products?categoryId=<leaf_id>&lang=ru&offset=<n>&limit=100
+  (standard offset/limit pagination, confirmed live with total=10,055 on
+  one leaf). Products attach only at the LEAF level -- querying a
+  top-level parent id directly returns total=0 (confirmed live), so the
+  spider walks all 239 leaves rather than the 51 parents.
+
+  channel=marketplace because instashop is a unified storefront across
+  many first-party stores, not a single retailer -- per the skill's
+  marketplace guidance the seller directory would normally be preferred,
+  but this aggregator has one shared cart/catalog rather than
+  independently browsable per-seller storefronts, so there is no
+  separate directory to onboard instead.
+
+  Confirmed live 2026-09-06: leaf category
+  a671469f-280c-4061-a167-7a724701732f, "Тан классический 1,0 л."
+  (fermented-milk Tan drink) with a plain-integer KZT minPrice, no
+  minor-unit scaling. Some items carry minPrice=0 with an empty
+  minPriceFormated (no current offer) -- dropped by the spider.
+
+  Gotcha hit during onboarding: the list API returns no slug/canonical
+  url, only `productId` -- an early version of the spider stamped every
+  row with the same placeholder url, which the pipeline's
+  DuplicationPipeline (dedups on item['url']) silently collapsed to a
+  single row. Fixed by keying `url` on productId
+  (https://instashop.kz/ru/product/<productId>) -- not the exact
+  canonical slugged PDP url, but unique per product.

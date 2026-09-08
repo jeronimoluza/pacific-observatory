@@ -1,0 +1,37 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2.1", "07.2.2.2"]
+channel: null
+source_key: th_bangchak_fuel
+module: eap.southeast_asia.thailand.bangchak_fuel
+function: fetch_th_bangchak_fuel
+url: https://www.bangchak.co.th/api/oilprice
+language: th
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Bangchak Corporation (major Thai fuel retailer, ~2,000 forecourts).
+  Unauthenticated JSON API at /api/oilprice, plain `requests` clears it
+  (the site's Radware WAF challenges the HTML front end at
+  /en/oilprice but not this API path). 8 items at onboarding (2026-09-06):
+  DIESEL B20, Hi Diesel S, Hi Premium Diesel Plus, Hi Premium 98 Plus,
+  Gasohol E85/E20/91/95 S EVO -- all vehicle motor fuels, no
+  kerosene/LPG, so narrow single-COICOP (07.2.2) source_curated. No
+  per-row date in the payload (PriceToday is a same-day snapshot), so
+  observation_date = fetch date, period_kind=snapshot.
+
+  Distinct national retailer from pttor_fuel.yaml (PTT Oil and Retail
+  Business) -- two independent fuel companies, not duplicates.
+
+  GOTCHA: the API's Radware bot-challenge fires on ANY declared
+  User-Agent -- including a full Chrome UA string AND this repo's own
+  shared "pacific-observatory/prices (+research)" default from
+  get_session() -- and passes ONLY the bare python-requests library
+  default. The fetcher explicitly pops the User-Agent header after
+  get_session() for this reason; do not "fix" that by re-adding one.
+
+  Verified live 2026-09-06: fetch_th_bangchak_fuel(date(2020,1,1)) ->
+  8 rows, all THB, price range 29.23-50.48 (Gasohol E85 S EVO cheapest,
+  Hi Premium/Super Power variants dearest).

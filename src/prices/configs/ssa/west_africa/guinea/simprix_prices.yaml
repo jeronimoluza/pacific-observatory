@@ -1,0 +1,76 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["01.1.1.1", "01.1.1.2", "01.1.2.4", "01.1.4.3", "01.1.5.2", "01.1.7.1", "01.1.8.1"]
+channel: null
+source_key: simprix_prices_gin
+module: ssa.west_africa.guinea.simprix_prices
+function: fetch_simprix_prices_gin
+url: https://simprix.gov.gn/9e7d6b59065b43a81686e55819520ba0
+language: fr
+cadence: monthly
+fallback_date: 1970-01-01
+notes: |
+  SIMPRIX (simprix.gov.gn) — the national price-monitoring portal of the
+  Direction Nationale du Commerce Intérieur et de la Concurrence (DNCIC),
+  Ministère du Commerce, de l'Industrie et des PME, launched 2024-07-31.
+  It publishes the legally binding **prix plafonds** (maximum retail
+  prices) for staple foods, broken out by all 8 Guinean regions.
+
+  Guinea's first official/administered food-price source. Everything the
+  country had before this was retailer SKU spiders plus the shared
+  fews_net / wfp_prices regional feeds.
+
+  ROLE CHOICE — `tariff`, deliberately NOT `official_avg`. These are
+  administered CEILING prices set by the regulator, not observed market
+  averages. Filing them as official_avg would let a PPP basket treat a
+  legal maximum as a measured transaction price. They belong in the
+  administered-price layer next to utility and fuel tariffs even though
+  the goods are COICOP division 01 staples.
+
+  ACCESS (probed live 2026-09-05, no WAF, no auth, no cookies needed
+  beyond the session):
+    1. GET / -> brochure page; its only content link is the hashed public
+       price route below.
+    2. GET /9e7d6b59065b43a81686e55819520ba0 -> "Liste générale des prix
+       plafonds (CONAKRY)", 10 product cards, plus a Yii2 POST form with a
+       `_csrf` token and a <select name="cat"> of 8 regions whose option
+       values are opaque 48-hex-char zone ids.
+    3. POST /f2c221bc67e676b877b898e8dd9a67fd with _csrf, q="" and
+       cat=<zone id> -> the same 10 items repriced for that region.
+
+  GOTCHA — the zone <select> appears TWICE in the page (desktop + mobile
+  copies) with the SAME option values but different label casing
+  ("Conakry" / "CONAKRY"). The fetcher de-duplicates on the option VALUE;
+  keying on the label would fetch and emit all 8 regions twice.
+
+  Verified live 2026-09-05: 8 regions x 10 items = 80 rows, and the
+  regional prices genuinely differ — RIZ IMPORTE 5% BRISURES 50kg is
+  Conakry 280,000 / Kindia 292,200 / Mamou 297,833 / Faranah 302,500 /
+  Kankan 308,900 / Boke 309,200 / Labe 309,600 / Nzerekore 314,917 GNF.
+  The fetcher logs a warning if every region ever returns an identical
+  price vector, which is the signature of the region POST being ignored
+  and the default Conakry page being served 8 times.
+
+  NUMBER-FORMAT TRAP: prices render as "280.000 GNF / 50 KG" and
+  "314.917 GNF / 50 KG" — the "." is a THOUSANDS separator, not a decimal
+  point. 314.917 is 314,917 GNF. Sanity check: 280,000 GNF per 50 kg of
+  imported rice is ~USD 0.65/kg, the right order of magnitude for Guinea.
+
+  ITEMS (10, fixed): imported rice 5%/25% brisures in 50kg and 25kg sacks,
+  vegetable oil 20L, onion 25kg, whole imported chicken 10kg, imported
+  chicken leg 10kg, sugar 50kg, flour 50kg, powdered milk 25kg. The
+  _COICOP_MAP in the module covers all 10; an item that ever falls outside
+  it is DROPPED with a logged warning rather than emitted with a null
+  coicop_code. The declared coicop_codes above are all under class 01.1,
+  so this is a NARROW source by the skill's rule.
+
+  CADENCE / HISTORY: the portal exposes only the CURRENT schedule; no
+  archive of prior ceiling decisions was found. Per the tariff-schedule
+  guidance the fetcher snapshots the live schedule each run and stamps it
+  with the RUN date under period_kind: effective_from — observation_date
+  is therefore the snapshot date, not a publisher-stated effective date,
+  and that is spelled out in every row's `notes`. Successive runs build the
+  series forward. fallback_date is 1970-01-01 so the first run is never
+  skipped by the cutoff.

@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: quickmart_ke
+url: https://www.quickmart.co.ke/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 5400
+archive_prefix: "www.quickmart.co.ke/"
+notes: |
+  Quickmart -- 50,000+ SKU Kenyan chain, same-day delivery across 19 towns
+  (Nairobi, Mombasa, Kisumu + 16 more). Widest verified geographic reach of
+  any Kenyan grocer in the triage sheet; a strong single source for spatial
+  price dispersion once branch-per-town crawls are added (see the "single
+  branch" limitation below).
+
+  Server-rendered PHP storefront on a "Growcer"-family multi-vendor grocery
+  template (`data-kit="F!GR"` in the homepage <html> tag). Location-gated:
+  every page shows a "No Quickmart branch found near your delivery
+  location" modal until a delivery point is set (matches the triage
+  GOTCHA). Reverse-engineered live 2026-09-06 from the site's own jQuery
+  bundle (fcom.makeUrl('GeoLocation','setUpUserLocation')): POST
+  /geo-location/set-up-user-location with {lat,lng,address,radius(1-15)}
+  sets a `_ygShopId` branch cookie + PHPSESSID, no login needed. This
+  spider hardcodes one central-Nairobi point (-1.286389, 36.817223,
+  radius=10), resolving to the "Quickmart Tom Mboya" branch (shop_id=16) --
+  ONE branch's catalogue/pricing, not a national average. Per-town crawls
+  (different lat/lng per branch) are future work, not done in this pass.
+
+  8 top-level categories (foods/fresh/personal-care/liquor/homecare/
+  households/electronics/textile -- found via POST
+  /home/get-sidebar-category-menu) each aggregate their full subcategory
+  tree (foods alone reports 3215 total records) and paginate with the
+  literal-dash `?page-N` (NOT `?page=N`, which silently re-serves page 1 --
+  confirmed distinct product ids across page-1..page-6, empty page-7).
+
+  Page family parsed: listing (top-level category pages; PDP not
+  fetched -- name/price/id all come from the listing card).
+
+  End-to-end test `.venv/bin/po prices collect --source quickmart_ke
+  --max-items 100`: see test run notes in the onboarding results log for
+  row count and sample record.

@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: consum_es
+url: https://tienda.consum.es/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "tienda.consum.es/es/p/"
+archive_path_re: '^/es/p/[^/?]+/[0-9]+'
+notes: |
+  API. Valencian supermarket cooperative -- regional coverage the national
+  chains miss. Angular SPA on the "TOL" platform
+  (cdn-consum.aktiosdigitalservices.com), but GET
+  /api/rest/V1.0/shopping/category/menu (full category tree, ~661 leaf ids
+  re-verified 2026-09-06) and GET /api/rest/V1.0/catalog/product?
+  categories=<leaf_id>&page=N&limit=50&offset=... are public JSON, no auth,
+  found via Playwright network trace then confirmed live with a cold
+  curl_cffi GET (no cookies/session needed).
+
+  priceData.prices[] carries id="PRICE" (list price) and optionally
+  id="OFFER_PRICE" (temporary discount); value.centAmount despite the field
+  name IS the actual EUR unit price, not literal cents (re-verified: leaf
+  1970 "Palomitas Microondas Saladas Pack de 3" code 7064835 PRICE
+  centAmount 2.49, OFFER_PRICE 1.99 -- matches rendered page). Spider
+  prefers OFFER_PRICE when present.
+
+  Re-verified live 2026-09-06: /shopping/category/menu -> 200, tree walks
+  to 661 leaves; /catalog/product?categories=1970&page=1&limit=50 -> 200,
+  totalCount 301, hasMore true.

@@ -1,0 +1,61 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shirin_tj
+url: https://shirin.tj/
+language: ru
+cadence: weekly
+channel: specialty-food
+archive_prefix: "shirin.tj"
+archive_path_re: '^/product/[^/]+/?$'
+notes: |
+  Discovered 2026-09-05. Фабрика «Ширин» — Кондитерская корпорация,
+  Dushanbe (address confirmed on /contacts/: "Республика Таджикистан,
+  г. Душанбе, 734002, улица Джаббора Расулова"). A manufacturer's own
+  storefront, so it is narrow by construction — all 35 SKUs are sugar
+  confectionery (ирис, карамель, мармелад, помадка, шоколадные драже,
+  мультизлаковая конфета, chocolate-coated nuts and fruit) — everything
+  falls inside COICOP class 01.1.8 "Sugar, confectionery and desserts".
+
+  It is nonetheless left on `coicop_classification: classifier` with
+  coicop_codes UNSET, deliberately. The narrow short-circuit resolves
+  `coicop_codes` to a single LEAF, and this taxonomy carries 13 five-level
+  leaves under 01.1.8; the catalogue genuinely straddles several of them
+  (chocolate 01.1.8.3.x for the Chocofit line and the chocolate-coated
+  nuts/fruit, sugar-confectionery 01.1.8.4.0 for ирис/карамель/помадка/
+  драже/мармелад). Declaring the 3-digit class "01.1.8" loads with a
+  warning and does NOT short-circuit — config.py's
+  `_warn_narrow_coicop_non_leaf` gates on leafness — so it would buy
+  nothing and route to the classifier anyway. Better to say so than to
+  ship a code that only looks authoritative.
+
+  WordPress 6.5.8 + WooCommerce 5.9.0. **The Store API lives on the
+  un-versioned namespace**: /wp-json/wc/store/products serves 200,
+  /wp-json/wc/store/v1/products (the route almost every other subclass of
+  `_woo_base` uses) 404s. The rendered /catalog/ page hydrates
+  client-side and does not paginate server-side, so the API is the only
+  enumerable surface.
+
+  Enumerability proven, not assumed: X-WP-Total: 35, X-WP-TotalPages: 4 at
+  per_page=10, and page 1 (ids 2559/2528/2520/2496) and page 2 (ids
+  2277/2275/2267/2190) share no ids. At the base class's per_page=100 the
+  whole catalogue arrives in one request.
+
+  **Currency override is load-bearing.** prices.currency_code is the
+  placeholder string "ABC" — not an ISO 4217 code, just an unconfigured
+  WooCommerce setting — so the base class's `reported` currency would have
+  poisoned every row. FORCE_CURRENCY pins TJS, which matches
+  countries.yaml and the price levels (Chocofit ассорти = 2800 at
+  currency_minor_unit=2 -> 28.00 TJS).
+
+  Verified sample rows: 'Chocofit (ассорти)' 28.00 TJS; 'Мармелад
+  ассорти' 35.00; 'Ирис Золотой Ключик' 20.00; 'Грецкий орех в шоколаде'
+  130.00; 'Абрикос в шоколаде' 95.00. All 35 SKUs in stock at probe time.
+  channel: specialty-food (single-category manufacturer outlet, not a
+  general grocer).
+
+  Parses: API. Emitted `url` is the WooCommerce permalink
+  (https://shirin.tj/product/<slug>/), which the spider never fetches —
+  the archive regex is written against that PDP family, which is what
+  Common Crawl would hold.

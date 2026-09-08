@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: foetex_dk
+url: https://www.foetex.dk/
+language: da
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.foetex.dk/produkter/"
+archive_path_re: '^/produkter/[^/]+/\d+/?$'
+notes: |
+  page family: API (Algolia search index, no page ever fetched for its
+  rendered HTML).
+
+  Nuxt storefront (Salling Group, same family as bilkatogo_dk). No product
+  data on plain-HTTP category pages (client-rendered); Playwright
+  network-capture (2026-09-06) on a category page found the app id
+  (DRP4O45G5T) and a search-only Algolia API key baked into the runtime
+  config, scoped to index prod_FOETEX_PRODUCTS. POST
+  https://drp4o45g5t-dsn.algolia.net/1/indexes/*/queries with
+  filters=is_exposed:true, hitsPerPage=1000 -> HTTP 200 JSON, nbHits
+  61,912 exposed products, 60 pages for the full catalogue (mixed food +
+  general-merchandise hypermarket range).
+
+  Unlike bilkatogo_dk, `sales_price` here is already a DECIMAL DKK amount,
+  not minor units (øre) -- confirmed live 2026-09-06: 'Æblechips til
+  gnavere' sales_price=22.45, 'Æblebrændevin' sales_price=299.0, matching
+  the site's own da-DK display strings. Did not find the EU Price
+  Indication Directive Article 6a lowest-30-day-price field on this
+  index (no such attribute observed in the sampled hits) -- worth a
+  second look if Article 6a compliance data becomes a priority, but not
+  blocking for this source.

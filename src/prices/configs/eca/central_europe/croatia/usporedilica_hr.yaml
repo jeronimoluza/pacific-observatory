@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: usporedilica_hr
+url: https://usporedilica.hr/
+language: hr
+currency: EUR
+cadence: weekly
+archive_prefix: "usporedilica.hr/proizvod/"
+archive_path_re: '^/proizvod/[^/?]+/?$'
+notes: |
+  Multi-retailer grocery price-comparison aggregator (channel=marketplace,
+  same GLOSSARY.md aggregator split as cijene_hr -- prices pulled from
+  many named retailers, not a first-party outlet).
+
+  Page family: API. The site itself is a Vue SPA over a WordPress custom
+  theme (`<Product></Product>` mount points, no price in raw HTML); real
+  data comes from `wp-json/custom/v1/products/?shop=&sort=&page=N`,
+  localized via `window.MyScriptVars` (rest_url + a per-page-load nonce
+  sent as `X-WP-Nonce`). The route 403s ("REST API access is restricted
+  to usporedilica.hr") without a same-origin Referer/Origin header.
+
+  Each `posts[]` entry is an encrypted envelope: base64(base64_ciphertext
+  + "::" + hex_iv), AES-256-CBC/PKCS7, key hardcoded in the shipped JS
+  bundle (wp-content/themes/usporedilica/dist/index.js, function
+  `decryptData`) -- client-side obfuscation, not a real secret. Decrypted
+  plaintext is HTML-entity-escaped JSON.
+
+  Verified live 2026-09-06: page=1 decrypts to 16 products incl. "FAKS
+  900 ml GEL COLOR" EUR 1.70 (pricePerUnit 1.89/lit -- AI_NOTES's claim of
+  a normalised unit price on every line is correct and is carried in the
+  decrypted payload as `unit`/`pricePerUnit`, not emitted here to keep
+  the row shape uniform with other sources). `max_pages` in the first
+  response was 3357 (~53,700 rows); this spider paginates via that field
+  rather than a hardcoded cap -- a full run is a genuinely large crawl,
+  budget the `timeout:`/`max_items:` fields accordingly.
+
+  Test run (--max-items 10): 10 items decrypted cleanly, distinct
+  product_ids, EUR prices in plausible range, e.g. "DET MERI MERINO
+  COLOUR 900ml" EUR 4.09.
+
+  DEPENDENCY NOTE: decryption uses the `cryptography` package (AES-CBC).
+  Not a declared `prices` dependency in pyproject.toml, but present
+  transitively in this venv (pulled in by scrapy's TLS stack). Flag if a
+  fresh venv build ever lacks it.
+
+  GOTCHA (from candidate brief): shows "od" (minimum-across-retailers)
+  pricing -- same caveat as cijene_hr.

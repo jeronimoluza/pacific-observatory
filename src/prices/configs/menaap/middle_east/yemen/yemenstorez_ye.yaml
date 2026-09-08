@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: yemenstorez_ye
+url: https://yemenstorez.com/
+language: ar
+cadence: weekly
+channel: marketplace
+notes: |
+  Yemen Storez -- multi-vendor marketplace linking Yemeni merchants to
+  customers ("first Yemeni e-commerce platform" per its own copy), prices
+  in YER. Server-rendered PDPs carry clean OpenGraph/product:* meta tags
+  (product:price:amount, product:price:currency, product:availability,
+  product:brand, product:retailer_item_id) -- Tier 1A, curl_cffi
+  impersonate=chrome124 clears 200 with no anti-bot layer (a Cloudflare
+  Turnstile challenge script is present but did not block plain fetches).
+
+  Category listing pages (/category/<slug>) and the /shops directory are
+  BOTH client-rendered (raw HTML ships unrendered Vue template literals
+  like ${randomProduct.url}; a Playwright network trace on /shops found no
+  product/shop-list XHR either) -- neither is usable for discovery.
+
+  What IS server-rendered and walkable: the homepage links to 6 seller
+  storefronts at /shop/<vendor-slug>; each shop page embeds real
+  <a href="/product/..."> anchors (~5 per shop); each product page links
+  back to ~5 sibling products from the same shop (a "recommended" widget,
+  confirmed to be the same set as the shop page's own links, not further
+  pagination). Spider is a CrawlSpider over /shop/ and /product/ so it
+  picks up any additional shops/products the site adds later without a
+  code change, though the real catalog surface today is small (~6 shops).
+
+  channel: marketplace (seller-authored names, multiple distinct vendors,
+  not one retailer's own catalog) -- per skill guidance this excludes the
+  source from census.py's tier-a corpus but it is still onboarded because
+  AI_NOTES flagged an explicit "food and drink" category and Yemen has
+  only 1 prior source (P2, closes_gap).
+
+  Page family: PDP (spider reads /shop/ listing pages only to discover
+  /product/ links; all row data comes from product-page meta tags).
+
+  Test run 2026-09-06: crawl finished naturally (not truncated) at 8 unique
+  items -- the real reachable catalog via /shop/ and /product/ links is
+  genuinely this small today. Confirmed real prices, e.g. product_id
+  "saaa-rgaly-rkmy" "ساعة رقمية رجالية" 15000.0 YER, available=False (out
+  of stock, matches the page's own product:availability meta). Shop pages
+  also expose /shop/<slug>/all-products and /top-selling sub-paths the
+  CrawlSpider follows -- worth re-checking in a follow-up run once sellers
+  list more inventory, since today's crawl exhausted the link graph before
+  finding more than the ~5-per-shop "recommended" set.

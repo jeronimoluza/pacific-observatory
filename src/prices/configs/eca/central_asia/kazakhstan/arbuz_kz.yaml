@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: arbuz_kz
+url: https://arbuz.kz/
+language: ru
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: API (anonymous auth token + per-category JSON listing;
+  PDP/HTML never fetched).
+
+  SPA behind Cloudflare (challenge-platform scripts present on the page),
+  but plain curl_cffi requests to the JSON API cleared without any
+  challenge in testing. Playwright network-capture (2026-09-06) found:
+  POST /api/v1/auth/token with a public consumer+key pair baked into the
+  frontend bundle -> a long-lived (100-year expiry) anonymous bearer
+  token, no login required; then GET
+  /api/v1/shop/catalog/<top_category_id>?where[available][e]=0&page=<n>
+  with `Authorization: Bearer <token>` (the `?token=` query-param form
+  the browser sometimes uses 401'd in testing -- use the header).
+
+  Each top-level category is `isElasticsearch:true` and its listing
+  already aggregates every descendant subcategory's products -- confirmed
+  live 2026-09-06: category 14 "Вода и напитки" reports count=622 total
+  products with no subcategory id ever passed. Spider walks the ~21
+  top-level category ids from the homepage nav rather than a full
+  category-tree crawl. Page size is server-capped at 40 regardless of a
+  `limit=` override.
+
+  Confirmed live 2026-09-06: category 225161 ("Молоко, сыр и яйца"),
+  product 20069 "Молоко Lactel с витамином D 2,5% 1 л", priceActual=666
+  KZT (current price; pricePrevious=784 pre-discount) -- plain KZT
+  integers, no minor-unit scaling. Matches AI_NOTES' "KZT list/discount
+  pairs" description.

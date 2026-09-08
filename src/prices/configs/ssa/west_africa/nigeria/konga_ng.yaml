@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: konga_ng
+url: https://www.konga.com/
+language: en
+currency: NGN
+cadence: weekly
+archive_prefix: "www.konga.com/product/"
+archive_path_re: '^/product/[^/?]+$'
+notes: |
+  Page family: API (no HTML page is ever fetched at collection time).
+  Category pages ship a client-rendered Next.js skeleton (raw HTML has only
+  price-filter facet labels, no real product cards -- "Under N2000" etc,
+  animate-pulse skeleton divs). Recovered via Playwright network trace: the
+  front-end calls a hosted search service at kss.igbimo.com/search with a
+  "kss_pub_..." key shipped in every visitor's page load (public search
+  key, not a secret) -- curl_cffi + that header gets a clean 200, no
+  Playwright needed at collection time. The site's own api.konga.com/v1/graphql
+  (Magento-derived, custom schema, introspection disabled) only serves the
+  CMS category menu, not products -- the product search lives entirely on
+  igbimo.
+  Millions of listings across a general marketplace catalog (electronics,
+  phones, fashion, home) mixing first-party "Konga Retail" and third-party
+  seller fulfilment (distinguished by `konga_fulfilment_type`, e.g. "CWK")
+  -- tagged channel: marketplace per the seller-mix convention (see
+  GLOSSARY.md), not supermarket/retailer_sku-pure.
+  q="*" with page/hitPerPage paginates the full catalog (page 1 vs page 2
+  confirmed disjoint object ids). `special_price` used over `price` when
+  present (active discount), matching what the storefront displays.
+  Verified live 2026-09-06, --max-items test run.

@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rezvanpakhsh_ir
+url: https://rezvanpakhsh.com/
+language: fa
+currency: IRR
+cadence: weekly
+channel: wholesale
+timeout: 3600
+archive_prefix: "rezvanpakhsh.com/product/"
+archive_path_re: '^/product/[0-9]+/?$'
+notes: |
+  Verified live 2026-09-05: rezvanpakhsh.com is a WooCommerce store with the
+  Store API open at /wp-json/wc/store/v1/products (no auth), paginating
+  cleanly via per_page/page (X-WP-Total: 3428). Page 2 of the listing returns
+  a fully distinct id set, so the catalog is genuinely enumerable rather than
+  a re-served first page.
+
+  CURRENCY EXCEPTION for Iran: unlike every other Iranian source in this repo,
+  prices.currency_code is already "IRR" and the rendered PDP quotes ریال
+  (7 occurrences, zero تومان). No Toman->Rial scaling applies — the spider
+  sets neither FORCE_CURRENCY nor PRICE_MULTIPLIER. Cross-checked on the first
+  row: رطب کبکاب کارتنی 1ک12ع reads 31,359,708 ﷼ on both API and PDP.
+
+  Rezvan Pakhsh Azimi is a food/FMCG WHOLESALE distributor (بنکداری و پخش
+  عمده مواد غذایی, trading since 1368/1989), so prices are CASE prices, not
+  shelf prices — product names carry the case make-up ("1ک12ع" = 1 kg x 12
+  units). Treat as the wholesale layer for Iran, not a retail shelf series.
+  Catalog is food-led (dates, honey, chocolate, biscuits) with a household
+  cleaner / tissue tail.
+
+  Onboarded because Iran's 25 existing manifests are 21 cosmetics / pharmacy /
+  home-improvement shops and only 2 genuine food sources (hastmarket_ir,
+  royalnuts_ir) — the low division-01/02 leaf count is a food-sourcing gap,
+  not a manifest-count gap.
+
+  Page family parsed: API.

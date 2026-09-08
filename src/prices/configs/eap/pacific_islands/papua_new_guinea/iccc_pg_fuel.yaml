@@ -1,0 +1,34 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2.1", "07.2.2.2", "04.5.3.0"]
+channel: fuel-station
+source_key: pg_iccc_fuel
+module: eap.pacific_islands.papua_new_guinea.iccc_pg_fuel
+function: fetch_pg_iccc_fuel
+url: https://iccc.gov.pg/category/monthly-fuel-price/
+language: en
+cadence: monthly
+fallback_date: 2025-01-01
+notes: |
+  Independent Consumer & Competition Commission -- monthly Indicative
+  Retail Fuel Price (IRP) notice, ~25 named centres, Petrol/Diesel/
+  Kerosene, published as a PDF linked from a WordPress post. Confirmed
+  live 2026-09-06: category page lists posts from March through August
+  2026; only the August notice
+  (03082026_-Monthly-IRP-for-August-2026-Subsidized_hd.pdf) carries a text
+  layer -- March/April/May/June/July's linked PDFs are scanned images with
+  zero extractable text (no OCR available here), same failure mode as
+  Kiribati's MCIC price orders. Fetcher tries every PDF linked from a post
+  and keeps whichever one parses into >=5 rows rather than trusting the
+  filename (naming is inconsistent month to month). Test run against
+  fallback_date=2025-01-01 produced 75 rows (25 centres x 3 fuels) from the
+  single parseable August 2026 notice. Prices published in toea/litre (100
+  toea = 1 PGK); divided by 100 before emission. COICOP map verified
+  against data/prices/enrich/gold/coicop_leaves.txt (the PNG-inventory's
+  original "04.5.4" for kerosene was NOT a real leaf -- that's solid
+  fuels): Petrol -> 07.2.2.2, Diesel -> 07.2.2.1, Kerosene -> 04.5.3.0
+  (liquid fuels). effective_from date read from the notice's "take
+  effect from ... <date>" sentence, falling back to the post URL's date.
+  Administered ceiling price, not an observed shelf price.

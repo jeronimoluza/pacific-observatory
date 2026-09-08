@@ -1,0 +1,40 @@
+scaffolding: spider
+spider: dado_tj
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://dado.tj/
+language: ru
+currency: TJS
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+archive_prefix: "dado.tj"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Dado.tj -- Dushanbe grocery e-commerce store, plain WordPress +
+  WooCommerce. Discovery lead (wave 4, bare hostname `dado.tj`). Triage
+  AI_NOTES said "supermarket with app; web presence needs confirming" --
+  re-probed 2026-09-06: the web presence is real, no app or Playwright
+  needed. Plain GET on `curl_cffi impersonate=chrome124` (and the default
+  Scrapy downloader) clears 200, no anti-bot encountered.
+
+  Uses the unauthenticated WooCommerce Store API directly
+  (`/wp-json/wc/store/v1/products?per_page=50&page=N`), paginated, 391
+  products across 8 pages.
+
+  Minor-unit trap: `prices.price` / `regular_price` are integer minor units
+  (`currency_minor_unit: 2`) -- divide by 100. `currency_symbol` on this
+  store reads "CMH" (a shop-admin display quirk), but `currency_code` is
+  unambiguous TJS.
+
+  Catalogue is mostly unpriced: only ~44 of 391 products (~11%) carry a
+  non-zero price; the rest are listed with price "0" (out of stock /
+  awaiting pricing). Spider drops zero/blank-price rows rather than
+  emitting them (same convention as mekkamarket_ro).
+
+  Page family parsed: API only (spider never fetches an HTML page).
+
+  Test run 2026-09-06 (--max-items 5): passed, real TJS prices (e.g. energy
+  drinks 12.30-14.00 TJS) matching the storefront's own price_html
+  rendering for the sampled SKUs.

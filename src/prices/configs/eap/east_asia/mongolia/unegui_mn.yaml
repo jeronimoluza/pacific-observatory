@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: unegui_mn
+url: https://www.unegui.mn/avto-mashin/
+language: mn
+cadence: weekly
+channel: marketplace
+currency: MNT
+coicop_codes: ["07.1.1.2"]
+archive_prefix: "www.unegui.mn/adv/"
+archive_path_re: '^/adv/\d+'
+notes: |
+  Re-probed 2026-09-06: prior known_blockers.md verdict ("HTTP 403 from
+  non-Mongolian IP, likely app-tier allowlist") does not reproduce from this
+  network — curl_cffi (chrome124) gets a clean 200 on homepage AND the
+  /avto-mashin/ (vehicle classifieds) listing, no allowlist behaviour
+  observed. Mongolia's largest classifieds marketplace. Vue/Nuxt SPA, but
+  each listing page embeds the full page of results as a backslash-escaped
+  JSON string in the initial-state payload -- no separate API call needed.
+  Verified real pagination: page 1 vs page 2 of /avto-mashin/ return 60
+  listings each with zero id overlap; ~292 pages at probe time.
+  Scoped to /avto-mashin/ (vehicle classifieds) only -- narrow COICOP 07.1
+  (purchase of vehicles). Unegui.mn also carries real-estate, electronics,
+  and general classifieds sections; out of scope here (used-goods classifieds
+  is a different analytical shape from a retail catalogue and needs its own
+  COICOP scoping pass — a candidate for a dedicated follow-up, not bundled
+  into this narrow vehicle-only manifest).
+  Page family: listing only (no per-ad PDP fetch needed).

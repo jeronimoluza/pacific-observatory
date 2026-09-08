@@ -1,0 +1,41 @@
+scaffolding: spider
+spider: superpharmtt
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://superpharmtt.com/
+language: en
+currency: TTD
+cadence: weekly
+channel: pharmacy
+coicop_codes: null
+archive_prefix: "superpharmtt.com"
+notes: |
+  SuperPharm -- Trinidad & Tobago pharmacy chain that also carries a
+  grocery/household range (Grocery, Beverages, Household Products
+  sub-menus alongside pharmacy). Discovery lead (wave 4, bare hostname
+  `superpharmtt.com`, triage tier "C - engineering required").
+
+  Bare SPA shell -> backend API pattern: the front end is an empty
+  Quasar/Vue app (`<div id="q-app">`, ~1.5KB). A Playwright network trace
+  of a real click-path (Products -> Grocery -> Baking Supplies) found the
+  backend at api.superpharmtt.com -- AWS API Gateway + Lambda in front of a
+  Dynamics NAV/Business Central retail system.
+
+  Every call is POST, not GET -- a bare GET on any /api/service/* endpoint
+  returns AWS API Gateway's generic "Missing Authentication Token", which
+  reads like an auth failure but is a method mismatch. No API key/session
+  needed; the app's own POST body (appversion/appID/languageID) plus
+  Origin/Referer headers works from plain curl_cffi. No Playwright needed
+  at collection time.
+
+  POST /api/service/GetProductsHierarchy returns the full category tree
+  (47 top-level, 260 leaves) in one call. POST /api/search/GetProducts
+  (note: search/, NOT the sibling service/GetProducts, which wants an
+  undocumented filters.categories shape and returned nothing in probing)
+  with {categoryId, pageIdx, pageSize, storeNo:""} paginates each leaf.
+
+  Page family parsed: API only (spider never fetches an HTML page).
+
+  Test run 2026-09-06 (--max-items 10): passed, real TTD prices (27.00-
+  29.00 TTD on pantry items), matches the API sample seen while probing.

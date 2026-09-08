@@ -1,0 +1,61 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmfresh_gm
+url: https://farmfresh.gm/
+language: en
+cadence: weekly
+channel: fresh-market
+archive_prefix: "farmfresh.gm/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  New source (2026-09-05 SSA div-01/02 sweep). The Gambia previously had
+  `ebaaba_gm` (a general marketplace whose catalogue is dominated by
+  electronics and general merchandise), `fews_net` and `wfp_prices` — and
+  ZERO COICOP division 01/02 leaves on the dashboard. Farm Fresh is a
+  Serrekunda-area fresh-food delivery retailer and is the first Gambian
+  source whose catalogue is essentially 100% food.
+
+  Probed live 2026-09-05 with curl_cffi impersonate=chrome124: GET
+  /wp-json/wc/store/v1/products?per_page=100 -> HTTP 200, x-wp-total=102,
+  x-wp-totalpages=2. Standard (versioned) WooCommerce Store API namespace,
+  zero auth, no WAF. currency_code GMD matches countries.yaml;
+  currency_minor_unit=2, so the shared base divides by 100 (e.g. the API's
+  "20000" for Flax Seeds 70g is GMD 200.00, "25000" for Gambian Groundnut
+  oil 1L is GMD 250.00 — both sane against a ~72 GMD/USD rate).
+
+  Categories observed: Meat, Poultry & Eggs, Vegetables, Fruits, Spices,
+  Cereals, Natural Oils, Natural & Organic — hence `channel: fresh-market`
+  rather than `supermarket`: this is a butcher/greengrocer range with very
+  little packaged-goods depth. Many SKUs are priced per kg or per bunch
+  ("Osso Buco (per kg)", "Spring Onions (per bunch)"), which tier-a's
+  unit/quantity extraction should pick up from the raw name.
+
+  Locality: prices are quoted in GMD and delivery is domestic, so this is a
+  genuine domestic shelf-price series, unlike the USD-quoted diaspora
+  grocers rejected elsewhere in SSA (terangasgambia.com, probed the same day,
+  prices the identical goods in USD at roughly 4x the domestic level).
+
+  SLOW-ORIGIN TRAP — this cost a full failed run before it was diagnosed. The
+  site sits on a slow shared cPanel host (108.167.172.182) whose first-byte
+  latency is 20-40s and sometimes worse. The repo-wide DOWNLOAD_TIMEOUT of 15s
+  in price_scraping/settings.py times out EVERY request against it, and the
+  spider then reports finish_reason=finished with item_scraped_count=0 and no
+  HTTP error at all — a clean-looking zero. Bare curl against the apex host
+  hangs for the same reason while `https://www.farmfresh.gm/` 301s instantly,
+  which makes the host look half-dead when it is merely slow. The spider
+  overrides DOWNLOAD_TIMEOUT to 120s for this source only; do not "fix" a zero
+  row count here by re-probing, check the timeout first.
+
+  Test run 2026-09-05 (--max-items 60, after the timeout fix): 100 rows in one
+  API page, 100 distinct URLs, currency 100% GMD, price range 35-2,800 GMD
+  (median 250). Category mix of that page: Vegetables 23, Fruits 11, Natural
+  Oils 9, Natural & Organic 8, Meat 7, Pantry & Essentials 7, Snacks 7,
+  Cereals 6, Local Teas 5, Dairy 4 — 100% food and non-alcoholic beverages.
+
+  `coicop_codes` is deliberately left unset even though the catalogue is
+  food-only — it spans several 3-digit COICOP classes (01.1.1 cereals,
+  01.1.2 meat, 01.1.4 milk/eggs, 01.1.5 oils, 01.1.6 fruit, 01.1.7
+  vegetables), which is wide by the narrowness rule, so the classifier
+  assigns the leaf per product.

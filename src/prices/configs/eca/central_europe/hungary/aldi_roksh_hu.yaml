@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aldi_roksh_hu
+url: https://shop.aldi.hu/
+language: hu
+currency: HUF
+cadence: weekly
+channel: marketplace
+archive_prefix: "shop.aldi.hu/"
+archive_path_re: '^/termek/[^/?]+$'
+notes: |
+  page family: API. Candidate name in the source list: "Aldi via ROKSH"
+  (https://www.roksh.com/) -- Aldi runs no Hungarian online catalogue of
+  its own, ROKSH personal-shopper platform is the ONLY route to Aldi
+  Hungary prices. Targets the Aldi-only storefront shop.aldi.hu (a
+  ROKSH-hosted, Aldi-themed shop distinct from the generic multi-retailer
+  roksh.com UI -- confirmed via roksh.com's own GTM snippet branching on
+  this hostname) rather than roksh.com directly.
+  Playwright network trace (2026-09-06) found the backend at
+  shopservice.roksh.com, wide open with no auth: GET
+  /category/GetFullCategoryList?providerCode=ALDI&isOwnWebshop=true (386
+  leaf categories) -> GET /productlist/additionalCategoryProductList?
+  listResultProductNum=1000&providerCode=ALDI&isOwnWebshop=true&
+  progIdList=<leaf progID>. Leaf catalogs are small (single digits to a
+  few dozen items), so no pagination is needed. Verified live:
+  progIdList=friss-tej -> 8 products incl. "MILSANI Laktozmentes ESL tej
+  ... 1 l" HUF 379.00.
+  GOTCHA (personal-shopper margin possible): channel set to marketplace.
+  Test run 2026-09-06: --max-items 5 returned 5 rows with real HUF prices.

@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: caribeshop_dm
+url: https://backend.caribeeats.com/api/business/caribeshop-dm
+language: en
+cadence: weekly
+channel: marketplace
+notes: |
+  Onboarded 2026-09-05. CaribeShop DM, the CaribeEats-operated general-goods
+  storefront for Roseau, Dominica. Page family parsed: API (whole catalogue
+  in one unauthenticated GET; synthetic '#<product_id>' urls, not browsable).
+
+  6,206 SKUs / 15 categories verified live 2026-09-05 -- by a wide margin the
+  largest catalogue found for Dominica anywhere. Composition: Personal Care
+  3,544, OTC 825, Foods & Beverages 483, Beauty & Health 365, Household 341,
+  Others 297, Baby & Child 187, Pets 83, Kids & Toys 30, Electronics 24.
+
+  OVERRIDES A PRIOR REJECTION, on purpose. The 2026-09-01 F&B sweep probed
+  this exact business and rejected it as "not food-led" (8% F&B). That was
+  the right call under a food-LED bar. It is the wrong call for a
+  division-01/02 coverage brief in a country carrying six division-01/02
+  leaves in total: 483 genuine grocery SKUs at Dominican shelf prices is
+  real division-01 coverage, and the ~5,700 non-food rows are division
+  05/06/12 coverage Dominica otherwise has none of. Recorded here so the
+  next pass sees the reasoning rather than reading it as a rule violation.
+  channel: marketplace states honestly what it is.
+
+  Complements, does not duplicate, `savers_supermarket_dm` (Portsmouth
+  supermarket, XCD, onboarded the same day): different island town,
+  different operator, different currency, and a probe of shared product
+  names found the assortments barely overlap.
+
+  Currency: payload reports USD (the Roseau sibling island-liquor-dominica
+  reports XCD). Left to the payload. The same USD/XCD split on this platform
+  was independently confirmed REAL this pass on the St Kitts and Nevis
+  businesses -- median price ratio against an XCD sibling's shared SKUs came
+  out at 1/2.70, exactly the fixed peg, so the field is trustworthy.

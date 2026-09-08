@@ -1,0 +1,37 @@
+scaffolding: spider
+spider: mekkamarket_ro
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://mekkamarket.ro/
+language: ro
+currency: RON
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+archive_prefix: "mekkamarket.ro"
+archive_path_re: '^/sys/app/shop/productGroup/?$'
+notes: |
+  Mekka Market -- small app-led grocery-delivery storefront, white-label
+  "xf" platform. Discovery lead (wave 4, bare hostname `mekkamarket.ro`).
+  Triage AI_NOTES flagged partial 0.00 RON catalogue load; not observed on
+  the produce/grocery groups actually scraped (spider still drops
+  zero-price rows defensively).
+
+  Despite the app framing, `/sys/app/shop/productGroup/?id=<hex>` pages are
+  plain server-rendered HTML -- a Playwright network trace fired zero
+  product-data XHRs and curl_cffi alone returns the same product cards.
+  No Playwright needed at collection time.
+
+  Price format splits integer/decimal across a `<sup>` tag
+  (`1<sup>75</sup> RON` = 1.75 RON) -- a plain `[0-9]+[.,][0-9]{2}` regex
+  misses it entirely.
+
+  18 productGroup ids hardcoded from the homepage's own category rail
+  (`_CATEGORY_IDS` in the spider); ~20 cards per group, no in-group
+  pagination observed in raw HTML.
+
+  Page family parsed: productGroup listing pages only (PDP never fetched).
+
+  Test run 2026-09-06 (--max-items 10): passed, real RON prices (1.75-3.18
+  RON on loose produce), 0 blank names.

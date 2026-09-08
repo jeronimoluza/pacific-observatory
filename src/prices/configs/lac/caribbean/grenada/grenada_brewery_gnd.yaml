@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: grenada_brewery_gnd
+url: https://backend.caribeeats.com/api/business/grenada-brewery
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Onboarded 2026-09-05. Grenada Brewery's own storefront on the CaribeEats
+  delivery aggregator -- flagged as a ready-made next candidate by the
+  2026-09-01 Grenada pass. Page family parsed: API (whole catalogue in one
+  unauthenticated GET; synthetic '#<product_id>' urls, not browsable).
+
+  32 SKUs / 4 categories verified live 2026-09-05: Alcoholic 16 (beers,
+  stouts -> COICOP 02.1), Non-alcoholic 12 and Water 4 (soft drinks, malts,
+  bottled water -> COICOP 01.2). Two divisions, so coicop_codes stays unset
+  and the classifier assigns per-leaf.
+
+  Payload `currency` is XCD, matching countries.yaml grenada. Small
+  catalogue by design (a brewery, not a grocer) but a genuine, independently
+  priced division-01.2/02.1 shelf that the country's only other source
+  (`caribeshop_gnd`) does not carry at brand depth.

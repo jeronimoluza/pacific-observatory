@@ -1,0 +1,34 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: nc_eec_electricity_tariff
+module: eap.pacific_islands.new_caledonia.eec_electricity_tariff
+function: fetch_nc_eec_electricity_tariff
+url: https://eec.nc/institutionnel/eec-2/tarifs-eec-nouvelle-caledonie
+language: fr
+cadence: irregular
+fallback_date: 2015-01-01
+notes: |
+  Electricité et Eau de Calédonie (EEC) regulated electricity tariff
+  schedule, government-set. The tariff page stamps "Grille tarifaire en
+  vigueur du 1er octobre 2025".
+
+  The page holds nine HTML tables; this fetcher takes only the two
+  unambiguous, per-consumer ones -- "Prix unitaire (en FCFP)" (per-kWh
+  energy rate by usage category: Domestic <=3.3kVA / Domestic >3.3kVA /
+  Professional, 3 rows) and "Redevance comptage (FCFP)" (fixed monthly
+  metering fee by meter/breaker type, 5 rows). Skipped deliberately: the
+  photovoltaic feed-in ("Tarif d'achat") table is a rate EEC pays OUT to
+  solar producers, not a consumer price, and several PRIME FIXE / CALIBRAGE
+  tables have merged multi-row headers whose category boundaries are
+  ambiguous without inventing structure the source doesn't state cleanly.
+
+  `pandas.read_html` silently corrupts this page's comma-decimal figures
+  ("37,91" -> parsed as the integer 3791) -- the fetcher parses raw table
+  cells with BeautifulSoup and does the comma-to-dot conversion itself.
+  price_local is always whole XPF (New Caledonia franc has no subunit).
+
+  Verified live 2026-09-06: 8 rows, effective_from 2025-10-01.

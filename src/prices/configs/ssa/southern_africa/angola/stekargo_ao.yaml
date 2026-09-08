@@ -1,0 +1,51 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: stekargo_ao
+url: https://stekargo.com/
+language: pt
+cadence: monthly
+channel: dept-store
+archive_prefix: "stekargo.com/"
+archive_path_re: '^/produto/[^/?]+'
+notes: |
+  New source (2026-09-05 SSA div-01/02 sweep). Angola already had three
+  `supermarket` sources (`kiwaba_ao`, `kibabo_ao`, `angoremia_ao`);
+  Stekargo is a cross-division Angolan online store, added for the
+  COICOP-01.2 depth the supermarkets under-carry (coffee and tea are its
+  single biggest non-book category block).
+
+  Probed live 2026-09-05 with curl_cffi impersonate=chrome124: GET
+  /wp-json/wc/store/v1/products?per_page=20 -> HTTP 200, x-wp-total=3350,
+  x-wp-totalpages=168. Standard (versioned) WooCommerce Store API, zero
+  auth, no WAF. currency_code AOA matches countries.yaml;
+  currency_minor_unit=0, so prices need no division (e.g. "A Menina Gotinha
+  de Água" = 32,491 AOA, ~US$35 for an imported children's book — sane).
+
+  Catalogue mix (product-category counts): Escritório e papelaria 394,
+  Consumíveis 304, Café e Chá 140, Em Português 136, Café 107, Detergentes
+  e Produtos de Limpeza 107, Acessórios para Casa 106, Beleza e Bem-Estar
+  76, Desporto 74, plus ~700 school-textbook rows and a division-01/02 tail
+  of Chá 34, Bebidas 24, Chocolates 21, Alimentação Saudável 16. Books and
+  stationery dominate by count, so `channel: dept-store` (cross-division
+  retail, first-party inventory) is the honest value — this is NOT a
+  supermarket and should not be counted as one in source-mix reporting.
+
+  Test run 2026-09-05 (--max-items 60): 100 rows, 100 distinct product ids,
+  currency 100% AOA, prices 627-7,629,336 AOA (median 74,795). The API returns
+  newest-first, so the first page is entirely books — that is expected, NOT a
+  sign the food tail is unreachable. Verified by sampling deeper pages of the
+  same walk: page 15 (per_page=100) carries "Gin Maruvo de Loengo e Canela"
+  38,610 AOA, "Vinho Vale do Bero" 32,120 AOA and a Moët gift set 154,516 AOA
+  — i.e. this source also emits COICOP division **02.1** (wine/spirits) rows,
+  which none of Angola's three existing supermarket sources were onboarded for;
+  page 33 reaches toys, bags and coffee machines. A capped test run on this
+  source proves the API contract, not the catalogue mix — read the category
+  counts above for that.
+
+  `coicop_codes` unset: the catalogue spans divisions 01, 02, 05, 09 and 12,
+  which is as wide as a source gets — the classifier assigns per product.
+
+  Cost note: 168 API pages at the base's 2s DOWNLOAD_DELAY is roughly a
+  6-minute full walk, hence `cadence: monthly` rather than weekly.

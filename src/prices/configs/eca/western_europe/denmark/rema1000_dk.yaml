@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rema1000_dk
+url: https://shop.rema1000.dk/
+language: da
+cadence: weekly
+channel: supermarket
+notes: |
+  page family: API (departments + paginated search endpoint on a separate
+  host, PDP HTML never fetched).
+
+  Web shop is a JS SPA with no product data server-rendered. Playwright
+  network-capture (2026-09-06) found a clean, unauthenticated REST API at
+  api.digital.rema1000.dk: /api/v1/catalog/store/1/departments-v2 (15
+  departments) and /api/search/products?query=&page=<n>&per_page=100&
+  filter[departments]=<id>&sort=-popularity (standard page-based
+  pagination, confirmed via meta.pagination.total/last_page).
+
+  Each product's `prices` field is a list of time-windowed entries (a
+  current campaign price + the regular price that resumes afterward), not
+  a single current price -- confirmed live 2026-09-06: "SOLSIKKERUGBROD"
+  had a campaign entry (15 DKK, ending 2026-09-12) and a post-campaign
+  entry (22.5 DKK, starting 2026-09-13). Spider picks the entry whose
+  [starting_at, ending_at) window contains "now". Discounter per
+  AI_NOTES (Danish value tier).

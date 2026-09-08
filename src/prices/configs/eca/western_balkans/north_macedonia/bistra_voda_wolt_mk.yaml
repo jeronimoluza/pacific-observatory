@@ -1,0 +1,85 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["02.1.1.0"]
+spider: bistra_voda_wolt_mk
+url: https://wolt.com/en/mkd/skopje/venue/bistra-voda
+language: mk
+cadence: weekly
+channel: specialty-food
+archive_prefix: "wolt.com/en/mkd/skopje/venue/"
+archive_path_re: '^/en/mkd/skopje/venue/[^/?]+'
+notes: |
+  Bistra Voda (Skopje) — a pure SPIRITS retailer on Wolt. Onboarded to put
+  North Macedonia on COICOP division 02, which its existing 10 manifests do
+  not reach at all (kam_mk / ramstore_do_doma_mk / lanoi_wolt_mk are grocery,
+  setec_mk is electronics, reklama5_mk is classifieds, the five eurostat_*
+  fetchers are energy and PLI aggregates).
+
+  Discovered 2026-09-05 by enumerating the Wolt Skopje venue directory via
+  `GET https://consumer-api.wolt.com/v1/pages/front?lat=41.9981&lon=21.4254`
+  (144 venues with names and tags). The browsable
+  wolt.com/en/mkd/skopje/category/grocery page is useless for discovery — it
+  returns 429 with a 1.1 MB body containing zero /venue/ links.
+
+  >>> DOES NOT USE WoltBaseSpider, AND MUST NOT BE "FIXED" TO. <<<
+  This venue sits on Wolt's newer "unified store page" layout
+  (`server/unified-store-page-decision` in its SSR query-state,
+  `category_navigation_type: sidebar`). On that layout the shared base's
+  two-step SSR walk fails in the worst possible way — silently:
+    * `venue-assortment/category-listing` still resolves all 9 category
+      slugs, so the spider logs "9 categories" and looks healthy;
+    * but `.../items/<cat-slug>` no longer carries a
+      `venue-assortment/category` query at all. It carries
+      `venue-assortment/venue-content`, whose only populated section is a
+      12-item "New" carousel — and the SAME carousel comes back for EVERY
+      category. /items/whiskey-2 and /items/vodka-4 were verified to return
+      byte-identical item sets.
+  A base-class run against this venue finished with `finish_reason:
+  finished`, ZERO rows and no warnings. Had the carousel been counted it
+  would have been worse: 12 curated items masquerading as a catalogue.
+
+  The fix is Wolt's public consumer assortment API — no auth, no cookies, no
+  JS, and it returns the WHOLE assortment in one request:
+    GET https://consumer-api.wolt.com/consumer-api/consumer-assortment/v1
+        /venues/slug/bistra-voda/assortment
+  (This endpoint may be a better surface for the other 17 Wolt venue spiders
+  too, which currently lose every category past its first 50 SKUs to the SSR
+  page-1 cap. Not changed here — out of scope for this pass.)
+
+  CATEGORY EDGE RUNS BACKWARDS in that payload: item objects carry no
+  category field whatsoever, while each category carries `item_ids`. The
+  spider inverts the tree. Recursion is required — the top level is a single
+  "ALCOHOL" node with an EMPTY item_ids list, and the real leaves (WHISKEY,
+  COGNAC, VODKA, GIN, LIQUEUR, OUZO, OUZO MASTIKA, RAKIJA) are its
+  subcategories. A flat pass over `categories` maps zero items.
+
+  NARROWNESS CHECKED, NOT ASSUMED. All nine categories are distilled spirits;
+  no beer, no wine, no soft drinks, no snacks. That is the single COICOP leaf
+  02.1.1.0 (Spirits and liqueurs), verified present in the repo's taxonomy
+  index, so `is_narrow` fires and every row is stamped 02.1.1.0 at
+  confidence 1.0 via the ADR-0002 short-circuit in enrich/stages/classify.py.
+  The short-circuit gates ONLY on `is_narrow(coicop_codes)` and ignores
+  `coicop_classification`, so this declaration is load bearing: if the shop
+  adds beer or wine, those rows would be stamped as spirits with full
+  confidence. Re-check the category list on any future verification pass and
+  drop `coicop_codes` if it has broadened. The sibling tobacco_lux_wolt_mk
+  deliberately declares no codes for exactly this reason.
+
+  Prices are Wolt minor units (MKD x100). Eyeballed against the storefront:
+  Absolut Vodka 0.7L + 2 glasses 1,190 MKD (~EUR 19), Johnnie Walker Blue
+  Label 0.7L gift box 18,600 MKD (~EUR 302). Both plausible; no 100x error.
+
+  VERIFICATION RUN 2026-09-05: 206 rows, 206 distinct product_id, 206
+  distinct url, 0 blank names, 0 non-positive prices, currency 100% MKD,
+  price range 195-25,400 MKD, median 2,450. Category mix: WHISKEY 88,
+  LIQUEUR 29, GIN 27, VODKA 25, COGNAC 14, RAKIJA 11, OUZO 5, OUZO MASTIKA 3,
+  premium-set bundle 4 — 100% spirits, confirming the narrow declaration.
+
+  channel: specialty-food — single-category off-licence. Precedent:
+  bite_liqour_ls (Lesotho liquor store).
+
+  SPIDER PAGE FAMILY: API. The spider fetches no wolt.com page at all;
+  emitted urls are synthetic `<venue-url>#<item-id>` fragments (the
+  DuplicationPipeline dedups on url, so they must be unique per item).

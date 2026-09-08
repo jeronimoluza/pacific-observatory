@@ -1,0 +1,110 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: ocpv_infoprix_civ
+module: ssa.west_africa.cote_divoire.ocpv_infoprix
+function: fetch_ocpv_infoprix_civ
+url: https://infoprixocpv.com/tableauprix_details
+language: fr
+cadence: daily
+fallback_date: 2026-07-01
+notes: |
+  OCPV Info Prix — the national food-crop price board of the Office d'aide
+  à la Commercialisation des Produits Vivriers (Ministère du Commerce,
+  Côte d'Ivoire). Reached from ocpv-ci.com; the platform itself lives on
+  infoprixocpv.com.
+
+  Côte d'Ivoire's first `official_avg` source other than the shared
+  fews_net / wfp_prices regional feeds, and the first that reaches the
+  fresh-produce leaves supermarket spiders structurally miss.
+
+  THREE TABLES, ONE ONBOARDED:
+    /tableauprix          "bord champ" (farmgate)
+    /tableauprix_gros     wholesale
+    /tableauprix_details  RETAIL  <- this manifest
+  Retail is the layer a consumer basket needs. The other two are real
+  future sources but carry a different interpretation and would need their
+  own manifests; do not blend them into this one.
+
+  COVERAGE: ~100 distinct products across Ivorian Grand Marchés
+  (Abengourou, Aboisso, Bouaké, Minignan, ...). Plantain by variety and
+  ripeness (afoto / agninnin; verte / mûre / alloco), yam by variety
+  (bêtê-bêtê, kponan, klinglè, assawa, boukari, Florido), cassava (amer /
+  doux), attiéké, gari, fonio, millet (pilé / non pilé), maize by grain
+  colour, groundnut (shelled / unshelled, large / small grain), aubergine
+  (gnangnan / klômgbo / N'drowa / violette), okra (fresh baoulé / dioula,
+  dried), chilli (fresh, "sent bon", dried), palm oil, palm nuts
+  (ordinaire / SODEPALM), shea nut, kola nut, cashew, eggs, beef with and
+  without bone, and a long frozen-fish list (chinchard, maquereau,
+  sardine, thon rouge, carpe noire, sosso).
+
+  ACCESS (probed live 2026-09-05 — plain HTTP, no WAF, no auth, no CSRF):
+    GET /tableauprix_details?dateDebut=YYYY-MM-DD&dateFin=YYYY-MM-DD&page=N
+  Laravel pagination, 10 rows per page.
+
+  >>> PAGINATION TRAP <<< When a date filter is applied the page-number
+  LINKS are not rendered at all, so the last page cannot be read off the
+  markup — a fetcher that trusted the link list would stop at 10 rows per
+  day and look plausible. `&page=N` still works regardless. The fetcher
+  therefore walks pages until the response contains the site's own
+  empty-state marker `listeempty`. Verified on 2026-09-03: pages 1, 2 and
+  3 each returned 10 DISTINCT rows with no page links shown. Unfiltered,
+  the board renders 130 page links (~1,300 rows), which is the whole live
+  board rather than a single day.
+
+  DATE SEMANTICS: the table has no date column — the date exists only in
+  the query, so each row is stamped with the day it was requested for
+  (period_kind: daily_avg). Markets do not all report every day
+  (2026-09-04 and 2026-09-05 came back empty while 2026-09-02 and
+  2026-09-03 did not); an empty day is normal, not a fetch failure.
+
+  BACKFILL: the archive goes back years (2025-06-10 and 2026-01-15 both
+  return data). The fetcher walks cutoff+1 .. today, capped at 45 days per
+  run so an early fallback_date cannot turn one run into a multi-year
+  crawl. fallback_date is set to 2026-07-01 so the first run pulls a
+  meaningful recent window rather than one day.
+
+  VALUE EMITTED: `Prix Moyen` becomes price_local; `Prix Mini`/`Prix Maxi`
+  are preserved in each row's `notes` so the dispersion is not discarded.
+  Currency XOF (matches countries.yaml).
+
+  UNIT IS NULL ON PURPOSE: OCPV does not state the measurement unit
+  anywhere in the table markup. Assuming "kg" would silently corrupt any
+  per-kg normalisation downstream, so `unit` is left NULL and that fact is
+  written into every row's notes.
+
+  coicop_classification: classifier, and coicop_codes deliberately UNSET —
+  ~100 free-text local produce names including Ivorian varietal terms
+  ("Igname bêtê-bêtê", "Aubergine gnangnan", "Banane plantain Agninnin")
+  are exactly the long free-text list the ML classifier exists for, and
+  hand-mapping them would be guesswork. Same shape as insd_avg_prices
+  (Burkina Faso).
+
+  FIRST FULL RUN 2026-09-05 (cutoff=2026-07-01, 45-day window applied ->
+  2026-07-23..2026-09-05): **11,053 rows over 31 reporting days**, 0
+  duplicate observation_hashes, 0 non-positive prices, 100% XOF, and ZERO
+  page-cap warnings. Coverage: **35 markets** (Adjamé Marché Gouro, Cocody
+  Marché Cocovico, Abengourou / Aboisso / Adzopé / Agboville / Agnibilekrou
+  / Bouaflé / Bouaké / Dimbokro / Duékoué / Gagnoa / Man / Odienné /
+  Séguéla / Yamoussoukro Grand Marchés, Méagui CCGPV, Yamoussoukro Marché
+  MOHFAITAI, ...) x **118 distinct products**. Wall time ~13 minutes.
+
+  A FLAT-CAP BUG WAS CAUGHT AND FIXED DURING THIS ONBOARDING -- record it,
+  because it is the exact failure signature the skill warns about. The
+  first cut used _MAX_PAGES_PER_DAY = 60, and busy days came back at
+  **exactly 600 rows** over and over (2026-08-05, 08-10, 08-12, 08-24...).
+  That identical round number across days was the tell. Re-probing
+  2026-08-05 directly showed page 60 still returning rows while page 80 was
+  `listeempty`, so the day really held ~700. The cap is now 150 with an
+  explicit warning if any day reaches it; the same days now return 695-769
+  rows. Never trust a repeated round row count.
+
+  Idempotency: a same-day re-run finds cutoff == today's max
+  observation_date and returns nothing new.
+
+  RUN COST: ~13 min for a 45-day first window (busy days walk ~70 pages at
+  10 rows/page). Well inside the 5400s per-source driver cap, but worth
+  knowing before scheduling it in a large parallel fleet run. Subsequent
+  runs only cover cutoff+1..today and are seconds.

@@ -1,0 +1,33 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["10.4.0.0"]
+source_key: mn_num_tuition_fees
+module: eap.east_asia.mongolia.num_tuition_fees
+function: fetch_mn_num_tuition_fees
+channel: null
+url: https://www.num.edu.mn/admissions/undergraduate/fees-and-funding/course-fees/
+language: mn
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Discovery lead "num.edu.mn" (National University of Mongolia). The
+  fees-and-funding page is plain server-rendered WordPress HTML with 5
+  well-formed <table id="myTable"> elements, no JS, no anti-bot, plain
+  `requests` GET works fine. First education-division (COICOP 10) source
+  for Mongolia -- the existing Mongolia sources are all groceries/pharmacy/
+  general marketplace/telecom.
+
+  Parses 3 of the 5 tables (the other 2 use rowspan/merged cells for a
+  nested foreign-student fee schedule, left for a future pass):
+    - table[0]: undergraduate per-credit-hour fee (MNT) by school x
+      {general-foundation, major-foundation} course.
+    - table[1]: master's per-credit-hour fee (MNT) by school.
+    - table[4]: non-credit language-course hourly rate by level (beginner/
+      intermediate/advanced) -- published as a range, stored as its midpoint.
+
+  Test run 2026-09-06: 34 rows (22 undergrad school x course-type pairs +
+  9 master's school rows + 3 language-level rows), price range 12,000-
+  409,000 MNT (undergrad/master's fees cluster 190,500-265,900 MNT/credit;
+  language courses 12,000-134,000 MNT/hour).

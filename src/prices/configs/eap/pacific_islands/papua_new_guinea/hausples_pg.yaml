@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1.0"]
+spider: hausples_pg
+url: https://www.hausples.com.pg/rent/
+language: en
+cadence: weekly
+channel: real-estate
+notes: |
+  Rental listings from Hausples.com.pg -- PNG's largest real-estate portal
+  (Digital Classifieds Group). Listings-layer source for COICOP 04.1.1
+  (actual rentals paid by tenants). Confirmed live 2026-09-06 with
+  curl_cffi impersonate=chrome124, no WAF encountered -- no Playwright
+  needed. Page family parsed: LISTING only (never fetches a PDP) -- every
+  listing page's server-rendered HTML embeds a full __NEXT_DATA__ JSON
+  blob at props.pageProps.cacheData.results.data.results with id,
+  address, headline, categoryName, url, displayRent per listing; no
+  per-property fetch required. 23 pages / 458 listings at onboarding
+  time (data.lastPage). Currency PGK (market.currency.code == "pgk",
+  confirmed against the site's own filter labels, not the country
+  default). Rent is quoted PER WEEK ("Price (per week)" filter label,
+  "Median asking rent per week" stat on the landing page) -- price_local
+  in the raw spider item is the weekly figure; tier-a should read
+  pricing_basis accordingly, do not assume monthly. Listings priced
+  "POA" (price on application, no numeric rent) are dropped rather than
+  emitted as zero. Test run (--max-items 5) verified 5 items with
+  K1,500-K12,000/week style rents against the rendered page.

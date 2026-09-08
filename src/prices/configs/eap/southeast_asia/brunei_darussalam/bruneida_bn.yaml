@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bruneida_bn
+url: https://www.bruneida.com/brunei/for-sale/
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.bruneida.com/"
+archive_path_re: '^/[^/?]+-\d+/?$'
+notes: |
+  Page family: listing (category browse pages under /brunei/for-sale/<cat>/,
+  spider never fetches an individual ad-detail page).
+
+  Discovery-lead re-probe 2026-09-06 (shard w3_shard02, bare hostname
+  "bruneida.com" with no prior triage). Fully server-rendered PHP site --
+  plain curl_cffi/requests with a realistic Chrome UA returns 200 with
+  the complete listing HTML, no anti-bot, no JS hydration needed, despite
+  robots.txt disallowing `User-agent: *` (repo ROBOTSTXT_OBEY=False
+  already overrides this per-spider).
+
+  Card markup (li.link > h3.az-title > a + div.az-price) stable across all
+  sampled categories. Pagination via `?&page=N`, confirmed genuine
+  ("Page 1 of 11" on mobile-phones with distinct listing ids per page).
+  Test run (2026-09-06, --max-items 20) returned real rows across the
+  mobile-phones and computers categories, e.g. "SAMSUNG GALAXY J1 ACE"
+  BND 30, "Pixiecube Linux Commands Line Mouse Pad 800x300mm" price
+  visible on the card -- see collect run notes for exact count.
+
+  Currency displayed as bare "$" on every price -- this is Brunei, so BND
+  (matches countries.yaml for brunei_darussalam), cross-checked against
+  seller-typed "BND" / "Price $30" mentions inside several ad bodies on
+  the same sampled pages.
+
+  Scope: curated for-sale goods categories only (mobile-phones, computers,
+  electronics, fashion-clothing, health-beauty, home-garden-stuff) --
+  excludes the site's separate property, vehicles, jobs and services
+  sections, which have different semantics. General classifieds: rows are
+  individual sellers' secondhand-goods asking prices, not a retailer's
+  posted new-goods price -- same caveat as khmer24_kh and olx_ba.

@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: megasuper_cr
+url: https://www.megasuper.com/
+language: es
+currency: CRC
+cadence: weekly
+notes: |
+  Page family: API (no HTML page is ever fetched at collection time; the
+  spider's `url` field is a synthesized `?sku=<sku>#<sku>` identity, not a
+  real browsable PDP route -- no archive_prefix/archive_path_re set,
+  per the "browsable URLs" precondition in yaml_schema.md).
+  Homepage is a bare Next.js shell (all product data client-fetched).
+  Recovered via Playwright network trace: front-end calls a shared LatAm
+  grocery-commerce backend ("Instaleap"/"Moira Engine") at
+  nextgentheadless.instaleap.io/api/v3 (GraphQL, introspection disabled),
+  authenticated with a `dpl-api-key` header shipped in every visitor's page
+  load (public per-tenant key, not a secret). The query shape actually
+  accepted by the live schema (`getProductsByCategoryInput` object wrapper,
+  `currentPage` pagination arg) was found by trial-and-error against
+  GraphQL validation-error hints -- the GetProductsByCategory query text
+  embedded in the site's own JS bundle (`categoryId` arg) is STALE and
+  rejected by the live server; do not copy it.
+  18 top-level categories from GetCategoryTree span most of COICOP
+  divisions 01-13 (groceries, meat/fish, produce, dairy/eggs, beverages,
+  personal care, cleaning, pet, bakery, frozen, household, baby, deli,
+  pharmacy, hygiene/beauty, electro, toys). Category "01" ABARROTES alone
+  spans 99 pages -- large real catalog. Prices in whole colones (e.g.
+  cooking oil 900ml at CRC 1,400 -- plausible CR retail price, not minor
+  units).
+  Verified live 2026-09-06, --max-items test run.

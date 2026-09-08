@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: delhaize_be
+url: https://www.delhaize.be/
+language: fr
+currency: EUR
+cadence: weekly
+notes: |
+  Delhaize Belgium (delhaize.be) — supermarket, Next.js storefront (Ahold
+  Delhaize group -- distinct backend from ah.be, which is Akamai-blocked
+  even on its mobile-app auth endpoint). Category pages are client-
+  hydrated (no product data in server HTML or __NEXT_DATA__.apolloState,
+  which only carries ROOT_QUERY) — a Playwright network trace found the
+  real backend: a public Apollo GraphQL persisted-query endpoint,
+  `/api/v1/?operationName=GetCategoryProductSearch&variables=...&
+  extensions={"persistedQuery":{"sha256Hash":"d8bff391..."}}`. Plain
+  curl_cffi 400s with a CSRF error unless an `apollo-require-preflight:
+  true` header is sent — no cookies or auth token otherwise.
+
+  robots.txt -> /sitemap/delhaizesitemapindex.xml -> one gzipped urlset of
+  ~22.7k category-listing urls (`.../c/<categoryCode>`). Spider extracts
+  category codes from the sitemap (stride-sampled, every 20th) and queries
+  each one directly via the GraphQL endpoint (page_size=48). Verified live
+  2026-09-06: category v2FRUFRUKIW (Kiwis) returned 4 real products, e.g.
+  "Kiwi | Jaune | 6pc", EUR 5.49. Page family: API (spider never fetches a
+  rendered page; the sitemap only harvests category codes).

@@ -1,0 +1,43 @@
+scaffolding: spider
+spider: auchan_ua
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://auchan.zakaz.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: hypermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  Auchan Ukraine -- French-owned hypermarket chain. auchan.ua itself is a
+  client-side Apollo/GraphQL SPA (wave 12 deferred it as a Playwright job);
+  the Zakaz.ua storefront serves the same assortment over a plain JSON API.
+  Pinned store: Auchan Почайна DRIVE, Kyiv (store_id 48246401). 1,040 leaf
+  categories, ~25,831 declared items.
+
+  Runs on the Zakaz.ua white-label e-grocery platform (shared base
+  `_zakaz_base.ZakazBaseSpider`). Discovery finding 2026-09-05: the
+  known_blockers.md entry recording zakaz.ua as a genuine 403 is true only of
+  the MARKETING ROOT (https://zakaz.ua/). Every per-chain storefront
+  subdomain and the platform API host `stores-api.zakaz.ua` answer HTTP 200
+  anonymously -- no cookies, no Origin/Referer, no TLS impersonation
+  (verified with a header-free GET). Flow: GET /stores/ for the chain->store
+  map, GET /stores/<id>/categories/ for the tree, then
+  GET /stores/<id>/categories/<cat>/products/?page=N (30 per page) until an
+  empty results array. Price is returned in MINOR UNITS (kopiyky) and is
+  divided by 100 in the base class -- verified against a rendered PDP.
+  web_url is the store-independent canonical permalink, so
+  DuplicationPipeline's url-dedup collapses the platform's promo-shelf
+  cross-listing rather than emitting it as duplicate rows.
+
+  Spider parses: API (stores-api.zakaz.ua JSON; no storefront page is ever
+  fetched, so the collected `url` values are PDP permalinks the spider never
+  requested -- they cannot be used to validate an archive regex locally).
+  Test run 2026-09-05 (--max-items 60, closespider-timeout 300): 137 rows written, 137 distinct product_id,
+  137 distinct url, 9 categories touched, 0 blank names, 0
+  zero/negative prices, 100% UAH. Price range 12.40-14922.10 UAH, median
+  99.00. (Rows exceed --max-items because CLOSESPIDER_ITEMCOUNT stops the
+  engine only after the in-flight pages drain.) Sample names eyeballed: all real
+  food/beverage SKUs with Ukrainian titles, not boilerplate.

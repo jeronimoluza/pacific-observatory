@@ -1,0 +1,49 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: gu_gpa_residential_tariff
+module: eap.pacific_islands.guam.gpa_residential_tariff
+function: fetch_gu_gpa_residential_tariff
+url: "https://www.guampowerauthority.com/rates"
+language: en
+currency: USD
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Guam Power Authority (GPA) -- Schedule "R" (Residential Service) electricity
+  tariff. Discovered as a bare hostname lead (guampowerauthority.com) with no
+  prior triage; genuine gap-filler, Guam previously had zero utility-tariff
+  coverage in this repo (all 7 existing Guam sources are food/grocery
+  retail).
+
+  GPA's Wix-built /rates page lists ~20 rate-schedule PDFs (Schedules R, D,
+  G, J, P, I, H, S, K, L, M, F, N, A, B, C, Z) as opaque
+  *.usrfiles.com/ugd/<hash>.pdf links -- the schedule letter appears nowhere
+  in the URL or its surrounding link text, only inside each PDF's own
+  header. The fetcher downloads every linked PDF and keeps only the one
+  whose first-page header names "Rate Schedule \"R\"" / "SCHEDULE \"R\" /
+  Residential Service", rather than guessing from the URL.
+
+  Verified live 2026-09-06: matched PDF is "Issued March 21, 1984 ... Revised
+  January 28, 2021 ... Effective with meters read on and after January 01,
+  2026". Body is prose, not a ruled table -- 5 rate fields extracted by
+  targeted regex against known labels (same "prose tariff" pattern as
+  smart_tariff.py/Cambodia): two-tier Non-Fuel Energy Charge ($0.08086/kWh
+  first 500 kWh/month, $0.11540/kWh above that), a flat $25.00/month
+  Customer Charge, a $0.00290/kWh Insurance Charge, and a $0.00279/kWh
+  Emergency Water Well and Wastewater Charge. Live fetch run wrote 5 rows.
+  A separate Fuel Recovery Charge is explicitly deferred to "Schedule Z"
+  in the source text (a Levelized Energy Adjustment Clause rider, not a
+  fixed number) and is NOT emitted here.
+
+  Rates are quoted to 5 decimal places ($0.08086) -- GPA's own published
+  precision for its non-fuel energy charge, not a parsing artifact.
+
+  SCOPE NOTE: the same /rates page links ~19 other rate schedules
+  (Commercial/Industrial/Demand/Government/Street-Lighting/Net-Metering/
+  Rider schedules) in the identical PDF shape -- natural follow-on sources,
+  out of scope for this pass (Schedule R only, per the onboarding skill's
+  "one clean source over many half-built ones" guidance under time budget).

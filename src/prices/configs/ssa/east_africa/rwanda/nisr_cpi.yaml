@@ -1,0 +1,40 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: nisr_cpi
+module: ssa.east_africa.rwanda.nisr_cpi
+function: fetch_nisr_cpi
+url: https://www.statistics.gov.rw/statistical-publications/price-indices-cpi-ppi
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Verified live 2026-09-06. Category page lists the newest "Consumer Price
+  Index (CPI) <Month> <Year>" publication first; that page carries a
+  "CPI_time_series_<Month> <Year>.xls" attachment. Workbook's "All Rwanda"
+  sheet is the national (non urban/rural-split) monthly index series, one
+  row per COICOP division/group ("00".."12" plus a handful of food
+  subgroups like "01.1.1"/"01.1.2"/"01.1.4"/"01.1.7"/"01.2"), one column
+  per month back to 2009-02, base Feb 2014=100. This is a COICOP-1999-style
+  12-division scheme (no division 13), same pattern as BPS Indonesia and
+  Bahrain's cpi_odp — the all-items headline row (coicop_code="00") is
+  dropped per the skill's open headline-CPI question.
+
+  Test run with fallback_date=2024-01-01 returned 342 rows (19 months x 18
+  series) — confirmed via `po prices collect --source nisr_cpi`.
+
+  TLS gotcha: statistics.gov.rw's certificate SAN does not cover the
+  hostname actually served (confirmed on both the apex and `www.` host,
+  all 5 curl_cffi profiles) — a certificate misconfiguration, not a WAF.
+  The fetcher uses `verify=False` throughout.
+
+  This closes the NISR "NOT REACHED THIS PASS" gap noted in a prior Rwanda
+  onboarding run (rule-16 cheapest-build pass that shipped mtn_rw_bundles
+  instead). The average-retail-price table mentioned in that prior note
+  was not found on the current site — only the CPI index publication is
+  live; if NISR later publishes a separate average-retail-price table it
+  should ship as its own official_avg manifest per the "split into two
+  YAMLs" rule.

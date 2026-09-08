@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: tchitunga_cg
+url: https://tchitunga.com/
+language: fr
+cadence: monthly
+notes: |
+  Page family: API (spider never fetches a rendered category/PDP page;
+  all data comes from the open WooCommerce Store API,
+  `/wp-json/wc/store/v1/products`, 127 products at fetch time per
+  `X-WP-Total`). No auth, no anti-bot.
+
+  Tchitunga is a Congo Republic diaspora grocery/care-package
+  marketplace, same model as market242_cg (also in this country's
+  config set): a buyer abroad orders groceries/packs for delivery
+  inside Congo. CURRENCY CAVEAT: prices.currency_code is EUR, not XAF
+  (Congo Republic's currency per countries.yaml) -- may carry a
+  remittance-service markup rather than being a 1:1 organic local
+  retail price.
+
+  MINOR-UNIT TRAP: `prices.price` is an integer minor unit, not a
+  decimal -- divided by `10 ** prices.currency_minor_unit`
+  (currency_minor_unit=2 throughout). Verified live 2026-09-06: raw
+  "8000" -> EUR 80.00 for "PACK MATONDO" (a bundled rice/oil/fufu/
+  charcoal care package -- a high sale price is expected for a bundle,
+  not a bug), raw "189" -> EUR 1.89 for "saka-saka ecrase 1,5 KG".
+
+  Test run confirmed live: >=5 rows with sane per-item EUR prices after
+  minor-unit correction (spot-checked against the unscaled price_html
+  field before trusting the divide).

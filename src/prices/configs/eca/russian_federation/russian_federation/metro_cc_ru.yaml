@@ -1,0 +1,60 @@
+scaffolding: spider
+spider: metro_cc_ru
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://online.metro-cc.ru/
+language: ru
+currency: RUB
+cadence: weekly
+channel: wholesale
+coicop_codes: null
+timeout: 21600
+notes: |
+  METRO Cash & Carry Russia. Supersedes the Russia inventory's PARKED verdict
+  ("reachable, JSON-LD present but missing price, lives only in a minified
+  Nuxt blob"): that is true of the CORPORATE site www.metro-cc.ru, but the
+  transactional store is a different host, online.metro-cc.ru, which
+  server-renders a real product grid. No Playwright, no Nuxt-blob parsing, no
+  curl_cffi impersonation -- a stock browser UA over plain Scrapy gets 200.
+
+  Two traps, both of which would silently yield a worthless spider:
+  1. Department pages are CAROUSELS, not listings. /category/bakaleya renders
+     0 grid products and ~16 slider cards (`catalog-1-level-product-card`);
+     only leaf pages (/category/bakaleya/konservy) carry the real grid, whose
+     cards are `catalog-2-level-product-card`. The spider extracts ONLY
+     2-level cards, so a mid-level page contributes navigation links and
+     nothing else -- exactly the homepage-carousel false positive.
+  2. Two price magnitudes per card: `product-price__sum-rubles` ("189") and
+     `product-price__sum-penny` (".91") are separate spans. Reading only the
+     first silently drops the kopecks. Both are joined. The price used is the
+     `product-unit-prices__actual` figure scoped INSIDE the card (the page
+     also carries slider-card prices) -- the per-piece ("/шт") online price.
+
+  Enumerability proven, not assumed: /category/bakaleya/konservy page 1 vs
+  page 2 return 30 SKUs each with ZERO overlap, and the paginator emits
+  explicit ?page=N links up to the last page (22 for that leaf), so the walk
+  is bounded by the site's own markup.
+
+  channel: wholesale -- cash-and-carry. This is a genuine COICOP 01/02 price
+  source (its grocery leaves are the same goods a supermarket sells, at
+  case/single prices) but it is a distinct PPP layer, not a substitute for a
+  Russian retail grocer. Russia's retail grocery cohort is almost entirely
+  behind Qrator / ServicePipe / DDoS-Guard (see known_blockers.md and the
+  Russia inventory); METRO is one of the few large, reachable catalogues.
+
+  Prices are the unauthenticated default store's (Moscow); METRO prices by
+  store and no store cookie is set, matching the single-city convention used
+  by the other Russian and Ukrainian grocery sources in this repo.
+
+  Spider parses: both (category listing pages carry the grid; PDPs are never
+  fetched, but the emitted `url` values are real /products/<slug> permalinks).
+
+  Test run 2026-09-05 (--max-items 60, closespider-timeout 300): 60 rows written,
+  60 distinct product_id, 60 distinct url,
+  2 categories touched, 0 blank names, 0 zero/negative prices,
+  100% RUB. Price range 61.90-4349.00, median 159.00. Product names
+  eyeballed against the rendered site: real SKUs, not boilerplate.
+  NOTE the standing --max-items trap: a capped run drains only the
+  last-enqueued categories, so the category mix in a capped test is NOT
+  representative of the catalog. The full category tree is listed above.

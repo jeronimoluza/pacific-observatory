@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+spider: imagine_bn
+url: https://imagine.com.bn/consumer/mobile/
+language: en
+cadence: weekly
+channel: null
+archive_prefix: "imagine.com.bn/consumer/mobile/"
+archive_path_re: '^/consumer/mobile/?$'
+notes: |
+  Page family: listing (single tariff page, five plan cards, no
+  pagination).
+
+  Discovery lead re-probe 2026-09-06 (shard w3_shard02, bare hostname
+  "imagine.com.bn" with no prior triage). Imagine is one of Brunei's two
+  mobile telcos (alongside DST). Homepage itself is mostly marketing;
+  /consumer/mobile/ is a fully server-rendered Elementor/WordPress page
+  -- plain curl_cffi/requests with a realistic Chrome UA returns 200 with
+  all five WISH postpaid plan cards already in the raw HTML.
+
+  Markup: each plan is one `<div class="swiper-slide">` carousel block;
+  splitting on that marker and reading the Elementor heading widgets in
+  document order gives plan name / data amount / data unit / price /
+  billing period, in that order, confirmed identical across all 5 slides
+  (WISH 2/6/15/25/50 GB at $10/$18/$28/$45/$75 per month).
+
+  Currency shown as bare "$" -- Brunei, so BND (matches countries.yaml).
+  All 5 cards share one physical page URL; DuplicationPipeline dedups on
+  item['url'] alone, so each row gets a per-plan #fragment (same fix as
+  mtn_prepaid_internet_sd.yaml / zain_prepaid_internet_sd.yaml).
+
+  Test run (2026-09-06, --max-items 5) returned exactly 5 real rows (the
+  full catalog on this page) -- see collect run notes.
+
+  Scope: only the postpaid WISH family found on this page. A separate
+  prepaid/data-only tariff page exists under /consumer/ but was not
+  probed this pass -- candidate for a follow-up source or an expansion
+  of this spider.
