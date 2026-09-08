@@ -351,13 +351,19 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     <div class="info" id="i-wt">
       <div class="beginner-only">
         Pick what to compare — <b>whole regions</b>, <b>parts of a region</b> or <b>single
-        countries</b> — and which category. Each line is the typical US-dollar price of the
-        items priced in that category, per kilogram, per litre or per piece. It is worked out so
-        the <b>same items</b> are compared from one period to the next: the line moves when prices
-        move, not when a different shop happens to get collected. Because everything is in
-        <b>US dollars</b>, a line can also move because the currency moved &mdash; Currency effects
-        splits those two apart. Quiet periods are joined by a dashed line; hover any point to see
-        how much data stands behind it.
+        countries</b> — and which category. Each line answers one question: <b>how much
+        dearer is this than it was a year ago?</b> Only items priced in <b>both</b> periods
+        in the same country count, and each one carries equal weight, so the line moves when
+        prices move and not when a different shop happens to get collected.
+        <b>Since a year ago</b> is the reading to trust: it compares two months and stops
+        there. <b>Index, base = 100</b> instead cumulates every month's move onto one starting
+        month, and that starting month is itself a single thin reading — useful, but only if
+        you know what it is resting on. <b>Price level US$</b> is a real dollars-per-kilo
+        figure, so it is offered only for a single named item; a dollars-per-kilo of a whole
+        grouping is not a quantity anyone can buy. Because everything is in <b>US dollars</b>,
+        a line can also move because the currency moved &mdash; Currency effects splits those
+        two apart. Quiet periods are joined by a dashed line; hover any point to see how much
+        data stands behind it.
       </div>
           </div>
 
@@ -371,10 +377,17 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       <span class="chips" id="wtUnits" role="group" aria-label="Unit of measure"></span>
           </div>
     <div class="ctlbar">
-      <span class="ctllab" id="lab-meas">Measure</span>
+      <span class="ctllab" id="lab-meas">Price change since</span>
       <div class="seg" role="group" aria-labelledby="lab-meas">
-        <button id="wv-level" class="on" aria-pressed="true" onclick="APP.setGMeasure('level')">Price level US$</button>
-        <button id="wv-index" aria-pressed="false" onclick="APP.setGMeasure('index')">Matched-item index</button>
+        <button id="wv-chg1" onclick="APP.setGMeasure('chg1')">previous <span id="wv-chg1-word">month</span></button>
+        <button id="wv-chg12" class="on" aria-pressed="true" onclick="APP.setGMeasure('chg12')">a year ago</button>
+        <button id="wv-chg24" onclick="APP.setGMeasure('chg24')">2 years ago</button>
+        <button id="wv-chg36" onclick="APP.setGMeasure('chg36')">3 years ago</button>
+      </div>
+      <span class="ctllab" id="lab-meas2">Or</span>
+      <div class="seg" role="group" aria-labelledby="lab-meas2">
+        <button id="wv-level" onclick="APP.setGMeasure('level')">Price level US$</button>
+        <button id="wv-index" onclick="APP.setGMeasure('index')">Index, base = 100</button>
       </div>
       <span class="ctllab" id="lab-per">Period</span>
       <div class="seg" role="group" aria-labelledby="lab-per">

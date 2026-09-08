@@ -23,7 +23,7 @@ var S = {
      gsel null means "whatever the default is here" — an explicit list only appears
      once the reader has actually chosen, so a category with thin coverage can never
      silently strike a place off the list for good. */
-  gmode:"region", gsel:null, gnode:"01", gunit:0, gmeasure:"level",
+  gmode:"region", gsel:null, gnode:"01", gunit:0, gmeasure:"chg12",
   gfreq:"Q", gsmooth:0, gwin:36
 };
 var charts = {};
@@ -343,6 +343,47 @@ function gser(gk, ni, ui) {
   return DATA.gseries[S.gfreq + "|" + gk + "|" + ni + "|" + ui] || null;
 }
 
+/* ---- what the World chart is measuring -----------------------------------
+   Three families, and only one of them needs a base period.
+
+   A change ("what has it done since a year ago") is two observations of the
+   same items and stops there — nothing accumulates, and no month's own noise
+   sets the level of the whole line. That is why it leads.
+
+   The base-100 chain is still here for anyone who wants the cumulated series,
+   but it is read against a period that was one thin draw, which is exactly the
+   reading that was hard to defend.
+
+   A level is a US$ figure and exists only at a leaf; see the node filter. */
+function changeLabel(months, word) {
+  return months === 1 ? "the previous " + word
+    : months === 12 ? "a year earlier" : (months / 12) + " years earlier";
+}
+function changeMonths() {
+  return S.gmeasure.indexOf("chg") === 0 ? +S.gmeasure.slice(3) : null;
+}
+/* the payload keys each horizon by MONTHS; the shortest a quarter can carry
+   is three, so "previous period" is 1 month or 3 depending on the grain */
+function horizonKey(months, f) {
+  return String(months === 1 && f === "Q" ? 3 : months);
+}
+function measureKind() {
+  return S.gmeasure === "level" ? "level"
+    : S.gmeasure === "index" ? "index" : "change";
+}
+function gvalue(s, i, months, f) {
+  if (S.gmeasure === "level") return s.lvl[i];
+  if (S.gmeasure === "index") return s.idx[i];
+  var c = s.chg && s.chg[horizonKey(months, f)];
+  return c ? c.v[i] : null;
+}
+/* how many item cells stand behind the point actually being read */
+function gsupport(s, i, months, f) {
+  if (S.gmeasure === "level" || S.gmeasure === "index") return s.k[i];
+  var c = s.chg && s.chg[horizonKey(months, f)];
+  return c ? c.k[i] : 0;
+}
+
 /* period arithmetic, quarters and months alike */
 function pnum(p) {
   var a = p.indexOf("Q") > 0 ? p.split("Q") : p.split("-");
@@ -379,6 +420,20 @@ function smooth(pts, w) {
   });
 }
 
+/* trailing arithmetic mean, for a series that is already a rate of change:
+   a percentage change can be negative, so it has no logarithm to average */
+function smoothPct(pts, w) {
+  if (!w || w < 2) return pts;
+  return pts.map(function (v, i) {
+    if (v == null) return null;
+    var acc = 0, n = 0;
+    for (var j = Math.max(0, i - w + 1); j <= i; j++) {
+      if (pts[j] != null) { acc += pts[j]; n++; }
+    }
+    return acc / n;
+  });
+}
+
 /* The headline reading was removed from the markup; the chart below carries
    the same story with its own axis. Kept as a no-op so the several call sites
    that still hand it a number do not each need a guard. */
@@ -393,7 +448,7 @@ function renderWorldTrends() {
      categories where such a figure exists: a single leaf, and not a catch-all
      one. Every change measure keeps the whole tree — a group compared with its
      own past is a basket, and a basket has a perfectly good growth rate. */
-  var levelOnly = S.gmeasure === "level";
+  var levelOnly = S.gmeasure === "level", months = changeMonths();
   var nodes = levelOnly
     ? allNodes.filter(function (c) { return isLeaf(c) && notResidual(c); })
     : allNodes;
@@ -405,8 +460,9 @@ function renderWorldTrends() {
     document.getElementById("wf-" + x).className = f === x ? "on" : ""; });
   [0,2,3].forEach(function (x) {
     document.getElementById("ws-" + x).className = S.gsmooth === x ? "on" : ""; });
-  ["level","index"].forEach(function (m) {
+  ["level","index","chg1","chg12","chg24","chg36"].forEach(function (m) {
     document.getElementById("wv-" + m).className = S.gmeasure === m ? "on" : ""; });
+  document.getElementById("wv-chg1-word").textContent = word;
   [36,60,0].forEach(function (w) {
     document.getElementById("ww-" + w).className = S.gwin === w ? "on" : ""; });
   ["region","subregion","country"].forEach(function (m) {
@@ -459,13 +515,15 @@ function renderWorldTrends() {
     if (!s) return;
     var n = 0;
     s.p.forEach(function (p, i) {
-      if (p >= from && (S.gmeasure === "index" ? s.idx[i] : s.lvl[i]) != null) n++; });
+      if (p >= from && gvalue(s, i, months, f) != null) n++; });
     if (n) cands.push({g:g, t:DATA.geos[g].t, n:n, s:s});
   });
   if (!cands.length) return nothing(
-    "No " + (S.gmeasure === "index" ? "matched-item chain" : "series") +
+    "No " + (measureKind() === "change"
+      ? "item priced both now and " + changeLabel(months, word)
+      : measureKind() === "index" ? "matched-item chain" : "series") +
     " here in this window. Try a broader category, a wider window" +
-    (f === "Q" ? ", monthly periods" : "") + ", or the other measure.");
+    (f === "Q" ? ", monthly periods" : "") + ", a shorter horizon, or another measure.");
   cands.sort(function (a, b) { return b.n - a.n || (a.t < b.t ? -1 : 1); });
 
   var avail = {};
@@ -503,19 +561,21 @@ function renderWorldTrends() {
         esc((DATA.geos[g] || {}).t || g) + "</button>"; }).join("");
   /* the add-a-place picker was one of the analyst controls and is gone */
 
-  var isLevel = S.gmeasure === "level";
+  var kindM = measureKind(), isLevel = kindM === "level", isIndex = kindM === "index";
   var lo = null, hi = null;
   drawn.forEach(function (g) {
     avail[g].s.p.forEach(function (p, i) {
-      if (p < from || (isLevel ? avail[g].s.lvl[i] : avail[g].s.idx[i]) == null) return;
+      if (p < from || gvalue(avail[g].s, i, months, f) == null) return;
       if (lo == null || p < lo) lo = p;
       if (hi == null || p > hi) hi = p; }); });
   if (lo == null) return nothing("Nothing to draw for the places selected.");
   var grid = pgrid(lo, hi, f);
 
-  /* the index rebases every line at the first period they can all share */
+  /* only the base-100 chain needs a base; it rebases every line at the first
+     period they can all share. A change has no base at all — which is the
+     point of it. */
   var baseP = null;
-  if (!isLevel) {
+  if (isIndex) {
     drawn.forEach(function (g) {
       var s = avail[g].s, first = null;
       s.p.forEach(function (p, i) {
@@ -528,16 +588,21 @@ function renderWorldTrends() {
     var c = avail[g], s = c.s, vals = {}, base = null;
     /* rebase on the shared period, then plot the whole window either side of
        it — clipping to the base would throw away history a line really has */
-    s.p.forEach(function (p, i) {
+    if (isIndex) s.p.forEach(function (p, i) {
       if (base == null && p >= from && s.idx[i] != null &&
           (baseP == null || p >= baseP)) base = s.idx[i]; });
     s.p.forEach(function (p, i) {
       if (p < from) return;
-      if (isLevel) { if (s.lvl[i] != null) vals[p] = s.lvl[i]; return; }
-      if (s.idx[i] != null && base) vals[p] = s.idx[i] / base * 100;
+      var v = gvalue(s, i, months, f);
+      if (v == null) return;
+      if (isIndex) { if (base) vals[p] = v / base * 100; return; }
+      vals[p] = v;
     });
-    var pts = smooth(grid.map(function (p) {
-      return vals[p] == null ? null : vals[p]; }), S.gsmooth);
+    /* A change is already a ratio of two logs; smoothing it is a moving
+       average of a rate, not of a price, so it is averaged arithmetically
+       rather than in logs (a negative change has no logarithm). */
+    var raw = grid.map(function (p) { return vals[p] == null ? null : vals[p]; });
+    var pts = kindM === "change" ? smoothPct(raw, S.gsmooth) : smooth(raw, S.gsmooth);
     if (pts.filter(function (v) { return v != null; }).length < 2) thin.push(c.t);
     sup[g] = {t:c.t, s:s};
     ds.push({ label:c.t, data:pts,
@@ -556,8 +621,13 @@ function renderWorldTrends() {
     "needs a single, named item, so groupings and catch-all “other…” items " +
     "are offered on the change measures only. <b>The two measures do not cover the " +
     "same categories.</b>");
-  if (!isLevel) warn.push("Only items priced in <b>two consecutive " + word + "s</b> in the " +
-    "same country are linked — the strictest reading, and the thinnest.");
+  if (kindM === "change") warn.push("Each point averages the price change of every item " +
+    "priced <b>both in that " + word + " and " + changeLabel(months, word) + "</b>, in the " +
+    "same country — items priced in only one of the two are left out entirely, so the " +
+    "line answers “what did the same shopping do”, not “what is on the shelf now”.");
+  if (isIndex) warn.push("Only items priced in <b>two consecutive " + word + "s</b> in the " +
+    "same country are linked — the strictest reading, and the thinnest. The whole line " +
+    "hangs off the base " + word + ", which is itself one thin reading.");
   if (S.gsmooth) warn.push("Showing a <b>" + S.gsmooth + "-" + word +
     " trailing average</b>: turning points lag by about half that.");
   if (thin.length) warn.push("Too few " + word + "s to draw: <b>" +
@@ -576,18 +646,22 @@ function renderWorldTrends() {
           label:function (it) {
             var v = it.parsed.y;
             return v == null ? null : it.dataset.label + ": " +
-              (isLevel ? "$" + v.toFixed(2) + UNIT_OF[unitCode] : v.toFixed(1)); },
+              (isLevel ? "$" + v.toFixed(2) + UNIT_OF[unitCode]
+                : isIndex ? v.toFixed(1)
+                : (v >= 0 ? "+" : "") + v.toFixed(1) + "%"); },
           afterBody:function (items) {
             var p = grid[items[0].dataIndex], out = [""];
             drawn.forEach(function (g) {
               var s = sup[g].s, i = s.p.indexOf(p);
-              if (i < 0 || !s.k[i]) return;
+              var n = i < 0 ? 0 : gsupport(s, i, months, f);
+              if (!n) return;
               out.push(sup[g].t + ": " + s.c[i] + (s.c[i] === 1 ? " country · " : " countries · ") +
-                s.k[i] + " item cells"); });
+                n + " item cells"); });
             return out.length > 1 ? out : []; } } } },
       scales:{ y:{ grid:{color:RULE},
           title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode]
-            : "Index, " + (baseP || lo) + " = 100"} },
+            : isIndex ? "Index, " + (baseP || lo) + " = 100"
+            : "% change vs " + changeLabel(months, word)} },
         x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
   });
 
@@ -603,9 +677,10 @@ function renderWorldTrends() {
   else {
     var leadT = ds[0].label;
     readout(isLevel ? "$" + last.toFixed(2) : last.toFixed(1),
-      isLevel ? " US$ per " + UNIT_SHORT[unitCode] : " index",
+      isLevel ? " US$ per " + UNIT_SHORT[unitCode] : isIndex ? " index" : "%",
       (isLevel ? "Average across the items priced per " + UNIT_SHORT[unitCode] + " in "
-               : "Matched-item index for ") +
+               : isIndex ? "Matched-item index for " : "Change vs " +
+                 changeLabel(months, word) + " for ") +
       esc(title(S.gnode)) + " &middot; " + esc(leadT) + " &middot; " + lastP,
       first && first !== last
         ? (function () {
@@ -617,11 +692,12 @@ function renderWorldTrends() {
   }
 
   var lead = avail[drawn[0]], li = lead ? lead.s.p.length - 1 : -1;
+  var leadN = li >= 0 ? gsupport(lead.s, li, months, f) : 0;
   document.getElementById("wtNote").innerHTML =
     "Always in US$ here — the local-currency and exchange-rate split lives in " +
     '<span class="linkish" onclick="APP.go(\'trends\')">Currency effects</span>. ' +
-    (li >= 0 ? "Latest support: " + esc(lead.t) + " · " + lead.s.c[li] +
-      (lead.s.c[li] === 1 ? " country · " : " countries · ") + fmtN(lead.s.k[li]) +
+    (li >= 0 && leadN ? "Latest support: " + esc(lead.t) + " · " + lead.s.c[li] +
+      (lead.s.c[li] === 1 ? " country · " : " countries · ") + fmtN(leadN) +
       " item cells in " + lead.s.p[li] + ". " : "") +
     "Dashed segments bridge periods with no data at all.";
 }

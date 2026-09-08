@@ -185,13 +185,36 @@ def make_payload() -> dict:
             "r": cty[slug]["region"],
         }
 
-    def series_block(ps, seed):
+    # 36 months of history is more than this fixture carries, so the 3-year
+    # horizon is deliberately absent: a measure with no data must degrade to a
+    # spoken message, not to a blank chart.
+    HORIZONS = {"M": (1, 12, 24), "Q": (3, 12, 24)}
+
+    def chg_value(months, k, seed):
+        # the shortest horizon alternates sign, the way a real month-over-month
+        # does: a smoother that works in logs would return NaN on the negatives
+        if months in (1, 3):
+            return (2.0 if k % 2 else -1.0) + seed * 0.001
+        return {12: 12.0, 24: 25.0}[months] + seed * 0.01
+
+    def series_block(ps, seed, freq):
+        n = len(ps)
+        chg = {}
+        for months in HORIZONS[freq]:
+            lag = months if freq == "M" else months // 3
+            chg[str(months)] = {
+                "v": [
+                    None if k < lag else chg_value(months, k, seed) for k in range(n)
+                ],
+                "k": [0 if k < lag else 30 for k in range(n)],
+            }
         return {
             "p": ps,
-            "lvl": [round(3.0 + seed * 0.1 + 0.02 * k, 4) for k in range(len(ps))],
-            "idx": [round(100.0 * (1.004**k), 2) for k in range(len(ps))],
-            "k": [40] * len(ps),
-            "c": [5] * len(ps),
+            "lvl": [round(3.0 + seed * 0.1 + 0.02 * k, 4) for k in range(n)],
+            "idx": [round(100.0 * (1.004**k), 2) for k in range(n)],
+            "k": [40] * n,
+            "c": [5] * n,
+            "chg": chg,
         }
 
     gseries = {}
@@ -199,7 +222,7 @@ def make_payload() -> dict:
         for gi, gk in enumerate(geos):
             for node in ("01", "01.1", "01.1.1", "01.1.1.1.1", "01.1.9.1.1"):
                 gseries["%s|%s|%d|0" % (freq, gk, node_pos[node])] = series_block(
-                    ps, gi
+                    ps, gi, freq
                 )
 
     series, chain = {}, {}

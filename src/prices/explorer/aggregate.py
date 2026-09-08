@@ -20,6 +20,7 @@ from prices.coicop import residual_leaves
 from prices.explorer.geo import build_geo_series
 from prices.explorer.sources import (
     REGIONS_YAML,
+    CHANGE_LAGS,
     COMPARABLE_UNITS,
     FE_MIN_PAIRS,
     COUNTRY_DEFECT_SHARE,
@@ -126,15 +127,12 @@ def _leaf_census(tax: dict) -> dict[str, int]:
     return out
 
 
-def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
-    """Composition-free price index for aggregate COICOP nodes.
+def _leaf_panel(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
+    """Median unit value of each (country, leaf, unit) per month — the item.
 
-    A raw median over an aggregate node moves whenever the scrape composition
-    moves — which item got collected this month, not what it cost. So for every
-    non-leaf node we chain the Jevons way: month over month, average the log
-    price relative across the leaves observed in BOTH months, then cumulate.
-    Only the US$ chain is built; the local chain follows exactly from the FX
-    identity, which also sidesteps mixing two currencies inside one country.
+    Both the chain and the year-over-year family are built on exactly this
+    panel, so it is defined once: two measures of the same prices that disagreed
+    about which observations count would be impossible to reconcile on screen.
     """
     leaf = exploded[
         exploded.coicop_code.map(lambda c: bool(tax.get(c, {}).get("leaf")))
@@ -147,7 +145,95 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
         .agg(usd=("unit_value_usd", "median"), n=("unit_value_usd", "size"))
         .reset_index()
     )
-    m = m[(m.n >= MIN_CELL_OBS) & (m.usd > 0)]
+    return m[(m.n >= MIN_CELL_OBS) & (m.usd > 0)]
+
+
+def _link_need(nodes: pd.Series, tax: dict) -> np.ndarray:
+    """Matched leaves a node must carry before its average is published.
+
+    Scaled to the node's own leaf census, because 78 of the 102 non-leaf nodes
+    in divisions 01/02 hold fewer than MIN_LINK_LEAVES leaves in the taxonomy at
+    all -- a taxonomy-shape problem wearing the clothes of a data problem. A
+    LEAF needs one: it is its own basket, and there is nothing to average.
+    """
+    n_desc = nodes.map(_leaf_census(tax)).fillna(0).to_numpy()
+    scaled = np.where(
+        n_desc >= MIN_LINK_LEAVES,
+        MIN_LINK_LEAVES,
+        np.maximum(MIN_LINK_LEAVES_FLOOR, np.ceil(MIN_LINK_LEAVES_FRAC * n_desc)),
+    )
+    is_leaf = nodes.map(lambda c: bool(tax.get(c, {}).get("leaf"))).to_numpy()
+    return np.where(is_leaf, 1, scaled)
+
+
+def _lagged_changes(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
+    """Average log price change over k months, matched leaf by leaf.
+
+    Unlike the chain this never links to "whatever the previous observation
+    happened to be": period t is compared with period t-k exactly, over the
+    leaves priced in BOTH, and the mean of those log changes is the group's
+    change:  d ln P_gt = (1/n) sum_i ( ln p_it - ln p_i,t-k ).
+
+    The MEAN, not the median. There are no expenditure weights in this corpus,
+    so everything is equally weighted, and an unweighted mean of log relatives
+    is the elementary index that follows from that. It is also what makes the
+    number decomposable: the group change is the sum of each leaf's share of it,
+    which a median is not.
+
+    Nothing accumulates. A chained index carries every link's error forward and
+    is read against a base month that is itself one noisy draw; a k-month change
+    is two observations and stops there.
+    """
+    m = _leaf_panel(exploded, tax)
+    if m.empty:
+        return pd.DataFrame(
+            columns=["country", "node", "standard_unit", "period", "lag", "lr", "k"]
+        )
+    m = m.copy()
+    m["t"] = pd.PeriodIndex(m.period, freq="M").astype(int)
+    keys = ["country", "coicop_code", "standard_unit"]
+    ladder = pd.DataFrame(
+        [(c, n) for c in m.coicop_code.unique() for n in _levels(c)],
+        columns=["coicop_code", "node"],
+    )
+
+    out = []
+    for months, lag in CHANGE_LAGS["M"].items():
+        prev = m[keys + ["t", "usd"]].rename(columns={"usd": "prev_usd"})
+        prev["t"] = prev.t + lag
+        j = m.merge(prev, on=keys + ["t"], how="inner")
+        if j.empty:
+            continue
+        j["lr"] = np.log(j.usd / j.prev_usd)
+        step = (
+            j.merge(ladder, on="coicop_code", how="inner")
+            .groupby(["country", "node", "standard_unit", "period"], observed=True)
+            .agg(lr=("lr", "mean"), k=("lr", "size"))
+            .reset_index()
+        )
+        step = step[step.k >= _link_need(step.node, tax)]
+        if step.empty:
+            continue
+        step["lag"] = months
+        out.append(step)
+    if not out:
+        return pd.DataFrame(
+            columns=["country", "node", "standard_unit", "period", "lag", "lr", "k"]
+        )
+    return pd.concat(out, ignore_index=True)
+
+
+def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
+    """Composition-free price index for aggregate COICOP nodes.
+
+    A raw median over an aggregate node moves whenever the scrape composition
+    moves — which item got collected this month, not what it cost. So for every
+    non-leaf node we chain the Jevons way: month over month, average the log
+    price relative across the leaves observed in BOTH months, then cumulate.
+    Only the US$ chain is built; the local chain follows exactly from the FX
+    identity, which also sidesteps mixing two currencies inside one country.
+    """
+    m = _leaf_panel(exploded, tax)
     if m.empty:
         return pd.DataFrame(
             columns=["country", "node", "standard_unit", "period", "idx", "n_leaves"]
@@ -178,16 +264,11 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
         )
         .reset_index()
     )
-    # Scale the requirement to the node's own leaf census. Nodes that could
-    # always clear the flat bar keep it, so this only ever relaxes what the
-    # taxonomy made impossible, never what was merely thin this month.
-    n_desc = step.node.map(_leaf_census(tax)).fillna(0).to_numpy()
-    need = np.where(
-        n_desc >= MIN_LINK_LEAVES,
-        MIN_LINK_LEAVES,
-        np.maximum(MIN_LINK_LEAVES_FLOOR, np.ceil(MIN_LINK_LEAVES_FRAC * n_desc)),
-    )
-    step = step[step.n_leaves >= need]
+    # Nodes that could always clear the flat bar keep it, so the scaling only
+    # ever relaxes what the taxonomy made impossible, never what was merely thin
+    # this month. Every node here is a strict ancestor, so the leaf case in
+    # `_link_need` never fires and this is the gate it has always been.
+    step = step[step.n_leaves >= _link_need(step.node, tax)]
     if step.empty:
         return pd.DataFrame(
             columns=["country", "node", "standard_unit", "period", "idx", "n_leaves"]
@@ -314,6 +395,7 @@ def build_payload(region: str | None = None) -> dict:
     cells = _cells(exploded)
     series = _series(exploded)
     chained = _chained_index(exploded, tax)
+    changed = _lagged_changes(exploded, tax)
     levels = _basket_levels(cells, tax)
 
     # ---- country meta -------------------------------------------------
@@ -484,6 +566,22 @@ def build_payload(region: str | None = None) -> dict:
             "k": [int(v) for v in g.n_leaves],
         }
 
+    # Country-grain changes, keyed like `chain`: one entry per (country, node,
+    # unit), each horizon a period-aligned list of percent changes and the count
+    # of leaves the average was taken over.
+    changes: dict[str, dict] = {}
+    for (c, n, u, lag), g in changed.sort_values("period").groupby(
+        ["country", "node", "standard_unit", "lag"], observed=True
+    ):
+        if c not in cty_pos or n not in node_pos:
+            continue
+        entry = changes.setdefault(f"{cty_pos[c]}|{node_pos[n]}|{unit_pos[u]}", {})
+        entry[str(lag)] = {
+            "p": g.period.tolist(),
+            "v": [round(float(np.expm1(v)) * 100, 3) for v in g.lr],
+            "k": [int(v) for v in g.k],
+        }
+
     gseries: dict[str, dict] = {}
     for k, v in gseries_raw.items():
         freq, gk, node, unit = k.split("|")
@@ -522,6 +620,7 @@ def build_payload(region: str | None = None) -> dict:
         "cells": cell_payload,
         "series": ser,
         "chain": chain,
+        "changes": changes,
         "geos": geos,
         "gseries": gseries,
         "fx": fx,
