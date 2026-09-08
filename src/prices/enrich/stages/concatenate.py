@@ -428,6 +428,10 @@ def per_source_path(region: str, subregion: str, country: str, source: str) -> P
 def _write_monolith(shard_paths: list[Path]) -> int:
     """Stream the shards into raw_prices.csv one at a time.
 
+    Opt-in — see `run`. Kept because it is the only artifact a caller outside
+    this repo can read without pyarrow, and because `aggregate._observation_chunks`
+    still falls back to it when no shard tree exists.
+
     This used to read all 1,164 shards into a list and `pd.concat` them, so the
     whole 33 GB corpus had to be resident to write a file nothing ever reads
     whole. Appending shard by shard bounds the footprint at the largest single
@@ -444,9 +448,21 @@ def _write_monolith(shard_paths: list[Path]) -> int:
 
 def run(
     force: bool = False,
-    write_monolith: bool = True,
+    write_monolith: bool = False,
     selectors: Optional[list[str]] = None,
 ) -> Path:
+    """Refresh the per-source shards. `write_monolith` additionally writes the
+    39.4 GB raw_prices.csv.
+
+    It defaults off because every stage in the pipeline reads the shards:
+    `prepare` is `prepare_shards.run` (cli.py:180), and
+    `aggregate._observation_chunks` takes the CSV only when the shard tree is
+    absent, which it is not. The two module-level readers left on
+    `config.RAW_PRICES_CSV` are `prepare.run`, shadowed by `prepare_shards.run`
+    at its only call site, and `merge.run`, which does an unchunked
+    `pd.read_csv` of all 39.4 GB and cannot complete in this box's 26 GB. So the
+    default run pays ~10 minutes and 39.4 GB of disk for a file no live caller
+    consumes."""
     if not DATA_PRICES_ROOT.is_dir():
         raise FileNotFoundError(f"{DATA_PRICES_ROOT} not found")
     PER_SOURCE_DIR.mkdir(parents=True, exist_ok=True)
@@ -523,9 +539,8 @@ def run(
     if not write_monolith:
         return PER_SOURCE_DIR
 
-    # Always rebuilt, even when every source was skipped, so a stale monolith is
-    # impossible. It exists only for the stages that have not moved onto the
-    # shards yet.
+    # Rebuilt whole whenever it is asked for, even when every source was
+    # skipped, so an opted-in monolith is never partially stale.
     n_rows = _write_monolith(shard_paths)
     logger.info(
         "[concatenate] wrote %s (%d rows from %d sources)",

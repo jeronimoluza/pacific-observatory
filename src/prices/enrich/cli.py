@@ -114,6 +114,14 @@ def _explain(selectors) -> None:
     help="Print what the selector matches and exit without running anything.",
 )
 @click.option(
+    "--write-monolith",
+    is_flag=True,
+    help=(
+        "Also rebuild outputs/prices/raw/raw_prices.csv from the shards "
+        "(~39 GB, ~10 minutes). Off by default: every stage reads the shards."
+    ),
+)
+@click.option(
     "--backend",
     type=click.Choice(sorted(backends.BACKENDS)),
     default=None,
@@ -127,7 +135,16 @@ def _explain(selectors) -> None:
 @click.option("-S", "--subregion", "subregion", default=None)
 @click.option("-c", "--country", "country", default=None)
 def process_command(
-    stage, rebuild, only, workers, explain, backend, region, subregion, country
+    stage,
+    rebuild,
+    only,
+    workers,
+    explain,
+    write_monolith,
+    backend,
+    region,
+    subregion,
+    country,
 ):
     """AI enrichment pipeline (concatenate → prepare → classify → merge).
 
@@ -159,13 +176,13 @@ def process_command(
 
     def run_stage(name: str) -> None:
         if name == "concatenate":
-            # The 41 GB monolith is a fallback for callers that predate the
+            # The 39 GB monolith is a fallback for callers that predate the
             # shards, and nothing on this path is one: prepare reads shards,
-            # and build only falls back to the CSV when no shard exists. A
-            # scoped run would spend ~10 minutes rewriting all of it to change
-            # one country, so it writes the shards and leaves the CSV alone.
-            # The next whole-corpus run refreshes it.
-            if selectors:
+            # and build only falls back to the CSV when no shard exists. So it
+            # is written only when asked for -- and never for a scoped run,
+            # which cannot scope the CSV and would spend ~10 minutes rewriting
+            # all of it to change one country.
+            if selectors and write_monolith:
                 click.echo(
                     "note: skipping the raw_prices.csv rebuild for a scoped "
                     "run; it is stale until the next unscoped concatenate",
@@ -174,7 +191,7 @@ def process_command(
             concatenate_stage.run(
                 force=rebuild,
                 selectors=selectors,
-                write_monolith=not selectors,
+                write_monolith=write_monolith and not selectors,
             )
         elif name == "prepare":
             prepare_shards.run(selectors=selectors, workers=workers)

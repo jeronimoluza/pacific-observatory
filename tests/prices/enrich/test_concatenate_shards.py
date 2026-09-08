@@ -95,16 +95,18 @@ def test_shard_keeps_the_raw_price_text(env):
     assert frame["price"].dtype == object
 
 
-def test_monolith_is_still_written_and_holds_every_row(env):
-    concatenate.run()
+def test_monolith_holds_every_row_when_asked_for(env):
+    concatenate.run(write_monolith=True)
     monolith = pd.read_csv(env["out_dir"] / "raw_prices.csv", dtype=str)
     assert len(monolith) == 3
     assert list(monolith.columns) == list(shards.SHARD_COLUMNS)
     assert set(monolith["source"]) == {"shop_a", "esoko"}
 
 
-def test_monolith_can_be_skipped(env):
-    out = concatenate.run(write_monolith=False)
+def test_monolith_is_not_written_by_default(env):
+    """39.4 GB and ~10 minutes for a file no live caller reads: prepare is
+    prepare_shards, and aggregate takes the CSV only when no shard tree exists."""
+    out = concatenate.run()
     assert out == env["per_source"]
     assert not (env["out_dir"] / "raw_prices.csv").exists()
 

@@ -146,7 +146,7 @@ def test_a_source_that_is_entirely_out_of_stock_yields_no_shard(env):
         / "a.jsonl",
         [_row("keep", "4.50", currency="FJD")],
     )
-    concatenate.run()
+    concatenate.run(write_monolith=True)
     assert not (
         env["per_source"] / "lac/south_america/argentina/disco_ar.parquet"
     ).exists()

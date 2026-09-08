@@ -56,14 +56,22 @@ def test_no_selector_runs_every_stage_unscoped(calls):
     assert "warning" not in result.output
 
 
-def test_an_unscoped_run_still_rebuilds_the_monolith(calls):
+def test_the_monolith_is_opt_in(calls):
+    """Nothing downstream reads it, and rebuilding it costs ~10 minutes and
+    39.4 GB, so an ordinary run must not pay for it."""
     invoke("--stage", "concatenate")
+    assert calls["concatenate"]["write_monolith"] is False
+
+
+def test_write_monolith_asks_for_it(calls):
+    invoke("--write-monolith", "--stage", "concatenate")
     assert calls["concatenate"]["write_monolith"] is True
 
 
-def test_a_scoped_run_does_not_rewrite_the_41gb_monolith(calls):
-    """Nothing downstream reads it, and rebuilding it costs ~10 minutes."""
-    result = invoke("--only", "ssa", "--stage", "concatenate")
+def test_a_scoped_run_does_not_rewrite_the_39gb_monolith(calls):
+    """The CSV cannot be scoped, so even an explicit request is declined for a
+    selector rather than silently rewriting the whole corpus."""
+    result = invoke("--write-monolith", "--only", "ssa", "--stage", "concatenate")
     assert calls["concatenate"]["write_monolith"] is False
     assert "skipping the raw_prices.csv rebuild" in result.output
 
