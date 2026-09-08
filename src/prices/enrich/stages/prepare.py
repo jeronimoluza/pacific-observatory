@@ -3,6 +3,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 
 from core.config import load_countries
@@ -181,6 +182,31 @@ def _build_source_coicop_codes_map() -> dict[tuple[str, str], str]:
     return out
 
 
+def _source_lookup(df: pd.DataFrame, mapping: dict, default: str = "") -> np.ndarray:
+    """`(country, source)` -> `mapping` value, one dict lookup per DISTINCT pair.
+
+    Replaces `df.set_index(["country", "source"]).index.map(lambda k: ...)`,
+    which was two costs stacked: `set_index` rebuilt the whole frame -- every
+    column, not just the two keys -- and `.map` then made one Python call per
+    row, 110.3M of them per corpus pass, for an answer that only ever depends on
+    the pair. `_derive` sees one country and a handful of sources at a time, so
+    factorizing collapses those 110.3M lookups to a few dozen.
+
+    `use_na_sentinel=False` keeps a null country or source as its own code
+    rather than -1, so it stays a pair that simply misses the dict and takes
+    `default` -- which is what `.get(k, default)` did with a NaN inside the
+    tuple. The grid is countries x sources, and `_derive` sees one country, so
+    it is a handful of cells; even a whole-corpus chunk is ~200 x ~1,100.
+    """
+    c_codes, countries = pd.factorize(df["country"], use_na_sentinel=False)
+    s_codes, sources = pd.factorize(df["source"], use_na_sentinel=False)
+    table = np.array(
+        [[mapping.get((c, s), default) for s in sources] for c in countries],
+        dtype=object,
+    )
+    return table[c_codes, s_codes]
+
+
 def _modal_or_empty(series: pd.Series) -> str:
     mode = series.mode()
     return str(mode.iloc[0]) if not mode.empty else ""
@@ -244,7 +270,16 @@ def _derive(raw: pd.DataFrame) -> pd.DataFrame:
         )
     else:
         df["observation_date"] = pd.NaT
-    df["price"] = df.apply(lambda r: parse_price(r["price"], r.get("currency")), axis=1)
+    # zip, not `df.apply(..., axis=1)`: apply materialises a Series per row --
+    # index and all -- to hand `parse_price` two scalars, 110.3M times per
+    # corpus pass. The `.get` is preserved as an explicit null column so a frame
+    # without `currency` still passes None, as `r.get("currency")` did.
+    currency = (
+        df["currency"]
+        if "currency" in df.columns
+        else pd.Series(None, index=df.index, dtype=object)
+    )
+    df["price"] = [parse_price(v, c) for v, c in zip(df["price"], currency)]
     # Shards carry input_hash already; it is a pure function of the raw row, so
     # recomputing it here would hash 20M rows a second time for the same answer.
     if "input_hash" not in df.columns or df["input_hash"].isna().any():
@@ -259,18 +294,14 @@ def _derive(raw: pd.DataFrame) -> pd.DataFrame:
         df["channel"] = ""
     df["channel"] = df["channel"].fillna("").astype(str)
     if "source" in df.columns:
-        fallback = df.set_index(["country", "source"]).index.map(
-            lambda k: channel_map.get(k, "")
-        )
+        fallback = _source_lookup(df, channel_map)
         df["channel"] = df["channel"].where(
             df["channel"] != "", pd.Series(fallback, index=df.index)
         )
 
     coicop_codes_map = _build_source_coicop_codes_map()
     if "source" in df.columns:
-        declared = df.set_index(["country", "source"]).index.map(
-            lambda k: coicop_codes_map.get(k, "")
-        )
+        declared = _source_lookup(df, coicop_codes_map)
         df["declared_coicop_codes"] = pd.Series(declared, index=df.index).astype(str)
     else:
         df["declared_coicop_codes"] = ""
