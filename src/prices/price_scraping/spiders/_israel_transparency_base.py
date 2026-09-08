@@ -65,6 +65,30 @@ def _extract_xml(raw: bytes) -> bytes:
     return raw
 
 
+# "unknown" placeholder the statutory schema uses for an absent field.
+_UNKNOWN = "לא ידוע"
+
+
+def _declared_quantity(item) -> str:
+    """The item's PACKAGE size, as "<Quantity> <UnitQty>".
+
+    NOT ``UnitOfMeasure``, which is the basis unit of ``UnitOfMeasurePrice``
+    ("100 גרם" / "100 מיליליטר") rather than the pack ``ItemPrice`` refers to;
+    the two disagree for 59-71% of items. See the same helper in
+    ``fetchers/_shared/menaap/israel_publishedprices.py`` for the measurement.
+    """
+    qty = (item.findtext("Quantity") or "").strip()
+    unit_qty = (item.findtext("UnitQty") or "").strip()
+    if not qty or not unit_qty or unit_qty == _UNKNOWN:
+        return ""
+    try:
+        if float(qty) <= 0:
+            return ""
+    except ValueError:
+        return ""
+    return f"{qty} {unit_qty}"
+
+
 def _iter_items(xml_bytes: bytes):
     root = etree.fromstring(xml_bytes)
     for item in root.findall(".//Item"):
@@ -72,8 +96,9 @@ def _iter_items(xml_bytes: bytes):
         name = (item.findtext("ItemName") or item.findtext("ItemNm") or "").strip()
         price = (item.findtext("ItemPrice") or "").strip()
         unit = (item.findtext("UnitOfMeasure") or "").strip()
+        declared = _declared_quantity(item)
         if code and name and price:
-            yield code, name, price, unit
+            yield code, name, price, unit, declared
 
 
 class IsraelTransparencySpiderBase(scrapy.Spider):
@@ -89,12 +114,13 @@ class IsraelTransparencySpiderBase(scrapy.Spider):
         xml_bytes = _extract_xml(raw_body)
         scraped_at = datetime.now(timezone.utc).isoformat()
         n = 0
-        for code, name, price, unit in _iter_items(xml_bytes):
+        for code, name, price, unit, declared in _iter_items(xml_bytes):
             n += 1
             yield {
                 "product_id": code,
                 "product_name": name[:500],
                 "category": unit,
+                "unit": declared,
                 "price": price,
                 "currency": self.currency,
                 "available": True,

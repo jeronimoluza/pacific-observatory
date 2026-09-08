@@ -21,11 +21,24 @@ Price deltas.
 Verified live 2026-08-06 against 8 chains (RamiLevi, TivTaam, yohananof,
 doralon, Paz_bo/Yellow, Keshet, Stop_Market, yuda_ho/SuperYuda): all
 returned real Hebrew grocery/convenience items with plausible ILS prices.
-Two logins probed and rejected: osherad and SuperCofixApp authenticate but
-list Stores-only directories with zero Price/PriceFull files -- the gov.il
-register shows Cofix folded into Rami Levy's own feed as of 2026-08-04;
-Osher Ad's dedicated feed is presumed similarly retired. Do not re-add
-those two without re-checking the gov.il register first.
+Two logins probed and rejected on 2026-08-06: osherad and SuperCofixApp
+authenticated but listed Stores-only directories with zero Price/PriceFull
+files -- the gov.il register showed Cofix folded into Rami Levy's own feed
+as of 2026-08-04.
+
+CORRECTION 2026-09-05: that verdict does NOT hold for osherad. Re-probed
+live, the login lists 141 files including 67 PriceFull, and a branch
+snapshot parses 6,771 real items -- now scaffolded as osher_ad_il.
+SuperCofixApp is still dead (3 files, zero PriceFull), as are HaziHinam /
+hazihinam (authenticate, list nothing). Take this as the general rule: a
+"retired feed" note on this portal is a point-in-time observation, so
+re-probe before trusting it. Four chains the repo had never claimed --
+SalachD, politzer, freshmarket, osherad -- all verified in that same sweep.
+
+Second re-probe pass also confirmed these logins do NOT exist (530 Not
+logged in): Quik, wolt, superpharm, CityMarket, Maayan2000, Bareket,
+MegaAtar, tastefood, supersapir, Netiv, ampm, shuk-hayir. If those chains
+publish, it is through binaprojects.com or a dedicated portal, not here.
 
 Gotcha: despite the uniform ".gz" extension, the payload is gzip on some
 chains (Rami Levy, Carrefour, King Store) and a zip archive on others (Good
@@ -58,6 +71,35 @@ _COUNTRY = "Israel"
 _CURRENCY = "ILS"
 _IDENT = ["source_key", "observation_date", "source_url"]
 _DATE_RE = re.compile(r"(20\d{6})")
+# "unknown" placeholder the statutory schema uses for an absent field.
+_UNKNOWN = "לא ידוע"
+
+
+def _declared_quantity(item) -> str:
+    """The item's PACKAGE size, as "<Quantity> <UnitQty>".
+
+    NOT ``UnitOfMeasure``: that field is the basis unit of
+    ``UnitOfMeasurePrice`` (typically "100 גרם" / "100 מיליליטר"), whereas
+    ``ItemPrice`` -- the price this fetcher emits -- is the price of the whole
+    package. Measured live 2026-09-05 on RamiLevi/yohananof/TivTaam, the two
+    disagree for 59-71% of items (e.g. a 750 ml wine carries
+    UnitOfMeasure="100 מיליליטר"), so feeding UnitOfMeasure to
+    ``enrich/declared_unit.parse_declared_unit`` would divide ItemPrice by the
+    wrong quantity and inflate every such unit value. Quantity+UnitQty is the
+    real pack size and is parseable for 66-82% of items; weighted items carry
+    Quantity=1.00 / UnitQty="קילוגרם" with ItemPrice already per kg, so the
+    same formula is correct for them too.
+    """
+    qty = (item.findtext("Quantity") or "").strip()
+    unit_qty = (item.findtext("UnitQty") or "").strip()
+    if not qty or not unit_qty or unit_qty == _UNKNOWN:
+        return ""
+    try:
+        if float(qty) <= 0:
+            return ""
+    except ValueError:
+        return ""
+    return f"{qty} {unit_qty}"
 
 
 def _extract_xml(raw: bytes) -> bytes:
@@ -166,7 +208,7 @@ def fetch_publishedprices_chain(
         code = (item.findtext("ItemCode") or "").strip()
         name = (item.findtext("ItemName") or item.findtext("ItemNm") or "").strip()
         price_raw = (item.findtext("ItemPrice") or "").strip()
-        unit = (item.findtext("UnitOfMeasure") or "").strip()
+        unit = _declared_quantity(item)
         if not code or not name or not price_raw:
             continue
         try:

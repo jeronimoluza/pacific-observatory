@@ -35,10 +35,37 @@ logger = logging.getLogger(__name__)
 
 _BASE = "https://prices.shufersal.co.il"
 _STORE_ID = "001"
+# catID=2 is the "PricesFull" category in the portal's #ddlCategory select;
+# storeId=1 is store 001. The bare homepage grid lists ONLY the hourly
+# `Price` DELTAS (a ~2 KB file, 33 items) -- reading it is why this spider
+# used to contribute 11 observations for Israel's largest chain. The full
+# catalog lives under a different blob container (/pricefull/, not /price/)
+# and is only listed by this AJAX endpoint (Scripts/Main.js binds it to the
+# category dropdown). Verified live 2026-09-05: 326 KB gz, 22k+ items.
+_LISTING = f"{_BASE}/FileObject/UpdateCategory?catID=2&storeId=1"
 _FILE_RE = re.compile(
-    r'href="(https://pricesprodpublic\.blob\.core\.windows\.net/price/'
-    r"Price\d+-\d+-" + _STORE_ID + r'-\d+-\d+\.gz\?[^"]+)"'
+    r'href="(https://pricesprodpublic\.blob\.core\.windows\.net/pricefull/'
+    r"PriceFull\d+-\d+-" + _STORE_ID + r'-\d+-\d+\.gz\?[^"]+)"'
 )
+# "unknown" placeholder the statutory schema uses for an absent field.
+_UNKNOWN = "לא ידוע"
+
+
+def _declared_quantity(item) -> str:
+    """The item's PACKAGE size as "<Quantity> <UnitQty>" -- NOT UnitOfMeasure,
+    which is the basis unit of UnitOfMeasurePrice ("100 גרם") rather than the
+    pack ItemPrice refers to. See the same helper in
+    ``_israel_transparency_base.py``."""
+    qty = (item.findtext("Quantity") or "").strip()
+    unit_qty = (item.findtext("UnitQty") or "").strip()
+    if not qty or not unit_qty or unit_qty == _UNKNOWN:
+        return ""
+    try:
+        if float(qty) <= 0:
+            return ""
+    except ValueError:
+        return ""
+    return f"{qty} {unit_qty}"
 
 
 class ShufersalIlSpider(scrapy.Spider):
@@ -63,13 +90,22 @@ class ShufersalIlSpider(scrapy.Spider):
     }
 
     async def start(self):
-        yield scrapy.Request(f"{_BASE}/", callback=self.parse_listing)
+        yield scrapy.Request(
+            _LISTING,
+            callback=self.parse_listing,
+            headers={
+                "X-Requested-With": "XMLHttpRequest",
+                "Referer": f"{_BASE}/",
+            },
+        )
 
     def parse_listing(self, response):
         m = _FILE_RE.search(response.text)
         if not m:
             logger.warning(
-                "shufersal_il: store %s file link not found on page 1", _STORE_ID
+                "shufersal_il: store %s PriceFull link not found in the "
+                "catID=2 listing",
+                _STORE_ID,
             )
             return
         file_url = m.group(1).replace("&amp;", "&")
@@ -95,6 +131,7 @@ class ShufersalIlSpider(scrapy.Spider):
                 "product_id": code,
                 "product_name": name[:500],
                 "category": unit,
+                "unit": _declared_quantity(item),
                 "price": price,
                 "currency": self.currency,
                 "available": True,
