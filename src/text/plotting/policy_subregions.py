@@ -11,6 +11,7 @@ quietly -- they remain reachable under the "All subregions" default.
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Dict, Iterable, List, Tuple
 
 from core.config import load_countries, load_regions
@@ -23,6 +24,9 @@ NAME_ALIASES: Dict[str, str] = {
     "rmi": "marshall_islands",
     "laos": "lao_pdr",
     "korearep": "south_korea",
+    # Long forms the topology carries only in World Bank short form.
+    "democraticrepublicofcongo": "congo_dem_rep",
+    "republicofcongo": "congo_rep",
 }
 
 # Countries and aggregate rows the topology does not carry at all, mapped
@@ -35,9 +39,27 @@ EXTRA_MEMBERS: Dict[str, str] = {
 ALL_LABEL = "All subregions"
 
 
-def _norm(value: str) -> str:
+def fold(value: str) -> str:
+    """Normalize a country cell to a comparison key.
+
+    Accents are folded rather than stripped. The old form deleted anything
+    outside [a-z0-9] *after* lowercasing, so an accented letter vanished
+    instead of decaying to its base: "Côte d'Ivoire" became "ctedivoire"
+    while countries.yaml's "Cote d'Ivoire" became "cotedivoire", and the two
+    never met. Every region with accented names hits this -- SSA on Côte
+    d'Ivoire and São Tomé, LAC on Perú-style spellings.
+
+    A standalone "the" is dropped so "The Gambia" and "Gambia, The" -- the
+    workbook form and the countries.yaml form of one country -- agree.
+    """
     text = re.sub(r"\s+", " ", (value or "").strip().lower()).replace("&", "and")
-    return re.sub(r"[^a-z0-9]+", "", text)
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(c for c in text if not unicodedata.combining(c))
+    return "".join(t for t in re.findall(r"[a-z0-9]+", text) if t != "the")
+
+
+# Kept as the module's private spelling; `fold` is the name other modules use.
+_norm = fold
 
 
 def _slug_to_subregion(region_key: str) -> Tuple[Dict[str, str], Dict[str, str]]:

@@ -23,10 +23,14 @@ import re
 import sys
 import zipfile
 from collections import Counter
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from openpyxl import load_workbook
+
+from core.config import load_countries
+from text.plotting.policy_subregions import fold
 
 from text.plotting.trackers import (
     DEFAULT_TRACKER,
@@ -312,25 +316,54 @@ WB_PIC_MEMBERS = [
 # share no vocabulary. Left alone a country splits in two: the dropdown offers
 # both, the year bars divide between them, and -- because the PIC view matches
 # WB_PIC_MEMBERS by exact string -- rows filed under the variant drop out of
-# "PICs only (12)" entirely. Keys are punctuation-free and lowercased, so a
-# newly invented separator lands on the canonical name without another entry.
+# "PICs only (12)" entirely. Keys are `fold`ed, so a newly invented separator
+# or an accent lands on the canonical name without another entry.
+#
+# These are the overrides only: names where the workbook's own spelling is
+# canonical and countries.yaml disagrees. Everything else resolves against
+# countries.yaml itself, so a region does not need entries here just because
+# its analysts type accents.
 COUNTRY_ALIASES = {
-    "hong kong sar china": "Hong Kong SAR, China",
-    "marshall islands": "RMI",
-    "micronesia fed sts": "FSM",
-    "micronesia federated states of": "FSM",
-    "timor leste": "Timor-Leste",
-    "papua new guinea": "PNG",
-    "lao pdr": "Laos",
-    "viet nam": "Vietnam",
+    "hongkongsarchina": "Hong Kong SAR, China",
+    "marshallislands": "RMI",
+    "micronesiafedsts": "FSM",
+    "micronesiafederatedstatesof": "FSM",
+    "timorleste": "Timor-Leste",
+    "papuanewguinea": "PNG",
+    "laopdr": "Laos",
+    "vietnam": "Vietnam",
+    # Long forms countries.yaml carries only in World Bank short form.
+    "democraticrepublicofcongo": "Congo, Dem. Rep.",
+    "republicofcongo": "Congo, Rep.",
 }
 
 
+@lru_cache(maxsize=1)
+def _names_by_fold() -> Dict[str, str]:
+    """Every countries.yaml display name, keyed by its folded form."""
+    return {
+        fold(props["name"]): props["name"]
+        for props in load_countries().values()
+        if props.get("name")
+    }
+
+
 def canonical_country(value: Any) -> str:
-    """One spelling per country, so a name cannot split the same country in two."""
+    """One spelling per country, so a name cannot split the same country in two.
+
+    Two layers, overrides last. countries.yaml decides the spelling for every
+    country in every region -- which is what makes "Côte d'Ivoire" and
+    "Cote d'Ivoire" one country without an SSA-specific entry. COUNTRY_ALIASES
+    then wins where the workbook's abbreviation is canonical, because the PIC
+    view matches WB_PIC_MEMBERS ("RMI", "FSM", "PNG") by exact string and
+    resolving those to their countries.yaml long forms would empty it.
+    """
     name = clean_text(value)
-    key = re.sub(r"[^a-z0-9]+", " ", name.lower()).strip()
-    return COUNTRY_ALIASES.get(key, name)
+    key = fold(name)
+    if key in COUNTRY_ALIASES:
+        return COUNTRY_ALIASES[key]
+    resolved = _names_by_fold().get(key, name)
+    return COUNTRY_ALIASES.get(fold(resolved), resolved)
 
 
 REGIONS: List[Dict[str, Any]] = [
