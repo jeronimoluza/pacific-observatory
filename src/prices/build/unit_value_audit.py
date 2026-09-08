@@ -59,7 +59,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-NEW_COLS = ["uv_robust_z", "uv_cell_n", "uv_outlier", "trust_uv"]
+NEW_COLS = ["uv_robust_z", "uv_cell_n", "uv_outlier", "uv_thin", "trust_uv"]
 
 
 def flag_uv_outliers(
@@ -83,6 +83,7 @@ def flag_uv_outliers(
     df["uv_robust_z"] = np.nan
     df["uv_cell_n"] = 0
     df["uv_outlier"] = False
+    df["uv_thin"] = False
     df["trust_uv"] = "high"
     if df.empty:
         return df
@@ -142,5 +143,12 @@ def flag_uv_outliers(
     df.loc[idx, "uv_cell_n"] = cell_n.astype(int).to_numpy()
     df.loc[idx, "uv_robust_z"] = z.to_numpy()
     df.loc[idx, "uv_outlier"] = outlier.to_numpy()
+    # Emitted so a reader can tell the two "flag" verdicts apart. `thin` already
+    # decides trust_uv above, but it was never written out, so qa.py's
+    # `df.get("uv_thin", ...)` fell through to its all-False default and every
+    # thin row was reported as review_uv_outlier -- "we judged this and it
+    # failed" -- when the truth is that its cell had too few baseline rows to
+    # judge it at all. Not a gate: it changes the REASON, never shippability.
+    df.loc[idx, "uv_thin"] = thin.to_numpy()
     df.loc[idx, "trust_uv"] = trust_uv
     return df
