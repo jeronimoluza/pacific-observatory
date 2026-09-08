@@ -21,6 +21,24 @@ os.makedirs(IMF_ROOT, exist_ok=True)
 os.makedirs(OUTPUT_ROOT, exist_ok=True)
 
 
+def _cache_path(country: str, frequency: str, component: str) -> Path:
+    """One file per (country, component, frequency).
+
+    The component was missing from this name, so a request for CP01 -- food and
+    non-alcoholic beverages -- returned whatever had already been cached under
+    the same country and frequency, which in practice was always the `_T`
+    headline. The caller got a headline index labelled as food, silently.
+    """
+    # An empty component is the SDMX wildcard -- every COICOP division the
+    # country publishes, in one request -- and needs a name of its own.
+    return IMF_ROOT / f"{country}.cpi.{component or 'all'}.{frequency}.csv"
+
+
+def _legacy_cache_path(country: str, frequency: str) -> Path:
+    """The component-less name. Everything written under it is headline."""
+    return IMF_ROOT / f"{country}.cpi.{frequency}.csv"
+
+
 def _get_country_cpi_data(
     country: str,
     frequency: str = "M",  # One of "M", "Q", "Y"
@@ -35,11 +53,25 @@ def _get_country_cpi_data(
             params={"startPeriod": start_period},
         )
         output = sdmx.to_pandas(data_msg).dropna().reset_index()
-        output.to_csv(IMF_ROOT / f"{country}.cpi.{frequency}.csv", index=False)
+        output.to_csv(_cache_path(country, frequency, component), index=False)
         return output
     except Exception as e:
         print(f"Error for {country}: {e}")
         return None
+
+
+def _load_or_fetch(
+    country: str, frequency: str, start_period: int, component: str
+) -> pd.DataFrame:
+    for path in (
+        _cache_path(country, frequency, component),
+        # only the headline was ever written under the old name, so only the
+        # headline may be read back from it
+        *([_legacy_cache_path(country, frequency)] if component == "_T" else []),
+    ):
+        if os.path.exists(path):
+            return pd.read_csv(path)
+    return _get_country_cpi_data(country, frequency, start_period, component)
 
 
 def get_cpi_data(
@@ -48,24 +80,8 @@ def get_cpi_data(
     start_period: int = 2012,
     component: str = "_T",
 ) -> pd.DataFrame:
-    output = []
-    if isinstance(country, list):
-        for c in country:
-            csv_path = IMF_ROOT / f"{c}.cpi.{frequency}.csv"
-            if os.path.exists(csv_path):
-                data = pd.read_csv(csv_path)
-                output.append(data)
-            else:
-                data = _get_country_cpi_data(c, frequency, start_period, component)
-                output.append(data)
-    else:
-        csv_path = IMF_ROOT / f"{country}.cpi.{frequency}.csv"
-        if os.path.exists(csv_path):
-            data = pd.read_csv(csv_path)
-            output.append(data)
-        else:
-            data = _get_country_cpi_data(country, frequency, start_period, component)
-            output.append(data)
+    wanted = country if isinstance(country, list) else [country]
+    output = [_load_or_fetch(c, frequency, start_period, component) for c in wanted]
     return pd.concat(output).reset_index(drop=True)
 
 

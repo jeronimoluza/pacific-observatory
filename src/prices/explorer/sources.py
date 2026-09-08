@@ -77,6 +77,13 @@ FE_MIN_PAIRS_LEAF = 4
 GEO_MIN_LINK_PAIRS_LEAF = 4
 # how far apart two observations of the same item may be and still link
 FREQ_MAX_GAP = {"Q": 1, "M": 3}
+# Horizons for the year-over-year family, expressed in MONTHS and mapped to
+# each frequency's own period count. A base-period index answers "how far has
+# this drifted since some month we happened to start at", which is only as
+# stable as that month; these answer "what has it done since a year ago", which
+# needs no base at all. The 1-month entry is the previous-period change; at
+# quarterly grain the shortest horizon a period can carry is three months.
+CHANGE_LAGS = {"M": {1: 1, 12: 12, 24: 24, 36: 36}, "Q": {3: 1, 12: 4, 24: 8, 36: 12}}
 # an item this far in logs from its own median is a unit/decimal defect,
 # not a price move — ln(20), comfortably above any real swing
 DEFECT_LOG_RATIO = 3.0

@@ -18,12 +18,12 @@ var S = {
   view:"world", mode:"explore", cur:"usd", incModelled:false, measuredOnly:false,
   showFlagged:false, evidence:"solid", region:null, node:"01", unit:null, country:null,
   cmpMode:"abs", fxMode:"both", sortCmp:{k:"val",d:1}, sortCtry:{k:"ratio",d:1},
-  multi:[], hregion:null, hsort:{k:null, d:1}, hmode:"usd",
+  multi:[], hregion:null, hsort:{k:null, d:1},
   /* world time series: what to compare, at what category, unit, measure and window.
      gsel null means "whatever the default is here" — an explicit list only appears
      once the reader has actually chosen, so a category with thin coverage can never
      silently strike a place off the list for good. */
-  gmode:"region", gsel:null, gnode:"01", gunit:0, gmeasure:"level",
+  gmode:"region", gsel:null, gnode:"01", gunit:0, gmeasure:"chg12", gcpi:false,
   gfreq:"Q", gsmooth:0, gwin:36
 };
 var charts = {};
@@ -72,6 +72,17 @@ function isLeaf(code) {
   return TAX_HAS_LEAF ? !!t.leaf : !(KIDS.get(code) || []).length;
 }
 function title(code) { return (DATA.tax[code] || {}).t || code; }
+
+/* The taxonomy's catch-all leaves — "... n.e.c." and titles that open with
+   "Other". A LEVEL for one is not a quantity: its members share no common good,
+   so a dollars-per-kilo of "other bakery products" prices croissants in one
+   country against flatbread in another. A CHANGE for one is fine — the same
+   catch-all in the same country month over month is a basket of its own — so
+   these are held out of the level views only, and the chain keeps them. */
+var RESIDUAL = {};
+(DATA.residual || []).forEach(function (c) { RESIDUAL[c] = 1; });
+function isResidual(code) { return !!RESIDUAL[code]; }
+function notResidual(code) { return !RESIDUAL[code]; }
 function ancestors(code) {
   var parts = code.split("."), out = [], i;
   for (i = 0; i < parts.length; i++) out.push(parts.slice(0, i + 1).join("."));
@@ -332,6 +343,109 @@ function gser(gk, ni, ui) {
   return DATA.gseries[S.gfreq + "|" + gk + "|" + ni + "|" + ui] || null;
 }
 
+/* ---- what the World chart is measuring -----------------------------------
+   Three families, and only one of them needs a base period.
+
+   A change ("what has it done since a year ago") is two observations of the
+   same items and stops there — nothing accumulates, and no month's own noise
+   sets the level of the whole line. That is why it leads.
+
+   The base-100 chain is still here for anyone who wants the cumulated series,
+   but it is read against a period that was one thin draw, which is exactly the
+   reading that was hard to defend.
+
+   A level is a US$ figure and exists only at a leaf; see the node filter. */
+function changeLabel(months, word) {
+  return months === 1 ? "the previous " + word
+    : months === 12 ? "a year earlier" : (months / 12) + " years earlier";
+}
+function changeMonths() {
+  return S.gmeasure.indexOf("chg") === 0 ? +S.gmeasure.slice(3) : null;
+}
+/* the payload keys each horizon by MONTHS; the shortest a quarter can carry
+   is three, so "previous period" is 1 month or 3 depending on the grain */
+function horizonKey(months, f) {
+  return String(months === 1 && f === "Q" ? 3 : months);
+}
+/* How far apart two observations may sit and still be linked by the chain.
+   Published by the build so this reading cannot drift from the constant that
+   produced it; the fallback is for a payload built before it was. */
+function gapMonths(f) {
+  var g = DATA.qa.link_gap_months || {};
+  return g[f] != null ? g[f] : (f === "Q" ? 1 : 3);
+}
+function measureKind() {
+  return S.gmeasure === "level" ? "level"
+    : S.gmeasure === "index" ? "index" : "change";
+}
+function gvalue(s, i, months, f) {
+  if (S.gmeasure === "level") return s.lvl[i];
+  if (S.gmeasure === "index") return s.idx[i];
+  var c = s.chg && s.chg[horizonKey(months, f)];
+  return c ? c.v[i] : null;
+}
+/* ---- official CPI overlay ------------------------------------------------
+   An official CPI is a LOCAL-CURRENCY index and every series this dashboard
+   builds is in US dollars, so laying one over the other unconverted would put
+   the exchange rate inside the comparison — the exact misreading the Currency
+   effects tab exists to prevent.
+
+   The fix is the FX identity the Trends tab already uses, P_local = P_usd x FX,
+   in its change form:  d ln P_local = d ln P_usd + d ln FX. Applied to OUR
+   line, not to the official one: the published index is the thing being
+   benchmarked against and must not be the thing that moves.
+
+   It does not generalise. A region or the world spans many currencies and has
+   no exchange rate to apply, so the overlay is country-mode only and switches
+   the whole chart into local terms while it is on, rather than drawing one
+   converted line among unconverted ones. */
+function lagPeriods(months, f) {
+  return f === "Q" ? (months === 1 ? 1 : months / 3) : months;
+}
+/* monthly values collapsed onto the chart's own period grain */
+function toGrain(ps, vs, f) {
+  var acc = {}, out = {};
+  ps.forEach(function (p, i) {
+    if (vs[i] == null) return;
+    var k = f === "M" ? p
+      : p.slice(0, 4) + "Q" + (Math.floor((+p.slice(5, 7) - 1) / 3) + 1);
+    (acc[k] = acc[k] || []).push(vs[i]);
+  });
+  Object.keys(acc).forEach(function (k) {
+    out[k] = acc[k].reduce(function (a, b) { return a + b; }, 0) / acc[k].length; });
+  return out;
+}
+function pctOver(map, grid, L) {
+  return grid.map(function (p, i) {
+    var was = grid[i - L];
+    if (was == null) return null;
+    var a = map[was], b = map[p];
+    return (a > 0 && b > 0) ? (b / a - 1) * 100 : null;
+  });
+}
+/* the COICOP division on screen, as the IMF names it — so the official line
+   beside our food series is the official FOOD series, not the headline */
+function cpiCodeFor(node) {
+  var code = "CP" + String(node).split(".")[0];
+  return (DATA.cpiMeta && DATA.cpiMeta.labels && DATA.cpiMeta.labels[code]) ? code : null;
+}
+function cpiFor(slug, code) {
+  var c = (DATA.cpi || {})[slug];
+  return c && c[code] ? c[code] : null;
+}
+/* the overlay only means something where one country meets one currency */
+function cpiPossible(kind) {
+  return kind === "country" && measureKind() === "change" &&
+    !!DATA.cpi && Object.keys(DATA.cpi).length > 0;
+}
+
+/* how many item cells stand behind the point actually being read */
+function gsupport(s, i, months, f) {
+  if (S.gmeasure === "level" || S.gmeasure === "index") return s.k[i];
+  var c = s.chg && s.chg[horizonKey(months, f)];
+  return c ? c.k[i] : 0;
+}
+
 /* period arithmetic, quarters and months alike */
 function pnum(p) {
   var a = p.indexOf("Q") > 0 ? p.split("Q") : p.split("-");
@@ -368,6 +482,20 @@ function smooth(pts, w) {
   });
 }
 
+/* trailing arithmetic mean, for a series that is already a rate of change:
+   a percentage change can be negative, so it has no logarithm to average */
+function smoothPct(pts, w) {
+  if (!w || w < 2) return pts;
+  return pts.map(function (v, i) {
+    if (v == null) return null;
+    var acc = 0, n = 0;
+    for (var j = Math.max(0, i - w + 1); j <= i; j++) {
+      if (pts[j] != null) { acc += pts[j]; n++; }
+    }
+    return acc / n;
+  });
+}
+
 /* The headline reading was removed from the markup; the chart below carries
    the same story with its own axis. Kept as a no-op so the several call sites
    that still hand it a number do not each need a guard. */
@@ -376,8 +504,17 @@ function renderWorldTrends() {
   var f = S.gfreq, kind = S.gmode;
   if (!GEO_INDEX[f]) { S.gfreq = f = "M"; }
   var byNode = (GEO_INDEX[f] || {})[kind] || {};
-  var nodes = Object.keys(byNode).map(function (n) { return DATA.nodeIdx[+n]; })
+  var allNodes = Object.keys(byNode).map(function (n) { return DATA.nodeIdx[+n]; })
     .filter(Boolean).sort();
+  /* A level is a US$-per-unit figure, so the level measure offers only
+     categories where such a figure exists: a single leaf, and not a catch-all
+     one. Every change measure keeps the whole tree — a group compared with its
+     own past is a basket, and a basket has a perfectly good growth rate. */
+  var levelOnly = S.gmeasure === "level", months = changeMonths();
+  var nodes = levelOnly
+    ? allNodes.filter(function (c) { return isLeaf(c) && notResidual(c); })
+    : allNodes;
+  var droppedForLevel = allNodes.length - nodes.length;
   var word = f === "Q" ? "quarter" : "month";
   document.getElementById("ws-2").textContent = "2 " + word + "s";
   document.getElementById("ws-3").textContent = "3 " + word + "s";
@@ -385,12 +522,22 @@ function renderWorldTrends() {
     document.getElementById("wf-" + x).className = f === x ? "on" : ""; });
   [0,2,3].forEach(function (x) {
     document.getElementById("ws-" + x).className = S.gsmooth === x ? "on" : ""; });
-  ["level","index"].forEach(function (m) {
+  ["level","index","chg1","chg12","chg24","chg36"].forEach(function (m) {
     document.getElementById("wv-" + m).className = S.gmeasure === m ? "on" : ""; });
+  document.getElementById("wv-chg1-word").textContent = word;
   [36,60,0].forEach(function (w) {
     document.getElementById("ww-" + w).className = S.gwin === w ? "on" : ""; });
   ["region","subregion","country"].forEach(function (m) {
     document.getElementById("wm-" + m).className = kind === m ? "on" : ""; });
+  var cpiOK = cpiPossible(kind), cpiOn = cpiOK && S.gcpi;
+  var cpiBtn = document.getElementById("wv-cpi");
+  cpiBtn.disabled = !cpiOK;
+  cpiBtn.className = cpiOn ? "on" : "";
+  cpiBtn.setAttribute("aria-pressed", cpiOn ? "true" : "false");
+  cpiBtn.title = cpiOK
+    ? "Switch the chart into local-currency terms and draw the official index beside it"
+    : "An official CPI is a local-currency index, so it can only be set against " +
+      "one country at a time, on a price change. Pick Countries and a change measure.";
 
   var chartId = "cWorldTrend";
   function nothing(msg) {
@@ -400,9 +547,23 @@ function renderWorldTrends() {
     chart(chartId, {type:"line", data:{labels:[], datasets:[]}});
     document.getElementById("wtNote").innerHTML = "";
   }
-  if (!nodes.length) return nothing("Nothing repeats often enough at this level to draw a line.");
+  if (!nodes.length) return nothing(levelOnly
+    ? "No single item here has a deep enough series to price in US$ per unit. " +
+      "A price level only means something for one item; try a change measure, " +
+      "which works for any grouping."
+    : "Nothing repeats often enough at this level to draw a line.");
   if (nodes.indexOf(S.gnode) < 0) S.gnode = nodes.indexOf("01") >= 0 ? "01" : nodes[0];
   var ni = DATA.nodeIdx.indexOf(S.gnode);
+
+  /* The level measure is a US$-per-unit figure, so it is offered only where one
+     exists. Disabling it beats silently swapping the category out from under
+     the reader, which is what the "not in the list" fallback above would do. */
+  var levelOK = isLeaf(S.gnode) && notResidual(S.gnode);
+  var lvlBtn = document.getElementById("wv-level");
+  lvlBtn.disabled = !levelOK;
+  lvlBtn.title = levelOK ? ""
+    : "A price per unit only means something for a single named item. " +
+      title(S.gnode) + " is a grouping — pick one item to price it in US$.";
 
   var sel = document.getElementById("wtNode");
   sel.innerHTML = nodes.map(function (c) {
@@ -425,13 +586,15 @@ function renderWorldTrends() {
     if (!s) return;
     var n = 0;
     s.p.forEach(function (p, i) {
-      if (p >= from && (S.gmeasure === "index" ? s.idx[i] : s.lvl[i]) != null) n++; });
+      if (p >= from && gvalue(s, i, months, f) != null) n++; });
     if (n) cands.push({g:g, t:DATA.geos[g].t, n:n, s:s});
   });
   if (!cands.length) return nothing(
-    "No " + (S.gmeasure === "index" ? "matched-item chain" : "series") +
+    "No " + (measureKind() === "change"
+      ? "item priced both now and " + changeLabel(months, word)
+      : measureKind() === "index" ? "matched-item chain" : "series") +
     " here in this window. Try a broader category, a wider window" +
-    (f === "Q" ? ", monthly periods" : "") + ", or the other measure.");
+    (f === "Q" ? ", monthly periods" : "") + ", a shorter horizon, or another measure.");
   cands.sort(function (a, b) { return b.n - a.n || (a.t < b.t ? -1 : 1); });
 
   var avail = {};
@@ -449,16 +612,34 @@ function renderWorldTrends() {
   }
   var drawn = S.gsel ? S.gsel.filter(function (g) { return avail[g]; }) : defaults();
   if (!drawn.length) drawn = defaults();
+  /* The world has no exchange rate, so it cannot come along into local terms.
+     Dropping it is better than drawing it in a currency it does not have. */
+  if (cpiOn) drawn = drawn.filter(function (g) { return g !== "W"; });
+  if (cpiOn && !drawn.length) drawn = cands.filter(function (c) { return c.g !== "W"; })
+    .slice(0, 1).map(function (c) { return c.g; });
+  if (!drawn.length) drawn = defaults();
   var parked = S.gsel ? S.gsel.filter(function (g) { return !avail[g]; }) : [];
   assignSlots(drawn);
   DRAWN = drawn;
 
   var atCap = drawn.filter(function (g) { return g !== "W"; }).length >= PAL.length;
+  /* Countries are capped at eighteen chips, but the World yardstick is drawn by
+     default and must keep its own chip whatever the cap: without one it was on
+     the chart with no way to switch it off. */
+  var chips = kind === "country"
+    ? cands.filter(function (c) { return c.g === "W"; })
+        .concat(cands.filter(function (c) { return c.g !== "W"; }).slice(0, 18))
+    : cands;
   document.getElementById("wtChips").innerHTML =
-    (kind === "country" ? cands.slice(0, 18) : cands).map(function (c) {
+    chips.map(function (c) {
       var on = drawn.indexOf(c.g) >= 0, full = !on && c.g !== "W" && atCap;
+      /* the world has no exchange rate, so while the chart is in local terms
+         its chip is dead rather than clickable-but-ignored */
+      var noFx = cpiOn && c.g === "W";
       return '<button class="chip ser' + (on ? " on" : "") + '" aria-pressed="' + on + '"' +
-        (full ? ' disabled title="Six lines is the limit — switch one off first"' : "") +
+        (noFx ? ' disabled title="The world spans many currencies, so it has no rate to ' +
+          'convert at — turn the official-CPI benchmark off to bring it back"' :
+         full ? ' disabled title="Six lines is the limit — switch one off first"' : "") +
         ' style="border-left-color:' + (on ? geoColor(c.g) : "var(--rule)") +
         '" onclick="APP.toggleGeo(' + arg(c.g) + ')">' + esc(c.t) +
         '<span class="c">' + c.n + "</span></button>"; }).join("") +
@@ -469,19 +650,21 @@ function renderWorldTrends() {
         esc((DATA.geos[g] || {}).t || g) + "</button>"; }).join("");
   /* the add-a-place picker was one of the analyst controls and is gone */
 
-  var isLevel = S.gmeasure === "level";
+  var kindM = measureKind(), isLevel = kindM === "level", isIndex = kindM === "index";
   var lo = null, hi = null;
   drawn.forEach(function (g) {
     avail[g].s.p.forEach(function (p, i) {
-      if (p < from || (isLevel ? avail[g].s.lvl[i] : avail[g].s.idx[i]) == null) return;
+      if (p < from || gvalue(avail[g].s, i, months, f) == null) return;
       if (lo == null || p < lo) lo = p;
       if (hi == null || p > hi) hi = p; }); });
   if (lo == null) return nothing("Nothing to draw for the places selected.");
   var grid = pgrid(lo, hi, f);
 
-  /* the index rebases every line at the first period they can all share */
+  /* only the base-100 chain needs a base; it rebases every line at the first
+     period they can all share. A change has no base at all — which is the
+     point of it. */
   var baseP = null;
-  if (!isLevel) {
+  if (isIndex) {
     drawn.forEach(function (g) {
       var s = avail[g].s, first = null;
       s.p.forEach(function (p, i) {
@@ -494,16 +677,36 @@ function renderWorldTrends() {
     var c = avail[g], s = c.s, vals = {}, base = null;
     /* rebase on the shared period, then plot the whole window either side of
        it — clipping to the base would throw away history a line really has */
-    s.p.forEach(function (p, i) {
+    if (isIndex) s.p.forEach(function (p, i) {
       if (base == null && p >= from && s.idx[i] != null &&
           (baseP == null || p >= baseP)) base = s.idx[i]; });
     s.p.forEach(function (p, i) {
       if (p < from) return;
-      if (isLevel) { if (s.lvl[i] != null) vals[p] = s.lvl[i]; return; }
-      if (s.idx[i] != null && base) vals[p] = s.idx[i] / base * 100;
+      var v = gvalue(s, i, months, f);
+      if (v == null) return;
+      if (isIndex) { if (base) vals[p] = v / base * 100; return; }
+      vals[p] = v;
     });
-    var pts = smooth(grid.map(function (p) {
-      return vals[p] == null ? null : vals[p]; }), S.gsmooth);
+    /* A change is already a ratio of two logs; smoothing it is a moving
+       average of a rate, not of a price, so it is averaged arithmetically
+       rather than in logs (a negative change has no logarithm). */
+    var raw = grid.map(function (p) { return vals[p] == null ? null : vals[p]; });
+    /* d ln P_local = d ln P_usd + d ln FX, applied before any smoothing:
+       a trailing average of converted points is not the conversion of a
+       trailing average once the rate has moved inside the window. */
+    if (cpiOn) {
+      var fxg = toGrain(DATA.fx[g.slice(2)] ? DATA.fx[g.slice(2)].p : [],
+                        DATA.fx[g.slice(2)] ? DATA.fx[g.slice(2)].r : [], f);
+      var L = lagPeriods(months, f);
+      raw = raw.map(function (v, i) {
+        var was = grid[i - L];
+        if (v == null || was == null) return null;
+        var r0 = fxg[was], r1 = fxg[grid[i]];
+        if (!(r0 > 0) || !(r1 > 0)) return null;
+        return (Math.exp(Math.log(1 + v / 100) + Math.log(r1 / r0)) - 1) * 100;
+      });
+    }
+    var pts = kindM === "change" ? smoothPct(raw, S.gsmooth) : smooth(raw, S.gsmooth);
     if (pts.filter(function (v) { return v != null; }).length < 2) thin.push(c.t);
     sup[g] = {t:c.t, s:s};
     ds.push({ label:c.t, data:pts,
@@ -513,12 +716,82 @@ function renderWorldTrends() {
       tension:.2, pointRadius:2.8, spanGaps:true, segment:GAP_SEG });
   });
 
+  /* The official index, exactly as published — headline, and the division the
+     category on screen sits in. Same colour as the country it belongs to, so
+     the pairing is readable without a legend; dotted, because it is somebody
+     else's measurement rather than ours. */
+  var cpiDrawn = [], cpiCode = cpiCodeFor(S.gnode);
+  var cpiSpecs = (cpiCode ? [[cpiCode, [2,2], 1.8]] : []).concat([["_T", [1,3], 1.4]]);
+  if (cpiOn) drawn.forEach(function (g) {
+    var slug = g.slice(2), L = lagPeriods(months, f);
+    cpiSpecs.forEach(function (spec) {
+      var code = spec[0];
+      var series = cpiFor(slug, code);
+      if (!series) return;
+      var pts = smoothPct(
+        pctOver(toGrain(series.p, series.v, f), grid, L), S.gsmooth);
+      if (!pts.filter(function (v) { return v != null; }).length) return;
+      cpiDrawn.push(code);
+      ds.push({
+        label: (DATA.geos[g] || {}).t + " — official " +
+          (code === "_T" ? "CPI, all items" : "CPI, " +
+            DATA.cpiMeta.labels[code].toLowerCase()),
+        data: pts, borderColor: geoColor(g), borderWidth: spec[2],
+        borderDash: spec[1], tension:.2, pointRadius:0, spanGaps:true });
+    });
+  });
+
   /* Only caveats that change how you read what is on screen right now. How the
      measure is built belongs in the note behind the heading, not in a standing
      wall of text above the chart. */
   var warn = [];
-  if (!isLevel) warn.push("Only items priced in <b>two consecutive " + word + "s</b> in the " +
-    "same country are linked — the strictest reading, and the thinnest.");
+  if (droppedForLevel) warn.push("<b>" + droppedForLevel + "</b> categor" +
+    (droppedForLevel === 1 ? "y is" : "ies are") + " missing from this list: a US$ level " +
+    "needs a single, named item, so groupings and catch-all “other…” items " +
+    "are offered on the change measures only. <b>The two measures do not cover the " +
+    "same categories.</b>");
+  if (kindM === "change") warn.push("Each point averages the price change of every item " +
+    "priced <b>both in that " + word + " and " + changeLabel(months, word) + "</b>, in the " +
+    "same country — items priced in only one of the two are left out entirely, so the " +
+    "line answers “what did the same shopping do”, not “what is on the shelf now”.");
+  if (isIndex) {
+    warn.push("Only items priced in <b>two consecutive " + word + "s</b> in the " +
+      "same country are linked — the strictest reading, and the thinnest. The whole line " +
+      "hangs off the base " + word + ", which is itself one thin reading.");
+    /* Disclosure, not a fix: a link is allowed to span a gap, and the whole
+       move is booked onto the later period. Nothing is interpolated, so the
+       alternative would be to drop the link, not to invent the missing month. */
+    var gap = gapMonths(f);
+    if (gap > 1) warn.push("A link may span up to <b>" + gap + " " + word + "s</b>, and the " +
+      "entire move is booked onto the later one — so a " + gap + "-" + word + " rise can " +
+      "appear as a single " + word + "'s. <b>Nothing is interpolated</b>: an empty " + word +
+      " stays empty rather than being filled in.");
+  }
+  if (isLevel) warn.push("This level is <b>fitted, not observed</b>: " +
+    esc(DATA.qa.fitted_level || "a two-way fixed-effects model on log price") +
+    ", whose period effect is the level with the item mix held fixed. It uses every item " +
+    "that recurs at all, not only items that recur in consecutive periods — which is why " +
+    "it exists — but it is a model output, and a point can stand where no single shop was " +
+    "observed that " + word + ".");
+  if (cpiOn) {
+    warn.push("Comparing with an official CPI means comparing in the currency it is " +
+      "published in, so <b>our lines are converted to local currency</b> here " +
+      "(d ln P<sub>local</sub> = d ln P<sub>US$</sub> + d ln FX) and the official index " +
+      "is drawn exactly as published. The world line is dropped: it spans many " +
+      "currencies and has no rate to convert at.");
+    warn.push("Ours is a <b>matched-item retail</b> change over the items we scrape; " +
+      "the official index is an <b>expenditure-weighted</b> national basket over a much " +
+      "wider range of outlets. They should move together, not coincide — a gap is a " +
+      "question to ask, not an error to correct.");
+    if (!cpiDrawn.length) warn.push("<b>No official CPI</b> is published for the " +
+      "countries on screen at this horizon.");
+    else if (cpiCode && cpiDrawn.indexOf(cpiCode) < 0) warn.push(
+      "No official <b>" + esc(DATA.cpiMeta.labels[cpiCode].toLowerCase()) + "</b> index " +
+      "for these countries — only the all-items headline is drawn.");
+  }
+  if (kindM === "change") warn.push("Nothing here is interpolated or modelled: each point is " +
+    "two observations of the same item, exactly " + (months === 1 ? "one " + word : months +
+    " months") + " apart. A " + word + " with no match simply has no point.");
   if (S.gsmooth) warn.push("Showing a <b>" + S.gsmooth + "-" + word +
     " trailing average</b>: turning points lag by about half that.");
   if (thin.length) warn.push("Too few " + word + "s to draw: <b>" +
@@ -537,18 +810,23 @@ function renderWorldTrends() {
           label:function (it) {
             var v = it.parsed.y;
             return v == null ? null : it.dataset.label + ": " +
-              (isLevel ? "$" + v.toFixed(2) + UNIT_OF[unitCode] : v.toFixed(1)); },
+              (isLevel ? "$" + v.toFixed(2) + UNIT_OF[unitCode]
+                : isIndex ? v.toFixed(1)
+                : (v >= 0 ? "+" : "") + v.toFixed(1) + "%"); },
           afterBody:function (items) {
             var p = grid[items[0].dataIndex], out = [""];
             drawn.forEach(function (g) {
               var s = sup[g].s, i = s.p.indexOf(p);
-              if (i < 0 || !s.k[i]) return;
+              var n = i < 0 ? 0 : gsupport(s, i, months, f);
+              if (!n) return;
               out.push(sup[g].t + ": " + s.c[i] + (s.c[i] === 1 ? " country · " : " countries · ") +
-                s.k[i] + " item cells"); });
+                n + " item cells"); });
             return out.length > 1 ? out : []; } } } },
       scales:{ y:{ grid:{color:RULE},
-          title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode]
-            : "Index, " + (baseP || lo) + " = 100"} },
+          title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode] + " (fitted)"
+            : isIndex ? "Index, " + (baseP || lo) + " = 100"
+            : "% change vs " + changeLabel(months, word) +
+              (cpiOn ? ", local currency" : ", US$")} },
         x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
   });
 
@@ -564,9 +842,10 @@ function renderWorldTrends() {
   else {
     var leadT = ds[0].label;
     readout(isLevel ? "$" + last.toFixed(2) : last.toFixed(1),
-      isLevel ? " US$ per " + UNIT_SHORT[unitCode] : " index",
+      isLevel ? " US$ per " + UNIT_SHORT[unitCode] : isIndex ? " index" : "%",
       (isLevel ? "Average across the items priced per " + UNIT_SHORT[unitCode] + " in "
-               : "Matched-item index for ") +
+               : isIndex ? "Matched-item index for " : "Change vs " +
+                 changeLabel(months, word) + " for ") +
       esc(title(S.gnode)) + " &middot; " + esc(leadT) + " &middot; " + lastP,
       first && first !== last
         ? (function () {
@@ -578,11 +857,12 @@ function renderWorldTrends() {
   }
 
   var lead = avail[drawn[0]], li = lead ? lead.s.p.length - 1 : -1;
+  var leadN = li >= 0 ? gsupport(lead.s, li, months, f) : 0;
   document.getElementById("wtNote").innerHTML =
     "Always in US$ here — the local-currency and exchange-rate split lives in " +
     '<span class="linkish" onclick="APP.go(\'trends\')">Currency effects</span>. ' +
-    (li >= 0 ? "Latest support: " + esc(lead.t) + " · " + lead.s.c[li] +
-      (lead.s.c[li] === 1 ? " country · " : " countries · ") + fmtN(lead.s.k[li]) +
+    (li >= 0 && leadN ? "Latest support: " + esc(lead.t) + " · " + lead.s.c[li] +
+      (lead.s.c[li] === 1 ? " country · " : " countries · ") + fmtN(leadN) +
       " item cells in " + lead.s.p[li] + ". " : "") +
     "Dashed segments bridge periods with no data at all.";
 }
@@ -612,10 +892,16 @@ function navigator(crumbId, listId, node, onPick, countFn) {
   document.getElementById(crumbId).innerHTML =
     sw + (crumb ? ' <span class="sep">›</span> ' + crumb : "");
 
-  var kids = KIDS.get(node) || [];
+  /* Both callers of this navigator are LEVEL views, so the catch-all leaves
+     are not offered here at all rather than offered and then blanked. They are
+     still reachable wherever a change is what is being read. */
+  var kids = (KIDS.get(node) || []).filter(notResidual);
   var list = (kids.length ? kids : ancestors(node).length > 1
-      ? (KIDS.get(DATA.tax[node].p) || []) : ROOTS);
-  var isSiblings = !kids.length;
+      ? (KIDS.get(DATA.tax[node].p) || []).filter(notResidual) : ROOTS);
+  var hidden = (KIDS.get(node) || []).filter(isResidual).length;
+  /* read off the UNFILTERED children: a node whose every child is a catch-all
+     is still a node, and must not claim to be a leaf */
+  var isSiblings = !(KIDS.get(node) || []).length;
   var html = list.map(function (code) {
     var c = countFn(code);
     var leaf = isLeaf(code);
@@ -631,7 +917,13 @@ function navigator(crumbId, listId, node, onPick, countFn) {
     ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
       "This is a leaf — showing the other items alongside it.</div>"
     : "";
-  document.getElementById(listId).innerHTML = hint + html ||
+  var foot = hidden
+    ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
+      hidden + ' catch-all item' + (hidden === 1 ? "" : "s") + ' ("other …", ' +
+      '"n.e.c.") hidden: a price per kilo needs the items in it to be the same ' +
+      'thing. They still count in the price <i>changes</i> on the World tab.</div>'
+    : "";
+  document.getElementById(listId).innerHTML = (hint + html + foot) ||
     '<div class="empty">Nothing priced under this node.</div>';
 }
 
@@ -659,16 +951,52 @@ function renderCompare() {
       arg(x.u) + ')">' + UNIT_LABEL[x.u] + '<span class="c">' + x.n + "</span></button>";
   }).join("") : '<span class="tiny">no comparable unit at this node</span>';
 
+  /* Both bar readings divide by a world median for this node, and there is no
+     such median above a leaf, so both controls go dead there rather than
+     pretending to switch between two views of nothing. */
+  var cmpOK = isLeaf(S.node) && notResidual(S.node);
+  ["cmp-abs", "cmp-rel"].forEach(function (id) {
+    var b = document.getElementById(id);
+    b.disabled = !cmpOK;
+    b.title = cmpOK ? "" : "Only single items can be compared across countries in levels.";
+  });
   seg("cmp-abs", S.cmpMode === "abs");
   seg("cmp-rel", S.cmpMode === "rel");
 
-  if (ui == null) {
-    document.getElementById("cmpTitle").textContent = title(S.node);
-    document.getElementById("cmpSub").textContent = "No comparable unit values at this node.";
+  /* Nothing to rank: clear the chart and the table rather than leaving the last
+     node's numbers standing under the new node's heading. */
+  function cmpNothing(sub) {
+    document.getElementById("cmpTitle").innerHTML = esc(title(S.node));
+    document.getElementById("cmpSub").innerHTML = sub;
+    document.getElementById("cmpWarn").innerHTML = "";
+    document.getElementById("cmpLegend").innerHTML = "";
+    sizeCanvas("cCompare", 0);
     chart("cCompare", {type:"bar", data:{labels:[], datasets:[]}});
     document.getElementById("cmpTbl").innerHTML = "";
-    return;
+    setHtmlIfPresent("cmpSamples", "");
   }
+  if (ui == null) return cmpNothing("No comparable unit values at this node.");
+  /* A price in levels is only a price at a leaf. "US$4.10 per kilo of cereals"
+     divides one country's mix of rice, bread and pasta by another country's,
+     and the ratio moves with whichever items each happened to price -- there is
+     no such quantity to compare. The reader is sent down to an item instead of
+     being handed a number that looks like one. */
+  if (!isLeaf(S.node)) return cmpNothing(
+    "<b>" + esc(title(S.node)) + "</b> is a grouping, not an item, and a price per " +
+    UNIT_SHORT[DATA.unitIdx[ui]] + " for a grouping is not a quantity — one country's " +
+    "mix of the items inside it is not another's. <b>Pick an item on the left</b> to " +
+    "compare countries; to compare the grouping itself, use a price <i>change</i> on " +
+    'the <span class="linkish" onclick="APP.go(\'world\')">World</span> tab, which is ' +
+    "built item by item and then averaged.");
+  /* A catch-all leaf holds whatever did not resolve to a named sibling, so one
+     country's is not the other's. Ranking them against each other is the figure
+     `publish` has withheld since it was written. */
+  if (isResidual(S.node)) return cmpNothing(
+    "<b>" + esc(title(S.node)) + "</b> is a catch-all category — it holds whatever could " +
+    "not be placed on a named item, and what lands in it differs from one country to the " +
+    "next. A price per unit for it is not comparable across countries, so none is shown. " +
+    'Its price <i>changes</i> are still on the <span class="linkish" ' +
+    "onclick=\"APP.go('world')\">World</span> tab.");
   var unit = DATA.unitIdx[ui];
   var gmed = ((DATA.nodeMeta[S.node] || {}).gmed || {})[unit];
 
@@ -845,14 +1173,16 @@ function renderCountry() {
   navigator("ctryCrumb", "ctryNav", S.node, null, function (code) {
     var pre = code + ".";
     var n = mineAll.filter(function (c) {
-      return isLeaf(c.node) && (c.node === code || c.node.indexOf(pre) === 0); }).length;
+      return isLeaf(c.node) && notResidual(c.node) &&
+        (c.node === code || c.node.indexOf(pre) === 0); }).length;
     return n ? n + " item" + (n > 1 ? "s" : "") : "—";
   });
 
   /* all leaf cells for this country under the selected node */
   var prefix = S.node + ".";
   var mine = mineAll.filter(function (c) {
-    return (c.node === S.node || c.node.indexOf(prefix) === 0) && isLeaf(c.node);
+    return (c.node === S.node || c.node.indexOf(prefix) === 0) && isLeaf(c.node) &&
+      notResidual(c.node);
   }).map(function (c) {
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
     return { c:c, name:title(c.node), ratio: g ? c.usd / g : null, gmed:g, val:val(c) };
@@ -1148,7 +1478,7 @@ function shortTitle(code) {
 function gapsFor(ci) {
   var out = [];
   (byCountry.get(ci) || []).filter(keep).forEach(function (c) {
-    if (!isLeaf(c.node) || !(c.usd > 0)) return;
+    if (!isLeaf(c.node) || isResidual(c.node) || !(c.usd > 0)) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
     if (!(g > 0)) return;
     var cls = classOf(c.node);
@@ -1291,22 +1621,24 @@ function renderWaterfall() {
 /* Category down the side, country across the top -- the same orientation as
    the dashboard's heat table, so the two can be read side by side.
 
-   Two readings of the same cell. USD is the plain unit value a shopper would
-   recognise and is what the dashboard shows, so it leads. Index is the gap
-   from the world median for the same items, which is the only one of the two
-   that is comparable ACROSS rows: a kilo of tea and a kilo of rice are not
-   the same kind of number, but "38% dearer than the world" and "12% dearer"
-   are. Each row carries one unit, chosen as the unit most of that group's
-   prices are quoted in, so a column never mixes kilos with litres. */
+   One reading of a cell: the gap from the world median for the same items,
+   matched leaf by leaf. The US$-per-unit reading this table used to lead with
+   was a median dollars-per-kilo taken ACROSS a whole COICOP class, and there
+   is no such quantity -- the members of a class are not the same good, so
+   their unit values are not one distribution to take a median of. The gap is
+   built per leaf and only then averaged, so it survives the aggregation the
+   level does not. Each row still carries one unit, chosen as the unit most of
+   that group's prices are quoted in, so a column never mixes kilos with
+   litres. */
 function classCellsFor(ci) {
   var out = {};
   (byCountry.get(ci) || []).filter(keep).forEach(function (c) {
-    if (!isLeaf(c.node) || !(c.usd > 0)) return;
+    if (!isLeaf(c.node) || isResidual(c.node) || !(c.usd > 0)) return;
     var cls = classOf(c.node);
     if (!cls) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
     (out[cls] = out[cls] || []).push({
-      unit: c.unit, usd: c.usd, r: g > 0 ? Math.log(c.usd / g) : null});
+      unit: c.unit, r: g > 0 ? Math.log(c.usd / g) : null});
   });
   return out;
 }
@@ -1323,7 +1655,6 @@ function setHtmlIfPresent(id, v) {
 }
 
 function renderHeatmap() {
-  var usdMode = S.hmode !== "index";
   var rowN = {}, byCty = {}, unitVotes = {};
 
   DATA.ctyIdx.forEach(function (slug, ci) {
@@ -1355,9 +1686,7 @@ function renderHeatmap() {
       if (same.length < HM_MIN_LEAVES) return;
       var gaps = same.map(function (x) { return x.r; })
                      .filter(function (v) { return v != null; });
-      cells[cls] = {usd:median(same.map(function (x) { return x.usd; })),
-                    r:gaps.length ? median(gaps) : null,
-                    n:same.length};
+      cells[cls] = {r:gaps.length ? median(gaps) : null, n:same.length};
       rowN[cls] = (rowN[cls] || 0) + 1;
     });
     c.cells = cells;
@@ -1396,7 +1725,7 @@ function renderHeatmap() {
   shown = sk && rows.indexOf(sk) >= 0
     ? sortRows(shown, function (r) {
         var c = r.cells[sk];
-        return c ? (usdMode ? c.usd : c.r) : null; }, "num", sd)
+        return c ? c.r : null; }, "num", sd)
     : sortRows(shown, function (r) { return r.level; }, "num", sd);
 
   var head = '<thead><tr><th class="ctry">Category</th>' +
@@ -1406,60 +1735,40 @@ function renderHeatmap() {
         arg(r.slug) + ')">' + esc(r.name) + "</th>"; }).join("") + "</tr></thead>";
 
   var body = "<tbody>" + rows.map(function (cls) {
-    var u = rowUnit[cls];
-    var vals = shown.map(function (r) { return r.cells[cls]; })
-      .filter(Boolean).map(function (c) { return usdMode ? c.usd : c.r; });
-    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
     var tr = '<tr><td class="ctry" title="' + esc(title(cls)) + " · " + rowN[cls] +
       ' countries" tabindex="0" role="button" data-act="1" onclick="APP.hsort(' + arg(cls) +
       ')">' + esc(shortTitle(cls)) +
-      '<span class="ru">' + esc(usdMode ? "US$/" + u : "vs world") + "</span>" +
+      '<span class="ru">vs world</span>' +
       (sk === cls ? (sd === 1 ? " ▼" : " ▲") : "") + "</td>";
     return tr + shown.map(function (r) {
       var cell = r.cells[cls];
       if (!cell) return '<td class="na" title="' + esc(r.name) + " · " + esc(title(cls)) +
         ': fewer than ' + HM_MIN_LEAVES + ' matched items"></td>';
-      var lab, bg, t;
-      if (usdMode) {
-        lab = cell.usd >= 100 ? cell.usd.toFixed(0) : cell.usd.toFixed(2);
-        t = hi > lo ? (cell.usd - lo) / (hi - lo) : 0.5;
-        bg = hexMix(HM_MID, t >= 0.5 ? DEAR : CHEAP, Math.pow(Math.abs(t - 0.5) * 2, 0.8));
-      } else {
-        if (cell.r == null) return '<td class="na" title="' + esc(r.name) +
-          ': no world median for these items"></td>';
-        var v = (Math.exp(cell.r) - 1) * 100;
-        lab = Math.abs(v) >= 999 ? (v > 0 ? "+999" : "-999")
-          : (v >= 0 ? "+" : "") + v.toFixed(0);
-        t = heatT(cell.r);
-        bg = heatColor(cell.r);
-      }
-      return '<td class="c" style="background:' + bg + ";color:" +
-        (t > 0.55 || t < 0.05 ? "#1b211f" : "#1b211f") + '" title="' + esc(r.name) + " · " +
-        esc(title(cls)) + ": " + (usdMode
-          ? "US$" + cell.usd.toFixed(2) + " per " + u
-          : lab + "% vs the world median") +
+      if (cell.r == null) return '<td class="na" title="' + esc(r.name) +
+        ': no world median for these items"></td>';
+      var v = (Math.exp(cell.r) - 1) * 100;
+      var lab = Math.abs(v) >= 999 ? (v > 0 ? "+999" : "-999")
+        : (v >= 0 ? "+" : "") + v.toFixed(0);
+      return '<td class="c" style="background:' + heatColor(cell.r) + ';color:#1b211f" title="' +
+        esc(r.name) + " · " + esc(title(cls)) + ": " + lab + "% vs the world median" +
         ", over " + cell.n + ' matched items">' + lab + "</td>"; }).join("") + "</tr>"; }).join("") +
     "</tbody>";
   document.getElementById("hmTbl").innerHTML = head + body;
 
-  document.getElementById("hmSub").innerHTML = usdMode
-    ? "Median US dollars per unit, by category group. Each row is quoted in one unit; "
-      + "colour runs cheapest to dearest <b>within</b> the row."
-    : "Each category group against the world median for the same items. "
-      + "Red is dearer than the world, blue cheaper.";
-  document.getElementById("hm-usd").className = "chip" + (usdMode ? " on" : "");
-  document.getElementById("hm-idx").className = "chip" + (usdMode ? "" : " on");
+  document.getElementById("hmSub").innerHTML =
+    "Each category group against the world median for the same items. " +
+    "Red is dearer than the world, blue cheaper.";
 
   var cut = Object.keys(rowN).filter(function (c) { return rows.indexOf(c) < 0; })
     .sort(function (a2, b2) { return rowN[b2] - rowN[a2]; });
   var stops = [-1, -0.6, -0.3, 0, 0.3, 0.6, 1];
   document.getElementById("hmRamp").innerHTML =
-    '<span class="lab">' + (usdMode ? "cheapest in the row" : "cheaper than the world") + "</span>" +
+    '<span class="lab">cheaper than the world</span>' +
     stops.map(function (t) { return '<i style="background:' +
       hexMix(HM_MID, t >= 0 ? DEAR : CHEAP, Math.pow(Math.abs(t), 0.8)) + '"></i>'; }).join("") +
-    '<span class="lab">' + (usdMode ? "dearest" : "dearer") + "</span>" +
+    '<span class="lab">dearer</span>' +
     '<span class="lab" style="margin-left:14px">' +
-    (usdMode ? "" : "full colour at &plusmn;100% &middot; ") +
+    'full colour at &plusmn;100% &middot; ' +
     'hatched: fewer than ' + HM_MIN_LEAVES + ' matched items &middot; ' + rows.length +
     " groups &times; " + shown.length + " countries" +
     (cut.length ? " &middot; " + cut.length + " groups too thinly covered to show, " +
@@ -1492,7 +1801,6 @@ var APP = {
     b.setAttribute("aria-expanded", open ? "true" : "false");
   },
   setHRegion:function (r) { S.hregion = r; this.render(); },
-  setHMode:function (m) { S.hmode = m; this.render(); },
   hsort:function (k) {
     if (S.hsort.k === k) S.hsort.d = -S.hsort.d;
     else S.hsort = {k:k, d:1};
@@ -1513,6 +1821,7 @@ var APP = {
   setGNode:function (c) { S.gnode = c; this.render(); },
   setGUnit:function (u) { S.gunit = u; this.render(); },
   setGMeasure:function (m) { S.gmeasure = m; this.render(); },
+  toggleCPI:function () { S.gcpi = !S.gcpi; this.render(); },
   setGWin:function (w) { S.gwin = w; this.render(); },
   setGFreq:function (f) { S.gfreq = f; this.render(); },
   setGSmooth:function (w) { S.gsmooth = w; this.render(); },
@@ -1587,7 +1896,13 @@ window.APP = APP;
     return '<div><div class="l">' + r[0] + '</div><div class="v">' + r[1] + "</div></div>"; }).join("");
   document.getElementById("aboutFoot").innerHTML =
     "Generated " + m.generated + ". A cell needs " + m.min_cell_obs +
-    "+ observations before it is shown at all.";
+    "+ observations before it is shown at all. <b>No missing month is ever filled in.</b> " +
+    "Some of these gaps are collection artefacts rather than quiet markets, and an imputed " +
+    "price would be indistinguishable on screen from a measured one — so a gap stays a gap. " +
+    "The two places that come closest are said out loud where they are used: the base-100 " +
+    "chain may link across up to " + gapMonths("M") + " months and books the whole move onto " +
+    "the later one, and the US$ price level is a fitted model output rather than an observed " +
+    "median.";
   document.getElementById("foot").innerHTML =
     "Generated " + m.generated + " · " + m.n_obs.toLocaleString() +
     " trusted unit values · cells need " + m.min_cell_obs + "+ observations";

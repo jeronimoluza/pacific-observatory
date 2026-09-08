@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 
 from prices.explorer.sources import (
+    CHANGE_LAGS,
     DEFECT_LOG_RATIO,
     FE_ITERATIONS,
     FE_MIN_PAIRS,
@@ -168,6 +169,56 @@ def _chain(linked: pd.DataFrame) -> pd.DataFrame:
     return out.drop_duplicates(KEY + ["period"], keep="first")
 
 
+def _lagged(linked: pd.DataFrame, freq: str) -> pd.DataFrame:
+    """Average log change over each horizon, matched (country, leaf) by pair.
+
+    The chain beside this one links an item to whatever its previous
+    observation happened to be and cumulates from a base period; this compares
+    period t with period t-k exactly and stops there. Nothing accumulates, so
+    no link's error is carried forward, and there is no base month whose own
+    noise sets the level of the whole line.
+
+    The MEAN, deliberately. `_chain` above takes the MEDIAN of the same log
+    relatives, chosen so one cents-for-units item cannot move the link by
+    ln 100 -- but `_pairs` already drops those cells (DEFECT_LOG_RATIO), and the
+    mean is the elementary index that follows from "everything is equally
+    weighted". The divergence between the two is pre-existing and left in place
+    rather than silently changed underneath the chain.
+    """
+    m = linked.drop_duplicates(PAIR + ["period"])[PAIR + ["period", "usd"]].copy()
+    m["t"] = pd.PeriodIndex(m.period, freq=freq).astype(int)
+    out = []
+    for months, lag in CHANGE_LAGS[freq].items():
+        prev = m[PAIR + ["t", "usd"]].rename(columns={"usd": "prev_usd"})
+        prev["t"] = prev.t + lag
+        j = m.merge(prev, on=PAIR + ["t"], how="inner")
+        if j.empty:
+            continue
+        j["lr"] = np.log(j.usd / j.prev_usd)
+        step = (
+            j.merge(
+                linked[PAIR + ["period", "geo", "node", "is_leaf"]].drop_duplicates(),
+                on=PAIR + ["period"],
+                how="inner",
+            )
+            .groupby(KEY + ["period"], observed=True)
+            .agg(lr=("lr", "mean"), pairs=("lr", "size"), is_leaf=("is_leaf", "first"))
+            .reset_index()
+        )
+        need = np.where(
+            step.is_leaf.to_numpy(), GEO_MIN_LINK_PAIRS_LEAF, GEO_MIN_LINK_PAIRS
+        )
+        step = step[step.pairs >= need]
+        if step.empty:
+            continue
+        out.append(
+            step.assign(months=months)[KEY + ["period", "months", "lr", "pairs"]]
+        )
+    if not out:
+        return pd.DataFrame(columns=KEY + ["period", "months", "lr", "pairs"])
+    return pd.concat(out, ignore_index=True)
+
+
 def _geo_maps(cmeta: dict[str, dict]) -> dict[str, dict[str, str]]:
     return {
         "world": {s: "W" for s in cmeta},
@@ -216,16 +267,41 @@ def build_geo_series(
             frame = _fe_level(linked).merge(
                 _chain(linked), on=KEY + ["period"], how="outer"
             )
+            chg = _lagged(linked, freq)
+            # A k-month change can exist in a period the fit could not identify
+            # and the chain could not link, so the change periods join the grid
+            # rather than being clipped to it.
+            frame = frame.merge(
+                chg[KEY + ["period"]].drop_duplicates(),
+                on=KEY + ["period"],
+                how="outer",
+            )
             frame = frame.sort_values(KEY + ["period"])
             depth = frame.groupby(KEY, observed=True).period.transform("nunique")
+            by_key = {k: v for k, v in chg.groupby(KEY, observed=True)}
             for (gk, node, unit), g in frame[depth >= GEO_MIN_PERIODS].groupby(
                 KEY, observed=True
             ):
+                pos = {p: i for i, p in enumerate(g.period)}
+                horizons: dict[str, dict] = {}
+                for months, h in by_key.get((gk, node, unit), chg.iloc[:0]).groupby(
+                    "months"
+                ):
+                    v = [None] * len(pos)
+                    n = [0] * len(pos)
+                    for period, lr, pairs in zip(h.period, h.lr, h.pairs):
+                        i = pos.get(period)
+                        if i is None:
+                            continue
+                        v[i] = round(float(np.expm1(lr)) * 100, 3)
+                        n[i] = int(pairs)
+                    horizons[str(months)] = {"v": v, "k": n}
                 out[f"{freq}|{gk}|{node}|{unit}"] = {
                     "p": g.period.tolist(),
                     "lvl": [None if pd.isna(v) else round(float(v), 4) for v in g.lvl],
                     "idx": [None if pd.isna(v) else round(float(v), 2) for v in g.idx],
                     "k": [0 if pd.isna(v) else int(v) for v in g.k],
                     "c": [0 if pd.isna(v) else int(v) for v in g.c],
+                    "chg": horizons,
                 }
     return out, geos
