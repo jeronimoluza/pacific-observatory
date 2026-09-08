@@ -577,10 +577,9 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
           aria-controls="i-hm" aria-label="How to read this" onclick="APP.info('hm')">i</button></h2>
         <div class="sub" id="hmSub">Country by category group, against the world median for the same items.</div>
       </div>
-      <div class="chips" role="group" aria-label="Reading">
-        <button class="chip on" id="hm-usd" onclick="APP.setHMode('usd')">US$ per unit</button>
-        <button class="chip" id="hm-idx" onclick="APP.setHMode('index')">vs world median</button>
-      </div>
+      <!-- One reading only. A US$-per-unit cell here was a median dollars-per-kilo
+           over a whole COICOP class, which is not a quantity anyone can price. -->
+      <span class="chip on" aria-hidden="true">vs world median</span>
       <div class="chips" role="group" aria-label="Filter by region">
         <button class="chip on" id="hreg-all" aria-pressed="true" onclick="APP.setHRegion(null)">All regions</button>
         <span id="hmRegions"></span>

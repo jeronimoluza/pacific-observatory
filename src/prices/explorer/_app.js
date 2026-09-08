@@ -18,7 +18,7 @@ var S = {
   view:"world", mode:"explore", cur:"usd", incModelled:false, measuredOnly:false,
   showFlagged:false, evidence:"solid", region:null, node:"01", unit:null, country:null,
   cmpMode:"abs", fxMode:"both", sortCmp:{k:"val",d:1}, sortCtry:{k:"ratio",d:1},
-  multi:[], hregion:null, hsort:{k:null, d:1}, hmode:"usd",
+  multi:[], hregion:null, hsort:{k:null, d:1},
   /* world time series: what to compare, at what category, unit, measure and window.
      gsel null means "whatever the default is here" — an explicit list only appears
      once the reader has actually chosen, so a category with thin coverage can never
@@ -1291,13 +1291,15 @@ function renderWaterfall() {
 /* Category down the side, country across the top -- the same orientation as
    the dashboard's heat table, so the two can be read side by side.
 
-   Two readings of the same cell. USD is the plain unit value a shopper would
-   recognise and is what the dashboard shows, so it leads. Index is the gap
-   from the world median for the same items, which is the only one of the two
-   that is comparable ACROSS rows: a kilo of tea and a kilo of rice are not
-   the same kind of number, but "38% dearer than the world" and "12% dearer"
-   are. Each row carries one unit, chosen as the unit most of that group's
-   prices are quoted in, so a column never mixes kilos with litres. */
+   One reading of a cell: the gap from the world median for the same items,
+   matched leaf by leaf. The US$-per-unit reading this table used to lead with
+   was a median dollars-per-kilo taken ACROSS a whole COICOP class, and there
+   is no such quantity -- the members of a class are not the same good, so
+   their unit values are not one distribution to take a median of. The gap is
+   built per leaf and only then averaged, so it survives the aggregation the
+   level does not. Each row still carries one unit, chosen as the unit most of
+   that group's prices are quoted in, so a column never mixes kilos with
+   litres. */
 function classCellsFor(ci) {
   var out = {};
   (byCountry.get(ci) || []).filter(keep).forEach(function (c) {
@@ -1306,7 +1308,7 @@ function classCellsFor(ci) {
     if (!cls) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
     (out[cls] = out[cls] || []).push({
-      unit: c.unit, usd: c.usd, r: g > 0 ? Math.log(c.usd / g) : null});
+      unit: c.unit, r: g > 0 ? Math.log(c.usd / g) : null});
   });
   return out;
 }
@@ -1323,7 +1325,6 @@ function setHtmlIfPresent(id, v) {
 }
 
 function renderHeatmap() {
-  var usdMode = S.hmode !== "index";
   var rowN = {}, byCty = {}, unitVotes = {};
 
   DATA.ctyIdx.forEach(function (slug, ci) {
@@ -1355,9 +1356,7 @@ function renderHeatmap() {
       if (same.length < HM_MIN_LEAVES) return;
       var gaps = same.map(function (x) { return x.r; })
                      .filter(function (v) { return v != null; });
-      cells[cls] = {usd:median(same.map(function (x) { return x.usd; })),
-                    r:gaps.length ? median(gaps) : null,
-                    n:same.length};
+      cells[cls] = {r:gaps.length ? median(gaps) : null, n:same.length};
       rowN[cls] = (rowN[cls] || 0) + 1;
     });
     c.cells = cells;
@@ -1396,7 +1395,7 @@ function renderHeatmap() {
   shown = sk && rows.indexOf(sk) >= 0
     ? sortRows(shown, function (r) {
         var c = r.cells[sk];
-        return c ? (usdMode ? c.usd : c.r) : null; }, "num", sd)
+        return c ? c.r : null; }, "num", sd)
     : sortRows(shown, function (r) { return r.level; }, "num", sd);
 
   var head = '<thead><tr><th class="ctry">Category</th>' +
@@ -1406,60 +1405,40 @@ function renderHeatmap() {
         arg(r.slug) + ')">' + esc(r.name) + "</th>"; }).join("") + "</tr></thead>";
 
   var body = "<tbody>" + rows.map(function (cls) {
-    var u = rowUnit[cls];
-    var vals = shown.map(function (r) { return r.cells[cls]; })
-      .filter(Boolean).map(function (c) { return usdMode ? c.usd : c.r; });
-    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
     var tr = '<tr><td class="ctry" title="' + esc(title(cls)) + " · " + rowN[cls] +
       ' countries" tabindex="0" role="button" data-act="1" onclick="APP.hsort(' + arg(cls) +
       ')">' + esc(shortTitle(cls)) +
-      '<span class="ru">' + esc(usdMode ? "US$/" + u : "vs world") + "</span>" +
+      '<span class="ru">vs world</span>' +
       (sk === cls ? (sd === 1 ? " ▼" : " ▲") : "") + "</td>";
     return tr + shown.map(function (r) {
       var cell = r.cells[cls];
       if (!cell) return '<td class="na" title="' + esc(r.name) + " · " + esc(title(cls)) +
         ': fewer than ' + HM_MIN_LEAVES + ' matched items"></td>';
-      var lab, bg, t;
-      if (usdMode) {
-        lab = cell.usd >= 100 ? cell.usd.toFixed(0) : cell.usd.toFixed(2);
-        t = hi > lo ? (cell.usd - lo) / (hi - lo) : 0.5;
-        bg = hexMix(HM_MID, t >= 0.5 ? DEAR : CHEAP, Math.pow(Math.abs(t - 0.5) * 2, 0.8));
-      } else {
-        if (cell.r == null) return '<td class="na" title="' + esc(r.name) +
-          ': no world median for these items"></td>';
-        var v = (Math.exp(cell.r) - 1) * 100;
-        lab = Math.abs(v) >= 999 ? (v > 0 ? "+999" : "-999")
-          : (v >= 0 ? "+" : "") + v.toFixed(0);
-        t = heatT(cell.r);
-        bg = heatColor(cell.r);
-      }
-      return '<td class="c" style="background:' + bg + ";color:" +
-        (t > 0.55 || t < 0.05 ? "#1b211f" : "#1b211f") + '" title="' + esc(r.name) + " · " +
-        esc(title(cls)) + ": " + (usdMode
-          ? "US$" + cell.usd.toFixed(2) + " per " + u
-          : lab + "% vs the world median") +
+      if (cell.r == null) return '<td class="na" title="' + esc(r.name) +
+        ': no world median for these items"></td>';
+      var v = (Math.exp(cell.r) - 1) * 100;
+      var lab = Math.abs(v) >= 999 ? (v > 0 ? "+999" : "-999")
+        : (v >= 0 ? "+" : "") + v.toFixed(0);
+      return '<td class="c" style="background:' + heatColor(cell.r) + ';color:#1b211f" title="' +
+        esc(r.name) + " · " + esc(title(cls)) + ": " + lab + "% vs the world median" +
         ", over " + cell.n + ' matched items">' + lab + "</td>"; }).join("") + "</tr>"; }).join("") +
     "</tbody>";
   document.getElementById("hmTbl").innerHTML = head + body;
 
-  document.getElementById("hmSub").innerHTML = usdMode
-    ? "Median US dollars per unit, by category group. Each row is quoted in one unit; "
-      + "colour runs cheapest to dearest <b>within</b> the row."
-    : "Each category group against the world median for the same items. "
-      + "Red is dearer than the world, blue cheaper.";
-  document.getElementById("hm-usd").className = "chip" + (usdMode ? " on" : "");
-  document.getElementById("hm-idx").className = "chip" + (usdMode ? "" : " on");
+  document.getElementById("hmSub").innerHTML =
+    "Each category group against the world median for the same items. " +
+    "Red is dearer than the world, blue cheaper.";
 
   var cut = Object.keys(rowN).filter(function (c) { return rows.indexOf(c) < 0; })
     .sort(function (a2, b2) { return rowN[b2] - rowN[a2]; });
   var stops = [-1, -0.6, -0.3, 0, 0.3, 0.6, 1];
   document.getElementById("hmRamp").innerHTML =
-    '<span class="lab">' + (usdMode ? "cheapest in the row" : "cheaper than the world") + "</span>" +
+    '<span class="lab">cheaper than the world</span>' +
     stops.map(function (t) { return '<i style="background:' +
       hexMix(HM_MID, t >= 0 ? DEAR : CHEAP, Math.pow(Math.abs(t), 0.8)) + '"></i>'; }).join("") +
-    '<span class="lab">' + (usdMode ? "dearest" : "dearer") + "</span>" +
+    '<span class="lab">dearer</span>' +
     '<span class="lab" style="margin-left:14px">' +
-    (usdMode ? "" : "full colour at &plusmn;100% &middot; ") +
+    'full colour at &plusmn;100% &middot; ' +
     'hatched: fewer than ' + HM_MIN_LEAVES + ' matched items &middot; ' + rows.length +
     " groups &times; " + shown.length + " countries" +
     (cut.length ? " &middot; " + cut.length + " groups too thinly covered to show, " +
@@ -1492,7 +1471,6 @@ var APP = {
     b.setAttribute("aria-expanded", open ? "true" : "false");
   },
   setHRegion:function (r) { S.hregion = r; this.render(); },
-  setHMode:function (m) { S.hmode = m; this.render(); },
   hsort:function (k) {
     if (S.hsort.k === k) S.hsort.d = -S.hsort.d;
     else S.hsort = {k:k, d:1};
