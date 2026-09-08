@@ -44,7 +44,7 @@ const chartScroll = document.getElementById("chartScroll");
 const axisSvg = document.getElementById("chartAxis");
 const discBox = document.getElementById("ycDiscovered");
 const sqrtBox = document.getElementById("ycSqrt");
-const ystate = { showDiscovered: true, sqrt: false, sig: "", pinned: null };
+const ystate = { showDiscovered: true, sqrt: false, sig: "", pinned: null, ro: null };
 
 function cleanText(s) { return (s || "").toString().replace(/\\s+/g, " ").trim(); }
 function escapeHTML(s) { return cleanText(s).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#039;"}[ch])); }
@@ -362,11 +362,28 @@ function render() {
     const sig = years[0] + ":" + years[years.length - 1] + ":" + width;
     if (sig !== ystate.sig) {
       ystate.sig = sig;
-      // The new width has not been laid out yet, so scrollWidth still reports
-      // the previous extent; pin to the right edge once a frame has passed.
-      const toRight = () => { chartScroll.scrollLeft = chartScroll.scrollWidth; };
-      toRight();
-      requestAnimationFrame(toRight);
+      // This first runs while the Policy tab is still display:none, where
+      // clientWidth and scrollWidth are both 0 and scrollLeft silently refuses
+      // to move -- so a one-shot pin leaves the chart at the left edge showing
+      // the oldest years. Retry until the element actually has a width: one
+      // frame covers the usual layout lag, and a ResizeObserver catches the
+      // hidden-to-visible transition when the reader opens the tab. Stop at the
+      // first success so scrolling left afterwards is not undone.
+      if (ystate.ro) { ystate.ro.disconnect(); ystate.ro = null; }
+      const toRight = () => {
+        if (!chartScroll.clientWidth) return false;
+        chartScroll.scrollLeft = chartScroll.scrollWidth;
+        return chartScroll.scrollWidth <= chartScroll.clientWidth
+            || chartScroll.scrollLeft > 0;
+      };
+      if (!toRight()) {
+        const settle = () => {
+          if (toRight() && ystate.ro) { ystate.ro.disconnect(); ystate.ro = null; }
+        };
+        ystate.ro = new ResizeObserver(settle);
+        ystate.ro.observe(chartScroll);
+        requestAnimationFrame(settle);
+      }
     }
   }
 }
