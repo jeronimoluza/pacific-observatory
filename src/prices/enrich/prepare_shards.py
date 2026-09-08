@@ -44,6 +44,12 @@ PREPARED_DIR = config.ENRICH_DIR / "_prepared"
 # What prepare_input actually reads. url_hash, product_id and wayback are in the
 # shard but unused here, so they are never paid for. input_hash IS read: it is
 # already in the shard, so prepare reuses it rather than hashing every raw row.
+#
+# This is the THIRD definition of the raw schema, after concatenate.OUTPUT_COLS
+# and shards.SHARD_COLUMNS, and it is an allowlist like the other two: a column
+# missing here is never read off the shard, and `_derive` then fills it empty.
+# That is how `unit` stayed dead after 71b1e9ef fixed the writer -- the column
+# reached disk and prepare still asked for the other thirteen.
 PREPARE_COLUMNS = (
     "input_hash",
     "product_name",
@@ -58,6 +64,7 @@ PREPARE_COLUMNS = (
     "channel",
     "category",
     "details",
+    "unit",
 )
 
 

@@ -239,3 +239,25 @@ def test_cross_country_urls_are_reported_when_planted(corpus):
     conflicts = prepare_shards.find_cross_country_urls(root=corpus)
     assert list(conflicts["product_url"]) == ["https://e/yam"]
     assert conflicts["countries"].iloc[0] == "ghana|tonga"
+
+
+def test_declared_unit_survives_the_read(tmp_path):
+    """`unit` has to be IN PREPARE_COLUMNS or prepare never sees it.
+
+    71b1e9ef fixed the writer half of this -- `unit` reaches the shard on disk.
+    It did not fix the reader: `prepare_country` passes this allowlist to
+    `read_shards`, so a column the tuple omits is simply not requested, and
+    `_derive` then fills it with "" (prepare.py:213). Every downstream consumer
+    still ran clean, which is why it went unnoticed twice: the declared-unit
+    fallback in classify (`parse_declared_unit`) got an empty string for every
+    production row and quietly contributed nothing.
+    """
+    frame = pd.DataFrame(rows("india", "sar", "south_asia", "agmarknet", [
+        ("Onion", "2500", ""),
+    ]))
+    frame["unit"] = "quintal (100 kg)"
+    shard = shards.write_shard(
+        frame, tmp_path / "sar" / "south_asia" / "india" / "agmarknet.parquet"
+    )
+    raw = shards.read_shard(shard, columns=list(prepare_shards.PREPARE_COLUMNS))
+    assert list(prepare_input(raw)["unit"]) == ["quintal (100 kg)"]
