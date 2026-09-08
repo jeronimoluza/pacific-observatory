@@ -109,14 +109,36 @@ def oof_tables(g: pd.DataFrame, scope: str, verbose: bool = True,
         with np.load(path, allow_pickle=False) as z:
             out = (z["classes"].astype(str), z["proba"], z["classes_lex"].astype(str),
                    z["proba_lex"], z["nbr_idx"], z["nbr_sim"])
-        x = embedding.embed_names(names) if keep_x else None
+        if keep_x:
+            if not spill.exists():
+                np.save(spill, embedding.embed_names(names))
+            x = np.load(spill, mmap_mode="r")
+        else:
+            x = None
         return (*out, x)
 
     if verbose:
         print(f"  embedding {len(names)} names "
               f"({'+'.join(b['tag'] for b in config.CLASSIFIER_EMBED_ENSEMBLE)})",
               flush=True)
-    x = embedding.embed_names(names)
+    # Reuse a spill from an interrupted run. The spill path is keyed by
+    # cache_key, which covers the block layout, the weights, the scope and the
+    # exact row set -- so a spill that exists is a spill of THIS matrix, and
+    # re-gathering it would repeat ~11 minutes of store reads for nothing.
+    if spill.exists():
+        if verbose:
+            print(f"  reusing spilled embedding matrix: {spill.name}", flush=True)
+        x = np.load(spill, mmap_mode="r")
+    else:
+        x = embedding.embed_names(names)
+    # Spill BEFORE the head fits, not after. The head is the largest consumer in
+    # the run, and holding an 8.5 GB anonymous float32 base alongside its float64
+    # fold slice is what put the 278k run past the box. Spilled, the base lives
+    # in reclaimable page cache and the fold slice is the only anonymous copy.
+    if not spill.exists():
+        np.save(spill, x)
+        del x
+        x = np.load(spill, mmap_mode="r")
 
     if head_path.exists():
         if verbose:
@@ -126,14 +148,14 @@ def oof_tables(g: pd.DataFrame, scope: str, verbose: bool = True,
     else:
         if verbose:
             print(f"  head OOF on {x.shape}", flush=True)
-        classes, proba = oof.oof_proba(x, y, verbose=verbose, sample_weight=sample_weight)
+        classes, proba = oof.oof_proba(
+            x, y, verbose=verbose, sample_weight=sample_weight,
+            checkpoint=str(CACHE_DIR / f"oofpart_{key}.npz"),
+        )
         np.savez(head_path, classes=classes, proba=proba)
 
-    # The lexical fold fits are the memory peak of the whole run: a dense
-    # n_features x n_classes coefficient matrix, of which L-BFGS keeps roughly
-    # twenty copies. The embedding matrix is not read again until the neighbour
-    # search, so spill it rather than hold 3.7 GB resident across that peak.
-    np.save(spill, x)
+    # Already spilled before the head fits; just drop the memmap handle so the
+    # lexical peak has the page cache to itself.
     del x
 
     if lex_path.exists():
@@ -160,7 +182,7 @@ def oof_tables(g: pd.DataFrame, scope: str, verbose: bool = True,
         print(f"  cached OOF tables -> {path.name}", flush=True)
     # Materialise only here, with the search's temporaries already released.
     return (classes, proba, classes_lex, proba_lex, nbr_idx, nbr_sim,
-            np.load(spill) if keep_x else None)
+            np.load(spill, mmap_mode="r") if keep_x else None)
 
 
 def gate_inputs(classes, proba, classes_lex, proba_lex, nbr_idx, nbr_sim, y, names):

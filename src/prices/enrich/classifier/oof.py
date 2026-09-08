@@ -14,20 +14,23 @@ turn a wrong high-confidence row into a right one (or reject it outright).
 from __future__ import annotations
 
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 
 from prices.enrich import vetoes
+from prices.enrich.classifier import minibatch
 
 C_INV_REG = 10.0
 MAX_ITER = 2000
+# Epochs for the mini-batch head. See `minibatch` for why LBFGS is gone.
+HEAD_EPOCHS = 120
 OOF_FOLDS = 5
 OOF_SEED = 42
 TARGET_PRECISION = 0.98
 
 
 def oof_proba(x: np.ndarray, y: np.ndarray, verbose: bool = False,
-              sample_weight: np.ndarray | None = None):
+              sample_weight: np.ndarray | None = None,
+              checkpoint: str | None = None):
     """Out-of-fold class list and the full (N, n_classes) probability table.
 
     The table is kept whole rather than collapsed to argmax because the gate needs
@@ -40,19 +43,46 @@ def oof_proba(x: np.ndarray, y: np.ndarray, verbose: bool = False,
     """
     import time
 
+    import os as _os
+    from pathlib import Path as _Path
+
     skf = StratifiedKFold(OOF_FOLDS, shuffle=True, random_state=OOF_SEED)
     classes = np.array(sorted(set(y)))
     idx = {c: i for i, c in enumerate(classes)}
     proba = np.zeros((len(y), len(classes)))
+    done = np.zeros(OOF_FOLDS, bool)
+
+    # Resume. The split is a pure function of (OOF_FOLDS, OOF_SEED, y), so a
+    # fold an earlier process finished is the same fold now. A run that dies in
+    # fold 4 used to cost all five.
+    if checkpoint and _Path(checkpoint).exists():
+        with np.load(checkpoint, allow_pickle=False) as z:
+            if list(z["classes"].astype(str)) == list(classes.astype(str)):
+                proba, done = z["proba"], z["done"]
+                if verbose and done.any():
+                    print(f"    resuming: folds {list(np.where(done)[0] + 1)} already done",
+                          flush=True)
+
     for k, (tr, te) in enumerate(skf.split(x, y), 1):
+        if done[k - 1]:
+            continue
         t0 = time.time()
-        w = None if sample_weight is None else sample_weight[tr]
-        lr = LogisticRegression(max_iter=MAX_ITER, C=C_INV_REG).fit(
-            x[tr], y[tr], sample_weight=w
+        # Seeded per fold so the folds are independent draws but the run as a
+        # whole still reproduces exactly.
+        head = minibatch.fit_head(
+            x, y, tr, seed=OOF_SEED + k, epochs=HEAD_EPOCHS,
+            sample_weight=sample_weight, c_inv_reg=C_INV_REG, verbose=verbose,
         )
-        p = lr.predict_proba(x[te])
-        for j, c in enumerate(lr.classes_):
+        p = minibatch.predict_proba_indexed(x, te, head.w, head.b)
+        for j, c in enumerate(head.classes_):
             proba[te, idx[c]] = p[:, j]
+        done[k - 1] = True
+        if checkpoint:
+            # Atomic: a crash mid-write must not leave a torn file the next run
+            # trusts.
+            tmp = str(checkpoint) + ".tmp.npz"
+            np.savez(tmp, classes=classes, proba=proba, done=done)
+            _os.replace(tmp, checkpoint)
         if verbose:
             print(f"    fold {k}/{OOF_FOLDS} {time.time() - t0:.0f}s", flush=True)
     return classes, proba

@@ -58,8 +58,9 @@ def train_classifier_command(scope, bless):
     click.echo(
         f"  fit: {tr['n_train']} rows, {tr['n_classes']} classes, "
         f"head accuracy {tr['head_accuracy']:.1%}, tau={tr['tau']} "
-        f"(raw tau {tr['tau_raw']}), {tr['n_iter']} iters "
-        f"(converged={tr['converged']}), oof={tr['oof_secs']}s fit={tr['fit_secs']}s"
+        f"(raw tau {tr['tau_raw']}), {tr['epochs']} epochs "
+        f"(final loss {tr['loss_per_epoch'][-1]}), "
+        f"oof={tr['oof_secs']}s fit={tr['fit_secs']}s"
     )
     metrics = head_eval.run(scope=scope)
     (version_dir(version) / EVAL_METRICS_FILE).write_text(

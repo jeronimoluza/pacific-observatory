@@ -28,7 +28,6 @@ import time
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 
 from prices.enrich import config
 from prices.enrich.classifier import (
@@ -37,13 +36,13 @@ from prices.enrich.classifier import (
     POOL_FILE,
     gate,
     lexical,
+    minibatch,
     oof,
     tables,
     version_dir,
 )
 
 C_INV_REG = oof.C_INV_REG
-MAX_ITER = oof.MAX_ITER
 OOF_FOLDS = oof.OOF_FOLDS
 OOF_SEED = oof.OOF_SEED
 TARGET_PRECISION = oof.TARGET_PRECISION
@@ -93,8 +92,11 @@ def fit(version: str, scope: str | None = None, verbose: bool = True,
 
     if verbose:
         print("  fitting final head / lexical / gate on all rows", flush=True)
-    clf = LogisticRegression(max_iter=MAX_ITER, C=C_INV_REG).fit(
-        x, y, sample_weight=sample_weight
+    # Streams batches off the memmap rather than materialising all 278k rows:
+    # the float64 matrix this replaced was 17 GB on a 26 GB box.
+    clf = minibatch.fit_head(
+        x, y, seed=oof.OOF_SEED, epochs=oof.HEAD_EPOCHS,
+        sample_weight=sample_weight, c_inv_reg=C_INV_REG, verbose=verbose,
     )
     lex_bundle = lexical.fit(names, y)
     gate_bundle = gate.fit(feats, leaf_pred, correct)
@@ -146,8 +148,8 @@ def fit(version: str, scope: str | None = None, verbose: bool = True,
         "tau_raw": round(float(tau_raw), 4),
         "precision": oof_summary["precision"],
         "coverage": oof_summary["coverage"],
-        "n_iter": int(np.max(clf.n_iter_)),
-        "converged": bool(np.max(clf.n_iter_) < MAX_ITER),
+        "epochs": clf.diag["epochs"],
+        "loss_per_epoch": [round(v, 5) for v in clf.diag["loss_per_epoch"]],
         "oof_secs": round(oof_secs, 1),
         "fit_secs": round(fit_secs, 1),
     }
