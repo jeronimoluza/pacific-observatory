@@ -24,6 +24,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from prices.enrich import shards
 from prices.enrich.stages import concatenate
 
 pytestmark = pytest.mark.unit
@@ -74,11 +75,14 @@ def test_unit_survives_the_column_projection(tmp_path, monkeypatch):
     source_dir = tmp_path / "sar" / "south_asia" / "india" / "agmarknet"
     _write_price_obs(source_dir / "price_observations.csv")
 
-    df = concatenate._load_source(
-        source_dir, "sar", "south_asia", "india", "agmarknet"
+    shard = tmp_path / "agmarknet.parquet"
+    assert (
+        concatenate._write_source_shard(
+            source_dir, "sar", "south_asia", "india", "agmarknet", shard
+        )
+        == 2
     )
-    assert df is not None
-    assert list(df["unit"]) == ["quintal (100 kg)", "kg"]
+    assert list(shards.read_shard(shard)["unit"]) == ["quintal (100 kg)", "kg"]
 
 
 def test_a_source_with_no_unit_column_still_loads(tmp_path, monkeypatch):
@@ -104,6 +108,11 @@ def test_a_source_with_no_unit_column_still_loads(tmp_path, monkeypatch):
         + "\n",
         encoding="utf-8",
     )
-    df = concatenate._load_source(source_dir, "eap", "pacific", "fiji", "shop_a")
-    assert df is not None
-    assert list(df["unit"]) == [""]
+    shard = tmp_path / "shop_a.parquet"
+    assert (
+        concatenate._write_source_shard(
+            source_dir, "eap", "pacific", "fiji", "shop_a", shard
+        )
+        == 1
+    )
+    assert list(shards.read_shard(shard)["unit"]) == [""]

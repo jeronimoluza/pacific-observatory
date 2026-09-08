@@ -121,7 +121,7 @@ def test_second_run_skips_unchanged_sources(env, caplog):
 def test_a_legacy_csv_shard_is_converted_not_rederived(env, monkeypatch):
     """The format change alone must not re-derive every source from 43 GB of
     scrape output. An unchanged source whose shard is still CSV converts in
-    place, and _load_source is never reached."""
+    place, and _write_source_shard is never reached."""
     concatenate.run()
     for shard in list(env["per_source"].rglob("*.parquet")):
         shards.coerce(shards.read_shard(shard)).to_csv(
@@ -130,9 +130,11 @@ def test_a_legacy_csv_shard_is_converted_not_rederived(env, monkeypatch):
         shard.unlink()
 
     def explode(*args, **kwargs):
-        raise AssertionError("_load_source was called for an unchanged source")
+        raise AssertionError(
+            "_write_source_shard was called for an unchanged source"
+        )
 
-    monkeypatch.setattr(concatenate, "_load_source", explode)
+    monkeypatch.setattr(concatenate, "_write_source_shard", explode)
     concatenate.run()
 
     converted = env["per_source"] / "eap/pacific/fiji/shop_a.parquet"

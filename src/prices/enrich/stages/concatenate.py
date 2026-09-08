@@ -39,6 +39,17 @@ product_name_original is NOT emitted here — prepare derives it. Currency for
 Common Crawl rows (which often lack a currency field) is back-filled with the
 modal currency observed in the same source's jsonl rows; rows with no
 resolvable currency are dropped.
+
+A source is built in two streaming passes over a temporary spill file rather
+than accumulated whole. The modal back-fill is the reason there are two: it
+needs a count over every non-empty currency in the source before any row can be
+finalised, so nothing can be written until the last file has been read. Holding
+the source as a list of dicts to bridge that gap made peak memory one whole
+source — 19.4M rows for yahoo_shopping, 38.5M once the Common Crawl ingest
+lands — on a 26 GB box. Pass 1 streams the emitters into the spill and pass 2
+streams it back, so peak memory is one batch either way. The spill costs one
+extra Parquet round-trip; re-reading the source's 8,160 gzipped inputs a second
+time to pre-count currencies would cost a second JSON parse of all of it.
 """
 
 from __future__ import annotations
@@ -47,10 +58,13 @@ import hashlib
 import json
 import logging
 from collections import Counter
+from itertools import batched
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Iterable, Iterator, Optional
 
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 import yaml
 
 from prices import partition
@@ -67,6 +81,17 @@ STATE_FILE = RAW_OUT_DIR / ".state.json"
 # Shards are Parquet: a CSV shard has no types, so every reader re-infers
 # `price` from the file's own contents. See prices.enrich.shards.
 SHARD_SUFFIX = ".parquet"
+
+# The spill a source is streamed through, written beside its shard so both land
+# on the same filesystem. Deliberately not `.parquet`: `partition.select` globs
+# the shard tree for that suffix and would read a half-written spill as a shard.
+SPILL_SUFFIX = ".spill"
+
+# Rows per batch, in both passes. Bounds peak memory at one batch instead of
+# one source.
+BATCH_ROWS = 200_000
+
+REQUIRED_COLS = ["product_name", "price", "currency", "country"]
 
 OUTPUT_COLS = [
     "url_hash",
@@ -91,6 +116,30 @@ OUTPUT_COLS = [
 # the classifier corpus (see _build_classifier_csv_map). Shared here so a
 # future rename of the marker only needs one edit.
 CLASSIFIER_MARKER = "classifier"
+
+
+# Every column the emitters below can produce. `unit` comes only from
+# `_emit_price_obs`, so the emitters disagree about the key set; pinning the
+# columns is what lets batches from different shapes share one spill schema.
+EMITTED_COLS = (
+    "product_name",
+    "price",
+    "currency",
+    "date",
+    "product_url",
+    "product_id",
+    "url_hash",
+    "category",
+    "details",
+    "unit",
+)
+
+# `wayback` is the one non-text emitted column: the emitters set a real bool and
+# never leave it null.
+SPILL_SCHEMA = pa.schema(
+    [pa.field(name, pa.string()) for name in EMITTED_COLS]
+    + [pa.field("wayback", pa.bool_())]
+)
 
 
 _CHANNEL_MAP_CACHE: Optional[dict[tuple[str, str], str]] = None
@@ -301,91 +350,244 @@ def _signature(files: list[tuple[str, Path]]) -> tuple[float, int]:
     return (max(mtimes), len(files))
 
 
-def _load_source(
+def _iter_rows(files: list[tuple[str, Path]], stats: Counter) -> Iterator[dict]:
+    """Every raw row of a source, in file order, one at a time."""
+    for shape, path in files:
+        if shape == "jsonl":
+            yield from _emit_jsonl(path, False, stats)
+        elif shape == "wayback":
+            yield from _emit_jsonl(path, True, stats)
+        elif shape == "cc":
+            yield from _emit_cc(path, stats)
+        elif shape == "cc_jsonl":
+            yield from _emit_cc_jsonl(path, stats)
+        elif shape == "price_obs":
+            yield from _emit_price_obs(path)
+
+
+def _text(value):
+    """``str(value)``, with every null shape mapped to None.
+
+    The same mapping `shards._as_text` applies, hoisted to the row level so a
+    batch can be rendered without waiting for the rest of the source."""
+    if value is None:
+        return None
+    if isinstance(value, float) and value != value:  # NaN, incl. numpy's
+        return None
+    return str(value)
+
+
+def _as_text_column(series: pd.Series) -> pd.Series:
+    if series.dtype == object and not series.isna().any():
+        if pd.api.types.infer_dtype(series, skipna=True) in ("string", "empty"):
+            # Already str-or-nothing, so str() is the identity. This is most of
+            # the corpus and skipping the elementwise map here is worth the check.
+            return series
+    return series.map(_text)
+
+
+class _ColumnTypes:
+    """The dtype `pd.DataFrame(every_row)` would have inferred, per column.
+
+    Batches are typed one at a time and pandas types a column from what it can
+    see, so a column that is int64 in one batch is float64 over the whole source
+    as soon as another batch holds a float or a null — and float64 renders 12 as
+    "12.0" where int64 and object render it as "12". Recording the per-batch
+    kinds is what lets pass 2 reproduce the whole-source rendering exactly."""
+
+    def __init__(self) -> None:
+        self.kinds: dict[str, set[str]] = {c: set() for c in EMITTED_COLS}
+        self.has_null: dict[str, bool] = {c: False for c in EMITTED_COLS}
+
+    def observe(self, frame: pd.DataFrame) -> None:
+        for col in EMITTED_COLS:
+            na = frame[col].isna()
+            if na.any():
+                self.has_null[col] = True
+            if not na.all():
+                # An all-null batch says nothing about the column's type: pandas
+                # types it object here and float64 there depending on nothing.
+                self.kinds[col].add(frame[col].dtype.kind)
+
+    def float_columns(self) -> list[str]:
+        return [
+            col
+            for col in EMITTED_COLS
+            if self.kinds[col]
+            and self.kinds[col] <= {"i", "u", "f"}
+            and ("f" in self.kinds[col] or self.has_null[col])
+        ]
+
+
+def _as_float_text(series: pd.Series) -> pd.Series:
+    """Re-render an all-numeric column's text the way float64 renders it.
+
+    The `astype` is load-bearing: `to_numeric` reads a batch of all-integer text
+    back as int64, which renders 13 as "13" — the very thing this exists to
+    undo."""
+    return pd.to_numeric(series, errors="coerce").astype("float64").map(_text)
+
+
+def _spill_source(
+    files: list[tuple[str, Path]], spill_path: Path, stats: Counter
+) -> tuple[int, _ColumnTypes]:
+    """Pass 1: stream every emitted row into `spill_path`, recording the types
+    pandas inferred. Returns (rows written, types)."""
+    n_rows = 0
+    types = _ColumnTypes()
+    columns = list(EMITTED_COLS) + ["wayback"]
+    writer = pq.ParquetWriter(spill_path, SPILL_SCHEMA, compression="zstd")
+    try:
+        for batch in batched(_iter_rows(files, stats), BATCH_ROWS):
+            frame = pd.DataFrame(list(batch), columns=columns)
+            types.observe(frame)
+            out = pd.DataFrame(
+                {col: _as_text_column(frame[col]) for col in EMITTED_COLS}
+            )
+            out["wayback"] = frame["wayback"]
+            writer.write_table(
+                pa.Table.from_pandas(out, schema=SPILL_SCHEMA, preserve_index=False)
+            )
+            n_rows += len(batch)
+    finally:
+        writer.close()
+    return n_rows, types
+
+
+def _modal_currency(spill_path: Path, float_cols: list[str]) -> Optional[str]:
+    """The most common non-empty currency in the source, counted in row order so
+    a tie breaks on first appearance exactly as `Counter.most_common` did over
+    the whole frame."""
+    counter: Counter = Counter()
+    for batch in pq.ParquetFile(spill_path).iter_batches(
+        batch_size=BATCH_ROWS, columns=["currency"]
+    ):
+        series = batch.column(0).to_pandas()
+        if "currency" in float_cols:
+            series = _as_float_text(series)
+        series = series[series.notna()]
+        counter.update(series[series.str.len() > 0])
+    if not counter:
+        return None
+    return counter.most_common(1)[0][0]
+
+
+def _finalise_shard(
+    spill_path: Path,
+    shard_path: Path,
+    float_cols: list[str],
+    modal_currency: Optional[str],
+    region: str,
+    subregion: str,
+    country: str,
+    source: str,
+) -> tuple[int, int]:
+    """Pass 2: stream the spill back, apply the modal back-fill and the
+    required-field screen, and write the shard. Returns (written, dropped)."""
+    channel = _channel_for(country, source)
+    n_rows = n_dropped = 0
+    writer = None
+    try:
+        for batch in pq.ParquetFile(spill_path).iter_batches(batch_size=BATCH_ROWS):
+            df = batch.to_pandas()
+            for col in float_cols:
+                df[col] = _as_float_text(df[col])
+
+            # Back-fill currency for rows that lack it, using the modal currency
+            # observed in this source's other rows.
+            if modal_currency is not None:
+                currency = df["currency"]
+                df["currency"] = currency.where(
+                    currency.notna() & (currency.str.len() > 0), modal_currency
+                )
+
+            df["country"] = country
+            df["source"] = source
+            df["region"] = region
+            df["subregion"] = subregion
+            df["channel"] = channel
+            for col in ("category", "details", "unit"):
+                df[col] = df[col].fillna("").astype(str)
+
+            before = len(df)
+            df = df.dropna(subset=REQUIRED_COLS)
+            df = df[df["product_name"].astype(str).str.len() > 0]
+            n_dropped += before - len(df)
+            if df.empty:
+                continue
+            table = pa.Table.from_pandas(
+                shards.coerce(df[OUTPUT_COLS]),
+                schema=shards.SHARD_SCHEMA,
+                preserve_index=False,
+            )
+            if writer is None:
+                # Opened lazily so a source that screens out entirely leaves no
+                # shard behind, exactly as returning None used to.
+                shard_path.parent.mkdir(parents=True, exist_ok=True)
+                writer = pq.ParquetWriter(
+                    shard_path, shards.SHARD_SCHEMA, compression="zstd"
+                )
+            writer.write_table(table)
+            n_rows += len(df)
+    finally:
+        if writer is not None:
+            writer.close()
+    return n_rows, n_dropped
+
+
+def _write_source_shard(
     source_dir: Path,
     region: str,
     subregion: str,
     country: str,
     source: str,
+    shard_path: Path,
     run_stats: Optional[Counter] = None,
-) -> Optional[pd.DataFrame]:
+) -> int:
+    """Build one source's shard at `shard_path`. Returns the rows written; 0
+    means nothing was written and no shard exists for this source."""
     files = _iter_source_files(source_dir, country, source)
     if not files:
-        return None
+        return 0
     stats: Counter = Counter()
-    rows: list[dict] = []
-    for shape, path in files:
-        if shape == "jsonl":
-            rows.extend(_emit_jsonl(path, False, stats))
-        elif shape == "wayback":
-            rows.extend(_emit_jsonl(path, True, stats))
-        elif shape == "cc":
-            rows.extend(_emit_cc(path, stats))
-        elif shape == "cc_jsonl":
-            rows.extend(_emit_cc_jsonl(path, stats))
-        elif shape == "price_obs":
-            rows.extend(_emit_price_obs(path))
-    n_out_of_stock = stats["out_of_stock"]
-    if n_out_of_stock:
-        logger.info(
-            "[concatenate] %s/%s: dropped %d out-of-stock rows",
+    shard_path.parent.mkdir(parents=True, exist_ok=True)
+    spill_path = shard_path.with_suffix(SPILL_SUFFIX)
+    try:
+        n_spilled, types = _spill_source(files, spill_path, stats)
+        n_out_of_stock = stats["out_of_stock"]
+        if n_out_of_stock:
+            logger.info(
+                "[concatenate] %s/%s: dropped %d out-of-stock rows",
+                country,
+                source,
+                n_out_of_stock,
+            )
+            if run_stats is not None:
+                run_stats["rows"] += n_out_of_stock
+                run_stats["sources"] += 1
+        if not n_spilled:
+            return 0
+        float_cols = types.float_columns()
+        n_rows, n_dropped = _finalise_shard(
+            spill_path,
+            shard_path,
+            float_cols,
+            _modal_currency(spill_path, float_cols),
+            region,
+            subregion,
             country,
             source,
-            n_out_of_stock,
         )
-        if run_stats is not None:
-            run_stats["rows"] += n_out_of_stock
-            run_stats["sources"] += 1
-    if not rows:
-        return None
-    df = pd.DataFrame(rows)
-
-    # Back-fill currency for rows that lack it, using the modal currency
-    # observed in this source's other rows.
-    if "currency" in df.columns:
-        present = df["currency"].dropna()
-        present = present[present.astype(str).str.len() > 0]
-        if not present.empty:
-            modal = Counter(present.astype(str)).most_common(1)[0][0]
-            df["currency"] = df["currency"].where(
-                df["currency"].notna() & (df["currency"].astype(str).str.len() > 0),
-                modal,
-            )
-
-    df["country"] = country
-    df["source"] = source
-    df["region"] = region
-    df["subregion"] = subregion
-    df["channel"] = _channel_for(country, source)
-    if "category" not in df.columns:
-        df["category"] = ""
-    else:
-        df["category"] = df["category"].fillna("").astype(str)
-    if "details" not in df.columns:
-        df["details"] = ""
-    else:
-        df["details"] = df["details"].fillna("").astype(str)
-    if "unit" not in df.columns:
-        df["unit"] = ""
-    else:
-        df["unit"] = df["unit"].fillna("").astype(str)
-
-    required = ["product_name", "price", "currency", "country"]
-    before = len(df)
-    df = df.dropna(subset=required)
-    df = df[df["product_name"].astype(str).str.len() > 0]
-    dropped = before - len(df)
-    if dropped:
+    finally:
+        spill_path.unlink(missing_ok=True)
+    if n_dropped:
         logger.debug(
-            "[%s/%s] dropped %d rows missing required fields", country, source, dropped
+            "[%s/%s] dropped %d rows missing required fields",
+            country,
+            source,
+            n_dropped,
         )
-    if df.empty:
-        return None
-
-    for col in OUTPUT_COLS:
-        if col not in df.columns:
-            df[col] = None
-    return df[OUTPUT_COLS]
+    return n_rows
 
 
 def _walk_sources(root: Path):
@@ -507,15 +709,20 @@ def run(
                 n_converted += 1
                 continue
 
-        df = _load_source(
-            source_dir, region, subregion, country, source, run_stats=run_stats
+        n_rows = _write_source_shard(
+            source_dir,
+            region,
+            subregion,
+            country,
+            source,
+            shard_path,
+            run_stats=run_stats,
         )
-        if df is None:
+        if not n_rows:
             continue
-        shards.write_shard(df, shard_path)
         new_state[key] = list(sig)
         n_refreshed += 1
-        logger.info("[concatenate] %s: %d rows", key, len(df))
+        logger.info("[concatenate] %s: %d rows", key, n_rows)
 
     logger.info(
         "[concatenate] sources: %d total, %d refreshed, %d unchanged, %d converted",
