@@ -36,12 +36,21 @@ def rows(country, region, subregion, source, specs):
 
 
 @pytest.fixture(autouse=True)
-def union_target(tmp_path, monkeypatch) -> Path:
+def union_target(tmp_path) -> Path:
     """Keep the default products_input.parquet target inside tmp_path so no
-    test can write into the real data tree."""
+    test can write into the real data tree.
+
+    Its OWN MonkeyPatch, not the `monkeypatch` fixture. That fixture is one
+    instance shared by everything in a test function, so a test calling
+    `monkeypatch.undo()` to drop its own patch drops this one too -- and the
+    next `prepare_shards.run()` in that test writes the union over the real
+    data/prices/enrich/products_input.parquet. Three tests here undo a patch
+    mid-body, and running this file in a working checkout replaced a 7.3 GB
+    production products_input.parquet with the six-row fiji/ghana fixture."""
     target = tmp_path / "products_input.parquet"
-    monkeypatch.setattr(prepare_shards.config, "PRODUCTS_INPUT_PARQUET", target)
-    return target
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(prepare_shards.config, "PRODUCTS_INPUT_PARQUET", target)
+        yield target
 
 
 @pytest.fixture
