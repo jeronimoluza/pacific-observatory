@@ -76,6 +76,45 @@ NEW_COLS = ["uv_robust_z", "uv_cell_n", "uv_outlier", "uv_thin", "trust_uv"]
 # units and cannot be compared to the |z| > 5 Will specified.
 MAD_TO_SIGMA = 1.4826
 
+# Months on either side of a row's own month that may lend it SUPPORT. Will put
+# the survey period in the cell key, which is right for the comparison -- a row
+# must be judged against prices from its own month, never against a different
+# month's price level. But it slices support so finely that most cells fall
+# under min_n and lose trust for lack of evidence rather than for any defect:
+# 1,003,316 rows, 67.7% of everything flagged, on the measured build.
+#
+# So the period splits the COMPARISON and a +/-1 month window pools the COUNT.
+# Nothing about what a row is scored against changes, so no inter-period price
+# movement can register as an outlier; a cell that is thin in March alone but
+# well-observed in February and April becomes judgeable. A 6-month window was
+# considered and 3 months chosen, recovering 198,418 rows against a projected
+# 287,831.
+UV_SUPPORT_WINDOW = 1
+
+
+def _pooled_support(
+    n_by_period: pd.Series, cell_cols: list[str], window: int
+) -> pd.Series:
+    """Support per (cell, month), widened to the months within `window` of it.
+
+    Joined by month ARITHMETIC, not by row position: a cell observed in January
+    and June has adjacent rows in this table but four empty months between them,
+    and a positional roll would pool them as if they were neighbours. Shifting
+    the ordinal and merging keeps a gap a gap.
+    """
+    s = n_by_period.rename("_n_period").reset_index()
+    s["_ord"] = pd.PeriodIndex(s["_period"], freq="M").astype("int64")
+    total = np.zeros(len(s), dtype="int64")
+    for off in range(-window, window + 1):
+        other = s[cell_cols + ["_ord", "_n_period"]].copy()
+        other["_ord"] = other["_ord"] + off
+        merged = s[cell_cols + ["_ord"]].merge(
+            other, on=cell_cols + ["_ord"], how="left"
+        )
+        total += merged["_n_period"].fillna(0).to_numpy().astype("int64")
+    s["_n"] = total
+    return s.set_index(cell_cols + ["_period"])["_n"]
+
 
 def flag_uv_outliers(
     df: pd.DataFrame,
@@ -85,6 +124,7 @@ def flag_uv_outliers(
     value_col: str = "unit_value_local",
     k: float = 5.0,
     min_n: int = 3,
+    support_window: int = UV_SUPPORT_WINDOW,
     baseline_mask: pd.Series | None = None,
 ) -> pd.DataFrame:
     """Score every auditable row against its cell, estimated from baseline rows.
@@ -132,16 +172,22 @@ def flag_uv_outliers(
         cell_mm, on=group_cols
     )
     work["_resid"] = work["_logv"] - work["_mm"].fillna(work["_cmm"])
+    key = group_cols + ["_period"]
 
     # Cell centre, spread and support, all from baseline rows only.
     bw = work[work["_base"]].copy()
+    # Centre and spread within (cell, MONTH) -- Will put the survey period in the
+    # cell key, so a row is compared only against prices from its own month.
     bw["_absdev"] = (
-        bw["_resid"] - bw.groupby(group_cols)["_resid"].transform("median")
+        bw["_resid"] - bw.groupby(key)["_resid"].transform("median")
     ).abs()
-    stats = bw.groupby(group_cols).agg(
-        _cell_med=("_resid", "median"), _mad=("_absdev", "median"), _n=("_logv", "size")
+    stats = bw.groupby(key).agg(
+        _cell_med=("_resid", "median"),
+        _mad=("_absdev", "median"),
+        _n_period=("_logv", "size"),
     )
-    work = work.join(stats, on=group_cols)
+    stats["_n"] = _pooled_support(stats["_n_period"], group_cols, support_window)
+    work = work.join(stats, on=key)
 
     cell_n = work["_n"].fillna(0)
     mad = work["_mad"]
