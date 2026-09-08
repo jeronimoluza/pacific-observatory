@@ -577,6 +577,44 @@ def prices_explorer(region, out_path):
     _explorer_run(out_path, region)
 
 
+@prices.command("cpi-benchmark")
+@_region_opt
+def prices_cpi_benchmark(region):
+    """Refresh the official-CPI benchmark table from the IMF.
+
+    Writes data/cpi/official_cpi_monthly.csv -- one tidy
+    (iso3, period, series, index_value) row per country, month and COICOP
+    division, at whatever granularity the IMF publishes for that country
+    (CP01..CP12 plus _T for all items). Standalone: the explorer build reads
+    this file directly, so nothing in the enrich pipeline is involved.
+
+    Responses are cached per country under data/cpi/imf/, so a re-run only
+    fetches what is missing. Network required.
+    """
+    import logging
+
+    from prices.explorer.cpi import refresh
+    from prices.explorer.sources import load_country_meta
+
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
+    meta = load_country_meta()
+    if region:
+        from prices.explorer.aggregate import _region_label
+
+        label = _region_label(region)
+        meta = {s: m for s, m in meta.items() if m["region"] == label}
+    iso3s = sorted({m["iso3"] for m in meta.values() if m["iso3"]})
+    if not iso3s:
+        raise click.ClickException("no countries selected")
+    out = refresh(iso3s)
+    click.echo(
+        f"{len(out):,} rows · {out.iso3.nunique()} countries · "
+        f"{out.series.nunique()} COICOP series"
+    )
+
+
 @prices.command("consumable")
 def prices_consumable():
     """Regenerate the curated ~10k consumable dataset family.

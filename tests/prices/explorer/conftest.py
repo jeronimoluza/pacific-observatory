@@ -49,6 +49,10 @@ BRANCHES = {
     "01.1.9.1": "Other food products",
 }
 N_COUNTRIES = 20
+# monthly compounding factors behind the fixture's FX and official-CPI series
+FX_DRIFT = 1.005
+CPI_HEADLINE = 1.004
+CPI_FOOD = 1.007
 
 
 def _tax() -> dict:
@@ -278,7 +282,41 @@ def make_payload() -> dict:
         "chain": chain,
         "geos": geos,
         "gseries": gseries,
-        "fx": {slug: {"p": periods, "r": [1.0] * len(periods)} for slug in cty_idx},
+        # c00's currency slides 0.5% a month against the dollar; everyone
+        # else's is pegged. A conversion that is a no-op cannot be told from a
+        # conversion that never ran.
+        "fx": {
+            slug: {
+                "p": periods,
+                "r": [
+                    round(FX_DRIFT**k, 8) if slug == "c00" else 1.0
+                    for k in range(len(periods))
+                ],
+            }
+            for slug in cty_idx
+        },
+        "cpi": {
+            "c00": {
+                "_T": {
+                    "p": periods,
+                    "v": [
+                        round(100.0 * CPI_HEADLINE**k, 6) for k in range(len(periods))
+                    ],
+                },
+                "CP01": {
+                    "p": periods,
+                    "v": [round(100.0 * CPI_FOOD**k, 6) for k in range(len(periods))],
+                },
+            }
+        },
+        "cpiMeta": {
+            "labels": {
+                "_T": "All items",
+                "CP01": "Food and non-alcoholic beverages",
+            },
+            "division": {"CP01": "01"},
+            "source": "IMF, Consumer Price Index (IMF.STA:CPI), monthly index",
+        },
         "samples": {},
         "qa": {
             "status": {"trusted": 100000},

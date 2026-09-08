@@ -390,6 +390,10 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
           title="A model-fitted level, not an observed median">Price level US$ (fitted)</button>
         <button id="wv-index" onclick="APP.setGMeasure('index')">Index, base = 100</button>
       </div>
+      <span class="ctllab" id="lab-cpi">Benchmark</span>
+      <div class="seg" role="group" aria-labelledby="lab-cpi">
+        <button id="wv-cpi" aria-pressed="false" onclick="APP.toggleCPI()">Official CPI</button>
+      </div>
       <span class="ctllab" id="lab-per">Period</span>
       <div class="seg" role="group" aria-labelledby="lab-per">
         <button id="wf-Q" class="on" aria-pressed="true" onclick="APP.setGFreq('Q')">Quarterly</button>

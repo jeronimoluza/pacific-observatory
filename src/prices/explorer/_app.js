@@ -23,7 +23,7 @@ var S = {
      gsel null means "whatever the default is here" — an explicit list only appears
      once the reader has actually chosen, so a category with thin coverage can never
      silently strike a place off the list for good. */
-  gmode:"region", gsel:null, gnode:"01", gunit:0, gmeasure:"chg12",
+  gmode:"region", gsel:null, gnode:"01", gunit:0, gmeasure:"chg12", gcpi:false,
   gfreq:"Q", gsmooth:0, gwin:36
 };
 var charts = {};
@@ -384,6 +384,61 @@ function gvalue(s, i, months, f) {
   var c = s.chg && s.chg[horizonKey(months, f)];
   return c ? c.v[i] : null;
 }
+/* ---- official CPI overlay ------------------------------------------------
+   An official CPI is a LOCAL-CURRENCY index and every series this dashboard
+   builds is in US dollars, so laying one over the other unconverted would put
+   the exchange rate inside the comparison — the exact misreading the Currency
+   effects tab exists to prevent.
+
+   The fix is the FX identity the Trends tab already uses, P_local = P_usd x FX,
+   in its change form:  d ln P_local = d ln P_usd + d ln FX. Applied to OUR
+   line, not to the official one: the published index is the thing being
+   benchmarked against and must not be the thing that moves.
+
+   It does not generalise. A region or the world spans many currencies and has
+   no exchange rate to apply, so the overlay is country-mode only and switches
+   the whole chart into local terms while it is on, rather than drawing one
+   converted line among unconverted ones. */
+function lagPeriods(months, f) {
+  return f === "Q" ? (months === 1 ? 1 : months / 3) : months;
+}
+/* monthly values collapsed onto the chart's own period grain */
+function toGrain(ps, vs, f) {
+  var acc = {}, out = {};
+  ps.forEach(function (p, i) {
+    if (vs[i] == null) return;
+    var k = f === "M" ? p
+      : p.slice(0, 4) + "Q" + (Math.floor((+p.slice(5, 7) - 1) / 3) + 1);
+    (acc[k] = acc[k] || []).push(vs[i]);
+  });
+  Object.keys(acc).forEach(function (k) {
+    out[k] = acc[k].reduce(function (a, b) { return a + b; }, 0) / acc[k].length; });
+  return out;
+}
+function pctOver(map, grid, L) {
+  return grid.map(function (p, i) {
+    var was = grid[i - L];
+    if (was == null) return null;
+    var a = map[was], b = map[p];
+    return (a > 0 && b > 0) ? (b / a - 1) * 100 : null;
+  });
+}
+/* the COICOP division on screen, as the IMF names it — so the official line
+   beside our food series is the official FOOD series, not the headline */
+function cpiCodeFor(node) {
+  var code = "CP" + String(node).split(".")[0];
+  return (DATA.cpiMeta && DATA.cpiMeta.labels && DATA.cpiMeta.labels[code]) ? code : null;
+}
+function cpiFor(slug, code) {
+  var c = (DATA.cpi || {})[slug];
+  return c && c[code] ? c[code] : null;
+}
+/* the overlay only means something where one country meets one currency */
+function cpiPossible(kind) {
+  return kind === "country" && measureKind() === "change" &&
+    !!DATA.cpi && Object.keys(DATA.cpi).length > 0;
+}
+
 /* how many item cells stand behind the point actually being read */
 function gsupport(s, i, months, f) {
   if (S.gmeasure === "level" || S.gmeasure === "index") return s.k[i];
@@ -474,6 +529,15 @@ function renderWorldTrends() {
     document.getElementById("ww-" + w).className = S.gwin === w ? "on" : ""; });
   ["region","subregion","country"].forEach(function (m) {
     document.getElementById("wm-" + m).className = kind === m ? "on" : ""; });
+  var cpiOK = cpiPossible(kind), cpiOn = cpiOK && S.gcpi;
+  var cpiBtn = document.getElementById("wv-cpi");
+  cpiBtn.disabled = !cpiOK;
+  cpiBtn.className = cpiOn ? "on" : "";
+  cpiBtn.setAttribute("aria-pressed", cpiOn ? "true" : "false");
+  cpiBtn.title = cpiOK
+    ? "Switch the chart into local-currency terms and draw the official index beside it"
+    : "An official CPI is a local-currency index, so it can only be set against " +
+      "one country at a time, on a price change. Pick Countries and a change measure.";
 
   var chartId = "cWorldTrend";
   function nothing(msg) {
@@ -548,16 +612,34 @@ function renderWorldTrends() {
   }
   var drawn = S.gsel ? S.gsel.filter(function (g) { return avail[g]; }) : defaults();
   if (!drawn.length) drawn = defaults();
+  /* The world has no exchange rate, so it cannot come along into local terms.
+     Dropping it is better than drawing it in a currency it does not have. */
+  if (cpiOn) drawn = drawn.filter(function (g) { return g !== "W"; });
+  if (cpiOn && !drawn.length) drawn = cands.filter(function (c) { return c.g !== "W"; })
+    .slice(0, 1).map(function (c) { return c.g; });
+  if (!drawn.length) drawn = defaults();
   var parked = S.gsel ? S.gsel.filter(function (g) { return !avail[g]; }) : [];
   assignSlots(drawn);
   DRAWN = drawn;
 
   var atCap = drawn.filter(function (g) { return g !== "W"; }).length >= PAL.length;
+  /* Countries are capped at eighteen chips, but the World yardstick is drawn by
+     default and must keep its own chip whatever the cap: without one it was on
+     the chart with no way to switch it off. */
+  var chips = kind === "country"
+    ? cands.filter(function (c) { return c.g === "W"; })
+        .concat(cands.filter(function (c) { return c.g !== "W"; }).slice(0, 18))
+    : cands;
   document.getElementById("wtChips").innerHTML =
-    (kind === "country" ? cands.slice(0, 18) : cands).map(function (c) {
+    chips.map(function (c) {
       var on = drawn.indexOf(c.g) >= 0, full = !on && c.g !== "W" && atCap;
+      /* the world has no exchange rate, so while the chart is in local terms
+         its chip is dead rather than clickable-but-ignored */
+      var noFx = cpiOn && c.g === "W";
       return '<button class="chip ser' + (on ? " on" : "") + '" aria-pressed="' + on + '"' +
-        (full ? ' disabled title="Six lines is the limit — switch one off first"' : "") +
+        (noFx ? ' disabled title="The world spans many currencies, so it has no rate to ' +
+          'convert at — turn the official-CPI benchmark off to bring it back"' :
+         full ? ' disabled title="Six lines is the limit — switch one off first"' : "") +
         ' style="border-left-color:' + (on ? geoColor(c.g) : "var(--rule)") +
         '" onclick="APP.toggleGeo(' + arg(c.g) + ')">' + esc(c.t) +
         '<span class="c">' + c.n + "</span></button>"; }).join("") +
@@ -609,6 +691,21 @@ function renderWorldTrends() {
        average of a rate, not of a price, so it is averaged arithmetically
        rather than in logs (a negative change has no logarithm). */
     var raw = grid.map(function (p) { return vals[p] == null ? null : vals[p]; });
+    /* d ln P_local = d ln P_usd + d ln FX, applied before any smoothing:
+       a trailing average of converted points is not the conversion of a
+       trailing average once the rate has moved inside the window. */
+    if (cpiOn) {
+      var fxg = toGrain(DATA.fx[g.slice(2)] ? DATA.fx[g.slice(2)].p : [],
+                        DATA.fx[g.slice(2)] ? DATA.fx[g.slice(2)].r : [], f);
+      var L = lagPeriods(months, f);
+      raw = raw.map(function (v, i) {
+        var was = grid[i - L];
+        if (v == null || was == null) return null;
+        var r0 = fxg[was], r1 = fxg[grid[i]];
+        if (!(r0 > 0) || !(r1 > 0)) return null;
+        return (Math.exp(Math.log(1 + v / 100) + Math.log(r1 / r0)) - 1) * 100;
+      });
+    }
     var pts = kindM === "change" ? smoothPct(raw, S.gsmooth) : smooth(raw, S.gsmooth);
     if (pts.filter(function (v) { return v != null; }).length < 2) thin.push(c.t);
     sup[g] = {t:c.t, s:s};
@@ -617,6 +714,31 @@ function renderWorldTrends() {
       borderWidth: g === "W" ? 2.8 : 2.2,
       borderDash: g === "W" ? [6,3] : undefined,
       tension:.2, pointRadius:2.8, spanGaps:true, segment:GAP_SEG });
+  });
+
+  /* The official index, exactly as published — headline, and the division the
+     category on screen sits in. Same colour as the country it belongs to, so
+     the pairing is readable without a legend; dotted, because it is somebody
+     else's measurement rather than ours. */
+  var cpiDrawn = [], cpiCode = cpiCodeFor(S.gnode);
+  var cpiSpecs = (cpiCode ? [[cpiCode, [2,2], 1.8]] : []).concat([["_T", [1,3], 1.4]]);
+  if (cpiOn) drawn.forEach(function (g) {
+    var slug = g.slice(2), L = lagPeriods(months, f);
+    cpiSpecs.forEach(function (spec) {
+      var code = spec[0];
+      var series = cpiFor(slug, code);
+      if (!series) return;
+      var pts = smoothPct(
+        pctOver(toGrain(series.p, series.v, f), grid, L), S.gsmooth);
+      if (!pts.filter(function (v) { return v != null; }).length) return;
+      cpiDrawn.push(code);
+      ds.push({
+        label: (DATA.geos[g] || {}).t + " — official " +
+          (code === "_T" ? "CPI, all items" : "CPI, " +
+            DATA.cpiMeta.labels[code].toLowerCase()),
+        data: pts, borderColor: geoColor(g), borderWidth: spec[2],
+        borderDash: spec[1], tension:.2, pointRadius:0, spanGaps:true });
+    });
   });
 
   /* Only caveats that change how you read what is on screen right now. How the
@@ -651,6 +773,22 @@ function renderWorldTrends() {
     "that recurs at all, not only items that recur in consecutive periods — which is why " +
     "it exists — but it is a model output, and a point can stand where no single shop was " +
     "observed that " + word + ".");
+  if (cpiOn) {
+    warn.push("Comparing with an official CPI means comparing in the currency it is " +
+      "published in, so <b>our lines are converted to local currency</b> here " +
+      "(d ln P<sub>local</sub> = d ln P<sub>US$</sub> + d ln FX) and the official index " +
+      "is drawn exactly as published. The world line is dropped: it spans many " +
+      "currencies and has no rate to convert at.");
+    warn.push("Ours is a <b>matched-item retail</b> change over the items we scrape; " +
+      "the official index is an <b>expenditure-weighted</b> national basket over a much " +
+      "wider range of outlets. They should move together, not coincide — a gap is a " +
+      "question to ask, not an error to correct.");
+    if (!cpiDrawn.length) warn.push("<b>No official CPI</b> is published for the " +
+      "countries on screen at this horizon.");
+    else if (cpiCode && cpiDrawn.indexOf(cpiCode) < 0) warn.push(
+      "No official <b>" + esc(DATA.cpiMeta.labels[cpiCode].toLowerCase()) + "</b> index " +
+      "for these countries — only the all-items headline is drawn.");
+  }
   if (kindM === "change") warn.push("Nothing here is interpolated or modelled: each point is " +
     "two observations of the same item, exactly " + (months === 1 ? "one " + word : months +
     " months") + " apart. A " + word + " with no match simply has no point.");
@@ -687,7 +825,8 @@ function renderWorldTrends() {
       scales:{ y:{ grid:{color:RULE},
           title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode] + " (fitted)"
             : isIndex ? "Index, " + (baseP || lo) + " = 100"
-            : "% change vs " + changeLabel(months, word)} },
+            : "% change vs " + changeLabel(months, word) +
+              (cpiOn ? ", local currency" : ", US$")} },
         x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
   });
 
@@ -1682,6 +1821,7 @@ var APP = {
   setGNode:function (c) { S.gnode = c; this.render(); },
   setGUnit:function (u) { S.gunit = u; this.render(); },
   setGMeasure:function (m) { S.gmeasure = m; this.render(); },
+  toggleCPI:function () { S.gcpi = !S.gcpi; this.render(); },
   setGWin:function (w) { S.gwin = w; this.render(); },
   setGFreq:function (f) { S.gfreq = f; this.render(); },
   setGSmooth:function (w) { S.gsmooth = w; this.render(); },

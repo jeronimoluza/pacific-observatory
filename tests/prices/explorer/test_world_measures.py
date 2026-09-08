@@ -26,7 +26,7 @@ def test_year_on_year_is_what_opens(page):
     assert page.evaluate("document.getElementById('wv-chg12').className") == "on"
     assert page.evaluate("document.getElementById('wv-index').className") == ""
     assert page.evaluate("document.getElementById('wv-level').className") == ""
-    assert "% change vs a year earlier" == _y_title(page)
+    assert _y_title(page) == "% change vs a year earlier, US$"
 
 
 def test_the_year_on_year_line_carries_the_payload_values(page):
@@ -41,9 +41,9 @@ def test_the_year_on_year_line_carries_the_payload_values(page):
 def test_every_horizon_is_reachable_and_changes_the_axis(page):
     page.evaluate("APP.setGFreq('M')")
     for measure, title, lo, hi in [
-        ("chg1", "% change vs the previous month", -1.1, 2.1),
-        ("chg12", "% change vs a year earlier", 11.9, 12.2),
-        ("chg24", "% change vs 2 years earlier", 24.9, 25.2),
+        ("chg1", "% change vs the previous month, US$", -1.1, 2.1),
+        ("chg12", "% change vs a year earlier, US$", 11.9, 12.2),
+        ("chg24", "% change vs 2 years earlier, US$", 24.9, 25.2),
     ]:
         page.evaluate("APP.setGMeasure('%s')" % measure)
         assert _y_title(page) == title
@@ -61,10 +61,10 @@ def test_a_horizon_with_no_data_says_so_instead_of_drawing_nothing(page):
 
 def test_the_shortest_horizon_follows_the_period_grain(page):
     page.evaluate("APP.setGFreq('M'); APP.setGMeasure('chg1')")
-    assert _y_title(page) == "% change vs the previous month"
+    assert _y_title(page) == "% change vs the previous month, US$"
     assert "previous month" in page.inner_text("#wv-chg1")
     page.evaluate("APP.setGFreq('Q')")
-    assert _y_title(page) == "% change vs the previous quarter"
+    assert _y_title(page) == "% change vs the previous quarter, US$"
     assert "previous quarter" in page.inner_text("#wv-chg1")
     drawn = [v for s in _points(page) for v in s if v is not None]
     assert all(-1.1 <= v <= 2.1 for v in drawn), drawn[:5]
@@ -99,3 +99,11 @@ def test_smoothing_a_change_averages_the_rate_not_its_logarithm(page):
     assert all(v == v for v in drawn), "NaN in a smoothed change series"
     # +2.0 and -1.0 alternate, so a two-period trailing mean sits near +0.5
     assert any(abs(v - 0.5) < 0.05 for v in drawn), sorted(set(drawn))[:8]
+
+
+def test_the_world_yardstick_keeps_a_chip_even_past_the_country_cap(page):
+    """It is drawn by default; without a chip there was no way to switch it off."""
+    page.evaluate("APP.setGeoMode('country'); APP.setGMeasure('chg12')")
+    chips = page.locator("#wtChips .chip").all_inner_texts()
+    assert len(chips) == 19, len(chips)
+    assert chips[0].startswith("World"), chips[:3]

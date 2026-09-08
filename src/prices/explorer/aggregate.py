@@ -17,6 +17,7 @@ import pandas as pd
 import yaml
 
 from prices.coicop import residual_leaves
+from prices.explorer.cpi import DIVISION_OF, SERIES_LABEL, load_official
 from prices.explorer.geo import build_geo_series
 from prices.explorer.sources import (
     REGIONS_YAML,
@@ -531,6 +532,9 @@ def build_payload(region: str | None = None) -> dict:
 
     gseries_raw, geos = build_geo_series(exploded, tax, cmeta)
 
+    official = load_official({s: countries.get(s, {}).get("iso3") for s in cmeta})
+    used_series = {k for v in official.values() for k in v}
+
     node_idx = sorted(nodemeta)
     node_pos = {n: i for i, n in enumerate(node_idx)}
     cty_idx = sorted(cmeta)
@@ -641,6 +645,15 @@ def build_payload(region: str | None = None) -> dict:
         "geos": geos,
         "gseries": gseries,
         "fx": fx,
+        # Official CPI, straight from the IMF and untouched: a local-currency
+        # index the client draws beside our own series after converting OURS
+        # into local terms. Empty when the standalone table has not been built.
+        "cpi": official,
+        "cpiMeta": {
+            "labels": {k: v for k, v in SERIES_LABEL.items() if k in used_series},
+            "division": {k: v for k, v in DIVISION_OF.items() if k in used_series},
+            "source": "IMF, Consumer Price Index (IMF.STA:CPI), monthly index",
+        },
         "samples": samples,
         "qa": qa,
     }
