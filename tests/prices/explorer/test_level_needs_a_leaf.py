@@ -20,40 +20,71 @@ if str(SRC) not in sys.path:
 from prices.explorer import aggregate  # noqa: E402
 
 
-def test_no_world_median_is_published_for_an_aggregate_node(monkeypatch, payload):
-    """The gate is server-side, so no client can reconstruct the ratio."""
-    for node, meta in payload["nodeMeta"].items():
-        leaf = payload["tax"][node]["leaf"] and node not in payload["residual"]
-        assert ("gmed" in meta) is leaf, node
+def test_no_world_median_is_published_for_an_aggregate_node(built):
+    """Straight off the build: only a leaf gets a `gmed`, so no client can
+    reconstruct the ratio that has no referent."""
+    for node, meta in built["nodeMeta"].items():
+        leaf = built["tax"][node]["leaf"]
+        assert ("gmed" in meta) is leaf, (node, sorted(meta))
+    assert any(m.get("gmed") for m in built["nodeMeta"].values()), "nothing at all"
 
 
-def test_the_payload_gmed_pass_keeps_only_leaves():
-    """Exercise the build's own filter rather than the fixture's copy of it."""
+def _tiny_corpus(tax, leaves):
+    months = ["2026-%02d" % m for m in range(1, 5)]
+    rows = []
+    for country in ("aa", "bb"):
+        for p in months:
+            for j, code in enumerate(leaves):
+                for _ in range(3):
+                    rows.append(
+                        {
+                            "country": country,
+                            "currency": "USD",
+                            "source": "shop",
+                            "observation_date": pd.Timestamp(p + "-15"),
+                            "coicop_code": code,
+                            "pricing_basis": "retail",
+                            "standard_unit": "kg",
+                            "unit_value_local": 2.0 + j,
+                            "unit_value_usd": 2.0 + j,
+                            "mass_source": "declared",
+                            "qa_status": "trusted",
+                            "product_name": "x",
+                            "fx_rate": 1.0,
+                        }
+                    )
+    df = pd.DataFrame(rows)
+    df["is_modelled"] = False
+    df["is_derived"] = False
+    df["period"] = df.observation_date.dt.to_period("M").astype(str)
+    return df
+
+
+def test_a_catch_all_leaf_gets_no_world_median_either(monkeypatch):
+    """A residual leaf is a leaf, so only the residual rule can hold it out."""
     tax = {
         "01": {"t": "Food", "p": None, "lvl": 1, "leaf": False},
         "01.1": {"t": "Rice", "p": "01", "lvl": 2, "leaf": True},
         "01.2": {"t": "Other cereals n.e.c.", "p": "01", "lvl": 2, "leaf": True},
     }
-    world_cells = pd.DataFrame(
-        {
-            "country": ["a", "a", "a", "b", "b", "b"],
-            "node": ["01", "01.1", "01.2"] * 2,
-            "standard_unit": ["kg"] * 6,
-            "usd": [3.0, 2.0, 4.0, 3.5, 2.5, 4.5],
-            "flagged": [False] * 6,
-            "modelled": [0.0] * 6,
-        }
+    monkeypatch.setattr(aggregate, "load_taxonomy", lambda: tax)
+    monkeypatch.setattr(
+        aggregate,
+        "load_country_meta",
+        lambda: {
+            s: {"name": s, "iso3": s.upper(), "region": "R", "subregion": "S"}
+            for s in ("aa", "bb")
+        },
     )
-    residual = aggregate._residual_nodes(tax)
-    leafy = world_cells.node.map(lambda c: bool(tax.get(c, {}).get("leaf")))
-    clean = world_cells[
-        leafy
-        & ~world_cells.flagged
-        & (world_cells.modelled < 0.5)
-        & ~world_cells.node.isin(residual)
-    ]
-    got = clean.groupby(["node", "standard_unit"]).usd.median().to_dict()
-    assert got == {("01.1", "kg"): 2.25}
+    monkeypatch.setattr(
+        aggregate, "load_observations", lambda: _tiny_corpus(tax, ["01.1", "01.2"])
+    )
+    built = aggregate.build_payload()
+
+    assert built["residual"] == ["01.2"]
+    assert "gmed" in built["nodeMeta"]["01.1"], "a named leaf keeps its yardstick"
+    assert "gmed" not in built["nodeMeta"]["01.2"], "a catch-all leaf gets none"
+    assert "gmed" not in built["nodeMeta"]["01"], "nor does an aggregate"
 
 
 # ---------------------------------------------------------------- client side
