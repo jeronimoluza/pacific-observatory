@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
+from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -194,10 +195,33 @@ def run(
     }
 
 
+# What the two callers of `load_shards` actually read. `backends._score_hierlex`
+# takes the first eight to build its ScoreResult frame; `hierlex report` adds
+# `is_fallback`. The scorer writes thirteen -- raw_correctness_score,
+# parent_pred, parent_score and script are diagnostics no consumer touches, and
+# reading them costs I/O and resident bytes on every one of the 256 parts.
+LOAD_COLUMNS = (
+    "name",
+    "country",
+    "assigned_coicop",
+    "proposed_leaf",
+    "is_leaf",
+    "original_score",
+    "calibrated_correctness_score",
+    "accepted",
+    "is_fallback",
+)
+
+
 def load_shards(
-    version: str | None = None, pred_root: Path = PRED_ROOT
+    version: str | None = None,
+    pred_root: Path = PRED_ROOT,
+    columns: Sequence[str] | None = LOAD_COLUMNS,
 ) -> pd.DataFrame:
-    """Every scored pair for a bundle version, concatenated."""
+    """Every scored pair for a bundle version, concatenated.
+
+    `columns` defaults to what the callers read rather than to everything, so
+    the diagnostic columns are not paid for. Pass None for the full frame."""
     from prices.enrich.hierlex import package
 
     version = version or package.manifest(package.resolve(version))["method_version"]
@@ -206,4 +230,7 @@ def load_shards(
         raise FileNotFoundError(
             f"no HierLex shards under {pred_root / version} — run `prices hierlex score`"
         )
-    return pd.concat((pd.read_parquet(p) for p in parts), ignore_index=True)
+    wanted = list(columns) if columns else None
+    return pd.concat(
+        (pd.read_parquet(p, columns=wanted) for p in parts), ignore_index=True
+    )
