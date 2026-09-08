@@ -7,6 +7,8 @@ shard and 13.3 GB resident. These are the arithmetic tests for the fix.
 
 from __future__ import annotations
 
+import pytest
+
 from prices import partition
 
 GB = 1 << 30
@@ -72,3 +74,40 @@ def test_every_job_runs_exactly_once():
     jobs = [(i, i) for i in range(20)]
     out = partition.run_budgeted(jobs, abs, 1, 1000)
     assert sorted(out) == list(range(20))
+
+
+def _fail_on_three(n):
+    if n == 3:
+        raise ValueError("this unit is poison")
+    return n * 10
+
+
+def test_a_failing_unit_does_not_hide_the_units_that_finished():
+    """The bug this exists for: `fut.result()` raised inside the collection
+    loop, so the run ended with nothing -- not even the results already in
+    hand, and not even the ones sharing the same `wait()` batch."""
+    jobs = [(i, i) for i in range(6)]
+    with pytest.raises(partition.PartialFailure) as caught:
+        partition.run_budgeted(jobs, _fail_on_three, workers=2, budget=1000)
+    assert sorted(caught.value.results) == [0, 10, 20, 40, 50]
+    assert len(caught.value.failures) == 1
+
+
+def test_results_are_handed_over_as_they_land():
+    """`on_result` is the only hook that can make finished work durable: the
+    return value does not exist until the run does."""
+    seen = []
+    out = partition.run_budgeted(
+        [(1, "a"), (2, "b")], str.upper, 1, 10, on_result=seen.append
+    )
+    assert seen == out == ["B", "A"]
+
+
+def test_on_result_sees_everything_a_run_that_dies_completed():
+    seen = []
+    jobs = [(i, i) for i in range(6)]
+    with pytest.raises(partition.PartialFailure):
+        partition.run_budgeted(
+            jobs, _fail_on_three, workers=2, budget=1000, on_result=seen.append
+        )
+    assert sorted(seen) == [0, 10, 20, 40, 50]

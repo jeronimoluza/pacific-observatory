@@ -104,8 +104,16 @@ def _load_state(out_dir: Path) -> dict:
 
 
 def _save_state(out_dir: Path, state: dict) -> None:
+    """Written to a temp file and renamed. It is now rewritten on every country
+    that finishes rather than once at the end of the run, so a crash landing
+    inside the write is no longer a theoretical concern -- and `_load_state`
+    treats unreadable state as NO state, which would mean preparing all 210
+    countries again."""
     out_dir.mkdir(parents=True, exist_ok=True)
-    _state_path(out_dir).write_text(json.dumps(state, indent=2, sort_keys=True))
+    path = _state_path(out_dir)
+    tmp = path.parent / (path.name + ".tmp")
+    tmp.write_text(json.dumps(state, indent=2, sort_keys=True))
+    tmp.replace(path)
 
 
 def _signature(country_shards: Sequence[partition.Shard]) -> list:
@@ -306,13 +314,25 @@ def run(
         workers,
         budget / 1e9,
     )
-    written = partition.run_budgeted(jobs, _prepare_one, workers, budget)
-    # Recorded from what came back, not from what was queued, so a country whose
-    # worker died is prepared again next run rather than cached as done.
-    for path in written:
+
+    def record(path: Path) -> None:
+        """Recorded from what came back, not from what was queued, so a country
+        whose worker died is prepared again next run rather than cached as
+        done -- and recorded AS it comes back, not once the run is over, so a
+        later country that kills the pool does not take the finished ones with
+        it. That is not hypothetical: japan broke the pool and 210 prepared
+        countries were recomputed from scratch, because this used to run two
+        lines below a `run_budgeted` the exception went straight past."""
         entry = pending.get(str(path))
         if entry is not None:
             new_state[entry[0]] = entry[1]
+            _save_state(prepared_dir, new_state)
+
+    # PartialFailure propagates: a run that lost a country has to stop rather
+    # than union a tree in which that country is missing or stale.
+    written = partition.run_budgeted(
+        jobs, _prepare_one, workers, budget, on_result=record
+    )
     _save_state(prepared_dir, new_state)
 
     if write_union:

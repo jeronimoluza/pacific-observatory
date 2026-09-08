@@ -251,7 +251,26 @@ def admits(inflight_bytes: int, n_inflight: int, next_size: int, budget: int) ->
     return inflight_bytes + next_size <= budget
 
 
-def run_budgeted(jobs, fn, workers, budget, initializer=None) -> list:
+class PartialFailure(RuntimeError):
+    """Some units of a budgeted run failed and the rest completed.
+
+    Raised at the END of the run, never at the first failure, so that by the
+    time it surfaces the caller has already been handed every unit that DID
+    finish through `on_result`. A broken pool used to propagate straight out of
+    the loop, past whatever the caller does with the return value: prepare
+    recorded 210 finished countries in `_save_state` two lines below
+    `run_budgeted`, and one dead worker threw all 210 away."""
+
+    def __init__(self, results: list, failures: list):
+        self.results = results
+        self.failures = failures
+        super().__init__(
+            f"{len(failures)} of {len(results) + len(failures)} units failed; "
+            f"first: {failures[0]!r}"
+        )
+
+
+def run_budgeted(jobs, fn, workers, budget, initializer=None, on_result=None) -> list:
     """Map `fn` over `jobs`, admitting work by BYTES in flight, not by count.
 
     `jobs` is an iterable of `(size_bytes, payload)`; `fn` is called with the
@@ -267,29 +286,60 @@ def run_budgeted(jobs, fn, workers, budget, initializer=None) -> list:
     So size is a budget as well as a sort key. The pool then runs the small
     units wide and the large ones alone, and no one has to pick a worker count
     per corpus.
+
+    `on_result` is called in the PARENT with each result as it lands. It is the
+    only place a caller can make finished work durable, because the return value
+    does not exist until the whole run does — and on a run that dies it never
+    does. A unit that fails is collected rather than re-raised on the spot, and
+    the run ends in `PartialFailure` carrying every failure it saw.
     """
     from concurrent.futures import (  # noqa: PLC0415
         FIRST_COMPLETED,
+        BrokenExecutor,
         ProcessPoolExecutor,
         wait,
     )
 
+    results, failures, inflight = [], [], {}
+
+    def deliver(result):
+        results.append(result)
+        if on_result is not None:
+            on_result(result)
+
     pending = sorted(jobs, key=lambda j: -j[0])
     if workers <= 1 or len(pending) <= 1:
-        return [fn(payload) for _, payload in pending]
+        for _, payload in pending:
+            deliver(fn(payload))
+        return results
 
-    results, inflight = [], {}
     with ProcessPoolExecutor(max_workers=workers, initializer=initializer) as pool:
         while pending or inflight:
-            while pending and len(inflight) < workers:
-                if not admits(
-                    sum(inflight.values()), len(inflight), pending[0][0], budget
-                ):
+            try:
+                while pending and len(inflight) < workers:
+                    if not admits(
+                        sum(inflight.values()), len(inflight), pending[0][0], budget
+                    ):
+                        break
+                    size, payload = pending.pop(0)
+                    inflight[pool.submit(fn, payload)] = size
+            except BrokenExecutor as exc:
+                # An earlier unit took the pool down with it; nothing else can
+                # be started, but whatever is still in flight is still waited on
+                # so its result is delivered rather than dropped.
+                failures.append(exc)
+                pending.clear()
+                if not inflight:
                     break
-                size, payload = pending.pop(0)
-                inflight[pool.submit(fn, payload)] = size
             done, _ = wait(inflight, return_when=FIRST_COMPLETED)
             for fut in done:
                 inflight.pop(fut)
-                results.append(fut.result())
+                try:
+                    result = fut.result()
+                except Exception as exc:  # noqa: BLE001 — re-raised below, not swallowed
+                    failures.append(exc)
+                else:
+                    deliver(result)
+    if failures:
+        raise PartialFailure(results, failures)
     return results

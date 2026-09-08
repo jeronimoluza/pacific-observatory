@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -456,3 +457,85 @@ def test_a_leftover_shuffle_part_is_not_unioned_into_products_input(
     )
     assert len(pd.read_parquet(prepare_shards.write_products_input(out_dir))) == clean
 
+
+# ---------------------------------------------------------------------------
+# A dead worker must not throw away the countries that finished
+# ---------------------------------------------------------------------------
+
+
+def _raise_on_fiji(args):
+    """Module level so a forked worker resolves it by name."""
+    if args[1][-1] == "fiji":
+        raise RuntimeError("worker died")
+    return prepare_shards.prepare_country(*args)
+
+
+# Set in the parent before the pool forks, so the workers inherit it.
+_KILL_COUNTRY = ""
+
+
+def _kill_the_pool(args):
+    """What japan actually did: the kernel took the worker, not an exception,
+    so the pool broke. Note what that costs even after the fix -- every future
+    still IN FLIGHT comes back BrokenProcessPool too, so only the countries
+    that had already finished survive. That is the 205 of 210 case, not 210."""
+    if args[1][-1] == _KILL_COUNTRY:
+        os._exit(1)
+    return prepare_shards.prepare_country(*args)
+
+
+def test_a_failing_country_does_not_discard_the_ones_that_finished(
+    corpus, tmp_path, monkeypatch
+):
+    out_dir = tmp_path / "_prepared"
+    monkeypatch.setattr(prepare_shards, "_prepare_one", _raise_on_fiji)
+    with pytest.raises(partition.PartialFailure):
+        prepare_shards.run(root=corpus, out_dir=out_dir, workers=4)
+    monkeypatch.undo()
+
+    state = prepare_shards._load_state(out_dir)
+    assert "eap/pacific/fiji" not in state
+    assert sorted(state) == [
+        "eap/pacific/tonga",
+        "ssa/southern/south_africa",
+        "ssa/western/ghana",
+    ]
+    assert [p.stem for p in prepare_shards.run(root=corpus, out_dir=out_dir)] == ["fiji"]
+
+
+def test_a_broken_pool_does_not_discard_the_countries_that_finished(
+    corpus, tmp_path, monkeypatch
+):
+    """The failure that lost 210 countries. The smallest country is scheduled
+    last, so with two workers the others have finished and been recorded before
+    it takes the pool down."""
+    global _KILL_COUNTRY
+    groups = partition.group_by(partition.select(None, corpus), "country")
+    smallest = min(groups, key=lambda k: sum(s.size for s in groups[k]))
+    _KILL_COUNTRY = smallest[-1]
+
+    out_dir = tmp_path / "_prepared"
+    monkeypatch.setattr(prepare_shards, "_prepare_one", _kill_the_pool)
+    with pytest.raises(partition.PartialFailure):
+        prepare_shards.run(root=corpus, out_dir=out_dir, workers=2)
+    monkeypatch.undo()
+
+    state = prepare_shards._load_state(out_dir)
+    assert "/".join(smallest) not in state
+    assert len(state) >= 2
+
+    again = [p.stem for p in prepare_shards.run(root=corpus, out_dir=out_dir)]
+    assert smallest[-1] in again
+    assert len(again) == len(groups) - len(state)
+
+
+def test_a_run_that_lost_a_country_does_not_write_the_union(
+    corpus, tmp_path, monkeypatch, union_target
+):
+    """It must not look like a clean success: a union built over a tree with a
+    country missing -- or holding that country's PREVIOUS parquet -- is what
+    the next stage would read as complete."""
+    monkeypatch.setattr(prepare_shards, "_prepare_one", _raise_on_fiji)
+    with pytest.raises(partition.PartialFailure):
+        prepare_shards.run(root=corpus, out_dir=tmp_path / "_prepared", workers=4)
+    assert not union_target.exists()
