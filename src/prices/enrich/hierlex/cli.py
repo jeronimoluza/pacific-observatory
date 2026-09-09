@@ -147,7 +147,11 @@ def report_cmd(version, policy) -> None:
 
     pkg = package.resolve(version)
     meta = package.manifest(pkg)
-    tau = float(meta["thresholds"]["thresholds"][f"lexical_correctness_gate_{policy}"])
+    # Through `resolve_tau`, not the manifest: `POLICIES` -- which this command's
+    # own `click.Choice` offers -- carries locally-solved operating points that
+    # have no `lexical_correctness_gate_*` key, so indexing directly raises on
+    # exactly the policies the flag advertises.
+    tau = scorer.resolve_tau(version, policy=policy)
     df = driver.load_shards(meta["method_version"])
     df["ok"] = (df["calibrated_correctness_score"] >= tau) & df["is_leaf"]
     click.echo(f"{meta['method_version']}  policy={policy}  tau={tau:.6f}")

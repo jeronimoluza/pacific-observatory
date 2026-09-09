@@ -33,6 +33,10 @@ BUNDLE_POLICIES = ("conservative_risk", "empirical_98")
 # Each is the LOWEST tau whose accepted set still meets the named precision, so
 # each buys the most coverage that target allows.
 #
+# These are calibration-specific: a tau is a threshold on THIS bundle's Platt
+# output, so it is meaningless against another bundle. Solved against
+# `hierlex_select_v1_20260908`; re-solve before pointing them at any other.
+#
 # Solved on the bundle's own nested-OOF audit (`implementation_oof_decisions`,
 # 278,490 rows, balanced 5-fold), and cross-validated before being written down:
 # choosing tau on four folds and measuring precision on the fifth reproduces the
