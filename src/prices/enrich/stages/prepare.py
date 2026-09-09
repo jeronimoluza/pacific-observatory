@@ -299,12 +299,26 @@ def _derive(raw: pd.DataFrame) -> pd.DataFrame:
             df["channel"] != "", pd.Series(fallback, index=df.index)
         )
 
+    # Two ways a row can arrive with a declared COICOP, and the narrower one
+    # wins. A fetcher may stamp a per-ITEM leaf from a lookup table in its own
+    # code; the YAML `coicop_codes` field is per-SOURCE and can only assert that
+    # a whole feed is one leaf. Overwriting the first with the second would
+    # discard the more specific of the two, so the source map is a FALLBACK for
+    # rows that carry nothing, never an override.
     coicop_codes_map = _build_source_coicop_codes_map()
-    if "source" in df.columns:
-        declared = _source_lookup(df, coicop_codes_map)
-        df["declared_coicop_codes"] = pd.Series(declared, index=df.index).astype(str)
+    if "declared_coicop_codes" in df.columns:
+        per_row = df["declared_coicop_codes"].fillna("").astype(str).str.strip()
+        per_row = per_row.where(per_row.str.lower() != "nan", "")
     else:
-        df["declared_coicop_codes"] = ""
+        per_row = pd.Series("", index=df.index)
+    if "source" in df.columns:
+        # `_source_lookup` is the branch's own helper for the same (country,
+        # source) join the channel map uses just above.
+        declared = _source_lookup(df, coicop_codes_map)
+        per_source = pd.Series(declared, index=df.index).astype(str)
+    else:
+        per_source = pd.Series("", index=df.index)
+    df["declared_coicop_codes"] = per_row.where(per_row != "", per_source)
 
     return df
 

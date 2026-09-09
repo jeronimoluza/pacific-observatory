@@ -53,6 +53,7 @@ SHARD_COLUMNS = (
     "category",
     "details",
     "unit",
+    "declared_coicop_codes",
     "input_hash",
 )
 
@@ -135,8 +136,7 @@ def coerce(df: pd.DataFrame) -> pd.DataFrame:
     a pure function of the row and is derived rather than left null — so a shard
     always carries it however it was produced."""
     extra = [
-        c for c in df.columns
-        if c not in SHARD_COLUMNS and c not in IGNORABLE_COLUMNS
+        c for c in df.columns if c not in SHARD_COLUMNS and c not in IGNORABLE_COLUMNS
     ]
     if extra:
         raise ValueError(

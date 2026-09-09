@@ -86,6 +86,7 @@ PREPARE_COLUMNS = (
     "category",
     "details",
     "unit",
+    "declared_coicop_codes",
 )
 
 

@@ -313,6 +313,11 @@ def _emit_price_obs(path: Path) -> Iterable[dict]:
             # classify's `unit_declared` fallback dead code and left every such
             # row on pricing_basis="item".
             "unit": r.get("unit"),
+            # A fetcher may carry a per-ITEM curated leaf (a lookup table in
+            # its own code). The YAML `coicop_codes` field cannot express
+            # that -- it is per-source, so it can only say "this whole feed
+            # is one leaf", which is false for a multi-commodity feed.
+            "declared_coicop_codes": r.get("coicop_code"),
         }
 
 
