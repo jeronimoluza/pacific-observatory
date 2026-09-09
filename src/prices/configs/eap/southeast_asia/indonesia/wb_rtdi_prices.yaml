@@ -4,18 +4,22 @@ analytical_role: official_avg
 coicop_classification: classifier
 channel: null
 source_key: wb_rtdi_idn
-module: _shared.eap.wb_rtdi_prices
+module: _shared.wb_rtdi_prices
 function: fetch_wb_rtdi_idn
-url: https://microdata.worldbank.org/index.php/catalog/6166
+url: https://microdata.worldbank.org/index.php/catalog/4483
 language: en
 cadence: monthly
 fallback_date: 2007-01-01
 notes: |
   World Bank Real-Time Development Indicators, monthly food price estimates by
-  product and market for Indonesia (shared EAP fetcher
-  _shared.eap.wb_rtdi_prices). 9 food commodities at market level, monthly
-  from 2007, priced in local currency -- roughly a decade further back than
+  product and market for Indonesia. 9 commodities at market level, monthly from
+  2007, priced in local currency (IDR) -- roughly a decade further back than
   Common Crawl or Wayback reach for retail catalogues.
+
+  Served from the GLOBAL RTFP panel (catalog 4483), which carries 37 countries
+  in one ~1.1 GB file. The fetcher downloads and parses it once per process and
+  slices each country from the cache, so a whole-collection run pays for the
+  download a single time rather than 37 times.
 
   `coicop_classification: classifier` is what admits this manifest's
   price_observations.csv to the corpus (see _classifier_csv_map), but COICOP is
@@ -26,4 +30,6 @@ notes: |
 
   Mapping keys on (country, ticker), never ticker alone: `oil` is vegetable in
   Indonesia, soybean in Lao PDR and palm in Myanmar. `food_price_index` is an
-  INDEX, not a level, and is deliberately excluded.
+  INDEX, not a level, and is deliberately excluded, as are the `_fao` twins of
+  tickers this country already carries nationally -- they are the same commodity
+  on a different unit basis and would double-count.

@@ -3,17 +3,17 @@ extraction_pattern: tabular_download
 analytical_role: official_avg
 coicop_classification: classifier
 channel: null
-source_key: wb_rtdi_mmr
+source_key: wb_rtdi_uga
 module: _shared.wb_rtdi_prices
-function: fetch_wb_rtdi_mmr
+function: fetch_wb_rtdi_uga
 url: https://microdata.worldbank.org/index.php/catalog/4483
 language: en
 cadence: monthly
 fallback_date: 2007-01-01
 notes: |
   World Bank Real-Time Development Indicators, monthly food price estimates by
-  product and market for Myanmar. 5 commodities at market level, monthly from
-  2007, priced in local currency (MMK) -- roughly a decade further back than
+  product and market for Uganda. 8 commodities at market level, monthly from
+  2007, priced in local currency (UGX) -- roughly a decade further back than
   Common Crawl or Wayback reach for retail catalogues.
 
   Served from the GLOBAL RTFP panel (catalog 4483), which carries 37 countries
