@@ -198,3 +198,71 @@ def test_every_emitted_key_survives_the_spill_projection(tmp_path):
 
     # and the curated leaf specifically must arrive
     assert emitted[0]["declared_coicop_codes"] == "01.1.1.1.2"
+
+
+def test_curated_code_survives_all_the_way_into_the_shard(tmp_path, monkeypatch):
+    """End-to-end through the real shard writer, because the projections lie.
+
+    A column has to clear TWO separate lists to reach a shard -- EMITTED_COLS
+    for the spill, then OUTPUT_COLS for the shard itself -- and clearing only
+    one is silent: `_finalise_shard` writes `df[OUTPUT_COLS]` against
+    SHARD_SCHEMA, so a column the schema declares but the list omits comes out
+    all-null with nothing raised.
+
+    That is not hypothetical. `declared_coicop_codes` cleared the first list and
+    not the second, and 6,142,693 WB RTDI rows concatenated into 40 shards with
+    every curated COICOP silently gone. Asserting on the emitter alone passed
+    the whole time. Only reading the shard back catches it."""
+    import pandas as pd
+
+    concatenate = pytest.importorskip("prices.enrich.stages.concatenate")
+    shards = pytest.importorskip("prices.enrich.shards")
+
+    country, source = "kenya", "wb_rtdi_prices"
+    source_dir = tmp_path / "data" / "ssa" / "east_africa" / country / source
+    source_dir.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {
+                "item_name": "Rice (imported)",
+                "price_local": 1234.5,
+                "currency": "KES",
+                "observation_date": "2024-01-01",
+                "source_url": "https://example.invalid/catalog/4483",
+                "observation_hash": "hash-1",
+                "coicop_code": "01.1.1.1.2",
+                "unit": "KG",
+            },
+            {
+                "item_name": "Maize (white)",
+                "price_local": 88.25,
+                "currency": "KES",
+                "observation_date": "2024-01-01",
+                "source_url": "https://example.invalid/catalog/4483",
+                "observation_hash": "hash-2",
+                "coicop_code": "01.1.1.1.6",
+                "unit": "KG",
+            },
+        ]
+    ).to_csv(source_dir / "price_observations.csv", index=False)
+
+    # The price_observations.csv shape is admitted only for a gated manifest.
+    monkeypatch.setattr(
+        concatenate, "_classifier_csv_map", lambda: {(country, source): "retail"}
+    )
+    monkeypatch.setattr(concatenate, "_channel_for", lambda c, s: "retail")
+
+    shard_path = tmp_path / "shard.parquet"
+    concatenate._write_source_shard(
+        source_dir, "ssa", "east_africa", country, source, shard_path
+    )
+
+    got = shards.read_shard(shard_path)
+    assert len(got) == 2, got
+    codes = set(got["declared_coicop_codes"].dropna().astype(str))
+    assert codes == {
+        "01.1.1.1.2",
+        "01.1.1.1.6",
+    }, f"curated COICOP lost between the emitter and the shard: {codes}"
+    # the sibling column added by the same projection, as a control
+    assert set(got["unit"].dropna().astype(str)) == {"KG"}

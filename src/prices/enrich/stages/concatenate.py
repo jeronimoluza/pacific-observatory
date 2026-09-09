@@ -110,6 +110,11 @@ OUTPUT_COLS = [
     "category",
     "details",
     "unit",
+    # Second of the two projections a column must clear to reach a shard, the
+    # other being EMITTED_COLS. `_finalise_shard` writes `df[OUTPUT_COLS]`
+    # against SHARD_SCHEMA, so a column the schema declares but this list omits
+    # is written as all-null rather than raising.
+    "declared_coicop_codes",
 ]
 
 # The coicop_classification value that routes a fetcher manifest's rows into
