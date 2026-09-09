@@ -432,6 +432,7 @@ def test_the_hierlex_backend_calls_the_driver_it_actually_has(monkeypatch):
                 "country": ["fiji"],
                 "assigned_coicop": ["01.1.1.1.0"],
                 "proposed_leaf": ["01.1.1.1.0"],
+                "is_fallback": [False],
                 "is_leaf": [True],
                 "accepted": [True],
                 "original_score": [0.9],
@@ -449,6 +450,64 @@ def test_the_hierlex_backend_calls_the_driver_it_actually_has(monkeypatch):
     assert seen["workers"] == 6, "the backend swallowed --workers again"
     assert list(out.frame["leaf"]) == ["01.1.1.1.0"]
     assert out.unembedded == frozenset()
+
+
+def test_the_parent_fallback_keeps_the_leaf_the_model_proposed(monkeypatch):
+    """The bundle rewrites a proposed leaf to its parent's "n.e.c." sibling when
+    leaf-level confidence is short. On the bundle's own outer-OOF gold that
+    rewrite is correct 15.6% of the time against 75.8% for the leaf it discards,
+    and depth-3 accuracy is identical because the rewrite never leaves the
+    depth-3 parent. So `leaf` has to carry the proposed leaf on those rows.
+
+    The third row is the case that must NOT be rewritten: where the parent has
+    no "n.e.c." leaf the scorer emits a synthetic `<parent>.__parent_fallback__`
+    token with `is_leaf` False. That is a parent-grain decision, it is not a
+    usable COICOP code, and it must never reach `leaf` as if it were one."""
+    import types  # noqa: PLC0415
+
+    def run(**_kwargs):
+        return {}
+
+    def load_shards(version=None):
+        return pd.DataFrame(
+            {
+                "name": ["cocoa", "rice", "odd"],
+                "country": ["fiji", "fiji", "fiji"],
+                # cocoa: the rewrite fired and landed on a real n.e.c. leaf.
+                # rice:  no fallback, so the assigned code stands untouched.
+                # odd:   fallback with no n.e.c. leaf to land on.
+                "assigned_coicop": [
+                    "01.1.8.5.9",
+                    "01.1.1.1.0",
+                    "01.1.9.__parent_fallback__",
+                ],
+                "proposed_leaf": ["01.1.8.5.1", "01.1.1.1.0", "01.1.9.1.1"],
+                "is_fallback": [True, False, True],
+                "is_leaf": [True, True, False],
+                "accepted": [True, True, True],
+                "original_score": [0.9, 0.9, 0.9],
+                "calibrated_correctness_score": [0.97, 0.95, 0.97],
+            }
+        )
+
+    stub_mod = types.SimpleNamespace(
+        driver=types.SimpleNamespace(run=run, load_shards=load_shards)
+    )
+    monkeypatch.setattr(backends, "_hierlex", lambda: stub_mod)
+
+    out = backends._score_hierlex(
+        products([("cocoa", "fiji"), ("rice", "fiji"), ("odd", "fiji")]), workers=1
+    )
+    leaf = dict(zip(out.frame["product_name_original"], out.frame["leaf"]))
+    assert leaf["cocoa"] == "01.1.8.5.1", "the rewrite swallowed the proposed leaf"
+    assert leaf["rice"] == "01.1.1.1.0", "a non-fallback row was rewritten"
+    # `leaf_top1` keeps reporting what the model proposed, unchanged.
+    top1 = dict(zip(out.frame["product_name_original"], out.frame["leaf_top1"]))
+    assert top1["cocoa"] == "01.1.8.5.1"
+    # The synthetic token is never accepted, so it cannot be published as a code.
+    acc = dict(zip(out.frame["product_name_original"], out.frame["accepted"]))
+    assert acc["odd"] is False or not acc["odd"]
+    assert "__parent_fallback__" not in str(leaf["cocoa"])
 
 
 def test_hierlex_driver_is_bound_in_a_fresh_interpreter():

@@ -161,11 +161,37 @@ def _score_hierlex(
     # division filter downstream lets it through and it would be written out as
     # a real code.
     accepted = shards["accepted"].astype(bool) & shards["is_leaf"].astype(bool)
+    # The bundle's parent-fallback rewrites a leaf the model proposed into its
+    # parent's "n.e.c." sibling whenever leaf-level confidence is short of the
+    # action threshold. Keep the proposed leaf instead, on the rows where the
+    # rewrite landed on a real leaf.
+    #
+    # Measured on the bundle's own nested outer-OOF gold (the 20260908 retrain,
+    # 2,154 accepted rows where the rewrite actually changed the code): the code
+    # the rewrite WRITES is correct 15.6% of the time and the leaf it DISCARDS
+    # is correct 75.8%. Depth-3 accuracy is identical either way -- 98.5% --
+    # because the rewrite never leaves the depth-3 parent: on 162,301 production
+    # rows it stays inside that prefix 100.00% of the time and the code it emits
+    # ends in ".9" 100.00% of the time. So this is strictly better at leaf grain
+    # and exactly neutral above it, worth +0.60 pt of leaf-exact precision at
+    # zero coverage cost.
+    #
+    # It is not caution being removed. A fallback that is right 15.6% of the
+    # time against a discarded leaf that is right 75.8% is not expressing doubt
+    # about which sibling is correct, it is losing information the gate was
+    # already confident in -- these rows carry a median gate_score of 0.972
+    # against an acceptance threshold of 0.9437.
+    #
+    # `is_leaf` is still required: where the parent has no "n.e.c." leaf the
+    # scorer emits the synthetic `<parent>.__parent_fallback__` token, those
+    # rows are a parent-grain decision and keep going out as `fallback_parent`.
+    _rewritten = shards["is_fallback"].astype(bool) & shards["is_leaf"].astype(bool)
+    _leaf = shards["assigned_coicop"].where(~_rewritten, shards["proposed_leaf"])
     frame = pd.DataFrame(
         {
             "product_name_original": shards["name"].astype(str),
             "country": shards["country"].astype(str),
-            "leaf": shards["assigned_coicop"],
+            "leaf": _leaf,
             # Leaf softmax score, NOT the gate score -- the same split
             # hierlex/decide.py makes. Two different numbers: acceptance is a
             # threshold on the gate, and collapsing them hides a confident leaf
