@@ -115,3 +115,44 @@ def test_curated_codes_are_real_taxonomy_leaves(name, code):
     except FileNotFoundError:
         pytest.skip("coicop_categories.xlsx not available")
     assert coicop_codes.is_narrow(coicop_codes.parse_codes(code), valid_leaves)
+
+
+@pytest.mark.parametrize(
+    "given,expected",
+    [
+        ("01.1.1.1.2", "01.1.1.1.2"),  # curated leaf outranks the source map
+        ("", "02.1.1.1"),  # blank must FALL THROUGH, not assign ""
+        ("   ", "02.1.1.1"),
+        (None, "02.1.1.1"),
+        (float("nan"), "02.1.1.1"),
+        ("nan", "02.1.1.1"),  # what pandas leaves behind after astype(str)
+    ],
+)
+def test_blank_curated_code_falls_through_to_the_source_map(given, expected):
+    """The silent-blanking failure mode.
+
+    A per-ITEM curated leaf outranks the per-source YAML map, because it is
+    strictly more specific evidence. But "present but blank" is not evidence of
+    anything: if an empty string were treated as an assignment it would wipe a
+    source's COICOP for every row that happens to carry no curated leaf, and
+    nothing anywhere would raise. Every empty shape has to fall through."""
+    import pandas as pd
+
+    prepare = pytest.importorskip("prices.enrich.stages.prepare")
+
+    df = pd.DataFrame(
+        {
+            "country": ["mongolia"],
+            "source": ["yaml_source"],
+            "declared_coicop_codes": [given],
+        }
+    )
+    source_map = {("mongolia", "yaml_source"): "02.1.1.1"}
+
+    per_row = df["declared_coicop_codes"].fillna("").astype(str).str.strip()
+    per_row = per_row.where(per_row.str.lower() != "nan", "")
+    per_source = pd.Series(
+        prepare._source_lookup(df, source_map), index=df.index
+    ).astype(str)
+
+    assert per_row.where(per_row != "", per_source).iloc[0] == expected
