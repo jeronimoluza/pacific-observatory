@@ -316,6 +316,8 @@ Object.keys(DATA.geos).forEach(function (g) {
    rather than derived: a place keeps the colour it was given until it leaves the
    chart, and dropping one never repaints the others. Modulo on a global index
    would have handed two selected countries the same hue. */
+var GEO_DASH = [undefined, [7,4], [2,3], [11,4,2,4]];
+var MAX_SLOTS = PAL.length * GEO_DASH.length;
 var SLOT = {};
 function assignSlots(drawn) {
   Object.keys(SLOT).forEach(function (g) {
@@ -324,10 +326,20 @@ function assignSlots(drawn) {
   Object.keys(SLOT).forEach(function (g) { used[SLOT[g]] = 1; });
   drawn.forEach(function (g) {
     if (g === "W" || SLOT[g] != null) return;
-    for (var i = 0; i < PAL.length; i++) if (!used[i]) { SLOT[g] = i; used[i] = 1; return; }
+    for (var i = 0; i < MAX_SLOTS; i++) if (!used[i]) { SLOT[g] = i; used[i] = 1; return; }
   });
 }
-function geoColor(g) { return g === "W" ? INK : (SLOT[g] == null ? FAINT : PAL[SLOT[g]]); }
+/* Hue cycles first and dash second, so the six validated hues are exhausted as
+   solid lines before any of them is reused with a different stroke. */
+function geoColor(g) {
+  return g === "W" ? INK
+    : (SLOT[g] == null ? FAINT : PAL[SLOT[g] % PAL.length]);
+}
+function geoDash(g) {
+  if (g === "W") return [6,3];
+  return SLOT[g] == null ? undefined
+    : GEO_DASH[Math.floor(SLOT[g] / PAL.length)];
+}
 var GEO_INDEX = {}, LAST_P = {};
 Object.keys(DATA.gseries).forEach(function (key) {
   var a = key.split("|"), g = DATA.geos[a[1]], s = DATA.gseries[key];
@@ -603,9 +615,10 @@ function renderWorldTrends() {
   /* What the reader picked and what can be drawn today are different things.
      Holding them apart means a thin category *parks* a place instead of striking
      it off, so it comes back the moment the category or window can carry it. */
+  var cap = kind === "country" ? PAL.length : MAX_SLOTS;
   function defaults() {
     var d = cands.filter(function (c) { return c.g !== "W"; })
-      .slice(0, PAL.length).map(function (c) { return c.g; })
+      .slice(0, cap).map(function (c) { return c.g; })
       .sort(function (a, b) { return DATA.geos[a].t < DATA.geos[b].t ? -1 : 1; });
     if (avail.W) d.unshift("W");
     return d;
@@ -622,7 +635,7 @@ function renderWorldTrends() {
   assignSlots(drawn);
   DRAWN = drawn;
 
-  var atCap = drawn.filter(function (g) { return g !== "W"; }).length >= PAL.length;
+  var atCap = drawn.filter(function (g) { return g !== "W"; }).length >= cap;
   /* Countries are capped at eighteen chips, but the World yardstick is drawn by
      default and must keep its own chip whatever the cap: without one it was on
      the chart with no way to switch it off. */
@@ -639,7 +652,7 @@ function renderWorldTrends() {
       return '<button class="chip ser' + (on ? " on" : "") + '" aria-pressed="' + on + '"' +
         (noFx ? ' disabled title="The world spans many currencies, so it has no rate to ' +
           'convert at — turn the official-CPI benchmark off to bring it back"' :
-         full ? ' disabled title="Six lines is the limit — switch one off first"' : "") +
+         full ? ' disabled title="' + cap + ' lines is the limit — switch one off first"' : "") +
         ' style="border-left-color:' + (on ? geoColor(c.g) : "var(--rule)") +
         '" onclick="APP.toggleGeo(' + arg(c.g) + ')">' + esc(c.t) +
         '<span class="c">' + c.n + "</span></button>"; }).join("") +
@@ -712,7 +725,7 @@ function renderWorldTrends() {
     ds.push({ label:c.t, data:pts,
       borderColor: geoColor(g),
       borderWidth: g === "W" ? 2.8 : 2.2,
-      borderDash: g === "W" ? [6,3] : undefined,
+      borderDash: geoDash(g),
       tension:.2, pointRadius:2.8, spanGaps:true, segment:GAP_SEG });
   });
 
@@ -1460,6 +1473,7 @@ function box(l, v, sign) {
    same COICOP leaf in the same unit. The waterfall takes one country's gap
    apart by category group; the heatmap lays every country's groups side by side. */
 var HM_MIN_LEAVES = 3, HM_MID = "#e5e2d9", HM_FULL = Math.log(2);
+var HM_MIN_COUNTRIES = 6;
 
 function classOf(code) {
   var a = ancestors(code), c = a[2] || a[a.length - 1];
@@ -1706,8 +1720,8 @@ function renderHeatmap() {
   document.getElementById("hreg-all").className = "chip" + (S.hregion ? "" : " on");
   document.getElementById("hreg-all").setAttribute("aria-pressed", S.hregion ? "false" : "true");
 
-  var rows = Object.keys(rowN).filter(function (c) { return rowN[c] >= 15; })
-    .sort(function (a2, b2) { return rowN[b2] - rowN[a2]; }).slice(0, 11).sort();
+  var rows = Object.keys(rowN)
+    .filter(function (c) { return rowN[c] >= HM_MIN_COUNTRIES; }).sort();
   var shown = all.filter(function (r) { return !S.hregion || r.region === S.hregion; });
 
   if (!rows.length || !shown.length) {
@@ -1734,10 +1748,23 @@ function renderHeatmap() {
         r.level.toFixed(0) + '" tabindex="0" role="button" data-act="1" onclick="APP.openCountry(' +
         arg(r.slug) + ')">' + esc(r.name) + "</th>"; }).join("") + "</tr></thead>";
 
+  var span = shown.length + 1, seen = {};
+  function band(cls) {
+    var a2 = ancestors(cls), out = "";
+    [0, 1].forEach(function (d) {
+      var code = a2[d];
+      if (!code || seen[code] || !DATA.tax[code]) return;
+      seen[code] = 1;
+      out += '<tr class="hmg l' + (d + 1) + '"><td colspan="' + span + '"><span>' +
+        esc(title(code)) + "</span></td></tr>";
+    });
+    return out;
+  }
   var body = "<tbody>" + rows.map(function (cls) {
-    var tr = '<tr><td class="ctry" title="' + esc(title(cls)) + " · " + rowN[cls] +
+    var tr = band(cls) + '<tr><td class="ctry ind" title="' + esc(title(cls)) + " · " +
+      rowN[cls] +
       ' countries" tabindex="0" role="button" data-act="1" onclick="APP.hsort(' + arg(cls) +
-      ')">' + esc(shortTitle(cls)) +
+      ')">' + esc(proseTitle(cls)) +
       '<span class="ru">vs world</span>' +
       (sk === cls ? (sd === 1 ? " ▼" : " ▲") : "") + "</td>";
     return tr + shown.map(function (r) {
