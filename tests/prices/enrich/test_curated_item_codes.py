@@ -156,3 +156,45 @@ def test_blank_curated_code_falls_through_to_the_source_map(given, expected):
     ).astype(str)
 
     assert per_row.where(per_row != "", per_source).iloc[0] == expected
+
+
+def test_every_emitted_key_survives_the_spill_projection(tmp_path):
+    """`EMITTED_COLS` is a strict projection, and dropping is SILENT.
+
+    `_spill` rebuilds every batch as `{col: ... for col in EMITTED_COLS}`, so a
+    key an emitter yields but that is missing from that tuple never reaches the
+    shard -- and the column still exists downstream, uniformly null, with
+    nothing raised. That is how `declared_coicop_codes` was lost for all 6.14M
+    WB RTDI rows: the emitter set it, the tuple did not list it.
+
+    Pinning emitter-keys ⊆ EMITTED_COLS + {wayback} catches the next one."""
+    import pandas as pd
+
+    concatenate = pytest.importorskip("prices.enrich.stages.concatenate")
+
+    csv = tmp_path / "price_observations.csv"
+    pd.DataFrame(
+        [
+            {
+                "item_name": "Rice (imported)",
+                "price_local": 1234.5,
+                "currency": "KES",
+                "observation_date": "2024-01-01",
+                "source_url": "https://example.invalid/catalog/4483",
+                "observation_hash": "abc123",
+                "coicop_code": "01.1.1.1.2",
+                "unit": "KG",
+            }
+        ]
+    ).to_csv(csv, index=False)
+
+    emitted = list(concatenate._emit_price_obs(csv))
+    assert emitted, "the emitter produced no rows"
+
+    allowed = set(concatenate.EMITTED_COLS) | {"wayback"}
+    for row in emitted:
+        dropped = set(row) - allowed
+        assert not dropped, f"emitted keys silently dropped by the spill: {dropped}"
+
+    # and the curated leaf specifically must arrive
+    assert emitted[0]["declared_coicop_codes"] == "01.1.1.1.2"

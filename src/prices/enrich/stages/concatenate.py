@@ -118,9 +118,18 @@ OUTPUT_COLS = [
 CLASSIFIER_MARKER = "classifier"
 
 
-# Every column the emitters below can produce. `unit` comes only from
-# `_emit_price_obs`, so the emitters disagree about the key set; pinning the
-# columns is what lets batches from different shapes share one spill schema.
+# Every column the emitters below can produce. `unit` and
+# `declared_coicop_codes` come only from `_emit_price_obs`, so the emitters
+# disagree about the key set; pinning the columns is what lets batches from
+# different shapes share one spill schema.
+#
+# This tuple is a strict projection -- `_spill` builds each batch as
+# `{col: ... for col in EMITTED_COLS}` -- so a key an emitter yields but that is
+# missing here is dropped SILENTLY, with the column still present downstream and
+# uniformly null. That is exactly how `declared_coicop_codes` was lost for all
+# 6.14M WB RTDI rows: the emitter set it, this tuple did not list it, and the
+# shards came out with the column full of None and no error anywhere. Anything
+# added to an emitter must be added here too.
 EMITTED_COLS = (
     "product_name",
     "price",
@@ -132,6 +141,7 @@ EMITTED_COLS = (
     "category",
     "details",
     "unit",
+    "declared_coicop_codes",
 )
 
 # `wayback` is the one non-text emitted column: the emitters set a real bool and
