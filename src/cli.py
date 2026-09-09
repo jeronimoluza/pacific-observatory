@@ -452,6 +452,8 @@ from prices.enrich.gold_audit.cli import (  # noqa: E402
     gold_audit_group as _prices_gold_audit,
 )
 
+from prices.rtcal.cli import rtcal as _prices_rtcal  # noqa: E402
+
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
 prices.add_command(_prices_common_crawl, name="common-crawl")
@@ -467,6 +469,7 @@ prices.add_command(_prices_port_decisions, name="port-decisions")
 prices.add_command(_prices_train_classifier, name="train-classifier")
 prices.add_command(_prices_label, name="label")
 prices.add_command(_prices_gold_audit, name="gold-audit")
+prices.add_command(_prices_rtcal, name="rtcal")
 
 
 @prices.command("build")

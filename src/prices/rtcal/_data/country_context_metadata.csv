@@ -1,0 +1,210 @@
+country,country_iso3,country_iso2,wb_name,country_region_id,country_region,country_income_id,country_income,country_longitude,country_latitude,country_metadata_source
+afghanistan,AFG,AF,Afghanistan,MEA,"Middle East, North Africa, Afghanistan & Pakistan",LIC,Low income,69.1761,34.5228,world_bank_country_api
+albania,ALB,AL,Albania,ECS,Europe & Central Asia,UMC,Upper middle income,19.8172,41.3317,world_bank_country_api
+algeria,DZA,DZ,Algeria,MEA,"Middle East, North Africa, Afghanistan & Pakistan",UMC,Upper middle income,3.05097,36.7397,world_bank_country_api
+american_samoa,ASM,AS,American Samoa,EAS,East Asia & Pacific,HIC,High income,-170.691,-14.2846,world_bank_country_api
+andorra,AND,AD,Andorra,ECS,Europe & Central Asia,HIC,High income,1.5218,42.5075,world_bank_country_api
+angola,AGO,AO,Angola,SSF,Sub-Saharan Africa ,LMC,Lower middle income,13.242,-8.81155,world_bank_country_api
+antigua_and_barbuda,ATG,AG,Antigua and Barbuda,LCN,Latin America & Caribbean ,HIC,High income,-61.8456,17.1175,world_bank_country_api
+argentina,ARG,AR,Argentina,LCN,Latin America & Caribbean ,UMC,Upper middle income,-58.4173,-34.6118,world_bank_country_api
+armenia,ARM,AM,Armenia,ECS,Europe & Central Asia,UMC,Upper middle income,44.509,40.1596,world_bank_country_api
+aruba,ABW,AW,Aruba,LCN,Latin America & Caribbean ,HIC,High income,-70.0167,12.5167,world_bank_country_api
+australia,AUS,AU,Australia,EAS,East Asia & Pacific,HIC,High income,149.129,-35.282,world_bank_country_api
+austria,AUT,AT,Austria,ECS,Europe & Central Asia,HIC,High income,16.3798,48.2201,world_bank_country_api
+azerbaijan,AZE,AZ,Azerbaijan,ECS,Europe & Central Asia,UMC,Upper middle income,49.8932,40.3834,world_bank_country_api
+bahamas_the,BHS,BS,"Bahamas, The",LCN,Latin America & Caribbean ,HIC,High income,-77.339,25.0661,world_bank_country_api
+bahrain,BHR,BH,Bahrain,MEA,"Middle East, North Africa, Afghanistan & Pakistan",HIC,High income,50.5354,26.1921,world_bank_country_api
+bangladesh,BGD,BD,Bangladesh,SAS,South Asia,LMC,Lower middle income,90.4113,23.7055,world_bank_country_api
+barbados,BRB,BB,Barbados,LCN,Latin America & Caribbean ,HIC,High income,-59.6105,13.0935,world_bank_country_api
+belarus,BLR,BY,Belarus,ECS,Europe & Central Asia,UMC,Upper middle income,27.5766,53.9678,world_bank_country_api
+belgium,BEL,BE,Belgium,ECS,Europe & Central Asia,HIC,High income,4.36761,50.8371,world_bank_country_api
+belize,BLZ,BZ,Belize,LCN,Latin America & Caribbean ,UMC,Upper middle income,-88.7713,17.2534,world_bank_country_api
+benin,BEN,BJ,Benin,SSF,Sub-Saharan Africa ,LMC,Lower middle income,2.6323,6.4779,world_bank_country_api
+bhutan,BTN,BT,Bhutan,SAS,South Asia,LMC,Lower middle income,89.6177,27.5768,world_bank_country_api
+bolivia,BOL,BO,Bolivia,LCN,Latin America & Caribbean ,LMC,Lower middle income,-66.1936,-13.9908,world_bank_country_api
+bosnia_and_herzegovina,BIH,BA,Bosnia and Herzegovina,ECS,Europe & Central Asia,UMC,Upper middle income,18.4214,43.8607,world_bank_country_api
+botswana,BWA,BW,Botswana,SSF,Sub-Saharan Africa ,UMC,Upper middle income,25.9201,-24.6544,world_bank_country_api
+brazil,BRA,BR,Brazil,LCN,Latin America & Caribbean ,UMC,Upper middle income,-47.9292,-15.7801,world_bank_country_api
+british_virgin_islands,VGB,VG,British Virgin Islands,LCN,Latin America & Caribbean ,HIC,High income,-64.623056,18.431389,world_bank_country_api
+brunei_darussalam,BRN,BN,Brunei Darussalam,EAS,East Asia & Pacific,HIC,High income,114.946,4.94199,world_bank_country_api
+bulgaria,BGR,BG,Bulgaria,ECS,Europe & Central Asia,HIC,High income,23.3238,42.7105,world_bank_country_api
+burkina_faso,BFA,BF,Burkina Faso,SSF,Sub-Saharan Africa ,LIC,Low income,-1.53395,12.3605,world_bank_country_api
+burundi,BDI,BI,Burundi,SSF,Sub-Saharan Africa ,LIC,Low income,29.3639,-3.3784,world_bank_country_api
+cabo_verde,CPV,CV,Cabo Verde,SSF,Sub-Saharan Africa ,UMC,Upper middle income,-23.5087,14.9218,world_bank_country_api
+cambodia,KHM,KH,Cambodia,EAS,East Asia & Pacific,LMC,Lower middle income,104.874,11.5556,world_bank_country_api
+cameroon,CMR,CM,Cameroon,SSF,Sub-Saharan Africa ,LMC,Lower middle income,11.5174,3.8721,world_bank_country_api
+cayman_islands,CYM,KY,Cayman Islands,LCN,Latin America & Caribbean ,HIC,High income,-81.3857,19.3022,world_bank_country_api
+central_african_republic,CAF,CF,Central African Republic,SSF,Sub-Saharan Africa ,LIC,Low income,21.6407,5.63056,world_bank_country_api
+chad,TCD,TD,Chad,SSF,Sub-Saharan Africa ,LIC,Low income,15.0445,12.1048,world_bank_country_api
+channel_islands,CHI,JG,Channel Islands,ECS,Europe & Central Asia,HIC,High income,,,world_bank_country_api
+chile,CHL,CL,Chile,LCN,Latin America & Caribbean ,HIC,High income,-70.6475,-33.475,world_bank_country_api
+china,CHN,CN,China,EAS,East Asia & Pacific,UMC,Upper middle income,116.286,40.0495,world_bank_country_api
+colombia,COL,CO,Colombia,LCN,Latin America & Caribbean ,UMC,Upper middle income,-74.082,4.60987,world_bank_country_api
+comoros,COM,KM,Comoros,SSF,Sub-Saharan Africa ,LMC,Lower middle income,43.2418,-11.6986,world_bank_country_api
+congo_dem_rep,COD,CD,"Congo, Dem. Rep.",SSF,Sub-Saharan Africa ,LIC,Low income,15.3222,-4.325,world_bank_country_api
+congo_rep,COG,CG,"Congo, Rep.",SSF,Sub-Saharan Africa ,LMC,Lower middle income,15.2662,-4.2767,world_bank_country_api
+costa_rica,CRI,CR,Costa Rica,LCN,Latin America & Caribbean ,HIC,High income,-84.0089,9.63701,world_bank_country_api
+cote_divoire,CIV,CI,Cote d'Ivoire,SSF,Sub-Saharan Africa ,LMC,Lower middle income,-4.0305,5.332,world_bank_country_api
+croatia,HRV,HR,Croatia,ECS,Europe & Central Asia,HIC,High income,15.9614,45.8069,world_bank_country_api
+cuba,CUB,CU,Cuba,LCN,Latin America & Caribbean ,UMC,Upper middle income,-82.3667,23.1333,world_bank_country_api
+curacao,CUW,CW,Curacao,LCN,Latin America & Caribbean ,HIC,High income,,,world_bank_country_api
+cyprus,CYP,CY,Cyprus,ECS,Europe & Central Asia,HIC,High income,33.3736,35.1676,world_bank_country_api
+czech_republic,CZE,CZ,Czechia,ECS,Europe & Central Asia,HIC,High income,14.4205,50.0878,world_bank_country_api
+denmark,DNK,DK,Denmark,ECS,Europe & Central Asia,HIC,High income,12.5681,55.6763,world_bank_country_api
+djibouti,DJI,DJ,Djibouti,MEA,"Middle East, North Africa, Afghanistan & Pakistan",LMC,Lower middle income,43.1425,11.5806,world_bank_country_api
+dominica,DMA,DM,Dominica,LCN,Latin America & Caribbean ,UMC,Upper middle income,-61.39,15.2976,world_bank_country_api
+dominican_republic,DOM,DO,Dominican Republic,LCN,Latin America & Caribbean ,UMC,Upper middle income,-69.8908,18.479,world_bank_country_api
+ecuador,ECU,EC,Ecuador,LCN,Latin America & Caribbean ,UMC,Upper middle income,-78.5243,-0.229498,world_bank_country_api
+egypt,EGY,EG,"Egypt, Arab Rep.",MEA,"Middle East, North Africa, Afghanistan & Pakistan",LMC,Lower middle income,31.2461,30.0982,world_bank_country_api
+el_salvador,SLV,SV,El Salvador,LCN,Latin America & Caribbean ,UMC,Upper middle income,-89.2073,13.7034,world_bank_country_api
+equatorial_guinea,GNQ,GQ,Equatorial Guinea,SSF,Sub-Saharan Africa ,UMC,Upper middle income,8.7741,3.7523,world_bank_country_api
+estonia,EST,EE,Estonia,ECS,Europe & Central Asia,HIC,High income,24.7586,59.4392,world_bank_country_api
+eswatini,SWZ,SZ,Eswatini,SSF,Sub-Saharan Africa ,LMC,Lower middle income,31.4659,-26.5225,world_bank_country_api
+ethiopia,ETH,ET,Ethiopia,SSF,Sub-Saharan Africa ,LIC,Low income,38.7468,9.02274,world_bank_country_api
+fiji,FJI,FJ,Fiji,EAS,East Asia & Pacific,UMC,Upper middle income,178.399,-18.1149,world_bank_country_api
+finland,FIN,FI,Finland,ECS,Europe & Central Asia,HIC,High income,24.9525,60.1608,world_bank_country_api
+france,FRA,FR,France,ECS,Europe & Central Asia,HIC,High income,2.35097,48.8566,world_bank_country_api
+french_polynesia,PYF,PF,French Polynesia,EAS,East Asia & Pacific,HIC,High income,-149.57,-17.535,world_bank_country_api
+gabon,GAB,GA,Gabon,SSF,Sub-Saharan Africa ,UMC,Upper middle income,9.45162,0.38832,world_bank_country_api
+gambia,GMB,GM,"Gambia, The",SSF,Sub-Saharan Africa ,LIC,Low income,-16.5885,13.4495,world_bank_country_api
+georgia,GEO,GE,Georgia,ECS,Europe & Central Asia,UMC,Upper middle income,44.793,41.71,world_bank_country_api
+germany,DEU,DE,Germany,ECS,Europe & Central Asia,HIC,High income,13.4115,52.5235,world_bank_country_api
+ghana,GHA,GH,Ghana,SSF,Sub-Saharan Africa ,LMC,Lower middle income,-0.20795,5.57045,world_bank_country_api
+gibraltar,GIB,GI,Gibraltar,ECS,Europe & Central Asia,HIC,High income,,,world_bank_country_api
+greece,GRC,GR,Greece,ECS,Europe & Central Asia,HIC,High income,23.7166,37.9792,world_bank_country_api
+greenland,GRL,GL,Greenland,ECS,Europe & Central Asia,HIC,High income,-51.7214,64.1836,world_bank_country_api
+grenada,GRD,GD,Grenada,LCN,Latin America & Caribbean ,UMC,Upper middle income,-61.7449,12.0653,world_bank_country_api
+guam,GUM,GU,Guam,EAS,East Asia & Pacific,HIC,High income,144.794,13.4443,world_bank_country_api
+guatemala,GTM,GT,Guatemala,LCN,Latin America & Caribbean ,UMC,Upper middle income,-90.5328,14.6248,world_bank_country_api
+guinea,GIN,GN,Guinea,SSF,Sub-Saharan Africa ,LMC,Lower middle income,-13.7,9.51667,world_bank_country_api
+guinea_bissau,GNB,GW,Guinea-Bissau,SSF,Sub-Saharan Africa ,LIC,Low income,-15.1804,11.8037,world_bank_country_api
+guyana,GUY,GY,Guyana,LCN,Latin America & Caribbean ,HIC,High income,-58.1548,6.80461,world_bank_country_api
+haiti,HTI,HT,Haiti,LCN,Latin America & Caribbean ,LMC,Lower middle income,-72.3288,18.5392,world_bank_country_api
+honduras,HND,HN,Honduras,LCN,Latin America & Caribbean ,LMC,Lower middle income,-87.4667,15.1333,world_bank_country_api
+hong_kong_sar_china,HKG,HK,"Hong Kong SAR, China",EAS,East Asia & Pacific,HIC,High income,114.109,22.3964,world_bank_country_api
+hungary,HUN,HU,Hungary,ECS,Europe & Central Asia,HIC,High income,19.0408,47.4984,world_bank_country_api
+iceland,ISL,IS,Iceland,ECS,Europe & Central Asia,HIC,High income,-21.8952,64.1353,world_bank_country_api
+india,IND,IN,India,SAS,South Asia,LMC,Lower middle income,77.225,28.6353,world_bank_country_api
+indonesia,IDN,ID,Indonesia,EAS,East Asia & Pacific,UMC,Upper middle income,106.83,-6.19752,world_bank_country_api
+iran,IRN,IR,"Iran, Islamic Rep.",MEA,"Middle East, North Africa, Afghanistan & Pakistan",UMC,Upper middle income,51.4447,35.6878,world_bank_country_api
+iraq,IRQ,IQ,Iraq,MEA,"Middle East, North Africa, Afghanistan & Pakistan",UMC,Upper middle income,44.394,33.3302,world_bank_country_api
+ireland,IRL,IE,Ireland,ECS,Europe & Central Asia,HIC,High income,-6.26749,53.3441,world_bank_country_api
+israel,ISR,IL,Israel,MEA,"Middle East, North Africa, Afghanistan & Pakistan",HIC,High income,35.2035,31.7717,world_bank_country_api
+italy,ITA,IT,Italy,ECS,Europe & Central Asia,HIC,High income,12.4823,41.8955,world_bank_country_api
+jamaica,JAM,JM,Jamaica,LCN,Latin America & Caribbean ,UMC,Upper middle income,-76.792,17.9927,world_bank_country_api
+japan,JPN,JP,Japan,EAS,East Asia & Pacific,HIC,High income,139.77,35.67,world_bank_country_api
+jordan,JOR,JO,Jordan,MEA,"Middle East, North Africa, Afghanistan & Pakistan",UMC,Upper middle income,35.9263,31.9497,world_bank_country_api
+kazakhstan,KAZ,KZ,Kazakhstan,ECS,Europe & Central Asia,UMC,Upper middle income,71.4382,51.1879,world_bank_country_api
+kenya,KEN,KE,Kenya,SSF,Sub-Saharan Africa ,LMC,Lower middle income,36.8126,-1.27975,world_bank_country_api
+kiribati,KIR,KI,Kiribati,EAS,East Asia & Pacific,LMC,Lower middle income,172.979,1.32905,world_bank_country_api
+korea_dem_peoples_rep,PRK,KP,"Korea, Dem. People's Rep.",EAS,East Asia & Pacific,LIC,Low income,125.754,39.0319,world_bank_country_api
+kosovo,XKX,XK,Kosovo,ECS,Europe & Central Asia,UMC,Upper middle income,20.926,42.565,world_bank_country_api
+kuwait,KWT,KW,Kuwait,MEA,"Middle East, North Africa, Afghanistan & Pakistan",HIC,High income,47.9824,29.3721,world_bank_country_api
+kyrgyz_republic,KGZ,KG,Kyrgyz Republic,ECS,Europe & Central Asia,LMC,Lower middle income,74.6057,42.8851,world_bank_country_api
+lao_pdr,LAO,LA,Lao PDR,EAS,East Asia & Pacific,LMC,Lower middle income,102.177,18.5826,world_bank_country_api
+latvia,LVA,LV,Latvia,ECS,Europe & Central Asia,HIC,High income,24.1048,56.9465,world_bank_country_api
+lebanon,LBN,LB,Lebanon,MEA,"Middle East, North Africa, Afghanistan & Pakistan",LMC,Lower middle income,35.5134,33.8872,world_bank_country_api
+lesotho,LSO,LS,Lesotho,SSF,Sub-Saharan Africa ,LMC,Lower middle income,27.7167,-29.5208,world_bank_country_api
+liberia,LBR,LR,Liberia,SSF,Sub-Saharan Africa ,LIC,Low income,-10.7957,6.30039,world_bank_country_api
+libya,LBY,LY,Libya,MEA,"Middle East, North Africa, Afghanistan & Pakistan",UMC,Upper middle income,13.1072,32.8578,world_bank_country_api
+liechtenstein,LIE,LI,Liechtenstein,ECS,Europe & Central Asia,HIC,High income,9.52148,47.1411,world_bank_country_api
+lithuania,LTU,LT,Lithuania,ECS,Europe & Central Asia,HIC,High income,25.2799,54.6896,world_bank_country_api
+luxembourg,LUX,LU,Luxembourg,ECS,Europe & Central Asia,HIC,High income,6.1296,49.61,world_bank_country_api
+macao_sar_china,MAC,MO,"Macao SAR, China",EAS,East Asia & Pacific,HIC,High income,113.55,22.1667,world_bank_country_api
+madagascar,MDG,MG,Madagascar,SSF,Sub-Saharan Africa ,LIC,Low income,45.7167,-20.4667,world_bank_country_api
+malawi,MWI,MW,Malawi,SSF,Sub-Saharan Africa ,LIC,Low income,33.7703,-13.9899,world_bank_country_api
+malaysia,MYS,MY,Malaysia,EAS,East Asia & Pacific,UMC,Upper middle income,101.684,3.12433,world_bank_country_api
+maldives,MDV,MV,Maldives,SAS,South Asia,UMC,Upper middle income,73.5109,4.1742,world_bank_country_api
+mali,MLI,ML,Mali,SSF,Sub-Saharan Africa ,LIC,Low income,-7.50034,13.5667,world_bank_country_api
+malta,MLT,MT,Malta,MEA,"Middle East, North Africa, Afghanistan & Pakistan",HIC,High income,14.5189,35.9042,world_bank_country_api
+marshall_islands,MHL,MH,Marshall Islands,EAS,East Asia & Pacific,UMC,Upper middle income,171.135,7.11046,world_bank_country_api
+mauritania,MRT,MR,Mauritania,SSF,Sub-Saharan Africa ,LMC,Lower middle income,-15.9824,18.2367,world_bank_country_api
+mauritius,MUS,MU,Mauritius,SSF,Sub-Saharan Africa ,UMC,Upper middle income,57.4977,-20.1605,world_bank_country_api
+mexico,MEX,MX,Mexico,LCN,Latin America & Caribbean ,UMC,Upper middle income,-99.1276,19.427,world_bank_country_api
+micronesia_fed_sts,FSM,FM,"Micronesia, Fed. Sts.",EAS,East Asia & Pacific,UMC,Upper middle income,158.185,6.91771,world_bank_country_api
+moldova,MDA,MD,Moldova,ECS,Europe & Central Asia,UMC,Upper middle income,28.8497,47.0167,world_bank_country_api
+mongolia,MNG,MN,Mongolia,EAS,East Asia & Pacific,UMC,Upper middle income,106.937,47.9129,world_bank_country_api
+montenegro,MNE,ME,Montenegro,ECS,Europe & Central Asia,UMC,Upper middle income,19.2595,42.4602,world_bank_country_api
+morocco,MAR,MA,Morocco,MEA,"Middle East, North Africa, Afghanistan & Pakistan",LMC,Lower middle income,-6.8704,33.9905,world_bank_country_api
+mozambique,MOZ,MZ,Mozambique,SSF,Sub-Saharan Africa ,LIC,Low income,32.5713,-25.9664,world_bank_country_api
+myanmar,MMR,MM,Myanmar,EAS,East Asia & Pacific,LMC,Lower middle income,95.9562,21.914,world_bank_country_api
+namibia,NAM,NA,Namibia,SSF,Sub-Saharan Africa ,LMC,Lower middle income,17.0931,-22.5648,world_bank_country_api
+nauru,NRU,NR,Naoero,EAS,East Asia & Pacific,HIC,High income,166.920867,-0.5477,world_bank_country_api
+nepal,NPL,NP,Nepal,SAS,South Asia,LMC,Lower middle income,85.3157,27.6939,world_bank_country_api
+netherlands,NLD,NL,Netherlands,ECS,Europe & Central Asia,HIC,High income,4.89095,52.3738,world_bank_country_api
+new_caledonia,NCL,NC,New Caledonia,EAS,East Asia & Pacific,HIC,High income,166.464,-22.2677,world_bank_country_api
+new_zealand,NZL,NZ,New Zealand,EAS,East Asia & Pacific,HIC,High income,174.776,-41.2865,world_bank_country_api
+nicaragua,NIC,NI,Nicaragua,LCN,Latin America & Caribbean ,LMC,Lower middle income,-86.2734,12.1475,world_bank_country_api
+niger,NER,NE,Niger,SSF,Sub-Saharan Africa ,LIC,Low income,2.1073,13.514,world_bank_country_api
+nigeria,NGA,NG,Nigeria,SSF,Sub-Saharan Africa ,LMC,Lower middle income,7.48906,9.05804,world_bank_country_api
+north_macedonia,MKD,MK,North Macedonia,ECS,Europe & Central Asia,UMC,Upper middle income,21.4361,42.0024,world_bank_country_api
+northern_mariana_islands,MNP,MP,Northern Mariana Islands,EAS,East Asia & Pacific,HIC,High income,145.765,15.1935,world_bank_country_api
+norway,NOR,NO,Norway,ECS,Europe & Central Asia,HIC,High income,10.7387,59.9138,world_bank_country_api
+oman,OMN,OM,Oman,MEA,"Middle East, North Africa, Afghanistan & Pakistan",HIC,High income,58.5874,23.6105,world_bank_country_api
+pakistan,PAK,PK,Pakistan,MEA,"Middle East, North Africa, Afghanistan & Pakistan",LMC,Lower middle income,72.8,30.5167,world_bank_country_api
+palau,PLW,PW,Palau,EAS,East Asia & Pacific,HIC,High income,134.479,7.34194,world_bank_country_api
+panama,PAN,PA,Panama,LCN,Latin America & Caribbean ,HIC,High income,-79.5188,8.99427,world_bank_country_api
+papua_new_guinea,PNG,PG,Papua New Guinea,EAS,East Asia & Pacific,LMC,Lower middle income,147.194,-9.47357,world_bank_country_api
+paraguay,PRY,PY,Paraguay,LCN,Latin America & Caribbean ,UMC,Upper middle income,-57.6362,-25.3005,world_bank_country_api
+peru,PER,PE,Peru,LCN,Latin America & Caribbean ,UMC,Upper middle income,-77.0465,-12.0931,world_bank_country_api
+philippines,PHL,PH,Philippines,EAS,East Asia & Pacific,UMC,Upper middle income,121.035,14.5515,world_bank_country_api
+poland,POL,PL,Poland,ECS,Europe & Central Asia,HIC,High income,21.02,52.26,world_bank_country_api
+portugal,PRT,PT,Portugal,ECS,Europe & Central Asia,HIC,High income,-9.13552,38.7072,world_bank_country_api
+puerto_rico,PRI,PR,Puerto Rico (US),LCN,Latin America & Caribbean ,HIC,High income,-66.0,18.23,world_bank_country_api
+qatar,QAT,QA,Qatar,MEA,"Middle East, North Africa, Afghanistan & Pakistan",HIC,High income,51.5082,25.2948,world_bank_country_api
+romania,ROU,RO,Romania,ECS,Europe & Central Asia,HIC,High income,26.0979,44.4479,world_bank_country_api
+russian_federation,RUS,RU,Russian Federation,ECS,Europe & Central Asia,HIC,High income,37.6176,55.7558,world_bank_country_api
+rwanda,RWA,RW,Rwanda,SSF,Sub-Saharan Africa ,LIC,Low income,30.0587,-1.95325,world_bank_country_api
+samoa,WSM,WS,Samoa,EAS,East Asia & Pacific,UMC,Upper middle income,-171.752,-13.8314,world_bank_country_api
+san_marino,SMR,SM,San Marino,ECS,Europe & Central Asia,HIC,High income,12.4486,43.9322,world_bank_country_api
+saudi_arabia,SAU,SA,Saudi Arabia,MEA,"Middle East, North Africa, Afghanistan & Pakistan",HIC,High income,46.6977,24.6748,world_bank_country_api
+senegal,SEN,SN,Senegal,SSF,Sub-Saharan Africa ,LMC,Lower middle income,-17.4734,14.7247,world_bank_country_api
+serbia,SRB,RS,Serbia,ECS,Europe & Central Asia,UMC,Upper middle income,20.4656,44.8024,world_bank_country_api
+sierra_leone,SLE,SL,Sierra Leone,SSF,Sub-Saharan Africa ,LIC,Low income,-13.2134,8.4821,world_bank_country_api
+singapore,SGP,SG,Singapore,EAS,East Asia & Pacific,HIC,High income,103.85,1.28941,world_bank_country_api
+sint_maarten_dutch_part,SXM,SX,Sint Maarten (Dutch part),LCN,Latin America & Caribbean ,HIC,High income,,,world_bank_country_api
+slovak_republic,SVK,SK,Slovak Republic,ECS,Europe & Central Asia,HIC,High income,17.1073,48.1484,world_bank_country_api
+slovenia,SVN,SI,Slovenia,ECS,Europe & Central Asia,HIC,High income,14.5044,46.0546,world_bank_country_api
+solomon_islands,SLB,SB,Solomon Islands,EAS,East Asia & Pacific,LMC,Lower middle income,159.949,-9.42676,world_bank_country_api
+somalia,SOM,SO,"Somalia, Fed. Rep.",SSF,Sub-Saharan Africa ,LIC,Low income,45.3254,2.07515,world_bank_country_api
+south_africa,ZAF,ZA,South Africa,SSF,Sub-Saharan Africa ,UMC,Upper middle income,28.1871,-25.746,world_bank_country_api
+south_korea,KOR,KR,"Korea, Rep.",EAS,East Asia & Pacific,HIC,High income,126.957,37.5323,world_bank_country_api
+south_sudan,SSD,SS,South Sudan,SSF,Sub-Saharan Africa ,LIC,Low income,31.6,4.85,world_bank_country_api
+spain,ESP,ES,Spain,ECS,Europe & Central Asia,HIC,High income,-3.70327,40.4167,world_bank_country_api
+sri_lanka,LKA,LK,Sri Lanka,SAS,South Asia,UMC,Upper middle income,79.8528,6.92148,world_bank_country_api
+st_kitts_and_nevis,KNA,KN,St. Kitts and Nevis,LCN,Latin America & Caribbean ,HIC,High income,-62.7309,17.3,world_bank_country_api
+st_lucia,LCA,LC,St. Lucia,LCN,Latin America & Caribbean ,UMC,Upper middle income,-60.9832,14.0,world_bank_country_api
+st_martin_french_part,MAF,MF,St. Martin (French part),LCN,Latin America & Caribbean ,HIC,High income,,,world_bank_country_api
+st_vincent_and_the_grenadines,VCT,VC,St. Vincent and the Grenadines,LCN,Latin America & Caribbean ,UMC,Upper middle income,-61.2653,13.2035,world_bank_country_api
+sudan,SDN,SD,Sudan,SSF,Sub-Saharan Africa ,LIC,Low income,32.5363,15.5932,world_bank_country_api
+suriname,SUR,SR,Suriname,LCN,Latin America & Caribbean ,UMC,Upper middle income,-55.1679,5.8232,world_bank_country_api
+sweden,SWE,SE,Sweden,ECS,Europe & Central Asia,HIC,High income,18.0645,59.3327,world_bank_country_api
+switzerland,CHE,CH,Switzerland,ECS,Europe & Central Asia,HIC,High income,7.44821,46.948,world_bank_country_api
+syria,SYR,SY,Syrian Arab Republic,MEA,"Middle East, North Africa, Afghanistan & Pakistan",LIC,Low income,36.3119,33.5146,world_bank_country_api
+taiwan_china,TWN,TW,"Taiwan, China",EAS,East Asia & Pacific,HIC,High income,121.5654,25.033,manual_taipei_proxy
+tajikistan,TJK,TJ,Tajikistan,ECS,Europe & Central Asia,LMC,Lower middle income,68.7864,38.5878,world_bank_country_api
+tanzania,TZA,TZ,Tanzania,SSF,Sub-Saharan Africa ,LMC,Lower middle income,35.7382,-6.17486,world_bank_country_api
+thailand,THA,TH,Thailand,EAS,East Asia & Pacific,UMC,Upper middle income,100.521,13.7308,world_bank_country_api
+timor_leste,TLS,TL,Timor-Leste,EAS,East Asia & Pacific,LMC,Lower middle income,125.567,-8.56667,world_bank_country_api
+togo,TGO,TG,Togo,SSF,Sub-Saharan Africa ,LMC,Lower middle income,1.2255,6.1228,world_bank_country_api
+tonga,TON,TO,Tonga,EAS,East Asia & Pacific,UMC,Upper middle income,-175.216,-21.136,world_bank_country_api
+trinidad_and_tobago,TTO,TT,Trinidad and Tobago,LCN,Latin America & Caribbean ,HIC,High income,-61.4789,10.6596,world_bank_country_api
+tunisia,TUN,TN,Tunisia,MEA,"Middle East, North Africa, Afghanistan & Pakistan",LMC,Lower middle income,10.21,36.7899,world_bank_country_api
+turkiye,TUR,TR,Turkiye,ECS,Europe & Central Asia,UMC,Upper middle income,32.3606,39.7153,world_bank_country_api
+turkmenistan,TKM,TM,Turkmenistan,ECS,Europe & Central Asia,UMC,Upper middle income,58.3794,37.9509,world_bank_country_api
+turks_and_caicos_islands,TCA,TC,Turks and Caicos Islands,LCN,Latin America & Caribbean ,HIC,High income,-71.141389,21.4602778,world_bank_country_api
+tuvalu,TUV,TV,Tuvalu,EAS,East Asia & Pacific,UMC,Upper middle income,179.089567,-8.6314877,world_bank_country_api
+uganda,UGA,UG,Uganda,SSF,Sub-Saharan Africa ,LIC,Low income,32.5729,0.314269,world_bank_country_api
+ukraine,UKR,UA,Ukraine,ECS,Europe & Central Asia,UMC,Upper middle income,30.5038,50.4536,world_bank_country_api
+united_arab_emirates,ARE,AE,United Arab Emirates,MEA,"Middle East, North Africa, Afghanistan & Pakistan",HIC,High income,54.3705,24.4764,world_bank_country_api
+united_kingdom,GBR,GB,United Kingdom,ECS,Europe & Central Asia,HIC,High income,-0.126236,51.5002,world_bank_country_api
+uruguay,URY,UY,Uruguay,LCN,Latin America & Caribbean ,HIC,High income,-56.0675,-34.8941,world_bank_country_api
+uzbekistan,UZB,UZ,Uzbekistan,ECS,Europe & Central Asia,LMC,Lower middle income,69.269,41.3052,world_bank_country_api
+vanuatu,VUT,VU,Vanuatu,EAS,East Asia & Pacific,LMC,Lower middle income,168.321,-17.7404,world_bank_country_api
+venezuela_rb,VEN,VE,"Venezuela, RB",LCN,Latin America & Caribbean ,LMC,Lower middle income,-69.8371,9.08165,world_bank_country_api
+vietnam,VNM,VN,Viet Nam,EAS,East Asia & Pacific,UMC,Upper middle income,105.825,21.0069,world_bank_country_api
+virgin_islands_us,VIR,VI,Virgin Islands (U.S.),LCN,Latin America & Caribbean ,HIC,High income,-64.8963,18.3358,world_bank_country_api
+west_bank_and_gaza,PSE,PS,West Bank and Gaza,MEA,"Middle East, North Africa, Afghanistan & Pakistan",LMC,Lower middle income,,,world_bank_country_api
+yemen,YEM,YE,"Yemen, Rep.",MEA,"Middle East, North Africa, Afghanistan & Pakistan",LIC,Low income,44.2075,15.352,world_bank_country_api
+zambia,ZMB,ZM,Zambia,SSF,Sub-Saharan Africa ,LMC,Lower middle income,28.2937,-15.3982,world_bank_country_api
+zimbabwe,ZWE,ZW,Zimbabwe,SSF,Sub-Saharan Africa ,LMC,Lower middle income,31.0672,-17.8312,world_bank_country_api
