@@ -5,6 +5,7 @@ Sources: (1) uncertainty - model proposed the exact target leaf but rejected it;
 Lexical mining is deliberately excluded: CJK substring precision was too low (see spot.py).
 Stratified so no country or family dominates."""
 import pandas as pd, numpy as np, datetime
+TAU=0.5893453359603882   # shipped target_95 operating point
 BASE='/home/jeronimoluza/po-worktrees/gap-mining/outputs'
 M=pd.read_parquet(BASE+'/gap_triage_full.parquet')
 tgt=pd.read_csv(BASE+'/target_leaves.csv')
@@ -19,13 +20,13 @@ famname=(gaps.groupby(['country','fam']).coicop
 
 # --- source 1
 U=pd.read_parquet(BASE+'/candidates_raw.parquet')
-U=U[~U.accepted].copy()
+U=U[U.score < TAU].copy()          # still rejected under the shipped target_95 tau
 U['fam']=U.coicop.map(par); U['reason']='uncertainty'
 U=U.rename(columns={'coicop':'current_pred'})[['name','country','fam','current_pred','score','script','reason']]
 
 # --- source 2
 S=pd.read_parquet(BASE+'/sibling_candidates.parquet')
-S=S[~S.accepted].copy()
+S=S[S.score < TAU].copy()          # still rejected under the shipped target_95 tau
 S=S.rename(columns={'parent_pred':'fam','proposed_leaf':'current_pred'})
 S['reason']='sibling'
 S=S[['name','country','fam','current_pred','score','script','reason']]
@@ -42,7 +43,7 @@ rng=np.random.default_rng(11)
 def pick(g,k):
     if len(g)<=k: return g
     # uncertainty rows first, then the rows closest to the decision boundary
-    return (g.assign(_d=(g.score-0.5).abs())
+    return (g.assign(_d=(g.score-TAU).abs())
              .sort_values(['src_rank','_d']).head(k).drop(columns='_d'))
 step1=C.groupby(['country','fam'],group_keys=False).apply(lambda g:pick(g,PER_FAM))
 P=step1.groupby('country',group_keys=False).apply(lambda g:pick(g,PER_COUNTRY))

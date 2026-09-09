@@ -12,6 +12,7 @@ Run order:
 | `agg.py`             | one pass over 256 hierlex pred shards -> leaf x country x score-band census |
 | `triage.py`          | join matrix gaps to candidate supply + gold counts; bucket A/B/C |
 | `cver2.py`           | verify buckets against published observations (QA vs 60d staleness) |
+| `tau95.py`           | re-derive the triage at the shipped target_95 tau |
 | `qa.py`              | which QA gate kills the cells that have observations but none trusted |
 | `a_split.py`         | is a gap leaf model-blind, or just absent in that country? |
 | `corr.py` `causal.py`| does gold count predict coverage? controlled for candidate volume |
@@ -30,11 +31,17 @@ Outputs land in `outputs/` (gitignored, lives on the Geekom).
 
 **Where the gaps die.**
 
-| stage | cells | share |
+Measured at the frozen `accepted` column (old tau 0.9437) and re-derived from the score
+bands at the **shipped `target_95` tau 0.5893**:
+
+| stage | old tau | shipped target_95 |
 |---|---|---|
-| No candidate - model never proposes that leaf in that country | 1,203 | 49.6% |
-| Classifier-blocked - candidates exist, zero accepted | 462 | 19.0% |
-| Accepted but never published | 761 | 31.4% |
+| A - no candidate; model never proposes that leaf in that country | 1,203 (49.6%) | 1,203 (49.6%) |
+| B - classifier-blocked; candidates exist, zero accepted | 462 (19.0%) | **154 (6.3%)** |
+| C - accepted but never published | 761 (31.4%) | **1,069 (44.1%)** |
+
+The tau change alone unblocks 283 cells. Band-derived old-tau counts differ from the
+frozen column by ~25 cells because the 0.9376-0.9437 band straddles the old threshold.
 
 By terminal cause against the published observations: 71.6% never became an observation
 row, 22.1% have observations that all fail QA, 5.4% are trusted but older than the 60-day
@@ -66,10 +73,17 @@ Superseded by sibling mining, which is language-agnostic and needs no term lists
 
 ## The label pack
 
-`outputs/label_pack_gapfill_<date>.csv` - 8,354 rows over all 28 countries and 26
-COICOP families, addressing 603 of the 689 classifier-limited gap cells (38 leaves).
-Two sources: `uncertainty` (2,283 rows - model proposed the exact target leaf but
-rejected it) and `sibling` (6,071 rows - model landed in the target leaf's parent
+`outputs/label_pack_gapfill_<date>.csv` - 6,726 rows over all 28 countries and 26
+COICOP families, addressing 571 of the 689 classifier-limited gap cells (38 leaves).
+Every row is still rejected under the shipped `target_95` tau and is ranked by
+distance to that decision boundary.
+
+Two sources: `uncertainty` (1,519 rows - model proposed the exact target leaf but
+rejected it) and `sibling` (5,207 rows - model landed in the target leaf's parent
 family). Stratified at 30 rows per (country, family) and 450 per country so no
-country or family dominates; scripts are latin 6,126 / cjk 1,151 / hangul 437 /
-cyrillic 362 / thai 199.
+country or family dominates; scripts are latin 4,790 / cjk 893 / hangul 438 /
+cyrillic 340 / thai 168 / other 96.
+
+Spot-checked clean: Fiji "SEALORD HOKI FILLETS" against the gadiform leaf, Samoa
+"Fish (Vaisu)", Mongolia "Шөл аягатай далайн байцаатай" (seaweed soup), Japan
+海ぶどう (sea grapes) at score 0.49 against the seaweed leaf.
