@@ -87,3 +87,104 @@ cyrillic 340 / thai 168 / other 96.
 Spot-checked clean: Fiji "SEALORD HOKI FILLETS" against the gadiform leaf, Samoa
 "Fish (Vaisu)", Mongolia "Шөл аягатай далайн байцаатай" (seaweed soup), Japan
 海ぶどう (sea grapes) at score 0.49 against the seaweed leaf.
+
+---
+
+# World run (2026-09-09)
+
+Same method, whole world. The matrix comes out of the shipped dashboard rather
+than a hand-exported CSV: `gmx.py` brace-matches `const DATA = {...}` out of
+`outputs/prices/global_prices_dashboard.html`, so the triage is against exactly
+the cells Will sees.
+
+## Universe
+
+195 deep COICOP leaves (depth 5, plus depth-4 leaves with no depth-5 child,
+minus the 53 residual `n.e.c.` catch-alls) x 209 countries = **40,755
+addressable cells, 14,173 filled (34.8%), 26,582 gaps.**
+
+## Triage at the shipped target_95 tau (0.5893)
+
+| bucket | cells | share | EAP for comparison |
+|---|---|---|---|
+| A - model never proposes that leaf in that country | 14,843 | 55.8% | 49.6% |
+| B - candidates exist, zero accepted | 1,616 | 6.1% | 6.3% |
+| C - accepted, never published | 10,123 | 38.1% | 44.1% |
+
+The proportions barely move between EAP and the world, which is the useful
+result: the shape of the coverage problem is not regional.
+
+## What does not transfer
+
+The EAP target rule (`gaps>=8 & gold<250 & cand>=200 & acc_rate<0.45`) selects
+**4 leaves** at world scale. Leaf-global acceptance worldwide runs 0.70-0.83
+because the pool is dominated by high-resource countries, so a leaf that is
+badly broken in Mongolia looks healthy in the global average. **The binding
+constraint at world scale is per-cell, not per-leaf**, and targeting had to move
+to the cell.
+
+The world causal test also comes out weaker than EAP's (Q2 rho=0.269 p=0.062,
+Q3 rho=0.245 p=0.093, Q1/Q4 flat). Same middle-band shape, less signal - the
+world leaf set is more saturated.
+
+## Three failure modes, only two of them ours
+
+`gw8.py` classifies every deep leaf by how its coverage fails:
+
+| mode | leaves | median fill | median cand | median gold | verdict |
+|---|---|---|---|---|---|
+| suppressed | 51 | 13.4% | 1,259 | 44 | **label these** |
+| patchy | 110 | 52.4% | 8,403 | 293 | label the anomalous blanks |
+| no_supply | 34 | 4.3% | 263 | 16 | **new specialised sources** |
+
+`no_supply` is the answer to Will's second approach and is a separate file:
+live poultry, live pigs, fresh dates, fresh beans, cassava leaves, quinoa flour,
+yams, sorghum, pigeon peas, cocoa beans, beet sugar. Fewer than 500 candidates
+each across 32.7M predictions - these are not sold on the sites we scrape.
+
+A gap on a `patchy` leaf is only mined when it is *anomalous*: the leaf is
+published for >=25% of the countries in the same region, so the blank is a
+pipeline failure rather than a fact about the market. Without that filter the
+pool fills with garbage - every French steak tagged against "Meat of horses",
+every peach against "Tunas" - because sibling mining will happily assign a whole
+family to a leaf the market does not stock.
+
+## Pack
+
+`outputs/label_pack_world_20260909.csv` - **47,389 rows, 205 countries, 59
+COICOP families**, covering 4,508 of the 5,119 in-scope cells.
+
+Two changes from the EAP pack:
+
+1. **The sibling explode is collapsed.** One row per (product, country, parent
+   family), listing every missing sibling leaf in `candidate_for`. Exploding one
+   product across three missing siblings made it consume three labelling slots
+   for one label.
+2. **Score floor 0.15.** Below that the model is confidently placing the row
+   somewhere else and the row is not a near miss.
+
+Caps: 60 per (country, family), 1,200 per country, ranked by source then
+proximity to the tau boundary. Nauru-to-Israel spread is 1 to 1,175.
+
+Split for the handoff into two strata-balanced halves (alternating within each
+country x family stratum, max per-country imbalance 20 rows):
+`..._half_A_internal.csv` (24,458) and `..._half_B_william.csv` (22,931).
+
+## Run order
+
+| script | does |
+|---|---|
+| `gmx.py` | pull `DATA.current` out of the dashboard HTML |
+| `gw1.py` | world universe + A/B/C triage |
+| `gw2.py` | leaf profile, gold correlation, causal band |
+| `gw3.py` | `(country, parent_pred, band)` census over the 256 shards |
+| `gw4.py` | sibling reachability of every gap |
+| `gw7.py` | anomalous vs structural split + sourcing brief |
+| `gw8.py` | leaf failure modes |
+| `gw5.py` | mine the candidate pool |
+| `gw9.py` | scope the pool to label-addressable cells |
+| `gw10.py` | build the pack |
+| `gw11.py` | spot-check |
+| `gw12.py` | split into halves |
+| `enrich_pack.py` | attach retailer context from `products_input` |
+| `mkbatches.py` | pack -> `gold_v5_batch_*.csv` labeling batches |
