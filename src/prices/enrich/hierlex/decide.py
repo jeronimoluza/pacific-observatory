@@ -154,7 +154,10 @@ def run(
         )
     pkg = package.resolve(version)
     meta = package.manifest(pkg)
-    tau = float(meta["thresholds"]["thresholds"][f"lexical_correctness_gate_{policy}"])
+    # Via `resolve_tau` rather than straight off the manifest: `POLICIES` now
+    # carries locally-solved operating points too, and those have no
+    # `lexical_correctness_gate_*` key to look up.
+    tau = scorer.resolve_tau(version, policy=policy)
     shard_dir = pred_root / meta["method_version"]
     if not any(shard_dir.glob("pred_*.parquet")):
         raise FileNotFoundError(

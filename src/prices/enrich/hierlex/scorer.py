@@ -27,7 +27,61 @@ import pandas as pd
 
 from prices.enrich.hierlex import package
 
-POLICIES = ("conservative_risk", "empirical_98")
+BUNDLE_POLICIES = ("conservative_risk", "empirical_98")
+
+# Operating points solved in this repo, as opposed to the two the bundle ships.
+# Each is the LOWEST tau whose accepted set still meets the named precision, so
+# each buys the most coverage that target allows.
+#
+# Solved on the bundle's own nested-OOF audit (`implementation_oof_decisions`,
+# 278,490 rows, balanced 5-fold), and cross-validated before being written down:
+# choosing tau on four folds and measuring precision on the fifth reproduces the
+# target to within 0.003 points at every level, and the per-fold tau spread at
+# `target_95` is 0.5865-0.5940. The curve is also flat there -- tau +/-0.10
+# moves precision only 94.4%-95.6% -- so a small error in this number is not a
+# cliff.
+#
+# These are OOF scores, so the taus transfer to production rows, which the
+# bundle never trained on. They do NOT transfer to the ~278k gold rows, whose
+# production scores are in-sample and inflated; validate against the OOF audit,
+# never against the production cache.
+LOCAL_TAUS = {
+    "target_95": 0.5893453359603882,
+    "target_92": 0.1712740957736969,
+    "target_90": 0.07299648225307465,
+}
+
+POLICIES = BUNDLE_POLICIES + tuple(LOCAL_TAUS)
+
+
+def resolve_tau(
+    version: str | None = None,
+    policy: str | None = None,
+    tau: float | None = None,
+) -> float:
+    """The acceptance threshold to apply, without loading the bundle.
+
+    An explicit `tau` wins outright; otherwise `policy` (defaulting to the
+    configured one) is looked up in the bundle's thresholds and then in
+    `LOCAL_TAUS`. Reads the manifest rather than the models because callers want
+    a float and loading 1.65 GB of weights to get one is the thing this avoids.
+    """
+    from prices.enrich import config  # noqa: PLC0415 - avoids an import cycle
+
+    if tau is None:
+        tau = config.HIERLEX_TAU
+    if tau is not None:
+        tau = float(tau)
+        if not 0.0 <= tau <= 1.0:
+            raise ValueError(f"tau must lie in [0, 1], got {tau!r}")
+        return tau
+    policy = policy or config.HIERLEX_POLICY
+    if policy in LOCAL_TAUS:
+        return float(LOCAL_TAUS[policy])
+    if policy not in BUNDLE_POLICIES:
+        raise ValueError(f"unknown policy {policy!r}; expected one of {POLICIES}")
+    meta = package.manifest(package.resolve(version))
+    return float(meta["thresholds"]["thresholds"][f"lexical_correctness_gate_{policy}"])
 
 
 @dataclass

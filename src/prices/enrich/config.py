@@ -211,6 +211,31 @@ CLASSIFIED_HIERLEX_PARQUET = CACHE_DIR / "classified_hierlex.parquet"
 DECISIONS_HIERLEX_PARQUET = CACHE_DIR / "decisions_hierlex.parquet"
 HIERLEX_MODELS_DIR = ENRICH_DIR / "_models" / "hierlex"
 HIERLEX_PRED_DIR = ENRICH_DIR / "_hierlex_pred"
+
+# Which acceptance threshold the HierLex meta-gate applies. Changing this
+# re-reads score shards rather than re-scoring 7.29M pairs, because the shards
+# carry the continuous `calibrated_correctness_score` and acceptance is a
+# comparison against it -- see `hierlex.scorer.resolve_tau`.
+#
+# Default is `target_95`, not the bundle's `conservative_risk`. Measured on the
+# bundle's nested-OOF audit, that trades 98.2% -> 95.0% precision for 77.4% ->
+# 86.1% coverage, and on food and beverage alone 73.1% -> 83.0% (+9.9 points) --
+# which is the grid the dashboard publishes. The cost lands as a tail rather
+# than a shift: the typical published cell median does not move (0.00%), while
+# ~6.6% of cells move more than 5%.
+#
+# Do NOT relax further without new evidence. The bands are not points on a
+# smooth curve -- the rows between the 95% and 92% taus are 41.2% correct, and
+# between 92% and 90% only 19.0%. Nothing downstream can catch them: unit-value
+# dispersion is blind to misclassification (AUC 0.47-0.50, measured three ways),
+# because misclassification selects borderline products and those are
+# price-borderline too.
+HIERLEX_POLICY = os.environ.get("PRICES_HIERLEX_POLICY", "target_95")
+_HIERLEX_TAU_ENV = os.environ.get("PRICES_HIERLEX_TAU", "").strip()
+# An explicit override, for a threshold no named policy carries. `None` means
+# "use the policy"; 0.0 is a real value and must survive, hence the empty-string
+# test rather than a falsy one.
+HIERLEX_TAU = float(_HIERLEX_TAU_ENV) if _HIERLEX_TAU_ENV else None
 BUILD_CLASSIFIED_PARQUET = (
     CLASSIFIED_HIERLEX_PARQUET
     if CLASSIFIER_BACKEND == "hierlex"

@@ -135,7 +135,7 @@ def _hierlex():
 
 
 def _score_hierlex(
-    products: pd.DataFrame, version=None, workers: int = 1
+    products: pd.DataFrame, version=None, workers: int = 1, tau: float | None = None
 ) -> ScoreResult:
     """Score the frozen bundle bucket-major over (name, country) pairs.
 
@@ -160,7 +160,19 @@ def _score_hierlex(
     # Acceptance has to carry that: the token shares the parent's prefix, so the
     # division filter downstream lets it through and it would be written out as
     # a real code.
-    accepted = shards["accepted"].astype(bool) & shards["is_leaf"].astype(bool)
+    # Re-thresholded here rather than read from `shards["accepted"]`, which the
+    # scoring run froze at whatever policy it used. The shards carry the
+    # continuous score precisely so the operating point stays a downstream
+    # decision, so switching it costs a re-read instead of re-scoring 7.29M
+    # pairs. At the bundle's own tau this reproduces the frozen column exactly:
+    # `accepted` is `cal >= tau` and nothing else (`scorer.py:127`), and the
+    # float32 the shard stores round-trips the comparison without moving a row.
+    from prices.enrich.hierlex import scorer as hlx_scorer  # noqa: PLC0415
+
+    tau = hlx_scorer.resolve_tau(version, tau=tau)
+    accepted = (shards["calibrated_correctness_score"].astype(float) >= tau) & shards[
+        "is_leaf"
+    ].astype(bool)
     # The bundle's parent-fallback rewrites a leaf the model proposed into its
     # parent's "n.e.c." sibling whenever leaf-level confidence is short of the
     # action threshold. Keep the proposed leaf instead, on the rows where the
