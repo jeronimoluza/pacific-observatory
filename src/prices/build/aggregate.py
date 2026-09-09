@@ -265,9 +265,82 @@ def _init_worker() -> None:
     _WORKER_CACHE = _JoinCache(load_filtered_cache())
 
 
-def _join_one_shard(path: str) -> pd.DataFrame:
-    chunk = shard_io.read_shard(Path(path), columns=list(RAW_OBSERVATION_COLS))
+# A unit this size keeps the largest shard from being one indivisible job.
+# 256 MB on disk is a few GB resident at the string expansion the admission
+# budget already assumes, which one worker holds comfortably.
+_UNIT_TARGET_BYTES = 256_000_000
+# Resident cost of a unit is its on-disk size times roughly this.
+EXPANSION_HEADROOM = 4
+# What the pool refuses to spend even when the arithmetic says it fits.
+_JOIN_HEADROOM_BYTES = 4_000_000_000
+# Measured, not guessed: `_JoinCache(load_filtered_cache())` peaks at 2.38 GB
+# and every worker builds its own. Cores are not what bounds this pool.
+_WORKER_CACHE_BYTES = 2_600_000_000
+
+
+def _join_one_shard(payload) -> pd.DataFrame:
+    """Join one unit: a whole shard, or named row groups of one."""
+    path, groups = payload
+    if groups is None:
+        chunk = shard_io.read_shard(Path(path), columns=list(RAW_OBSERVATION_COLS))
+    else:
+        chunk = shard_io.read_shard_row_groups(
+            Path(path), groups, columns=list(RAW_OBSERVATION_COLS)
+        )
     return _join_chunk(chunk, _WORKER_CACHE)
+
+
+def _shard_units(shards, target: int = _UNIT_TARGET_BYTES):
+    """`(size, payload)` jobs, splitting a large parquet shard by row group.
+
+    Sizes stay denominated in on-disk bytes so the admission rule in
+    `partition.run_budgeted` keeps meaning what it meant before; a split unit
+    just reports its share of the file.
+    """
+    for shard in shards:
+        path = Path(shard.path)
+        if path.suffix != ".parquet" or shard.size <= target:
+            yield (shard.size, (str(path), None))
+            continue
+        total = pq.ParquetFile(path).num_row_groups
+        if total <= 1:
+            yield (shard.size, (str(path), None))
+            continue
+        per = max(1, int(total * target / shard.size))
+        for start in range(0, total, per):
+            group = list(range(start, min(start + per, total)))
+            yield (int(shard.size * len(group) / total), (str(path), group))
+
+
+def _plan_join_workers(requested: int) -> int:
+    """How many join workers fit, given each one holds its own cache copy.
+
+    Read from `MemAvailable` rather than core count for the same reason the
+    classify pool does: this box has been killed by a pool sized on cores while
+    the arithmetic on memory said five.
+    """
+    try:
+        with open("/proc/meminfo") as fh:
+            avail = next(
+                int(line.split()[1]) * 1024
+                for line in fh
+                if line.startswith("MemAvailable:")
+            )
+    except (OSError, StopIteration):
+        return requested
+    per = _WORKER_CACHE_BYTES + _UNIT_TARGET_BYTES * EXPANSION_HEADROOM
+    budget = avail - _JOIN_HEADROOM_BYTES
+    n = max(1, min(requested, int(budget // per) if budget > 0 else 1))
+    if n < requested:
+        logger.info(
+            "[observations] %d join workers requested, running %d: "
+            "%.1f GB each against %.1f GB free",
+            requested,
+            n,
+            per / 1e9,
+            budget / 1e9,
+        )
+    return n
 
 
 def _parallel_join(shards, workers: int, budget_bytes: int) -> list[pd.DataFrame]:
@@ -278,7 +351,8 @@ def _parallel_join(shards, workers: int, budget_bytes: int) -> list[pd.DataFrame
     disagree silently: one stage keeps running while the other is OOM-killed,
     and the difference reads as a flaky box rather than as a policy that drifted.
     """
-    jobs = [(s.size, str(s.path)) for s in shards]
+    jobs = list(_shard_units(shards))
+    workers = _plan_join_workers(workers)
     got = partition.run_budgeted(
         jobs, _join_one_shard, workers, budget_bytes, initializer=_init_worker
     )

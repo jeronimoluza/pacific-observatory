@@ -259,6 +259,37 @@ def iter_batches(
             yield df[wanted].reset_index(drop=True)
 
 
+def read_shard_row_groups(
+    path: Path,
+    row_groups: Sequence[int],
+    columns: Optional[Sequence[str]] = None,
+) -> pd.DataFrame:
+    """Part of one parquet shard, read by row group.
+
+    `read_shard` is all-or-nothing, and the biggest shard in the corpus is
+    2.85 GB on disk / 35.8M rows whose string columns expand about twelvefold
+    once `to_pandas` materialises them. That single unit is larger than the
+    whole admission budget, so it ran alone and still killed its worker --
+    parallelism was never the problem, granularity was. A row group is the
+    natural sub-unit parquet already provides, so splitting on it costs no
+    reformatting and no re-read.
+
+    Missing columns are filled exactly as `read_shard` fills them, because a
+    shard written before a column existed must stay readable either way.
+    """
+    wanted = list(columns) if columns else list(SHARD_COLUMNS)
+    available = set(pq.read_schema(path).names)
+    handle = pq.ParquetFile(path)
+    table = handle.read_row_groups(
+        list(row_groups), columns=[c for c in wanted if c in available]
+    )
+    df = table.to_pandas()
+    for name in wanted:
+        if name not in df.columns:
+            df[name] = None
+    return df[wanted]
+
+
 def read_shards(
     shards: Iterable, columns: Optional[Sequence[str]] = None
 ) -> pd.DataFrame:
