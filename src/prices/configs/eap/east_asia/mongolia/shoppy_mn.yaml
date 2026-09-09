@@ -18,3 +18,9 @@ notes: |
   products. Paginated with Elasticsearch search_after over
   sort [created_at asc, sku asc] (from+size caps at 10k). Prices in MNT.
   Playwright used only at discovery time; runtime is a fast API spider.
+  product_name comes from the _source field `name`, never `title`: in this
+  Cody/Spree index `title` is the taxon-wide product-type label (mirrors
+  keyword.mn / property.type), so it repeats across every product in a
+  taxon and once filed perfume, corkscrews and hair dye under food COICOP
+  leaves. The spider guards the regression in closed() on the
+  rows-per-distinct-name ratio.

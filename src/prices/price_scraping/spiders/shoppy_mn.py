@@ -14,7 +14,6 @@ _PUBLIC_CLIENT = ("guest", "ShoppyGuest")
 _AUTH = "Basic " + base64.b64encode(":".join(_PUBLIC_CLIENT).encode()).decode()
 _PAGE_SIZE = 200
 _SOURCE = [
-    "title",
     "name",
     "selling_price",
     "price",
@@ -51,6 +50,11 @@ class ShoppyMnSpider(scrapy.Spider):
             "Referer": "https://shoppy.mn/",
         },
     }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.total_items = 0
+        self.seen_names: set[str] = set()
 
     def _body(self, search_after=None):
         body = {
@@ -107,7 +111,13 @@ class ShoppyMnSpider(scrapy.Spider):
                 price = s.get("price")
             if price is None:
                 continue
-            name = s.get("title") or s.get("name")
+            # ``name`` is the product title ("BLACK ORCHID EDP
+            # 100ML/3.4FLOZ"); ``title`` is the taxon's product-type label
+            # ("Үнэртэй ус" = perfume, "Дарс" = wine), mirroring keyword.mn /
+            # property.type and repeating across every product in the taxon.
+            # Reading ``title`` first filed perfume, corkscrews and hair dye
+            # under food COICOP leaves, so ``title`` is not a fallback either.
+            name = s.get("name")
             if not name:
                 continue
             store = s.get("store") or {}
@@ -123,6 +133,8 @@ class ShoppyMnSpider(scrapy.Spider):
                 if deepest:
                     cat = deepest.get("name")
             slug = s.get("slug")
+            self.total_items += 1
+            self.seen_names.add(name)
             yield {
                 "product_id": str(s.get("sku") or slug or ""),
                 "product_name": name,
@@ -139,6 +151,26 @@ class ShoppyMnSpider(scrapy.Spider):
 
         if last_sort and len(hits) >= _PAGE_SIZE:
             yield self._request(search_after=last_sort)
+
+    def closed(self, reason):
+        # Silent-failure mode this source has already shipped once: the
+        # index carries both a per-product ``name`` and a taxon-wide
+        # ``title``, and reading the wrong one emits tens of thousands of
+        # rows whose product_name is a category label. Nothing raises --
+        # every request 200s and the row count looks healthy -- so the only
+        # signal is the ratio of rows to distinct names. Measured 14.9 on
+        # the broken run (56,796 rows / 3,821 names) and 1.5 on the fixed one
+        # (58,764 / 39,112).
+        distinct = len(self.seen_names)
+        if self.total_items >= 1000 and self.total_items > 5 * distinct:
+            logger.error(
+                "shoppy_mn: emitted %d item(s) from only %d distinct "
+                "product_name(s) (reason=%s). product_name is probably a "
+                "category label again, not a product title -- do not ship.",
+                self.total_items,
+                distinct,
+                reason,
+            )
 
     def errback(self, failure):
         logger.error(
