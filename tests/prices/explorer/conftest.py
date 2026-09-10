@@ -488,11 +488,13 @@ TAX_BUILD = {
     "01.1.4": {"t": "Noodles", "p": "01.1", "lvl": 3, "leaf": True},
 }
 BUILD_LEAVES = ["01.1.1", "01.1.2", "01.1.3", "01.1.4"]
+# `currency` is load-bearing: the FX table is the median over the country's OWN
+# currency and nothing else, so a country meta without one gets no FX at all.
 BUILD_CMETA = {
-    "aa": {"name": "Aa", "region": "R1", "subregion": "S1"},
-    "bb": {"name": "Bb", "region": "R1", "subregion": "S1"},
-    "cc": {"name": "Cc", "region": "R2", "subregion": "S2"},
-    "dd": {"name": "Dd", "region": "R2", "subregion": "S2"},
+    "aa": {"name": "Aa", "region": "R1", "subregion": "S1", "currency": "USD"},
+    "bb": {"name": "Bb", "region": "R1", "subregion": "S1", "currency": "USD"},
+    "cc": {"name": "Cc", "region": "R2", "subregion": "S2", "currency": "USD"},
+    "dd": {"name": "Dd", "region": "R2", "subregion": "S2", "currency": "USD"},
 }
 OBS_PER_CELL = 3
 

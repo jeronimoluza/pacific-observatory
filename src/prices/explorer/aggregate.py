@@ -28,7 +28,12 @@ from prices.explorer.sources import (
     REGIONS_YAML,
     CHANGE_LAGS,
     COMPARABLE_UNITS,
+    CURRENCY_ALIASES,
     FE_MIN_PAIRS,
+    FX_EXCURSION_MAX_RUN,
+    FX_EXCURSION_RATIO,
+    FX_EXCURSION_RETURN,
+    FX_SPAN_WARN,
     FREQ_MAX_GAP,
     COUNTRY_DEFECT_SHARE,
     MAX_LINK_GAP_MONTHS,
@@ -656,6 +661,147 @@ def _region_label(key: str) -> str:
     return topo[key].get("name", key)
 
 
+def _fx_table(obs: pd.DataFrame, countries: dict[str, dict]) -> dict[str, dict]:
+    """Monthly local-per-USD rate per country, from the country's OWN currency.
+
+    The rate is the median of the per-row `fx_rate` over the country's declared
+    currency and nothing else. Taking it over every row in the country-month
+    regardless of currency -- which is what this did -- averages two different
+    units: where a country's rows are part local and part USD (`fx_rate` = 1.0),
+    whichever side is more numerous that month wins the median outright, and the
+    series steps between two scales that are 4,000x apart. See CURRENCY_ALIASES
+    in `sources` for why a legacy code is aliased rather than dropped.
+
+    A country with no rows in its declared currency gets NO entry at all. An
+    empty or one-sided entry is worse than none: `_app.js` returns null on a
+    missing rate and draws an honest gap, but a series built from the wrong unit
+    draws a confident wrong line.
+    """
+    declared = {c: (m.get("currency") or "").upper() for c, m in countries.items()}
+    fxr = obs.dropna(subset=["fx_rate"])
+    ccy = fxr.currency.astype(str).str.upper().map(lambda c: CURRENCY_ALIASES.get(c, c))
+    keep = ccy.eq(fxr.country.map(declared).astype(str).str.upper())
+    fxr = fxr[keep]
+
+    fx_tbl = (
+        fxr.groupby(["country", "period"], observed=True).fx_rate.median().reset_index()
+    )
+    fx: dict[str, dict] = {}
+    for c, g in fx_tbl.sort_values("period").groupby("country"):
+        fx[c] = {"p": g.period.tolist(), "r": [round(v, 6) for v in g.fx_rate]}
+
+    dropped = sorted(set(obs.country.unique()) - set(fx))
+    if dropped:
+        logger.warning(
+            "FX: %d countries have no observation in their declared currency and "
+            "get no overlay: %s",
+            len(dropped),
+            ", ".join(f"{c} (declared {declared.get(c) or '?'})" for c in dropped[:20]),
+        )
+    _warn_on_fx_span(fx)
+    _warn_on_fx_excursion(fx)
+    return fx
+
+
+def _warn_on_fx_span(fx: dict[str, dict]) -> None:
+    """Shout when a country's rate travels further than any currency should.
+
+    A tripwire, not a filter. The Cambodia defect ran for months because the
+    build never looked at the table it had just written; every cause -- a mixed
+    median, a missed alias, a bad rate upstream -- shows up as an implausible
+    span, so one check catches all of them. Genuine hyperinflation trips it too,
+    and should: it is exactly the case a reader needs told about.
+    """
+    for c, g in sorted(fx.items()):
+        rates = [r for r in g["r"] if r > 0]
+        if len(rates) < 2:
+            continue
+        lo, hi = min(rates), max(rates)
+        if hi / lo < FX_SPAN_WARN:
+            continue
+        logger.warning(
+            "FX SPAN: %s moves %.0fx over %d months (%.6g at %s -> %.6g at %s). "
+            "Either real hyperinflation or an upstream FX defect -- check before "
+            "trusting the local-currency overlay for this country.",
+            c,
+            hi / lo,
+            len(rates),
+            lo,
+            g["p"][g["r"].index(lo)],
+            hi,
+            g["p"][g["r"].index(hi)],
+        )
+
+
+def _warn_on_fx_excursion(fx: dict[str, dict]) -> None:
+    """Shout when a rate leaves its own level by orders of magnitude and returns.
+
+    The span check above says something is odd; this one says what. Distance
+    from a currency's own long-run level is a BAD detector on its own -- it
+    fires on SDG, VES, ARS, LBP, BYN, ZWL, SYP and IRR, where the move is a real
+    redenomination or real hyperinflation and the series is right. What
+    separates a bad RATE from a bad ECONOMY is the return: hyperinflation goes
+    one way and a redenomination steps once and stays, whereas a wrong rate is
+    an excursion whose two shoulders agree with each other and not with it.
+
+    Mongolia is the case in hand: MNT sits at ~3,597 per USD, drops to 0.753181
+    for 2025-11, and is back at 3,547 in 2025-12. The shoulders are 1.4% apart
+    and the middle is 4,775x away from both. Underneath, the shared FX cache
+    holds a 22-day block (2025-10-25 .. 2025-11-15) of sub-1 MNT rates that
+    drift daily and copy no other currency in the cache -- the signature of a
+    provider whose MNT is cross-derived rather than quoted, merged in during the
+    Frankfurter backfill. Clean edges and a date-bounded interior; not a write
+    race, and nothing to do with the currency LABEL, which is correct.
+
+    What this does NOT catch, and is worth knowing: a bad rate in the first or
+    last months of a series, because there is no shoulder to return to; a bad
+    rate that persists past FX_EXCURSION_MAX_RUN months; anything under
+    FX_EXCURSION_RATIO; and a bad rate that lands while the true rate is itself
+    moving, because then the shoulders will not agree. The span check is the
+    backstop for those -- an excursion large enough to matter also widens the
+    span -- and neither is a substitute for fixing the cache.
+    """
+    for c, g in sorted(fx.items()):
+        p, r = g["p"], g["r"]
+        n = len(r)
+        i = 1
+        while i < n - 1:
+            # widen a run of months that all sit off the level set by p[i-1]
+            j = i
+            while (
+                j < n - 1
+                and j - i < FX_EXCURSION_MAX_RUN
+                and r[i - 1] > 0
+                and r[j] > 0
+                and max(r[i - 1] / r[j], r[j] / r[i - 1]) > FX_EXCURSION_RATIO
+            ):
+                j += 1
+            if j > i and j < n and r[j] > 0 and r[i - 1] > 0:
+                before, after = r[i - 1], r[j]
+                shoulders = max(before / after, after / before)
+                off = max(before / min(r[i:j]), max(r[i:j]) / before)
+                if shoulders <= FX_EXCURSION_RETURN and off > FX_EXCURSION_RATIO:
+                    logger.warning(
+                        "FX EXCURSION: %s leaves %.6g (%s) by %.0fx for %d month(s) "
+                        "(%s..%s) and returns to %.6g (%s). Shoulders agree to "
+                        "within %.1f%%, so this is an upstream RATE defect, not a "
+                        "currency move -- do not publish this month's overlay.",
+                        c,
+                        before,
+                        p[i - 1],
+                        off,
+                        j - i,
+                        p[i],
+                        p[j - 1],
+                        after,
+                        p[j],
+                        (shoulders - 1) * 100,
+                    )
+                    i = j
+                    continue
+            i += 1
+
+
 def build_payload(region: str | None = None) -> dict:
     """Aggregate the corpus, optionally restricted to one region's countries.
 
@@ -916,13 +1062,7 @@ def build_payload(region: str | None = None) -> dict:
     }
 
     # ---- FX: local per USD, monthly ------------------------------------
-    fxr = obs.dropna(subset=["fx_rate"])
-    fx_tbl = (
-        fxr.groupby(["country", "period"], observed=True).fx_rate.median().reset_index()
-    )
-    fx: dict[str, dict] = {}
-    for c, g in fx_tbl.sort_values("period").groupby("country"):
-        fx[c] = {"p": g.period.tolist(), "r": [round(v, 6) for v in g.fx_rate]}
+    fx = _fx_table(obs, countries)
 
     gseries_raw, geos = build_geo_series(exploded, tax, cmeta)
 
