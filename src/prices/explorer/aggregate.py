@@ -48,8 +48,8 @@ from prices.explorer.sources import (
 __all__ = ["REPO_ROOT", "build_payload", "write_payload"]
 
 
-def _fold_piece_units(obs: pd.DataFrame) -> pd.DataFrame:
-    """Relabel `item` as `unit` on the leaves that vet `item` as a genuine piece.
+def _fold_piece_units(obs: pd.DataFrame) -> int:
+    """Relabel `item` as `unit`, IN PLACE, on the leaves that vet it as a piece.
 
     `unit` and `item` are both a price per ONE countable piece; they differ only
     in how the denominator was reached. `unit` divided a pack price by an
@@ -64,13 +64,19 @@ def _fold_piece_units(obs: pd.DataFrame) -> pd.DataFrame:
     `publish.py` has folded these two labels together since 2026-09-04; the
     explorer never grew the equivalent, which is one of the ways the two
     dashboards disagree about what the corpus contains.
+
+    In place, and not for tidiness: this runs before the trusted filter, on the
+    whole 18.9M-row observation frame with nine object columns in it. Copying
+    that frame to change 92,223 cells peaks around 23 GB and the render is
+    OOM-killed on a 26 GB box. `build_payload` owns the frame `load_observations`
+    just handed it, so mutating it costs one boolean mask and nothing else.
+    Returns the number of rows relabelled.
     """
     fold = obs.coicop_code.isin(SOLD_BY_ITEM_LEAVES) & obs.standard_unit.eq("item")
-    if not fold.any():
-        return obs
-    obs = obs.copy()
-    obs.loc[fold, "standard_unit"] = "unit"
-    return obs
+    n = int(fold.sum())
+    if n:
+        obs.loc[fold, "standard_unit"] = "unit"
+    return n
 
 
 def _mad(x: pd.Series) -> float:
@@ -405,7 +411,7 @@ def build_payload(region: str | None = None) -> dict:
     countries = load_country_meta()
     obs = load_observations()
 
-    obs = _fold_piece_units(obs)
+    _fold_piece_units(obs)
     trusted = obs[
         obs.qa_status.eq("trusted")
         & obs.standard_unit.isin(COMPARABLE_UNITS)

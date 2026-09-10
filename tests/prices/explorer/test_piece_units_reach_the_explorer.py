@@ -10,6 +10,10 @@ So the filter was discarding rows the trust gate had already cleared: 92,223 of
 them on the 2026-09-10 corpus, and with them 531 (country, leaf) cells across
 about a hundred countries. `publish.py` has folded `item` and `unit` into one
 label since 2026-09-04; the explorer never grew the equivalent.
+
+The fold is in place. It runs before the trusted filter, on the whole 18.9M-row
+observation frame, and copying that frame to change 92,223 cells OOM-kills the
+render on a 26 GB box.
 """
 
 from __future__ import annotations
@@ -37,9 +41,10 @@ def test_the_allowlist_is_not_empty():
 
 
 def test_a_genuine_per_piece_row_survives_the_comparable_units_filter():
-    out = _fold_piece_units(_obs([(PIECE_LEAF, "item")]))
-    assert out.standard_unit.iloc[0] == "unit"
-    assert out.standard_unit.isin(
+    obs = _obs([(PIECE_LEAF, "item")])
+    assert _fold_piece_units(obs) == 1
+    assert obs.standard_unit.iloc[0] == "unit"
+    assert obs.standard_unit.isin(
         COMPARABLE_UNITS
     ).all(), "a trusted per-piece row must reach the payload"
 
@@ -47,17 +52,23 @@ def test_a_genuine_per_piece_row_survives_the_comparable_units_filter():
 def test_an_off_allowlist_item_row_is_left_alone():
     """Off-allowlist `item` really does mean "no quantity found" and must not
     be promoted into a comparable unit by this fold."""
-    out = _fold_piece_units(_obs([(WEIGHED_LEAF, "item")]))
-    assert out.standard_unit.iloc[0] == "item"
-    assert not out.standard_unit.isin(COMPARABLE_UNITS).any()
+    obs = _obs([(WEIGHED_LEAF, "item")])
+    assert _fold_piece_units(obs) == 0
+    assert obs.standard_unit.iloc[0] == "item"
+    assert not obs.standard_unit.isin(COMPARABLE_UNITS).any()
 
 
 def test_measured_rows_are_untouched():
-    rows = [(WEIGHED_LEAF, "kg"), (PIECE_LEAF, "kg"), (PIECE_LEAF, "unit")]
-    out = _fold_piece_units(_obs(rows))
-    assert out.standard_unit.tolist() == ["kg", "kg", "unit"]
+    obs = _obs([(WEIGHED_LEAF, "kg"), (PIECE_LEAF, "kg"), (PIECE_LEAF, "unit")])
+    assert _fold_piece_units(obs) == 0
+    assert obs.standard_unit.tolist() == ["kg", "kg", "unit"]
 
 
-def test_the_fold_is_a_no_op_when_nothing_matches():
-    df = _obs([(WEIGHED_LEAF, "kg")])
-    assert _fold_piece_units(df) is df
+def test_the_fold_mutates_in_place_and_never_copies():
+    """The caller keeps its own frame -- a copy of the real one is ~23 GB."""
+    obs = _obs([(PIECE_LEAF, "item"), (WEIGHED_LEAF, "kg")])
+    before = id(obs)
+    n = _fold_piece_units(obs)
+    assert n == 1
+    assert id(obs) == before
+    assert obs.standard_unit.tolist() == ["unit", "kg"]
