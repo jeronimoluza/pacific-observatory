@@ -103,10 +103,10 @@ function firstLive() {
    each other.
 
    A terminal is a node with no live children. That is the same no-children
-   test `isLeaf` makes in the app and it is deliberately NOT "depth 5": eight of
-   this taxonomy's leaves stop at depth 4 -- spirits, wine, beer, cigarettes,
-   cigars and their siblings, the whole of division 02 -- and a depth test would
-   put every one of them beyond reach of this control. */
+   test `isLeaf` makes in the app and it is deliberately NOT "depth 5": nine of
+   this taxonomy's 254 leaves stop at depth 4 -- spirits, the two wines, beer,
+   cigarettes, cigars and their siblings, which is the whole of division 02 --
+   and a depth test would put every one of them beyond reach of this control. */
 var TERM = {};
 function terms(c) {
   if (TERM[c]) return TERM[c];

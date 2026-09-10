@@ -2476,10 +2476,11 @@ var HM_MIN_LEAVES = 3, HM_MID = "#e5e2d9", HM_FULL = Math.log(2);
 /* ---- how deep the rows go ----
    COICOP names its levels and the reader picks which of them the grid puts
    down the side. THE DEEPEST ROW IS NOT LEVEL 5. A leaf is a node with no
-   children, and this taxonomy is ragged: 243 of its 251 leaves are depth-5
-   items, and the other 8 are depth-4 subclasses — spirits, wine, beer,
-   cigarettes, cigars — every one of them in division 02, which has no depth-5
-   codes at all. A control that read `lvl === 5` would make all of alcohol and
+   children, and this taxonomy is ragged: 245 of its 254 leaves are depth-5
+   items, and the other 9 are depth-4 subclasses — spirits, the two wines,
+   beer, other alcoholic beverages, cigarettes, cigars, other tobacco and
+   narcotics — every one of them in division 02, which has no depth-5 code at
+   all. A control that read `lvl === 5` would make all of alcohol and
    tobacco invisible, which is the bug src/prices/explorer/sources.py carries a
    comment about. `isLeaf` is the only test used here and it asks about
    children, never about depth. */
