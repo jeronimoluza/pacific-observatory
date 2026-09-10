@@ -252,15 +252,34 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
   color:var(--dim);text-align:center;padding:7px 4px;border-bottom:1px solid var(--ink);
   cursor:pointer;white-space:nowrap;min-width:74px}
 .hm th:hover{color:var(--ink)}
-.hm th.ctry{text-align:left;left:0;z-index:4;min-width:232px;padding-left:2px}
+/* Wider than it was: the rows are leaf items now, and "Macaroni, noodles,
+   couscous and similar pasta products" is the name COICOP gives the thing.
+   232px ellipsised most of them away. */
+.hm th.ctry{text-align:left;left:0;z-index:4;min-width:310px;padding-left:2px}
 .hm td{padding:0;border:1px solid var(--plate);height:19px}
+/* Country names WRAP. They used to be clamped to three lines, except that they
+   never were: `.hm th` above sets `white-space:nowrap` for the sticky header
+   row, .ctyh overrode writing-mode and transform and text-align but never
+   white-space, and a -webkit-box that cannot break its text has exactly one
+   line -- so the three-line clamp had nothing to clamp and `overflow:hidden`
+   at a 66px width simply cut every long name off mid-word ("New Caledor",
+   "Brunei Darus"). The clamp is gone with it: a header that hides part of a
+   country's name is not a header, and the row is as tall as the longest name
+   needs, which on this corpus is three lines. */
+/* The other half of the complaint was headers that "disappear". None of them
+   were ever empty -- every one carried its full name in the DOM and in its
+   title -- but a name clipped at 66px and left-aligned leaves a wide band of
+   paper before the next one starts, and with no rule between the columns the
+   eye reads that band as a column with no heading. The cells below have
+   borders and the headings did not, so a hairline under the same rule tells
+   the reader which name belongs to which column. */
 .hm th.ctyh{writing-mode:horizontal-tb;transform:none;text-align:left;font-weight:500;
-  font-size:10.5px;line-height:1.2;padding:6px 4px;height:46px;vertical-align:bottom;cursor:pointer}
-.hm th.ctyh>span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
-  overflow:hidden;width:66px;word-break:break-word;hyphens:auto}
+  font-size:10.5px;line-height:1.2;padding:6px 4px;height:46px;vertical-align:bottom;
+  cursor:pointer;white-space:normal;min-width:82px;border-left:1px solid var(--hair)}
+.hm th.ctyh>span{display:block;width:74px;overflow-wrap:break-word;hyphens:auto}
 .hm td.ctry .ru{display:block;font-size:10px;color:var(--faint);font-weight:400}
 .hm td.ctry{position:sticky;left:0;background:var(--plate);z-index:2;padding:0 8px 0 2px;
-  white-space:nowrap;max-width:232px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;max-width:310px;overflow:hidden;text-overflow:ellipsis;
   border-right:1px solid var(--hair);cursor:pointer;font-size:12px}
 /* Depth bands, as on the main dashboard: the basket's shape has to be legible
    before any single number in it is. Chrome stays hueless -- these are greys of
@@ -291,7 +310,7 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
 /* Six region names, not two hundred country ones: the 66px column the country
    grid needs would truncate every one of them. */
 #gvTbl th.ctyh{height:auto;min-width:132px}
-#gvTbl th.ctyh>span{width:126px;-webkit-line-clamp:3}
+#gvTbl th.ctyh>span{width:126px}
 .ramp{display:flex;align-items:center;gap:0;margin-top:10px}
 .ramp i{width:26px;height:10px;display:block}
 .ramp .lab{font-size:11px;color:var(--faint);padding:0 8px}
@@ -437,6 +456,17 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         every cell stays measured against the world, not against the region.
       </div>
           </div>
+    <!-- Row depth. COICOP is a tree and the grid can put any of its levels down
+         the side; the chips say which. "Deepest leaf" is not a level and is not
+         a synonym for depth 5 -- it is every node with no children, which in
+         this taxonomy includes eight depth-4 subclasses, all of them alcohol
+         and tobacco. It is also the default: the deepest row is the only one
+         where a cell compares like with like without the ladder having to
+         average anything first. -->
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:2px 0 12px">
+      <span class="ctllab" id="lab-hmdepth">Rows</span>
+      <div class="chips" role="group" aria-labelledby="lab-hmdepth" id="hmDepth"></div>
+    </div>
     <div class="hmwrap"><table class="hm" id="hmTbl"></table></div>
     <div class="ramp" id="hmRamp"></div>
   </div>

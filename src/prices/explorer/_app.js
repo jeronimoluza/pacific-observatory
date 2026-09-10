@@ -49,6 +49,12 @@ var S = {
   cnode:null, bench:"world",
   sortCmp:{k:"val",d:1}, sortCtry:{k:"ratio",d:1},
   multi:[], hregion:null, hsort:{k:null, d:1},
+  /* Which COICOP levels the heatmap puts down the side. A set rather than a
+     number so several depths can be shown at once, and `leaf` is a member of
+     it rather than a level: see HM_LEVEL_NAME. Deepest leaf alone is the
+     default — the grain at which a cell compares one item with the same item,
+     before the ladder has averaged anything. */
+  hdepth:{leaf:1},
   /* world time series: what to compare, at what category, unit, measure and window.
      gsel null means "whatever the default is here" — an explicit list only appears
      once the reader has actually chosen, so a category with thin coverage can never
@@ -2483,7 +2489,46 @@ function box(l, v, sign) {
    same COICOP leaf in the same unit. The waterfall takes one country's gap
    apart by category group; the heatmap lays every country's groups side by side. */
 var HM_MIN_LEAVES = 3, HM_MID = "#e5e2d9", HM_FULL = Math.log(2);
-var HM_MIN_COUNTRIES = 6;
+
+/* ---- how deep the rows go ----
+   COICOP names its levels and the reader picks which of them the grid puts
+   down the side. THE DEEPEST ROW IS NOT LEVEL 5. A leaf is a node with no
+   children, and this taxonomy is ragged: 243 of its 251 leaves are depth-5
+   items, and the other 8 are depth-4 subclasses — spirits, wine, beer,
+   cigarettes, cigars — every one of them in division 02, which has no depth-5
+   codes at all. A control that read `lvl === 5` would make all of alcohol and
+   tobacco invisible, which is the bug src/prices/explorer/sources.py carries a
+   comment about. `isLeaf` is the only test used here and it asks about
+   children, never about depth. */
+var HM_LEVEL_NAME = {1:"Division", 2:"Group", 3:"Class", 4:"Subclass", 5:"Item"};
+/* A level is worth a chip only where the taxonomy holds a node at it that is
+   NOT a leaf. Offering "Subclass" on a taxonomy whose subclasses are all
+   terminal would draw exactly the rows "Deepest leaf" already draws, and read
+   as a second copy of it. */
+var HM_LEVELS = (function () {
+  var seen = {};
+  DATA.nodeIdx.forEach(function (c) {
+    var t = DATA.tax[c];
+    if (t && t.lvl && !isLeaf(c)) seen[t.lvl] = 1; });
+  return Object.keys(seen).map(Number).sort(function (a, b) { return a - b; });
+})();
+
+/* The row set: every category at the chosen depths, in COICOP code order.
+   Codes are zero-padded and dot-separated, so a plain string sort IS ascending
+   code order — 01.1.1.1.1 before 01.1.1.1.2 before 01.1.2, and 02 last.
+   Catch-all nodes are held out for the reason RESIDUAL gives: a LEVEL for
+   "other bakery products" prices croissants against flatbread, and every cell
+   in this grid is a level. */
+function hmRowCodes() {
+  var out = [];
+  DATA.nodeIdx.forEach(function (c) {
+    var t = DATA.tax[c];
+    if (!t || isResidual(c)) return;
+    var lvl = t.lvl || ancestors(c).length;
+    if ((S.hdepth.leaf && isLeaf(c)) || S.hdepth[lvl]) out.push(c);
+  });
+  return out.sort();
+}
 
 /* The client-side twin of `sources.ladder_agg`. Fold a set of leaf readings up
    to `toDepth` one COICOP level at a time, so every child of a node counts once
@@ -2728,17 +2773,25 @@ function renderWaterfall() {
    built per leaf and then averaged UP THE TREE, subclass by subclass, so it
    survives the aggregation the level does not. Each row still carries one unit, chosen as the unit most of
    that group's prices are quoted in, so a column never mixes kilos with
-   litres. */
-function classCellsFor(ci) {
+   litres.
+
+   Every matched leaf is filed under EVERY row node standing above it, so one
+   pass over a country's cells serves whatever depth the reader has asked for.
+   The alternative — scan the country's whole leaf list once per row — is 200
+   rows x 200 leaves x 200 countries of prefix matching at leaf depth, for an
+   answer one walk up the code already has. */
+function hmCellsFor(ci, want) {
   var out = {};
   (byCountry.get(ci) || []).filter(keep).forEach(function (c) {
     if (!isLeaf(c.node) || isResidual(c.node) || !(c.usd > 0)) return;
-    var cls = classOf(c.node);
-    if (!cls) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
-    (out[cls] = out[cls] || []).push({
-      code: c.node, unit: c.unit, imp: c.imp,
-      r: g > 0 ? Math.log(c.usd / g) : null});
+    var rec = {code: c.node, unit: c.unit, imp: c.imp,
+               r: g > 0 ? Math.log(c.usd / g) : null};
+    /* `ancestors` ends with the code itself, so a leaf files under its own row
+       as well as under every grouping above it. */
+    ancestors(c.node).forEach(function (a) {
+      if (want[a]) (out[a] = out[a] || []).push(rec);
+    });
   });
   return out;
 }
@@ -2755,12 +2808,14 @@ function setHtmlIfPresent(id, v) {
 }
 
 function renderHeatmap() {
-  var rowN = {}, byCty = {}, unitVotes = {};
+  var byCty = {}, unitVotes = {};
+  var rowCodes = hmRowCodes(), want = {};
+  rowCodes.forEach(function (c) { want[c] = 1; });
 
   DATA.ctyIdx.forEach(function (slug, ci) {
     var meta = DATA.cty[slug];
     if (!meta.level_ok) return;                 /* only countries the ranking trusts */
-    var per = classCellsFor(ci);
+    var per = hmCellsFor(ci, want);
     byCty[slug] = {slug:slug, name:meta.name, region:meta.region,
                    level:meta.level, per:per};
     Object.keys(per).forEach(function (cls) {
@@ -2770,24 +2825,33 @@ function renderHeatmap() {
     });
   });
 
-  /* one unit per row: whichever the group's prices are mostly quoted in */
+  /* one unit per row: whichever the group's prices are mostly quoted in.
+     Voted over EVERY country, not over the ones a region filter leaves on
+     screen, so picking a region never silently reprices a row from kilos into
+     litres under the reader. */
   var rowUnit = {};
   Object.keys(unitVotes).forEach(function (cls) {
     rowUnit[cls] = Object.keys(unitVotes[cls]).sort(function (p, q) {
       return unitVotes[cls][q] - unitVotes[cls][p]; })[0];
   });
 
-  /* collapse each (country, group) to one figure, on the row's unit */
+  /* collapse each (country, category) to one figure, on the row's unit */
   Object.keys(byCty).forEach(function (slug) {
     var c = byCty[slug], cells = {};
     Object.keys(c.per).forEach(function (cls) {
       var u = rowUnit[cls];
       var same = c.per[cls].filter(function (x) { return x.unit === u; });
-      if (same.length < HM_MIN_LEAVES) return;
+      /* The three-item floor is about AGGREGATION: a class averaged out of one
+         leaf is that leaf wearing the class's name, and the hatching says so.
+         A LEAF row aggregates nothing — the cell is the item, matched against
+         the world median for the same item in the same unit — so its floor is
+         one. Carrying the three across would hatch every cell in the table at
+         the default depth, which is how a row set nobody could read gets
+         mistaken for a row set with no data. */
+      if (same.length < (isLeaf(cls) ? 1 : HM_MIN_LEAVES)) return;
       var usable = same.filter(function (x) { return x.r != null; });
       cells[cls] = {r:ladderMean(usable, cls.split(".").length), n:same.length,
                     imp:same.filter(function (x) { return x.imp > 0; }).length};
-      rowN[cls] = (rowN[cls] || 0) + 1;
     });
     c.cells = cells;
   });
@@ -2806,9 +2870,38 @@ function renderHeatmap() {
   document.getElementById("hreg-all").className = "chip" + (S.hregion ? "" : " on");
   document.getElementById("hreg-all").setAttribute("aria-pressed", S.hregion ? "false" : "true");
 
-  var rows = Object.keys(rowN)
-    .filter(function (c) { return rowN[c] >= HM_MIN_COUNTRIES; }).sort();
+  /* The depth chips. Rendered from the taxonomy rather than written into the
+     template, so a payload whose tree stops at depth 4 offers four chips and
+     not five. "Deepest leaf" sits last because it is where the grid opens. */
+  document.getElementById("hmDepth").innerHTML =
+    HM_LEVELS.map(function (l) {
+      var on = !!S.hdepth[l];
+      return '<button class="chip' + (on ? " on" : "") + '" aria-pressed="' + on +
+        '" onclick="APP.toggleHDepth(' + l + ')">' +
+        esc(HM_LEVEL_NAME[l] || ("Level " + l)) + "</button>"; }).join("") +
+    '<button class="chip' + (S.hdepth.leaf ? " on" : "") + '" aria-pressed="' +
+      (S.hdepth.leaf ? "true" : "false") + '" onclick="APP.toggleHDepth(' + arg("leaf") +
+      ')" title="Every category with nothing under it — including the eight ' +
+      'that stop one level short of the rest">Deepest leaf</button>';
+
   var shown = all.filter(function (r) { return !S.hregion || r.region === S.hregion; });
+
+  /* The rows are the WHOLE category set at the chosen depth, in code order —
+     not the subset that clears a coverage bar. The old grid dropped any group
+     fewer than six countries priced, which quietly deleted the categories a
+     small region is most likely to be asked about.
+
+     What is still dropped is a row with nothing in it AT ALL: no country on
+     screen holds a cell there. That is a fact about the taxonomy, not about
+     the prices, and at leaf depth it is most of the taxonomy — drawing it
+     would bury the rows that carry a reading under a hundred rows of hatching.
+     The count is printed under the ramp so the grid never claims to be the
+     whole tree. */
+  var rowN = {};
+  shown.forEach(function (r) {
+    Object.keys(r.cells).forEach(function (c) { rowN[c] = (rowN[c] || 0) + 1; }); });
+  var rows = rowCodes.filter(function (c) { return rowN[c]; });
+  var nEmpty = rowCodes.length - rows.length;
 
   if (!rows.length || !shown.length) {
     document.getElementById("hmTbl").innerHTML =
@@ -2840,6 +2933,10 @@ function renderHeatmap() {
     [0, 1].forEach(function (d) {
       var code = a2[d];
       if (!code || seen[code] || !DATA.tax[code]) return;
+      /* A division the reader has asked for as a ROW must not also be drawn as
+         a band above itself: one of the two would carry numbers and the other
+         would not, and they would read as two different things. */
+      if (want[code]) return;
       seen[code] = 1;
       out += '<tr class="hmg l' + (d + 1) + '"><td colspan="' + span + '"><span>' +
         esc(title(code)) + "</span></td></tr>";
@@ -2847,16 +2944,22 @@ function renderHeatmap() {
     return out;
   }
   var body = "<tbody>" + rows.map(function (cls) {
-    var tr = band(cls) + '<tr><td class="ctry ind" title="' + esc(title(cls)) + " · " +
-      rowN[cls] +
-      ' countries" tabindex="0" role="button" data-act="1" onclick="APP.hsort(' + arg(cls) +
-      ')">' + esc(proseTitle(cls)) +
-      '<span class="ru">vs world</span>' +
+    /* Depth is stated by the indent, and the row carries its FULL label rather
+       than the trimmed one the column headings use — a row set sorted by code
+       is only readable if the names beside the codes are the real names. */
+    var tr = band(cls) + '<tr><td class="ctry" style="padding-left:' +
+      (2 + cls.split(".").length * 7) + 'px" title="' + esc(title(cls)) + " · " + cls +
+      " · priced by " + rowN[cls] +
+      ' of the countries on screen" tabindex="0" role="button" data-act="1" onclick="APP.hsort(' +
+      arg(cls) + ')">' + esc(title(cls)) +
+      '<span class="ru">' + cls + " · vs world</span>" +
       (sk === cls ? (sd === 1 ? " ▼" : " ▲") : "") + "</td>";
     return tr + shown.map(function (r) {
       var cell = r.cells[cls];
       if (!cell) return '<td class="na" title="' + esc(r.name) + " · " + esc(title(cls)) +
-        ': fewer than ' + HM_MIN_LEAVES + ' matched items"></td>';
+        ": " + (isLeaf(cls)
+          ? "not priced here in " + (UNIT_SHORT[rowUnit[cls]] || "this unit")
+          : "fewer than " + HM_MIN_LEAVES + " matched items") + '"></td>';
       if (cell.r == null) return '<td class="na" title="' + esc(r.name) +
         ': no world median for these items"></td>';
       var v = (Math.exp(cell.r) - 1) * 100;
@@ -2875,11 +2978,9 @@ function renderHeatmap() {
   document.getElementById("hmTbl").innerHTML = head + body;
 
   document.getElementById("hmSub").innerHTML =
-    "Each category group against the world median for the same items. " +
-    "Red is more expensive than the world, blue cheaper.";
+    "Each category against the world median for the same items, " +
+    esc(hmDepthPhrase()) + ". Red is more expensive than the world, blue cheaper.";
 
-  var cut = Object.keys(rowN).filter(function (c) { return rows.indexOf(c) < 0; })
-    .sort(function (a2, b2) { return rowN[b2] - rowN[a2]; });
   var stops = [-1, -0.6, -0.3, 0, 0.3, 0.6, 1];
   document.getElementById("hmRamp").innerHTML =
     '<span class="lab">cheaper than the world</span>' +
@@ -2888,12 +2989,23 @@ function renderHeatmap() {
     '<span class="lab">more expensive</span>' +
     '<span class="lab" style="margin-left:14px">' +
     'full colour at &plusmn;100% &middot; ' +
-    'hatched: fewer than ' + HM_MIN_LEAVES + ' matched items &middot; ' +
+    'hatched: not priced here, or fewer than ' + HM_MIN_LEAVES +
+    ' matched items where the row is a grouping &middot; ' +
     '<span class="impm">◇</span> rests partly on imputed months &middot; ' + rows.length +
-    " groups &times; " + shown.length + " countries" +
-    (cut.length ? " &middot; " + cut.length + " groups too thinly covered to show, " +
-       "widest of them " + esc(proseTitle(cut[0])) + " at " + rowN[cut[0]] + " countries" : "") +
+    " categories &times; " + shown.length + " countries" +
+    (nEmpty ? " &middot; " + nEmpty + " categor" + (nEmpty === 1 ? "y" : "ies") +
+       " at this depth are priced by nobody on screen and are not drawn" : "") +
     "</span>";
+}
+
+/* The row set in words, for the line under the heading. */
+function hmDepthPhrase() {
+  var parts = HM_LEVELS.filter(function (l) { return S.hdepth[l]; })
+    .map(function (l) { return (HM_LEVEL_NAME[l] || ("level " + l)).toLowerCase(); });
+  if (S.hdepth.leaf) parts.push("deepest leaf");
+  if (!parts.length) return "no depth selected";
+  return parts.length === 1 ? "one row per " + parts[0]
+    : "one row per " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1];
 }
 
 
@@ -3119,6 +3231,17 @@ var APP = {
   hsort:function (k) {
     if (S.hsort.k === k) S.hsort.d = -S.hsort.d;
     else S.hsort = {k:k, d:1};
+    this.render(); },
+  /* `k` is a COICOP level number or the string "leaf". Turning the last one off
+     would leave a grid with no rows, which reads as broken rather than as a
+     choice, so an empty selection falls back to the depth the table opens on.
+     The sort key is dropped with the depth that made it available: sorting the
+     columns by a row that is no longer drawn is a state nothing on screen
+     explains. */
+  toggleHDepth:function (k) {
+    if (S.hdepth[k]) delete S.hdepth[k]; else S.hdepth[k] = 1;
+    if (!Object.keys(S.hdepth).length) S.hdepth.leaf = 1;
+    if (S.hsort.k && hmRowCodes().indexOf(S.hsort.k) < 0) S.hsort = {k:null, d:1};
     this.render(); },
   setRegion:function (r) { S.region = r; this.render(); },
   weightPanel:function () {
