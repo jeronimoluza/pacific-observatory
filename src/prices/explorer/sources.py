@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np  # noqa: F401
 import pandas as pd
 import pyarrow.parquet as pq
 import yaml
@@ -58,6 +59,29 @@ MIN_BASKET_SOURCES = 2
 # blank grid. Lower this share, or lower MIN_BASKET_LEAVES with it, if the log
 # says the intersection is thin.
 MIN_BASKET_LEAF_SHARE = 0.75
+
+# The COICOP level the expenditure weights -- and the reader's sliders -- act
+# on. 1 is the division, 3 the class.
+#
+# William asked for divisions, and divisions are what a CPI weight table
+# publishes. They are also, right now, useless as a control: this dashboard
+# carries two divisions and one of them contributes almost nothing to the
+# eligible basket, so a division slider is one knob pinned at 100%. Class is
+# where the World Bank's ICP actually stops for food, it is the grain the
+# heatmap rows and the waterfall bars already use, and it is where the damage
+# is: equal-per-class hands a class holding ONE leaf the same say as a class
+# holding twelve. Set this to 1 to get his literal reading back; nothing else
+# needs to change, and nothing here assumes which divisions are on screen.
+BASKET_WEIGHT_LEVEL = 3
+
+# Weight coverage: the share of the default weight vector a country actually
+# prices. Under an equal average, MIN_BASKET_LEAVES was a serviceable proxy for
+# breadth -- fifteen leaves is fifteen leaves. Under weights it stops being one:
+# fifteen leaves that all sit inside cereals is a price level that is entirely
+# cereals wearing a basket's name, and renormalising the missing categories away
+# makes it look complete. This gate is quiet on the current corpus and gets loud
+# exactly when the corpus thins, which is the shape a guard should have.
+MIN_BASKET_WEIGHT_COVERED = 0.60
 
 # A region's median over one or two countries is one of those countries' own
 # price wearing a region's name. Below this a regional or subregional yardstick
@@ -133,6 +157,69 @@ def _levels(code: str) -> list[str]:
     """Every ancestor node of a COICOP code, itself included."""
     parts = code.split(".")
     return [".".join(parts[: i + 1]) for i in range(len(parts))]
+
+
+def ladder_agg(
+    leaves: pd.DataFrame,
+    keys: list[str],
+    val: str,
+    how: str = "mean",
+    k0: str | None = None,
+    extra: dict[str, tuple[str, str]] | None = None,
+) -> pd.DataFrame:
+    """Average a leaf statistic up the COICOP tree ONE LEVEL AT A TIME.
+
+    Every figure this dashboard reports for an aggregate node — a price change,
+    a chain link, a gap from the world — is built by comparing like with like at
+    the deepest level and then averaging upward. Rice against rice, then the
+    mean of the cereals, then the mean of the bread-and-cereals classes, then
+    the mean of the food groups. Never the other way around: an average taken
+    across a class before the comparison is an average over goods that are not
+    the same good, and comparing two of those compares two different baskets.
+
+    The change from a flat mean over every leaf beneath a node is a change of
+    WEIGHT, and it is the point. A flat mean lets a densely enumerated corner of
+    the taxonomy speak for its parent: `01.1.1` carries seven cereal leaves, and
+    under a flat mean rice is a seventeenth of bread-and-cereals purely because
+    the taxonomy happens to split cereals finely. Under the ladder every child
+    of a node counts once, so a subclass of one leaf and a subclass of twenty
+    weigh the same at their parent. Neither is a statement about consumption —
+    there are no expenditure weights in this corpus — but only one of the two is
+    a statement about the taxonomy rather than about prices.
+
+    `k` counts the leaves underneath that actually contributed, summed up the
+    ladder, so the publication gates keep the meaning they have always had.
+    Pass `k0` when a leaf already stands for more than one observation.
+
+    `how` is the estimator applied at every level. It is orthogonal to the
+    ordering this function exists for: the chain in `geo` takes a median for
+    reasons of its own and keeps taking one, level by level.
+
+    NO GATE IS APPLIED HERE. A node too thin to publish on its own still passes
+    its value to its parent, because the observation is real either way and the
+    gate is about what may carry a headline, not about what counts as evidence.
+    Callers apply `_link_need` to the result.
+    """
+    extra = extra or {}
+    cols = keys + ["coicop_code", val] + [c for c, _ in extra.values()]
+    cur = leaves[cols + ([k0] if k0 else [])].rename(columns={"coicop_code": "node"})
+    cur = cur.copy()
+    cur["_d"] = cur.node.str.count(r"\.") + 1
+    cur["k"] = cur.pop(k0) if k0 else 1
+    spec = {val: (val, how), "k": ("k", "sum")}
+    spec.update({out: (src, how) for out, (src, how) in extra.items()})
+
+    out = [cur]
+    for d in range(int(cur._d.max()), 1, -1):
+        step = cur[cur._d == d]
+        if step.empty:
+            continue
+        up = step.assign(node=step.node.str.rsplit(".", n=1).str[0])
+        up = up.groupby(keys + ["node"], observed=True).agg(**spec).reset_index()
+        up["_d"] = d - 1
+        cur = pd.concat([cur, up], ignore_index=True)
+        out.append(up)
+    return pd.concat(out, ignore_index=True).drop(columns="_d")
 
 
 def load_taxonomy() -> dict[str, dict]:

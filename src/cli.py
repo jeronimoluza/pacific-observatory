@@ -580,6 +580,51 @@ def prices_explorer(region, out_path):
     _explorer_run(out_path, region)
 
 
+@prices.command("basket-weights")
+def prices_basket_weights():
+    """Refresh the expenditure-weight table behind the basket comparison.
+
+    Writes data/prices/weights/expenditure_weights.csv -- one tidy
+    (iso3, code, value, round, source) row per economy and COICOP category,
+    from two sources that answer different halves of the same question:
+
+      icp         World Bank ICP household final consumption expenditure, at
+                  COICOP class depth for food and group depth for beverages,
+                  alcohol and tobacco. This is what the default weights are
+                  built from. Latest round available per economy, with no
+                  vintage floor -- the alternative drops Macao, which is the
+                  country the weights exist to fix.
+
+      imf_wgt_pt  the countries' own published CPI weights by division, from
+                  the same IMF dataset the CPI benchmark already uses. Stored
+                  as an alternative division split, not used by default: one
+                  source per tree, because ICP's shares nest and a mixture of
+                  two sources' shares does not.
+
+    Standalone, like cpi-benchmark: the explorer build reads the CSV directly.
+    Network required for the refresh and never for the render -- a build with
+    no table falls back to equal weight per category and says so in the
+    payload.
+    """
+    import logging
+
+    from prices.explorer.sources import load_taxonomy
+    from prices.explorer.weights import default_weights, refresh
+
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    tax = load_taxonomy()
+    divisions = sorted(c for c, m in tax.items() if m.get("lvl") == 1)
+    path = refresh(divisions)
+    weights, meta = default_weights(tax, 3)
+    click.echo(f"wrote {path}")
+    click.echo(f"  {meta['label']}")
+    click.echo(f"  rounds: {meta.get('rounds', {})}")
+    click.echo(f"  {len(weights)} categories carry a default weight")
+    for code, w in sorted(weights.items(), key=lambda kv: -kv[1]):
+        click.echo(f"    {code:<9}{(tax.get(code, {}).get('t') or '')[:44]:<46}"
+                   f"{w * 100:6.2f}%")
+
+
 @prices.command("cpi-benchmark")
 @_region_opt
 def prices_cpi_benchmark(region):

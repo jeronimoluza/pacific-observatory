@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 
 from prices.explorer.sources import (
+    ladder_agg,
     CHANGE_LAGS,
     DEFECT_LOG_RATIO,
     FE_ITERATIONS,
@@ -132,7 +133,7 @@ def _fe_level(d: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def _chain(linked: pd.DataFrame) -> pd.DataFrame:
+def _chain(linked: pd.DataFrame, tax: dict) -> pd.DataFrame:
     """Cumulate the MEDIAN log relative over matched items into an index at 100.
 
     The textbook elementary index averages the log relatives, but a single item
@@ -140,18 +141,33 @@ def _chain(linked: pd.DataFrame) -> pd.DataFrame:
     over however many items are linked. The median is the same quantity for a
     clean link and ignores the flipped one, matching how the cross-sectional
     basket level is already built.
+
+    Two aggregations, in this order and not the other one. Countries first, at
+    a FIXED leaf, where the thing being averaged is the same good everywhere;
+    then up the COICOP tree a level at a time. Collapsing both at once let the
+    finely split corners of the taxonomy speak for their parents.
     """
-    step = (
-        linked.dropna(subset=["lr"])
-        .groupby(KEY + ["period"], observed=True)
+    leaf = linked.dropna(subset=["lr"]).drop_duplicates(PAIR + ["period", "geo"])
+    per_leaf = (
+        leaf.groupby(["geo", "coicop_code", "standard_unit", "period"], observed=True)
         .agg(
             lr=("lr", "median"),
             pairs=("lr", "size"),
             prev_period=("prev_period", "min"),
-            is_leaf=("is_leaf", "first"),
         )
         .reset_index()
     )
+    if per_leaf.empty:
+        return pd.DataFrame(columns=KEY + ["period", "idx", "pairs"])
+    step = ladder_agg(
+        per_leaf,
+        ["geo", "standard_unit", "period"],
+        "lr",
+        how="median",
+        k0="pairs",
+        extra={"prev_period": ("prev_period", "min")},
+    ).rename(columns={"k": "pairs"})
+    step["is_leaf"] = step.node.map(lambda c: bool(tax.get(c, {}).get("leaf")))
     # the chain must not be gated harder than the fit it rides alongside
     need = np.where(
         step.is_leaf.to_numpy(), GEO_MIN_LINK_PAIRS_LEAF, GEO_MIN_LINK_PAIRS
@@ -169,7 +185,7 @@ def _chain(linked: pd.DataFrame) -> pd.DataFrame:
     return out.drop_duplicates(KEY + ["period"], keep="first")
 
 
-def _lagged(linked: pd.DataFrame, freq: str) -> pd.DataFrame:
+def _lagged(linked: pd.DataFrame, tax: dict, freq: str) -> pd.DataFrame:
     """Average log change over each horizon, matched (country, leaf) by pair.
 
     The chain beside this one links an item to whatever its previous
@@ -184,6 +200,12 @@ def _lagged(linked: pd.DataFrame, freq: str) -> pd.DataFrame:
     mean is the elementary index that follows from "everything is equally
     weighted". The divergence between the two is pre-existing and left in place
     rather than silently changed underneath the chain.
+
+    The ORDER is now shared with the chain, whatever the estimator: the change
+    is taken at the leaf, averaged across the countries in the geography at
+    that same leaf, and only then averaged up the COICOP tree one level at a
+    time. Division 01's twelve-month change is the mean of its groups' changes,
+    each of which is the mean of its classes', down to rice against rice.
     """
     m = linked.drop_duplicates(PAIR + ["period"])[PAIR + ["period", "usd"]].copy()
     m["t"] = pd.PeriodIndex(m.period, freq=freq).astype(int)
@@ -195,16 +217,22 @@ def _lagged(linked: pd.DataFrame, freq: str) -> pd.DataFrame:
         if j.empty:
             continue
         j["lr"] = np.log(j.usd / j.prev_usd)
-        step = (
+        per_leaf = (
             j.merge(
-                linked[PAIR + ["period", "geo", "node", "is_leaf"]].drop_duplicates(),
+                linked[PAIR + ["period", "geo"]].drop_duplicates(),
                 on=PAIR + ["period"],
                 how="inner",
             )
-            .groupby(KEY + ["period"], observed=True)
-            .agg(lr=("lr", "mean"), pairs=("lr", "size"), is_leaf=("is_leaf", "first"))
+            .groupby(["geo", "coicop_code", "standard_unit", "period"], observed=True)
+            .agg(lr=("lr", "mean"), pairs=("lr", "size"))
             .reset_index()
         )
+        if per_leaf.empty:
+            continue
+        step = ladder_agg(
+            per_leaf, ["geo", "standard_unit", "period"], "lr", k0="pairs"
+        ).rename(columns={"k": "pairs"})
+        step["is_leaf"] = step.node.map(lambda c: bool(tax.get(c, {}).get("leaf")))
         need = np.where(
             step.is_leaf.to_numpy(), GEO_MIN_LINK_PAIRS_LEAF, GEO_MIN_LINK_PAIRS
         )
@@ -265,9 +293,9 @@ def build_geo_series(
         for mp in maps.values():
             linked["geo"] = linked.country.map(mp)
             frame = _fe_level(linked).merge(
-                _chain(linked), on=KEY + ["period"], how="outer"
+                _chain(linked, tax), on=KEY + ["period"], how="outer"
             )
-            chg = _lagged(linked, freq)
+            chg = _lagged(linked, tax, freq)
             # A k-month change can exist in a period the fit could not identify
             # and the chain could not link, so the change periods join the grid
             # rather than being clipped to it.

@@ -28,7 +28,7 @@ var INDEX_BASE = {M:"2024-01", Q:"2024Q1"};
 var S = {
   view:"world", mode:"explore", cur:"usd", incModelled:false, measuredOnly:false,
   incImputed:false,
-  showFlagged:false, evidence:"corrob", region:null, node:OPEN_ON, country:null,
+  showFlagged:false, evidence:"solid", region:null, node:OPEN_ON, country:null,
   /* Country profile keeps its own category state: it opens on ALL items and
      the filter narrows it, where Compare opens on one item and drills. The two
      tabs wanted opposite defaults out of one variable, which is why one of them
@@ -107,7 +107,7 @@ function ancestors(code) {
 }
 
 /* ---------------- filters ---------------- */
-var EVIDENCE = { any:{obs:0, src:1}, solid:{obs:10, src:1}, corrob:{obs:10, src:2} };
+var EVIDENCE = { any:{obs:0, src:1}, thin:{obs:5, src:1}, solid:{obs:10, src:1} };
 function keep(cell) {
   if (!S.incModelled && cell.mod >= 0.5) return false;
   if (S.measuredOnly && cell.der > 0.2) return false;
@@ -138,8 +138,14 @@ function arg(v) { return JSON.stringify(v).replace(/"/g, "&quot;"); }
    took a mean, so two cells on the same screen answered the same question
    differently and the app had to say so in a footnote. A mean is also the only
    one of the two that decomposes — the waterfall's bars add up to its total
-   because of it — and the evidence filter now defaults to two sources, which
-   removes the thin cells an outlier comes from before the mean sees them. */
+   because of it — and the evidence filter defaults to ten observations, which
+   removes the thin cells an outlier comes from before the mean sees them.
+
+   The filter does NOT require two sources. A second source corroborates, but a
+   single retailer with forty readings is evidence and a rule that discarded it
+   cost eighteen countries and 2,486 leaf-country cells for no gain against the
+   noise the filter exists to remove. Ten observations was the bar that was
+   actually reviewed and accepted; the source count never was. */
 function mean(a) {
   if (!a.length) return null;
   return a.reduce(function (p, q) { return p + q; }, 0) / a.length;
@@ -1716,6 +1722,36 @@ function box(l, v, sign) {
 var HM_MIN_LEAVES = 3, HM_MID = "#e5e2d9", HM_FULL = Math.log(2);
 var HM_MIN_COUNTRIES = 6;
 
+/* The client-side twin of `sources.ladder_agg`. Fold a set of leaf readings up
+   to `toDepth` one COICOP level at a time, so every child of a node counts once
+   at its parent however many leaves the taxonomy split it into. A flat mean over
+   the leaves of a class hands the class to whichever of its subclasses is
+   enumerated most finely, which is a fact about the taxonomy and not about
+   prices. Ragged branches are fine: a leaf that terminates above `toDepth`
+   simply waits at its own level until the fold reaches it. */
+function ladderMean(items, toDepth) {
+  var lvl = {}, bucket = {};
+  items.forEach(function (x) { (bucket[x.code] = bucket[x.code] || []).push(x.r); });
+  var d = 0;
+  Object.keys(bucket).forEach(function (c) {
+    lvl[c] = mean(bucket[c]);
+    d = Math.max(d, c.split(".").length);
+  });
+  while (d > toDepth) {
+    var up = {};
+    Object.keys(lvl).forEach(function (c) {
+      if (c.split(".").length !== d) return;
+      var p = c.slice(0, c.lastIndexOf("."));
+      (up[p] = up[p] || []).push(lvl[c]);
+      delete lvl[c];
+    });
+    Object.keys(up).forEach(function (p) { lvl[p] = mean(up[p]); });
+    d -= 1;
+  }
+  var vals = Object.keys(lvl).map(function (c) { return lvl[c]; });
+  return vals.length ? mean(vals) : null;
+}
+
 function classOf(code) {
   var a = ancestors(code), c = a[2] || a[a.length - 1];
   return DATA.tax[c] ? c : null;
@@ -1864,9 +1900,13 @@ function renderWaterfall() {
        item the country has. */
     "The published price level is <b>" +
     (m.level_ok ? m.level.toFixed(0) : (Math.exp(own) * 100).toFixed(0)) +
-    "</b>. Both average the differences; they part company on which items count, " +
-    "because the published level uses only the leaves priced across almost every " +
-    "country and this decomposes everything this country prices.";
+    "</b>. Both average the differences, and they part company twice. The " +
+    "published level uses only the leaves priced across almost every country, " +
+    "where this decomposes everything this country prices; and the level folds " +
+    "those leaves up the COICOP tree a level at a time, where these bars weight " +
+    "each group by how many matched items it holds. That weighting is what makes " +
+    "the bars add up to the total, which is the only thing a decomposition is " +
+    "for, so it is kept here and nowhere else.";
 }
 
 /* Category down the side, country across the top -- the same orientation as
@@ -1877,8 +1917,8 @@ function renderWaterfall() {
    was a median dollars-per-kilo taken ACROSS a whole COICOP class, and there
    is no such quantity -- the members of a class are not the same good, so
    their unit values are not one distribution to take a median of. The gap is
-   built per leaf and only then averaged, so it survives the aggregation the
-   level does not. Each row still carries one unit, chosen as the unit most of
+   built per leaf and then averaged UP THE TREE, subclass by subclass, so it
+   survives the aggregation the level does not. Each row still carries one unit, chosen as the unit most of
    that group's prices are quoted in, so a column never mixes kilos with
    litres. */
 function classCellsFor(ci) {
@@ -1889,7 +1929,7 @@ function classCellsFor(ci) {
     if (!cls) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
     (out[cls] = out[cls] || []).push({
-      unit: c.unit, r: g > 0 ? Math.log(c.usd / g) : null});
+      code: c.node, unit: c.unit, r: g > 0 ? Math.log(c.usd / g) : null});
   });
   return out;
 }
@@ -1935,9 +1975,8 @@ function renderHeatmap() {
       var u = rowUnit[cls];
       var same = c.per[cls].filter(function (x) { return x.unit === u; });
       if (same.length < HM_MIN_LEAVES) return;
-      var gaps = same.map(function (x) { return x.r; })
-                     .filter(function (v) { return v != null; });
-      cells[cls] = {r:mean(gaps), n:same.length};
+      var usable = same.filter(function (x) { return x.r != null; });
+      cells[cls] = {r:ladderMean(usable, cls.split(".").length), n:same.length};
       rowN[cls] = (rowN[cls] || 0) + 1;
     });
     c.cells = cells;
@@ -1983,7 +2022,7 @@ function renderHeatmap() {
     shown.map(function (r) {
       return '<th class="ctyh" title="' + esc(r.name) + " · price level " +
         r.level.toFixed(0) + '" tabindex="0" role="button" data-act="1" onclick="APP.openCountry(' +
-        arg(r.slug) + ')">' + esc(r.name) + "</th>"; }).join("") + "</tr></thead>";
+        arg(r.slug) + ')"><span>' + esc(r.name) + "</span></th>"; }).join("") + "</tr></thead>";
 
   var span = shown.length + 1, seen = {};
   function band(cls) {
@@ -2123,7 +2162,7 @@ var APP = {
     if (impSeg) impSeg.hidden = !HAS_IMPUTED;
     seg("der-0", !S.measuredOnly); seg("der-1", S.measuredOnly);
     seg("flg-0", !S.showFlagged); seg("flg-1", S.showFlagged);
-    ["any","solid","corrob"].forEach(function (k) { seg("ev-" + k, S.evidence === k); });
+    ["any","thin","solid"].forEach(function (k) { seg("ev-" + k, S.evidence === k); });
 
     /* A control that cannot change what is on screen reads as broken. Each group
        declares the views it acts on, and the strip disappears when none apply. */

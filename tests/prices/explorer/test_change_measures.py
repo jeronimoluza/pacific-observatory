@@ -122,18 +122,79 @@ def test_the_geo_change_uses_the_mean_while_the_chain_still_uses_the_median():
     """A pre-existing divergence, documented rather than silently harmonised.
 
     `geo._chain` takes the MEDIAN of the log relatives -- chosen so a single
-    cents-for-units item cannot move a link by ln 100 -- while
-    `aggregate._chained_index` takes the mean. The new change measure uses the
-    mean in both modules; the chain is left exactly as it was.
+    cents-for-units item cannot move a link by ln 100 -- while every other
+    measure takes the mean. The estimator is orthogonal to the ladder: moving
+    the aggregation onto `ladder_agg` changed the ORDER the levels are folded
+    in, and deliberately left each site's choice of estimator alone.
     """
     import inspect
 
     from prices.explorer import geo as geo_mod
 
-    assert '"median"' in inspect.getsource(geo_mod._chain)
-    assert '"mean"' in inspect.getsource(geo_mod._lagged)
-    assert '"mean"' in inspect.getsource(aggregate._lagged_changes)
-    assert '"mean"' in inspect.getsource(aggregate._chained_index)
+    assert 'how="median"' in inspect.getsource(geo_mod._chain)
+    assert 'how="median"' not in inspect.getsource(geo_mod._lagged)
+    for fn in (aggregate._lagged_changes, aggregate._chained_index):
+        assert 'how="median"' not in inspect.getsource(fn)
+
+
+def test_every_aggregate_figure_folds_up_the_tree_a_level_at_a_time():
+    """The order Will asked for, pinned so it cannot regress to a flat mean.
+
+    "You would just compare each product, like each leaf, to the leaf of the
+    global, and then you average the differences. You can't do it the other way
+    around of like adding them all together and then comparing."
+
+    A flat groupby over every leaf beneath a node is exactly the other way
+    around, so no aggregate measure may reach one.
+    """
+    import inspect
+
+    from prices.explorer import geo as geo_mod
+
+    for fn in (
+        aggregate._lagged_changes,
+        aggregate._chained_index,
+        aggregate._basket_levels,
+        geo_mod._chain,
+        geo_mod._lagged,
+    ):
+        assert "ladder_agg(" in inspect.getsource(fn), fn.__name__
+
+
+def test_the_ladder_weights_children_not_leaves():
+    """Seven leaves that doubled and one that did not, under one parent each.
+
+    A flat mean over the eight leaves reads +83%, because the taxonomy happens
+    to split that branch seven ways. The ladder reads +41%: each subclass
+    counts once at its parent, whatever it holds.
+    """
+    from prices.explorer.sources import ladder_agg
+
+    rows = [(f"01.1.1.1.{i}", np.log(2)) for i in range(1, 8)] + [("01.1.1.2.1", 0.0)]
+    df = pd.DataFrame(rows, columns=["coicop_code", "lr"]).assign(country="x")
+    out = ladder_agg(df, ["country"], "lr").set_index("node")
+
+    assert out.loc["01.1.1", "lr"] == pytest.approx(np.log(2) / 2)
+    assert out.loc["01", "lr"] == pytest.approx(np.log(2) / 2)
+    assert int(out.loc["01", "k"]) == 8          # every leaf still counted
+    assert np.expm1(df.lr.mean()) * 100 == pytest.approx(83.4, abs=0.1)
+    assert np.expm1(out.loc["01", "lr"]) * 100 == pytest.approx(41.4, abs=0.1)
+
+
+def test_the_ladder_folds_a_ragged_tree():
+    """Division 02 terminates at depth 4, so a leaf can sit beside a branch."""
+    from prices.explorer.sources import ladder_agg
+
+    df = pd.DataFrame(
+        [("02.1.1.1", 1.0), ("02.1.2.1.1", 0.0), ("02.1.2.1.2", 0.0)],
+        columns=["coicop_code", "lr"],
+    ).assign(country="x")
+    out = ladder_agg(df, ["country"], "lr").set_index("node")
+
+    # the depth-4 leaf and the depth-5 branch are siblings at 02.1, so 0.5 --
+    # a flat mean over the three leaves would read 0.333
+    assert out.loc["02.1", "lr"] == pytest.approx(0.5)
+    assert int(out.loc["02.1", "k"]) == 3
 
 
 def test_only_leaves_priced_in_BOTH_periods_are_counted():

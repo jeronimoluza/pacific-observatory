@@ -21,7 +21,9 @@ import yaml
 from prices.coicop import residual_leaves
 from prices.explorer.cpi import DIVISION_OF, SERIES_LABEL, load_official
 from prices.explorer.geo import build_geo_series
+from prices.explorer.weights import default_weights
 from prices.explorer.sources import (
+    ladder_agg,
     REGIONS_YAML,
     CHANGE_LAGS,
     COMPARABLE_UNITS,
@@ -29,7 +31,9 @@ from prices.explorer.sources import (
     FREQ_MAX_GAP,
     COUNTRY_DEFECT_SHARE,
     MAX_LINK_GAP_MONTHS,
+    BASKET_WEIGHT_LEVEL,
     MIN_BASKET_LEAF_SHARE,
+    MIN_BASKET_WEIGHT_COVERED,
     MIN_BASKET_LEAVES,
     MIN_BASKET_SOURCES,
     MIN_BENCH_COUNTRIES,
@@ -247,14 +251,20 @@ def _lagged_changes(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
 
     Unlike the chain this never links to "whatever the previous observation
     happened to be": period t is compared with period t-k exactly, over the
-    leaves priced in BOTH, and the mean of those log changes is the group's
-    change:  d ln P_gt = (1/n) sum_i ( ln p_it - ln p_i,t-k ).
+    leaves priced in BOTH.
+
+    The comparison happens at the leaf and the averaging happens afterwards,
+    one level of the tree at a time -- see `ladder_agg`. Rice this year over
+    rice last year, then the mean across the cereals, then across the classes,
+    then across the groups, and the mean of those is what division 01 changed
+    by. Taking a price per kilo across a whole class first and differencing
+    that would difference two different baskets.
 
     The MEAN, not the median. There are no expenditure weights in this corpus,
     so everything is equally weighted, and an unweighted mean of log relatives
     is the elementary index that follows from that. It is also what makes the
-    number decomposable: the group change is the sum of each leaf's share of it,
-    which a median is not.
+    number decomposable: the group change is the sum of each child's share of
+    it, which a median is not.
 
     Nothing accumulates. A chained index carries every link's error forward and
     is read against a base month that is itself one noisy draw; a k-month change
@@ -268,10 +278,6 @@ def _lagged_changes(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     m = m.copy()
     m["t"] = pd.PeriodIndex(m.period, freq="M").astype(int)
     keys = ["country", "coicop_code", "standard_unit"]
-    ladder = pd.DataFrame(
-        [(c, n) for c in m.coicop_code.unique() for n in _levels(c)],
-        columns=["coicop_code", "node"],
-    )
 
     out = []
     for months, lag in CHANGE_LAGS["M"].items():
@@ -281,12 +287,7 @@ def _lagged_changes(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
         if j.empty:
             continue
         j["lr"] = np.log(j.usd / j.prev_usd)
-        step = (
-            j.merge(ladder, on="coicop_code", how="inner")
-            .groupby(["country", "node", "standard_unit", "period"], observed=True)
-            .agg(lr=("lr", "mean"), k=("lr", "size"))
-            .reset_index()
-        )
+        step = ladder_agg(j, ["country", "standard_unit", "period"], "lr")
         step = step[step.k >= _link_need(step.node, tax)]
         if step.empty:
             continue
@@ -304,8 +305,9 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
 
     A raw median over an aggregate node moves whenever the scrape composition
     moves — which item got collected this month, not what it cost. So for every
-    non-leaf node we chain the Jevons way: month over month, average the log
-    price relative across the leaves observed in BOTH months, then cumulate.
+    non-leaf node we chain the Jevons way: month over month, take the log price
+    relative at the leaf where both months are observed, average it up the tree
+    one level at a time (`ladder_agg`), then cumulate.
     Only the US$ chain is built; the local chain follows exactly from the FX
     identity, which also sidesteps mixing two currencies inside one country.
     """
@@ -326,20 +328,16 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     m = m[(gap >= 1) & (gap <= MAX_LINK_GAP_MONTHS)].copy()
     m["lr"] = np.log(m.usd / m.prev_usd)
 
-    ladder = pd.DataFrame(
-        [(c, n) for c in m.coicop_code.unique() for n in _levels(c)[:-1]],
-        columns=["coicop_code", "node"],
-    )
-    linked = m.merge(ladder, on="coicop_code", how="inner")
-    step = (
-        linked.groupby(["country", "node", "standard_unit", "period"], observed=True)
-        .agg(
-            lr=("lr", "mean"),
-            n_leaves=("lr", "size"),
-            prev_period=("prev_period", "min"),
-        )
-        .reset_index()
-    )
+    step = ladder_agg(
+        m,
+        ["country", "standard_unit", "period"],
+        "lr",
+        extra={"prev_period": ("prev_period", "min")},
+    ).rename(columns={"k": "n_leaves"})
+    # The chain is an aggregate-node measure. A leaf holds nothing constant by
+    # chaining -- its own monthly median already is its series -- so the ladder's
+    # leaf rows, which exist only to feed their parents, come out here.
+    step = step[~step.node.map(lambda c: bool(tax.get(c, {}).get("leaf")))]
     # Nodes that could always clear the flat bar keep it, so the scaling only
     # ever relaxes what the taxonomy made impossible, never what was merely thin
     # this month. Every node here is a strict ancestor, so the leaf case in
@@ -378,9 +376,11 @@ def _residual_nodes(tax: dict) -> frozenset[str]:
     )
 
 
-def _basket_levels(cells: pd.DataFrame, tax: dict) -> pd.DataFrame:
-    """Matched-leaf Jevons price level: geometric mean of a country's leaf unit
-    values relative to the global median for that same (leaf, unit).
+def _basket_levels(
+    cells: pd.DataFrame, tax: dict, weights: dict[str, float] | None = None
+) -> pd.DataFrame:
+    """Matched-leaf Jevons price level: a country's leaf unit values against the
+    global median for that same (leaf, unit), averaged up the COICOP tree.
 
     Catch-all leaves are dropped. The construction's whole claim is that it
     compares like with like -- a kilo of rice against a kilo of rice -- and
@@ -427,19 +427,66 @@ def _basket_levels(cells: pd.DataFrame, tax: dict) -> pd.DataFrame:
     glob = leaves.groupby(keys).usd.median().rename("g")
     leaves = leaves.join(glob, on=keys)
     leaves["rel"] = np.log(leaves.usd / leaves.g)
-    out = (
-        leaves.groupby("country")
-        .agg(rel=("rel", "mean"), n_leaves=("rel", "size"), src=("sources", "max"))
-        .reset_index()
-    )
+    # Up the tree one level at a time -- the same order every other figure here
+    # uses -- and then a WEIGHTED sum across the categories at
+    # BASKET_WEIGHT_LEVEL. The ladder alone still lets the taxonomy decide: it
+    # gives every child of a node one vote, so a class holding a single leaf
+    # speaks as loudly as a class holding twelve. That is how Macao reached 347
+    # against a world median of 100 -- six of its classes hold one beverage leaf
+    # each, every one of them with a broken unit value, and together they took
+    # about a third of the basket. Expenditure weights put those six at under
+    # eight per cent, which is what they are.
+    lad = ladder_agg(leaves.rename(columns={"node": "coicop_code"}), ["country"], "rel")
+    depth = BASKET_WEIGHT_LEVEL - 1 if weights else 0
+    lvl = lad[lad.node.str.count(r"\.").eq(depth)].copy()
+
+    if weights:
+        lvl["w"] = lvl.node.map(weights).astype(float).fillna(0.0)
+        # A category this country does not price is an ABSENT TERM, never a
+        # zero and never an imputed price. Its weight goes to the categories the
+        # country does price, in proportion to their own -- so the weights the
+        # reader sees always sum to one, over the basket that actually exists.
+        # What the redistribution hides is how much of the intended basket went
+        # missing, which is why `covered` is carried out of here and gated on.
+        cov = lvl.groupby("country").w.sum().rename("covered")
+        lvl["w"] = lvl.w / lvl.groupby("country").w.transform("sum")
+        lvl["wr"] = lvl.w * lvl.rel
+        out = (
+            lvl.groupby("country")
+            .agg(rel=("wr", "sum"), n_leaves=("k", "sum"))
+            .reset_index()
+            .join(cov, on="country")
+        )
+    else:
+        out = (
+            lvl.groupby("country")
+            .agg(rel=("rel", "mean"), n_leaves=("k", "sum"))
+            .reset_index()
+        )
+        out["covered"] = 1.0
+    out = out.join(leaves.groupby("country").sources.max().rename("src"), on="country")
     out = out.join(defect, on="country")
     out["level"] = np.exp(out.rel) * 100
     out["ok"] = (
         (out.n_leaves >= MIN_BASKET_LEAVES)
         & (out.src >= MIN_BASKET_SOURCES)
         & (out.defect_share.fillna(0) < COUNTRY_DEFECT_SHARE)
+        & (out.covered.fillna(0) >= MIN_BASKET_WEIGHT_COVERED)
     )
-    return out[["country", "level", "n_leaves", "defect_share", "ok"]]
+    logger.info(
+        "basket: %d of %d countries ranked; %d fail on weight coverage alone",
+        int(out.ok.sum()),
+        len(out),
+        int(
+            (
+                (out.covered.fillna(0) < MIN_BASKET_WEIGHT_COVERED)
+                & (out.n_leaves >= MIN_BASKET_LEAVES)
+                & (out.src >= MIN_BASKET_SOURCES)
+                & (out.defect_share.fillna(0) < COUNTRY_DEFECT_SHARE)
+            ).sum()
+        ),
+    )
+    return out[["country", "level", "n_leaves", "covered", "defect_share", "ok"]]
 
 
 def _samples(trusted: pd.DataFrame) -> dict[str, list[str]]:
@@ -528,7 +575,8 @@ def build_payload(region: str | None = None) -> dict:
     series = _series(exploded, fills)
     chained = _chained_index(exploded, tax)
     changed = _lagged_changes(exploded, tax)
-    levels = _basket_levels(cells, tax)
+    basket_w, wmeta = default_weights(tax, BASKET_WEIGHT_LEVEL)
+    levels = _basket_levels(cells, tax, basket_w)
 
     # ---- country meta -------------------------------------------------
     cmeta: dict[str, dict] = {}
@@ -536,6 +584,7 @@ def build_payload(region: str | None = None) -> dict:
     nleaf_map = dict(zip(levels.country, levels.n_leaves))
     ok_map = dict(zip(levels.country, levels.ok))
     defect_map = dict(zip(levels.country, levels.defect_share))
+    cov_map = dict(zip(levels.country, levels.covered))
     grp = trusted.groupby("country", observed=True)
     for slug, g in grp:
         base = countries.get(
@@ -561,6 +610,8 @@ def build_payload(region: str | None = None) -> dict:
             "level": round(float(lvl_map[slug]), 1) if slug in lvl_map else None,
             "level_n": int(nleaf_map.get(slug, 0)),
             "level_ok": bool(ok_map.get(slug, False)),
+            "level_cov": (round(float(cov_map[slug]), 3)
+                          if slug in cov_map and pd.notna(cov_map[slug]) else None),
             "defect": round(float(defect_map.get(slug, 0.0) or 0.0), 3),
             "last": str(g.period.max()),
         }
@@ -649,6 +700,7 @@ def build_payload(region: str | None = None) -> dict:
         # The leaf gate, published so the client can state the missing-price
         # policy in the same words the build applies it in.
         "min_basket_leaf_share": MIN_BASKET_LEAF_SHARE,
+        "min_basket_weight_covered": MIN_BASKET_WEIGHT_COVERED,
         # The regional yardstick is an addition, and the payload says so, so a
         # future reader of `rmed` cannot mistake it for the default.
         "benchmark": {
@@ -844,6 +896,23 @@ def build_payload(region: str | None = None) -> dict:
         # Official CPI, straight from the IMF and untouched: a local-currency
         # index the client draws beside our own series after converting OURS
         # into local terms. Empty when the standalone table has not been built.
+        "basket": {
+            # The weight vector the build used, the level it acts on, and where
+            # it came from. Shipped rather than recomputed on the client so a
+            # figure on screen and a figure in the parquet cannot drift, and so
+            # a reader who moves a slider can be shown what they moved it FROM.
+            "lvl": BASKET_WEIGHT_LEVEL,
+            "within": "equal-within-parent below the weighted level",
+            "w0": {k: round(v, 6) for k, v in sorted(basket_w.items())},
+            "wmeta": wmeta,
+            "gates": {
+                "leaf_share": MIN_BASKET_LEAF_SHARE,
+                "min_leaves": MIN_BASKET_LEAVES,
+                "min_sources": MIN_BASKET_SOURCES,
+                "defect_share": COUNTRY_DEFECT_SHARE,
+                "min_covered": MIN_BASKET_WEIGHT_COVERED,
+            },
+        },
         "cpi": official,
         "cpiMeta": {
             "labels": {k: v for k, v in SERIES_LABEL.items() if k in used_series},
