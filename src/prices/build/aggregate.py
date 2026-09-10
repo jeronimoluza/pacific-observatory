@@ -79,6 +79,10 @@ logger = logging.getLogger(__name__)
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BUILD_DIR = REPO_ROOT / "data" / "prices" / "build"
 OBSERVATIONS_PARQUET = BUILD_DIR / "global_prices_observations.parquet"
+# Scratch for the country-partitioned path. Holds the spilled join and the
+# finalized parts; removed on a clean run, left behind on a failed one so the
+# run can be inspected rather than only re-run.
+CHUNK_SCRATCH_DIR = BUILD_DIR / "_chunked"
 SNAPSHOT_PARQUET = BUILD_DIR / "global_prices_snapshot.parquet"
 TRUSTED_OBS_PARQUET = BUILD_DIR / "global_prices_trusted_observations.parquet"
 UNIT_VALUE_SUMMARY_PARQUET = BUILD_DIR / "global_prices_unit_value_summary.parquet"
@@ -602,8 +606,15 @@ def build_observations(
     shard_root: Path | None = None,
     overlay: bool = False,
     workers: int = 1,
-) -> pd.DataFrame:
-    """Build the historical time-series observations from the raw rows."""
+    spill_to: Path | None = None,
+):
+    """Build the historical time-series observations from the raw rows.
+
+    `spill_to` switches on the country-partitioned path in `build.chunked`,
+    which never materialises the joined frame whole and writes the consumables
+    itself. It returns the finalized part paths instead of a frame, so it is
+    opt-in rather than the default: every existing caller wants the frame back.
+    """
     cache = load_filtered_cache()
     logger.info("[observations] cache rows: %d", len(cache))
     if cache.empty:
@@ -635,6 +646,20 @@ def build_observations(
     if not pieces:
         scope = f" for {list(selectors)}" if selectors else ""
         raise RuntimeError(f"raw rows produced nothing joinable for the basket{scope}.")
+
+    if spill_to is not None:
+        from prices.build.chunked import build_observations_chunked  # noqa: PLC0415
+
+        logger.info(
+            "[observations] chunked path: %d joined pieces spilling to %s",
+            len(pieces),
+            spill_to,
+        )
+        # `pieces` is consumed in place by the spill, so the list is handed over
+        # rather than copied: holding a second reference here would keep every
+        # piece alive for the whole run and undo the point of the exercise.
+        return build_observations_chunked(pieces, typical_mass, workers, spill_to)
+
     df = pd.concat(pieces, ignore_index=True)
     logger.info(
         "[observations] joined: %d rows × %d countries × %d coicop leaves",
@@ -717,6 +742,7 @@ def build(
     shard_root: Path | None = None,
     recompute_leaf_tables: bool | None = None,
     workers: int = 1,
+    chunked: bool | None = None,
 ) -> None:
     """Build the basket parquets, optionally recomputing only part of the corpus.
 
@@ -727,6 +753,22 @@ def build(
     scoped = bool(selectors)
     typical_mass = _pinned_typical_mass(scoped, recompute_leaf_tables)
     build_snapshot(typical_mass=typical_mass)
+    if chunked is None:
+        # A scoped run overlays onto the existing full frame, so it needs that
+        # frame in memory and is small enough to have it. A full run is the one
+        # the kernel killed.
+        chunked = not scoped
+    if chunked:
+        build_observations(
+            csv_path=csv_path,
+            typical_mass=typical_mass,
+            selectors=selectors,
+            shard_root=shard_root,
+            overlay=False,
+            workers=workers,
+            spill_to=CHUNK_SCRATCH_DIR,
+        )
+        return
     obs = build_observations(
         csv_path=csv_path,
         typical_mass=typical_mass,
@@ -742,6 +784,7 @@ def run(
     selectors: Sequence[str] | None = None,
     recompute_leaf_tables: bool | None = None,
     workers: int = 1,
+    chunked: bool | None = None,
 ) -> None:
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
@@ -750,4 +793,5 @@ def run(
         selectors=selectors,
         recompute_leaf_tables=recompute_leaf_tables,
         workers=workers,
+        chunked=chunked,
     )

@@ -76,8 +76,18 @@ def _derived_vs_measured(window: pd.DataFrame) -> pd.DataFrame:
     return ratio.rename("derived_vs_measured_ratio").reset_index()
 
 
-def build_analytical(df: pd.DataFrame) -> pd.DataFrame:
-    """Trailing-3-month median unit price per (country, leaf, unit)."""
+def build_analytical(
+    df: pd.DataFrame, anchor: pd.Period | None = None
+) -> pd.DataFrame:
+    """Trailing-3-month median unit price per (country, leaf, unit).
+
+    `anchor` pins the last month of the trailing window. It exists for the
+    country-chunked build: the window is anchored on the GLOBAL latest trusted
+    observation, so deriving this per country without pinning it would give each
+    country a window ending on its own last month -- a different statistic
+    wearing the same column name, and nothing downstream would catch the swap.
+    None keeps the whole-frame behaviour of anchoring on this frame's own max.
+    """
     if df.empty or "qa_status" not in df.columns:
         return pd.DataFrame(columns=OUTPUT_COLS)
 
@@ -92,7 +102,8 @@ def build_analytical(df: pd.DataFrame) -> pd.DataFrame:
     if trusted.empty:
         return pd.DataFrame(columns=OUTPUT_COLS)
 
-    anchor = trusted["observation_date"].max().to_period("M")
+    if anchor is None:
+        anchor = trusted["observation_date"].max().to_period("M")
     window_periods = pd.period_range(end=anchor, periods=TRAILING_MONTHS, freq="M")
     trusted["period"] = trusted["observation_date"].dt.to_period("M")
     window = trusted[trusted["period"].isin(window_periods)]
