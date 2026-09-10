@@ -138,7 +138,7 @@ def test_the_country_table_carries_no_catch_all_rows(page):
 
 
 def test_the_heatmap_has_no_catch_all_row(page):
-    page.click("#t-patterns")
+    page.click("#t-world")
     page.wait_for_selector("#hmTbl td.c")
     labels = page.locator("#hmTbl td.ctry").all_inner_texts()
     assert any("Cereals" in v for v in labels), labels

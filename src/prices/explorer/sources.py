@@ -45,6 +45,17 @@ MIN_BASKET_SOURCES = 2
 # where this share of the countries being compared price it. It doubles as the
 # missing-price policy, stated once rather than left implicit in whatever the
 # scrape happened to catch that month.
+#
+# THESE TWO GATES MULTIPLY, and the product has never been measured against the
+# real corpus. After the share cut, no country can carry more leaves than the
+# number of (leaf, unit) pairs that cleared it, so `MIN_BASKET_LEAVES` is now a
+# demand for 15 pairs each priced in 75% of EVERY country in the payload. If
+# fewer than 15 clear it, no country gets `level_ok`, and `level_ok` is what
+# gates the country ranking, the heatmap and the waterfall -- three charts go
+# blank at once, with only their own empty states to explain it. The eligible
+# count is logged by `_basket_levels` on every build: read it before trusting a
+# blank grid. Lower this share, or lower MIN_BASKET_LEAVES with it, if the log
+# says the intersection is thin.
 MIN_BASKET_LEAF_SHARE = 0.75
 
 # A region's median over one or two countries is one of those countries' own

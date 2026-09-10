@@ -97,8 +97,22 @@ def test_compare_refuses_to_rank_an_aggregate_node(page):
     sub = page.inner_text("#cmpSub")
     assert "is a grouping, not an item" in sub
     assert page.inner_html("#cmpTbl") == "", "no value or ratio columns at an aggregate"
-    assert page.evaluate("document.getElementById('cmp-abs').disabled") is True
-    assert page.evaluate("document.getElementById('cmp-rel').disabled") is True
+
+
+def test_the_price_level_relative_price_toggle_is_gone(page):
+    """Both readings divided by a world median that does not exist above a leaf,
+    so the pair used to go dead together at an aggregate node. The relative-price
+    reading has since been withdrawn outright, so there is no pair left to
+    disable -- the controls are deleted, not hidden."""
+    assert page.locator("#cmp-abs").count() == 0
+    assert page.locator("#cmp-rel").count() == 0
+    page.click("#t-compare")
+    page.evaluate("APP.set('cmpMode','rel')")
+    page.evaluate("APP.pick('01.1.1.1.1')")
+    page.wait_for_selector("#cmpTbl tbody tr")
+    # no client state can bring the withdrawn reading back
+    assert "Relative price" not in page.inner_text("#cmpSub")
+    assert "Relative" not in page.inner_text("#cmpTbl")
 
 
 def test_compare_still_ranks_a_leaf(page):
@@ -107,7 +121,6 @@ def test_compare_still_ranks_a_leaf(page):
     page.wait_for_selector("#cmpTbl tbody tr")
     assert page.locator("#cmpTbl tbody tr").count() == 20
     assert "World median" in page.inner_text("#cmpSub")
-    assert page.evaluate("document.getElementById('cmp-rel').disabled") is False
 
 
 def test_the_world_level_toggle_is_dead_at_an_aggregate_node(page):
@@ -124,11 +137,18 @@ def test_the_world_level_toggle_is_live_at_a_leaf(page):
 
 def test_the_matched_leaf_constructions_are_untouched(page):
     """The waterfall, the ranking and the heatmap all aggregate across
-    COUNTRIES at a fixed leaf, which is the legitimate direction."""
-    page.click("#t-patterns")
+    COUNTRIES at a fixed leaf, which is the legitimate direction.
+
+    All three moved tabs in the redesign -- heatmap to World, ranking to
+    Compare, waterfall to Country profile -- so this also pins that each one is
+    still DRAWN where it now lives, rather than sitting under a heading with no
+    renderer behind it."""
+    page.click("#t-world")
     page.wait_for_selector("#hmTbl td.c")
     assert page.locator("#hmTbl td.c").count() > 0
+    page.click("#t-country")
+    page.wait_for_selector("#wfNote")
     assert "against a world median of 100" in page.inner_text("#wfNote")
-    page.click("#t-world")
+    page.click("#t-compare")
     page.wait_for_selector("#rankList .rrow")
     assert page.locator("#rankList .rrow").count() == 20

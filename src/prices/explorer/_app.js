@@ -194,7 +194,20 @@ function domUnit(code) {
   var i = DATA.unitIdx.indexOf(d);
   return i >= 0 ? i : null;
 }
-function resolveUnit(ni) { return domUnit(DATA.nodeIdx[ni]); }
+/* `dom` is counted over every trusted OBSERVATION at the node; a cell has to
+   clear MIN_CELL_OBS and then the evidence filter on top of it. So the
+   dominant unit can end up with no surviving cell at all while another unit
+   still has several, and picking it regardless would put a confident heading
+   over an empty chart. Where that happens the unit with the most surviving
+   cells is drawn instead and `unitLabelHtml` names what was left out — the
+   same rule the World and Currency-effects charts already apply to their own
+   series. It is still a label, not a control: nothing here is clickable. */
+function resolveUnit(ni) {
+  var dom = domUnit(DATA.nodeIdx[ni]);
+  if (dom != null && cellsFor(ni, dom).length) return dom;
+  var us = unitsAt(ni);
+  return us.length ? us[0].ui : dom;
+}
 /* The read-only counterpart of the old chip row. It carries the count so the
    label still says how much is behind it, and it names what the dominant unit
    is costing when a node is priced in more than one. */
@@ -1020,6 +1033,13 @@ function navigator(crumbId, listId, node, onPick, countFn) {
    2. COMPARE COUNTRIES
    ===================================================================== */
 function renderCompare() {
+  /* The whole-basket ranking moved to this tab with its markup, so its renderer
+     has to follow it or the card sits empty under a heading. It is drawn FIRST,
+     and before every early return below: the ranking answers a question about
+     countries and knows nothing about the item selected on the left, so a node
+     that cannot be ranked must not take the country ranking down with it. */
+  renderRanking();
+
   var ni = DATA.nodeIdx.indexOf(S.node);
   navigator("cmpCrumb", "cmpNav", S.node, null, function (code) {
     var i = DATA.nodeIdx.indexOf(code);

@@ -53,6 +53,12 @@ h1{font:400 25px/1.2 var(--serif);letter-spacing:-.1px}
 .ctlbar{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
 .ctlbar .grp{display:flex;align-items:center;gap:9px}
 .ctlbar select{max-width:360px}
+/* The category picker names what the whole chart is about, so it is set larger
+   than the controls around it and given room for the deepest COICOP title
+   rather than truncating it. Its options are indented with FIGURE SPACES
+   (U+2007), not ordinary ones, so the tree depth survives the browser's own
+   whitespace collapsing. */
+#wtNode{font-size:14.5px;font-weight:600;max-width:none;min-width:min(100%,420px)}
 .ctllab{font-size:12px;color:var(--faint);white-space:nowrap}
 
 /* the filter strip sits with the views it governs, never above one it cannot touch */
