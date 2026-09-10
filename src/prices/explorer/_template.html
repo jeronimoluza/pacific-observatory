@@ -387,13 +387,11 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
        this rename exists to stop. There is exactly ONE such tab either way --
        "Global View" over the world, "Regional View" over one region.
 
-       t-global was a SECOND world tab that appeared only beside the regional
-       one, so an EAP reader was handed two tabs and left to work out which of
-       them was the world. It is hidden in every build now. It stays in the DOM
-       because APP.go walks VIEWS by id and would throw on a missing tab; the
-       pane behind it (v-global) is likewise kept but unreachable. -->
+       There used to be a second tab, also called "Global View", revealed only
+       beside the regional one: an EAP reader was handed two tabs and left to
+       work out which was the world. Its two cards now live in this tab, at the
+       scope of the build they are in, and the tab and its pane are gone. -->
   <button id="t-world"    class="on" role="tab" aria-selected="true"  onclick="APP.go('world')">Global View</button>
-  <button id="t-global"   role="tab" aria-selected="false" onclick="APP.go('global')" hidden>Global View</button>
   <button id="t-compare"  role="tab" aria-selected="false" onclick="APP.go('compare')">Compare countries</button>
   <button id="t-country"  role="tab" aria-selected="false" onclick="APP.go('country')">Country profile</button>
   <button id="t-trends"   role="tab" aria-selected="false" onclick="APP.go('trends')">Currency effects</button>
@@ -405,7 +403,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
      country's own items, one product's own history -- BOTH are shown at once
      rather than hidden behind a control the reader has to find. -->
 <div class="ctlstrip" id="ctlstrip" hidden>
-  <div class="grp" data-views="world global compare country"><span class="ctllab" id="lab-ev">Evidence</span>
+  <div class="grp" data-views="world compare country"><span class="ctllab" id="lab-ev">Evidence</span>
     <div class="seg" role="group" aria-labelledby="lab-ev">
       <button id="ev-any" aria-pressed="false" onclick="APP.set('evidence','any')">Any</button>
       <button id="ev-thin" aria-pressed="false" onclick="APP.set('evidence','thin')">5+ obs</button>
@@ -533,6 +531,45 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     <div class="samples" id="wtNote"></div>
   </section>
 
+  <!-- Relocated out of the retired Global View tab. Both cards measure
+       against the SAME yardstick in either build -- `nodeMeta[code].gmed`, the
+       world median for that item and unit, computed over the whole corpus
+       before any region filter. What changes with the build is only who is on
+       the rows: the world's regions in a global build (from `rmed`), the
+       build's own countries in a regional one (from its own cells). The
+       yardstick never moves, so "vs the world median" stays true on every
+       label -- see the silent-swap warning in aggregate.build_payload. -->
+  <div class="card">
+    <div class="spread">
+      <div>
+        <h2><span id="gvTitle">How the world prices the same basket</span><button class="ibtn" id="b-gv"
+          aria-expanded="false" aria-controls="i-gv" aria-label="How to read this"
+          onclick="APP.info('gv')">i</button></h2>
+        <div class="sub" id="gvSub">Every world region against the world median, item by item.</div>
+      </div>
+    </div>
+    <div class="info" id="i-gv">
+      <div class="beginner-only" id="gvHelp">
+        Every figure here is a world region's median price for an item set against the
+        <b>world median for the same item in the same unit</b> &mdash; 1&nbsp;kg of rice
+        against 1&nbsp;kg of rice &mdash; and those item-by-item differences are then
+        folded up the category tree, so a finely split branch cannot outvote its
+        neighbours. Red is more expensive than the world, blue cheaper.
+      </div>
+    </div>
+    <div class="cwrap" style="height:220px"><canvas id="cGlobalBars" role="img"
+      aria-label="Each row against the world median"></canvas></div>
+    <div class="samples" id="gvLead" style="margin-top:14px"></div>
+  </div>
+
+  <div class="card">
+    <h2 id="gvGridTitle">Region by category group</h2>
+    <div class="sub" id="gvGridSub">Each category group in each world region, against the world
+      median for the same items.</div>
+    <div class="hmwrap"><table class="hm" id="gvTbl"></table></div>
+    <div class="ramp" id="gvRamp"></div>
+  </div>
+
   <details class="more">
     <summary>More about the corpus behind these numbers</summary>
     <div class="row2">
@@ -551,48 +588,6 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       </div>
     </div>
   </details>
-</section>
-
-<!-- ============ 1b. GLOBAL VIEW ============ -->
-<!-- Only present in a regional build, where the tab beside it holds one
-     region. Everything on it comes from the world medians a regional payload
-     already carries: `nodeMeta[code].gmed` is the world median for an item,
-     computed before the region filter, and `rmed` holds the same median for
-     every world region beside it. So this is the actual world, not a second
-     copy of this build's countries under a different heading. -->
-<section id="v-global" role="tabpanel" aria-labelledby="t-global" hidden>
-  <div class="card">
-    <div class="spread">
-      <div>
-        <h2>How the world prices the same basket<button class="ibtn" id="b-gv"
-          aria-expanded="false" aria-controls="i-gv" aria-label="How to read this"
-          onclick="APP.info('gv')">i</button></h2>
-        <div class="sub">Every world region against the world median, item by item.</div>
-      </div>
-    </div>
-    <div class="info" id="i-gv">
-      <div class="beginner-only">
-        The other tabs show the countries this dashboard was built for. This one shows
-        <b>the world they are being compared with</b>. Every figure here is a region's
-        median price for an item set against the <b>world median for the same item in
-        the same unit</b> &mdash; 1&nbsp;kg of rice against 1&nbsp;kg of rice &mdash;
-        and those item-by-item differences are then folded up the category tree, so a
-        finely split branch cannot outvote its neighbours. Red is more expensive than
-        the world, blue cheaper. The outlined column is the region this build is of.
-      </div>
-    </div>
-    <div class="cwrap" style="height:220px"><canvas id="cGlobalBars" role="img"
-      aria-label="Each world region against the world median"></canvas></div>
-    <div class="samples" id="gvLead" style="margin-top:14px"></div>
-  </div>
-
-  <div class="card">
-    <h2>Region by category group</h2>
-    <div class="sub">Each category group in each world region, against the world
-      median for the same items.</div>
-    <div class="hmwrap"><table class="hm" id="gvTbl"></table></div>
-    <div class="ramp" id="gvRamp"></div>
-  </div>
 </section>
 
 <!-- ============ 2. COMPARE ============ -->
