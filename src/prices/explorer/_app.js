@@ -2334,12 +2334,40 @@ function monthsBack(p, k) {
   var a = p.split("-"), n = +a[0] * 12 + (+a[1] - 1) - k, m = n % 12 + 1;
   return Math.floor(n / 12) + "-" + (m < 10 ? "0" : "") + m;
 }
-var FX_WIN_MONTHS = 12;
-/* The two months every currency split on this tab is measured over: the last
-   month this COUNTRY has a published series in, and the same month a year
-   before it. One window per country is the whole point — read the endpoints
-   off each item and the exchange rate stops being a country-level number. */
-function countryWindow(ci) {
+/* THE HORIZONS THIS CORPUS SUPPORTS. A window is only drawable where the
+   country has an exchange rate in BOTH endpoint months and at least a few
+   products priced in both; counting leaf products priced at both ends of a
+   window ending 2026-09, over the 37 EAP countries in the payload:
+
+       window     1m    3m    6m   12m   18m   24m   36m   48m   60m
+       Japan     132   132   105   111    88    85    37    41    67
+       Indonesia 108    92    95    69    58    43    61    58    71
+       Fiji      118    82    88    62    43    52    56    38    43
+       >=8 rows   33    30    22    24    23    23    20    17    14
+
+   Three, six, twelve and twenty-four are what gets offered. One month is
+   dropped: it is the densest window but the currency leg over it is usually
+   under a point, so the chart's whole subject shrinks to a hairline. Beyond
+   twenty-four the count falls away -- 14 of 37 countries can still draw a
+   five-year window -- and a decomposition nobody can see is not the more
+   rigorous one. This is a purely CLIENT-SIDE choice: the panel reads
+   DATA.series, which is the full monthly panel, so offering four windows
+   instead of one adds nothing whatever to the payload.
+
+   Six months costs more countries than twelve does, which looks wrong and is
+   not: FX is monthly and genuinely SPARSE for small currencies. Tonga has no
+   rate between 2026-01 and 2026-04, so its six-month window has no left
+   endpoint at all while its twelve-month one does. Windows a country cannot
+   draw are offered as dead buttons rather than as live ones that blank the
+   chart; the endpoint is never nudged to a neighbouring month, because that
+   would quietly report a different window from the one on the button. */
+var FXB_WINS = [3, 6, 12, 24];
+var FXB_WIN = 12;
+/* The right-hand end of every window on this tab: the last month this COUNTRY
+   has a published series in. One window per country is the whole point -- read
+   the endpoints off each item and the exchange rate stops being a
+   country-level number. */
+function countryHi(ci) {
   var hi = null, pre = ci + "|";
   Object.keys(DATA.series).forEach(function (k) {
     if (k.indexOf(pre) !== 0) return;
@@ -2347,7 +2375,67 @@ function countryWindow(ci) {
     if (!ps.length) return;
     if (hi == null || ps[ps.length - 1] > hi) hi = ps[ps.length - 1];
   });
-  return {lo:hi == null ? null : monthsBack(hi, FX_WIN_MONTHS), hi:hi};
+  return hi;
+}
+/* What the trend panel below states its three readings over -- the same window
+   the bars are drawn on, so the two cards on this tab cannot report different
+   months for the same country. */
+function countryWindow(ci) {
+  var hi = countryHi(ci);
+  return {lo:hi == null ? null : monthsBack(hi, FXB_WIN), hi:hi};
+}
+/* One pass over a country's leaf series for one window. Returns the shared
+   currency leg and a row per product priced at BOTH endpoints; `fx` is null
+   where the window has no exchange rate at one end, which is a different
+   failure from having no products and reads differently on screen. */
+function fxbSplit(ci, hi, months) {
+  var fxMap = fxOf(DATA.ctyIdx[ci]), lo = monthsBack(hi, months);
+  var r0 = fxMap[lo], r1 = fxMap[hi];
+  var out = {lo:lo, hi:hi, months:months, r0:r0, r1:r1, leg:null, rows:[]};
+  if (!(r0 > 0) || !(r1 > 0)) return out;
+  /* d ln P_usd = d ln P_local - d ln FX, so the CURRENCY's contribution to a
+     dollar price is minus the rate's own move: a currency that loses ground
+     against the dollar (FX up) pulls dollar prices down. */
+  out.leg = -Math.log(r1 / r0);
+  DATA.nodeIdx.forEach(function (code, ni) {
+    if (!isLeaf(code) || isResidual(code)) return;
+    for (var ui = 0; ui < DATA.unitIdx.length; ui++) {
+      var ser = DATA.series[ci + "|" + ni + "|" + ui];
+      if (!ser) continue;
+      var a = ser.p.indexOf(lo), b = ser.p.indexOf(hi);
+      if (a < 0 || b < 0 || !(ser.usd[a] > 0) || !(ser.usd[b] > 0)) continue;
+      out.rows.push({code:code, name:title(code), unit:DATA.unitIdx[ui],
+        total:Math.log(ser.usd[b] / ser.usd[a]),
+        imp:!!(ser.imp && (ser.imp[a] || ser.imp[b]))});
+      return;
+    }
+  });
+  out.rows.forEach(function (r) { r.real = r.total - out.leg; });
+  return out;
+}
+/* The window buttons are STATIC markup and this only repaints their state.
+   Rebuilding them with innerHTML would destroy the very button the reader just
+   clicked, and a control that deletes itself mid-click is how a page loses the
+   focus ring and jumps. Each button carries the count for its window in the
+   title, and a window this country cannot draw goes dead rather than live-and-
+   empty -- except the selected one, which stays clickable so the reader is
+   never left with the pressed control disabled under their cursor. */
+function fxbSyncWins(splits) {
+  FXB_WINS.forEach(function (w) {
+    var b = document.getElementById("fxw-" + w);
+    if (!b) return;
+    var s = splits[w], n = s ? s.rows.length : 0, on = w === FXB_WIN;
+    b.className = on ? "on" : "";
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    b.disabled = !on && !n;
+    b.title = !s || s.leg == null
+      ? "No exchange rate for " + (s ? s.lo : "the start month") + ", so this " +
+        "window cannot be split"
+      : n
+      ? n + " product" + (n === 1 ? "" : "s") + " priced in both " + s.lo +
+        " and " + s.hi
+      : "No product is priced in both " + s.lo + " and " + s.hi;
+  });
 }
 /* A hatch, not a third saturated colour. The currency tip has to stay legible
    ON TOP OF both bar colours as well as beyond them, so it is drawn with no
@@ -2389,7 +2477,14 @@ function renderFxBars(ci) {
     }
     fsel.value = slug;
   }
-  var win = countryWindow(ci), fxMap = fxOf(slug);
+  /* Every offered window is split, not only the selected one. The buttons
+     carry per-window counts and have to know which windows this country can
+     draw at all, and the extra passes are a few thousand lookups against a
+     panel already in memory -- cheaper than the chart they feed. */
+  var hi = countryHi(ci), splits = {};
+  FXB_WINS.forEach(function (w) { splits[w] = hi ? fxbSplit(ci, hi, w) : null; });
+  fxbSyncWins(splits);
+
   var warnEl = document.getElementById("fxbWarn");
   function nothing(msg) {
     warnEl.innerHTML = '<div class="warnbox">' + msg + "</div>";
@@ -2398,33 +2493,16 @@ function renderFxBars(ci) {
     sizeCanvas("cFxBars", 90);
     chart("cFxBars", {type:"bar", data:{labels:[], datasets:[]}});
   }
-  if (!win.hi) return nothing("No monthly series for " +
+  if (!hi) return nothing("No monthly series for " +
     esc(m.name || slug) + " at all, so there is nothing to split.");
-  var r0 = fxMap[win.lo], r1 = fxMap[win.hi];
-  if (!(r0 > 0) || !(r1 > 0)) return nothing(
+  var sp = splits[FXB_WIN], win = {lo:sp.lo, hi:sp.hi};
+  if (sp.leg == null) return nothing(
     "No exchange rate for <b>" + esc(m.name || slug) + "</b> in both " + win.lo +
     " and " + win.hi + ", so a US$ move cannot be split into a currency leg and a " +
-    "price leg over this window.");
-  /* d ln P_usd = d ln P_local − d ln FX, so the CURRENCY's contribution to a
-     dollar price is minus the rate's own move: a currency that loses ground
-     against the dollar (FX up) pulls dollar prices down. */
-  var fxLeg = -Math.log(r1 / r0);
-
-  var rows = [];
-  DATA.nodeIdx.forEach(function (code, ni) {
-    if (!isLeaf(code) || isResidual(code)) return;
-    for (var ui = 0; ui < DATA.unitIdx.length; ui++) {
-      var ser = DATA.series[ci + "|" + ni + "|" + ui];
-      if (!ser) continue;
-      var a = ser.p.indexOf(win.lo), b = ser.p.indexOf(win.hi);
-      if (a < 0 || b < 0 || !(ser.usd[a] > 0) || !(ser.usd[b] > 0)) continue;
-      rows.push({code:code, name:title(code), unit:DATA.unitIdx[ui],
-        total:Math.log(ser.usd[b] / ser.usd[a]),
-        imp:!!(ser.imp && (ser.imp[a] || ser.imp[b]))});
-      return;
-    }
-  });
-  rows.forEach(function (r) { r.real = r.total - fxLeg; });
+    "price leg over this window. The rate is monthly and is genuinely missing " +
+    "for some months in smaller currencies; another window above may have one at " +
+    "both ends.");
+  var fxLeg = sp.leg, rows = sp.rows, r0 = sp.r0, r1 = sp.r1;
 
   /* The rate is quoted LOCAL PER US DOLLAR, so a rise in it is the local
      currency losing ground and it makes every dollar price smaller. Saying
@@ -2463,7 +2541,10 @@ function renderFxBars(ci) {
   if (rows.length > FXB_MAX) show = rows.slice(0, FXB_MAX / 2)
     .concat(rows.slice(-FXB_MAX / 2));
 
-  sizeCanvas("cFxBars", Math.max(220, show.length * 21 + 70));
+  /* 21px a row, plus the header allowance. That allowance went from 70 to 88
+     when the axis title grew to two lines: at 70 the two-line title ate the
+     last row's height and the bottom bar was clipped by the legend. */
+  sizeCanvas("cFxBars", Math.max(220, show.length * 21 + 88));
   var hatch = fxbPattern(document.getElementById("cFxBars").getContext("2d"));
   chart("cFxBars", {
     type:"bar",
@@ -2504,7 +2585,7 @@ function renderFxBars(ci) {
       scales:{
         x:{ stacked:false, grid:{color:RULE}, position:"top",
             title:{display:true, text:[
-              "Change over the " + FX_WIN_MONTHS + " months to " + win.hi + ", log %",
+              "Change over the " + FXB_WIN + " months to " + win.hi + ", log %",
               "solid bar: the product's own move  ·  hatched tip: the shared " +
                 "exchange rate, ending at the total US$ change"]} },
         y:{ stacked:true, ticks:{font:{size:11}, autoSkip:false}, grid:{display:false} } } }
@@ -3211,6 +3292,17 @@ var APP = {
      "All items", which is what this tab opens on. */
   setCNode:function (code) { S.cnode = code || null; this.render(); },
   setBench:function (b) { S.bench = b; this.render(); },
+  /* The currency-split window is chart-local state, like the PPP benchmark:
+     it stays out of S and out of the hash, so nothing else has to learn about
+     it. It still goes through the full render rather than repainting the bars
+     alone, because the trend card below states its three readings over THIS
+     window, off the same variable countryWindow reads -- and the two cards
+     on one tab must not name different months for the same country. */
+  setFxWin:function (k) {
+    if (FXB_WINS.indexOf(k) < 0) return;
+    FXB_WIN = k;
+    this.render();
+  },
   go:function (v) { S.view = v;
     VIEWS.forEach(function (x) {
       var tab = document.getElementById("t-" + x);

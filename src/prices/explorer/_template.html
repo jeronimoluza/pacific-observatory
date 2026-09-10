@@ -849,6 +849,19 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         much the same number.
       </div>
     </div>
+    <!-- The comparison window. Static buttons, repainted in place by
+         fxbSyncWins(): rebuilding a control group with innerHTML deletes the
+         very button the reader just clicked, which costs the focus ring and
+         can move the viewport. -->
+    <div class="ctlbar">
+      <div class="grp"><span class="ctllab" id="lab-fxwin">Compare over</span>
+        <div class="seg" role="group" aria-labelledby="lab-fxwin">
+        <button type="button" id="fxw-3" aria-pressed="false" onclick="APP.setFxWin(3)">3 months</button>
+        <button type="button" id="fxw-6" aria-pressed="false" onclick="APP.setFxWin(6)">6 months</button>
+        <button type="button" id="fxw-12" class="on" aria-pressed="true" onclick="APP.setFxWin(12)">12 months</button>
+        <button type="button" id="fxw-24" aria-pressed="false" onclick="APP.setFxWin(24)">24 months</button>
+      </div></div>
+    </div>
     <div class="samples" id="fxbLead" style="margin:0 0 12px"></div>
     <div id="fxbWarn"></div>
     <div class="cscroll"><div class="cwrap"><canvas id="cFxBars" role="img"
