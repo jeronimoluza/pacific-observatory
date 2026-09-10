@@ -45,8 +45,17 @@ var S = {
   /* Country profile keeps its own category state: it opens on ALL items and
      the filter narrows it, where Compare opens on one item and drills. The two
      tabs wanted opposite defaults out of one variable, which is why one of them
-     was always wrong. `cnode` null means the whole tree. */
-  cnode:null, bench:"world",
+     was always wrong.
+
+     `cnodes` is a LIST, and it is the only category state on this dashboard
+     that is. This tab's chart ranks every item a country prices against the
+     same item elsewhere, so a union of categories is a chart -- "cereals and
+     fish" is a perfectly good question -- where the world series and Compare
+     each draw exactly one category and a second pick there can only replace
+     the first. Empty means the whole tree, which is what the tab opens on and
+     is a real state here, not a missing one. Three mounts of the same tree
+     filter read these three variables and never each other. */
+  cnodes:[], bench:"world",
   /* Which money the two detail TABLES print first -- "usd" or "loc". One key
      and not one per table: "show me the shelf price in the country's own money"
      is a preference of the reader's, not a property of one table, so the choice
@@ -56,6 +65,12 @@ var S = {
   cur:"usd",
   sortCmp:{k:"val",d:1}, sortCtry:{k:"ratio",d:1},
   multi:[], hregion:null, hsort:{k:null, d:1},
+  /* Which COICOP levels the heatmap puts down the side. A set rather than a
+     number so several depths can be shown at once, and `leaf` is a member of
+     it rather than a level: see HM_LEVEL_NAME. Deepest leaf alone is the
+     default — the grain at which a cell compares one item with the same item,
+     before the ladder has averaged anything. */
+  hdepth:{leaf:1},
   /* world time series: what to compare, at what category, unit, measure and window.
      gsel null means "whatever the default is here" — an explicit list only appears
      once the reader has actually chosen, so a category with thin coverage can never
@@ -1617,61 +1632,6 @@ function kpi(l, v, n) {
          '</div><div class="n">' + n + "</div></div>";
 }
 
-/* =====================================================================
-   shared: hierarchy navigator
-   ===================================================================== */
-function navigator(crumbId, listId, node, onPick, countFn) {
-  /* COICOP has no node above a division, so the top of this tree is genuinely a
-     choice between two — 01 food and drink, 02 alcohol and tobacco. One "all"
-     crumb had to resolve to one of them, which is how division 02 became
-     unreachable from here. */
-  var path = ancestors(node);
-  var sw = ROOTS.map(function (r) {
-    return '<button class="chip' + (r === path[0] ? " on" : "") + '" onclick="APP.pick(' +
-      arg(r) + ')">' + esc(proseTitle(r)) + "</button>"; }).join(" ");
-  var crumb = path.slice(1).map(function (a, i, arr) {
-    var last = i === arr.length - 1;
-    return last ? '<span class="cur">' + esc(title(a)) + "</span>"
-      : '<a onclick="APP.pick(' + arg(a) + ')">' + esc(title(a)) + "</a>";
-  }).join(' <span class="sep">›</span> ');
-  document.getElementById(crumbId).innerHTML =
-    sw + (crumb ? ' <span class="sep">›</span> ' + crumb : "");
-
-  /* Both callers of this navigator are LEVEL views, so the catch-all leaves
-     are not offered here at all rather than offered and then blanked. They are
-     still reachable wherever a change is what is being read. */
-  var kids = (KIDS.get(node) || []).filter(notResidual);
-  var list = (kids.length ? kids : ancestors(node).length > 1
-      ? (KIDS.get(DATA.tax[node].p) || []).filter(notResidual) : ROOTS);
-  var hidden = (KIDS.get(node) || []).filter(isResidual).length;
-  /* read off the UNFILTERED children: a node whose every child is a catch-all
-     is still a node, and must not claim to be a leaf */
-  var isSiblings = !(KIDS.get(node) || []).length;
-  var html = list.map(function (code) {
-    var c = countFn(code);
-    var leaf = isLeaf(code);
-    var dom = (DATA.nodeMeta[code] || {}).dom;
-    return '<div class="it' + (code === node ? " on" : "") +
-      '" tabindex="0" role="button" data-act="1" onclick="APP.pick(' + arg(code) + ')">' +
-      "<div><div>" + esc(title(code)) +
-      (leaf ? ' <span class="leafmark">leaf</span>' : "") + "</div>" +
-      '<div class="code">' + code + (dom ? " · " + UNIT_LABEL[dom] : "") + "</div></div>" +
-      '<div class="m">' + c + "</div></div>";
-  }).join("");
-  var hint = isSiblings
-    ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
-      "This is a leaf — showing the other items alongside it.</div>"
-    : "";
-  var foot = hidden
-    ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
-      hidden + ' catch-all item' + (hidden === 1 ? "" : "s") + ' ("other …", ' +
-      '"n.e.c.") hidden: a price per kilo needs the items in it to be the same ' +
-      'thing. They still count in the price <i>changes</i> on the ' + HOME_TAB +
-      ' tab.</div>'
-    : "";
-  document.getElementById(listId).innerHTML = (hint + html + foot) ||
-    '<div class="empty">Nothing priced under this node.</div>';
-}
 
 /* =====================================================================
    2. COMPARE COUNTRIES
@@ -1687,19 +1647,13 @@ function renderCompare() {
      question about the same countries, so it is drawn with it. */
   renderPppBench();
 
+  /* CATFILTER: the breadcrumb and the sibling list that used to be drawn here
+     are gone. They showed one rung of the tree at a time — the current node's
+     children, or its siblings if it had none — and a reader who wanted beer
+     from rice had to climb. The COICOP tree filter states the whole taxonomy
+     and is mounted in their place, and it draws itself from APP.render's call
+     to CATFILTER.sync rather than from here. */
   var ni = DATA.nodeIdx.indexOf(S.node);
-  navigator("cmpCrumb", "cmpNav", S.node, null, function (code) {
-    var i = DATA.nodeIdx.indexOf(code);
-    if (i < 0) return "—";
-    /* one country can hold a cell in kg AND litre AND piece, so summing cells
-       across units counted several hundred more "countries" than exist */
-    var seen = {};
-    DATA.unitIdx.forEach(function (u, ui) {
-      cellsFor(i, ui).forEach(function (c) { seen[c.ci] = 1; }); });
-    var n = Object.keys(seen).length;
-    return n ? n + " countr" + (n === 1 ? "y" : "ies") : "—";
-  });
-
   var ui = resolveUnit(ni);
   document.getElementById("cmpUnits").innerHTML = unitLabelHtml(ni);
 
@@ -1773,10 +1727,21 @@ function renderCompare() {
     type:"bar",
     data:{ labels: plot.map(function (r) { return r.name; }),
       datasets:[{ data: plot.map(function (r) { return r.usd; }),
+        /* One source or twenty, the bar is the same solid blue. The pale fill
+           this used to give a single-source country was a warning worn by the
+           MEASUREMENT, not by the number: a price collected from one shop is
+           still that country's price, and half the small economies on this
+           chart have exactly one retailer online. It read as "this figure is
+           weaker" beside twenty identical-looking bars that are not
+           necessarily stronger. The fact itself has not left the product — the
+           tooltip on this very bar prints "N observations · 1 source", the
+           table under the chart has a Src column, the Cell detail table carries
+           a "1 source" pill, and a country whose whole basket rests on one
+           source is told so in prose on its own profile. */
         backgroundColor: plot.map(function (r) {
           if (r.c.flag) return DEAR;
           if (r.c.mod >= 0.5) return PAL[5];
-          return r.c.src === 1 ? PAL[0] + "66" : PAL[0]; }),
+          return PAL[0]; }),
         /* A cell carrying an imputed month is outlined rather than recoloured:
            the fill already says where the reading came from, and this says
            whether every month behind it was actually observed. Same idea as
@@ -1805,17 +1770,20 @@ function renderCompare() {
         y:{ ticks:{font:{size:11}, autoSkip:false}, grid:{display:false} } } }
   });
 
-  /* three different things were being said with colour and none of them was labelled */
+  /* The legend names the colours that are actually on the chart and nothing
+     else. The two source swatches are gone with the shading they explained: one
+     blue needs no key, and a legend whose only two rows say "blue" and "blue"
+     is furniture. What stays are the marks that still differ — a flagged bar, a
+     modelled bar, an outlined one — because a red bar with no key is worse than
+     no legend at all. On a plot with none of those the strip renders empty and
+     takes no room. */
   var seen = {};
   plot.forEach(function (r) {
     if (r.c.flag) seen.flag = 1;
     else if (r.c.mod >= 0.5) seen.mod = 1;
-    else seen[r.c.src === 1 ? "one" : "many"] = 1;
     if (r.c.imp > 0) seen.imp = 1; });
   function sw(col, txt) { return '<span><i class="sw" style="background:' + col + '"></i>' + txt + "</span>"; }
   var leg = [];
-  if (seen.many) leg.push(sw(PAL[0], "two or more sources"));
-  if (seen.one) leg.push(sw(PAL[0] + "66", "a single source"));
   if (seen.mod) leg.push(sw(PAL[5], "modelled, not an observed shelf price"));
   if (seen.flag) leg.push(sw(DEAR, "outside plausible bounds"));
   if (seen.imp) leg.push('<span><i class="sw" style="background:transparent;border:1.4px solid ' +
@@ -1950,6 +1918,20 @@ function benchMed(code, unit) {
   return ((meta.rmed || {})[benchName()] || {})[unit];
 }
 
+/* CATFILTER (multi): how many leaf items the current country prices under each
+   node, built in one pass and thrown away whenever the country or the evidence
+   gate changes. See APP.ctryItems.
+
+   The key is both because `keep` moves with the filter strip: a count taken
+   under "10+ obs" is a different number from the same count under "Any", and
+   the panel has to repaint when the reader moves that strip or it will sit
+   there showing figures for a gate that is no longer on. */
+var CTRY_ITEMS = {key:null, n:{}};
+function ctryItemsKey() {
+  return S.country + "|" + S.incModelled + "|" + S.measuredOnly + "|" +
+    S.showFlagged + "|" + S.evidence;
+}
+
 function renderCountry() {
   var sel = document.getElementById("ctrySel");
   if (sel.options.length !== DATA.ctyIdx.length) {
@@ -1984,47 +1966,38 @@ function renderCountry() {
   document.getElementById("ctryWarn").innerHTML = warn.length
     ? '<div class="warnbox">' + warn.join("<br>") + "</div>" : "";
 
-  /* Division and class, never an item. The category navigator used to sit here
-     and scoped this chart down to a single leaf, which drew exactly one bar --
-     "the ranked chart of one thing". These two selects narrow the basket and
-     stop: "All items" is the default and every level below a class is out of
-     reach on purpose. Drilling to an item is what Compare is for. */
+  /* CATFILTER: two native dropdowns used to sit here, Division over Class, and
+     between them they could express exactly one node at one of two levels.
+     "Division and class, never an item" was the rule, and it was a rule about
+     what a <select> pair could hold rather than about what the chart can draw:
+     this chart ranks every item against the same item elsewhere, so it draws a
+     union of categories perfectly well and always could. The multi-select tree
+     is mounted at the left of it instead, and it reaches the whole taxonomy --
+     including division 02, whose leaves stop at depth 4 and which the class
+     dropdown could only ever have offered as `lvl === 3` nodes.
+
+     A leaf is still never the whole selection by accident: picking one item
+     draws one bar, which is a chart of one thing, and the summary line and the
+     count under the heading both say what is on screen. */
   var mineAll = (byCountry.get(ci) || []).filter(keep);
-  function underCount(code) {
-    var pre = code + ".";
-    return mineAll.filter(function (c) {
-      return isLeaf(c.node) && notResidual(c.node) &&
-        (c.node === code || c.node.indexOf(pre) === 0); }).length;
-  }
-  var div = S.cnode ? ancestors(S.cnode)[0] : null;
-  var dsel = document.getElementById("ctryDiv");
-  dsel.innerHTML = '<option value="">All items</option>' +
-    ROOTS.map(function (r) {
-      return '<option value="' + r + '">' + esc(proseTitle(r)) + " · " +
-        underCount(r) + " items</option>"; }).join("");
-  dsel.value = div || "";
-  /* Classes are the level-3 nodes under the chosen division -- the same grain
-     the heatmap's rows use, so the two read as one vocabulary. */
-  var classes = div
-    ? DATA.nodeIdx.filter(function (c) {
-        return (DATA.tax[c] || {}).lvl === 3 && ancestors(c)[0] === div; })
-    : [];
-  var csel = document.getElementById("ctryCls");
-  csel.innerHTML = '<option value="' + (div || "") + '">All classes</option>' +
-    classes.map(function (c) {
-      return '<option value="' + c + '">' + esc(proseTitle(c)) + " · " +
-        underCount(c) + " items</option>"; }).join("");
-  csel.value = S.cnode || div || "";
-  csel.disabled = !div;
 
   ["world", "region", "subregion"].forEach(function (b) {
     seg("bm-" + b, S.bench === b); });
 
-  /* all leaf cells for this country under the selected filter */
-  var scope = S.cnode, prefix = scope ? scope + "." : null;
+  /* All leaf cells for this country under the selected filter. The selection is
+     a LIST of nodes and a cell is kept when it sits under ANY of them -- the
+     union, which is what ticking two classes has to mean. An empty list is not
+     an empty chart: it is the whole tree, the state the tab opens on. */
+  var scope = S.cnodes || [];
+  function inScope(code) {
+    if (!scope.length) return true;
+    for (var i = 0; i < scope.length; i++) {
+      if (code === scope[i] || code.indexOf(scope[i] + ".") === 0) return true;
+    }
+    return false;
+  }
   var mine = mineAll.filter(function (c) {
-    return (!scope || c.node === scope || c.node.indexOf(prefix) === 0) &&
-      isLeaf(c.node) && notResidual(c.node);
+    return inScope(c.node) && isLeaf(c.node) && notResidual(c.node);
   }).map(function (c) {
     var g = benchMed(c.node, c.unit);
     return { c:c, name:title(c.node), ratio: g ? c.usd / g : null, gmed:g };
@@ -2046,13 +2019,29 @@ function renderCountry() {
   var top = mine.filter(function (r) { return r.ratio != null; })
     .sort(function (a, b) { return b.ratio - a.ratio; });
   var show = top.length > 30 ? top.slice(0, 15).concat(top.slice(-15)) : top;
+  var hidden = top.length - show.length;
   document.getElementById("ctryChartTitle").innerHTML =
     esc(m.name || "") + " — most and least expensive" +
-    (scope ? " under " + esc(proseTitle(scope)) : " across every item priced") +
+    (scope.length
+      ? " under " + scope.map(function (c) { return esc(proseTitle(c)); }).join(", ")
+      : " across every item priced") +
     ", versus " + esc(benchName());
+  /* The count is the FILTERED count -- it is read off `top`, which is what the
+     selection left standing, so a stale 59 can never sit beside a chart of 12.
+     And the chart has always drawn at most the dearest 15 and the cheapest 15;
+     it never said so, which made a 200-item basket look like a 30-item one. A
+     view that is truncated and looks complete is the one failure this control
+     exists to remove, so the middle of the distribution is counted out loud. */
   setHtmlIfPresent("ctryChartSub",
     "Ratio of this country's unit value to the <b>" + esc(benchName()) +
-    "</b> median for the same item and unit. " + top.length + " items.");
+    "</b> median for the same item and unit. " +
+    (top.length === 1 ? "1 item" : top.length + " items") +
+    (scope.length ? " in the selected categories" : "") +
+    (hidden
+      ? ", of which the <b>15 dearest</b> and the <b>15 cheapest</b> are drawn — " +
+        hidden + " in the middle " + (hidden === 1 ? "is" : "are") +
+        " not on the chart. Every one of them is in the table below."
+      : ", all drawn."));
   sizeCanvas("cCountry", Math.max(200, show.length * 18 + 50));
   chart("cCountry", {
     type:"bar",
@@ -2746,7 +2735,47 @@ function box(l, v, sign) {
    same COICOP leaf in the same unit. The waterfall takes one country's gap
    apart by category group; the heatmap lays every country's groups side by side. */
 var HM_MIN_LEAVES = 3, HM_MID = "#e5e2d9", HM_FULL = Math.log(2);
-var HM_MIN_COUNTRIES = 6;
+
+/* ---- how deep the rows go ----
+   COICOP names its levels and the reader picks which of them the grid puts
+   down the side. THE DEEPEST ROW IS NOT LEVEL 5. A leaf is a node with no
+   children, and this taxonomy is ragged: 245 of its 254 leaves are depth-5
+   items, and the other 9 are depth-4 subclasses — spirits, the two wines,
+   beer, other alcoholic beverages, cigarettes, cigars, other tobacco and
+   narcotics — every one of them in division 02, which has no depth-5 code at
+   all. A control that read `lvl === 5` would make all of alcohol and
+   tobacco invisible, which is the bug src/prices/explorer/sources.py carries a
+   comment about. `isLeaf` is the only test used here and it asks about
+   children, never about depth. */
+var HM_LEVEL_NAME = {1:"Division", 2:"Group", 3:"Class", 4:"Subclass", 5:"Item"};
+/* A level is worth a chip only where the taxonomy holds a node at it that is
+   NOT a leaf. Offering "Subclass" on a taxonomy whose subclasses are all
+   terminal would draw exactly the rows "Deepest leaf" already draws, and read
+   as a second copy of it. */
+var HM_LEVELS = (function () {
+  var seen = {};
+  DATA.nodeIdx.forEach(function (c) {
+    var t = DATA.tax[c];
+    if (t && t.lvl && !isLeaf(c)) seen[t.lvl] = 1; });
+  return Object.keys(seen).map(Number).sort(function (a, b) { return a - b; });
+})();
+
+/* The row set: every category at the chosen depths, in COICOP code order.
+   Codes are zero-padded and dot-separated, so a plain string sort IS ascending
+   code order — 01.1.1.1.1 before 01.1.1.1.2 before 01.1.2, and 02 last.
+   Catch-all nodes are held out for the reason RESIDUAL gives: a LEVEL for
+   "other bakery products" prices croissants against flatbread, and every cell
+   in this grid is a level. */
+function hmRowCodes() {
+  var out = [];
+  DATA.nodeIdx.forEach(function (c) {
+    var t = DATA.tax[c];
+    if (!t || isResidual(c)) return;
+    var lvl = t.lvl || ancestors(c).length;
+    if ((S.hdepth.leaf && isLeaf(c)) || S.hdepth[lvl]) out.push(c);
+  });
+  return out.sort();
+}
 
 /* The client-side twin of `sources.ladder_agg`. Fold a set of leaf readings up
    to `toDepth` one COICOP level at a time, so every child of a node counts once
@@ -2991,17 +3020,25 @@ function renderWaterfall() {
    built per leaf and then averaged UP THE TREE, subclass by subclass, so it
    survives the aggregation the level does not. Each row still carries one unit, chosen as the unit most of
    that group's prices are quoted in, so a column never mixes kilos with
-   litres. */
-function classCellsFor(ci) {
+   litres.
+
+   Every matched leaf is filed under EVERY row node standing above it, so one
+   pass over a country's cells serves whatever depth the reader has asked for.
+   The alternative — scan the country's whole leaf list once per row — is 200
+   rows x 200 leaves x 200 countries of prefix matching at leaf depth, for an
+   answer one walk up the code already has. */
+function hmCellsFor(ci, want) {
   var out = {};
   (byCountry.get(ci) || []).filter(keep).forEach(function (c) {
     if (!isLeaf(c.node) || isResidual(c.node) || !(c.usd > 0)) return;
-    var cls = classOf(c.node);
-    if (!cls) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
-    (out[cls] = out[cls] || []).push({
-      code: c.node, unit: c.unit, imp: c.imp,
-      r: g > 0 ? Math.log(c.usd / g) : null});
+    var rec = {code: c.node, unit: c.unit, imp: c.imp,
+               r: g > 0 ? Math.log(c.usd / g) : null};
+    /* `ancestors` ends with the code itself, so a leaf files under its own row
+       as well as under every grouping above it. */
+    ancestors(c.node).forEach(function (a) {
+      if (want[a]) (out[a] = out[a] || []).push(rec);
+    });
   });
   return out;
 }
@@ -3018,12 +3055,14 @@ function setHtmlIfPresent(id, v) {
 }
 
 function renderHeatmap() {
-  var rowN = {}, byCty = {}, unitVotes = {};
+  var byCty = {}, unitVotes = {};
+  var rowCodes = hmRowCodes(), want = {};
+  rowCodes.forEach(function (c) { want[c] = 1; });
 
   DATA.ctyIdx.forEach(function (slug, ci) {
     var meta = DATA.cty[slug];
     if (!meta.level_ok) return;                 /* only countries the ranking trusts */
-    var per = classCellsFor(ci);
+    var per = hmCellsFor(ci, want);
     byCty[slug] = {slug:slug, name:meta.name, region:meta.region,
                    level:meta.level, per:per};
     Object.keys(per).forEach(function (cls) {
@@ -3033,24 +3072,33 @@ function renderHeatmap() {
     });
   });
 
-  /* one unit per row: whichever the group's prices are mostly quoted in */
+  /* one unit per row: whichever the group's prices are mostly quoted in.
+     Voted over EVERY country, not over the ones a region filter leaves on
+     screen, so picking a region never silently reprices a row from kilos into
+     litres under the reader. */
   var rowUnit = {};
   Object.keys(unitVotes).forEach(function (cls) {
     rowUnit[cls] = Object.keys(unitVotes[cls]).sort(function (p, q) {
       return unitVotes[cls][q] - unitVotes[cls][p]; })[0];
   });
 
-  /* collapse each (country, group) to one figure, on the row's unit */
+  /* collapse each (country, category) to one figure, on the row's unit */
   Object.keys(byCty).forEach(function (slug) {
     var c = byCty[slug], cells = {};
     Object.keys(c.per).forEach(function (cls) {
       var u = rowUnit[cls];
       var same = c.per[cls].filter(function (x) { return x.unit === u; });
-      if (same.length < HM_MIN_LEAVES) return;
+      /* The three-item floor is about AGGREGATION: a class averaged out of one
+         leaf is that leaf wearing the class's name, and the hatching says so.
+         A LEAF row aggregates nothing — the cell is the item, matched against
+         the world median for the same item in the same unit — so its floor is
+         one. Carrying the three across would hatch every cell in the table at
+         the default depth, which is how a row set nobody could read gets
+         mistaken for a row set with no data. */
+      if (same.length < (isLeaf(cls) ? 1 : HM_MIN_LEAVES)) return;
       var usable = same.filter(function (x) { return x.r != null; });
       cells[cls] = {r:ladderMean(usable, cls.split(".").length), n:same.length,
                     imp:same.filter(function (x) { return x.imp > 0; }).length};
-      rowN[cls] = (rowN[cls] || 0) + 1;
     });
     c.cells = cells;
   });
@@ -3069,9 +3117,38 @@ function renderHeatmap() {
   document.getElementById("hreg-all").className = "chip" + (S.hregion ? "" : " on");
   document.getElementById("hreg-all").setAttribute("aria-pressed", S.hregion ? "false" : "true");
 
-  var rows = Object.keys(rowN)
-    .filter(function (c) { return rowN[c] >= HM_MIN_COUNTRIES; }).sort();
+  /* The depth chips. Rendered from the taxonomy rather than written into the
+     template, so a payload whose tree stops at depth 4 offers four chips and
+     not five. "Deepest leaf" sits last because it is where the grid opens. */
+  document.getElementById("hmDepth").innerHTML =
+    HM_LEVELS.map(function (l) {
+      var on = !!S.hdepth[l];
+      return '<button class="chip' + (on ? " on" : "") + '" aria-pressed="' + on +
+        '" onclick="APP.toggleHDepth(' + l + ')">' +
+        esc(HM_LEVEL_NAME[l] || ("Level " + l)) + "</button>"; }).join("") +
+    '<button class="chip' + (S.hdepth.leaf ? " on" : "") + '" aria-pressed="' +
+      (S.hdepth.leaf ? "true" : "false") + '" onclick="APP.toggleHDepth(' + arg("leaf") +
+      ')" title="Every category with nothing under it — including the eight ' +
+      'that stop one level short of the rest">Deepest leaf</button>';
+
   var shown = all.filter(function (r) { return !S.hregion || r.region === S.hregion; });
+
+  /* The rows are the WHOLE category set at the chosen depth, in code order —
+     not the subset that clears a coverage bar. The old grid dropped any group
+     fewer than six countries priced, which quietly deleted the categories a
+     small region is most likely to be asked about.
+
+     What is still dropped is a row with nothing in it AT ALL: no country on
+     screen holds a cell there. That is a fact about the taxonomy, not about
+     the prices, and at leaf depth it is most of the taxonomy — drawing it
+     would bury the rows that carry a reading under a hundred rows of hatching.
+     The count is printed under the ramp so the grid never claims to be the
+     whole tree. */
+  var rowN = {};
+  shown.forEach(function (r) {
+    Object.keys(r.cells).forEach(function (c) { rowN[c] = (rowN[c] || 0) + 1; }); });
+  var rows = rowCodes.filter(function (c) { return rowN[c]; });
+  var nEmpty = rowCodes.length - rows.length;
 
   if (!rows.length || !shown.length) {
     document.getElementById("hmTbl").innerHTML =
@@ -3103,6 +3180,10 @@ function renderHeatmap() {
     [0, 1].forEach(function (d) {
       var code = a2[d];
       if (!code || seen[code] || !DATA.tax[code]) return;
+      /* A division the reader has asked for as a ROW must not also be drawn as
+         a band above itself: one of the two would carry numbers and the other
+         would not, and they would read as two different things. */
+      if (want[code]) return;
       seen[code] = 1;
       out += '<tr class="hmg l' + (d + 1) + '"><td colspan="' + span + '"><span>' +
         esc(title(code)) + "</span></td></tr>";
@@ -3110,16 +3191,22 @@ function renderHeatmap() {
     return out;
   }
   var body = "<tbody>" + rows.map(function (cls) {
-    var tr = band(cls) + '<tr><td class="ctry ind" title="' + esc(title(cls)) + " · " +
-      rowN[cls] +
-      ' countries" tabindex="0" role="button" data-act="1" onclick="APP.hsort(' + arg(cls) +
-      ')">' + esc(proseTitle(cls)) +
-      '<span class="ru">vs world</span>' +
+    /* Depth is stated by the indent, and the row carries its FULL label rather
+       than the trimmed one the column headings use — a row set sorted by code
+       is only readable if the names beside the codes are the real names. */
+    var tr = band(cls) + '<tr><td class="ctry" style="padding-left:' +
+      (2 + cls.split(".").length * 7) + 'px" title="' + esc(title(cls)) + " · " + cls +
+      " · priced by " + rowN[cls] +
+      ' of the countries on screen" tabindex="0" role="button" data-act="1" onclick="APP.hsort(' +
+      arg(cls) + ')">' + esc(title(cls)) +
+      '<span class="ru">' + cls + " · vs world</span>" +
       (sk === cls ? (sd === 1 ? " ▼" : " ▲") : "") + "</td>";
     return tr + shown.map(function (r) {
       var cell = r.cells[cls];
       if (!cell) return '<td class="na" title="' + esc(r.name) + " · " + esc(title(cls)) +
-        ': fewer than ' + HM_MIN_LEAVES + ' matched items"></td>';
+        ": " + (isLeaf(cls)
+          ? "not priced here in " + (UNIT_SHORT[rowUnit[cls]] || "this unit")
+          : "fewer than " + HM_MIN_LEAVES + " matched items") + '"></td>';
       if (cell.r == null) return '<td class="na" title="' + esc(r.name) +
         ': no world median for these items"></td>';
       var v = (Math.exp(cell.r) - 1) * 100;
@@ -3138,11 +3225,9 @@ function renderHeatmap() {
   document.getElementById("hmTbl").innerHTML = head + body;
 
   document.getElementById("hmSub").innerHTML =
-    "Each category group against the world median for the same items. " +
-    "Red is more expensive than the world, blue cheaper.";
+    "Each category against the world median for the same items, " +
+    esc(hmDepthPhrase()) + ". Red is more expensive than the world, blue cheaper.";
 
-  var cut = Object.keys(rowN).filter(function (c) { return rows.indexOf(c) < 0; })
-    .sort(function (a2, b2) { return rowN[b2] - rowN[a2]; });
   var stops = [-1, -0.6, -0.3, 0, 0.3, 0.6, 1];
   document.getElementById("hmRamp").innerHTML =
     '<span class="lab">cheaper than the world</span>' +
@@ -3151,12 +3236,23 @@ function renderHeatmap() {
     '<span class="lab">more expensive</span>' +
     '<span class="lab" style="margin-left:14px">' +
     'full colour at &plusmn;100% &middot; ' +
-    'hatched: fewer than ' + HM_MIN_LEAVES + ' matched items &middot; ' +
+    'hatched: not priced here, or fewer than ' + HM_MIN_LEAVES +
+    ' matched items where the row is a grouping &middot; ' +
     '<span class="impm">◇</span> rests partly on imputed months &middot; ' + rows.length +
-    " groups &times; " + shown.length + " countries" +
-    (cut.length ? " &middot; " + cut.length + " groups too thinly covered to show, " +
-       "widest of them " + esc(proseTitle(cut[0])) + " at " + rowN[cut[0]] + " countries" : "") +
+    " categories &times; " + shown.length + " countries" +
+    (nEmpty ? " &middot; " + nEmpty + " categor" + (nEmpty === 1 ? "y" : "ies") +
+       " at this depth are priced by nobody on screen and are not drawn" : "") +
     "</span>";
+}
+
+/* The row set in words, for the line under the heading. */
+function hmDepthPhrase() {
+  var parts = HM_LEVELS.filter(function (l) { return S.hdepth[l]; })
+    .map(function (l) { return (HM_LEVEL_NAME[l] || ("level " + l)).toLowerCase(); });
+  if (S.hdepth.leaf) parts.push("deepest leaf");
+  if (!parts.length) return "no depth selected";
+  return parts.length === 1 ? "one row per " + parts[0]
+    : "one row per " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1];
 }
 
 
@@ -3461,6 +3557,17 @@ var APP = {
     if (S.hsort.k === k) S.hsort.d = -S.hsort.d;
     else S.hsort = {k:k, d:1};
     this.render(); },
+  /* `k` is a COICOP level number or the string "leaf". Turning the last one off
+     would leave a grid with no rows, which reads as broken rather than as a
+     choice, so an empty selection falls back to the depth the table opens on.
+     The sort key is dropped with the depth that made it available: sorting the
+     columns by a row that is no longer drawn is a state nothing on screen
+     explains. */
+  toggleHDepth:function (k) {
+    if (S.hdepth[k]) delete S.hdepth[k]; else S.hdepth[k] = 1;
+    if (!Object.keys(S.hdepth).length) S.hdepth.leaf = 1;
+    if (S.hsort.k && hmRowCodes().indexOf(S.hsort.k) < 0) S.hsort = {k:null, d:1};
+    this.render(); },
   setRegion:function (r) { S.region = IS_REGIONAL ? null : r; this.render(); },
   weightPanel:function () {
     var pane = document.getElementById("wPanel"), b = document.getElementById("wToggle");
@@ -3493,10 +3600,39 @@ var APP = {
     if (!BW_ON) return;
     bwSetMode(S.wbase); bwApply(); bwWriteHash(); this.render();
   },
-  /* Division and class come out of the same control: picking a division clears
-     the class under it, picking a class carries its own division. Empty is
-     "All items", which is what this tab opens on. */
-  setCNode:function (code) { S.cnode = code || null; this.render(); },
+  /* CATFILTER (multi): the Country profile's selection, as a canonical list of
+     the shallowest nodes covering it. An empty list is the tab's default and a
+     legitimate state -- every item this country prices -- so it is never
+     coerced into a fallback the way `pick` coerces an empty single selection
+     into OPEN_ON. */
+  setCNodes:function (codes) {
+    S.cnodes = (codes || []).filter(function (c) { return !!DATA.tax[c]; });
+    this.render(); },
+  /* How many leaf items THIS country prices under a node. The two dropdowns
+     this replaced printed the same figure beside every option, and it is the
+     only count that answers a question anyone has on a single country's page:
+     "countries pricing it", which is what the cross-country mounts show, is
+     the same number for every country and tells a reader here nothing. */
+  ctryItems:function (code) {
+    /* Memoised, because the panel asks this once per visible row on every
+       repaint and the honest answer is a scan of the country's whole cell
+       list. The key is the country AND the evidence gate, since `keep` moves
+       with the filter strip: a cached count taken under "10+ obs" would be a
+       lie the moment the reader clicks "Any". */
+    var key = ctryItemsKey();
+    if (CTRY_ITEMS.key !== key) {
+      CTRY_ITEMS.key = key;
+      CTRY_ITEMS.n = {};
+      var ci = DATA.ctyIdx.indexOf(S.country);
+      (ci < 0 ? [] : byCountry.get(ci) || []).filter(keep).forEach(function (c) {
+        if (!isLeaf(c.node) || isResidual(c.node)) return;
+        /* One walk up the code counts the leaf at every ancestor at once,
+           rather than one prefix scan per node in the tree. */
+        ancestors(c.node).forEach(function (a) {
+          CTRY_ITEMS.n[a] = (CTRY_ITEMS.n[a] || 0) + 1; });
+      });
+    }
+    return CTRY_ITEMS.n[code] || 0; },
   setBench:function (b) { S.bench = b; this.render(); },
   /* The currency-split window is chart-local state, like the PPP benchmark:
      it stays out of S and out of the hash, so nothing else has to learn about
@@ -3519,6 +3655,24 @@ var APP = {
   /* Falling back to `01` is what opened Compare on a division, and a division
      draws no bars at all — so the fallback is the item the tab opens on. */
   pick:function (code) { S.node = code || OPEN_ON; this.render(); },
+  /* CATFILTER: the tree keeps no copy of the selection, it reads the committed
+     one back through here. Two copies of one choice is how a picker and the
+     chart under it end up disagreeing — and the app moves this state on its
+     own (a node with no series at the current setting is swapped for one that
+     has one), so a picker holding its own copy would be wrong every time that
+     happened. "cmp" is the Compare tab's item, anything else the world
+     series'. */
+  node:function (which) {
+    if (which === "cmp") return S.node;
+    /* An ARRAY for the multi mount. Each mount reads its own key and no mount
+       can see another's, which is what keeps the three selections
+       independent. */
+    if (which === "country") return S.cnodes;
+    return S.gnode; },
+  /* CATFILTER (multi): a token the Country profile's panel can compare against
+     to know its per-node counts have gone stale — the country changed, or the
+     evidence gate did. */
+  ctryRev:function () { return ctryItemsKey(); },
   openCountry:function (slug) { S.country = slug; S.multi = []; this.go("country"); },
   openNode:function (code) { S.node = code; this.go("compare"); },
   setGeoMode:function (m) { S.gmode = m; S.gsel = null; this.render(); },

@@ -184,6 +184,10 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
 .legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:11.5px;
   color:var(--faint);margin-top:9px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
+/* A legend with nothing to say takes no room, not 9px of it: the ranking chart
+   is one solid colour unless something on it is flagged, modelled or imputed,
+   and on most nodes nothing is. */
+.legend:empty{display:none}
 .sw{width:22px;height:9px;border-radius:1px;display:inline-block}
 .sw.dim{opacity:.5}
 
@@ -255,15 +259,34 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
   color:var(--dim);text-align:center;padding:7px 4px;border-bottom:1px solid var(--ink);
   cursor:pointer;white-space:nowrap;min-width:74px}
 .hm th:hover{color:var(--ink)}
-.hm th.ctry{text-align:left;left:0;z-index:4;min-width:232px;padding-left:2px}
+/* Wider than it was: the rows are leaf items now, and "Macaroni, noodles,
+   couscous and similar pasta products" is the name COICOP gives the thing.
+   232px ellipsised most of them away. */
+.hm th.ctry{text-align:left;left:0;z-index:4;min-width:310px;padding-left:2px}
 .hm td{padding:0;border:1px solid var(--plate);height:19px}
+/* Country names WRAP. They used to be clamped to three lines, except that they
+   never were: `.hm th` above sets `white-space:nowrap` for the sticky header
+   row, .ctyh overrode writing-mode and transform and text-align but never
+   white-space, and a -webkit-box that cannot break its text has exactly one
+   line -- so the three-line clamp had nothing to clamp and `overflow:hidden`
+   at a 66px width simply cut every long name off mid-word ("New Caledor",
+   "Brunei Darus"). The clamp is gone with it: a header that hides part of a
+   country's name is not a header, and the row is as tall as the longest name
+   needs, which on this corpus is three lines. */
+/* The other half of the complaint was headers that "disappear". None of them
+   were ever empty -- every one carried its full name in the DOM and in its
+   title -- but a name clipped at 66px and left-aligned leaves a wide band of
+   paper before the next one starts, and with no rule between the columns the
+   eye reads that band as a column with no heading. The cells below have
+   borders and the headings did not, so a hairline under the same rule tells
+   the reader which name belongs to which column. */
 .hm th.ctyh{writing-mode:horizontal-tb;transform:none;text-align:left;font-weight:500;
-  font-size:10.5px;line-height:1.2;padding:6px 4px;height:46px;vertical-align:bottom;cursor:pointer}
-.hm th.ctyh>span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
-  overflow:hidden;width:66px;word-break:break-word;hyphens:auto}
+  font-size:10.5px;line-height:1.2;padding:6px 4px;height:46px;vertical-align:bottom;
+  cursor:pointer;white-space:normal;min-width:82px;border-left:1px solid var(--hair)}
+.hm th.ctyh>span{display:block;width:74px;overflow-wrap:break-word;hyphens:auto}
 .hm td.ctry .ru{display:block;font-size:10px;color:var(--faint);font-weight:400}
 .hm td.ctry{position:sticky;left:0;background:var(--plate);z-index:2;padding:0 8px 0 2px;
-  white-space:nowrap;max-width:232px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;max-width:310px;overflow:hidden;text-overflow:ellipsis;
   border-right:1px solid var(--hair);cursor:pointer;font-size:12px}
 /* Depth bands, as on the main dashboard: the basket's shape has to be legible
    before any single number in it is. Chrome stays hueless -- these are greys of
@@ -294,7 +317,7 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
 /* Six region names, not two hundred country ones: the 66px column the country
    grid needs would truncate every one of them. */
 #gvTbl th.ctyh{height:auto;min-width:132px}
-#gvTbl th.ctyh>span{width:126px;-webkit-line-clamp:3}
+#gvTbl th.ctyh>span{width:126px}
 .ramp{display:flex;align-items:center;gap:0;margin-top:10px}
 .ramp i{width:26px;height:10px;display:block}
 .ramp .lab{font-size:11px;color:var(--faint);padding:0 8px}
@@ -464,6 +487,17 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         every cell stays measured against the world, not against the region.
       </div>
           </div>
+    <!-- Row depth. COICOP is a tree and the grid can put any of its levels down
+         the side; the chips say which. "Deepest leaf" is not a level and is not
+         a synonym for depth 5 -- it is every node with no children, which in
+         this taxonomy includes eight depth-4 subclasses, all of them alcohol
+         and tobacco. It is also the default: the deepest row is the only one
+         where a cell compares like with like without the ladder having to
+         average anything first. -->
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:2px 0 12px">
+      <span class="ctllab" id="lab-hmdepth">Rows</span>
+      <div class="chips" role="group" aria-labelledby="lab-hmdepth" id="hmDepth"></div>
+    </div>
     <div class="hmwrap"><table class="hm" id="hmTbl"></table></div>
     <div class="ramp" id="hmRamp"></div>
   </div>
@@ -499,13 +533,13 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         <button id="wm-subregion" aria-pressed="false" onclick="APP.setGeoMode('subregion')">Subregions</button>
         <button id="wm-country" aria-pressed="false" onclick="APP.setGeoMode('country')">Countries</button>
       </div>
-      <!-- CATFILTER mount (start). The <select> stays as the state carrier the
-           view layer already writes to and reads back from; it is hidden, and
-           _catfilter.js draws the COICOP tree in front of it. -->
+      <!-- CATFILTER state carrier. The <select> stays as the carrier the view
+           layer already writes to and reads back from; it is hidden, and the
+           COICOP tree that replaced it is mounted beside the chart below
+           rather than here — a filter that covers the chart it filters is a
+           filter the reader opens once. -->
       <select id="wtNode" aria-label="Category" hidden aria-hidden="true" tabindex="-1"
               onchange="APP.setGNode(this.value)"></select>
-      <div id="catfilter"></div>
-      <!-- CATFILTER mount (end) -->
       <span id="wtUnits"></span>
           </div>
     <div class="ctlbar">
@@ -545,11 +579,23 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       </div></div>
     </div>
 
-    <div id="wtWarn"></div>
-    <div class="chips" id="wtChips" role="group" aria-label="Places on the chart" style="margin-bottom:14px"></div>
-    <div class="cwrap" style="height:400px"><canvas id="cWorldTrend" role="img"
-      aria-label="Price trend by place"></canvas></div>
-    <div class="samples" id="wtNote"></div>
+    <!-- CATFILTER mount (start). The tree sits at the LEFT of the series it
+         governs, in the same two-column shape the Compare tab uses, and stays
+         open: it is the panel, not an overlay over the chart. -->
+    <div class="row-side">
+      <div>
+        <div class="tiny" style="margin-bottom:6px">Category</div>
+        <div id="catfilter"></div>
+      </div>
+      <div>
+        <div id="wtWarn"></div>
+        <div class="chips" id="wtChips" role="group" aria-label="Places on the chart" style="margin-bottom:14px"></div>
+        <div class="cwrap" style="height:400px"><canvas id="cWorldTrend" role="img"
+          aria-label="Price trend by place"></canvas></div>
+        <div class="samples" id="wtNote"></div>
+      </div>
+    </div>
+    <!-- CATFILTER mount (end) -->
   </section>
 
   <!-- Relocated out of the retired Global View tab. Both cards measure
@@ -616,9 +662,13 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   <div class="row-side">
     <div class="card">
       <h2>Category</h2>
-      <div class="sub">Click to go deeper. Use the breadcrumb to go back up.</div>
-      <div class="crumb" id="cmpCrumb"></div>
-      <div class="navlist" id="cmpNav"></div>
+      <div class="sub">Pick one item. The whole COICOP tree is here; open a
+        branch with the chevron.</div>
+      <!-- CATFILTER mount. This panel used to be a breadcrumb over a list of
+           whichever siblings were beside the current node — a tree you could
+           only see one rung of at a time. It is the same control as the one
+           under the world series now, and the tree is stated in full. -->
+      <div id="catfilterCmp"></div>
       <div style="margin-top:14px">
         <div class="tiny" style="margin-bottom:6px">Unit of measure &mdash; never mixed</div>
         <div id="cmpUnits"></div>
@@ -812,19 +862,22 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     </div>
     <div class="info" id="i-ct">
       <div class="beginner-only">
-        Every item this country prices, set against the same item elsewhere. The filters narrow
-        which part of the basket is on screen; they never narrow it to a single item, because a
-        chart of one bar is not a chart. <b>Compare against</b> changes the yardstick: the world
+        Every item this country prices, set against the same item elsewhere. Tick any number of
+        categories in the tree at the left to narrow which part of the basket is on screen &mdash;
+        ticking a branch takes everything under it, and ticking nothing means everything. The
+        count under the heading is always the count of what the tick marks left, and where there
+        are more than thirty items the chart draws the fifteen dearest and the fifteen cheapest
+        and says how many it left out. <b>Compare against</b> changes the yardstick: the world
         median is the default and the one every other screen here uses, and the two regional
         options are an <b>addition</b> to it &mdash; when one is on, the axis, the column heading
         and the tooltips all say so.
       </div>
           </div>
+    <!-- The yardstick switch stays exactly where it was and exactly as it
+         behaves: it is not a category control. What left this bar is the
+         Division and Class pair of <select>s, replaced by the tree at the
+         left of the chart below. -->
     <div class="ctlbar">
-      <div class="grp"><span class="ctllab" id="lab-div">Division</span>
-        <select id="ctryDiv" aria-label="Division" onchange="APP.setCNode(this.value)"></select></div>
-      <div class="grp"><span class="ctllab" id="lab-cls">Class</span>
-        <select id="ctryCls" aria-label="Class" onchange="APP.setCNode(this.value)"></select></div>
       <div class="grp"><span class="ctllab" id="lab-bench">Compare against</span>
         <div class="seg" role="group" aria-labelledby="lab-bench">
         <button id="bm-world" class="on" aria-pressed="true" onclick="APP.setBench('world')">The world</button>
@@ -833,8 +886,18 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       </div></div>
     </div>
     <div id="ctryBenchWarn"></div>
-    <div class="cscroll"><div class="cwrap"><canvas id="cCountry" role="img"
-      aria-label="Items versus the benchmark"></canvas></div></div>
+    <!-- CATFILTER mount (start). Multi-select here, and at the left like the
+         other two: this chart draws a union of categories, so the tree keeps
+         the checkboxes. -->
+    <div class="row-side">
+      <div>
+        <div class="tiny" style="margin-bottom:6px">Categories &mdash; tick any number</div>
+        <div id="catfilterCtry"></div>
+      </div>
+      <div class="cscroll"><div class="cwrap"><canvas id="cCountry" role="img"
+        aria-label="Items versus the benchmark"></canvas></div></div>
+    </div>
+    <!-- CATFILTER mount (end) -->
   </div>
 
   <div class="card">
