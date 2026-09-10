@@ -43,6 +43,16 @@ COMPARABLE_UNITS = ("kg", "lt", "unit")
 # that filter says on screen how many cells it is hiding. Cost of admitting
 # them: +0.46 MB on a ~105 MB global payload, +0.12 MB on a ~31 MB EAP one.
 MIN_CELL_OBS = gate(1, 1)
+# The rolling window the "current" cell grid is taken over. It replaces a
+# `max(period)` taken per cell, which parked each cell on whatever calendar
+# month it was last scraped in. On a corpus running to 2026-09-09 that meant a
+# ten-day-old September for most cells, and 3,539 of 28,124 cells resting on a
+# SINGLE observation. A rolling 30 days holds essentially the same grid (25,781
+# cells) at a median of 24 observations each, with 92 single-observation cells
+# rather than 3,539. The cost is 8 countries whose only recent prices are older
+# than 30 days; `publish.py` keeps its wider 90-day window for that reason, so
+# the two dashboards deliberately do NOT share this number.
+CELL_WINDOW_DAYS = gate(30, 100_000)
 # Distinct months a cell needs before it is published as a series -- NOT
 # consecutive months, they may sit anywhere in the span. Was 3, which carried no
 # recorded justification and sat one above the median cell's 2 months, so it cut

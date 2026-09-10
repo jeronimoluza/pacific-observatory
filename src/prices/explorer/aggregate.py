@@ -43,6 +43,7 @@ from prices.explorer.sources import (
     MIN_BASKET_LEAVES,
     MIN_BASKET_SOURCES,
     MIN_BENCH_COUNTRIES,
+    CELL_WINDOW_DAYS,
     MIN_CELL_OBS,
     MIN_CHAIN_PERIODS,
     MIN_LINK_LEAVES,
@@ -188,6 +189,34 @@ def _pool(trusted: pd.DataFrame, fills: pd.DataFrame) -> tuple[pd.DataFrame, pd.
     return _concat_rows(ex, ex_fill), ex_fill
 
 
+def _cell_window(
+    trusted: pd.DataFrame, fills: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """The last CELL_WINDOW_DAYS of the corpus -- observations and fills alike.
+
+    ANCHORED ON THE CORPUS, NOT THE CLOCK. `Timestamp.now()` would reintroduce
+    the very failure this window exists to fix: a build run any distance after
+    the last collection would open a window with nothing in it, and the grid
+    would quietly empty rather than say so. The corpus's own last observation is
+    what "current" can honestly mean.
+
+    Fills carry no `observation_date` -- a fill is a cell median for a MONTH --
+    so they are admitted on `period`, by whichever months the window touches. A
+    window ending mid-month therefore admits that month's fill and the previous
+    month's, and the cell median pools both. Admitting them on a date they do
+    not have would have dropped every fill from the grid.
+    """
+    if trusted.empty:
+        return trusted, fills
+    end = trusted.observation_date.max()
+    start = end - pd.Timedelta(days=CELL_WINDOW_DAYS)
+    tw = trusted[trusted.observation_date >= start]
+    if fills is None or fills.empty:
+        return tw, fills
+    months = set(pd.period_range(start, end, freq="M").astype(str))
+    return tw, fills[fills.period.astype(str).isin(months)]
+
+
 def _imputed_share(ex_fill: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
     """Per group: how many pooled values were fills, and their mean probability.
 
@@ -247,21 +276,23 @@ def _publishable(agg: pd.DataFrame) -> pd.Series:
 
 
 def _cells(exploded: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
-    """Latest-period medians per (country, node, unit) plus quality flags.
+    """Current-window medians per (country, node, unit) plus quality flags.
 
-    THE LATEST PERIOD IS TAKEN OVER THE POOLED FRAME, fills included. RT-CAL's
-    forward class fills exactly the month that was never collected, so reading
-    `max(period)` off observations alone would leave the grid parked on the last
-    month that happened to be scraped and defeat the fill it was given. The cost
-    is that a cell whose observations stop in June and whose fill lands in
-    August now shows August; `imp` on that cell is 1.0 and says so.
+    THE WINDOW IS THE CALLER'S: `exploded` here is the pooled last
+    CELL_WINDOW_DAYS, not the whole corpus. This used to be the whole corpus
+    with `max(period)` taken per cell, and that is why a cell could rest on a
+    single reading -- the newest month a cell happened to be scraped in was
+    often only days old. Pooling a fixed window instead means every cell reports
+    over the same stretch of time, whatever month it happens to fall in.
     """
     keys = ["country", "node", "standard_unit"]
-    latest = exploded.groupby(keys, observed=True).period.max().rename("period")
-    cur = exploded.merge(latest, on=keys + ["period"], how="inner")
+    cur = exploded
+    latest = (
+        cur.groupby(keys, observed=True).period.max().rename("period").reset_index()
+    )
 
     agg = (
-        cur.groupby(keys + ["period"], observed=True)
+        cur.groupby(keys, observed=True)
         .agg(
             usd=("unit_value_usd", "median"),
             n_all=("unit_value_usd", "size"),
@@ -272,6 +303,9 @@ def _cells(exploded: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
         )
         .reset_index()
     )
+    # `period` is a LABEL -- the newest month this cell was seen in -- not the
+    # slice the median was taken over. The median is over the whole window.
+    agg = agg.merge(latest, on=keys, how="left")
 
     # Local currency medians key on the cell's dominant currency, never country.
     dom = (
@@ -283,7 +317,7 @@ def _cells(exploded: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
         .rename(columns={"median": "local", "size": "n_local"})
     )
     agg = agg.merge(dom, on=keys, how="left")
-    agg = _with_imputed(agg, ex_fill, keys + ["period"])
+    agg = _with_imputed(agg, ex_fill, keys)
     # A fill has no local price and votes in no currency, so a cell that is all
     # fill has no dominant currency to be mixed about.
     ratio = (agg.n_local / agg.n.where(agg.n > 0)).fillna(1.0)
@@ -1086,7 +1120,13 @@ def build_payload(region: str | None = None) -> dict:
     # basket and the world median -- and it is thrown away immediately
     # afterwards, because the exploded frame is the largest object here.
     world_ex, world_ex_fill = _pool(trusted, fills)
-    world_cells = _cells(world_ex, world_ex_fill)
+    # A SECOND, SMALL POOL rather than a flag on the big one. The current grid
+    # needs a 30-day slice; the series needs all of history. Carrying a marker
+    # per row on the exploded frame would cost a byte across ~90M rows, so the
+    # window is exploded on its own and thrown away as soon as the grid is out.
+    _cw_ex, _cw_fill = _pool(*_cell_window(trusted, fills))
+    world_cells = _cells(_cw_ex, _cw_fill)
+    del _cw_ex, _cw_fill
     reference = basket_reference(world_cells, tax)
     n_ref_countries = world_cells.country.nunique()
 
@@ -1099,7 +1139,9 @@ def build_payload(region: str | None = None) -> dict:
         if trusted.empty:
             raise SystemExit(f"no trusted observations for region {region!r} ({label})")
         exploded, ex_fill = _pool(trusted, fills)
-        cells = _cells(exploded, ex_fill)
+        _cw_ex, _cw_fill = _pool(*_cell_window(trusted, fills))
+        cells = _cells(_cw_ex, _cw_fill)
+        del _cw_ex, _cw_fill
     else:
         # Identical inputs, so the global build does this exactly once. It used
         # to explode and aggregate the whole corpus twice for the same answer.
@@ -1655,6 +1697,7 @@ def build_payload(region: str | None = None) -> dict:
             "n_nodes": len(node_idx),
             "n_sources": int(trusted.source.nunique()),
             "min_cell_obs": MIN_CELL_OBS,
+            "cell_window_days": CELL_WINDOW_DAYS,
             "geo_min_pairs": FE_MIN_PAIRS,
             "divisions": ["01", "02"],
             # THE BUILD'S OWN SCOPE, stated rather than inferred. `region` is

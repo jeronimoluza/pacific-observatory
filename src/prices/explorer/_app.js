@@ -3042,7 +3042,7 @@ function hmCellsFor(ci, want) {
   (byCountry.get(ci) || []).filter(keep).forEach(function (c) {
     if (!isLeaf(c.node) || isResidual(c.node) || !(c.usd > 0)) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
-    var rec = {code: c.node, unit: c.unit, imp: c.imp,
+    var rec = {code: c.node, unit: c.unit, imp: c.imp, obs: c.obs, src: c.src,
                r: g > 0 ? Math.log(c.usd / g) : null};
     /* `ancestors` ends with the code itself, so a leaf files under its own row
        as well as under every grouping above it. */
@@ -3107,7 +3107,13 @@ function renderHeatmap() {
          mistaken for a row set with no data. */
       if (same.length < (isLeaf(cls) ? 1 : HM_MIN_LEAVES)) return;
       var usable = same.filter(function (x) { return x.r != null; });
+      /* A LEAF row is one item, so its matched-item count is always 1 and
+         saying so tells the reader nothing. What varies there is how much was
+         priced, so the evidence is carried up and the tooltip reports that
+         instead. Group rows keep the leaf count, which is what varies for them. */
       cells[cls] = {r:ladderMean(usable, cls.split(".").length), n:same.length,
+                    obs:same.reduce(function (t, x) { return t + (x.obs || 0); }, 0),
+                    src:same.reduce(function (t, x) { return Math.max(t, x.src || 0); }, 0),
                     imp:same.filter(function (x) { return x.imp > 0; }).length};
     });
     c.cells = cells;
@@ -3228,7 +3234,10 @@ function renderHeatmap() {
          priced. It says WHICH cells, never how much to trust them. */
       return '<td class="c" style="background:' + heatColor(cell.r) + ';color:#1b211f" title="' +
         esc(r.name) + " · " + esc(title(cls)) + ": " + lab + "% vs the world median" +
-        ", over " + cell.n + " matched items" +
+        (isLeaf(cls)
+          ? ", from " + cell.obs + " observation" + (cell.obs === 1 ? "" : "s") +
+            " across " + cell.src + " source" + (cell.src === 1 ? "" : "s")
+          : ", over " + cell.n + " matched item" + (cell.n === 1 ? "" : "s")) +
         (cell.imp ? ", " + cell.imp + " of them carrying imputed months" : "") +
         '">' + lab + (cell.imp ? '<span class="impm">◇</span>' : "") +
         "</td>"; }).join("") + "</tr>"; }).join("") +
