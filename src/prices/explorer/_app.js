@@ -749,6 +749,9 @@ function levelRows(all) {
 function renderWorld() {
   renderHeatmap();
   renderWorldTrends();
+  /* Was its own tab. Same tab as the heatmap now, and measured against the
+     same world median, so the two read as one argument rather than two. */
+  renderVsWorldGrid();
 
   /* division + unit composition */
   var divs = {}, units = {};
@@ -886,6 +889,24 @@ Object.keys(DATA.geos).forEach(function (g) {
   var k = DATA.geos[g].kind;
   (GEOS_BY_KIND[k] = GEOS_BY_KIND[k] || []).push(g);
 });
+/* `build_geo_series` maps EVERY country it is handed to the "W" geo, and a
+   regional build hands it one region's countries -- so in a regional payload W
+   is the region total wearing the word "World", not the world. It is not merely
+   mislabelled, it is a DUPLICATE: all 788 W series in an EAP payload are
+   byte-identical to their `R:East Asia & Pacific` twin, so the chart drew one
+   line twice under two names and offered it as two comparators.
+
+   One of the pair has to go. W keeps the slot because it is the only anchor the
+   country and subregion modes have -- the region geo is only ever offered in
+   region mode -- and it is relabelled with the region's own name at boot, which
+   is what the numbers are. A GENUINE world comparator is not available to a
+   regional build at all: the payload's only world-scope figures are the
+   cross-sectional medians `gmed`/`rmed`, and there is no world time series in
+   it. Nothing here may be dressed up as one. */
+if (IS_REGIONAL) {
+  GEOS_BY_KIND.region = (GEOS_BY_KIND.region || []).filter(function (g) {
+    return g !== "R:" + BUILD_REGION; });
+}
 /* Six validated slots for a list that can hold 190 places, so a slot is *held*
    rather than derived: a place keeps the colour it was given until it leaves the
    chart, and dropping one never repaints the others. Modulo on a global index
@@ -3140,31 +3161,39 @@ function renderHeatmap() {
 
 
 /* =====================================================================
-   GLOBAL VIEW — the actual world, in a build that holds one region
+   AGAINST THE WORLD MEDIAN, ROW BY ROW
    =====================================================================
-   A regional build carries 38 EAP countries. What it ALSO carries, and
-   what nothing on screen was using, is the world it was measured against:
-   `nodeMeta[code].gmed` is the world median for that item and unit,
-   computed over the whole corpus BEFORE the region filter, and
-   `nodeMeta[code].rmed[label]` is the same median taken over each world
-   region and subregion beside it. Those numbers are not about these 38
-   countries at all.
+   Two cards that used to sit on a "Global View" tab of their own, shown only
+   in a regional build. They are on the same tab as the heatmap now, in both
+   builds, and they answer the heatmap's question one level up: not "where is
+   this category expensive" but "how does this whole shelf compare".
 
-   So this tab is every world region against the world median, item by
-   item and then folded up the COICOP tree the same way the heatmap folds
-   a country. It is the comparison the first tab was claiming to be, and
-   the region this build is of is marked in it so the reader can see where
-   they are standing.
+   ONE thing changes with the build, and it is who is on the rows.
 
-   TWO LIMITS, both stated on screen rather than absorbed. Regions here are
-   priced by whoever the corpus reaches in them, which is not a sample of
-   anything; and `rmed` is written only where at least
-   `qa.benchmark.min_countries` countries in a region price the item, so a
-   thinly covered region is absent from a row rather than estimated into
-   it. Neither is a reason to leave the world out of a dashboard whose
-   every number is measured against it.
+     global build   the world's six regions, from `nodeMeta[code].rmed[label]`
+                    -- a median taken over each region, published only where at
+                    least `qa.benchmark.min_countries` of its countries price
+                    the item.
+     regional build the countries this build carries, from their own cells --
+                    the same cells the heatmap above is built from, so the two
+                    tables cannot disagree about a country.
+
+   A regional build has no business ranking regions it does not hold; a global
+   build has 200 countries and no room for them. Hence the split.
+
+   What does NOT change is the yardstick. Both branches divide by
+   `nodeMeta[code].gmed`, the world median for that item in that unit, computed
+   over the whole corpus BEFORE any region filter. So "vs the world median" is
+   true on every label in either build, and the silent swap
+   `aggregate.build_payload` warns about -- a screen saying "vs world" over a
+   number that is not -- cannot happen here.
+
+   Gaps are built per LEAF, on a unit both sides price, and only then folded up
+   the COICOP tree by `ladderMean`, so a finely split branch cannot outvote its
+   neighbours. A median taken across a whole class is not a quantity anyone can
+   price, which is why nothing here takes one.
    ===================================================================== */
-var GV_MIN_LEAVES = 3, GV_MIN_REGIONS = 3;
+var GV_MIN_LEAVES = 3, GV_MIN_ROWS = 3;
 
 /* Every world region the payload carries a median for. `rmed` mixes regions
    and subregions in one flat map, so the region list is intersected with
@@ -3199,31 +3228,70 @@ function gvLeafGaps(region) {
   });
   return out;
 }
-function renderGlobalView() {
+
+/* The rows, in whichever of the two shapes this build calls for. `gaps` is the
+   same list either way -- one entry per leaf, carrying its class, its unit and
+   the log ratio to the world median -- so everything below is written once.
+
+   The country branch reads `classCellsFor`, the heatmap's own accessor, rather
+   than re-deriving a country median: a second definition of "this country's
+   price for this item" is exactly how two tables on one tab start disagreeing.
+   It also means the Evidence strip moves this card in a regional build, which
+   is the behaviour the heatmap beside it already has. */
+function gvRows() {
+  if (!IS_REGIONAL) {
+    return gvRegions().map(function (R) {
+      return {key:R, label:R, mine:R === BUILD_REGION, gaps:gvLeafGaps(R)};
+    });
+  }
+  var out = [];
+  DATA.ctyIdx.forEach(function (slug, ci) {
+    var meta = DATA.cty[slug];
+    if (!meta.level_ok) return;      /* only countries the ranking trusts */
+    var per = classCellsFor(ci), gaps = [];
+    Object.keys(per).forEach(function (cls) {
+      per[cls].forEach(function (x) {
+        if (x.r == null) return;
+        gaps.push({code:x.code, cls:cls, unit:x.unit, r:x.r});
+      });
+    });
+    if (gaps.length) out.push({key:slug, label:meta.name, mine:false, gaps:gaps});
+  });
+  return out;
+}
+
+function renderVsWorldGrid() {
   var tbl = document.getElementById("gvTbl");
   if (!tbl) return;
-  var regions = gvRegions();
-  var per = {}, rowN = {}, overall = {};
-  regions.forEach(function (R) {
-    var gaps = gvLeafGaps(R), by = {};
-    gaps.forEach(function (x) { if (x.cls) (by[x.cls] = by[x.cls] || []).push(x); });
+  /* What a row IS, in this build's words. Every count and every caption below
+     uses it, so the two never drift apart. */
+  var ROWWORD = IS_REGIONAL ? "country" : "region";
+  var ROWWORDS = IS_REGIONAL ? "countries" : "regions";
+
+  var rowsIn = gvRows();
+  var per = {}, rowN = {}, overall = {}, lab = {}, mineOf = {};
+  rowsIn.forEach(function (e) {
+    lab[e.key] = e.label; mineOf[e.key] = e.mine;
+    var by = {};
+    e.gaps.forEach(function (x) { if (x.cls) (by[x.cls] = by[x.cls] || []).push(x); });
     var cells = {};
     Object.keys(by).forEach(function (cls) {
       if (by[cls].length < GV_MIN_LEAVES) return;
       cells[cls] = {r:ladderMean(by[cls], cls.split(".").length), n:by[cls].length};
       rowN[cls] = (rowN[cls] || 0) + 1;
     });
-    per[R] = cells;
-    /* The headline figure folds all the way to the division, so a region with
+    per[e.key] = cells;
+    /* The headline figure folds all the way to the division, so a place with
        forty kinds of rice and one kind of beef does not have its number
        decided by rice. Same ladder as the heatmap and the price level. */
-    overall[R] = gaps.length ? {r:ladderMean(gaps, 1), n:gaps.length} : null;
+    overall[e.key] = e.gaps.length ? {r:ladderMean(e.gaps, 1), n:e.gaps.length} : null;
   });
 
-  var live = regions.filter(function (R) { return overall[R]; });
+  var live = rowsIn.map(function (e) { return e.key; })
+    .filter(function (k) { return overall[k]; });
   if (!live.length) {
-    tbl.innerHTML = '<tbody><tr><td class="empty">This build carries no regional ' +
-      "medians, so there is no world to compare against here.</td></tr></tbody>";
+    tbl.innerHTML = '<tbody><tr><td class="empty">This build carries nothing that ' +
+      "can be set against the world median here.</td></tr></tbody>";
     setHtmlIfPresent("gvRamp", "");
     setHtmlIfPresent("gvLead", "");
     sizeCanvas("cGlobalBars", 90);
@@ -3233,26 +3301,30 @@ function renderGlobalView() {
   /* Most expensive first, which is the order every other ranking here uses. */
   live.sort(function (a, b) { return overall[b].r - overall[a].r; });
 
-  var mine = BUILD_REGION;
-  sizeCanvas("cGlobalBars", Math.max(180, live.length * 30 + 60));
+  /* A country list is dozens of rows where a region list is six, so the bar
+     chart is sized off what it actually holds rather than off the fixed height
+     the wrapper declares. The region row height is left exactly where it was so
+     a global build draws this card at the size it always would have. */
+  sizeCanvas("cGlobalBars",
+    Math.max(180, live.length * (IS_REGIONAL ? 22 : 30) + 60));
   chart("cGlobalBars", {
     type:"bar",
-    data:{ labels: live.map(function (R) { return R; }),
-      datasets:[{ data: live.map(function (R) {
-          return (Math.exp(overall[R].r) - 1) * 100; }),
-        backgroundColor: live.map(function (R) {
-          return overall[R].r >= 0 ? DEAR : CHEAP; }),
+    data:{ labels: live.map(function (k) { return lab[k]; }),
+      datasets:[{ data: live.map(function (k) {
+          return (Math.exp(overall[k].r) - 1) * 100; }),
+        backgroundColor: live.map(function (k) {
+          return overall[k].r >= 0 ? DEAR : CHEAP; }),
         borderColor: INK,
-        borderWidth: live.map(function (R) { return R === mine ? 1.6 : 0; }),
+        borderWidth: live.map(function (k) { return mineOf[k] ? 1.6 : 0; }),
         borderRadius:3 }] },
     options:{ indexAxis:"y",
       plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:function (t) {
-        var R = live[t.dataIndex], o = overall[R];
+        var k = live[t.dataIndex], o = overall[k];
         return [ (Math.exp(o.r) - 1) * 100 >= 0
                    ? "+" + ((Math.exp(o.r) - 1) * 100).toFixed(0) + "% vs the world median"
                    : ((Math.exp(o.r) - 1) * 100).toFixed(0) + "% vs the world median",
                  o.n + " items matched against the world",
-                 R === mine ? "the region this dashboard is built from" : "" ]
+                 mineOf[k] ? "the region this dashboard is built from" : "" ]
           .filter(Boolean); } } } },
       scales:{ x:{ grid:{color:RULE}, position:"top",
           title:{display:true,
@@ -3261,23 +3333,23 @@ function renderGlobalView() {
   });
 
   var rows = Object.keys(rowN)
-    .filter(function (c) { return rowN[c] >= GV_MIN_REGIONS; }).sort();
+    .filter(function (c) { return rowN[c] >= GV_MIN_ROWS; }).sort();
   var head = '<thead><tr><th class="ctry">Category</th>' +
-    live.map(function (R) {
-      return '<th class="ctyh' + (R === mine ? " mine" : "") + '" title="' + esc(R) +
-        (R === mine ? " — the region this dashboard is built from" : "") +
-        '"><span>' + esc(R) + "</span></th>"; }).join("") + "</tr></thead>";
-  function cellHtml(R, cls) {
-    var c = per[R][cls];
-    if (!c || c.r == null) return '<td class="na" title="' + esc(R) + " · " +
+    live.map(function (k) {
+      return '<th class="ctyh' + (mineOf[k] ? " mine" : "") + '" title="' + esc(lab[k]) +
+        (mineOf[k] ? " — the region this dashboard is built from" : "") +
+        '"><span>' + esc(lab[k]) + "</span></th>"; }).join("") + "</tr></thead>";
+  function cellHtml(k, cls) {
+    var c = per[k][cls];
+    if (!c || c.r == null) return '<td class="na" title="' + esc(lab[k]) + " · " +
       esc(title(cls)) + ': fewer than ' + GV_MIN_LEAVES + ' matched items"></td>';
     var v = (Math.exp(c.r) - 1) * 100;
-    var lab = Math.abs(v) >= 999 ? (v > 0 ? "+999" : "-999")
+    var l = Math.abs(v) >= 999 ? (v > 0 ? "+999" : "-999")
       : (v >= 0 ? "+" : "") + v.toFixed(0);
-    return '<td class="c' + (R === mine ? " mine" : "") + '" style="background:' +
-      heatColor(c.r) + ';color:#1b211f" title="' + esc(R) + " · " + esc(title(cls)) +
-      ": " + lab + "% vs the world median, over " + c.n + ' matched items">' +
-      lab + "</td>";
+    return '<td class="c' + (mineOf[k] ? " mine" : "") + '" style="background:' +
+      heatColor(c.r) + ';color:#1b211f" title="' + esc(lab[k]) + " · " + esc(title(cls)) +
+      ": " + l + "% vs the world median, over " + c.n + ' matched items">' +
+      l + "</td>";
   }
   var span = live.length + 1, seen = {};
   function band(cls) {
@@ -3293,17 +3365,17 @@ function renderGlobalView() {
   }
   var body = "<tbody>" +
     '<tr class="gvall"><td class="ctry">Everything priced</td>' +
-    live.map(function (R) {
-      var o = overall[R], v = (Math.exp(o.r) - 1) * 100;
-      var lab = (v >= 0 ? "+" : "") + v.toFixed(0);
-      return '<td class="c' + (R === mine ? " mine" : "") + '" style="background:' +
-        heatColor(o.r) + ';color:#1b211f" title="' + esc(R) + ": " + lab +
-        "% vs the world median, over " + o.n + ' matched items">' + lab + "</td>";
+    live.map(function (k) {
+      var o = overall[k], v = (Math.exp(o.r) - 1) * 100;
+      var l = (v >= 0 ? "+" : "") + v.toFixed(0);
+      return '<td class="c' + (mineOf[k] ? " mine" : "") + '" style="background:' +
+        heatColor(o.r) + ';color:#1b211f" title="' + esc(lab[k]) + ": " + l +
+        "% vs the world median, over " + o.n + ' matched items">' + l + "</td>";
     }).join("") + "</tr>" +
     rows.map(function (cls) {
       return band(cls) + '<tr><td class="ctry ind" title="' + esc(title(cls)) + '">' +
         esc(proseTitle(cls)) + '<span class="ru">vs world</span></td>' +
-        live.map(function (R) { return cellHtml(R, cls); }).join("") + "</tr>";
+        live.map(function (k) { return cellHtml(k, cls); }).join("") + "</tr>";
     }).join("") + "</tbody>";
   tbl.innerHTML = head + body;
 
@@ -3315,30 +3387,56 @@ function renderGlobalView() {
     '<span class="lab">more expensive</span>' +
     '<span class="lab" style="margin-left:14px">full colour at &plusmn;100% &middot; ' +
     "hatched: fewer than " + GV_MIN_LEAVES + " matched items &middot; " + rows.length +
-    " groups &times; " + live.length + " regions</span>");
+    " groups &times; " + live.length + " " + ROWWORDS + "</span>");
 
-  var o = mine && overall[mine];
+  if (!IS_REGIONAL) {
+    /* This card was only ever drawn in a regional build, on a tab a global
+       build hid, so its lead could say "before this build was narrowed to
+       <region>" unconditionally -- and in a global build BUILD_REGION is null,
+       which rendered that as "narrowed to a region" about a build that was
+       never narrowed at all. Now that the card is on a tab both builds show,
+       the clause is written where it is true and left out where it is not. */
+    setHtmlIfPresent("gvLead",
+      "Every world region against the <b>world median for the same items in the same " +
+      "units</b> &mdash; the identical yardstick every other figure in this dashboard " +
+      "is measured against, taken over the whole corpus. " +
+      "A region is priced by whichever retailers the corpus reaches inside it, so read " +
+      "this as what the collected shelves say, not as a sample of the region. Where " +
+      "fewer than " + benchMinCountries() + " countries in a region price an item, no " +
+      "regional median is published for it and the cell is left hatched rather than " +
+      "estimated.");
+    return;
+  }
+  /* The regional lead says the same thing about countries, and then says where
+     the region as a whole stands -- which no row carries any more, and which is
+     the one figure a reader of a regional dashboard came for. It comes from
+     `rmed`, the region's own published median, so it is the region measured
+     against the world and not an average of the bars above it. */
+  var ro = gvLeafGaps(BUILD_REGION);
+  var rr = ro.length ? ladderMean(ro, 1) : null;
   setHtmlIfPresent("gvLead",
-    "Every world region against the <b>world median for the same items in the same " +
-    "units</b> &mdash; the identical yardstick every other figure in this dashboard " +
-    "is measured against, and one that was computed over the whole corpus before " +
-    "this build was narrowed to " + esc(mine || "a region") + ". " +
-    (o ? "<b>" + esc(mine) + "</b> reads <b>" +
-       ((Math.exp(o.r) - 1) * 100 >= 0 ? "+" : "") +
-       ((Math.exp(o.r) - 1) * 100).toFixed(0) + "%</b> against the world overall, " +
-       "on " + o.n + " matched items, and its column is outlined below. " : "") +
-    "A region is priced by whichever retailers the corpus reaches inside it, so read " +
-    "this as what the collected shelves say, not as a sample of the region. Where " +
-    "fewer than " + benchMinCountries() + " countries in a region price an item, no " +
-    "regional median is published for it and the cell is left hatched rather than " +
-    "estimated.");
+    "Every " + esc(BUILD_REGION) + " country against the <b>world median for the same " +
+    "items in the same units</b> &mdash; the identical yardstick every other figure in " +
+    "this dashboard is measured against, and one that was computed over the whole " +
+    "corpus before this build was narrowed to " + esc(BUILD_REGION) + ". " +
+    (rr != null
+      ? "<b>" + esc(BUILD_REGION) + "</b> as a whole reads <b>" +
+        ((Math.exp(rr) - 1) * 100 >= 0 ? "+" : "") +
+        ((Math.exp(rr) - 1) * 100).toFixed(0) + "%</b> against the world, on " +
+        ro.length + " matched items. "
+      : "") +
+    "A country is priced by whichever retailers the corpus reaches inside it, so read " +
+    "this as what the collected shelves say, not as a sample of the country. A group " +
+    "with fewer than " + GV_MIN_LEAVES + " matched items is left hatched rather than " +
+    "estimated, and a group no " + ROWWORD + " prices " + GV_MIN_ROWS +
+    " times over is left off entirely.");
 }
 
 /* =====================================================================
    controller
    ===================================================================== */
 var searchT = null;
-var VIEWS = ["world","global","compare","country","trends"];
+var VIEWS = ["world","compare","country","trends"];
 var APP = {
   set:function (k, v) { S[k] = v; if (k === "country") S.multi = []; this.render(); },
   /* the search box fires on every keystroke; a full re-render per character is
@@ -3357,12 +3455,13 @@ var APP = {
     pane.classList.toggle("open", open);
     b.setAttribute("aria-expanded", open ? "true" : "false");
   },
-  setHRegion:function (r) { S.hregion = r; this.render(); },
+  /* Null under IS_REGIONAL: see the boot block that hides the chip groups. */
+  setHRegion:function (r) { S.hregion = IS_REGIONAL ? null : r; this.render(); },
   hsort:function (k) {
     if (S.hsort.k === k) S.hsort.d = -S.hsort.d;
     else S.hsort = {k:k, d:1};
     this.render(); },
-  setRegion:function (r) { S.region = r; this.render(); },
+  setRegion:function (r) { S.region = IS_REGIONAL ? null : r; this.render(); },
   weightPanel:function () {
     var pane = document.getElementById("wPanel"), b = document.getElementById("wToggle");
     var open = pane.hidden;
@@ -3468,7 +3567,6 @@ var APP = {
     strip.hidden = !live;
 
     if (S.view === "world") renderWorld();
-    else if (S.view === "global") renderGlobalView();
     else if (S.view === "compare") renderCompare();
     else if (S.view === "country") renderCountry();
     else if (S.view === "trends") renderTrends();
@@ -3880,16 +3978,52 @@ APP.togglePppUngated = function () { PPP_UNGATED = !PPP_UNGATED; renderPppBench(
     "COICOP divisions " + m.divisions.join(" and ") + " — food, beverages, alcohol and tobacco, " +
     "priced per kilogram, litre or piece";
 
-  /* The first tab holds the countries this payload carries; the Global View
-     tab holds the world they are measured against, and only earns its place
-     where the first tab is not already the world. */
+  /* ONE tab for the scope of the build, named after that scope: "Global View"
+     over the world, "Regional View" over one region. There used to be a second
+     "Global View" tab beside the regional one -- two tabs both claiming to be
+     the world, in front of a reader who had asked for a region. Its two cards
+     moved into this tab and it is gone. */
   setTextIfPresent("t-world", IS_REGIONAL ? "Regional View" : "Global View");
-  var gtab = document.getElementById("t-global");
-  if (gtab) gtab.hidden = !IS_REGIONAL;
+
+  /* Those two cards name WHO is on their rows, and that is the one thing the
+     build's scope changes about them: the world's regions globally, this
+     build's own countries regionally. The yardstick they divide by is the world
+     median in both, so no label here may stop saying "world". */
+  if (IS_REGIONAL) {
+    setTextIfPresent("gvTitle", "How " + BUILD_REGION + " prices the same basket");
+    setTextIfPresent("gvSub", "Every " + BUILD_REGION +
+      " country against the world median, item by item.");
+    setHtmlIfPresent("gvHelp",
+      "Every figure here is one country's median price for an item set against the " +
+      "<b>world median for the same item in the same unit</b> &mdash; 1&nbsp;kg of rice " +
+      "against 1&nbsp;kg of rice &mdash; and those item-by-item differences are then " +
+      "folded up the category tree, so a finely split branch cannot outvote its " +
+      "neighbours. Red is more expensive than the world, blue cheaper. The world " +
+      "median is computed over the whole corpus, before this build was narrowed to " +
+      esc(BUILD_REGION) + ".");
+    setTextIfPresent("gvGridTitle", "Country by category group");
+    setTextIfPresent("gvGridSub", "Each category group in each " + BUILD_REGION +
+      " country, against the world median for the same items.");
+  }
+
+  /* A regional build is already scoped to one region, so a region filter is a
+     control with exactly one setting -- "All regions", which over this payload
+     IS the region. It read as an offer to narrow further that could not narrow
+     anything. Both chip groups go, in every tab that carries one. The state
+     they write stays null, which is what every reader of S.region/S.hregion
+     already treats as "no region filter"; the setters refuse a non-null value
+     under IS_REGIONAL so a hidden control cannot strand a stale filter. */
+  if (IS_REGIONAL) {
+    ["regionFilter", "hmRegionFilter"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+  }
   /* `build_geo_series` labels the total over whatever countries it was handed
-     "World", which in a regional build is a total over one region wearing the
-     word "world". Rename it where that is what it is. */
-  if (IS_REGIONAL && DATA.geos.W) DATA.geos.W.t = "All of " + BUILD_REGION;
+     "World". In a regional build that total is the region, so it is named after
+     the region -- plainly, because with the duplicate region chip dropped above
+     this IS the region's line and there is nothing to tell it apart from. */
+  if (IS_REGIONAL && DATA.geos.W) DATA.geos.W.t = BUILD_REGION;
   setTextIfPresent("minleaves", DATA.qa.min_basket_leaves);
   setTextIfPresent("wtPairs", m.geo_min_pairs);
   setTextIfPresent("hmMinLeaves", HM_MIN_LEAVES);
