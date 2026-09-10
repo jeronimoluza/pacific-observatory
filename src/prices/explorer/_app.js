@@ -41,7 +41,12 @@ var S = {
      once the reader has actually chosen, so a category with thin coverage can never
      silently strike a place off the list for good. */
   gmode:"region", gsel:null, gnode:"01", gunit:0, gmeasure:"chg12", gcpi:false,
-  gfreq:"Q", gsmooth:0, gwin:36
+  gfreq:"Q", gsmooth:0, gwin:36,
+  /* Basket weighting: which vector is selected, the raw vector itself, and the
+     fixed vector a custom one was seeded FROM -- which is what Reset returns to
+     and what each slider's "was" figure is measured against. All three stay
+     null on a payload that carries no weight vector at all. */
+  wmode:null, w:null, wbase:null
 };
 var charts = {};
 
@@ -246,13 +251,306 @@ function sizeCanvas(id, h) {
 }
 
 /* =====================================================================
+   BASKET WEIGHTS
+   ---------------------------------------------------------------------
+   The price level on the ranking is a weighted sum over COICOP classes:
+   one log ratio per class, weighted by what households spend on it. The
+   weights are the one input here that is not a fact about this corpus --
+   they come from ICP, or from the countries' own CPI returns, or from
+   nothing at all -- so they are the input a reader is entitled to
+   disagree with, and these controls are how they disagree with it
+   without being handed a different dashboard.
+
+   FOUR VECTORS, ONE ARITHMETIC. Equal, World Bank and IMF are fixed and
+   ship in the payload; Custom is whatever the sliders say. All four run
+   through `bwLevel`, which is the tail of `_basket_levels` re-run on the
+   per-class terms the server shipped in `basket.cty`. With the vector at
+   `basket.w0` the two must produce the same number -- a browser test
+   asserts it -- and if they ever part company the figure on screen is
+   the one that is wrong.
+
+   TWO RULES SURVIVE THE MOVE, because they are what the statistic means:
+
+   1. A class the country does not price is an ABSENT TERM, never a zero.
+      Its weight is redistributed over the classes the country does
+      price, in proportion to theirs. Entering it at zero would say the
+      country prices that class at the world median, which is not
+      something anyone measured.
+
+   2. `covered` is the share of the UNRENORMALISED vector the country
+      actually prices, and the gate on it is re-applied at every change.
+      That gate is load-bearing: American Samoa reads 2790 on two leaves
+      at 0.18 coverage. Countries therefore enter and leave the ranking
+      as the weights move. That is correct, and the count says so out
+      loud rather than leaving a reader to notice a name has gone.
+   ===================================================================== */
+var BW       = DATA.basket || {};
+var BW_MODES = BW.modes || {};
+var BW_W0    = BW.w0 || {};
+var BW_CTY   = BW.cty || {};
+var BW_LAB   = BW.lab || {};
+var BW_CODES = Object.keys(BW_W0).sort();
+var BW_MIN_COV = (BW.gates || {}).min_covered;
+/* Per mille, integer. A slider is an integer control and the lightest class in
+   the published vector is 0.011 of the basket, so a thousandth is the coarsest
+   step that leaves the light classes draggable at all. 400 is the ceiling: a
+   bit over twice the heaviest default (meat, 0.179), which is enough headroom
+   to make any single class dominate without a track so long that a class at
+   0.011 sits on its first pixel. */
+var BW_UNIT = 1000, BW_MAX = 400;
+/* A payload built before this block existed, or built with no weights table at
+   all, carries no vector and no matrix -- and a panel of sliders that cannot
+   change anything reads as broken, so it simply does not appear. */
+var BW_ON = BW_CODES.length > 0 && Object.keys(BW_CTY).length > 0 &&
+  BW_MIN_COV != null && !!BW_MODES[BW.mode0] &&
+  DATA.ctyIdx.some(function (s) { return DATA.cty[s].level_gate != null; });
+/* The mode order is the order they are offered in: what the taxonomy says, then
+   the two institutions, then the reader. Anything the payload does not carry is
+   dropped rather than shown dead. */
+var BW_ORDER = ["equal", "icp", "imf"].filter(function (k) { return !!BW_MODES[k]; });
+
+/* The published figures, taken aside before anything is recomputed. Reset puts
+   these back rather than re-deriving them at `w0`: the two agree to a hundredth
+   of an index point, and a published figure should still be exactly the
+   published figure once the reader has finished moving things. */
+var BW_PUB = {};
+if (BW_ON) DATA.ctyIdx.forEach(function (s) {
+  var m = DATA.cty[s];
+  BW_PUB[s] = {level:m.level, level_n:m.level_n, level_cov:m.level_cov,
+               level_ok:m.level_ok};
+});
+
+function bwTitle(code) {
+  var t = BW_LAB[code] || (DATA.tax[code] || {}).t;
+  return t || code;
+}
+function bwCopy(w) {
+  var out = {};
+  BW_CODES.forEach(function (c) { out[c] = w[c] || 0; });
+  return out;
+}
+/* Switch to a fixed vector. Custom is always SEEDED from one of these, so a
+   reader who starts dragging never starts from nowhere -- and `wbase` is what
+   Reset goes back to and what each row's "was" figure is measured against. */
+function bwSetMode(k) {
+  S.wmode = k; S.wbase = k; S.w = bwCopy(BW_MODES[k].w);
+}
+function bwDirty() {
+  var base = BW_MODES[S.wbase].w;
+  return BW_CODES.some(function (c) { return S.w[c] !== (base[c] || 0); });
+}
+/* Is what is on screen the vector this build published? Only then may the
+   ranking go unbadged. */
+function bwPublished() { return S.wmode === BW.mode0 && !bwDirty(); }
+/* A slider's integer position. An untouched class keeps the payload's own
+   float: rounding every default onto the per-mille grid would shift the vector
+   by up to half a thousandth per class and put the opening figure a tenth of a
+   point off the published one, for nothing. */
+function bwPos(c) { return Math.round(S.w[c] * BW_UNIT); }
+
+/* One country's level under weight vector `w`, and the share of that vector it
+   is able to price. This is the tail of `_basket_levels`, deliberately line for
+   line -- if it drifts, so does the number under the reader's finger. */
+function bwLevel(slug, w) {
+  var m = BW_CTY[slug];
+  if (!m) return null;
+  var tot = 0, i, code, wi, sw = 0, acc = 0, k = 0;
+  for (i = 0; i < BW_CODES.length; i++) tot += w[BW_CODES[i]] || 0;
+  for (code in m) {
+    /* Every priced class contributes its leaf count, including one carrying no
+       weight: `n_leaves` says how much of this country was matched, which is
+       the same statement whatever the weights are. The build sums it the same
+       way, over every row of the matrix. */
+    k += m[code][1];
+    wi = w[code];
+    if (!(wi > 0)) continue;
+    sw += wi;
+    acc += wi * m[code][0];
+  }
+  if (!(sw > 0) || !(tot > 0)) return null;
+  /* `sw / tot` is `covered`: the share of the vector as it stands that this
+     country actually prices. `acc / sw` is the weighted mean over the classes
+     that exist -- the redistribution of the absent terms, written as a division
+     rather than as a second pass over the weights. */
+  return {level:Math.exp(acc / sw) * 100, covered:sw / tot, n:k};
+}
+
+/* Write the current figures back into `DATA.cty`, which is where every view on
+   this dashboard reads a price level from. Recomputing in place rather than at
+   each call site is what stops the ranking and the country profile from
+   quietly disagreeing once a slider has moved. */
+function bwApply() {
+  if (!BW_ON) return;
+  var pub = bwPublished();
+  DATA.ctyIdx.forEach(function (slug) {
+    var m = DATA.cty[slug], p = BW_PUB[slug], b;
+    if (pub) {
+      m.level = p.level; m.level_n = p.level_n;
+      m.level_cov = p.level_cov; m.level_ok = p.level_ok;
+      return;
+    }
+    b = bwLevel(slug, S.w);
+    /* No row in the matrix at all: the country was never in the basket, and no
+       weight vector can put it there. */
+    if (!b) { m.level_ok = false; return; }
+    m.level = b.level;
+    m.level_n = b.n;
+    m.level_cov = b.covered;
+    /* `level_gate` is the build's verdict on everything EXCEPT coverage --
+       matched items, sources, defect share -- every one of which is a property
+       of the corpus and cannot move with a weight. Coverage can, and does. */
+    m.level_ok = !!m.level_gate && b.covered >= BW_MIN_COV;
+  });
+}
+/* How many countries the PUBLISHED vector ranks, under the region filter now
+   in force, so the count on screen is compared against like. */
+function bwPubCount() {
+  return DATA.ctyIdx.filter(function (s) {
+    return BW_PUB[s].level_ok && (!S.region || DATA.cty[s].region === S.region);
+  }).length;
+}
+
+/* URL state. There is no existing persistence in this app to be consistent
+   with -- no hash reader, no query string, no storage -- so this is the first,
+   and it stays narrow on purpose: the weighting, and nothing else. Only the
+   entries that differ from the seed vector are written, so a link keeps working
+   across a build that revises the defaults; encoding positions would not. */
+function bwHash() {
+  if (bwPublished()) return "";
+  var parts = [], base = BW_MODES[S.wbase].w;
+  BW_CODES.forEach(function (c) {
+    if (S.w[c] !== (base[c] || 0)) parts.push(c + ":" + bwPos(c));
+  });
+  return "w=" + S.wbase + (parts.length ? "|" + parts.join(",") : "");
+}
+function bwWriteHash() {
+  /* `history.replaceState` is refused on `file://` in some browsers and this
+     dashboard is opened from a file at least as often as it is served, so the
+     hash is set directly. Written on `change` and never on `input`: a history
+     entry per pixel of drag is not state worth keeping. */
+  var h = bwHash();
+  if ((window.location.hash || "").replace(/^#/, "") === h) return;
+  window.location.hash = h;
+}
+function bwReadHash() {
+  var m = /(?:^|[#&])w=([^&]*)/.exec(window.location.hash || "");
+  if (!m) return;
+  var raw = decodeURIComponent(m[1]), bar = raw.indexOf("|");
+  var mode = bar < 0 ? raw : raw.slice(0, bar);
+  /* A mode this build does not carry -- an IMF link opened against a payload
+     built with no WGT_PT rows -- is ignored rather than half-applied. */
+  if (!BW_MODES[mode]) return;
+  bwSetMode(mode);
+  if (bar < 0) return;
+  raw.slice(bar + 1).split(",").forEach(function (kv) {
+    var p = kv.split(":"), v;
+    if (p.length !== 2 || BW_W0[p[0]] == null) return;
+    v = parseInt(p[1], 10);
+    if (!isFinite(v) || v < 0 || v > BW_MAX) return;
+    S.w[p[0]] = v / BW_UNIT;
+  });
+  if (bwDirty()) S.wmode = "custom";
+}
+
+/* The grid is built ONCE. Rebuilding it on input would destroy the range input
+   the reader has hold of and end the drag on the first pixel; everything that
+   changes while dragging is text, and `bwSync` writes that. */
+function bwBuild() {
+  if (!BW_ON) return;
+  document.getElementById("wBox").hidden = false;
+  var html = "", grp = null;
+  BW_CODES.forEach(function (c, i) {
+    var g = c.slice(0, c.lastIndexOf("."));
+    if (g !== grp) {
+      grp = g;
+      html += '<div class="wgrp">' + esc(bwTitle(c.slice(0, 2))) +
+        ' <span style="opacity:.6">&rsaquo;</span> ' + esc(bwTitle(g)) + "</div>";
+    }
+    html += '<div class="wrow" id="w-r-' + i + '">' +
+      '<span class="lab" title="' + esc(c + " " + bwTitle(c)) + '">' +
+        esc(bwTitle(c)) + "</span>" +
+      '<input type="range" id="w-i-' + i + '" min="0" max="' + BW_MAX +
+        '" step="1" value="' + bwPos(c) + '" aria-label="' + esc(bwTitle(c)) +
+        ' weight" oninput="APP.setWeight(' + arg(c) + ',this.value)"' +
+        ' onchange="APP.setWeight(' + arg(c) + ',this.value,1)">' +
+      '<span class="num" id="w-n-' + i + '"></span></div>';
+  });
+  document.getElementById("wGrid").innerHTML = html;
+}
+
+/* Everything that changes when the vector changes, and nothing that does not. */
+function bwSync() {
+  if (!BW_ON) return;
+  var dirty = bwDirty(), tot = 0, base = BW_MODES[S.wbase].w, bt = 0;
+  BW_CODES.forEach(function (c) { tot += S.w[c]; bt += base[c] || 0; });
+
+  document.getElementById("wModes").innerHTML =
+    BW_ORDER.map(function (k) {
+      return '<button id="wm-' + k + '" class="' + (S.wmode === k ? "on" : "") +
+        '" aria-pressed="' + (S.wmode === k) + '" onclick="APP.setWMode(' +
+        arg(k) + ')">' + esc(BW_MODES[k].meta.name || k) + "</button>";
+    }).join("") +
+    '<button id="wm-custom" class="' + (S.wmode === "custom" ? "on" : "") +
+    '" aria-pressed="' + (S.wmode === "custom") + '" disabled' +
+    ' title="Move any slider below to weight the basket yourself">Custom</button>';
+
+  var badge = document.getElementById("wBadge");
+  badge.hidden = bwPublished();
+  badge.textContent = (S.wmode === "custom" ? "Your own weights"
+    : BW_MODES[S.wmode].meta.name) + " \u2014 not the published ranking";
+  document.getElementById("wReset").disabled = !dirty;
+  document.getElementById("wReset").textContent =
+    "Reset to " + (BW_MODES[S.wbase].meta.name || S.wbase);
+
+  var meta = BW_MODES[S.wmode === "custom" ? S.wbase : S.wmode].meta;
+  document.getElementById("wProv").innerHTML =
+    "<b>" + esc(meta.label) + ".</b> " + esc(meta.note || "") +
+    (S.wmode === "custom"
+      ? " You have moved this vector; every share below is shown beside the one " +
+        "it started from."
+      : "") +
+    " Every share below is a share of what this dashboard prices, not of a " +
+    "national CPI basket that mostly is not on it." +
+    /* The single most useful thing about any of these vectors, and the one a
+       reader will otherwise attribute to the prices: a category nothing here
+       prices still sits in the denominator of `covered`, so it caps how much of
+       the basket ANY country can reach and therefore how many get ranked. Two
+       modes can differ in who they rank without differing in a single price. */
+    (meta.unpriced > 0.005
+      ? " <b>Nothing in this build prices " + Math.round(meta.unpriced * 100) +
+        "% of this vector</b>, so no country can cover more than " +
+        Math.round((1 - meta.unpriced) * 100) + "% of it — which is why " +
+        "the number of countries ranked moves with the weights and not only " +
+        "with the prices."
+      : "");
+
+  BW_CODES.forEach(function (c, i) {
+    var inp = document.getElementById("w-i-" + i);
+    if (!inp) return;
+    /* Setting the value the input already holds is a no-op and does not
+       interrupt a drag; setting a different one is how Reset and the mode
+       buttons move the sliders. */
+    if (+inp.value !== bwPos(c)) inp.value = bwPos(c);
+    var moved = S.w[c] !== (base[c] || 0);
+    document.getElementById("w-r-" + i).className = "wrow" + (moved ? " moved" : "");
+    document.getElementById("w-n-" + i).innerHTML =
+      "<b>" + (S.w[c] / tot * 100).toFixed(1) + "%</b>" +
+      (dirty ? '<span class="was">was ' +
+        ((base[c] || 0) / bt * 100).toFixed(1) + "%</span>" : "");
+  });
+}
+
+/* =====================================================================
    1. WORLD
    ===================================================================== */
-function levelRows() {
+/* `all` skips the region filter. The region chips count what each region would
+   contribute to the ranking, which is a question about the whole list, and the
+   list itself is the same rows narrowed. */
+function levelRows(all) {
   return DATA.ctyIdx
     .map(function (slug) { return Object.assign({slug:slug}, DATA.cty[slug]); })
     .filter(function (r) { return r.level_ok && r.level != null; })
-    .filter(function (r) { return !S.region || r.region === S.region; })
+    .filter(function (r) { return all || !S.region || r.region === S.region; })
     .sort(function (a, b) { return b.level - a.level; });
 }
 
@@ -307,9 +605,12 @@ function renderWorld() {
   });
 }
 function renderRanking() {
+  bwSync();
+  /* Counted off the rows as they now stand, not off the payload: under a weight
+     vector the reader has chosen, a region's count is what THAT vector ranks. */
   var regions = {};
-  DATA.ctyIdx.forEach(function (s) { var r = DATA.cty[s];
-    if (r.level_ok) regions[r.region] = (regions[r.region] || 0) + 1; });
+  levelRows(true).forEach(function (r) {
+    regions[r.region] = (regions[r.region] || 0) + 1; });
   document.getElementById("regionChips").innerHTML = Object.keys(regions).sort()
     .map(function (r) {
       return '<button class="chip' + (S.region === r ? " on" : "") + '" aria-pressed="' +
@@ -320,8 +621,20 @@ function renderRanking() {
   document.getElementById("reg-all").setAttribute("aria-pressed", S.region ? "false" : "true");
 
   var rows = levelRows();
-  document.getElementById("worldCount").textContent =
-    rows.length + " countries ranked · world median = 100";
+  /* A country is ranked only where the live vector covers enough of the basket
+     it would need, so countries enter and leave as the weights move. Saying how
+     many, and how that compares with the published vector, is the difference
+     between that being visible behaviour and a name quietly going missing. */
+  var count = rows.length + " countries ranked · world median = 100";
+  if (BW_ON && !bwPublished()) {
+    var d = rows.length - bwPubCount();
+    count += " · " + (d === 0
+      ? "the same countries the published weights rank"
+      : (d > 0 ? d + " more" : (-d) + " fewer") + " than the published weights" +
+        " — a country is ranked only where these weights cover " +
+        Math.round(BW_MIN_COV * 100) + "% of its basket");
+  }
+  document.getElementById("worldCount").textContent = count;
   if (!rows.length) {
     document.getElementById("rankScale").innerHTML = "";
     document.getElementById("rankList").innerHTML = '<div class="empty">No country in this region is comparable enough to rank.</div>';
@@ -1045,6 +1358,9 @@ function renderCompare() {
      countries and knows nothing about the item selected on the left, so a node
      that cannot be ranked must not take the country ranking down with it. */
   renderRanking();
+  /* The external benchmark sits under the ranking and answers the same
+     question about the same countries, so it is drawn with it. */
+  renderPppBench();
 
   var ni = DATA.nodeIdx.indexOf(S.node);
   navigator("cmpCrumb", "cmpNav", S.node, null, function (code) {
@@ -2109,6 +2425,37 @@ var APP = {
     else S.hsort = {k:k, d:1};
     this.render(); },
   setRegion:function (r) { S.region = r; this.render(); },
+  weightPanel:function () {
+    var pane = document.getElementById("wPanel"), b = document.getElementById("wToggle");
+    var open = pane.hidden;
+    pane.hidden = !open;
+    b.className = "chip" + (open ? " on" : "");
+    b.setAttribute("aria-expanded", open ? "true" : "false");
+    b.textContent = (open ? "Hide" : "Show") + " the weights";
+  },
+  setWMode:function (k) {
+    if (!BW_MODES[k]) return;
+    bwSetMode(k); bwApply(); bwWriteHash(); this.render();
+  },
+  /* `commit` is set from `onchange` and never from `oninput`. The recompute has
+     to be live -- a slider whose number arrives on release is a slider nobody
+     can aim -- but a full re-render redraws two charts and a two-hundred-row
+     table, and a history entry per pixel of drag is not state worth keeping.
+     So dragging repaints the ranking alone, and letting go does the rest. */
+  setWeight:function (code, v, commit) {
+    if (!BW_ON || S.w[code] == null) return;
+    S.w[code] = (+v) / BW_UNIT;
+    /* Moving anything while a fixed vector is selected makes it the reader's
+       own, seeded from where they were rather than from nowhere. */
+    if (bwDirty()) S.wmode = "custom"; else S.wmode = S.wbase;
+    bwApply();
+    renderRanking();
+    if (commit) { bwWriteHash(); this.render(); }
+  },
+  resetWeights:function () {
+    if (!BW_ON) return;
+    bwSetMode(S.wbase); bwApply(); bwWriteHash(); this.render();
+  },
   /* Division and class come out of the same control: picking a division clears
      the class under it, picking a class carries its own division. Empty is
      "All items", which is what this tab opens on. */
@@ -2187,6 +2534,366 @@ document.addEventListener("keydown", function (e) {
 });
 window.APP = APP;
 
+/* =====================================================================
+   AN EXTERNAL PRICE LEVEL — a benchmark, never a correction
+   =====================================================================
+   The ranking above divides every country by the world median of OUR OWN
+   corpus, so nothing in this file can say whether it is right: the scale is
+   self-referential. What settles it is somebody else's price level over the
+   same countries, built from somebody else's prices. The World Bank's ICP
+   sends enumerators to price a common specification in each economy and
+   publishes a food, beverage, alcohol and tobacco price level on the SAME
+   world = 100 base this dashboard uses; the WDI publishes a whole-economy one.
+
+   Neither is blended into our number and neither corrects it — this is the
+   relationship the official CPI has with our change series one tab over: two
+   independent measurements on one pair of axes, and the reader judges.
+
+   The 45-degree line is the claim. A country sitting on it reads the same in
+   both. Distance from it, in logs, is the disagreement; the ten widest are
+   named underneath rather than left to be hunted for on the canvas.
+
+   Both axes are LOGARITHMIC because both numbers are ratios: 50 is as far
+   below 100 as 200 is above it, and a linear axis says otherwise. */
+var PPP = DATA.ppp || {}, PPPMETA = DATA.pppMeta || {};
+var PPP_ON = Object.keys(PPP).length > 0;
+/* Which benchmark, and whether the countries our own gate rejects are drawn.
+   Local to this card rather than in `S`: `S` is the shared, URL-shaped state
+   every view reads, and neither of these is a question about the corpus. */
+var PPPSEL = "icp", PPP_UNGATED = true;
+var PPP_BENCH = {
+  icp:  {v:"icp", y:"icpYear", lab:"ICP food &amp; tobacco",
+         ax:"ICP price level — food, beverages, alcohol, tobacco (world = 100)",
+         note:"has the same scope and the same base as ours"},
+  wdi:  {v:"wdi", y:"wdiYear", lab:"WDI whole economy",
+         ax:"WDI price level — whole economy (world = 100)",
+         note:"prices rent, health and services too, so poor countries " +
+              "read lower on it than they do on food alone"},
+  hfce: {v:"wdiHfce", y:"wdiHfceYear", lab:"WDI household consumption",
+         ax:"WDI price level — household final consumption (world = 100)",
+         note:"covers household consumption rather than the whole of GDP, "
+              + "still far wider than food"}
+};
+
+/* The vector the ranking is CURRENTLY drawn under — the reader's if they have
+   moved a slider, the published one otherwise. Handing it to the benchmark too
+   is what keeps the comparison honest: re-weighting our basket and leaving
+   theirs fixed would turn a difference of method into a difference of price. */
+function pppWeights() {
+  if (typeof BW_ON !== "undefined" && BW_ON && S.w) return S.w;
+  return (DATA.basket && DATA.basket.w0) || null;
+}
+
+/* The ICP benchmark, re-aggregated on the client under `w`. At the published
+   vector this reproduces the server's `icp` figure exactly, which is what
+   makes it safe to recompute at all; `e.icp` is the fallback for a payload
+   built before the class matrix existed. */
+function pppIcpLevel(slug, w) {
+  var e = PPP[slug];
+  if (!e) return null;
+  var nodeOf = PPPMETA.nodeOf || {}, num = 0, den = 0, code, node, cell;
+  if (e.cls && w) {
+    for (code in w) {
+      if (!Object.prototype.hasOwnProperty.call(w, code)) continue;
+      node = nodeOf[code];
+      cell = node && e.cls[node];
+      if (!cell || !(cell[0] > 0)) continue;
+      num += w[code] * Math.log(cell[0] / 100);
+      den += w[code];
+    }
+    if (den > 0) return Math.exp(num / den) * 100;
+  }
+  return e.icp != null ? e.icp : null;
+}
+
+function pppBenchOf(slug, w) {
+  var spec = PPP_BENCH[PPPSEL], e = PPP[slug];
+  if (!e) return null;
+  var v = PPPSEL === "icp" ? pppIcpLevel(slug, w) : e[spec.v];
+  if (v == null || !(v > 0)) return null;
+  return {v:v, y:e[spec.y] || null};
+}
+
+/* One row per country that has BOTH numbers. The region chips above filter
+   this list too — the reader has narrowed the ranking and the chart under it
+   has to answer the same question. */
+function pppRows() {
+  var w = pppWeights();
+  return DATA.ctyIdx.map(function (slug) {
+    var m = DATA.cty[slug];
+    if (m.level == null || !(m.level > 0)) return null;
+    if (S.region && m.region !== S.region) return null;
+    var b = pppBenchOf(slug, w);
+    if (!b) return null;
+    return {slug:slug, name:m.name, iso3:m.iso3, region:m.region,
+            ours:m.level, bench:b.v, year:b.y, ok:!!m.level_ok,
+            n:m.level_n, src:m.src,
+            gap:Math.log(m.level / b.v)};
+  }).filter(function (r) { return !!r; });
+}
+
+/* Average ranks, so a tie does not hand one of the tied values a rank the
+   other does not get and bias the rank correlation. */
+function pppRanks(v) {
+  var idx = v.map(function (x, i) { return i; })
+    .sort(function (a, b) { return v[a] - v[b]; });
+  var out = new Array(v.length), i = 0, j, r;
+  while (i < idx.length) {
+    j = i;
+    while (j + 1 < idx.length && v[idx[j + 1]] === v[idx[i]]) j++;
+    r = (i + j) / 2 + 1;
+    for (var k = i; k <= j; k++) out[idx[k]] = r;
+    i = j + 1;
+  }
+  return out;
+}
+function pppPearson(x, y) {
+  var n = x.length, i, mx = 0, my = 0, sxy = 0, sxx = 0, syy = 0, dx, dy;
+  if (n < 3) return null;
+  for (i = 0; i < n; i++) { mx += x[i]; my += y[i]; }
+  mx /= n; my /= n;
+  for (i = 0; i < n; i++) {
+    dx = x[i] - mx; dy = y[i] - my;
+    sxy += dx * dy; sxx += dx * dx; syy += dy * dy;
+  }
+  if (!(sxx > 0) || !(syy > 0)) return null;
+  return {r:sxy / Math.sqrt(sxx * syy), slope:sxy / sxx,
+          intercept:my - (sxy / sxx) * mx, n:n,
+          sdx:Math.sqrt(sxx / n), sdy:Math.sqrt(syy / n)};
+}
+/* Everything on LOGS. Both figures are ratios to a world median, so the thing
+   that is linear in them is the log, and a slope of 1 there means "one per
+   cent dearer on theirs is one per cent dearer on ours" — which is the claim
+   being tested. A slope below 1 says our spread is COMPRESSED against theirs. */
+function pppStats(rows) {
+  if (rows.length < 3) return null;
+  var x = rows.map(function (r) { return Math.log(r.bench); });
+  var y = rows.map(function (r) { return Math.log(r.ours); });
+  var fit = pppPearson(x, y);
+  if (!fit) return null;
+  var rho = pppPearson(pppRanks(x), pppRanks(y));
+  fit.rho = rho ? rho.r : null;
+  /* The RATIO OF SPREADS, which is the question the slope only looks like it
+     answers. A regression of ours on theirs is pulled below 1 by any error in
+     THEIR figure, so a slope of 0.7 is not evidence that our range is narrow;
+     the two standard deviations side by side are. */
+  fit.disp = fit.sdx > 0 ? fit.sdy / fit.sdx : null;
+  return fit;
+}
+
+function pppFmtGap(g) {
+  var pct = (Math.exp(g) - 1) * 100;
+  return (pct >= 0 ? "+" : "") + pct.toFixed(0) + "%";
+}
+
+function renderPppBench() {
+  var card = document.getElementById("pppCard");
+  if (!card) return;
+  if (!PPP_ON) { card.hidden = true; return; }
+  card.hidden = false;
+
+  var avail = Object.keys(PPP_BENCH).filter(function (k) {
+    var spec = PPP_BENCH[k];
+    return DATA.ctyIdx.some(function (s) {
+      return PPP[s] && PPP[s][spec.v] != null; });
+  });
+  if (avail.indexOf(PPPSEL) < 0) PPPSEL = avail[0];
+  document.getElementById("pppChips").innerHTML = avail.map(function (k) {
+    return '<button class="chip' + (PPPSEL === k ? " on" : "") + '" aria-pressed="' +
+      (PPPSEL === k) + '" onclick="APP.setPppBench(' + arg(k) + ')">' +
+      PPP_BENCH[k].lab + "</button>"; }).join("") +
+    '<button class="chip' + (PPP_UNGATED ? " on" : "") + '" aria-pressed="' +
+    PPP_UNGATED + '" title="Countries our own gate holds out of the ranking. ' +
+    'One of them landing far off the line is evidence the gate is working." ' +
+    'onclick="APP.togglePppUngated()">Show the countries we hold out</button>';
+
+  var spec = PPP_BENCH[PPPSEL];
+  var all = pppRows();
+  var gated = all.filter(function (r) { return r.ok; });
+  var held  = all.filter(function (r) { return !r.ok; });
+  var shown = PPP_UNGATED ? all : gated;
+  var st = pppStats(gated);
+
+  if (shown.length < 3) {
+    /* The message goes in the caption, not into the table: a <div> inside a
+       <table> is not markup a browser keeps where it was put. */
+    document.getElementById("pppStat").innerHTML =
+      "Too few countries here carry both a price level and a benchmark to " +
+      "compare them" +
+      (S.region ? " in " + esc(S.region) + "." : ".");
+    document.getElementById("pppOut").innerHTML = "";
+    if (charts.cPpp) { charts.cPpp.destroy(); delete charts.cPpp; }
+    document.getElementById("pppLegend").innerHTML = "";
+    return;
+  }
+
+  var vals = [], i;
+  for (i = 0; i < shown.length; i++) { vals.push(shown[i].bench, shown[i].ours); }
+  var lo = Math.min.apply(null, vals) / 1.15, hi = Math.max.apply(null, vals) * 1.15;
+
+  /* The ten widest disagreements, among the countries we actually publish.
+     They are labelled on the canvas AND listed, because a name written next to
+     a dot is findable and a name in a row is readable, and this card exists to
+     be argued with. */
+  var worst = gated.slice().sort(function (a, b) {
+    return Math.abs(b.gap) - Math.abs(a.gap); }).slice(0, 10);
+  var flagged = {};
+  worst.slice(0, 8).forEach(function (r) { flagged[r.slug] = true; });
+
+  var pt = function (r) {
+    return {x:r.bench, y:r.ours, row:r}; };
+  var ds = [{
+    type:"line", label:"same price level in both",
+    data:[{x:lo, y:lo}, {x:hi, y:hi}],
+    borderColor:DIM, borderDash:[6, 5], borderWidth:1.4,
+    pointRadius:0, fill:false, order:9
+  }];
+  if (st) {
+    var fx = [], k;
+    for (k = 0; k <= 24; k++) {
+      var xv = lo * Math.pow(hi / lo, k / 24);
+      fx.push({x:xv, y:Math.exp(st.intercept + st.slope * Math.log(xv))});
+    }
+    ds.push({type:"line", label:"line of best fit", data:fx,
+      borderColor:PAL[0], borderDash:[2, 3], borderWidth:1.6,
+      pointRadius:0, fill:false, order:8});
+  }
+  if (PPP_UNGATED && held.length) {
+    ds.push({label:"held out of the ranking", data:held.map(pt),
+      backgroundColor:"transparent", borderColor:FAINT, borderWidth:1.1,
+      pointRadius:3.2, pointHoverRadius:5.5, order:2});
+  }
+  ds.push({label:"ranked", data:gated.map(pt),
+    backgroundColor:"rgba(28,111,190,.72)", borderColor:"transparent",
+    pointRadius:4, pointHoverRadius:6.5, order:1});
+
+  var nice = [5,10,15,20,30,40,50,60,70,80,100,125,150,200,250,300,400,500,700,1000,1500,2000,3000,5000];
+  var axis = function (title) {
+    return {
+      type:"logarithmic", min:lo, max:hi,
+      title:{display:true, text:title, color:DIM, font:{size:11.5}},
+      grid:{color:RULE},
+      afterBuildTicks:function (a) {
+        a.ticks = nice.filter(function (v) { return v >= a.min && v <= a.max; })
+          .map(function (v) { return {value:v}; });
+      },
+      ticks:{color:FAINT, font:{size:10.5},
+        callback:function (v) { return v; }}
+    };
+  };
+
+  chart("cPpp", {
+    type:"scatter",
+    data:{datasets:ds},
+    options:{
+      parsing:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:function (c) {
+          var r = c.raw && c.raw.row;
+          if (!r) return c.dataset.label;
+          return [r.name + (r.ok ? "" : "  (held out of the ranking)"),
+                  "ours " + r.ours.toFixed(0) + "  ·  benchmark " +
+                  r.bench.toFixed(0) + (r.year ? " (" + r.year + ")" : ""),
+                  "we read " + pppFmtGap(r.gap) + " against it  ·  " +
+                  r.n + " matched items"];
+        }}}
+      },
+      scales:{x:axis(spec.ax), y:axis("Our matched-basket price level (world = 100)")}
+    },
+    /* Chart.js ships no label plugin and nothing may be fetched, so the eight
+       widest disagreements are written onto the canvas here. Only eight: a
+       name against every dot is a smear, and the rest of the list is a table. */
+    plugins:[{
+      id:"pppLabels",
+      afterDatasetsDraw:function (c) {
+        var ctx = c.ctx, placed = [];
+        ctx.save();
+        ctx.font = "600 10.5px system-ui, -apple-system, sans-serif";
+        ctx.fillStyle = INK;
+        ctx.textAlign = "left";
+        c.data.datasets.forEach(function (d, di) {
+          var meta = c.getDatasetMeta(di);
+          if (d.type === "line") return;
+          d.data.forEach(function (p, pi) {
+            if (!p.row || !flagged[p.row.slug]) return;
+            var el = meta.data[pi];
+            if (!el) return;
+            var above = p.row.gap > 0;
+            var x = el.x + 6, y = el.y + (above ? -4 : 5);
+            /* Two names on top of each other is worse than one name missing:
+               Kuwait and Qatar sit within a few pixels and the pair read as a
+               single smear. A label that cannot find clear air is dropped, and
+               the country is still in the table underneath. */
+            var clash = placed.some(function (q) {
+              return Math.abs(q[0] - x) < 46 && Math.abs(q[1] - y) < 13; });
+            if (clash) return;
+            placed.push([x, y]);
+            ctx.textBaseline = above ? "bottom" : "top";
+            ctx.fillText(p.row.name, x, y);
+          });
+        });
+        ctx.restore();
+      }
+    }]
+  });
+
+  var stat = st
+    ? "<b>" + st.n + " countries</b> carry both figures. Correlation of the logs " +
+      "<b>r&nbsp;=&nbsp;" + st.r.toFixed(2) + "</b>" +
+      (st.rho != null ? ", rank correlation <b>&rho;&nbsp;=&nbsp;" +
+        st.rho.toFixed(2) + "</b>" : "") +
+      ". Our spread is <b>" + (st.disp != null ? st.disp.toFixed(2) : "?") +
+      "&times;</b> the benchmark's" +
+      (st.disp != null
+        ? (st.disp > 1.08
+           ? " &mdash; we place the dear and the cheap FURTHER apart than it does. "
+           : st.disp < 0.93
+           ? " &mdash; we place the dear and the cheap closer together than it does. "
+           : " &mdash; the two ranges are about the same width. ")
+        : ". ") +
+      "The line of best fit has slope <b>" + st.slope.toFixed(2) + "</b>, which sits " +
+      "below the ratio of spreads because a regression is pulled toward flat by the " +
+      "error in whichever figure is on the horizontal axis &mdash; it is not evidence " +
+      "on its own about whose range is wider."
+    : "Too few countries to fit a line.";
+  document.getElementById("pppStat").innerHTML = stat +
+    " The benchmark " + spec.note + ".";
+
+  var yrs = {};
+  gated.forEach(function (r) { if (r.year) yrs[r.year] = (yrs[r.year] || 0) + 1; });
+  var yk = Object.keys(yrs).sort();
+  document.getElementById("pppLegend").innerHTML =
+    '<span><i class="sw" style="background:rgba(28,111,190,.72)"></i>ranked here</span>' +
+    (PPP_UNGATED && held.length
+      ? '<span><i class="sw" style="background:transparent;border:1px solid ' + FAINT +
+        '"></i>held out of our ranking (' + held.length + ")</span>" : "") +
+    '<span><i class="sw" style="background:' + DIM + '"></i>the two agree</span>' +
+    (st ? '<span><i class="sw" style="background:' + PAL[0] + '"></i>line of best fit</span>' : "") +
+    (yk.length ? '<span>benchmark vintage: ' + yk.map(function (y) {
+      return y + " (" + yrs[y] + ")"; }).join(", ") + "</span>" : "");
+
+  document.getElementById("pppOut").innerHTML = !worst.length ? "" :
+    "<thead><tr><th>Widest disagreement</th><th class='num'>Ours</th>" +
+    "<th class='num'>Benchmark</th><th class='num'>Vintage</th>" +
+    "<th class='num'>Gap</th><th class='num'>Items</th><th class='num'>Sources</th>" +
+    "</tr></thead><tbody>" +
+    worst.map(function (r) {
+      return '<tr tabindex="0" role="button" data-act="1" onclick="APP.openCountry(' +
+        arg(r.slug) + ')"><td>' + esc(r.name) + "</td>" +
+        '<td class="num">' + r.ours.toFixed(0) + "</td>" +
+        '<td class="num">' + r.bench.toFixed(0) + "</td>" +
+        '<td class="num">' + (r.year || "&mdash;") + "</td>" +
+        '<td class="num" style="color:' + (r.gap > 0 ? DEAR : CHEAP) + '">' +
+        pppFmtGap(r.gap) + "</td>" +
+        '<td class="num">' + r.n + "</td>" +
+        '<td class="num">' + r.src + "</td></tr>"; }).join("") + "</tbody>";
+}
+
+APP.setPppBench = function (k) { PPPSEL = k; renderPppBench(); };
+APP.togglePppUngated = function () { PPP_UNGATED = !PPP_UNGATED; renderPppBench(); };
+
+
 /* boot */
 (function () {
   var m = DATA.meta;
@@ -2245,6 +2952,15 @@ window.APP = APP;
   document.getElementById("foot").innerHTML =
     "Generated " + m.generated + " · " + m.n_obs.toLocaleString() +
     " trusted unit values · cells need " + m.min_cell_obs + "+ observations";
+  /* The weighting comes up before the first render, so nothing is ever drawn
+     under the published vector and then redrawn under the reader's. */
+  if (BW_ON) {
+    bwSetMode(DATA.basket.mode0);
+    bwReadHash();
+    bwApply();
+    bwBuild();
+  }
+
   /* default country = the one with the deepest series */
   var best = null, bestN = -1;
   Object.keys(DATA.series).forEach(function (k) {

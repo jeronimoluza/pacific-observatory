@@ -625,6 +625,58 @@ def prices_basket_weights():
                    f"{w * 100:6.2f}%")
 
 
+@prices.command("ppp-benchmark")
+def prices_ppp_benchmark():
+    """Refresh the external price-level benchmark behind the basket ranking.
+
+    Writes data/prices/ppp/price_level_benchmark.csv -- one tidy
+    (iso3, code, value, round, source) row per economy and category, from two
+    independently-produced price levels that our own ranking is checked
+    against and never corrected by:
+
+      icp   World Bank ICP `PX.WL`, price level index, WORLD = 100, at the same
+            classification the expenditure weights come from: our nine food
+            classes, non-alcoholic beverages, alcohol, tobacco, and the two
+            division aggregates that are COICOP 01 and 02 exactly. Same base,
+            same scope, same aggregation as the basket ranking. Latest round
+            per economy with no vintage floor, and the round year is stored so
+            a 2011 benchmark reads as one on screen.
+
+      wdi   `PA.NUS.GDP.PLI` and `PA.NUS.PRVT.PLI`, price level index, UNITED
+            STATES = 100, annual and extrapolated to the current year. This is
+            what `PA.NUS.PPPC.RF` became -- that indicator is retired. Whole
+            economy, so it prices rent and services alongside bread; carried
+            because its vintage is current where ICP's is 2021.
+
+    Standalone, like cpi-benchmark: the explorer build reads the CSV directly.
+    Network required for the refresh and never for the render -- a build with
+    no table draws the ranking without the benchmark chart.
+    """
+    import logging
+
+    from prices.explorer.ppp import load_benchmark, refresh
+    from prices.explorer.sources import BASKET_WEIGHT_LEVEL, load_country_meta, load_taxonomy
+    from prices.explorer.weights import default_weights
+
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    path = refresh()
+    tax = load_taxonomy()
+    weights, _ = default_weights(tax, BASKET_WEIGHT_LEVEL)
+    meta = load_country_meta()
+    got, prov = load_benchmark({s: m["iso3"] for s, m in meta.items()}, weights)
+    click.echo(f"wrote {path}")
+    click.echo(f"  {len(meta)} explorer countries")
+    click.echo(f"  {prov['n_icp']} with an ICP food-and-tobacco price level "
+               f"(World = 100)")
+    click.echo(f"  {prov['n_wdi']} with a WDI whole-economy price level "
+               f"(rescaled by {prov['us_on_world']})")
+    rounds = {}
+    for v in got.values():
+        if v.get("icpYear"):
+            rounds[v["icpYear"]] = rounds.get(v["icpYear"], 0) + 1
+    click.echo(f"  ICP rounds: {dict(sorted(rounds.items()))}")
+
+
 @prices.command("cpi-benchmark")
 @_region_opt
 def prices_cpi_benchmark(region):

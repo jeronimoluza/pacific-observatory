@@ -220,7 +220,47 @@ def _median(xs: list[float]) -> float:
     return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2.0
 
 
-def default_weights(tax: dict, level: int) -> tuple[dict[str, float], dict]:
+SOURCE_LABEL = {
+    "icp": "World Bank ICP household expenditure, median of {n} economies",
+    "imf_wgt_pt": "IMF, the countries\u2019 own published CPI weights, "
+                  "median of {n} economies",
+}
+
+
+def equal_weights(codes: list[str]) -> tuple[dict[str, float], dict]:
+    """One vote each, over exactly the categories the weighted sum runs over.
+
+    This is the taxonomy speaking and not consumption -- it is the reading the
+    ladder gives on its own, and the reason `default_weights` exists at all. It
+    stays reachable because it is the shape every figure here had before a
+    weight vector was introduced, and a reader has to be able to see what the
+    weights did.
+
+    It is NOT the pre-weights code path. That one (`weights=None` in
+    `_basket_levels`) folds all the way to the divisions and averages those,
+    which differs from equal-per-class whenever a division's classes are
+    unevenly branched -- see `test_the_unweighted_path_is_untouched`. Equal
+    weights at the weighted level are a MODE, not a restoration.
+    """
+    if not codes:
+        return {}, {"source": "equal", "label": "equal weight per category",
+                    "n_reporting": 0, "level": 0}
+    w = {c: 1.0 / len(codes) for c in codes}
+    return w, {
+        "source": "equal",
+        "label": f"equal weight over all {len(codes)} categories",
+        "stat": "none",
+        "n_reporting": 0,
+        "level": len(codes[0].split(".")),
+    }
+
+
+def default_weights(
+    tax: dict,
+    level: int,
+    source: str = "icp",
+    universe: set[str] | None = None,
+) -> tuple[dict[str, float], dict]:
     """The default weight vector, at `level`, over the taxonomy on screen.
 
     Four steps, in this order:
@@ -239,16 +279,32 @@ def default_weights(tax: dict, level: int) -> tuple[dict[str, float], dict]:
        an equal weight proportionate to the division weight", applied wherever
        the source stops rather than only at the division.
 
+    `source` selects which table in the CSV is read -- "icp" is the default and
+    the published vector; "imf_wgt_pt" is the countries\u2019 own CPI weights,
+    which exist at DIVISION depth only, so step 4 spreads each division equally
+    over everything inside it. That is a real difference in grain and not a
+    disagreement between two institutions about meat versus dairy; whatever
+    shows it to a reader has to say so.
+
+    `universe`, when given, restricts the categories the weight is spread onto.
+    The three selectable vectors have to share one category set or `covered`
+    means something different in each of them and the ranked-country counts
+    stop being comparable -- see `_weight_modes`.
+
     Returns (weights, provenance). An absent CSV returns ({}, source="equal"),
-    and the caller falls back to equal-per-child.
+    and the caller falls back to equal-per-child. A source with no rows, or no
+    economy reporting all of it, returns the same empty vector: the caller drops
+    that mode rather than inventing one.
     """
     at_level = sorted(c for c, m in tax.items() if m.get("lvl") == level)
+    if universe is not None:
+        at_level = [c for c in at_level if c in universe]
     if not WEIGHTS_CSV.exists():
         logger.info("no weights table at %s -- equal weights", WEIGHTS_CSV)
         return {}, {"source": "equal", "label": "equal weight per category",
                     "n_reporting": 0, "level": level}
 
-    rows = [r for r in csv.DictReader(WEIGHTS_CSV.open()) if r["source"] == "icp"]
+    rows = [r for r in csv.DictReader(WEIGHTS_CSV.open()) if r["source"] == source]
     in_scope = sorted({r["code"] for r in rows} & {
         c for c in tax if any(c == n for n in tax)})
     in_scope = [c for c in in_scope if c in tax]
@@ -257,11 +313,14 @@ def default_weights(tax: dict, level: int) -> tuple[dict[str, float], dict]:
                     "n_reporting": 0, "level": level}
 
     by_iso: dict[str, dict[str, float]] = defaultdict(dict)
-    rounds: dict[str, int] = {}
+    # The vintage, as a year. ICP stores an ICP round (2021); IMF WGT_PT stores
+    # the month the weight was last published (2025-M12). Both answer the same
+    # question -- how old is this share -- and only the year is worth showing.
+    rounds: dict[str, str] = {}
     for r in rows:
         if r["code"] in in_scope:
             by_iso[r["iso3"]][r["code"]] = float(r["value"])
-            rounds[r["iso3"]] = int(r["round"])
+            rounds[r["iso3"]] = str(r["round"])[:4]
     complete = {i: v for i, v in by_iso.items() if len(v) == len(in_scope)}
     if not complete:
         return {}, {"source": "equal", "label": "equal weight per category",
@@ -292,15 +351,18 @@ def default_weights(tax: dict, level: int) -> tuple[dict[str, float], dict]:
 
     yrs = sorted({rounds[i] for i in complete})
     prov = {
-        "source": "icp",
-        "label": f"World Bank ICP household expenditure, median of "
-                 f"{len(complete)} economies",
+        "source": source,
+        "label": SOURCE_LABEL[source].format(n=len(complete)),
         "stat": "median",
         "n_reporting": len(complete),
-        "rounds": {str(y): sum(1 for i in complete if rounds[i] == y) for y in yrs},
+        "rounds": {y: sum(1 for i in complete if rounds[i] == y) for y in yrs},
+        # The depth the SOURCE publishes at, which is not the depth the vector
+        # is applied at. Everything between the two was spread equally.
+        "sourced_depth": max(len(c.split(".")) for c in med),
         "level": level,
         "sourced_at": {c: round(med[c], 5) for c in sorted(med)},
     }
-    logger.info("default weights: %d nodes at level %d from %d economies",
-                len(out), level, len(complete))
+    logger.info("%s weights: %d nodes at level %d from %d economies, "
+                "sourced at depth %d",
+                source, len(out), level, len(complete), prov["sourced_depth"])
     return out, prov

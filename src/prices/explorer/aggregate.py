@@ -21,7 +21,8 @@ import yaml
 from prices.coicop import residual_leaves
 from prices.explorer.cpi import DIVISION_OF, SERIES_LABEL, load_official
 from prices.explorer.geo import build_geo_series
-from prices.explorer.weights import default_weights
+from prices.explorer.ppp import load_benchmark
+from prices.explorer.weights import default_weights, equal_weights
 from prices.explorer.sources import (
     ladder_agg,
     REGIONS_YAML,
@@ -377,7 +378,10 @@ def _residual_nodes(tax: dict) -> frozenset[str]:
 
 
 def _basket_levels(
-    cells: pd.DataFrame, tax: dict, weights: dict[str, float] | None = None
+    cells: pd.DataFrame,
+    tax: dict,
+    weights: dict[str, float] | None = None,
+    detail: dict | None = None,
 ) -> pd.DataFrame:
     """Matched-leaf Jevons price level: a country's leaf unit values against the
     global median for that same (leaf, unit), averaged up the COICOP tree.
@@ -402,6 +406,12 @@ def _basket_levels(
     does, so the sentence above is true rather than aspirational. What paid for
     it is the evidence filter: thin single-source cells, which are where an
     outlier comes from, are out before the mean ever sees them.
+
+    `detail`, when a dict is passed, is filled with the per-(country, category)
+    matrix the collapsed level is a weighted sum OF -- see the block that writes
+    it below. It is an out-parameter rather than a second return value because
+    six tests already pin this function's signature and none of them want the
+    matrix; the caller that does asks for it explicitly.
     """
     residual = _residual_nodes(tax)
     leaves = cells[
@@ -440,6 +450,28 @@ def _basket_levels(
     depth = BASKET_WEIGHT_LEVEL - 1 if weights else 0
     lvl = lad[lad.node.str.count(r"\.").eq(depth)].copy()
 
+    if detail is not None and weights:
+        # THE MATRIX BEHIND THE HEADLINE. One row per (country, category),
+        # carrying the category-level log ratio and the leaf count behind it.
+        # Everything below this point collapses it to one number per country
+        # under one weight vector, and a reader who wants to know what a
+        # different vector would say cannot get there from the collapsed
+        # figure -- the sliders need the terms, not the sum.
+        #
+        # Shipping it also makes the client checkable: apply `w0` to this and
+        # the `level` computed below must come back. `test_basket_matrix`
+        # asserts exactly that, which is the only thing standing between a
+        # slider at its default and a number that quietly disagrees with the
+        # published one.
+        #
+        # Keyed by the country SLUG, not by ISO3, because every other country
+        # key in this payload is a slug and two of them carry an empty iso3.
+        for cty, grp in lvl.groupby("country", observed=True):
+            detail[str(cty)] = {
+                str(node): [round(float(rel), 6), int(k)]
+                for node, rel, k in zip(grp.node, grp.rel, grp.k)
+            }
+
     if weights:
         lvl["w"] = lvl.node.map(weights).astype(float).fillna(0.0)
         # A category this country does not price is an ABSENT TERM, never a
@@ -467,12 +499,18 @@ def _basket_levels(
     out = out.join(leaves.groupby("country").sources.max().rename("src"), on="country")
     out = out.join(defect, on="country")
     out["level"] = np.exp(out.rel) * 100
-    out["ok"] = (
+    # The publication gate, in two halves. `gate` is everything that is a
+    # property of the CORPUS -- how many items were matched, how many sources
+    # stood behind them, how much of the country reads as defective -- none of
+    # which a weight vector can move. Coverage is the half that does move, and
+    # it is separated out so a client re-weighting the basket can re-apply it
+    # without having to re-derive the other three, which it has no way to do.
+    out["gate"] = (
         (out.n_leaves >= MIN_BASKET_LEAVES)
         & (out.src >= MIN_BASKET_SOURCES)
         & (out.defect_share.fillna(0) < COUNTRY_DEFECT_SHARE)
-        & (out.covered.fillna(0) >= MIN_BASKET_WEIGHT_COVERED)
     )
+    out["ok"] = out.gate & (out.covered.fillna(0) >= MIN_BASKET_WEIGHT_COVERED)
     logger.info(
         "basket: %d of %d countries ranked; %d fail on weight coverage alone",
         int(out.ok.sum()),
@@ -486,7 +524,111 @@ def _basket_levels(
             ).sum()
         ),
     )
-    return out[["country", "level", "n_leaves", "covered", "defect_share", "ok"]]
+    return out[
+        ["country", "level", "n_leaves", "covered", "defect_share", "gate", "ok"]
+    ]
+
+
+def _weight_modes(
+    tax: dict, icp_w: dict[str, float], icp_meta: dict, priced: set[str]
+) -> dict:
+    """The fixed weight vectors a reader can switch the ranking between.
+
+    ICP is the published default and is passed in rather than refetched, so the
+    vector on screen under "World Bank" is byte-for-byte the vector the `level`
+    in this payload was built with.
+
+    IMF IS A DIVISION VECTOR. `WGT_PT` publishes at CP01..CP12 and no deeper, so
+    the IMF mode sets the food versus alcohol-and-tobacco split and spreads each
+    division equally over what is inside it -- exactly the construction that was
+    asked for, and exactly the thing a reader will misread as two institutions
+    disagreeing about meat versus dairy unless it is labelled. The `note`
+    travels with the vector so the label cannot be lost on the way.
+
+    THE UNIVERSES ARE NOT ALL THE SAME, and the reason is worth stating because
+    the obvious design does not work. ICP and IMF are external vectors and keep
+    the categories their publishers publish -- ICP's 21, which is also what the
+    published `level` was built on. Equal is not external: it is this
+    dashboard's own statement, and the honest version of that statement is one
+    vote per category THIS DASHBOARD CAN PRICE.
+
+    Spreading it over ICP's 21 instead was tried and is unusable. This corpus
+    prices twelve of those categories anywhere at all -- there is no alcohol,
+    no tobacco, no oils and fats, no tea, no cocoa -- so a flat vector over 21
+    puts 43% of every basket on categories nothing can fill, no country reaches
+    a coverage of 0.60, and the mode ranks NOBODY. That is not the coverage gate
+    catching a thin country; it is the gate charging every country for a hole
+    none of them could fill, which is the failure `covered` exists to
+    distinguish itself from.
+
+    The cost is that `covered` is a share of a different denominator in each
+    mode, so the ranked counts move between modes for two reasons at once. What
+    pays for it is `unpriced`, carried on every vector below: the share of it
+    that nothing in this build can price, which is the ceiling on anybody's
+    coverage and the thing that actually explains the counts.
+
+    A mode with no rows behind it is OMITTED, never fabricated.
+    """
+    if not icp_w:
+        # No weights table at all: the build is on the unweighted path, the
+        # level is a division mean, and there is no vector to switch between.
+        return {}
+    codes = sorted(icp_w)
+
+    def entry(w: dict[str, float], meta: dict, name: str, note: str) -> dict:
+        # `unpriced` is the share of THIS vector that no country in this build
+        # prices -- so `1 - unpriced` is the highest coverage anyone can reach
+        # under it, and a mode where that falls under the gate ranks nobody.
+        return {
+            "w": {k: round(v, 6) for k, v in sorted(w.items())},
+            "meta": dict(meta, name=name, note=note,
+                         unpriced=round(
+                             1.0 - sum(v for c, v in w.items() if c in priced), 4),
+                         n_priced=sum(1 for c in w if c in priced)),
+        }
+
+    modes = {
+        "icp": entry(icp_w, icp_meta, "World Bank (ICP)",
+                     "Household expenditure shares at COICOP class depth for "
+                     "food and at group depth for beverages, alcohol and "
+                     "tobacco, spread equally below that."),
+    }
+    eq_codes = sorted(c for c in codes if c in priced) or codes
+    eq_w, eq_meta = equal_weights(eq_codes)
+    modes["equal"] = entry(
+        eq_w, eq_meta, "Equal",
+        f"One vote per category, over the {len(eq_codes)} categories this "
+        "build actually prices. This is the taxonomy's own shape rather than "
+        "anything about consumption.")
+    imf_w, imf_meta = default_weights(
+        tax, BASKET_WEIGHT_LEVEL, source="imf_wgt_pt", universe=set(icp_w)
+    )
+    if imf_w:
+        modes["imf"] = entry(
+            imf_w, imf_meta, "IMF (national CPI weights)",
+            "Published at DIVISION depth only, so this sets the food versus "
+            "alcohol-and-tobacco split and nothing below it: every category "
+            "inside a division carries the same weight as its neighbours.")
+    else:
+        logger.info(
+            "no usable imf_wgt_pt rows -- the IMF weighting mode is omitted"
+        )
+    for key, m in modes.items():
+        logger.info("weight mode %s: %d categories, %d priced, %.1f%% unpriced",
+                    key, len(m["w"]), m["meta"]["n_priced"],
+                    m["meta"]["unpriced"] * 100)
+    return modes
+
+
+def _weight_labels(weights: dict[str, float]) -> set[str]:
+    """Every code the slider panel has to name: the weighted categories and the
+    ancestors it groups them under."""
+    out: set[str] = set()
+    for code in weights:
+        parts = code.split(".")
+        for i in range(1, len(parts) + 1):
+            out.add(".".join(parts[:i]))
+    return out
 
 
 def _samples(trusted: pd.DataFrame) -> dict[str, list[str]]:
@@ -576,13 +718,18 @@ def build_payload(region: str | None = None) -> dict:
     chained = _chained_index(exploded, tax)
     changed = _lagged_changes(exploded, tax)
     basket_w, wmeta = default_weights(tax, BASKET_WEIGHT_LEVEL)
-    levels = _basket_levels(cells, tax, basket_w)
+    basket_cty: dict[str, dict] = {}
+    levels = _basket_levels(cells, tax, basket_w, basket_cty)
+    basket_modes = _weight_modes(
+        tax, basket_w, wmeta, {c for m in basket_cty.values() for c in m}
+    )
 
     # ---- country meta -------------------------------------------------
     cmeta: dict[str, dict] = {}
     lvl_map = dict(zip(levels.country, levels.level))
     nleaf_map = dict(zip(levels.country, levels.n_leaves))
     ok_map = dict(zip(levels.country, levels.ok))
+    gate_map = dict(zip(levels.country, levels.gate))
     defect_map = dict(zip(levels.country, levels.defect_share))
     cov_map = dict(zip(levels.country, levels.covered))
     grp = trusted.groupby("country", observed=True)
@@ -610,6 +757,11 @@ def build_payload(region: str | None = None) -> dict:
             "level": round(float(lvl_map[slug]), 1) if slug in lvl_map else None,
             "level_n": int(nleaf_map.get(slug, 0)),
             "level_ok": bool(ok_map.get(slug, False)),
+            # The corpus half of the gate, published so a client that has moved
+            # the weights can re-decide the coverage half on its own. `level_ok`
+            # already folds coverage in and therefore cannot answer "would this
+            # country be ranked if coverage were not the question".
+            "level_gate": bool(gate_map.get(slug, False)),
             "level_cov": (round(float(cov_map[slug]), 3)
                           if slug in cov_map and pd.notna(cov_map[slug]) else None),
             "defect": round(float(defect_map.get(slug, 0.0) or 0.0), 3),
@@ -777,6 +929,19 @@ def build_payload(region: str | None = None) -> dict:
     official = load_official({s: countries.get(s, {}).get("iso3") for s in cmeta})
     used_series = {k for v in official.values() for k in v}
 
+    # An EXTERNAL price level, to check our own against. ICP prices about a
+    # thousand products per economy under a common specification and publishes
+    # a food-and-beverage price level on the SAME World = 100 base this
+    # dashboard uses; the WDI publishes a whole-economy one. Neither is blended
+    # into our figure or corrects it -- it is an overlay, the way the official
+    # CPI is an overlay on the change series. The basket weight vector goes in
+    # with it so the benchmark is aggregated the way our own number is, and the
+    # difference between the two is prices rather than method. Empty when the
+    # standalone table has not been built.
+    ppp, ppp_meta = load_benchmark(
+        {s: countries.get(s, {}).get("iso3") for s in cmeta}, basket_w
+    )
+
     node_idx = sorted(nodemeta)
     node_pos = {n: i for i, n in enumerate(node_idx)}
     cty_idx = sorted(cmeta)
@@ -905,6 +1070,28 @@ def build_payload(region: str | None = None) -> dict:
             "within": "equal-within-parent below the weighted level",
             "w0": {k: round(v, 6) for k, v in sorted(basket_w.items())},
             "wmeta": wmeta,
+            # The per-(country, category) terms, `{slug: {code: [rel, k]}}`.
+            # `rel` is the category-level log ratio against the world, `k` the
+            # leaves behind it. Roughly 200 countries x 21 categories, so a few
+            # thousand numbers and no encoding worth inventing.
+            "cty": basket_cty,
+            # The selectable vectors, `{key: {"w": vector, "meta": provenance}}`.
+            # `w0` above is the ICP entry repeated: it is what the `level` in
+            # this payload was actually built with, and the client checks
+            # itself against it. `mode0` names the one that is published.
+            "modes": basket_modes,
+            "mode0": "icp",
+            # Titles for the categories the sliders act on and for the groups
+            # and divisions above them. `tax` carries all of this ALREADY for
+            # every node the corpus prices -- but a category in `w0` that no
+            # country priced at all is absent from `tax` and still needs a
+            # slider, because it is still in the denominator of `covered`.
+            "lab": {
+                c: tax[c]["t"]
+                for c in sorted(_weight_labels(
+                    {c: 1.0 for m in basket_modes.values() for c in m["w"]}))
+                if c in tax
+            },
             "gates": {
                 "leaf_share": MIN_BASKET_LEAF_SHARE,
                 "min_leaves": MIN_BASKET_LEAVES,
@@ -919,6 +1106,8 @@ def build_payload(region: str | None = None) -> dict:
             "division": {k: v for k, v in DIVISION_OF.items() if k in used_series},
             "source": "IMF, Consumer Price Index (IMF.STA:CPI), monthly index",
         },
+        "ppp": ppp,
+        "pppMeta": ppp_meta,
         "samples": samples,
         "qa": qa,
     }

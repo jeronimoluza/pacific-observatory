@@ -216,6 +216,28 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
 .rrow .tr .f{position:absolute;top:5px;bottom:5px;border-radius:1px}
 .rrow .v{font-size:12px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
 
+/* ---------- basket weights: the one input a reader may disagree with ---- */
+.wbar{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+.wbadge{display:inline-flex;align-items:center;background:var(--c5);color:var(--plate);
+  border-radius:var(--r);padding:2px 9px;font-size:11.5px;font-weight:600}
+.wpanel{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  padding:12px 0 14px;margin:0 0 14px}
+.wpanel .explain{margin-bottom:11px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:0 32px}
+.wgrp{grid-column:1/-1;font-size:11px;font-weight:600;color:var(--faint);
+  letter-spacing:.4px;text-transform:uppercase;margin:13px 0 3px}
+.wgrid .wgrp:first-child{margin-top:0}
+.wrow{display:grid;grid-template-columns:1fr 130px 108px;gap:10px;align-items:center;
+  font-size:12.5px;height:23px}
+.wrow .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim)}
+.wrow.moved .lab{color:var(--ink);font-weight:600}
+/* accent-color rather than a pile of vendor pseudo-elements: the track is
+   chrome, and chrome here is ink. */
+.wrow input[type=range]{width:100%;height:16px;accent-color:var(--ink);cursor:pointer}
+.wrow .num{text-align:right;font-variant-numeric:tabular-nums;font-size:12px}
+.wrow .num b{font-weight:600}
+.wrow .num .was{color:var(--faint);font-size:11px;margin-left:6px}
+
 .rankwrap{position:relative}
 .rankwrap .cscroll{max-height:551px}
 .rankwrap::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34px;
@@ -563,6 +585,23 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         country happened to have collected. Click any bar to open that country.
       </div>
           </div>
+    <!-- The weights are the one number on this card that is not measured here:
+         they come from ICP, or from the countries' own CPI returns, or from
+         nothing at all. So they are offered as a choice rather than asserted,
+         and anything other than the published vector says so on the badge. -->
+    <div id="wBox" hidden>
+      <div class="wbar">
+        <div class="seg" id="wModes" role="group" aria-label="Basket weighting"></div>
+        <button class="chip" id="wToggle" aria-expanded="false" aria-controls="wPanel"
+          onclick="APP.weightPanel()">Show the weights</button>
+        <button class="chip" id="wReset" onclick="APP.resetWeights()">Reset</button>
+        <span class="wbadge" id="wBadge" hidden></span>
+      </div>
+      <div class="wpanel" id="wPanel" hidden>
+        <div class="explain" id="wProv"></div>
+        <div class="wgrid" id="wGrid"></div>
+      </div>
+    </div>
     <div class="spread">
       <div class="chips" role="group" aria-label="Filter by region">
         <button class="chip on" id="reg-all" aria-pressed="true" onclick="APP.setRegion(null)">All regions</button>
@@ -576,6 +615,47 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       <div class="datum" id="rankDatum"></div>
     </div>
     <div class="legend" id="rankLegend"></div>
+  </div>
+
+  <!-- The ranking above is measured against OUR OWN world median, so it cannot
+       tell the reader whether it is right. This card puts an independently
+       produced price level on the other axis and lets the two disagree in
+       public. It is hidden outright on a payload with no benchmark table. -->
+  <div class="card" id="pppCard" hidden>
+    <h2>Does our price level agree with the World Bank’s?<button class="ibtn" id="b-ppp"
+      aria-expanded="false" aria-controls="i-ppp" aria-label="How to read this"
+      onclick="APP.info('ppp')">i</button></h2>
+    <div class="sub">Our matched-basket price level against an external one, world = 100 on both axes.</div>
+    <div class="info" id="i-ppp">
+      <div class="beginner-only">
+        The World Bank’s <b>International Comparison Program</b> sends enumerators to
+        price a common list of about a thousand products in each economy and works out
+        what a currency really buys. That is the same question this dashboard asks from
+        scraped shelf prices, asked by different people with a different method, so the
+        two ought to land near the <b>dashed diagonal</b>. Where they do, our number is
+        doing its job. Where a country sits far off it, one of the two is wrong &mdash;
+        and sometimes it is ours.
+        <br><br>
+        This is a <b>benchmark, not a correction</b>: nothing here is folded back into
+        the ranking above. The ICP figure is the same scope as ours (food, beverages,
+        alcohol and tobacco) and is re-weighted with whatever basket weights the ranking
+        is currently using, so the only difference left between the two is the prices
+        themselves. The whole-economy figures also price rent, healthcare and haircuts,
+        which are cheap in poor countries in a way that food is not — expect them to
+        sit below the line at the bottom of the scale for that reason alone.
+        <br><br>
+        <b>Vintage matters here.</b> A price level is a real exchange rate and it moves
+        every year; most benchmark values are from the ICP’s 2021 round while these
+        prices were scraped this year, and a handful of countries are benchmarked as far
+        back as 2011. Each country’s vintage is in its tooltip and in the table.
+      </div>
+    </div>
+    <div class="chips" role="group" aria-label="Which benchmark" id="pppChips"></div>
+    <div class="tiny" id="pppStat" style="margin:9px 0 2px"></div>
+    <div class="cwrap" style="height:440px"><canvas id="cPpp" role="img"
+      aria-label="Our price level against an external benchmark"></canvas></div>
+    <div class="legend" id="pppLegend"></div>
+    <div class="tbl-scroll" style="margin-top:10px"><table id="pppOut"></table></div>
   </div>
 </section>
 
