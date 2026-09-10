@@ -380,6 +380,11 @@ summary:focus-visible,.navlist .it:focus-visible,.linkish:focus-visible,
 .tiny{font-size:11.5px;color:var(--faint)}
 .spread{display:flex;justify-content:space-between;align-items:center;gap:14px;
   flex-wrap:wrap;margin-bottom:12px}
+/* A title block whose subtitle changes length would otherwise push the controls
+   beside it onto a second flex line: with flex-wrap, an over-long base size
+   wraps rather than shrinks. Basing it at 0 lets the prose reflow in place, so
+   the currency switch keeps its seat when the subtitle grows. */
+.spread>.spread-t{flex:1 1 0;min-width:0}
 .empty{padding:40px 20px;text-align:center;color:var(--faint);font-size:13.5px}
 footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid var(--rule)}
 .deco{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;margin-top:16px;
@@ -449,9 +454,9 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 <div class="ctlstrip" id="ctlstrip" hidden>
   <div class="grp" data-views="world compare country"><span class="ctllab" id="lab-ev">Evidence</span>
     <div class="seg" role="group" aria-labelledby="lab-ev">
-      <button id="ev-any" aria-pressed="false" onclick="APP.set('evidence','any')">Any</button>
+      <button id="ev-any" class="on" aria-pressed="true" onclick="APP.set('evidence','any')">Any</button>
       <button id="ev-thin" aria-pressed="false" onclick="APP.set('evidence','thin')">5+ obs</button>
-      <button id="ev-solid" class="on" aria-pressed="true" onclick="APP.set('evidence','solid')">10+ obs</button>
+      <button id="ev-solid" aria-pressed="false" onclick="APP.set('evidence','solid')">10+ obs</button>
     </div>
   </div>
       </div>
@@ -699,7 +704,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       </div>
       <div class="card">
         <div class="spread">
-          <div>
+          <div class="spread-t">
             <h2 style="margin-bottom:0">Cell detail</h2>
             <div class="sub" id="cmpTblSub" style="margin-bottom:0"></div>
           </div>
@@ -928,7 +933,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 
   <div class="card">
     <div class="spread">
-      <div>
+      <div class="spread-t">
         <h2 style="margin-bottom:0">All priced items</h2>
         <div class="sub" id="ctryTblSub" style="margin-bottom:0"></div>
       </div>

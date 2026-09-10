@@ -40,8 +40,8 @@ var INDEX_BASE = {M:"2024-01", Q:"2024Q1"};
    diamonds on a line, a marker in a table or a grid cell -- which was always
    the real requirement; hiding them by default was never it. */
 var S = {
-  view:"world", mode:"explore", incModelled:false, measuredOnly:false,
-  showFlagged:false, evidence:"solid", region:null, node:OPEN_ON, country:null,
+  view:"world", mode:"explore", incModelled:true, measuredOnly:false,
+  showFlagged:false, evidence:"any", region:null, node:OPEN_ON, country:null,
   /* Country profile keeps its own category state: it opens on ALL items and
      the filter narrows it, where Compare opens on one item and drills. The two
      tabs wanted opposite defaults out of one variable, which is why one of them
@@ -201,7 +201,12 @@ function ancestors(code) {
 }
 
 /* ---------------- filters ---------------- */
-var EVIDENCE = { any:{obs:0, src:1}, thin:{obs:5, src:1}, solid:{obs:10, src:1} };
+/* `any` means any: its floors are ZERO, not one. A wholly imputed cell has
+   no source behind it and carries src = 0, so a src floor of 1 here hid
+   every released RT-CAL fill in every mode, payload and all. The thin and
+   solid steps keep the source floor, since a cell that clears ten
+   observations has a source by construction. */
+var EVIDENCE = { any:{obs:0, src:0}, thin:{obs:5, src:1}, solid:{obs:10, src:1} };
 function keep(cell) {
   if (!S.incModelled && cell.mod >= 0.5) return false;
   if (S.measuredOnly && cell.der > 0.2) return false;
@@ -253,8 +258,13 @@ function arg(v) { return JSON.stringify(v).replace(/"/g, "&quot;"); }
    took a mean, so two cells on the same screen answered the same question
    differently and the app had to say so in a footnote. A mean is also the only
    one of the two that decomposes — the waterfall's bars add up to its total
-   because of it — and the evidence filter defaults to ten observations, which
-   removes the thin cells an outlier comes from before the mean sees them.
+   because of it. The evidence filter USED to default to ten observations,
+   which removed the thin cells an outlier comes from before the mean saw
+   them; it now opens at Any, so that the explorer shows the same cells the
+   dashboard does — publish gates at MIN_OBS_PER_CELL = 1 and the two builds
+   disagreeing about whether a country prices rice is worse than a wide mean.
+   The protection is one click away rather than gone, and the thin cells it
+   admits are the ones this decomposition is now most sensitive to.
 
    The filter does NOT require two sources. A second source corroborates, but a
    single retailer with forty readings is evidence and a rule that discarded it
@@ -3159,14 +3169,15 @@ function renderHeatmap() {
   }
 
   /* Countries are the columns now, so the sort key picks a ROW to order them
-     by; clicking a row label sorts across it. Default is the price level, the
-     same order the table opened in before. */
+     by; clicking a row label sorts across it. Default is the country name in
+     alphabetical order, so a reader looking for one country can find it
+     without knowing where it ranks; clicking any row still sorts by price. */
   var sk = S.hsort.k, sd = S.hsort.d;
   shown = sk && rows.indexOf(sk) >= 0
     ? sortRows(shown, function (r) {
         var c = r.cells[sk];
         return c ? c.r : null; }, "num", sd)
-    : sortRows(shown, function (r) { return r.level; }, "num", sd);
+    : sortRows(shown, function (r) { return r.name; }, "text", sd);
 
   var head = '<thead><tr><th class="ctry">Category</th>' +
     shown.map(function (r) {
@@ -3329,7 +3340,7 @@ function gvLeafGaps(region) {
    same list either way -- one entry per leaf, carrying its class, its unit and
    the log ratio to the world median -- so everything below is written once.
 
-   The country branch reads `classCellsFor`, the heatmap's own accessor, rather
+   The country branch reads `hmCellsFor`, the heatmap's own accessor, rather
    than re-deriving a country median: a second definition of "this country's
    price for this item" is exactly how two tables on one tab start disagreeing.
    It also means the Evidence strip moves this card in a regional build, which
@@ -3340,11 +3351,19 @@ function gvRows() {
       return {key:R, label:R, mine:R === BUILD_REGION, gaps:gvLeafGaps(R)};
     });
   }
+  /* One row per COICOP class, which is the grain the grid below groups by.
+     `hmCellsFor` files a leaf under EVERY node in `want`, so restricting the
+     set to depth 3 files each leaf exactly once and `gaps` cannot double-count
+     a leaf under both its class and its division. */
+  var want = {};
+  DATA.nodeIdx.forEach(function (code) {
+    if (code.split(".").length === 3) want[code] = 1;
+  });
   var out = [];
   DATA.ctyIdx.forEach(function (slug, ci) {
     var meta = DATA.cty[slug];
     if (!meta.level_ok) return;      /* only countries the ranking trusts */
-    var per = classCellsFor(ci), gaps = [];
+    var per = hmCellsFor(ci, want), gaps = [];
     Object.keys(per).forEach(function (cls) {
       per[cls].forEach(function (x) {
         if (x.r == null) return;
