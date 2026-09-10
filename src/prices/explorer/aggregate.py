@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import residual_leaves
 from prices.explorer.cpi import DIVISION_OF, SERIES_LABEL, load_official
 from prices.explorer.geo import build_geo_series
@@ -45,6 +46,31 @@ from prices.explorer.sources import (
 )
 
 __all__ = ["REPO_ROOT", "build_payload", "write_payload"]
+
+
+def _fold_piece_units(obs: pd.DataFrame) -> pd.DataFrame:
+    """Relabel `item` as `unit` on the leaves that vet `item` as a genuine piece.
+
+    `unit` and `item` are both a price per ONE countable piece; they differ only
+    in how the denominator was reached. `unit` divided a pack price by an
+    explicit count marker, `item` is the extraction ladder's catch-all, trusted
+    only where SOLD_BY_ITEM_LEAVES says the commodity really is an indivisible
+    piece. `COMPARABLE_UNITS` omits `item` because off-allowlist it means "no
+    quantity found" -- but that slice never reaches here: `qa.py::_row_has_quantity`
+    only lets an `item` row reach `trusted` when the leaf is on the allowlist.
+    So the filter was discarding 92,223 rows that had passed every gate, and
+    with them 531 (country, leaf) cells across ~100 countries.
+
+    `publish.py` has folded these two labels together since 2026-09-04; the
+    explorer never grew the equivalent, which is one of the ways the two
+    dashboards disagree about what the corpus contains.
+    """
+    fold = obs.coicop_code.isin(SOLD_BY_ITEM_LEAVES) & obs.standard_unit.eq("item")
+    if not fold.any():
+        return obs
+    obs = obs.copy()
+    obs.loc[fold, "standard_unit"] = "unit"
+    return obs
 
 
 def _mad(x: pd.Series) -> float:
@@ -379,6 +405,7 @@ def build_payload(region: str | None = None) -> dict:
     countries = load_country_meta()
     obs = load_observations()
 
+    obs = _fold_piece_units(obs)
     trusted = obs[
         obs.qa_status.eq("trusted")
         & obs.standard_unit.isin(COMPARABLE_UNITS)
