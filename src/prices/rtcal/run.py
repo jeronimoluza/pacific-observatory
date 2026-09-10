@@ -264,13 +264,33 @@ def run(
 
     status = np.where(blocked, "blocked_missing_features", "holdout_for_review")
     status = np.where(passes & ~blocked, "released", status)
-    # v1 never publishes a series nobody has ever observed: it validates at 42%
-    # within 25%, so a release there would be a guess wearing a price's clothes.
-    status = np.where(is_new_series, "holdout_new_series", status)
-    if not config.NEW_SERIES_RELEASE_ENABLED:
-        scored["release_status"] = status
-    else:  # pragma: no cover - guarded off in v1
-        scored["release_status"] = np.where(is_new_series & passes, "released", status)
+    # COLD-START CELLS -- a (country, leaf, unit) nobody has ever priced -- are
+    # released as a CLASS, not one threshold decision at a time, and the reason
+    # is that this class has no usable threshold to decide with.
+    #
+    # `selected_release_thresholds.csv` gives every other class a `gate_score` of
+    # `hgb_raw`, which is the score `gate_score_raw` above actually holds. The
+    # cold-start row gives `stacked_logistic` and a threshold of 0.374 estimated
+    # on THAT scale, under the rule `rank_top_25pct`. Comparing the raw HGB score
+    # against it is a comparison between two different scales: it passed 368 of
+    # 139,745 cells, which is 0.3% where the rule asks for 25%, and that number
+    # is an artefact rather than a judgement. Releasing on it would be worse than
+    # releasing on nothing, because it would look like a gate.
+    #
+    # So the flag below is the whole decision, and it is a deliberate one. This
+    # class validates at ~42% within 25% against ~80% for a normal gap. Every
+    # cell still carries its own `prob_within_25pct_calibrated`, which is the
+    # number a reader can act on and is the only accuracy statement published
+    # about a fill anywhere downstream -- no aggregate figure is emitted, because
+    # one number over a population mixing 42% and 80% cells describes neither.
+    #
+    # `blocked_missing_features` still wins: a cell with no gate score at all has
+    # no probability to carry and stays out whatever this flag says.
+    if config.NEW_SERIES_RELEASE_ENABLED:
+        status = np.where(is_new_series & ~blocked, "released", status)
+    else:
+        status = np.where(is_new_series & ~blocked, "holdout_new_series", status)
+    scored["release_status"] = status
 
     scored["predicted_log_median_unit_value_usd"] = scored["prediction"]
     with np.errstate(over="ignore"):

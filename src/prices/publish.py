@@ -207,17 +207,34 @@ def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
         .groupby(["coicop_code", "country", "standard_unit"])
         .agg(
             median_usd=("unit_value_usd", "median"),
-            n_obs=("unit_value_usd", "size"),
+            n_all=("unit_value_usd", "size"),
             # Distinct shelf items behind the cell, which is what the table
             # reports as `n=`. NOT n_obs: one product priced weekly for a year
             # is 52 observations of the same thing, and reporting that as the
             # evidence base overstates it by the scrape cadence.
             n_products=("product_name", "nunique"),
+            n_imputed=("imputed", "sum"),
             last_seen=("observation_date", "max"),
         )
         .reset_index()
     )
-    return g[g["n_obs"] >= MIN_OBS_PER_CELL]
+    return _split_imputed(g)
+
+
+def _split_imputed(g: pd.DataFrame) -> pd.DataFrame:
+    """Turn a pooled count into observed / imputed / share, and apply the gate.
+
+    `n_obs` keeps its old meaning -- measured rows -- so every reader of it is
+    unchanged. `imputed` is the cell with no measured price at all, which is the
+    one a reader most needs marked; `imp_share` is the finer reading for cells
+    that mix the two.
+    """
+    g["n_imputed"] = g["n_imputed"].fillna(0).astype(int)
+    g["n_obs"] = (g["n_all"] - g["n_imputed"]).astype(int)
+    g["imp_share"] = (g["n_imputed"] / g["n_all"]).where(g["n_all"] > 0, 0.0)
+    g["imputed"] = g["n_obs"].eq(0)
+    g = g.drop(columns="n_all")
+    return g[(g["n_obs"] >= MIN_OBS_PER_CELL) | (g["n_imputed"] > 0)]
 
 
 def _drop_pruned_rows(df: pd.DataFrame, pruned: pd.DataFrame) -> pd.DataFrame:
@@ -243,37 +260,81 @@ def _drop_pruned_rows(df: pd.DataFrame, pruned: pd.DataFrame) -> pd.DataFrame:
     return df[[t not in bad for t in tup]]
 
 
-def _attach_fills(monthly: pd.DataFrame, fills: pd.DataFrame) -> pd.DataFrame:
-    """Append released fills to the monthly series, flagged, never merged.
+def _fill_rows(obs: pd.DataFrame, fills: pd.DataFrame) -> pd.DataFrame:
+    """Append released fills to the observation frame as rows, flagged.
 
-    Same two rules the explorer uses: a fill may only extend a series that
-    already exists on measured data, and it may never share a month with a drawn
-    observation. `month` is a Timestamp here and a "YYYY-MM" string in the
-    summary parquet, so the conversion happens once, at this boundary.
+    They used to be appended to the MONTHLY series alone, and only where a
+    series already existed on measured data. Both restrictions are gone: a fill
+    is an observation-shaped row from here on, so it reaches the current
+    snapshot and the heat table, the region and World medians, and the coverage
+    cutoff -- every aggregate this file builds -- exactly as a measured price
+    does. What keeps it honest is `imputed`, which travels with it to the
+    payload, and `imp_share` on every aggregate it lands in.
+
+    Three things have to be lined up first, and each was a way to get this
+    wrong:
+
+    REGION. `obs` has already been cut to the build's countries; the fills table
+    has not. Appending it whole would put countries in a regional dashboard that
+    the region filter had just taken out.
+
+    DISPLAY UNIT. RT-CAL keys its cells on the unit the summary parquet carries,
+    while `_to_display_units` has already put every observation of a leaf onto
+    ONE unit, rescaling values on the way. A raw fill would either land on a
+    second row for a leaf that is supposed to have one, or sit on a per-piece
+    scale in a per-kilo row. So the fills go through the same conversion, under
+    the display units the OBSERVATIONS chose -- a modelled row never votes on
+    how a commodity is sold. A fill on a leaf with no defensible conversion is
+    dropped, exactly as an observation would be.
+
+    DATE. `period` is a "YYYY-MM" string in RT-CAL's tables and a Timestamp
+    here, so the conversion happens once, at this boundary. A fill is dated to
+    the START of its month, which is what puts it inside or outside the
+    snapshot's rolling window -- a fill for last month counts as last month.
     """
-    monthly = monthly.copy()
-    monthly["imputed"] = False
-    monthly["prob"] = np.nan
-    if fills.empty or monthly.empty:
-        return monthly
+    obs = obs.copy()
+    obs["imputed"] = False
+    if fills.empty:
+        return obs
 
-    f = fills.copy()
-    f["month"] = pd.to_datetime(f["period"] + "-01")
-    keys = ["coicop_code", "country", "month", "standard_unit"]
-    live = monthly[["coicop_code", "country", "standard_unit"]].drop_duplicates()
-    f = f.merge(live, on=["coicop_code", "country", "standard_unit"], how="inner")
+    f = fills[fills["country"].isin(set(obs["country"].unique()))].copy()
     if f.empty:
-        return monthly
+        return obs
+    f["coicop_code"] = f["coicop_code"].map(_normalize_coicop)
+    f = f.dropna(subset=["coicop_code", "standard_unit"])
+    f["observation_date"] = pd.to_datetime(f["period"] + "-01")
+    f = f.rename(columns={"usd": "unit_value_usd"})
 
-    drawn = set(map(tuple, monthly[keys].astype(str).values))
-    f = f[[tuple(r) not in drawn for r in f[keys].astype(str).values]]
-    if f.empty:
-        return monthly
-
-    f = f.assign(median_usd=f["usd"], n_obs=0, imputed=True)[
-        keys + ["median_usd", "n_obs", "imputed", "prob"]
+    display = (
+        obs.groupby("coicop_code")["standard_unit"].agg(lambda s: s.iloc[0]).to_dict()
+    )
+    typical_mass = (
+        pd.read_csv(TYPICAL_MASS_CSV) if TYPICAL_MASS_CSV.exists() else pd.DataFrame()
+    )
+    before = len(f)
+    f, _ = unit_collapse.collapse(
+        f, typical_mass, value_cols=("unit_value_usd",), canonical=display
+    )
+    f["imputed"] = True
+    f["product_name"] = None
+    keep = [
+        "country",
+        "coicop_code",
+        "standard_unit",
+        "observation_date",
+        "unit_value_usd",
+        "product_name",
+        "imputed",
+        "prob",
     ]
-    return pd.concat([monthly, f], ignore_index=True)
+    out = pd.concat([obs, f[keep]], ignore_index=True)
+    logger.info(
+        "appended %d of %d released fills to %d observation rows",
+        len(f),
+        before,
+        len(obs),
+    )
+    return out
 
 
 def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
@@ -288,11 +349,12 @@ def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
         sub.groupby(["coicop_code", "country", "month", "standard_unit"])
         .agg(
             median_usd=("unit_value_usd", "median"),
-            n_obs=("unit_value_usd", "size"),
+            n_all=("unit_value_usd", "size"),
+            n_imputed=("imputed", "sum"),
         )
         .reset_index()
     )
-    return g[g["n_obs"] >= MIN_OBS_PER_CELL]
+    return _split_imputed(g)
 
 
 def _region_stats(
@@ -301,6 +363,7 @@ def _region_stats(
     dict[str, dict[str, float]],
     dict[str, dict[str, int]],
     dict[str, dict[str, int]],
+    dict[str, dict[str, float]],
 ]:
     """Region medians plus two different counts of what stands behind them.
 
@@ -316,10 +379,12 @@ def _region_stats(
     medians: dict[str, dict[str, float]] = {}
     counts: dict[str, dict[str, int]] = {}
     products: dict[str, dict[str, int]] = {}
+    shares: dict[str, dict[str, float]] = {}
     for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
         med: dict[str, float] = {}
         cnt: dict[str, int] = {}
         prod: dict[str, int] = {}
+        imp: dict[str, float] = {}
         for col in region_cols:
             sub = (
                 grp
@@ -333,11 +398,17 @@ def _region_stats(
                 med[col["key"]] = float(s.median())
                 cnt[col["key"]] = n
                 prod[col["key"]] = int(sub.loc[have, "n_products"].sum())
+                # The median is over COUNTRY medians, so its provenance is the
+                # mean imputed share of the countries in it -- not of the rows.
+                imp[col["key"]] = round(
+                    float(sub.loc[have, "imp_share"].mean()), 4
+                )
         key = _cell_key(code, unit)
         medians[key] = med
         counts[key] = cnt
         products[key] = prod
-    return medians, counts, products
+        shares[key] = imp
+    return medians, counts, products, shares
 
 
 def _coverage_cutoff(
@@ -367,6 +438,21 @@ def _coverage_cutoff(
         "n_dropped": len(low),
     }
     return threshold, low, stats
+
+
+# The imputation fields on a record that has none. The global dashboard's
+# monthly array runs to millions of rows and the file is already ~90 MB, so
+# three constant fields per row is tens of megabytes of "nothing was modelled
+# here" -- which is what an absent key says for free. A client reading these
+# must treat missing as false / zero, which is what `undefined` does in JS
+# anyway.
+_IMP_FIELDS = ("imputed", "imp_share", "n_imputed")
+
+
+def _lean(r: dict) -> dict:
+    if r.get("n_imputed"):
+        return r
+    return {k: v for k, v in r.items() if k not in _IMP_FIELDS}
 
 
 def _payload(
@@ -415,7 +501,7 @@ def _payload(
     # the gap reads as deliberate rather than missing.
     keyed = current.assign(_region=current["country"].map(of_country))
     keyed = keyed[~keyed["coicop_code"].isin(residual)]
-    region_medians, region_n_countries, region_n_products = _region_stats(
+    region_medians, region_n_countries, region_n_products, region_imp = _region_stats(
         keyed, region_cols
     )
 
@@ -425,22 +511,44 @@ def _payload(
     # direction nobody would check.
     threshold, low_coverage, coverage_stats = _coverage_cutoff(current, residual)
     kept = keyed[~keyed["country"].isin(low_coverage)]
-    region_medians_kept, region_n_countries_kept, region_n_products_kept = (
-        _region_stats(kept, region_cols)
-    )
+    (
+        region_medians_kept,
+        region_n_countries_kept,
+        region_n_products_kept,
+        region_imp_kept,
+    ) = _region_stats(kept, region_cols)
 
     shown = current[~current["coicop_code"].isin(residual)]
     shown_kept = shown[~shown["country"].isin(low_coverage)]
-    kpi = {
-        "countries": len(country_display),
-        "coicop_leaves": int(shown["coicop_code"].nunique()),
-        "products": int(current["n_obs"].sum()),
-    }
-    kpi_kept = {
-        "countries": len(country_display) - len(low_coverage),
-        "coicop_leaves": int(shown_kept["coicop_code"].nunique()),
-        "products": int(current[~current["country"].isin(low_coverage)]["n_obs"].sum()),
-    }
+
+    def _kpi(cur: pd.DataFrame, shown: pd.DataFrame, n_countries: int) -> dict:
+        """Headline counts, each over exactly the population it names.
+
+        `products` used to be the row count of `current`, which is neither
+        products nor the number the table totals -- one product priced weekly
+        for two months is eight observations and one product. So `products` is
+        now distinct shelf items and `observations` is the price readings behind
+        them, and they are separate tiles because they are separate populations
+        and a reader who sees only one of them cannot tell which they were shown.
+
+        Everything here is scoped to the grid: this is the last
+        CURRENT_LOOKBACK_DAYS of the countries in this build, which is what the
+        heat table draws. Nothing counts the whole corpus.
+        """
+        return {
+            "countries": n_countries,
+            "coicop_leaves": int(shown["coicop_code"].nunique()),
+            "products": int(cur["n_products"].sum()),
+            "observations": int(cur["n_obs"].sum()),
+            "cells": int(len(cur)),
+            "imputed_cells": int(cur["imputed"].sum()),
+        }
+
+    kpi = _kpi(current, shown, len(country_display))
+    kept_cur = current[~current["country"].isin(low_coverage)]
+    kpi_kept = _kpi(
+        kept_cur, shown_kept, len(country_display) - len(low_coverage)
+    )
 
     cutoff = (
         (pd.Timestamp.now().normalize() - pd.Timedelta(days=CURRENT_LOOKBACK_DAYS))
@@ -468,14 +576,35 @@ def _payload(
         "region_medians_kept": region_medians_kept,
         "region_n_countries_kept": region_n_countries_kept,
         "region_n_products_kept": region_n_products_kept,
+        # Share of each region/World median that came from a fill, as a mean
+        # over the country medians it is a median of.
+        "region_imp": region_imp,
+        "region_imp_kept": region_imp_kept,
         "residual_leaves": sorted(residual & set(current["coicop_code"].dropna())),
         "low_coverage": sorted(low_coverage),
         "coverage_cutoff": {"categories": threshold, **coverage_stats},
         "kpi": kpi,
         "kpi_kept": kpi_kept,
-        "current": current.to_dict(orient="records"),
+        # What each KPI counts, in the payload rather than in the template, so
+        # the tile and its explanation cannot drift apart.
+        "kpi_notes": {
+            "products": "distinct shelf items priced in the window",
+            "observations": "price readings behind them; one item priced "
+            "weekly is many observations of one product",
+            "countries": "countries with at least one published cell",
+            "coicop_leaves": "named COICOP leaves with a published cell",
+            "cells": "(category, country, unit) cells in the table",
+            "imputed_cells": "of those, cells with no measured price at all",
+        },
+        "imputed": {
+            "cells": int(current["imputed"].sum()),
+            "method": "rtcal_v1",
+            "flag_field": "imputed",
+            "share_field": "imp_share",
+        },
+        "current": [_lean(r) for r in current.to_dict(orient="records")],
         "monthly": [
-            {**r, "month": r["month"].date().isoformat()}
+            _lean({**r, "month": r["month"].date().isoformat()})
             for r in monthly.to_dict(orient="records")
         ],
     }
@@ -547,10 +676,9 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
             before,
             len(pruned),
         )
+    obs = _fill_rows(obs, _fold_piece_units(fills_mod.load_released_fills()))
     current = _current_snapshot(obs)
-    monthly = _attach_fills(
-        _monthly_series(obs), _fold_piece_units(fills_mod.load_released_fills())
-    )
+    monthly = _monthly_series(obs)
 
     payload = _payload(current, monthly, region=region)
     chart_js = VENDOR_CHART_JS.read_text()

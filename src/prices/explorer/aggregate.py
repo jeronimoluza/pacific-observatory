@@ -91,18 +91,171 @@ _EXPLODE_DROP = [
 ]
 
 
-def _explode_nodes(trusted: pd.DataFrame) -> pd.DataFrame:
+def _explode_nodes(rows: pd.DataFrame) -> pd.DataFrame:
     """One row per (observation, ancestor node) so every tree level aggregates."""
-    codes = trusted.coicop_code.unique()
+    codes = rows.coicop_code.unique()
     ladder = pd.DataFrame(
         [(c, n) for c in codes for n in _levels(c)], columns=["coicop_code", "node"]
     )
-    slim = trusted.drop(columns=_EXPLODE_DROP, errors="ignore")
+    slim = rows.drop(columns=_EXPLODE_DROP, errors="ignore")
     return slim.merge(ladder, on="coicop_code", how="inner")
 
 
-def _cells(exploded: pd.DataFrame) -> pd.DataFrame:
-    """Latest-period medians per (country, node, unit) plus quality flags."""
+def _fill_rows(fills: pd.DataFrame, like: pd.DataFrame) -> pd.DataFrame:
+    """RT-CAL cell medians shaped as rows of the observation frame `like`.
+
+    A fill is a CELL median and an observation is a single shelf price, so this
+    is not a like-for-like promotion: one fill enters an aggregate as one value,
+    beside however many rows the observed leaves contributed. That is the same
+    arithmetic every aggregate on this dashboard already does -- a node's median
+    is a median over rows -- and it is why `imp` below is a share of the pooled
+    VALUES rather than a share of the leaves.
+
+    Every column the observation frame carries is reproduced at its own dtype.
+    `source` and `currency` in particular are Categorical and stay Categorical:
+    a fill votes in neither, so it is left null in both, which keeps `sources`
+    honest (a fill is not a source) and keeps the dominant-currency vote clean.
+    """
+    n = len(fills)
+    out = pd.DataFrame(index=pd.RangeIndex(n))
+    for col, dt in like.dtypes.items():
+        # `node` is the ladder's own column and is put back by `_explode_nodes`.
+        # Carrying it here would leave the merge with two of them.
+        if col == "node":
+            continue
+        if isinstance(dt, pd.CategoricalDtype):
+            out[col] = pd.Categorical([None] * n, dtype=dt)
+        elif dt == bool:
+            out[col] = np.zeros(n, dtype=bool)
+        elif np.issubdtype(dt, np.number):
+            out[col] = np.full(n, np.nan)
+        else:
+            out[col] = pd.Series([None] * n, dtype=object)
+    out["country"] = fills.country.to_numpy()
+    out["coicop_code"] = fills.coicop_code.to_numpy()
+    out["standard_unit"] = fills.standard_unit.to_numpy()
+    out["period"] = fills.period.to_numpy()
+    out["unit_value_usd"] = fills.usd.to_numpy(dtype=float)
+    # `prob` rides along on the fill frame ONLY. Carrying it on the pooled frame
+    # would cost a float per observation for a number only fills have.
+    out["prob"] = fills.prob.to_numpy(dtype=float)
+    return out
+
+
+def _concat_rows(a: pd.DataFrame, b: pd.DataFrame) -> pd.DataFrame:
+    """Append `b`'s rows to `a`, one column at a time, CONSUMING `a`.
+
+    `pd.concat` on the exploded frame needs a second copy of it alive at once,
+    and the exploded frame is the largest object a render builds -- a global
+    build peaks around 21 GB on a 26 GB box, so doubling it is not available.
+    Popping each column off `a` as it is consumed keeps the transient down to
+    one column. `a` is empty when this returns, which is the point; callers must
+    use the return value.
+    """
+    cols = list(a.columns)
+    out = {}
+    for col in cols:
+        left = a.pop(col)
+        right = b[col]
+        if right.dtype != left.dtype:
+            right = right.astype(left.dtype)
+        out[col] = pd.concat([left, right], ignore_index=True)
+    return pd.DataFrame(out, columns=cols)
+
+
+def _pool(trusted: pd.DataFrame, fills: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """(observations + fills exploded up the ladder, the fills alone).
+
+    THE FILLS GO UP THE LADDER TOO. They used to join only at the leaf they were
+    predicted for, on the argument that a parent's median would otherwise mix
+    modelled and measured values. It does mix them, and that is now the intent:
+    a parent node blank because two of its leaves were never collected is the
+    complaint this method exists to answer, and holding fills at the leaf left
+    every aggregate above them exactly as blank as before.
+
+    What pays for it is provenance rather than exclusion. Every figure derived
+    from this frame carries the share of the values behind it that were
+    imputed, so "mixed" is a number on the cell rather than a caveat in a
+    docstring. The second return value is the fill rows alone, which is what
+    that share is counted from -- the pooled frame deliberately carries no
+    per-row imputed flag, because a byte per row over ~90M rows buys nothing a
+    small group-by on the fills cannot say better.
+    """
+    ex = _explode_nodes(trusted)
+    if fills is None or fills.empty:
+        return ex, ex.iloc[:0].assign(prob=np.nan)
+    ex_fill = _explode_nodes(_fill_rows(fills, ex))
+    return _concat_rows(ex, ex_fill), ex_fill
+
+
+def _imputed_share(ex_fill: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
+    """Per group: how many pooled values were fills, and their mean probability.
+
+    `prob` is the isotonic-calibrated P(within 25% of the truth) RT-CAL puts on
+    each cell. It is carried as DATA, per cell, and is never collapsed into a
+    headline accuracy figure anywhere in this payload: the released population
+    now mixes normal gaps that validate around 80% with cold-start cells that
+    validate around 42%, and one number over that mixture describes neither.
+    """
+    return (
+        ex_fill.groupby(keys, observed=True)
+        .agg(nimp=("unit_value_usd", "size"), prob=("prob", "mean"))
+        .reset_index()
+    )
+
+
+def _with_imputed(
+    agg: pd.DataFrame, ex_fill: pd.DataFrame, keys: list[str], code_col: str = "node"
+) -> pd.DataFrame:
+    """Split a pooled group count into observed and imputed, and add the share.
+
+    `n_all` in, `n` / `nimp` / `imp` / `prob` out. `n` keeps the meaning it has
+    always had -- observations behind this figure -- so every gate written
+    against it still reads the same thing.
+    """
+    if ex_fill.empty:
+        agg["nimp"] = 0
+        agg["prob"] = np.nan
+    else:
+        fkeys = [code_col if k == "coicop_code" else k for k in keys]
+        imp = _imputed_share(ex_fill, fkeys)
+        if code_col != "coicop_code":
+            imp = imp.rename(columns=dict(zip(fkeys, keys)))
+        agg = agg.merge(imp, on=keys, how="left")
+        agg["nimp"] = agg.nimp.fillna(0)
+    agg["nimp"] = agg.nimp.astype("int64")
+    agg["n"] = (agg.n_all - agg.nimp).astype("int64")
+    agg["imp"] = (agg.nimp / agg.n_all.where(agg.n_all > 0)).fillna(0.0)
+    return agg.drop(columns="n_all")
+
+
+def _publishable(agg: pd.DataFrame) -> pd.Series:
+    """A cell publishes on enough observations, OR on any fill at all.
+
+    The evidence bar for MEASURED prices is untouched: MIN_CELL_OBS or the cell
+    is not drawn. What is new is the second clause, and it is the whole point of
+    releasing fills -- a cell nobody priced has no observations to count, so any
+    rule phrased only in observations keeps it blank forever.
+
+    A cell with one or two observations AND a fill now publishes where it used
+    to be suppressed. That is a real change and it is deliberate: RT-CAL only
+    targets a cell it considers missing, so such a cell was already below the
+    summary's own bar, and the pooled median plus `imp` says more about it than
+    an empty square does.
+    """
+    return (agg.n >= MIN_CELL_OBS) | (agg.nimp > 0)
+
+
+def _cells(exploded: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
+    """Latest-period medians per (country, node, unit) plus quality flags.
+
+    THE LATEST PERIOD IS TAKEN OVER THE POOLED FRAME, fills included. RT-CAL's
+    forward class fills exactly the month that was never collected, so reading
+    `max(period)` off observations alone would leave the grid parked on the last
+    month that happened to be scraped and defeat the fill it was given. The cost
+    is that a cell whose observations stop in June and whose fill lands in
+    August now shows August; `imp` on that cell is 1.0 and says so.
+    """
     keys = ["country", "node", "standard_unit"]
     latest = exploded.groupby(keys, observed=True).period.max().rename("period")
     cur = exploded.merge(latest, on=keys + ["period"], how="inner")
@@ -111,7 +264,7 @@ def _cells(exploded: pd.DataFrame) -> pd.DataFrame:
         cur.groupby(keys + ["period"], observed=True)
         .agg(
             usd=("unit_value_usd", "median"),
-            n=("unit_value_usd", "size"),
+            n_all=("unit_value_usd", "size"),
             mad=("unit_value_usd", _mad),
             modelled=("is_modelled", "mean"),
             derived=("is_derived", "mean"),
@@ -130,8 +283,12 @@ def _cells(exploded: pd.DataFrame) -> pd.DataFrame:
         .rename(columns={"median": "local", "size": "n_local"})
     )
     agg = agg.merge(dom, on=keys, how="left")
-    agg["mixed_currency"] = (agg.n_local / agg.n) < 0.9
-    agg = agg[agg.n >= MIN_CELL_OBS].copy()
+    agg = _with_imputed(agg, ex_fill, keys + ["period"])
+    # A fill has no local price and votes in no currency, so a cell that is all
+    # fill has no dominant currency to be mixed about.
+    ratio = (agg.n_local / agg.n.where(agg.n > 0)).fillna(1.0)
+    agg["mixed_currency"] = ratio < 0.9
+    agg = agg[_publishable(agg)].copy()
 
     lo = agg.standard_unit.map(lambda u: PLAUSIBLE_USD[u][0])
     hi = agg.standard_unit.map(lambda u: PLAUSIBLE_USD[u][1])
@@ -139,28 +296,26 @@ def _cells(exploded: pd.DataFrame) -> pd.DataFrame:
     return agg
 
 
-def _series(exploded: pd.DataFrame, fills: pd.DataFrame | None = None) -> pd.DataFrame:
-    """Monthly medians per (country, node, unit), optionally with RT-CAL fills.
+def _series(exploded: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
+    """Monthly medians per (country, node, unit) over observations AND fills.
 
-    Fills are appended as extra rows carrying `imputed`, never merged into an
-    observed one. Three rules keep them honest, and each is load-bearing:
+    Three rules used to keep fills out of everything but a leaf-grain line, and
+    all three are gone. They are worth naming, because each was removed for a
+    reason and each removal costs something:
 
-    LEAF ONLY. A fill is already a cell median; an observation is a single row.
-    Exploding fills up the COICOP ladder the way observations are exploded would
-    take a parent node's median over a mixture of the two, so a parent would
-    silently change meaning as fills arrived. Fills join where `node` IS the
-    leaf they were predicted for, and nowhere else.
+    LEAF ONLY is gone. Fills ride the same COICOP ladder observations ride, so a
+    group and a division see them too. A parent's median is now a median over a
+    mixture of measured and modelled values, which is exactly what the old rule
+    refused -- `imp` is the price of that, carried on every point.
 
-    NEVER CREATES A SERIES. The depth filter runs on observed periods alone. A
-    line that exists only because it was imputed is a line about the model, not
-    about prices, and `MIN_SERIES_PERIODS` is the reader's guarantee that they
-    are looking at something repeatedly measured.
+    NEVER CREATES A SERIES is gone. `MIN_SERIES_PERIODS` now counts periods
+    however they arrived, so a (country, node, unit) nobody ever measured twice
+    can carry a line. `imputed` marks the points that are entirely modelled and
+    `n` is 0 on them, so a wholly-imputed series is legible as one.
 
-    NO COLLISIONS TO RESOLVE. Cells the pruner rejected are removed from the
-    observations upstream of here, so the bread priced at US$108/kg is already
-    gone by the time this runs and the month it occupied is a genuine gap. A fill
-    then occupies an empty slot rather than arguing with a drawn point, which is
-    why there is no precedence rule to get wrong.
+    NO COLLISIONS TO RESOLVE still holds, and is now structural rather than
+    enforced: an observation and a fill for the same cell simply pool into one
+    median, and RT-CAL does not target a cell it can see, so it hardly arises.
     """
     keys = ["country", "node", "standard_unit", "period"]
     s = (
@@ -168,38 +323,16 @@ def _series(exploded: pd.DataFrame, fills: pd.DataFrame | None = None) -> pd.Dat
         .agg(
             usd=("unit_value_usd", "median"),
             local=("unit_value_local", "median"),
-            n=("unit_value_usd", "size"),
+            n_all=("unit_value_usd", "size"),
         )
         .reset_index()
     )
-    s = s[s.n >= MIN_CELL_OBS]
+    s = _with_imputed(s, ex_fill, keys)
+    s = s[_publishable(s)]
     depth = s.groupby(["country", "node", "standard_unit"]).period.transform("nunique")
     s = s[depth >= MIN_SERIES_PERIODS].copy()
-    s["imputed"] = False
-    s["prob"] = np.nan
-    if fills is None or fills.empty:
-        return s
-
-    f = fills.rename(columns={"coicop_code": "node"})
-    f = f[f.standard_unit.isin(s.standard_unit.unique())]
-
-    # Only onto series that already cleared the depth filter above.
-    live = s[["country", "node", "standard_unit"]].drop_duplicates()
-    f = f.merge(live, on=["country", "node", "standard_unit"], how="inner")
-
-    # Belt and braces. RT-CAL only targets cells it considers missing, and the
-    # cells it rejected were dropped from `trusted` before this frame was built,
-    # so a fill sharing a period with a drawn observation should be impossible.
-    # If one ever appears, the observation wins and the fill is discarded --
-    # never draw two prices for one month.
-    drawn = set(map(tuple, s[keys].astype(str).values))
-    f = f[[tuple(r) not in drawn for r in f[keys].astype(str).values]]
-    if f.empty:
-        return s
-    f = f.assign(local=np.nan, n=0, imputed=True)[
-        keys + ["usd", "local", "n", "imputed", "prob"]
-    ]
-    return pd.concat([s, f], ignore_index=True)
+    s["imputed"] = s.n.eq(0)
+    return s
 
 
 def _leaf_census(tax: dict) -> dict[str, int]:
@@ -213,25 +346,30 @@ def _leaf_census(tax: dict) -> dict[str, int]:
     return out
 
 
-def _leaf_panel(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
+def _leaf_panel(
+    exploded: pd.DataFrame, tax: dict, ex_fill: pd.DataFrame
+) -> pd.DataFrame:
     """Median unit value of each (country, leaf, unit) per month — the item.
 
     Both the chain and the year-over-year family are built on exactly this
     panel, so it is defined once: two measures of the same prices that disagreed
     about which observations count would be impossible to reconcile on screen.
+    Fills are items here like anything else, and every item carries `imp` so the
+    chain and the changes can report how much of a link was modelled.
     """
-    leaf = exploded[
-        exploded.coicop_code.map(lambda c: bool(tax.get(c, {}).get("leaf")))
-    ]
+    keys = ["country", "coicop_code", "standard_unit", "period"]
+    is_leaf = exploded.coicop_code.map(lambda c: bool(tax.get(c, {}).get("leaf")))
+    leaf = exploded[is_leaf]
     leaf = leaf[leaf.node == leaf.coicop_code]
     m = (
-        leaf.groupby(
-            ["country", "coicop_code", "standard_unit", "period"], observed=True
-        )
-        .agg(usd=("unit_value_usd", "median"), n=("unit_value_usd", "size"))
+        leaf.groupby(keys, observed=True)
+        .agg(usd=("unit_value_usd", "median"), n_all=("unit_value_usd", "size"))
         .reset_index()
     )
-    return m[(m.n >= MIN_CELL_OBS) & (m.usd > 0)]
+    if not ex_fill.empty:
+        ex_fill = ex_fill[ex_fill.node == ex_fill.coicop_code]
+    m = _with_imputed(m, ex_fill, keys, code_col="coicop_code")
+    return m[_publishable(m) & (m.usd > 0)]
 
 
 def _link_need(nodes: pd.Series, tax: dict) -> np.ndarray:
@@ -252,7 +390,9 @@ def _link_need(nodes: pd.Series, tax: dict) -> np.ndarray:
     return np.where(is_leaf, 1, scaled)
 
 
-def _lagged_changes(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
+def _lagged_changes(
+    exploded: pd.DataFrame, tax: dict, ex_fill: pd.DataFrame
+) -> pd.DataFrame:
     """Average log price change over k months, matched leaf by leaf.
 
     Unlike the chain this never links to "whatever the previous observation
@@ -276,37 +416,48 @@ def _lagged_changes(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     is read against a base month that is itself one noisy draw; a k-month change
     is two observations and stops there.
     """
-    m = _leaf_panel(exploded, tax)
+    cols = ["country", "node", "standard_unit", "period", "lag", "lr", "k", "imp"]
+    m = _leaf_panel(exploded, tax, ex_fill)
     if m.empty:
-        return pd.DataFrame(
-            columns=["country", "node", "standard_unit", "period", "lag", "lr", "k"]
-        )
+        return pd.DataFrame(columns=cols)
     m = m.copy()
     m["t"] = pd.PeriodIndex(m.period, freq="M").astype(int)
     keys = ["country", "coicop_code", "standard_unit"]
 
     out = []
     for months, lag in CHANGE_LAGS["M"].items():
-        prev = m[keys + ["t", "usd"]].rename(columns={"usd": "prev_usd"})
+        prev = m[keys + ["t", "usd", "imp"]].rename(
+            columns={"usd": "prev_usd", "imp": "prev_imp"}
+        )
         prev["t"] = prev.t + lag
         j = m.merge(prev, on=keys + ["t"], how="inner")
         if j.empty:
             continue
         j["lr"] = np.log(j.usd / j.prev_usd)
-        step = ladder_agg(j, ["country", "standard_unit", "period"], "lr")
+        # A change is only as measured as its LESS measured end, so the pair
+        # takes the larger of the two shares rather than their average. Written
+        # back over `imp` because `ladder_agg` carries an extra up the tree
+        # under its own name; see `_chained_index`.
+        j["imp"] = np.maximum(j.imp, j.prev_imp)
+        step = ladder_agg(
+            j,
+            ["country", "standard_unit", "period"],
+            "lr",
+            extra={"imp": ("imp", "mean")},
+        )
         step = step[step.k >= _link_need(step.node, tax)]
         if step.empty:
             continue
         step["lag"] = months
         out.append(step)
     if not out:
-        return pd.DataFrame(
-            columns=["country", "node", "standard_unit", "period", "lag", "lr", "k"]
-        )
+        return pd.DataFrame(columns=cols)
     return pd.concat(out, ignore_index=True)
 
 
-def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
+def _chained_index(
+    exploded: pd.DataFrame, tax: dict, ex_fill: pd.DataFrame
+) -> pd.DataFrame:
     """Composition-free price index for aggregate COICOP nodes.
 
     A raw median over an aggregate node moves whenever the scrape composition
@@ -317,28 +468,36 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     Only the US$ chain is built; the local chain follows exactly from the FX
     identity, which also sidesteps mixing two currencies inside one country.
     """
-    m = _leaf_panel(exploded, tax)
+    cols = ["country", "node", "standard_unit", "period", "idx", "n_leaves", "imp"]
+    m = _leaf_panel(exploded, tax, ex_fill)
     if m.empty:
-        return pd.DataFrame(
-            columns=["country", "node", "standard_unit", "period", "idx", "n_leaves"]
-        )
+        return pd.DataFrame(columns=cols)
 
     m = m.sort_values(["country", "coicop_code", "standard_unit", "period"])
     g = m.groupby(["country", "coicop_code", "standard_unit"], observed=True)
     m["prev_usd"] = g.usd.shift()
     m["prev_period"] = g.period.shift()
+    m["prev_imp"] = g.imp.shift()
     m = m.dropna(subset=["prev_usd", "prev_period"])
     gap = pd.PeriodIndex(m.period, freq="M").astype(int) - pd.PeriodIndex(
         m.prev_period, freq="M"
     ).astype(int)
     m = m[(gap >= 1) & (gap <= MAX_LINK_GAP_MONTHS)].copy()
     m["lr"] = np.log(m.usd / m.prev_usd)
+    # A link is only as measured as its less measured end. Written back over
+    # `imp` rather than into a new column because `ladder_agg` carries an extra
+    # up the tree under ITS OWN name -- an extra whose output name differs from
+    # its source is lost above the first level.
+    m["imp"] = np.maximum(m.imp, m.prev_imp)
 
     step = ladder_agg(
         m,
         ["country", "standard_unit", "period"],
         "lr",
-        extra={"prev_period": ("prev_period", "min")},
+        extra={
+            "prev_period": ("prev_period", "min"),
+            "imp": ("imp", "mean"),
+        },
     ).rename(columns={"k": "n_leaves"})
     # The chain is an aggregate-node measure. A leaf holds nothing constant by
     # chaining -- its own monthly median already is its series -- so the ladder's
@@ -350,9 +509,7 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     # `_link_need` never fires and this is the gate it has always been.
     step = step[step.n_leaves >= _link_need(step.node, tax)]
     if step.empty:
-        return pd.DataFrame(
-            columns=["country", "node", "standard_unit", "period", "idx", "n_leaves"]
-        )
+        return pd.DataFrame(columns=cols)
 
     key = ["country", "node", "standard_unit"]
     step = step.sort_values(key + ["period"])
@@ -363,9 +520,12 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     base = base.rename(columns={"prev_period": "period"})
     base["idx"] = 100.0
     base["n_leaves"] = 0
+    # The base is a definition, not a measurement, so nothing about it is
+    # imputed: it is 100 because the chain says so.
+    base["imp"] = 0.0
 
     out = pd.concat(
-        [base, step[key + ["period", "idx", "n_leaves"]]], ignore_index=True
+        [base, step[key + ["period", "idx", "n_leaves", "imp"]]], ignore_index=True
     )
     out = out.drop_duplicates(key + ["period"], keep="first").sort_values(
         key + ["period"]
@@ -382,11 +542,61 @@ def _residual_nodes(tax: dict) -> frozenset[str]:
     )
 
 
+def _basket_leaves(cells: pd.DataFrame, tax: dict) -> pd.DataFrame:
+    """The leaf cells a matched basket may be drawn from, before eligibility."""
+    residual = _residual_nodes(tax)
+    return cells[
+        (cells.node.map(lambda c: bool(tax.get(c, {}).get("leaf"))))
+        & (~cells.node.isin(residual))
+        & (cells.modelled < 0.5)
+        & cells.usd.gt(0)
+        & ~cells.flagged
+    ].copy()
+
+
+def basket_reference(cells: pd.DataFrame, tax: dict) -> tuple[pd.Index, pd.Series]:
+    """The eligible (leaf, unit) set and the world median for each -- ONCE.
+
+    Both halves of the matched-basket construction have to be settled over the
+    WHOLE corpus, not over whoever happens to be in the payload being built.
+
+    THE ELIGIBLE SET, because `MIN_BASKET_LEAF_SHARE` counts the share of the
+    countries being compared that price a leaf, and that share is a different
+    question in a 209-country payload than in a 38-country one. Recomputed per
+    payload it produced a different basket per region, which is precisely the
+    thing a matched basket claims not to be -- and on EAP it produced no basket
+    at all: the best country reached 14 eligible leaves against a
+    `MIN_BASKET_LEAVES` of 15, so `level_ok` was False for all 38 countries and
+    the heatmap, the ranking and the waterfall went blank together.
+
+    THE REFERENCE MEDIAN, for the same reason and with worse consequences. A
+    regional payload was dividing each country by the median of its own
+    neighbours while every label on screen said "world = 100". A regional level
+    and a global level were therefore not on the same scale and could not be
+    read side by side, which is what the dashboard is about to ask of them.
+    """
+    leaves = _basket_leaves(cells, tax)
+    keys = ["node", "standard_unit"]
+    n_cty = leaves.country.nunique()
+    cover = leaves.groupby(keys).country.nunique()
+    eligible = cover[cover >= MIN_BASKET_LEAF_SHARE * n_cty].index
+    logger.info(
+        "basket eligibility: %d of %d (leaf, unit) pairs priced in %.0f%%+ of %d countries",
+        len(eligible),
+        len(cover),
+        MIN_BASKET_LEAF_SHARE * 100,
+        n_cty,
+    )
+    sel = leaves[pd.MultiIndex.from_frame(leaves[keys]).isin(eligible)]
+    return eligible, sel.groupby(keys).usd.median().rename("g")
+
+
 def _basket_levels(
     cells: pd.DataFrame,
     tax: dict,
     weights: dict[str, float] | None = None,
     detail: dict | None = None,
+    reference: tuple[pd.Index, pd.Series] | None = None,
 ) -> pd.DataFrame:
     """Matched-leaf Jevons price level: a country's leaf unit values against the
     global median for that same (leaf, unit), averaged up the COICOP tree.
@@ -419,28 +629,19 @@ def _basket_levels(
     matrix; the caller that does asks for it explicitly.
     """
     residual = _residual_nodes(tax)
-    leaves = cells[
+    candidates = cells[
         (cells.node.map(lambda c: bool(tax.get(c, {}).get("leaf"))))
         & (~cells.node.isin(residual))
         & (cells.modelled < 0.5)
         & cells.usd.gt(0)
-    ].copy()
-    defect = leaves.groupby("country").flagged.mean().rename("defect_share")
-    leaves = leaves[~leaves.flagged]
+    ]
+    defect = candidates.groupby("country").flagged.mean().rename("defect_share")
+    leaves = _basket_leaves(cells, tax)
     keys = ["node", "standard_unit"]
-    n_cty = leaves.country.nunique()
-    cover = leaves.groupby(keys).country.nunique()
-    eligible = cover[cover >= MIN_BASKET_LEAF_SHARE * n_cty].index
-    logger.info(
-        "basket eligibility: %d of %d (leaf, unit) pairs priced in %.0f%%+ of %d countries",
-        len(eligible),
-        len(cover),
-        MIN_BASKET_LEAF_SHARE * 100,
-        n_cty,
-    )
+    eligible, glob = reference if reference is not None else basket_reference(cells, tax)
     leaves = leaves[pd.MultiIndex.from_frame(leaves[keys]).isin(eligible)]
-    glob = leaves.groupby(keys).usd.median().rename("g")
     leaves = leaves.join(glob, on=keys)
+    leaves = leaves[leaves.g.gt(0)]
     leaves["rel"] = np.log(leaves.usd / leaves.g)
     # Up the tree one level at a time -- the same order every other figure here
     # uses -- and then a WEIGHTED sum across the categories at
@@ -451,7 +652,12 @@ def _basket_levels(
     # each, every one of them with a broken unit value, and together they took
     # about a third of the basket. Expenditure weights put those six at under
     # eight per cent, which is what they are.
-    lad = ladder_agg(leaves.rename(columns={"node": "coicop_code"}), ["country"], "rel")
+    lad = ladder_agg(
+        leaves.rename(columns={"node": "coicop_code"}),
+        ["country"],
+        "rel",
+        extra={"imp": ("imp", "mean")},
+    )
     depth = BASKET_WEIGHT_LEVEL - 1 if weights else 0
     lvl = lad[lad.node.str.count(r"\.").eq(depth)].copy()
 
@@ -472,9 +678,13 @@ def _basket_levels(
         # Keyed by the country SLUG, not by ISO3, because every other country
         # key in this payload is a slug and two of them carry an empty iso3.
         for cty, grp in lvl.groupby("country", observed=True):
+            # `[rel, k, imp]`. The third slot is an APPEND: `bwLevel` in the
+            # client indexes 0 and 1 by position and is unaffected by a longer
+            # row, so a client that has not been taught about imputation keeps
+            # reading exactly what it read before.
             detail[str(cty)] = {
-                str(node): [round(float(rel), 6), int(k)]
-                for node, rel, k in zip(grp.node, grp.rel, grp.k)
+                str(node): [round(float(rel), 6), int(k), round(float(imp), 4)]
+                for node, rel, k, imp in zip(grp.node, grp.rel, grp.k, grp.imp)
             }
 
     if weights:
@@ -488,16 +698,21 @@ def _basket_levels(
         cov = lvl.groupby("country").w.sum().rename("covered")
         lvl["w"] = lvl.w / lvl.groupby("country").w.transform("sum")
         lvl["wr"] = lvl.w * lvl.rel
+        # The imputed share of the LEVEL, aggregated the way the level is: the
+        # same weights over the same categories, so `imp` answers "how much of
+        # this exact number came from a model" rather than "how much of this
+        # country's corpus is modelled", which is a different question.
+        lvl["wi"] = lvl.w * lvl.imp.fillna(0.0)
         out = (
             lvl.groupby("country")
-            .agg(rel=("wr", "sum"), n_leaves=("k", "sum"))
+            .agg(rel=("wr", "sum"), n_leaves=("k", "sum"), imp=("wi", "sum"))
             .reset_index()
             .join(cov, on="country")
         )
     else:
         out = (
             lvl.groupby("country")
-            .agg(rel=("rel", "mean"), n_leaves=("k", "sum"))
+            .agg(rel=("rel", "mean"), n_leaves=("k", "sum"), imp=("imp", "mean"))
             .reset_index()
         )
         out["covered"] = 1.0
@@ -530,7 +745,7 @@ def _basket_levels(
         ),
     )
     return out[
-        ["country", "level", "n_leaves", "covered", "defect_share", "gate", "ok"]
+        ["country", "level", "n_leaves", "covered", "defect_share", "imp", "gate", "ok"]
     ]
 
 
@@ -809,7 +1024,8 @@ def build_payload(region: str | None = None) -> dict:
     Every "vs world" figure keeps its global yardstick, computed below from the
     unrestricted cells, because a regional dashboard whose world median is
     secretly its own median would report a country as typical when it is only
-    typical for its neighbours.
+    typical for its neighbours. That now includes the matched basket, which used
+    to break the rule in silence -- see `basket_reference`.
 
     `nodeMeta[node].rmed` does publish a regional and subregional median beside
     `gmed`, and does not weaken that rule. The failure it guards against is a
@@ -819,12 +1035,25 @@ def build_payload(region: str | None = None) -> dict:
     """
     tax = load_taxonomy()
     countries = load_country_meta()
+    topo = yaml.safe_load(REGIONS_YAML.read_text()) or {}
+    region_labels = [m.get("name", k) for k, m in topo.items()]
+    subregion_labels = sorted(
+        {
+            sm.get("name", sk)
+            for m in topo.values()
+            for sk, sm in (m.get("subregions") or {}).items()
+        }
+    )
     obs = load_observations()
     # Both empty unless `prices rtcal run` has been executed.
     #
-    # Fills reach the time-series display only -- not the cells, not the chain,
-    # not the basket. Drawing a modelled point and letting it move an index are
-    # different commitments and only the first is made here.
+    # FILLS NOW REACH EVERYTHING: the cells, the chain, the changes, the basket,
+    # the geography series, the regional and world medians. The old split --
+    # draw a modelled point, but never let it move an index -- kept every
+    # aggregate above the leaf exactly as blank as it was before, which is what
+    # the dashboard was being asked about. What replaces the exclusion is
+    # measurement: every figure derived from a fill carries the share of itself
+    # that was imputed, so a client can show, dim or hide it.
     #
     # PRUNED CELLS ARE DIFFERENT and come out everywhere, at the observation
     # level, before anything aggregates. Removing a value our own screen calls an
@@ -850,22 +1079,39 @@ def build_payload(region: str | None = None) -> dict:
             len(pruned),
         )
 
-    world_cells = _cells(_explode_nodes(trusted))
+    fills = fills[fills.standard_unit.isin(COMPARABLE_UNITS)]
+
+    # The global pass, over every country in the corpus. It settles the two
+    # things a regional payload must NOT settle for itself -- the eligible
+    # basket and the world median -- and it is thrown away immediately
+    # afterwards, because the exploded frame is the largest object here.
+    world_ex, world_ex_fill = _pool(trusted, fills)
+    world_cells = _cells(world_ex, world_ex_fill)
+    reference = basket_reference(world_cells, tax)
+    n_ref_countries = world_cells.country.nunique()
+
     if region:
         label = _region_label(region)
         keep = {s for s, m in countries.items() if m["region"] == label}
+        del world_ex, world_ex_fill
         trusted = trusted[trusted.country.isin(keep)].copy()
+        fills = fills[fills.country.isin(keep)]
         if trusted.empty:
             raise SystemExit(f"no trusted observations for region {region!r} ({label})")
+        exploded, ex_fill = _pool(trusted, fills)
+        cells = _cells(exploded, ex_fill)
+    else:
+        # Identical inputs, so the global build does this exactly once. It used
+        # to explode and aggregate the whole corpus twice for the same answer.
+        exploded, ex_fill = world_ex, world_ex_fill
+        cells = world_cells
 
-    exploded = _explode_nodes(trusted)
-    cells = _cells(exploded)
-    series = _series(exploded, fills)
-    chained = _chained_index(exploded, tax)
-    changed = _lagged_changes(exploded, tax)
+    series = _series(exploded, ex_fill)
+    chained = _chained_index(exploded, tax, ex_fill)
+    changed = _lagged_changes(exploded, tax, ex_fill)
     basket_w, wmeta = default_weights(tax, BASKET_WEIGHT_LEVEL)
     basket_cty: dict[str, dict] = {}
-    levels = _basket_levels(cells, tax, basket_w, basket_cty)
+    levels = _basket_levels(cells, tax, basket_w, basket_cty, reference=reference)
     basket_modes = _weight_modes(
         tax, basket_w, wmeta, {c for m in basket_cty.values() for c in m}
     )
@@ -878,6 +1124,8 @@ def build_payload(region: str | None = None) -> dict:
     gate_map = dict(zip(levels.country, levels.gate))
     defect_map = dict(zip(levels.country, levels.defect_share))
     cov_map = dict(zip(levels.country, levels.covered))
+    imp_map = dict(zip(levels.country, levels.imp))
+    fill_n = fills.groupby("country").size().to_dict() if not fills.empty else {}
     grp = trusted.groupby("country", observed=True)
     for slug, g in grp:
         base = countries.get(
@@ -910,13 +1158,37 @@ def build_payload(region: str | None = None) -> dict:
             "level_gate": bool(gate_map.get(slug, False)),
             "level_cov": (round(float(cov_map[slug]), 3)
                           if slug in cov_map and pd.notna(cov_map[slug]) else None),
+            # THE COUNTRY'S IMPUTED SHARE, weighted exactly the way its price
+            # level is -- the same categories under the same weights -- so this
+            # answers "how much of the number this country is ranked on came
+            # from a model" rather than "how modelled is this country's corpus",
+            # which is a different and much less useful question. Null where the
+            # country has no basket at all.
+            "imp": (round(float(imp_map[slug]), 4)
+                    if slug in imp_map and pd.notna(imp_map[slug]) else None),
+            # Released fills standing behind this country at any node. A count,
+            # not a share; `obs` above counts measured rows and never counts
+            # these.
+            "n_imp": int(fill_n.get(slug, 0)),
             "defect": round(float(defect_map.get(slug, 0.0) or 0.0), 3),
             "last": str(g.period.max()),
         }
 
     # ---- node meta: dominant unit + volume ----------------------------
+    # OBSERVED VOLUME ONLY. `units` decides which unit a node is quoted in on
+    # screen, and `dom` is the winner of that count -- so a fill must not vote.
+    # How a commodity is sold is a fact about the commodity, and a modelled row
+    # is not evidence about it. The pooled frame is netted down by the fills
+    # rather than rebuilt, because the group-by over ~90M rows is the expensive
+    # half and the fills are a rounding error beside it.
     nodemeta: dict[str, dict] = {}
     nu = exploded.groupby(["node", "standard_unit"], observed=True).size()
+    if not ex_fill.empty:
+        nu = nu.subtract(
+            ex_fill.groupby(["node", "standard_unit"], observed=True).size(),
+            fill_value=0,
+        ).astype("int64")
+        nu = nu[nu > 0]
     for node, sub in nu.groupby(level=0):
         by_unit = {u: int(v) for (_, u), v in sub.items()}
         nodemeta[node] = {
@@ -925,9 +1197,55 @@ def build_payload(region: str | None = None) -> dict:
             "n": int(sum(by_unit.values())),
             "countries": 0,
         }
+    # A node nothing measured but something modelled has no observed volume and
+    # so no entry above. It still has cells, and dropping it here would throw
+    # away exactly the cells this whole change exists to publish.
+    if not ex_fill.empty:
+        nf = ex_fill.groupby(["node", "standard_unit"], observed=True).size()
+        for node, sub in nf.groupby(level=0):
+            if node in nodemeta:
+                continue
+            by_unit = {u: int(v) for (_, u), v in sub.items()}
+            nodemeta[node] = {
+                "units": {},
+                "dom": max(by_unit, key=by_unit.get),
+                "n": 0,
+                "countries": 0,
+            }
     for node, n in cells.groupby("node").country.nunique().items():
         if node in nodemeta:
             nodemeta[node]["countries"] = int(n)
+    # `countries` counts every country with a published cell here, measured or
+    # modelled. `countries_obs` counts the ones that measured it. A node where
+    # the two differ is a node the fills opened up, and the client can say so
+    # without having to re-derive it from the cell array.
+    obs_cells = cells[cells.n > 0]
+    for node, n in obs_cells.groupby("node").country.nunique().items():
+        if node in nodemeta:
+            nodemeta[node]["countries_obs"] = int(n)
+    for meta in nodemeta.values():
+        meta.setdefault("countries_obs", 0)
+
+    # SUPPRESS THE NODES NOTHING PRICES. A category filter that offers a
+    # category with nothing behind it is a filter that produces empty screens on
+    # purpose. "Nothing behind it" means no published cell in ANY country in
+    # this payload -- not a depth test and not a taxonomy test, both of which
+    # have been wrong here before: maize `01.1.1.4.0` is priced in 181 countries
+    # and rice `01.1.1.1.2` in 202, and a node that looks blank on screen while
+    # carrying cells is a gate to go and find, never a node to delete.
+    #
+    # An ancestor pools every row its descendants pool, so it can never have
+    # fewer, and dropping on this rule cannot orphan a surviving child.
+    priced = set(cells.node.unique())
+    dropped = [n for n in nodemeta if n not in priced]
+    for node in dropped:
+        del nodemeta[node]
+    if dropped:
+        logger.info(
+            "suppressed %d taxonomy nodes no country prices: %s",
+            len(dropped),
+            ", ".join(sorted(dropped)[:12]) + (" ..." if len(dropped) > 12 else ""),
+        )
     # World median per (node, unit) over unflagged retail cells — the yardstick
     # every "vs world" figure divides by. Catch-all leaves get none: a median of
     # "other bakery products" across countries pools croissants against
@@ -980,18 +1298,36 @@ def build_payload(region: str | None = None) -> dict:
             rmed.setdefault(label, {})[unit] = round(float(row.med), 4)
 
     # ---- QA / honesty panel -------------------------------------------
+    # SCOPED TO THIS PAYLOAD. These four counts used to be taken off the whole
+    # unrestricted parquet, so an EAP build reported the world's QA mix beside
+    # EAP's prices and a reader comparing them to anything else on the page was
+    # comparing two different populations. `in_scope` is every row of every
+    # status for the countries this payload shows.
+    in_scope = (
+        obs.country.isin(set(cmeta)) if region else pd.Series(True, index=obs.index)
+    )
+    scoped_trusted = in_scope & obs.qa_status.eq("trusted")
     qa = {
-        "status": {k: int(v) for k, v in obs.qa_status.value_counts().items()},
+        "status": {k: int(v) for k, v in obs.qa_status[in_scope].value_counts().items()},
         "mass_source": {
             str(k): int(v)
-            for k, v in obs[obs.qa_status.eq("trusted")]
-            .mass_source.value_counts(dropna=False)
+            for k, v in obs.mass_source[scoped_trusted]
+            .value_counts(dropna=False)
             .items()
         },
-        "item_basis_rows": int(
-            (obs.qa_status.eq("trusted") & obs.standard_unit.eq("item")).sum()
-        ),
-        "modelled_rows": int((obs.qa_status.eq("trusted") & obs.is_modelled).sum()),
+        "item_basis_rows": int((scoped_trusted & obs.standard_unit.eq("item")).sum()),
+        "modelled_rows": int((scoped_trusted & obs.is_modelled).sum()),
+        # Every count in this block, and every count in `meta`, describes the
+        # countries in THIS payload and nothing wider.
+        "scope": {"region": region, "countries": len(cmeta)},
+        # THE GEOGRAPHY VOCABULARY. `nodeMeta[*].rmed` is one flat map keyed by
+        # label, holding regions and subregions together with nothing in the key
+        # to say which is which -- so these two lists are the discriminator, and
+        # they come from `regions.yaml` rather than from a copy of it in the
+        # client. Every label in `cty[*].region` appears in the first list and
+        # every `cty[*].subregion` in the second.
+        "regions": region_labels,
+        "subregions": subregion_labels,
         "modelled_sources": sorted(MODELLED_SOURCES),
         "plausible_bounds": PLAUSIBLE_USD,
         "min_basket_leaves": MIN_BASKET_LEAVES,
@@ -1012,15 +1348,28 @@ def build_payload(region: str | None = None) -> dict:
         # "nothing is interpolated" -- was never about imputation being wrong.
         # It was about an imputed value being INDISTINGUISHABLE on screen from a
         # measured price move. RT-CAL answers that objection rather than
-        # overruling it: every fill is labelled, is off by default, and carries
-        # the calibrated probability that it lands within 25% of the truth.
+        # overruling it: every fill is labelled and is off by default.
         #
-        # What did not change is what a fill is allowed to touch. Fills reach
-        # the time-series display and nothing else -- not the chained index, not
-        # the heatmap leaf counts, not the basket. Drawing a modelled point and
-        # letting it move an index are different commitments, and only the first
-        # one has been made. That is why the chain still says, truthfully, that
-        # it interpolates nothing.
+        # What HAS changed is what a fill is allowed to touch, and the change is
+        # total. Fills reach the series, the cells, the chained index, the
+        # change family, the basket level, the geography series and the regional
+        # and world medians -- everything this payload publishes. Holding them
+        # at the leaf left every aggregate above them as blank as it had ever
+        # been, which was the complaint.
+        #
+        # The exclusion is replaced by a MEASURE. Wherever a figure could have
+        # been touched by a fill it carries the share of the values behind it
+        # that were imputed, under the field named in `share_field` below, and a
+        # figure with no measured evidence at all is flagged outright. So the
+        # honest sentence is no longer "nothing here is modelled" but "here is
+        # exactly how much of this is", which is a stronger claim and a checkable
+        # one.
+        #
+        # NO ACCURACY FIGURE IS PUBLISHED. Each fill carries its own calibrated
+        # probability, which is a statement about that cell. The released
+        # population now mixes normal gaps validating near 80% within 25% with
+        # cold-start cells near 42%, and a single headline number over that
+        # mixture would describe neither of them.
         #
         # Two older behaviours come close enough to need saying out loud, so they
         # are published rather than left in the source:
@@ -1036,11 +1385,39 @@ def build_payload(region: str | None = None) -> dict:
         "fitted_level": "two-way fixed effects on log price (item + period)",
         "interpolated": {
             "cells": int(len(fills)),
-            "scope": ["series"],
-            "excluded_from": ["cells", "chain", "changes", "basket", "heatmap"],
+            "scope": [
+                "series",
+                "cells",
+                "chain",
+                "changes",
+                "basket",
+                "heatmap",
+                "gseries",
+                "gmed",
+                "rmed",
+            ],
+            "excluded_from": [],
             "default_visible": False,
             "labelled": True,
-            "probability": "calibrated P(within 25% of the observed median)",
+            # WHERE THE PROVENANCE LIVES, per structure, because it is not one
+            # field name everywhere and pretending otherwise would be worse than
+            # saying so. `cells[*].imp` is a share; `series[*].imp` is a 0/1
+            # flag with the share beside it as `ish`, because the app has read
+            # that field as a flag since before fills reached the cells and a
+            # drawn point is either modelled or it is not.
+            "fields": {
+                "cells": {"share": "imp", "count": "nim", "prob": "pr"},
+                "series": {"share": "ish", "flag": "imp", "count": "nim",
+                           "prob": "pr"},
+                "chain": {"share": "ish"},
+                "changes": {"share": "ish"},
+                "gseries": {"share": "ish", "share_index": "ish_idx"},
+                "gseries.chg": {"share": "ish"},
+                "cty": {"share": "imp", "count": "n_imp"},
+            },
+            "share_of": "the values pooled into the figure, not the leaves",
+            "probability": "per cell: calibrated P(within 25% of the observed median)",
+            "headline_accuracy": None,
             "method": "rtcal_v1",
         },
     }
@@ -1064,7 +1441,7 @@ def build_payload(region: str | None = None) -> dict:
     # ---- FX: local per USD, monthly ------------------------------------
     fx = _fx_table(obs, countries)
 
-    gseries_raw, geos = build_geo_series(exploded, tax, cmeta)
+    gseries_raw, geos = build_geo_series(exploded, tax, cmeta, ex_fill)
 
     official = load_official({s: countries.get(s, {}).get("iso3") for s in cmeta})
     used_series = {k for v in official.values() for k in v}
@@ -1082,6 +1459,9 @@ def build_payload(region: str | None = None) -> dict:
         {s: countries.get(s, {}).get("iso3") for s in cmeta}, basket_w
     )
 
+    # `nodemeta` has already had the unpriced nodes taken out of it, so the
+    # index, the taxonomy and every keyed structure below follow from that one
+    # decision rather than each re-deciding it.
     node_idx = sorted(nodemeta)
     node_pos = {n: i for i, n in enumerate(node_idx)}
     cty_idx = sorted(cmeta)
@@ -1107,6 +1487,24 @@ def build_payload(region: str | None = None) -> dict:
         "mix": [bool(v) for v in cells.mixed_currency],
         "flag": [bool(v) for v in cells.flagged],
         "per": cells.period.tolist(),
+        # ---- provenance, parallel arrays over the same cells -------------
+        # `imp` is a SHARE in [0, 1]: how much of the median in this cell came
+        # from a fill rather than from a measured price. At a leaf it is 0 or 1;
+        # at an aggregate node it is the mixture the ladder produced, which is
+        # the number that makes exploding fills up the tree honest rather than
+        # silent. A wholly modelled cell is `obs == 0`, equivalently `imp == 1`,
+        # so no separate flag is shipped.
+        #
+        # NOTE the asymmetry with `series[*].imp`, which is a 0/1 FLAG: a series
+        # point is either drawn as modelled or it is not, and the app has read
+        # that field as a flag since before fills reached the cells. The series
+        # share is `ish`.
+        #
+        # `nim` is the count behind the share, and `pr` the mean calibrated
+        # probability of the fills in the cell (null where there are none).
+        "imp": [round(float(v), 4) for v in cells.imp],
+        "nim": [int(v) for v in cells.nimp],
+        "pr": [None if pd.isna(v) else round(float(v), 3) for v in cells.prob],
     }
 
     ser: dict[str, dict] = {}
@@ -1121,10 +1519,16 @@ def build_payload(region: str | None = None) -> dict:
             "loc": [None if pd.isna(v) else round(float(v), 4) for v in g.local],
             "n": [int(v) for v in g.n],
         }
-        # `imp`/`pr` are omitted entirely when a series carries no fill, so a
-        # payload built without RT-CAL is byte-identical to the one before it.
-        if bool(g.imputed.any()):
+        # Omitted entirely when a series carries no fill, so a payload built
+        # without RT-CAL is byte-identical to the one before it. `imp` keeps the
+        # meaning it always had -- 1 where the point is wholly modelled, which
+        # is what the client's "hide imputed" filter drops -- and `ish` is new:
+        # a partly-modelled point at an aggregate node has imp 0 and ish > 0,
+        # so hiding wholly-modelled points does not silently hide those too.
+        if bool((g.nimp > 0).any()):
             entry["imp"] = [1 if v else 0 for v in g.imputed]
+            entry["ish"] = [round(float(v), 4) for v in g.imp]
+            entry["nim"] = [int(v) for v in g.nimp]
             entry["pr"] = [None if pd.isna(v) else round(float(v), 3) for v in g.prob]
         ser[f"{cty_pos[c]}|{node_pos[n]}|{unit_pos[u]}"] = entry
 
@@ -1138,6 +1542,12 @@ def build_payload(region: str | None = None) -> dict:
             "p": g.period.tolist(),
             "idx": [round(float(v), 2) for v in g.idx],
             "k": [int(v) for v in g.n_leaves],
+            # The imputed share of the LINKS averaged into this period's step,
+            # where a link counts as imputed to the degree its LESS measured end
+            # was. It is per step and does not accumulate: the index at t is the
+            # product of every link before it, but "how modelled was this move"
+            # is a question about this move.
+            "ish": [round(float(v), 4) for v in g.imp],
         }
 
     # Country-grain changes, keyed like `chain`: one entry per (country, node,
@@ -1154,6 +1564,7 @@ def build_payload(region: str | None = None) -> dict:
             "p": g.period.tolist(),
             "v": [round(float(np.expm1(v)) * 100, 3) for v in g.lr],
             "k": [int(v) for v in g.k],
+            "ish": [round(float(v), 4) for v in g.imp],
         }
 
     gseries: dict[str, dict] = {}
@@ -1161,6 +1572,68 @@ def build_payload(region: str | None = None) -> dict:
         freq, gk, node, unit = k.split("|")
         if node in node_pos and unit in unit_pos:
             gseries[f"{freq}|{gk}|{node_pos[node]}|{unit_pos[unit]}"] = v
+
+    # HEADLINE COUNTS, each naming its own population. Two of these are
+    # legitimately different numbers over different things -- the corpus and the
+    # grid -- and the failure they are here to prevent is a reader taking the
+    # difference for an error. Every one is scoped to this payload's countries.
+    #
+    # THE GRID IS THE LEAF CELLS. `cells` also carries a row for every ancestor
+    # node, because the tree views read them, and an observation of rice is
+    # pooled into its class, its group and its division as well as into rice. So
+    # summing `n` over the whole array counts most observations about five times
+    # and lands nowhere near the total a reader gets by adding up the column the
+    # heatmap shows them. Every "grid" figure below is taken over leaves only,
+    # which is both what is drawn and the only count that does not double.
+    grid = cells[cells.node.map(lambda c: bool(tax.get(c, {}).get("leaf")))]
+    counts = [
+        {
+            "key": "countries",
+            "label": "Countries",
+            "value": len(cty_idx),
+            "note": "shown in this view",
+        },
+        {
+            "key": "obs",
+            "label": "Trusted price observations",
+            "value": int(len(trusted)),
+            "note": "every shelf price collected for these countries, all of "
+            "history, in kilograms, litres or pieces",
+        },
+        {
+            "key": "grid_obs",
+            "label": "Observations behind the current grid",
+            "value": int(grid.n.sum()),
+            "note": "the latest month of each published category cell only -- "
+            "this is the population the heatmap totals",
+        },
+        {
+            "key": "grid_cells",
+            "label": "Cells in the current grid",
+            "value": int(len(grid)),
+            "note": "one per (country, category, unit) with enough evidence to "
+            "publish",
+        },
+        {
+            "key": "grid_imputed",
+            "label": "Grid cells with no measured price",
+            "value": int((grid.n == 0).sum()),
+            "note": "modelled in full; every cell also carries the share of "
+            "itself that was modelled",
+        },
+        {
+            "key": "sources",
+            "label": "Retail sources",
+            "value": int(trusted.source.nunique()),
+            "note": "distinct scraped sources behind the observations",
+        },
+        {
+            "key": "categories",
+            "label": "Categories priced",
+            "value": int(sum(1 for c in node_idx if tax.get(c, {}).get("leaf"))),
+            "note": "COICOP leaves with a published cell somewhere in this view",
+        },
+    ]
 
     samples = {}
     for k, v in _samples(trusted).items():
@@ -1179,6 +1652,36 @@ def build_payload(region: str | None = None) -> dict:
             "min_cell_obs": MIN_CELL_OBS,
             "geo_min_pairs": FE_MIN_PAIRS,
             "divisions": ["01", "02"],
+            # THE BUILD'S OWN SCOPE, stated rather than inferred. `region` is
+            # the key passed on the command line and null for a global build;
+            # `region_label` is what that key is called on screen. A client was
+            # otherwise reduced to asking whether every country happens to share
+            # a region, which is true of a global build restricted to one region
+            # and also true of a region that happens to hold one country.
+            "region": region,
+            "region_label": _region_label(region) if region else None,
+            # ---- what the grid actually draws from ----------------------
+            # `n_obs` above is the whole trusted corpus for the countries in
+            # this payload, over all of history. The grid is a much smaller
+            # thing: one period per cell, comparable units, cells that cleared
+            # the evidence bar. Reporting the first while the second is on
+            # screen is what made a header say 7.4 million over a table
+            # totalling a bit under 1.1 million, and no reader could tell those
+            # were two populations rather than a discrepancy. Both are published
+            # here, each with its own name, and `counts` below labels them.
+            "n_grid_cells": int(len(grid)),
+            "n_grid_obs": int(grid.n.sum()),
+            "n_grid_imputed": int(grid.nimp.sum()),
+            "n_grid_cells_imputed": int((grid.n == 0).sum()),
+            # The whole `cells` array, aggregate nodes included. Kept apart from
+            # the grid figures above because summing anything over it
+            # double-counts up the tree.
+            "n_cells_all": int(len(cells)),
+            "n_fills": int(len(fills)),
+            "n_leaves_priced": int(
+                sum(1 for c in node_idx if tax.get(c, {}).get("leaf"))
+            ),
+            "counts": counts,
         },
         "tax": {k: v for k, v in tax.items() if k in node_pos},
         # Catch-all leaves, shipped so the client can hold them out of every
@@ -1238,6 +1741,14 @@ def build_payload(region: str | None = None) -> dict:
                 "min_sources": MIN_BASKET_SOURCES,
                 "defect_share": COUNTRY_DEFECT_SHARE,
                 "min_covered": MIN_BASKET_WEIGHT_COVERED,
+                # WHERE THE BASKET WAS DECIDED. Both the eligible (leaf, unit)
+                # set and the reference median are settled over the whole
+                # corpus, so a regional payload is on the same scale and holds
+                # the same items as the global one and the two can be read side
+                # by side. `n_eligible` is the size of that set.
+                "eligible_over": "global",
+                "eligible_countries": int(n_ref_countries),
+                "n_eligible": int(len(reference[0])),
             },
         },
         "cpi": official,

@@ -161,6 +161,7 @@ def collapse(
     df: pd.DataFrame,
     typical_mass: pd.DataFrame,
     value_cols: tuple[str, ...] = ("unit_value_usd", "unit_value_local"),
+    canonical: dict[str, str] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Rewrite every row onto its leaf's display unit.
 
@@ -170,17 +171,27 @@ def collapse(
     unit, converted by density, or converted through a typical mass. Grouping
     the result by (leaf, country) now yields one row per category, because
     `standard_unit` is constant within a leaf.
+
+    `canonical` overrides the per-leaf vote. A second frame that has to land on
+    the SAME display units as a first one -- imputed rows beside measured ones --
+    must be told what those units are rather than voting again on its own rows:
+    voting twice can hand the same leaf two different display units, which is
+    the split row this module exists to remove. It also keeps a modelled row
+    from ever casting a vote about how a commodity is sold.
     """
     if df.empty:
         return df, df.iloc[:0].assign(drop_reason=pd.Series(dtype=object))
 
-    canonical = canonical_units(df)
+    canonical = canonical_units(df) if canonical is None else canonical
     sizes = _piece_size(typical_mass)
     reasons = _rejection_reasons(typical_mass)
 
     codes = df["coicop_code"].astype(str)
     units = df["standard_unit"].astype(str)
-    target = codes.map(canonical)
+    # A leaf the map does not name keeps the unit the row arrived in, which is
+    # the identity conversion. That only happens under an imposed `canonical`,
+    # where it means "this leaf appears in the second frame and not the first".
+    target = codes.map(canonical).fillna(units)
 
     # Solved on the distinct (leaf, from, to) triples and joined back. There are
     # a few hundred of those against millions of rows, so a row-wise lookup here
