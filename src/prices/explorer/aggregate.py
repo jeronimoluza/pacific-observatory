@@ -411,12 +411,34 @@ def build_payload(region: str | None = None) -> dict:
     countries = load_country_meta()
     obs = load_observations()
 
+    # Counted BEFORE the fold: the honesty panel discloses how many trusted rows
+    # priced a single piece, and after the fold those rows read as `unit`.
+    item_basis_rows = int(
+        (obs.qa_status.eq("trusted") & obs.standard_unit.eq("item")).sum()
+    )
     _fold_piece_units(obs)
+
+    # Everything the UNFILTERED frame is needed for is a summary, so take them
+    # all here and let the frame go. Held to the end instead, `obs` (11 GB, nine
+    # object columns over 18.9M rows) sat alongside `trusted` and a full-width
+    # `dropna` copy for the FX table, and the render was OOM-killed at 23.4 GB.
+    qa_status_counts = obs.qa_status.value_counts()
+    is_trusted = obs.qa_status.eq("trusted")
+    qa_mass_source = obs.loc[is_trusted, "mass_source"].value_counts(dropna=False)
+    modelled_rows = int((is_trusted & obs.is_modelled).sum())
+    # Three columns, not thirteen: `obs.dropna(subset=["fx_rate"])` copied the
+    # whole frame to reach a per-(country, month) median.
+    fx_tbl = (
+        obs.loc[obs.fx_rate.notna(), ["country", "period", "fx_rate"]]
+        .groupby(["country", "period"], observed=True)
+        .fx_rate.median()
+        .reset_index()
+    )
+
     trusted = obs[
-        obs.qa_status.eq("trusted")
-        & obs.standard_unit.isin(COMPARABLE_UNITS)
-        & obs.unit_value_usd.gt(0)
+        is_trusted & obs.standard_unit.isin(COMPARABLE_UNITS) & obs.unit_value_usd.gt(0)
     ].copy()
+    del obs, is_trusted
 
     world_cells = _cells(_explode_nodes(trusted))
     if region:
@@ -506,17 +528,10 @@ def build_payload(region: str | None = None) -> dict:
 
     # ---- QA / honesty panel -------------------------------------------
     qa = {
-        "status": {k: int(v) for k, v in obs.qa_status.value_counts().items()},
-        "mass_source": {
-            str(k): int(v)
-            for k, v in obs[obs.qa_status.eq("trusted")]
-            .mass_source.value_counts(dropna=False)
-            .items()
-        },
-        "item_basis_rows": int(
-            (obs.qa_status.eq("trusted") & obs.standard_unit.eq("item")).sum()
-        ),
-        "modelled_rows": int((obs.qa_status.eq("trusted") & obs.is_modelled).sum()),
+        "status": {k: int(v) for k, v in qa_status_counts.items()},
+        "mass_source": {str(k): int(v) for k, v in qa_mass_source.items()},
+        "item_basis_rows": item_basis_rows,
+        "modelled_rows": modelled_rows,
         "modelled_sources": sorted(MODELLED_SOURCES),
         "plausible_bounds": PLAUSIBLE_USD,
         "min_basket_leaves": MIN_BASKET_LEAVES,
@@ -554,11 +569,7 @@ def build_payload(region: str | None = None) -> dict:
         "min_link_leaves": MIN_LINK_LEAVES,
     }
 
-    # ---- FX: local per USD, monthly ------------------------------------
-    fxr = obs.dropna(subset=["fx_rate"])
-    fx_tbl = (
-        fxr.groupby(["country", "period"], observed=True).fx_rate.median().reset_index()
-    )
+    # ---- FX: local per USD, monthly (fx_tbl built before `obs` was freed) ---
     fx: dict[str, dict] = {}
     for c, g in fx_tbl.sort_values("period").groupby("country"):
         fx[c] = {"p": g.period.tolist(), "r": [round(v, 6) for v in g.fx_rate]}
