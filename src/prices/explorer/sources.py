@@ -8,6 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
+import pyarrow.parquet as pq
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -192,8 +193,18 @@ def load_observations() -> pd.DataFrame:
         "product_name",
         "fx_rate",
     ]
-    df = pd.read_parquet(OBS_PATH, columns=cols)
-    df["is_modelled"] = df.source.str.lower().isin(MODELLED_SOURCES)
+    # Low-cardinality strings held as Python objects cost ~1 GB each over ~19M
+    # rows -- `qa_status` has eight distinct values and burned 1.11 GB.
+    # Dictionary-decoding straight to Categorical is ~19 MB each. Only columns
+    # that are never a groupby key are converted: a categorical key under a
+    # groupby that omits `observed=True` silently expands to the full cross
+    # product. `currency` qualifies because its one groupby already passes it.
+    cats = ["source", "qa_status", "mass_source", "currency", "pricing_basis"]
+    df = pq.read_table(OBS_PATH, columns=cols).to_pandas(categories=cats)
+    # Match on the ~170 categories, not on 19M rows: `.str.lower()` over a
+    # categorical materialises the object array this conversion just avoided.
+    modelled = [c for c in df.source.cat.categories if c.lower() in MODELLED_SOURCES]
+    df["is_modelled"] = df.source.isin(modelled)
     df["is_derived"] = df.mass_source.eq("derived_typical")
     df["period"] = df.observation_date.dt.to_period("M").astype(str)
     return df

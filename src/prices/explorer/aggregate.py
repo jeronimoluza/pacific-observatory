@@ -63,13 +63,32 @@ def _mad(x: pd.Series) -> float:
     return float(np.median(np.abs(v - np.median(v))))
 
 
+# Columns no consumer of the exploded frame reads. The ladder merge multiplies
+# every row by its ancestor count (~5x), so carrying these multiplies them too:
+# `product_name` alone is ~1.4 GB on `trusted` and ~7 GB once exploded, on a
+# render the OOM killer took three times at ~24 GB. Each is read off a frame
+# that is NOT the exploded one -- `_samples` takes `product_name` and
+# `observation_date` from `trusted`, and the FX table takes `fx_rate` from
+# `obs`. A drop-list, not an allow-list: a column overlooked here still
+# survives the merge.
+_EXPLODE_DROP = [
+    "product_name",
+    "observation_date",
+    "fx_rate",
+    "qa_status",
+    "mass_source",
+    "pricing_basis",
+]
+
+
 def _explode_nodes(trusted: pd.DataFrame) -> pd.DataFrame:
     """One row per (observation, ancestor node) so every tree level aggregates."""
     codes = trusted.coicop_code.unique()
     ladder = pd.DataFrame(
         [(c, n) for c in codes for n in _levels(c)], columns=["coicop_code", "node"]
     )
-    return trusted.merge(ladder, on="coicop_code", how="inner")
+    slim = trusted.drop(columns=_EXPLODE_DROP, errors="ignore")
+    return slim.merge(ladder, on="coicop_code", how="inner")
 
 
 def _cells(exploded: pd.DataFrame) -> pd.DataFrame:
