@@ -1455,8 +1455,13 @@ def build_payload(region: str | None = None) -> dict:
     # with it so the benchmark is aggregated the way our own number is, and the
     # difference between the two is prices rather than method. Empty when the
     # standalone table has not been built.
+    # `basket_cty` is the per-country matrix the level was collapsed FROM, so
+    # its keys are exactly the categories that country priced. Handing it over
+    # is what keeps the benchmark on our scope as well as on our weights.
     ppp, ppp_meta = load_benchmark(
-        {s: countries.get(s, {}).get("iso3") for s in cmeta}, basket_w
+        {s: countries.get(s, {}).get("iso3") for s in cmeta},
+        basket_w,
+        {s: set(m) for s, m in basket_cty.items()},
     )
 
     # `nodemeta` has already had the unpriced nodes taken out of it, so the

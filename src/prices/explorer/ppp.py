@@ -21,9 +21,36 @@ WHAT WE FETCH, and why there are two of them.
         our exact food classes (1101110-1101190), at non-alcoholic beverages
         (1101200), alcohol (1102100) and tobacco (1102200), and at the two
         DIVISION aggregates 1101000 and 1102000 that are our divisions 01 and
-        02 exactly. World = 100 is our base, food-and-tobacco is our scope,
-        and an expenditure-weighted average over classes is our aggregation.
-        This is the comparator; everything below is the check on it.
+        02 exactly. World = 100 is our base and an expenditure-weighted average
+        over classes is our aggregation. This is the comparator; everything
+        below is the check on it.
+
+        WHY THE SCOPE IS SO NARROW, since it is the first thing anyone asks.
+        It is not narrow because of anything ICP does. ICP publishes 48 series
+        on this classification and they span the whole of consumption --
+        clothing, transport, communication, restaurants, housing, health,
+        education. WE are the constraint: all 18,950,870 trusted observations
+        in this repository are retail shelf prices in COICOP divisions 01 and
+        02 (17.1M and 1.8M respectively, and zero anywhere else), so two
+        divisions of twelve is all there is to compare. A benchmark drawn
+        wider than the thing it benchmarks is not a check, it is a chart that
+        looks authoritative and is wrong, and the reader cannot tell which.
+        So the scope is matched to ours DELIBERATELY, and it widens when our
+        prices do -- the whole-economy `wdi` series below is already here
+        waiting for that day.
+
+        MATCHED PER COUNTRY, not just per build. Our own level treats a
+        category the country does not price as an ABSENT term and renormalises
+        the rest over what is left (`_basket_levels`); the ICP figure now does
+        the same over the same set, so the two cover identically country by
+        country and `icpCov` comes out equal to our own `level_cov`. It used
+        to run over the whole weight vector regardless, which quietly put
+        tobacco -- 3.9% of the vector, and priced widely enough to enter NO
+        country's matched basket -- and "other alcoholic beverages" and
+        "non-alcoholic beverages n.e.c." on their side of the chart and on
+        neither side of ours. 6.7% of the basket was being compared against
+        nothing. The cost of fixing it is 0.003 of correlation; the gain is
+        that the sentence "the same scope as ours" became true.
 
   wdi   `PA.NUS.GDP.PLI`, "price level index (GDP)", and `PA.NUS.PRVT.PLI`, the
         same for household final consumption. This is what William named in the
@@ -97,6 +124,20 @@ ICP_EXTRA = {
 }
 ICP_SERIES = {**ICP_TO_NODE, **ICP_EXTRA}
 
+# The COICOP divisions this benchmark is scoped to, and the answer to the
+# question a reader has already asked out loud: "why is the World Bank
+# comparison only food and tobacco?"
+#
+# It is DERIVED and not typed, because typing it is how it goes stale. The
+# scope is not a policy this module gets to set -- it is whatever the crosswalk
+# above reaches, which is in turn matched to the divisions this repository
+# prices. Add a class under division 03 to `ICP_TO_NODE` the day our own
+# coverage reaches clothing and this constant, the scope sentence in `meta`
+# and the axis it explains all move together. On record: "only because we're
+# doing 01 and 02 now, but eventually it will be for whole-economy" -- that day
+# is a change to the crosswalk, not a rewrite of this file.
+BENCHMARK_DIVISIONS = tuple(sorted({c.split(".")[0] for c in ICP_TO_NODE.values()}))
+
 _PX_URL = (
     "https://api.worldbank.org/v2/sources/{src}/country/all/"
     "classification/" + ICP_CLASS + "/series/{ser}/time/all/data"
@@ -115,8 +156,8 @@ _WDI_URL = (
 )
 
 LABELS = {
-    "icp": "World Bank ICP, price level index (World = 100), food, beverages, "
-           "alcohol and tobacco",
+    "icp": "World Bank ICP, price level index (World = 100), aggregated over "
+           "exactly the COICOP categories this dashboard prices",
     "icp_gdp": "World Bank ICP, price level index (World = 100), whole economy",
     "wdi": "World Bank WDI PA.NUS.GDP.PLI, price level index (GDP), rescaled "
            "from United States = 100 to World = 100",
@@ -269,6 +310,7 @@ def _agg(terms: list[tuple[float, float]]) -> tuple[float, float] | None:
 def load_benchmark(
     iso3_by_slug: dict[str, str],
     weights: dict[str, float] | None = None,
+    priced: dict[str, set[str]] | None = None,
 ) -> tuple[dict[str, dict], dict]:
     """The benchmark table, re-keyed on the explorer's country slugs.
 
@@ -282,6 +324,15 @@ def load_benchmark(
     another. When it is empty the fallback matches the ranking's own fallback --
     the unweighted mean over the two divisions, which is what `_basket_levels`
     computes when no weights exist.
+
+    `priced` is the other half of that, and the half that was missing: the
+    categories each country ACTUALLY prices, straight off the matrix
+    `_basket_levels` builds. Sharing the vector made the weights match; sharing
+    this makes the SCOPE match. Without it the benchmark averaged over the whole
+    vector while ours averaged over the part the country could fill, so the two
+    axes were measuring different baskets and the card said they were not.
+    Absent, every code with a weight is used, which is the old behaviour and
+    what a caller with no matrix to hand should get.
 
     THE JOIN IS ON ISO3, and it is one-to-one in both directions. Two explorer
     countries carry an empty iso3 and are dropped rather than matched to each
@@ -337,7 +388,15 @@ def load_benchmark(
                 entry["cls"] = cls
             terms: list[tuple[float, float]] = []
             if weights:
+                # LIKE FOR LIKE. `mine` is what this country prices; a category
+                # outside it is dropped here exactly as `_basket_levels` drops
+                # it on our side, and `_agg` renormalises what is left. A
+                # country with no matrix row at all keeps the whole vector --
+                # it has no price level to be compared against anyway.
+                mine = priced.get(slug) if priced else None
                 for code, w in weights.items():
+                    if mine is not None and code not in mine:
+                        continue
                     node = _icp_node_for(code, sourced)
                     if node and node in e_icp:
                         terms.append((float(w), e_icp[node][0]))
@@ -384,7 +443,12 @@ def load_benchmark(
             "World Bank WDI (PA.NUS.GDP.PLI, PA.NUS.PRVT.PLI)"
         ),
         "scope": {
-            "icp": "COICOP divisions 01 and 02 only -- the same scope as ours",
+            "icp": (
+                "COICOP divisions " + " and ".join(BENCHMARK_DIVISIONS) +
+                " -- the same scope as ours, and per country the same "
+                "categories: what a country does not price is dropped from "
+                "this figure too rather than averaged into it"
+            ),
             "wdi": "the whole economy, including rent, health and services",
         },
         "weighted": bool(weights),

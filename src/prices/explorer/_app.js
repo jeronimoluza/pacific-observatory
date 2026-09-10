@@ -3259,8 +3259,18 @@ window.APP = APP;
    self-referential. What settles it is somebody else's price level over the
    same countries, built from somebody else's prices. The World Bank's ICP
    sends enumerators to price a common specification in each economy and
-   publishes a food, beverage, alcohol and tobacco price level on the SAME
-   world = 100 base this dashboard uses; the WDI publishes a whole-economy one.
+   publishes a price level on the SAME world = 100 base this dashboard uses,
+   broken out at the COICOP classes our own basket is weighted at; the WDI
+   publishes a whole-economy one.
+
+   THE SCOPE IS MATCHED TO OURS, and that is the answer to "why only food and
+   drink". ICP prices the whole of consumption -- clothing, transport, rent,
+   schooling -- and this corpus prices COICOP divisions 01 and 02 and nothing
+   else, because it is built out of retail shelf listings. So the ICP figure is
+   folded back down to the categories WE price, country by country, under the
+   weights the ranking is currently using. Drawing their wider number against
+   our narrower one would put a difference of scope on a chart whose whole job
+   is to show a difference of price.
 
    Neither is blended into our number and neither corrects it — this is the
    relationship the official CPI has with our change series one tab over: two
@@ -3279,9 +3289,11 @@ var PPP_ON = Object.keys(PPP).length > 0;
    every view reads, and neither of these is a question about the corpus. */
 var PPPSEL = "icp", PPP_UNGATED = true;
 var PPP_BENCH = {
-  icp:  {v:"icp", y:"icpYear", lab:"ICP food &amp; tobacco",
-         ax:"ICP price level — food, beverages, alcohol, tobacco (world = 100)",
-         note:"has the same scope and the same base as ours"},
+  icp:  {v:"icp", y:"icpYear", lab:"ICP, the categories we price",
+         ax:"ICP price level — the COICOP 01/02 categories we price " +
+            "(world = 100)",
+         note:"is folded down to exactly the categories each country prices, " +
+              "on the same base and the same weights, so only the prices differ"},
   wdi:  {v:"wdi", y:"wdiYear", lab:"WDI whole economy",
          ax:"WDI price level — whole economy (world = 100)",
          note:"prices rent, health and services too, so poor countries " +
@@ -3304,14 +3316,27 @@ function pppWeights() {
 /* The ICP benchmark, re-aggregated on the client under `w`. At the published
    vector this reproduces the server's `icp` figure exactly, which is what
    makes it safe to recompute at all; `e.icp` is the fallback for a payload
-   built before the class matrix existed. */
+   built before the class matrix existed.
+
+   `mine` is the country's own basket matrix, and restricting the sum to its
+   keys is what makes this LIKE FOR LIKE: `bwLevel` two hundred lines up drops
+   a category the country does not price and renormalises the rest over what is
+   left, and this now drops the same ones in the same order. Skipping it put
+   tobacco -- which no country's matched basket reaches -- and two other absent
+   classes on their axis and on neither of ours, about 6.7% of the vector
+   compared against nothing at all. `_agg` on the server does the identical
+   restriction, so the two still agree to the last decimal. */
 function pppIcpLevel(slug, w) {
   var e = PPP[slug];
   if (!e) return null;
   var nodeOf = PPPMETA.nodeOf || {}, num = 0, den = 0, code, node, cell;
+  var mine = (typeof BW_CTY !== "undefined" && BW_CTY[slug]) || null;
   if (e.cls && w) {
     for (code in w) {
       if (!Object.prototype.hasOwnProperty.call(w, code)) continue;
+      /* No matrix row at all: this country was never in the basket and has no
+         level to sit opposite, so the whole vector is used rather than none. */
+      if (mine && !Object.prototype.hasOwnProperty.call(mine, code)) continue;
       node = nodeOf[code];
       cell = node && e.cls[node];
       if (!cell || !(cell[0] > 0)) continue;

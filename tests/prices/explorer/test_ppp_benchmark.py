@@ -216,14 +216,25 @@ BENCH_YEAR = 2021
 def _ppp_payload() -> dict:
     """The fixture payload, plus a benchmark on the same three categories the
     weight sliders act on -- so the client's re-aggregation is exercised
-    against the same vector the ranking uses."""
+    against the same vector the ranking uses.
+
+    LIKE FOR LIKE, and written out rather than borrowed: the published `icp`
+    runs over the categories the country actually prices, which for `BW_DROP`'s
+    two countries is two of the three, with the third's weight renormalised
+    away exactly as `_basket_levels` does it on our own side. That is what
+    `load_benchmark`'s `priced` argument buys, and pinning it here is what
+    stops the client and the build drifting apart on the countries with a hole
+    -- the only countries where the restriction is visible at all.
+    """
     p = make_payload()
     cls_vals = {"01.1.1": 120.0, "01.1.2": 80.0, "01.1.3": 150.0}
     ppp = {}
     for i, slug in enumerate(p["ctyIdx"]):
         # a per-country tilt, so the scatter is not a single point
         vals = {c: v * (0.9 + 0.01 * i) for c, v in cls_vals.items()}
-        acc = sum(BW_W0[c] * math.log(vals[c] / 100.0) for c in BW_CODES)
+        priced = [c for c in BW_CODES if c != BW_DROP.get(slug)]
+        den = sum(BW_W0[c] for c in priced)
+        acc = sum(BW_W0[c] * math.log(vals[c] / 100.0) for c in priced) / den
         ppp[slug] = {
             "cls": {c: [round(vals[c], 2), BENCH_YEAR] for c in BW_CODES},
             "icp": round(math.exp(acc) * 100.0, 2),
