@@ -887,8 +887,9 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 <!-- ============ 4. CURRENCY EFFECTS ============ -->
 <!-- An exchange-rate move shifts every price in the country by the same
      proportion, so the currency effect is one number and not a property of any
-     product. This first card states it once, as a bar every product shares,
-     and puts each product's own move on top of it. -->
+     product. This first card draws each product's OWN move as the bar and hangs
+     the shared currency effect off its tip as a hatched extension of the same
+     length on every row. -->
 <section id="v-trends" role="tabpanel" aria-labelledby="t-trends" hidden>
   <div class="card">
     <div class="spread">
@@ -896,8 +897,8 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         <h2>What moved: the currency, or the price?<button class="ibtn" id="b-fxb"
           aria-expanded="false" aria-controls="i-fxb" aria-label="How to read this"
           onclick="APP.info('fxb')">i</button></h2>
-        <div class="sub">Every product's US$ price change, split into the shared
-          exchange-rate move and the product's own.</div>
+        <div class="sub">Each product's own price move, with the shared
+          exchange-rate effect hung off the tip of it.</div>
       </div>
       <select id="fxbCtry" aria-label="Country" onchange="APP.set('country',this.value)"></select>
     </div>
@@ -906,12 +907,28 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         A US$ price can move for two reasons: the shop changed its price, or the local
         currency changed against the dollar. The second one is <b>the same for
         everything in the country</b> &mdash; it cannot be bigger for rice than for
-        beer &mdash; so it is drawn as a single bar that every row starts with. What
-        runs <b>beyond</b> that shared bar is the product's own price change, with the
-        currency netted out, and that is the part worth comparing across products.
-        Figures are in <b>log points</b> so the two parts add up exactly to the total;
-        for small moves a log point and a per cent are much the same number.
+        beer. So the <b>solid bar</b> is the first reason only, the product's own price
+        move with the currency taken out, and that is the part worth comparing across
+        products. The <b>hatched tip</b> on the end of it is the currency, drawn at the
+        same length on every row, and <b>where the tip ends is what the US$ price
+        actually did</b>. When the two pull opposite ways the tip folds back over its
+        own bar, and can cross zero. Figures are in <b>log points</b> so the two parts
+        add up exactly to the total; for small moves a log point and a per cent are
+        much the same number.
       </div>
+    </div>
+    <!-- The comparison window. Static buttons, repainted in place by
+         fxbSyncWins(): rebuilding a control group with innerHTML deletes the
+         very button the reader just clicked, which costs the focus ring and
+         can move the viewport. -->
+    <div class="ctlbar">
+      <div class="grp"><span class="ctllab" id="lab-fxwin">Compare over</span>
+        <div class="seg" role="group" aria-labelledby="lab-fxwin">
+        <button type="button" id="fxw-3" aria-pressed="false" onclick="APP.setFxWin(3)">3 months</button>
+        <button type="button" id="fxw-6" aria-pressed="false" onclick="APP.setFxWin(6)">6 months</button>
+        <button type="button" id="fxw-12" class="on" aria-pressed="true" onclick="APP.setFxWin(12)">12 months</button>
+        <button type="button" id="fxw-24" aria-pressed="false" onclick="APP.setFxWin(24)">24 months</button>
+      </div></div>
     </div>
     <div class="samples" id="fxbLead" style="margin:0 0 12px"></div>
     <div id="fxbWarn"></div>
