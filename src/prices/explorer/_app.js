@@ -1654,10 +1654,21 @@ function renderCompare() {
     type:"bar",
     data:{ labels: plot.map(function (r) { return r.name; }),
       datasets:[{ data: plot.map(function (r) { return r.usd; }),
+        /* One source or twenty, the bar is the same solid blue. The pale fill
+           this used to give a single-source country was a warning worn by the
+           MEASUREMENT, not by the number: a price collected from one shop is
+           still that country's price, and half the small economies on this
+           chart have exactly one retailer online. It read as "this figure is
+           weaker" beside twenty identical-looking bars that are not
+           necessarily stronger. The fact itself has not left the product — the
+           tooltip on this very bar prints "N observations · 1 source", the
+           table under the chart has a Src column, the Cell detail table carries
+           a "1 source" pill, and a country whose whole basket rests on one
+           source is told so in prose on its own profile. */
         backgroundColor: plot.map(function (r) {
           if (r.c.flag) return DEAR;
           if (r.c.mod >= 0.5) return PAL[5];
-          return r.c.src === 1 ? PAL[0] + "66" : PAL[0]; }),
+          return PAL[0]; }),
         /* A cell carrying an imputed month is outlined rather than recoloured:
            the fill already says where the reading came from, and this says
            whether every month behind it was actually observed. Same idea as
@@ -1686,17 +1697,20 @@ function renderCompare() {
         y:{ ticks:{font:{size:11}, autoSkip:false}, grid:{display:false} } } }
   });
 
-  /* three different things were being said with colour and none of them was labelled */
+  /* The legend names the colours that are actually on the chart and nothing
+     else. The two source swatches are gone with the shading they explained: one
+     blue needs no key, and a legend whose only two rows say "blue" and "blue"
+     is furniture. What stays are the marks that still differ — a flagged bar, a
+     modelled bar, an outlined one — because a red bar with no key is worse than
+     no legend at all. On a plot with none of those the strip renders empty and
+     takes no room. */
   var seen = {};
   plot.forEach(function (r) {
     if (r.c.flag) seen.flag = 1;
     else if (r.c.mod >= 0.5) seen.mod = 1;
-    else seen[r.c.src === 1 ? "one" : "many"] = 1;
     if (r.c.imp > 0) seen.imp = 1; });
   function sw(col, txt) { return '<span><i class="sw" style="background:' + col + '"></i>' + txt + "</span>"; }
   var leg = [];
-  if (seen.many) leg.push(sw(PAL[0], "two or more sources"));
-  if (seen.one) leg.push(sw(PAL[0] + "66", "a single source"));
   if (seen.mod) leg.push(sw(PAL[5], "modelled, not an observed shelf price"));
   if (seen.flag) leg.push(sw(DEAR, "outside plausible bounds"));
   if (seen.imp) leg.push('<span><i class="sw" style="background:transparent;border:1.4px solid ' +
