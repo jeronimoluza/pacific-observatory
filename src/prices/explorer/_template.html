@@ -315,6 +315,18 @@ details.more>div{margin-top:14px}
 
 /* ---------- table ---------- */
 .tbl-scroll{overflow-x:auto;max-height:560px;overflow-y:auto}
+/* A table and the key to its own pills, side by side. Mirrors `.row-side`
+   above -- same gap, same 1000px breakpoint -- but with the wide column FIRST,
+   because here the table is the thing and the key is the margin note beside it.
+   `minmax(0,1fr)` rather than `1fr`: a grid track's default minimum is its
+   content, so a wide table would push the key off the card instead of scrolling
+   inside `.tbl-scroll`. 330px is `.row-side`'s own side column, reused rather
+   than picked afresh, and it is about the narrowest this prose stays readable
+   at. Below the breakpoint the key drops under the table -- at 330px a column
+   of sentences is fine, at 150px it is a word per line. */
+.tblside{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:var(--gap);
+  align-items:start}
+@media(max-width:1000px){.tblside{grid-template-columns:minmax(0,1fr)}}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
 thead th{position:sticky;top:0;background:var(--plate);text-align:left;padding:7px 10px;
   border-bottom:1px solid var(--ink);font-size:12px;font-weight:600;
@@ -391,11 +403,20 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   <button id="t-trends"   role="tab" aria-selected="false" onclick="APP.go('trends')">Currency effects</button>
 </nav>
 
-<!-- Only the controls that change the view in front of you. There is no
-     US$/local switch: a cross-country comparison has no common ruler outside
-     the dollar, and where the local figure does mean something -- one
-     country's own items, one product's own history -- BOTH are shown at once
-     rather than hidden behind a control the reader has to find. -->
+<!-- Only the controls that change the view in front of you, and only the ones
+     that act on every one of them. There is still no US$/local switch HERE, and
+     the reason has not changed: the charts on these tabs rank countries against
+     each other, and a cross-country ranking has no common ruler outside the
+     dollar -- two hundred currencies cannot be put in an order.
+
+     The switch that now exists lives on the two detail TABLES instead -- Cell
+     detail on this tab, All priced items on Country profile -- next to the
+     table it acts on rather than up here where it would look like it governed
+     the charts too. A table ROW is one country's own shelf, and the price on it
+     is a true fact in that country's own money, which is the case the paragraph
+     above never covered. Both figures are still printed either way; the switch
+     decides which of the two leads, and neither table ever SORTS on the local
+     one. -->
 <div class="ctlstrip" id="ctlstrip" hidden>
   <div class="grp" data-views="world global compare country"><span class="ctllab" id="lab-ev">Evidence</span>
     <div class="seg" role="group" aria-labelledby="lab-ev">
@@ -625,12 +646,33 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       </div>
       <div class="card">
         <div class="spread">
-          <h2 style="margin-bottom:0">Cell detail</h2>
-          <input type="search" id="cmpSearch" aria-label="Filter countries"
-            placeholder="Filter countries&hellip;" oninput="APP.searchLater()">
+          <div>
+            <h2 style="margin-bottom:0">Cell detail</h2>
+            <div class="sub" id="cmpTblSub" style="margin-bottom:0"></div>
+          </div>
+          <!-- The currency switch belongs beside the table and nowhere else:
+               it changes this table and no chart on the page. It is written as
+               a `.seg` like every other two-state control here, and both
+               copies of it drive the same `S.cur`. -->
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+            <div class="seg" role="group" aria-label="Currency">
+              <button id="cur-usd-cmp" class="on" aria-pressed="true"
+                onclick="APP.set('cur','usd')">US$</button>
+              <button id="cur-loc-cmp" aria-pressed="false"
+                onclick="APP.set('cur','loc')">Local currency</button>
+            </div>
+            <input type="search" id="cmpSearch" aria-label="Filter countries"
+              placeholder="Filter countries&hellip;" oninput="APP.searchLater()">
+          </div>
         </div>
-        <div class="tbl-scroll"><table id="cmpTbl"></table></div>
-        <div id="cmpFlagKey"></div>
+        <!-- The key explains the pills that are IN the table, so it sits
+             beside them. Stacked underneath, a reader who wanted to know what
+             `mixed FX` meant had to scroll past every row to find out and then
+             back up to the row that asked the question. -->
+        <div class="tblside">
+          <div class="tbl-scroll"><table id="cmpTbl"></table></div>
+          <div id="cmpFlagKey"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -820,12 +862,25 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 
   <div class="card">
     <div class="spread">
-      <h2 style="margin-bottom:0">All priced items</h2>
-      <input type="search" id="ctrySearch" aria-label="Filter items"
-        placeholder="Filter items&hellip;" oninput="APP.searchLater()">
+      <div>
+        <h2 style="margin-bottom:0">All priced items</h2>
+        <div class="sub" id="ctryTblSub" style="margin-bottom:0"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+        <div class="seg" role="group" aria-label="Currency">
+          <button id="cur-usd-ctry" class="on" aria-pressed="true"
+            onclick="APP.set('cur','usd')">US$</button>
+          <button id="cur-loc-ctry" aria-pressed="false"
+            onclick="APP.set('cur','loc')">Local currency</button>
+        </div>
+        <input type="search" id="ctrySearch" aria-label="Filter items"
+          placeholder="Filter items&hellip;" oninput="APP.searchLater()">
+      </div>
     </div>
-    <div class="tbl-scroll"><table id="ctryTbl"></table></div>
-    <div id="ctryFlagKey"></div>
+    <div class="tblside">
+      <div class="tbl-scroll"><table id="ctryTbl"></table></div>
+      <div id="ctryFlagKey"></div>
+    </div>
   </div>
 </section>
 
