@@ -30,6 +30,7 @@ import yaml
 from prices.build import unit_collapse
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import RESIDUAL_TITLE_RE, residual_leaves
+from prices.rtcal import fills as fills_mod
 
 logger = logging.getLogger(__name__)
 
@@ -212,6 +213,62 @@ def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
     )
     return g[g["n_obs"] >= MIN_OBS_PER_CELL]
+
+
+def _drop_pruned_rows(df: pd.DataFrame, pruned: pd.DataFrame) -> pd.DataFrame:
+    """Remove observations sitting in a cell RT-CAL rejected as an obvious error.
+
+    The dashboards have to agree about what is real. If the explorer refuses to
+    draw a loaf of bread at US$108/kg and this one still charts it, the two are
+    reporting different corpora, and the reader has no way to tell which. So the
+    same rejection list drives both.
+    """
+    if pruned.empty or df.empty:
+        return df
+    key = df["observation_date"].dt.to_period("M").astype(str)
+    tup = list(
+        zip(
+            df["country"].astype(str),
+            df["coicop_code"].astype(str),
+            df["standard_unit"].astype(str),
+            key,
+        )
+    )
+    bad = set(map(tuple, pruned[fills_mod.CELL_KEY].astype(str).values))
+    return df[[t not in bad for t in tup]]
+
+
+def _attach_fills(monthly: pd.DataFrame, fills: pd.DataFrame) -> pd.DataFrame:
+    """Append released fills to the monthly series, flagged, never merged.
+
+    Same two rules the explorer uses: a fill may only extend a series that
+    already exists on measured data, and it may never share a month with a drawn
+    observation. `month` is a Timestamp here and a "YYYY-MM" string in the
+    summary parquet, so the conversion happens once, at this boundary.
+    """
+    monthly = monthly.copy()
+    monthly["imputed"] = False
+    monthly["prob"] = np.nan
+    if fills.empty or monthly.empty:
+        return monthly
+
+    f = fills.copy()
+    f["month"] = pd.to_datetime(f["period"] + "-01")
+    keys = ["coicop_code", "country", "month", "standard_unit"]
+    live = monthly[["coicop_code", "country", "standard_unit"]].drop_duplicates()
+    f = f.merge(live, on=["coicop_code", "country", "standard_unit"], how="inner")
+    if f.empty:
+        return monthly
+
+    drawn = set(map(tuple, monthly[keys].astype(str).values))
+    f = f[[tuple(r) not in drawn for r in f[keys].astype(str).values]]
+    if f.empty:
+        return monthly
+
+    f = f.assign(median_usd=f["usd"], n_obs=0, imputed=True)[
+        keys + ["median_usd", "n_obs", "imputed", "prob"]
+    ]
+    return pd.concat([monthly, f], ignore_index=True)
 
 
 def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
@@ -441,8 +498,27 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
         obs = obs[obs["country"].map(of_country) == region]
         logger.info("region==%r filter kept %d of %d rows", region, len(obs), before)
     obs = _to_display_units(obs)
+    # Both empty unless `prices rtcal run` has been executed.
+    #
+    # Folded on the way in, because RT-CAL keys cells on the unit the summary
+    # parquet carries while `_to_display_units` has already folded `item`/`unit`
+    # to one label here. Comparing the two raw would miss 2.7% of fills and 2.4%
+    # of pruned cells -- and both misses are silent, since one is an inner join
+    # returning fewer rows and the other a tuple that simply fails to match.
+    pruned = _fold_piece_units(fills_mod.load_pruned_cells())
+    before = len(obs)
+    obs = _drop_pruned_rows(obs, pruned)
+    if len(obs) != before:
+        logger.info(
+            "rtcal pruning dropped %d of %d rows (%d rejected cells)",
+            before - len(obs),
+            before,
+            len(pruned),
+        )
     current = _current_snapshot(obs)
-    monthly = _monthly_series(obs)
+    monthly = _attach_fills(
+        _monthly_series(obs), _fold_piece_units(fills_mod.load_released_fills())
+    )
 
     payload = _payload(current, monthly, region=region)
     chart_js = VENDOR_CHART_JS.read_text()

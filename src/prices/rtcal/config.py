@@ -40,6 +40,10 @@ RELEASE_THRESHOLDS_CSV = RTCAL_DIR / "selected_release_thresholds.csv"
 SCORED_TARGETS_PARQUET = RTCAL_DIR / "rtcal_v1_scored_targets.parquet"
 RELEASED_FILLS_PARQUET = RTCAL_DIR / "rtcal_v1_released_fills.parquet"
 REVIEW_QUEUE_PARQUET = RTCAL_DIR / "rtcal_v1_holdout_review_queue.parquet"
+# The cells the pruner rejected. Published because pruning is a DASHBOARD
+# fix as much as a training filter -- the obviously-wrong points come off
+# the historical view, which is half of what this method is for.
+PRUNED_CELLS_PARQUET = RTCAL_DIR / "rtcal_v1_pruned_cells.parquet"
 RUN_REPORT_MD = RTCAL_DIR / "rtcal_v1_run_report.md"
 MODEL_ARTIFACTS_DIR = RTCAL_DIR / "rtcal_v1_model_artifacts"
 VALIDATION_DIR = RTCAL_DIR / "validation"
@@ -165,7 +169,11 @@ FOLD_SCHEMES = (
     "fold_country_holdout",
     "fold_product_unit_holdout",
 )
-GATE_SCHEMES = ("fold_country_month_holdout", "fold_product_month_holdout", "fold_time_block")
+GATE_SCHEMES = (
+    "fold_country_month_holdout",
+    "fold_product_month_holdout",
+    "fold_time_block",
+)
 
 # ---- drift, from FULL_DATASET_RUNBOOK.md --------------------------------
 DRIFT_MAX_PRUNED_SHARE = 0.005

@@ -22,7 +22,13 @@ from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 
-from . import config, frames, gate as gate_mod, prune as prune_mod, targets as targets_mod
+from . import (
+    config,
+    frames,
+    gate as gate_mod,
+    prune as prune_mod,
+    targets as targets_mod,
+)
 from .features import build_gate_frame, nearest_gap_features, support_features
 from .predict import compute_components
 
@@ -39,18 +45,62 @@ GATE_FOR_MISSINGNESS = {
 FORWARD_TYPES = ("future_or_latest_month_gap",)
 
 OUTPUT_COLS = [
-    "run_id", "method_id", "model_version", "period", "period_index", "country",
-    "coicop_code", "standard_unit", "product_unit_id", "country_product_id", "series_id",
-    "missingness_type", "thinness_stratum", "selected_predictor",
-    "predicted_log_median_unit_value_usd", "predicted_median_unit_value_usd",
-    "gate_model", "gate_score_raw", "prob_within_25pct_calibrated",
-    "release_rule", "release_threshold", "release_status", "target_correct_within_25pct",
-    "series_train_count", "country_product_train_count", "product_unit_train_count",
-    "product_period_train_count", "country_period_train_count", "period_train_count",
-    "country_train_count", "coicop_train_count", "nearest_series_gap",
-    "component_prediction_count", "component_prediction_sd", "component_prediction_range",
-    "pruning_version", "label_batch_version", "created_at",
+    "run_id",
+    "method_id",
+    "model_version",
+    "period",
+    "period_index",
+    "country",
+    "coicop_code",
+    "standard_unit",
+    "product_unit_id",
+    "country_product_id",
+    "series_id",
+    "missingness_type",
+    "thinness_stratum",
+    "selected_predictor",
+    "predicted_log_median_unit_value_usd",
+    "predicted_median_unit_value_usd",
+    "gate_model",
+    "gate_score_raw",
+    "prob_within_25pct_calibrated",
+    "release_rule",
+    "release_threshold",
+    "release_status",
+    "target_correct_within_25pct",
+    "series_train_count",
+    "country_product_train_count",
+    "product_unit_train_count",
+    "product_period_train_count",
+    "country_period_train_count",
+    "period_train_count",
+    "country_train_count",
+    "coicop_train_count",
+    "nearest_series_gap",
+    "component_prediction_count",
+    "component_prediction_sd",
+    "component_prediction_range",
+    "pruning_version",
+    "label_batch_version",
+    "created_at",
 ]
+
+
+def _write_pruned_cells(flagged: pd.DataFrame) -> None:
+    """Publish the rejected cells so the dashboards can drop them too.
+
+    Pruning is not only a training filter. The point of it, in Will's words, is
+    that the historical view is full of values that are "obviously wrong" and
+    should stop being drawn -- so the same judgement that keeps a cell out of the
+    fit has to be readable by whatever draws the chart. Keyed exactly like the
+    summary parquet so a consumer can anti-join without deriving anything.
+    """
+    cols = ["country", "coicop_code", "standard_unit", "period"]
+    out = flagged[
+        cols + ["median_unit_value_usd", "n_trusted", "outlier_reason"]
+    ].copy()
+    config.PRUNED_CELLS_PARQUET.parent.mkdir(parents=True, exist_ok=True)
+    out.to_parquet(config.PRUNED_CELLS_PARQUET, index=False)
 
 
 def load_thresholds(path=None) -> pd.DataFrame:
@@ -66,14 +116,19 @@ def load_thresholds(path=None) -> pd.DataFrame:
 
 def _threshold_for(table, role, missingness):
     hit = table[
-        (table["implementation_role"] == role) & (table["missingness_type"] == missingness)
+        (table["implementation_role"] == role)
+        & (table["missingness_type"] == missingness)
     ]
     if hit.empty and role == "normal_gap_default":
         hit = table[table["missingness_type"] == "country_month_gap"]
     if hit.empty:
         return np.inf, None, None
     row = hit.iloc[0]
-    return float(row["gate_threshold"]), row.get("release_rule"), row.get("target_correct_within_25pct")
+    return (
+        float(row["gate_threshold"]),
+        row.get("release_rule"),
+        row.get("target_correct_within_25pct"),
+    )
 
 
 def _score_pass(df, train_mask, target_mask, past_only, candidate):
@@ -82,15 +137,21 @@ def _score_pass(df, train_mask, target_mask, past_only, candidate):
     support = support_features(train, val)
     support["nearest_series_gap"] = nearest_gap_features(train, val)
     frame = build_gate_frame(val, preds, stats, candidate, support)
-    frame["component_prediction_sd"] = stats[f"ensemble_context_sd"]
-    frame["component_prediction_range"] = stats[f"ensemble_context_range"]
-    frame["component_prediction_count"] = stats[f"ensemble_context_n"]
+    frame["component_prediction_sd"] = stats["ensemble_context_sd"]
+    frame["component_prediction_range"] = stats["ensemble_context_range"]
+    frame["component_prediction_count"] = stats["ensemble_context_n"]
     frame["selected_predictor"] = candidate
     frame["prediction"] = preds[candidate]
     return frame
 
 
-def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch_version="unknown", verbose=True):
+def run(
+    summary_path=None,
+    artifacts_dir=None,
+    thresholds_path=None,
+    label_batch_version="unknown",
+    verbose=True,
+):
     started = time.time()
     run_id = f"rtcal_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
     artifacts_dir = artifacts_dir or config.MODEL_ARTIFACTS_DIR
@@ -103,8 +164,12 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
     observed, unmatched = frames.attach_country_context(observed, context)
     observed = frames.add_derived_features(observed)
     train_frame, flagged, pruning_summary = prune_mod.prune(observed)
+    _write_pruned_cells(flagged)
     if verbose:
-        print(f"  observed {pruning_summary['input_rows']:,} -> train {pruning_summary['pruned_rows']:,}", flush=True)
+        print(
+            f"  observed {pruning_summary['input_rows']:,} -> train {pruning_summary['pruned_rows']:,}",
+            flush=True,
+        )
 
     if verbose:
         print("== targets ==", flush=True)
@@ -121,7 +186,11 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
 
     scored_parts = []
     for label, forward in (("interior", False), ("forward", True)):
-        wanted = np.isin(missingness, FORWARD_TYPES) if forward else (~is_train & ~np.isin(missingness, FORWARD_TYPES))
+        wanted = (
+            np.isin(missingness, FORWARD_TYPES)
+            if forward
+            else (~is_train & ~np.isin(missingness, FORWARD_TYPES))
+        )
         target_mask = wanted & ~is_train
         if not target_mask.any():
             continue
@@ -130,13 +199,27 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
         candidate = "ensemble_context" if forward else "relative_decomp_temporal"
         if verbose:
             print(f"== score {label}: {target_mask.sum():,} targets ==", flush=True)
-        part = _score_pass(combined, is_train, target_mask, past_only=forward, candidate=candidate)
-        for col in ("period", "period_index", "country", "coicop_code", "standard_unit",
-                    "product_unit_id", "country_product_id", "series_id", "missingness_type"):
+        part = _score_pass(
+            combined, is_train, target_mask, past_only=forward, candidate=candidate
+        )
+        for col in (
+            "period",
+            "period_index",
+            "country",
+            "coicop_code",
+            "standard_unit",
+            "product_unit_id",
+            "country_product_id",
+            "series_id",
+            "missingness_type",
+        ):
             part[col] = combined.loc[target_mask, col].to_numpy()
         # A cold-start cell is scored by the series-holdout gate whatever pass
         # it rode in on -- the predictor and the gate are chosen separately.
-        part.loc[part["missingness_type"] == "new_country_product_unit_series", "selected_predictor"] = "ensemble_context"
+        part.loc[
+            part["missingness_type"] == "new_country_product_unit_series",
+            "selected_predictor",
+        ] = "ensemble_context"
         scored_parts.append(part)
 
     scored = pd.concat(scored_parts, ignore_index=True)
@@ -155,7 +238,9 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
     scored["gate_model"] = None
 
     for missing_type, block in scored.groupby("missingness_type", sort=False):
-        scheme, role = GATE_FOR_MISSINGNESS.get(missing_type, ("country_month_holdout", "normal_gap_default"))
+        scheme, role = GATE_FOR_MISSINGNESS.get(
+            missing_type, ("country_month_holdout", "normal_gap_default")
+        )
         artifact = gates.get(scheme)
         idx = block.index
         scored.loc[idx, "gate_model"] = f"hgb_raw::{scheme}"
@@ -163,7 +248,9 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
             continue
         raw = gate_mod.score_gate(artifact["model"], block)
         scored.loc[idx, "gate_score_raw"] = raw
-        scored.loc[idx, "prob_within_25pct_calibrated"] = gate_mod.apply_calibrator(artifact["calibrator"], raw)
+        scored.loc[idx, "prob_within_25pct_calibrated"] = gate_mod.apply_calibrator(
+            artifact["calibrator"], raw
+        )
         threshold, rule, target = _threshold_for(thresholds, role, missing_type)
         scored.loc[idx, "release_threshold"] = threshold
         scored.loc[idx, "release_rule"] = rule
@@ -187,8 +274,12 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
 
     scored["predicted_log_median_unit_value_usd"] = scored["prediction"]
     with np.errstate(over="ignore"):
-        scored["predicted_median_unit_value_usd"] = np.exp(scored["prediction"].to_numpy(dtype=float))
-    scored["thinness_stratum"] = targets_mod.thinness_stratum(scored["series_train_count"])
+        scored["predicted_median_unit_value_usd"] = np.exp(
+            scored["prediction"].to_numpy(dtype=float)
+        )
+    scored["thinness_stratum"] = targets_mod.thinness_stratum(
+        scored["series_train_count"]
+    )
     scored["run_id"] = run_id
     scored["method_id"] = config.METHOD_ID
     scored["model_version"] = f"{config.METHOD_ID}@{config.CONFIG_VERSION_DATE}"
@@ -202,7 +293,9 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
     released = out[out["release_status"] == "released"]
     released.to_parquet(config.RELEASED_FILLS_PARQUET, index=False)
 
-    queue = out[out["release_status"].isin(["holdout_for_review", "holdout_new_series"])].copy()
+    queue = out[
+        out["release_status"].isin(["holdout_for_review", "holdout_new_series"])
+    ].copy()
     # Rank the queue by what a label would buy: recency, then how close the cell
     # sits to its threshold (near-misses are the cheapest wins), then thinness.
     queue["review_priority"] = (
@@ -210,7 +303,9 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
         + queue["prob_within_25pct_calibrated"].fillna(0).rank(pct=True) * 0.4
         + (1.0 - queue["series_train_count"].rank(pct=True)) * 0.2
     )
-    queue.sort_values("review_priority", ascending=False).to_parquet(config.REVIEW_QUEUE_PARQUET, index=False)
+    queue.sort_values("review_priority", ascending=False).to_parquet(
+        config.REVIEW_QUEUE_PARQUET, index=False
+    )
 
     summary = {
         "run_id": run_id,
@@ -226,8 +321,13 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
         "unmatched_countries": unmatched,
         "seconds": round(time.time() - started, 1),
     }
-    (config.RTCAL_DIR / "rtcal_v1_run_summary.json").write_text(json.dumps(summary, indent=2, default=str))
+    (config.RTCAL_DIR / "rtcal_v1_run_summary.json").write_text(
+        json.dumps(summary, indent=2, default=str)
+    )
     if verbose:
-        print(f"\nscored {len(out):,}  released {len(released):,} "
-              f"({summary['release_share']*100:.1f}%)  {summary['seconds']:.0f}s", flush=True)
+        print(
+            f"\nscored {len(out):,}  released {len(released):,} "
+            f"({summary['release_share']*100:.1f}%)  {summary['seconds']:.0f}s",
+            flush=True,
+        )
     return out, summary

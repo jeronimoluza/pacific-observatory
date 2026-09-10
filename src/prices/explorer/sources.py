@@ -38,6 +38,20 @@ MIN_SERIES_PERIODS = 2
 # otherwise top the ranking. Both gates are deliberately conservative.
 MIN_BASKET_LEAVES = 15
 MIN_BASKET_SOURCES = 2
+# Both gates above count LEAVES per country and say nothing about WHICH leaves.
+# A leaf priced by three countries still entered all three baskets, so the three
+# baskets were each a different basket, which is exactly what the matched
+# construction claims they are not. This is the leaf gate: a leaf enters only
+# where this share of the countries being compared price it. It doubles as the
+# missing-price policy, stated once rather than left implicit in whatever the
+# scrape happened to catch that month.
+MIN_BASKET_LEAF_SHARE = 0.75
+
+# A region's median over one or two countries is one of those countries' own
+# price wearing a region's name. Below this a regional or subregional yardstick
+# is not published at all, and the client says so rather than quietly reaching
+# for the world median instead.
+MIN_BENCH_COUNTRIES = 3
 
 # Chained-index linking: a leaf links to its own previous observation, but only
 # if that observation is recent enough for the link to mean anything.

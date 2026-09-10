@@ -8,6 +8,8 @@ on the cell's dominant `currency`. Nodes are every level of the COICOP tree
 
 from __future__ import annotations
 
+import logging
+
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,8 +29,10 @@ from prices.explorer.sources import (
     FREQ_MAX_GAP,
     COUNTRY_DEFECT_SHARE,
     MAX_LINK_GAP_MONTHS,
+    MIN_BASKET_LEAF_SHARE,
     MIN_BASKET_LEAVES,
     MIN_BASKET_SOURCES,
+    MIN_BENCH_COUNTRIES,
     MIN_CELL_OBS,
     MIN_CHAIN_PERIODS,
     MIN_LINK_LEAVES,
@@ -44,7 +48,11 @@ from prices.explorer.sources import (
     load_taxonomy,
 )
 
+from prices.rtcal.fills import drop_pruned, load_pruned_cells, load_released_fills
+
 __all__ = ["REPO_ROOT", "build_payload", "write_payload"]
+
+logger = logging.getLogger(__name__)
 
 
 def _mad(x: pd.Series) -> float:
@@ -102,7 +110,29 @@ def _cells(exploded: pd.DataFrame) -> pd.DataFrame:
     return agg
 
 
-def _series(exploded: pd.DataFrame) -> pd.DataFrame:
+def _series(exploded: pd.DataFrame, fills: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Monthly medians per (country, node, unit), optionally with RT-CAL fills.
+
+    Fills are appended as extra rows carrying `imputed`, never merged into an
+    observed one. Three rules keep them honest, and each is load-bearing:
+
+    LEAF ONLY. A fill is already a cell median; an observation is a single row.
+    Exploding fills up the COICOP ladder the way observations are exploded would
+    take a parent node's median over a mixture of the two, so a parent would
+    silently change meaning as fills arrived. Fills join where `node` IS the
+    leaf they were predicted for, and nowhere else.
+
+    NEVER CREATES A SERIES. The depth filter runs on observed periods alone. A
+    line that exists only because it was imputed is a line about the model, not
+    about prices, and `MIN_SERIES_PERIODS` is the reader's guarantee that they
+    are looking at something repeatedly measured.
+
+    NO COLLISIONS TO RESOLVE. Cells the pruner rejected are removed from the
+    observations upstream of here, so the bread priced at US$108/kg is already
+    gone by the time this runs and the month it occupied is a genuine gap. A fill
+    then occupies an empty slot rather than arguing with a drawn point, which is
+    why there is no precedence rule to get wrong.
+    """
     keys = ["country", "node", "standard_unit", "period"]
     s = (
         exploded.groupby(keys, observed=True)
@@ -115,7 +145,32 @@ def _series(exploded: pd.DataFrame) -> pd.DataFrame:
     )
     s = s[s.n >= MIN_CELL_OBS]
     depth = s.groupby(["country", "node", "standard_unit"]).period.transform("nunique")
-    return s[depth >= MIN_SERIES_PERIODS].copy()
+    s = s[depth >= MIN_SERIES_PERIODS].copy()
+    s["imputed"] = False
+    s["prob"] = np.nan
+    if fills is None or fills.empty:
+        return s
+
+    f = fills.rename(columns={"coicop_code": "node"})
+    f = f[f.standard_unit.isin(s.standard_unit.unique())]
+
+    # Only onto series that already cleared the depth filter above.
+    live = s[["country", "node", "standard_unit"]].drop_duplicates()
+    f = f.merge(live, on=["country", "node", "standard_unit"], how="inner")
+
+    # Belt and braces. RT-CAL only targets cells it considers missing, and the
+    # cells it rejected were dropped from `trusted` before this frame was built,
+    # so a fill sharing a period with a drawn observation should be impossible.
+    # If one ever appears, the observation wins and the fill is discarded --
+    # never draw two prices for one month.
+    drawn = set(map(tuple, s[keys].astype(str).values))
+    f = f[[tuple(r) not in drawn for r in f[keys].astype(str).values]]
+    if f.empty:
+        return s
+    f = f.assign(local=np.nan, n=0, imputed=True)[
+        keys + ["usd", "local", "n", "imputed", "prob"]
+    ]
+    return pd.concat([s, f], ignore_index=True)
 
 
 def _leaf_census(tax: dict) -> dict[str, int]:
@@ -313,6 +368,21 @@ def _basket_levels(cells: pd.DataFrame, tax: dict) -> pd.DataFrame:
     "other bakery products" in one country is not the same basket as "other
     bakery products" in another, so a leaf-matched ratio over one is exactly
     the composition effect the matching exists to remove.
+
+    ELIGIBILITY. The same claim fails a second way if the basket is allowed to
+    differ from one country to the next, so a leaf enters only where
+    MIN_BASKET_LEAF_SHARE of the countries being compared price it. That is a
+    real cut -- a thinly-priced leaf leaves every basket, not just the baskets
+    missing it -- and it is the point: a rule about which leaves count beats a
+    basket whose contents are whatever each scrape happened to catch.
+
+    The mean, not the median. This docstring said "geometric mean" while the
+    code took a median of the log gaps; the two are only the same on a
+    symmetric spread, and the app said as much out loud on the waterfall, which
+    already averaged. Averaging the differences is now what every reading here
+    does, so the sentence above is true rather than aspirational. What paid for
+    it is the evidence filter: thin single-source cells, which are where an
+    outlier comes from, are out before the mean ever sees them.
     """
     residual = _residual_nodes(tax)
     leaves = cells[
@@ -323,12 +393,24 @@ def _basket_levels(cells: pd.DataFrame, tax: dict) -> pd.DataFrame:
     ].copy()
     defect = leaves.groupby("country").flagged.mean().rename("defect_share")
     leaves = leaves[~leaves.flagged]
-    glob = leaves.groupby(["node", "standard_unit"]).usd.median().rename("g")
-    leaves = leaves.join(glob, on=["node", "standard_unit"])
+    keys = ["node", "standard_unit"]
+    n_cty = leaves.country.nunique()
+    cover = leaves.groupby(keys).country.nunique()
+    eligible = cover[cover >= MIN_BASKET_LEAF_SHARE * n_cty].index
+    logger.info(
+        "basket eligibility: %d of %d (leaf, unit) pairs priced in %.0f%%+ of %d countries",
+        len(eligible),
+        len(cover),
+        MIN_BASKET_LEAF_SHARE * 100,
+        n_cty,
+    )
+    leaves = leaves[pd.MultiIndex.from_frame(leaves[keys]).isin(eligible)]
+    glob = leaves.groupby(keys).usd.median().rename("g")
+    leaves = leaves.join(glob, on=keys)
     leaves["rel"] = np.log(leaves.usd / leaves.g)
     out = (
         leaves.groupby("country")
-        .agg(rel=("rel", "median"), n_leaves=("rel", "size"), src=("sources", "max"))
+        .agg(rel=("rel", "mean"), n_leaves=("rel", "size"), src=("sources", "max"))
         .reset_index()
     )
     out = out.join(defect, on="country")
@@ -374,16 +456,45 @@ def build_payload(region: str | None = None) -> dict:
     unrestricted cells, because a regional dashboard whose world median is
     secretly its own median would report a country as typical when it is only
     typical for its neighbours.
+
+    `nodeMeta[node].rmed` does publish a regional and subregional median beside
+    `gmed`, and does not weaken that rule. The failure it guards against is a
+    SILENT swap -- the screen saying "vs world" over a number that is not. An
+    additional yardstick the reader selects, on a chart that renames its axis,
+    its column and its tooltip when they do, is the opposite of that.
     """
     tax = load_taxonomy()
     countries = load_country_meta()
     obs = load_observations()
+    # Both empty unless `prices rtcal run` has been executed.
+    #
+    # Fills reach the time-series display only -- not the cells, not the chain,
+    # not the basket. Drawing a modelled point and letting it move an index are
+    # different commitments and only the first is made here.
+    #
+    # PRUNED CELLS ARE DIFFERENT and come out everywhere, at the observation
+    # level, before anything aggregates. Removing a value our own screen calls an
+    # obvious error is a correction, not an imputation, and it would be incoherent
+    # for the chain to keep pricing a cell the series view refuses to draw. This
+    # is the other half of what the method is for: the historical view is full of
+    # points that are wrong on their face, and they should stop being drawn.
+    fills = load_released_fills()
+    pruned = load_pruned_cells()
 
     trusted = obs[
         obs.qa_status.eq("trusted")
         & obs.standard_unit.isin(COMPARABLE_UNITS)
         & obs.unit_value_usd.gt(0)
     ].copy()
+    before = len(trusted)
+    trusted = drop_pruned(trusted, pruned).copy()
+    if len(trusted) != before:
+        logger.info(
+            "rtcal pruning dropped %d of %d trusted rows (%d rejected cells)",
+            before - len(trusted),
+            before,
+            len(pruned),
+        )
 
     world_cells = _cells(_explode_nodes(trusted))
     if region:
@@ -395,7 +506,7 @@ def build_payload(region: str | None = None) -> dict:
 
     exploded = _explode_nodes(trusted)
     cells = _cells(exploded)
-    series = _series(exploded)
+    series = _series(exploded, fills)
     chained = _chained_index(exploded, tax)
     changed = _lagged_changes(exploded, tax)
     levels = _basket_levels(cells, tax)
@@ -471,6 +582,35 @@ def build_payload(region: str | None = None) -> dict:
         if node in nodemeta:
             nodemeta[node].setdefault("gmed", {})[unit] = round(float(v), 4)
 
+    # Regional and subregional yardsticks, keyed by the label the geography
+    # carries in `cty`. This is an ADDITION to `gmed` and never a replacement
+    # for it: `gmed` above stays the default reading on every screen, and the
+    # only way to be read against neighbours instead of against the world is to
+    # ask for it, on a chart that then says which yardstick it is using. The
+    # invariant in this function's docstring is about substitution, not about
+    # supply -- a regional benchmark the reader has explicitly selected and the
+    # chart has explicitly labelled is not the "secretly its own median" failure
+    # that rule exists to prevent.
+    #
+    # Same cells and the same filters as `gmed`; only the population being taken
+    # a median of changes. Under MIN_BENCH_COUNTRIES nothing is written at all,
+    # so a two-country "region" has no entry rather than a private price wearing
+    # a region's name.
+    where = clean.country.map(lambda s: countries.get(s, {}))
+    geo_cells = clean.assign(
+        region=[m.get("region", "Unassigned") for m in where],
+        subregion=[m.get("subregion", "Unassigned") for m in where],
+    )
+    for field in ("region", "subregion"):
+        grouped = geo_cells.groupby([field, "node", "standard_unit"]).agg(
+            med=("usd", "median"), n=("country", "nunique")
+        )
+        for (label, node, unit), row in grouped.iterrows():
+            if row.n < MIN_BENCH_COUNTRIES or node not in nodemeta:
+                continue
+            rmed = nodemeta[node].setdefault("rmed", {})
+            rmed.setdefault(label, {})[unit] = round(float(row.med), 4)
+
     # ---- QA / honesty panel -------------------------------------------
     qa = {
         "status": {k: int(v) for k, v in obs.qa_status.value_counts().items()},
@@ -487,11 +627,34 @@ def build_payload(region: str | None = None) -> dict:
         "modelled_sources": sorted(MODELLED_SOURCES),
         "plausible_bounds": PLAUSIBLE_USD,
         "min_basket_leaves": MIN_BASKET_LEAVES,
-        # Nothing here is interpolated -- a gap stays a gap, because some of
-        # these gaps are collection artefacts and an imputed value would be
-        # indistinguishable on screen from a measured price move. Two existing
-        # behaviours come close enough to need saying out loud, so they are
-        # published rather than left in the source:
+        # The leaf gate, published so the client can state the missing-price
+        # policy in the same words the build applies it in.
+        "min_basket_leaf_share": MIN_BASKET_LEAF_SHARE,
+        # The regional yardstick is an addition, and the payload says so, so a
+        # future reader of `rmed` cannot mistake it for the default.
+        "benchmark": {
+            "default": "world",
+            "alternatives": ["region", "subregion"],
+            "min_countries": MIN_BENCH_COUNTRIES,
+            "labelled": True,
+        },
+        # Some gaps are now filled, and the reason the old promise existed is
+        # the reason the new one is shaped the way it is. That promise --
+        # "nothing is interpolated" -- was never about imputation being wrong.
+        # It was about an imputed value being INDISTINGUISHABLE on screen from a
+        # measured price move. RT-CAL answers that objection rather than
+        # overruling it: every fill is labelled, is off by default, and carries
+        # the calibrated probability that it lands within 25% of the truth.
+        #
+        # What did not change is what a fill is allowed to touch. Fills reach
+        # the time-series display and nothing else -- not the chained index, not
+        # the heatmap leaf counts, not the basket. Drawing a modelled point and
+        # letting it move an index are different commitments, and only the first
+        # one has been made. That is why the chain still says, truthfully, that
+        # it interpolates nothing.
+        #
+        # Two older behaviours come close enough to need saying out loud, so they
+        # are published rather than left in the source:
         #
         # `link_gap_months` -- a chain link may span this many periods, and the
         # WHOLE log relative is booked onto the later one. A three-month move
@@ -502,7 +665,15 @@ def build_payload(region: str | None = None) -> dict:
         # model-based, and the client labels it as such.
         "link_gap_months": {"chain": MAX_LINK_GAP_MONTHS, **FREQ_MAX_GAP},
         "fitted_level": "two-way fixed effects on log price (item + period)",
-        "interpolated": False,
+        "interpolated": {
+            "cells": int(len(fills)),
+            "scope": ["series"],
+            "excluded_from": ["cells", "chain", "changes", "basket", "heatmap"],
+            "default_visible": False,
+            "labelled": True,
+            "probability": "calibrated P(within 25% of the observed median)",
+            "method": "rtcal_v1",
+        },
     }
 
     recent = trusted.period.max()
@@ -568,12 +739,18 @@ def build_payload(region: str | None = None) -> dict:
     ):
         if c not in cty_pos or n not in node_pos:
             continue
-        ser[f"{cty_pos[c]}|{node_pos[n]}|{unit_pos[u]}"] = {
+        entry = {
             "p": g.period.tolist(),
             "usd": [round(float(v), 4) for v in g.usd],
             "loc": [None if pd.isna(v) else round(float(v), 4) for v in g.local],
             "n": [int(v) for v in g.n],
         }
+        # `imp`/`pr` are omitted entirely when a series carries no fill, so a
+        # payload built without RT-CAL is byte-identical to the one before it.
+        if bool(g.imputed.any()):
+            entry["imp"] = [1 if v else 0 for v in g.imputed]
+            entry["pr"] = [None if pd.isna(v) else round(float(v), 3) for v in g.prob]
+        ser[f"{cty_pos[c]}|{node_pos[n]}|{unit_pos[u]}"] = entry
 
     chain: dict[str, dict] = {}
     for (c, n, u), g in chained.groupby(
