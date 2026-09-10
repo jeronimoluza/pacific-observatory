@@ -83,6 +83,54 @@ BASKET_WEIGHT_LEVEL = 3
 # exactly when the corpus thins, which is the shape a guard should have.
 MIN_BASKET_WEIGHT_COVERED = 0.60
 
+# ------------------------------------------------------------------ FX
+# The FX table converts OUR US$ series into local terms so it can be laid over
+# an official CPI, which is published in local currency. It is built from the
+# per-row `fx_rate` of the observations themselves, and a country-month that
+# mixes currencies has no single rate: Cambodia's rows are ~60% KHR (~4,027 per
+# USD) and ~40% USD (1.0 exactly), so a plain median flips between two
+# incompatible scales month to month and the 12-month conversion factor swings
+# by 4,100x. The rows are right; the aggregation was not. So the median is taken
+# over the country's DECLARED currency only (`countries.yaml: currency:`).
+#
+# Only RATIOS of the rate are ever used (`r1/r0`), so a series that is
+# internally consistent at the wrong SCALE still converts correctly. That is why
+# a legacy or successor ISO code is aliased onto the declared one rather than
+# dropped -- Sierra Leone's rows are all old-scale SLL against a declared SLE,
+# and their ratios are the ratios of the new leone. Codes are aliased ONLY where
+# the two names denote the same currency: a redenomination (SLL/SLE, ZWL/ZWG) or
+# a successor issued at par (XCG/ANG). A currency CHANGEOVER is not an alias --
+# Bulgaria's BGN and EUR rows are two different units at 1.9558 to one, and
+# merging them would manufacture exactly the break this filter exists to remove.
+CURRENCY_ALIASES = {
+    "SLL": "SLE",  # Sierra Leone, redenominated 1000:1 in 2022
+    "ZWL": "ZWG",  # Zimbabwe, redenominated 2498.7:1 in 2024
+    "XCG": "ANG",  # Caribbean guilder, replaced the Antillean guilder at par
+}
+
+# How far a country's rate may travel across the WHOLE series before the build
+# says so. Not a filter -- the series is still published, because Venezuela's
+# 962,000x really is Venezuela's. It is a tripwire: this defect was invisible for
+# months because nothing looked, and every class of cause lands here. 20x is
+# loose enough for ARS/TRY/NGN over a decade and tight enough that a mixed-scale
+# median, a stale alias or a bad upstream rate cannot pass it quietly.
+FX_SPAN_WARN = 20.0
+
+# The second guard: a rate that leaves its own level and comes BACK. The span
+# check says a country is odd; this says the cause is upstream rather than
+# economic. A move must be at least this large to count as an excursion,
+# the two months on either side of it must agree with each other to within
+# FX_EXCURSION_RETURN, and it must last no longer than FX_EXCURSION_MAX_RUN --
+# past that it is a regime, not a glitch. On the real corpus it fires on exactly
+# three countries and all three are true: Mongolia (3,597 -> 0.753181 -> 3,547,
+# a cross-derived rate merged into the FX cache), Syria (11,057 -> 110.6 -> 13,006,
+# old and new pounds served under one SYP code across the 100:1 redenomination)
+# and Zimbabwe (30,805 -> 13.4 -> 35,141, ZWG rates served under ZWL). Venezuela's
+# clean one-way 1,000,000:1 cut does NOT fire it, which is the point.
+FX_EXCURSION_RATIO = 3.0
+FX_EXCURSION_RETURN = 1.5
+FX_EXCURSION_MAX_RUN = 6
+
 # A region's median over one or two countries is one of those countries' own
 # price wearing a region's name. Below this a regional or subregional yardstick
 # is not published at all, and the client says so rather than quietly reaching
@@ -260,6 +308,10 @@ def load_country_meta() -> dict[str, dict]:
             "iso3": iso3,
             "region": region,
             "subregion": subregion,
+            # The currency the country's prices are quoted in. Carried because
+            # the FX table has to filter on it -- dropping it here is what let
+            # a median run across two currencies at once.
+            "currency": (meta.get("currency") or "").strip().upper(),
         }
     return out
 

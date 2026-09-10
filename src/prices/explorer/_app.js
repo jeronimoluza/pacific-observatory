@@ -496,12 +496,90 @@ function toGrain(ps, vs, f) {
     out[k] = acc[k].reduce(function (a, b) { return a + b; }, 0) / acc[k].length; });
   return out;
 }
-function pctOver(map, grid, L) {
+/* Periods at which an index LEVEL steps, i.e. where the published series stops
+   being the same series. A doubling or a halving inside one month is a change
+   of base or a break in the feed far more often than it is a price move: Libya
+   rebased all eleven of its published series at 2025-01 (CP01 353.9 -> 102.0)
+   and ZMB CP01 carries a one-month decimal error (464.47 -> 4755.04 -> 486.52)
+   that reads as +1042% year on year. Differencing across either reports an
+   index change as an inflation rate.
+
+   Over the whole IMF table this marks 32 months across 26 of 1,549 series.
+   Some of them -- LBN, SDN, ZWE, UKR -- are a currency collapse rather than a
+   rebase, and the two are not separable from the levels alone. The response is
+   the same either way and is the conservative one: the two ends are not known
+   to be the same series, so they are not differenced, and the month is NAMED
+   on the chart so a reader can judge it. */
+function levelBreaks(map) {
+  var ks = Object.keys(map).sort(), step = [], out = {}, i, j, k;
+  for (i = 1; i < ks.length; i++) {
+    var a = map[ks[i - 1]], b = map[ks[i]];
+    step[i] = a > 0 && b > 0 && (b / a < 0.5 || b / a > 2.0);
+  }
+  /* How LONG the series stays out of band is what separates a defect from an
+     economy. One month out and it stays there is a rebase; out and straight
+     back is a decimal slip; three or more consecutive months of doubling is a
+     currency dying, which is real and must be drawn rather than cut. */
+  for (i = 1; i < ks.length; i++) {
+    if (!step[i]) continue;
+    for (j = i; step[j + 1]; j++) { /* walk the run */ }
+    if (j - i + 1 <= 2) for (k = i; k <= j; k++) out[ks[k]] = true;
+    i = j;
+  }
+  return out;
+}
+/* A change axis that survives a hyperinflation.
+
+   Percent change is not log-scalable: it crosses zero and goes negative. But a
+   chart carrying Venezuela and Cambodia at once is carrying +68,000,000% and
+   +5%, and on a linear axis every country that is not Venezuela is the zero
+   line. The three ways out are a clamp, a broken axis, and a log axis.
+
+   A clamp is the only one that LIES: it draws Venezuela at whatever the clamp
+   is and the reader takes that for the value. A broken axis is honest but is a
+   lot of custom drawing to say what a log axis says with a tick callback. So:
+   a symmetric log, sign(v) * log10(1 + |v|), which is exactly v near zero,
+   compresses the tail, keeps the ordering, and keeps small movements legible
+   beside enormous ones. The axis is relabelled and a warning is raised, because
+   an unannounced log axis is its own kind of lie.
+
+   It is a DISPLAY decision and deliberately not a claim about the number. Some
+   of these extremes are redenominations rather than inflation -- a currency
+   changing its unit, not its value. Saying which is which is the build's job
+   (see `_warn_on_fx_span` / `_warn_on_fx_excursion` in aggregate.py), not the
+   axis's. */
+var SYMLOG_AT = 1000;   /* engage once something on screen exceeds +1000% */
+function symlog(v) {
+  return v == null ? null : (v < 0 ? -1 : 1) * Math.log10(1 + Math.abs(v));
+}
+function symlogInv(t) {
+  return (t < 0 ? -1 : 1) * (Math.pow(10, Math.abs(t)) - 1);
+}
+function pctTick(v) {
+  var a = Math.abs(v);
+  return (v >= 0 ? "+" : "\u2212") +
+    (a >= 1e6 ? (a / 1e6).toPrecision(3).replace(/\.?0+$/, "") + "m"
+     : a >= 1e3 ? (a / 1e3).toPrecision(3).replace(/\.?0+$/, "") + "k"
+     : a >= 10 ? a.toFixed(0) : a.toFixed(1)) + "%";
+}
+
+/* `brk`, when given, collects the periods this call refused to difference
+   across, so the reader is told a series was cut rather than left to wonder
+   why a line stops. A break is never smoothed over and never dropped in
+   silence. */
+function pctOver(map, grid, L, brk) {
+  var breaks = levelBreaks(map);
   return grid.map(function (p, i) {
     var was = grid[i - L];
     if (was == null) return null;
     var a = map[was], b = map[p];
-    return (a > 0 && b > 0) ? (b / a - 1) * 100 : null;
+    if (!(a > 0) || !(b > 0)) return null;
+    /* the change from `was` to `p` is only a price change if the index meant
+       the same thing at both ends */
+    for (var k = i - L + 1; k <= i; k++) {
+      if (breaks[grid[k]]) { if (brk) brk[grid[k]] = true; return null; }
+    }
+    return (b / a - 1) * 100;
   });
 }
 /* the COICOP division on screen, as the IMF names it — so the official line
@@ -818,7 +896,7 @@ function renderWorldTrends() {
      category on screen sits in. Same colour as the country it belongs to, so
      the pairing is readable without a legend; dotted, because it is somebody
      else's measurement rather than ours. */
-  var cpiDrawn = [], cpiCode = cpiCodeFor(S.gnode);
+  var cpiDrawn = [], cpiBreaks = {}, cpiCode = cpiCodeFor(S.gnode);
   var cpiSpecs = (cpiCode ? [[cpiCode, [2,2], 1.8]] : []).concat([["_T", [1,3], 1.4]]);
   if (cpiOn) drawn.forEach(function (g) {
     var slug = g.slice(2), L = lagPeriods(months, f);
@@ -827,7 +905,7 @@ function renderWorldTrends() {
       var series = cpiFor(slug, code);
       if (!series) return;
       var pts = smoothPct(
-        pctOver(toGrain(series.p, series.v, f), grid, L), S.gsmooth);
+        pctOver(toGrain(series.p, series.v, f), grid, L, cpiBreaks), S.gsmooth);
       if (!pts.filter(function (v) { return v != null; }).length) return;
       cpiDrawn.push(code);
       ds.push({
@@ -891,6 +969,15 @@ function renderWorldTrends() {
       "the official index is an <b>expenditure-weighted</b> national basket over a much " +
       "wider range of outlets. They should move together, not coincide — a gap is a " +
       "question to ask, not an error to correct.");
+    var brkP = Object.keys(cpiBreaks).sort();
+    if (brkP.length) warn.push("The official index <b>changes level</b> at <b>" +
+      brkP.map(esc).join(", ") + "</b> — it halves or more than doubles inside a " +
+      "single " + word + ", which is a <b>change of base or a break in the feed</b> " +
+      "far more often than a price move. The two ends are not known to be the same " +
+      "series, so the official line is <b>cut</b> there rather than differenced " +
+      "across it and has no points for " + changeLabel(months, word) + " after the " +
+      "break. Nothing is dropped quietly: the gap is the break, and the " + word +
+      " is named above so you can judge it.");
     if (!cpiDrawn.length) warn.push("<b>No official CPI</b> is published for the " +
       "countries on screen at this horizon.");
     else if (cpiCode && cpiDrawn.indexOf(cpiCode) < 0) warn.push(
@@ -908,6 +995,26 @@ function renderWorldTrends() {
   warn.push("<b>" + (DATA.qa.history.share_last_12m * 100).toFixed(0) +
     "%</b> of trusted observations fall in the last 12 months, so earlier periods are " +
     "thinner than they look.");
+  /* Only a change measure produces a number a log axis can help: a US$ level
+     and a based index are already on one scale. The official CPI lines are in
+     `ds` too and count towards the peak -- an index that blows up is exactly as
+     unreadable beside a calm one as ours would be. */
+  var peak = 0;
+  if (kindM === "change") ds.forEach(function (d) {
+    d.data.forEach(function (v) { if (v != null && Math.abs(v) > peak) peak = Math.abs(v); }); });
+  var logY = peak >= SYMLOG_AT;
+  if (logY) {
+    /* the true value is kept on the dataset, so the tooltip and the lead line
+       still read the number rather than its logarithm */
+    ds.forEach(function (d) { d.rawData = d.data; d.data = d.data.map(symlog); });
+    warn.push("One line on this chart passes <b>" + pctTick(peak) + "</b>, so the " +
+      "vertical axis is drawn on a <b>symmetric log scale</b> — equal spacing is an " +
+      "equal <b>multiple</b>, not an equal number of points. It is the only way a " +
+      "single-digit change and a millionfold one are both readable here. <b>A number " +
+      "this size is often a currency redenomination rather than inflation</b>: the " +
+      "unit changed, not the price. The build logs every country whose rate moves " +
+      "further than any currency should.");
+  }
   document.getElementById("wtWarn").innerHTML = '<div class="warnbox">' + warn.join("<br>") + "</div>";
 
   chart(chartId, {
@@ -916,10 +1023,11 @@ function renderWorldTrends() {
       plugins:{ legend:{display:false},
         tooltip:{ callbacks:{
           label:function (it) {
-            var v = it.parsed.y;
+            var v = it.dataset.rawData ? it.dataset.rawData[it.dataIndex] : it.parsed.y;
             return v == null ? null : it.dataset.label + ": " +
               (isLevel ? "$" + v.toFixed(2) + UNIT_OF[unitCode]
                 : isIndex ? v.toFixed(1)
+                : Math.abs(v) >= 1000 ? pctTick(v)
                 : (v >= 0 ? "+" : "") + v.toFixed(1) + "%"); },
           afterBody:function (items) {
             var p = grid[items[0].dataIndex], out = [""];
@@ -931,16 +1039,19 @@ function renderWorldTrends() {
                 n + " item cells"); });
             return out.length > 1 ? out : []; } } } },
       scales:{ y:{ grid:{color:RULE},
+          ticks: logY ? {callback:function (v) { return pctTick(symlogInv(v)); }} : {},
           title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode] + " (fitted)"
             : isIndex ? "Index, " + baseP + " = 100"
             : "% change vs " + changeLabel(months, word) +
-              (cpiOn ? ", local currency" : ", US$")} },
+              (cpiOn ? ", local currency" : ", US$") +
+              (logY ? " — log scale" : "")} },
         x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
   });
 
   /* read the lead line off what is actually drawn, not off the raw series —
      the window and the smoothing both change what the number should say */
-  var lp = ds.length ? ds[0].data : [], first = null, last = null, lastP = null;
+  var lp = ds.length ? (ds[0].rawData || ds[0].data) : [],
+    first = null, last = null, lastP = null;
   lp.forEach(function (v, i) {
     if (v == null) return;
     if (first == null) first = v;
