@@ -49,3 +49,19 @@
 .cf-search:focus-visible,.cf-car:focus-visible,.cf-cb:focus-visible{
   outline:2px solid var(--ink);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.cf-car .cf-ic{transition:none}}
+
+/* Multi mount only. "Show all items" is not the old Clear wearing a new label:
+   Clear emptied a draft nobody had committed, this commits the empty selection,
+   which on the Country profile's chart is the meaningful state "every item this
+   country prices". It disables itself when that is already what is on screen. */
+.cf-foot{display:flex;padding:9px 0 0}
+.cf-clear{font:inherit;font-size:12.5px;font-weight:600;padding:5px 17px;
+  border-radius:var(--r);cursor:pointer;background:none;border:1px solid var(--rule);
+  color:var(--dim)}
+.cf-clear:hover:not([disabled]){border-color:var(--ink);color:var(--ink)}
+.cf-clear[disabled]{opacity:.4;cursor:default}
+.cf-clear:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+/* A half-selected parent must not read as an empty one. The browser draws the
+   dash itself once `indeterminate` is set; this only makes sure it is drawn in
+   the page's ink rather than the platform default. */
+.cf-cb:indeterminate{accent-color:var(--dim)}

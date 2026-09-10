@@ -45,8 +45,17 @@ var S = {
   /* Country profile keeps its own category state: it opens on ALL items and
      the filter narrows it, where Compare opens on one item and drills. The two
      tabs wanted opposite defaults out of one variable, which is why one of them
-     was always wrong. `cnode` null means the whole tree. */
-  cnode:null, bench:"world",
+     was always wrong.
+
+     `cnodes` is a LIST, and it is the only category state on this dashboard
+     that is. This tab's chart ranks every item a country prices against the
+     same item elsewhere, so a union of categories is a chart -- "cereals and
+     fish" is a perfectly good question -- where the world series and Compare
+     each draw exactly one category and a second pick there can only replace
+     the first. Empty means the whole tree, which is what the tab opens on and
+     is a real state here, not a missing one. Three mounts of the same tree
+     filter read these three variables and never each other. */
+  cnodes:[], bench:"world",
   sortCmp:{k:"val",d:1}, sortCtry:{k:"ratio",d:1},
   multi:[], hregion:null, hsort:{k:null, d:1},
   /* Which COICOP levels the heatmap puts down the side. A set rather than a
@@ -1814,6 +1823,20 @@ function benchMed(code, unit) {
   return ((meta.rmed || {})[benchName()] || {})[unit];
 }
 
+/* CATFILTER (multi): how many leaf items the current country prices under each
+   node, built in one pass and thrown away whenever the country or the evidence
+   gate changes. See APP.ctryItems.
+
+   The key is both because `keep` moves with the filter strip: a count taken
+   under "10+ obs" is a different number from the same count under "Any", and
+   the panel has to repaint when the reader moves that strip or it will sit
+   there showing figures for a gate that is no longer on. */
+var CTRY_ITEMS = {key:null, n:{}};
+function ctryItemsKey() {
+  return S.country + "|" + S.incModelled + "|" + S.measuredOnly + "|" +
+    S.showFlagged + "|" + S.evidence;
+}
+
 function renderCountry() {
   var sel = document.getElementById("ctrySel");
   if (sel.options.length !== DATA.ctyIdx.length) {
@@ -1848,47 +1871,38 @@ function renderCountry() {
   document.getElementById("ctryWarn").innerHTML = warn.length
     ? '<div class="warnbox">' + warn.join("<br>") + "</div>" : "";
 
-  /* Division and class, never an item. The category navigator used to sit here
-     and scoped this chart down to a single leaf, which drew exactly one bar --
-     "the ranked chart of one thing". These two selects narrow the basket and
-     stop: "All items" is the default and every level below a class is out of
-     reach on purpose. Drilling to an item is what Compare is for. */
+  /* CATFILTER: two native dropdowns used to sit here, Division over Class, and
+     between them they could express exactly one node at one of two levels.
+     "Division and class, never an item" was the rule, and it was a rule about
+     what a <select> pair could hold rather than about what the chart can draw:
+     this chart ranks every item against the same item elsewhere, so it draws a
+     union of categories perfectly well and always could. The multi-select tree
+     is mounted at the left of it instead, and it reaches the whole taxonomy --
+     including division 02, whose leaves stop at depth 4 and which the class
+     dropdown could only ever have offered as `lvl === 3` nodes.
+
+     A leaf is still never the whole selection by accident: picking one item
+     draws one bar, which is a chart of one thing, and the summary line and the
+     count under the heading both say what is on screen. */
   var mineAll = (byCountry.get(ci) || []).filter(keep);
-  function underCount(code) {
-    var pre = code + ".";
-    return mineAll.filter(function (c) {
-      return isLeaf(c.node) && notResidual(c.node) &&
-        (c.node === code || c.node.indexOf(pre) === 0); }).length;
-  }
-  var div = S.cnode ? ancestors(S.cnode)[0] : null;
-  var dsel = document.getElementById("ctryDiv");
-  dsel.innerHTML = '<option value="">All items</option>' +
-    ROOTS.map(function (r) {
-      return '<option value="' + r + '">' + esc(proseTitle(r)) + " · " +
-        underCount(r) + " items</option>"; }).join("");
-  dsel.value = div || "";
-  /* Classes are the level-3 nodes under the chosen division -- the same grain
-     the heatmap's rows use, so the two read as one vocabulary. */
-  var classes = div
-    ? DATA.nodeIdx.filter(function (c) {
-        return (DATA.tax[c] || {}).lvl === 3 && ancestors(c)[0] === div; })
-    : [];
-  var csel = document.getElementById("ctryCls");
-  csel.innerHTML = '<option value="' + (div || "") + '">All classes</option>' +
-    classes.map(function (c) {
-      return '<option value="' + c + '">' + esc(proseTitle(c)) + " · " +
-        underCount(c) + " items</option>"; }).join("");
-  csel.value = S.cnode || div || "";
-  csel.disabled = !div;
 
   ["world", "region", "subregion"].forEach(function (b) {
     seg("bm-" + b, S.bench === b); });
 
-  /* all leaf cells for this country under the selected filter */
-  var scope = S.cnode, prefix = scope ? scope + "." : null;
+  /* All leaf cells for this country under the selected filter. The selection is
+     a LIST of nodes and a cell is kept when it sits under ANY of them -- the
+     union, which is what ticking two classes has to mean. An empty list is not
+     an empty chart: it is the whole tree, the state the tab opens on. */
+  var scope = S.cnodes || [];
+  function inScope(code) {
+    if (!scope.length) return true;
+    for (var i = 0; i < scope.length; i++) {
+      if (code === scope[i] || code.indexOf(scope[i] + ".") === 0) return true;
+    }
+    return false;
+  }
   var mine = mineAll.filter(function (c) {
-    return (!scope || c.node === scope || c.node.indexOf(prefix) === 0) &&
-      isLeaf(c.node) && notResidual(c.node);
+    return inScope(c.node) && isLeaf(c.node) && notResidual(c.node);
   }).map(function (c) {
     var g = benchMed(c.node, c.unit);
     return { c:c, name:title(c.node), ratio: g ? c.usd / g : null, gmed:g };
@@ -1910,13 +1924,29 @@ function renderCountry() {
   var top = mine.filter(function (r) { return r.ratio != null; })
     .sort(function (a, b) { return b.ratio - a.ratio; });
   var show = top.length > 30 ? top.slice(0, 15).concat(top.slice(-15)) : top;
+  var hidden = top.length - show.length;
   document.getElementById("ctryChartTitle").innerHTML =
     esc(m.name || "") + " — most and least expensive" +
-    (scope ? " under " + esc(proseTitle(scope)) : " across every item priced") +
+    (scope.length
+      ? " under " + scope.map(function (c) { return esc(proseTitle(c)); }).join(", ")
+      : " across every item priced") +
     ", versus " + esc(benchName());
+  /* The count is the FILTERED count -- it is read off `top`, which is what the
+     selection left standing, so a stale 59 can never sit beside a chart of 12.
+     And the chart has always drawn at most the dearest 15 and the cheapest 15;
+     it never said so, which made a 200-item basket look like a 30-item one. A
+     view that is truncated and looks complete is the one failure this control
+     exists to remove, so the middle of the distribution is counted out loud. */
   setHtmlIfPresent("ctryChartSub",
     "Ratio of this country's unit value to the <b>" + esc(benchName()) +
-    "</b> median for the same item and unit. " + top.length + " items.");
+    "</b> median for the same item and unit. " +
+    (top.length === 1 ? "1 item" : top.length + " items") +
+    (scope.length ? " in the selected categories" : "") +
+    (hidden
+      ? ", of which the <b>15 dearest</b> and the <b>15 cheapest</b> are drawn — " +
+        hidden + " in the middle " + (hidden === 1 ? "is" : "are") +
+        " not on the chart. Every one of them is in the table below."
+      : ", all drawn."));
   sizeCanvas("cCountry", Math.max(200, show.length * 18 + 50));
   chart("cCountry", {
     type:"bar",
@@ -3228,10 +3258,39 @@ var APP = {
     if (!BW_ON) return;
     bwSetMode(S.wbase); bwApply(); bwWriteHash(); this.render();
   },
-  /* Division and class come out of the same control: picking a division clears
-     the class under it, picking a class carries its own division. Empty is
-     "All items", which is what this tab opens on. */
-  setCNode:function (code) { S.cnode = code || null; this.render(); },
+  /* CATFILTER (multi): the Country profile's selection, as a canonical list of
+     the shallowest nodes covering it. An empty list is the tab's default and a
+     legitimate state -- every item this country prices -- so it is never
+     coerced into a fallback the way `pick` coerces an empty single selection
+     into OPEN_ON. */
+  setCNodes:function (codes) {
+    S.cnodes = (codes || []).filter(function (c) { return !!DATA.tax[c]; });
+    this.render(); },
+  /* How many leaf items THIS country prices under a node. The two dropdowns
+     this replaced printed the same figure beside every option, and it is the
+     only count that answers a question anyone has on a single country's page:
+     "countries pricing it", which is what the cross-country mounts show, is
+     the same number for every country and tells a reader here nothing. */
+  ctryItems:function (code) {
+    /* Memoised, because the panel asks this once per visible row on every
+       repaint and the honest answer is a scan of the country's whole cell
+       list. The key is the country AND the evidence gate, since `keep` moves
+       with the filter strip: a cached count taken under "10+ obs" would be a
+       lie the moment the reader clicks "Any". */
+    var key = ctryItemsKey();
+    if (CTRY_ITEMS.key !== key) {
+      CTRY_ITEMS.key = key;
+      CTRY_ITEMS.n = {};
+      var ci = DATA.ctyIdx.indexOf(S.country);
+      (ci < 0 ? [] : byCountry.get(ci) || []).filter(keep).forEach(function (c) {
+        if (!isLeaf(c.node) || isResidual(c.node)) return;
+        /* One walk up the code counts the leaf at every ancestor at once,
+           rather than one prefix scan per node in the tree. */
+        ancestors(c.node).forEach(function (a) {
+          CTRY_ITEMS.n[a] = (CTRY_ITEMS.n[a] || 0) + 1; });
+      });
+    }
+    return CTRY_ITEMS.n[code] || 0; },
   setBench:function (b) { S.bench = b; this.render(); },
   go:function (v) { S.view = v;
     VIEWS.forEach(function (x) {
@@ -3250,7 +3309,17 @@ var APP = {
      has one), so a picker holding its own copy would be wrong every time that
      happened. "cmp" is the Compare tab's item, anything else the world
      series'. */
-  node:function (which) { return which === "cmp" ? S.node : S.gnode; },
+  node:function (which) {
+    if (which === "cmp") return S.node;
+    /* An ARRAY for the multi mount. Each mount reads its own key and no mount
+       can see another's, which is what keeps the three selections
+       independent. */
+    if (which === "country") return S.cnodes;
+    return S.gnode; },
+  /* CATFILTER (multi): a token the Country profile's panel can compare against
+     to know its per-node counts have gone stale — the country changed, or the
+     evidence gate did. */
+  ctryRev:function () { return ctryItemsKey(); },
   openCountry:function (slug) { S.country = slug; S.multi = []; this.go("country"); },
   openNode:function (code) { S.node = code; this.go("compare"); },
   setGeoMode:function (m) { S.gmode = m; S.gsel = null; this.render(); },

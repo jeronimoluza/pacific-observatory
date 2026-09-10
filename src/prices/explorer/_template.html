@@ -804,19 +804,22 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     </div>
     <div class="info" id="i-ct">
       <div class="beginner-only">
-        Every item this country prices, set against the same item elsewhere. The filters narrow
-        which part of the basket is on screen; they never narrow it to a single item, because a
-        chart of one bar is not a chart. <b>Compare against</b> changes the yardstick: the world
+        Every item this country prices, set against the same item elsewhere. Tick any number of
+        categories in the tree at the left to narrow which part of the basket is on screen &mdash;
+        ticking a branch takes everything under it, and ticking nothing means everything. The
+        count under the heading is always the count of what the tick marks left, and where there
+        are more than thirty items the chart draws the fifteen dearest and the fifteen cheapest
+        and says how many it left out. <b>Compare against</b> changes the yardstick: the world
         median is the default and the one every other screen here uses, and the two regional
         options are an <b>addition</b> to it &mdash; when one is on, the axis, the column heading
         and the tooltips all say so.
       </div>
           </div>
+    <!-- The yardstick switch stays exactly where it was and exactly as it
+         behaves: it is not a category control. What left this bar is the
+         Division and Class pair of <select>s, replaced by the tree at the
+         left of the chart below. -->
     <div class="ctlbar">
-      <div class="grp"><span class="ctllab" id="lab-div">Division</span>
-        <select id="ctryDiv" aria-label="Division" onchange="APP.setCNode(this.value)"></select></div>
-      <div class="grp"><span class="ctllab" id="lab-cls">Class</span>
-        <select id="ctryCls" aria-label="Class" onchange="APP.setCNode(this.value)"></select></div>
       <div class="grp"><span class="ctllab" id="lab-bench">Compare against</span>
         <div class="seg" role="group" aria-labelledby="lab-bench">
         <button id="bm-world" class="on" aria-pressed="true" onclick="APP.setBench('world')">The world</button>
@@ -825,8 +828,18 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       </div></div>
     </div>
     <div id="ctryBenchWarn"></div>
-    <div class="cscroll"><div class="cwrap"><canvas id="cCountry" role="img"
-      aria-label="Items versus the benchmark"></canvas></div></div>
+    <!-- CATFILTER mount (start). Multi-select here, and at the left like the
+         other two: this chart draws a union of categories, so the tree keeps
+         the checkboxes. -->
+    <div class="row-side">
+      <div>
+        <div class="tiny" style="margin-bottom:6px">Categories &mdash; tick any number</div>
+        <div id="catfilterCtry"></div>
+      </div>
+      <div class="cscroll"><div class="cwrap"><canvas id="cCountry" role="img"
+        aria-label="Items versus the benchmark"></canvas></div></div>
+    </div>
+    <!-- CATFILTER mount (end) -->
   </div>
 
   <div class="card">
