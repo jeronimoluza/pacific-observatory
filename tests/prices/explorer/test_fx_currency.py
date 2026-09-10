@@ -14,6 +14,8 @@ The rows were right. The aggregation was not. These pin the aggregation.
 
 from __future__ import annotations
 
+import copy
+import json
 import logging
 import sys
 from pathlib import Path
@@ -215,3 +217,69 @@ def test_the_built_payload_still_ships_an_fx_entry_per_country(built):
     assert set(built["fx"]) == set(built["cty"])
     for g in built["fx"].values():
         assert len(g["p"]) == len(g["r"]) and g["p"]
+
+
+# ------------------------------------------------ the gap, on the screen
+
+
+@pytest.fixture(scope="module")
+def gapped_html(payload, tmp_path_factory) -> Path:
+    """One month struck out of the FX table, the way Cambodia loses 2025-01.
+
+    Filtering to the declared currency costs Cambodia 2 of its 81 months --
+    it has no KHR row at all in 2025-01 or 2025-02, only USD ones the old
+    median was reading as a rate of 1.0. Those months have to come out.
+    """
+    from prices.explorer import render
+
+    pl = copy.deepcopy(payload)
+    fx = pl["fx"]["c00"]
+    struck = fx["p"][-18]  # inside the window, twelve months before a drawn point
+    keep = [i for i, q in enumerate(fx["p"]) if q != struck]
+    pl["fx"]["c00"] = {
+        "p": [fx["p"][i] for i in keep],
+        "r": [fx["r"][i] for i in keep],
+        "struck": struck,
+    }
+    out = tmp_path_factory.mktemp("fxgap") / "explorer.html"
+    out.write_text(render.render(pl))
+    return out
+
+
+@pytest.fixture
+def gpage(browser, gapped_html):
+    pg = browser.new_page()
+    errors: list[str] = []
+    pg.on("pageerror", lambda e: errors.append(str(e)))
+    pg.goto(gapped_html.as_uri())
+    pg.wait_for_function("window.APP !== undefined")
+    pg.evaluate(
+        "APP.setGFreq('M'); APP.setGeoMode('country'); APP.setGMeasure('chg12');"
+        "APP.set('gsel', ['C:c00']);"
+    )
+    yield pg
+    assert not errors, "JS errors on the page: " + json.dumps(errors)
+    pg.close()
+
+
+def _drawn(page):
+    grid = page.evaluate("Chart.getChart('cWorldTrend').data.labels")
+    return grid, page.evaluate("Chart.getChart('cWorldTrend').data.datasets[0].data")
+
+
+def test_a_missing_rate_is_an_honest_gap_not_a_flat_line(gpage):
+    """A month with no rate must draw nothing, not carry the last one forward
+    and not fall to zero. The US$ line is unaffected: only the conversion is."""
+    grid, before = _drawn(gpage)
+    struck = gpage.evaluate("DATA.fx.c00.struck")
+    hit = grid.index(struck)
+    gpage.evaluate("APP.toggleCPI()")
+    grid, after = _drawn(gpage)
+    # the point twelve months after the struck month loses its rate ratio
+    lost = hit + 12
+    assert lost < len(grid), "the struck month is outside the drawable window"
+    assert before[lost] is not None, "nothing was drawn there to begin with"
+    assert after[lost] is None
+    # and its neighbours are untouched
+    assert after[lost + 1] is not None or before[lost + 1] is None
+    assert after[lost - 1] is not None or before[lost - 1] is None
