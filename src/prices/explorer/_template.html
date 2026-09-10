@@ -502,13 +502,13 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         <button id="wm-subregion" aria-pressed="false" onclick="APP.setGeoMode('subregion')">Subregions</button>
         <button id="wm-country" aria-pressed="false" onclick="APP.setGeoMode('country')">Countries</button>
       </div>
-      <!-- CATFILTER mount (start). The <select> stays as the state carrier the
-           view layer already writes to and reads back from; it is hidden, and
-           _catfilter.js draws the COICOP tree in front of it. -->
+      <!-- CATFILTER state carrier. The <select> stays as the carrier the view
+           layer already writes to and reads back from; it is hidden, and the
+           COICOP tree that replaced it is mounted beside the chart below
+           rather than here — a filter that covers the chart it filters is a
+           filter the reader opens once. -->
       <select id="wtNode" aria-label="Category" hidden aria-hidden="true" tabindex="-1"
               onchange="APP.setGNode(this.value)"></select>
-      <div id="catfilter"></div>
-      <!-- CATFILTER mount (end) -->
       <span id="wtUnits"></span>
           </div>
     <div class="ctlbar">
@@ -548,11 +548,23 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       </div></div>
     </div>
 
-    <div id="wtWarn"></div>
-    <div class="chips" id="wtChips" role="group" aria-label="Places on the chart" style="margin-bottom:14px"></div>
-    <div class="cwrap" style="height:400px"><canvas id="cWorldTrend" role="img"
-      aria-label="Price trend by place"></canvas></div>
-    <div class="samples" id="wtNote"></div>
+    <!-- CATFILTER mount (start). The tree sits at the LEFT of the series it
+         governs, in the same two-column shape the Compare tab uses, and stays
+         open: it is the panel, not an overlay over the chart. -->
+    <div class="row-side">
+      <div>
+        <div class="tiny" style="margin-bottom:6px">Category</div>
+        <div id="catfilter"></div>
+      </div>
+      <div>
+        <div id="wtWarn"></div>
+        <div class="chips" id="wtChips" role="group" aria-label="Places on the chart" style="margin-bottom:14px"></div>
+        <div class="cwrap" style="height:400px"><canvas id="cWorldTrend" role="img"
+          aria-label="Price trend by place"></canvas></div>
+        <div class="samples" id="wtNote"></div>
+      </div>
+    </div>
+    <!-- CATFILTER mount (end) -->
   </section>
 
   <details class="more">
@@ -622,9 +634,13 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   <div class="row-side">
     <div class="card">
       <h2>Category</h2>
-      <div class="sub">Click to go deeper. Use the breadcrumb to go back up.</div>
-      <div class="crumb" id="cmpCrumb"></div>
-      <div class="navlist" id="cmpNav"></div>
+      <div class="sub">Pick one item. The whole COICOP tree is here; open a
+        branch with the chevron.</div>
+      <!-- CATFILTER mount. This panel used to be a breadcrumb over a list of
+           whichever siblings were beside the current node — a tree you could
+           only see one rung of at a time. It is the same control as the one
+           under the world series now, and the tree is stated in full. -->
+      <div id="catfilterCmp"></div>
       <div style="margin-top:14px">
         <div class="tiny" style="margin-bottom:6px">Unit of measure &mdash; never mixed</div>
         <div id="cmpUnits"></div>

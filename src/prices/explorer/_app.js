@@ -1560,61 +1560,6 @@ function kpi(l, v, n) {
          '</div><div class="n">' + n + "</div></div>";
 }
 
-/* =====================================================================
-   shared: hierarchy navigator
-   ===================================================================== */
-function navigator(crumbId, listId, node, onPick, countFn) {
-  /* COICOP has no node above a division, so the top of this tree is genuinely a
-     choice between two — 01 food and drink, 02 alcohol and tobacco. One "all"
-     crumb had to resolve to one of them, which is how division 02 became
-     unreachable from here. */
-  var path = ancestors(node);
-  var sw = ROOTS.map(function (r) {
-    return '<button class="chip' + (r === path[0] ? " on" : "") + '" onclick="APP.pick(' +
-      arg(r) + ')">' + esc(proseTitle(r)) + "</button>"; }).join(" ");
-  var crumb = path.slice(1).map(function (a, i, arr) {
-    var last = i === arr.length - 1;
-    return last ? '<span class="cur">' + esc(title(a)) + "</span>"
-      : '<a onclick="APP.pick(' + arg(a) + ')">' + esc(title(a)) + "</a>";
-  }).join(' <span class="sep">›</span> ');
-  document.getElementById(crumbId).innerHTML =
-    sw + (crumb ? ' <span class="sep">›</span> ' + crumb : "");
-
-  /* Both callers of this navigator are LEVEL views, so the catch-all leaves
-     are not offered here at all rather than offered and then blanked. They are
-     still reachable wherever a change is what is being read. */
-  var kids = (KIDS.get(node) || []).filter(notResidual);
-  var list = (kids.length ? kids : ancestors(node).length > 1
-      ? (KIDS.get(DATA.tax[node].p) || []).filter(notResidual) : ROOTS);
-  var hidden = (KIDS.get(node) || []).filter(isResidual).length;
-  /* read off the UNFILTERED children: a node whose every child is a catch-all
-     is still a node, and must not claim to be a leaf */
-  var isSiblings = !(KIDS.get(node) || []).length;
-  var html = list.map(function (code) {
-    var c = countFn(code);
-    var leaf = isLeaf(code);
-    var dom = (DATA.nodeMeta[code] || {}).dom;
-    return '<div class="it' + (code === node ? " on" : "") +
-      '" tabindex="0" role="button" data-act="1" onclick="APP.pick(' + arg(code) + ')">' +
-      "<div><div>" + esc(title(code)) +
-      (leaf ? ' <span class="leafmark">leaf</span>' : "") + "</div>" +
-      '<div class="code">' + code + (dom ? " · " + UNIT_LABEL[dom] : "") + "</div></div>" +
-      '<div class="m">' + c + "</div></div>";
-  }).join("");
-  var hint = isSiblings
-    ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
-      "This is a leaf — showing the other items alongside it.</div>"
-    : "";
-  var foot = hidden
-    ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
-      hidden + ' catch-all item' + (hidden === 1 ? "" : "s") + ' ("other …", ' +
-      '"n.e.c.") hidden: a price per kilo needs the items in it to be the same ' +
-      'thing. They still count in the price <i>changes</i> on the ' + HOME_TAB +
-      ' tab.</div>'
-    : "";
-  document.getElementById(listId).innerHTML = (hint + html + foot) ||
-    '<div class="empty">Nothing priced under this node.</div>';
-}
 
 /* =====================================================================
    2. COMPARE COUNTRIES
@@ -1630,19 +1575,13 @@ function renderCompare() {
      question about the same countries, so it is drawn with it. */
   renderPppBench();
 
+  /* CATFILTER: the breadcrumb and the sibling list that used to be drawn here
+     are gone. They showed one rung of the tree at a time — the current node's
+     children, or its siblings if it had none — and a reader who wanted beer
+     from rice had to climb. The COICOP tree filter states the whole taxonomy
+     and is mounted in their place, and it draws itself from APP.render's call
+     to CATFILTER.sync rather than from here. */
   var ni = DATA.nodeIdx.indexOf(S.node);
-  navigator("cmpCrumb", "cmpNav", S.node, null, function (code) {
-    var i = DATA.nodeIdx.indexOf(code);
-    if (i < 0) return "—";
-    /* one country can hold a cell in kg AND litre AND piece, so summing cells
-       across units counted several hundred more "countries" than exist */
-    var seen = {};
-    DATA.unitIdx.forEach(function (u, ui) {
-      cellsFor(i, ui).forEach(function (c) { seen[c.ci] = 1; }); });
-    var n = Object.keys(seen).length;
-    return n ? n + " countr" + (n === 1 ? "y" : "ies") : "—";
-  });
-
   var ui = resolveUnit(ni);
   document.getElementById("cmpUnits").innerHTML = unitLabelHtml(ni);
 
@@ -3290,6 +3229,14 @@ var APP = {
   /* Falling back to `01` is what opened Compare on a division, and a division
      draws no bars at all — so the fallback is the item the tab opens on. */
   pick:function (code) { S.node = code || OPEN_ON; this.render(); },
+  /* CATFILTER: the tree keeps no copy of the selection, it reads the committed
+     one back through here. Two copies of one choice is how a picker and the
+     chart under it end up disagreeing — and the app moves this state on its
+     own (a node with no series at the current setting is swapped for one that
+     has one), so a picker holding its own copy would be wrong every time that
+     happened. "cmp" is the Compare tab's item, anything else the world
+     series'. */
+  node:function (which) { return which === "cmp" ? S.node : S.gnode; },
   openCountry:function (slug) { S.country = slug; S.multi = []; this.go("country"); },
   openNode:function (code) { S.node = code; this.go("compare"); },
   setGeoMode:function (m) { S.gmode = m; S.gsel = null; this.render(); },
