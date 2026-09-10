@@ -3667,7 +3667,10 @@ APP.togglePppUngated = function () { PPP_UNGATED = !PPP_UNGATED; renderPppBench(
     "median.";
   document.getElementById("foot").innerHTML =
     "Generated " + m.generated + " · " + m.n_obs.toLocaleString() +
-    " trusted unit values · cells need " + m.min_cell_obs + "+ observations";
+    " trusted unit values · cells need " + m.min_cell_obs + "+ observations" +
+    /* The gate is now "enough observations OR at least one fill", so the old
+       flat claim understated what is on screen the moment fills are loaded. */
+    (HAS_IMPUTED ? " or a marked estimate" : "");
   /* The weighting comes up before the first render, so nothing is ever drawn
      under the published vector and then redrawn under the reader's. */
   if (BW_ON) {
