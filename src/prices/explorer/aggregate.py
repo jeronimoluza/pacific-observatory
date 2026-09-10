@@ -435,9 +435,13 @@ def build_payload(region: str | None = None) -> dict:
         .reset_index()
     )
 
+    # No `.copy()`: boolean-mask indexing already returns a frame that owns its
+    # data, so the copy was a second 9 GB allocation taken at the one moment
+    # `obs` was still alive -- the peak that got the render killed. Nothing below
+    # writes to `trusted`; it is only read, merged, grouped and reassigned.
     trusted = obs[
         is_trusted & obs.standard_unit.isin(COMPARABLE_UNITS) & obs.unit_value_usd.gt(0)
-    ].copy()
+    ]
     del obs, is_trusted
 
     world_cells = _cells(_explode_nodes(trusted))
