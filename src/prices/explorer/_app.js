@@ -2301,24 +2301,34 @@ function renderTrends() {
    An exchange-rate move shifts every price in the country by the same
    proportion. It is one number, not a property of rice or of beer, and a
    panel that reported a different one per product was reporting the
-   arithmetic of its own windows.
-
-   So this chart states it once, as a bar every product shares, and puts
-   the product's own move on top of it. In logs the two add exactly:
+   arithmetic of its own windows. In logs the two legs add exactly:
 
        d ln P_usd  =  d ln P_local  +  ( - d ln FX )
 
-   where FX is local currency per US dollar. Each bar therefore runs from
-   zero to the shared currency leg and then on to that product's total, so
-   the segment beyond the shared one is the real price change with the
-   currency netted out. Read the second segment across products and the
-   currency is gone from the comparison, which is the entire point.
+   where FX is local currency per US dollar.
 
-   THE WINDOW IS TWELVE MONTHS to the country's latest data, not its whole
-   span. The span was tried and it does not work: over Vietnam's full
-   2013-12 to 2026-09 exactly ONE product is priced at both endpoints, and
-   Japan, Fiji and Tonga are the same. Over twelve months it is 61, 208, 87
-   and 26. A decomposition nobody can see is not the more rigorous one.
+   THE GEOMETRY. The solid bar is the product's OWN move — d ln P_local,
+   the currency already netted out — drawn from zero in the rose/teal that
+   says which way it went. Hung off the tip of that bar is a hatched
+   extension whose length is the currency leg: identical on every row, and
+   its far edge therefore lands on the total US$ change. Two readings off
+   one bar. Where the colour stops is the real move; where the hatch stops
+   is the dollar move; the gap between them is the same everywhere, which
+   is the proof that the currency explains none of the differences BETWEEN
+   products.
+
+   The previous build stacked the currency leg AT THE ORIGIN and ran the
+   product's move outward from there. Identical arithmetic, but it painted
+   a solid column of shared colour straddling zero down the middle of the
+   chart, so the eye read the shared quantity as the subject and the real
+   move as a remainder hanging off it — the exact inversion of the point.
+
+   SIGNS. The tip is the floating bar [real, real + fxLeg]. It points
+   outward when the two legs agree and folds BACK OVER the bar when they
+   disagree, and it may cross zero. So it carries no fill of its own —
+   diagonal hatch strokes and an outline over transparency — and the
+   coloured bar reads through it in the overlap case instead of being
+   painted out.
    ===================================================================== */
 function monthsBack(p, k) {
   var a = p.split("-"), n = +a[0] * 12 + (+a[1] - 1) - k, m = n % 12 + 1;
@@ -2339,6 +2349,33 @@ function countryWindow(ci) {
   });
   return {lo:hi == null ? null : monthsBack(hi, FX_WIN_MONTHS), hi:hi};
 }
+/* A hatch, not a third saturated colour. The currency tip has to stay legible
+   ON TOP OF both bar colours as well as beyond them, so it is drawn with no
+   fill at all: diagonal strokes over transparency. The tile is cached; the
+   CanvasPattern is not, because `chart()` tears the Chart down and rebuilds it
+   on every render and a pattern is cheap to re-cut against the live context.
+   The three strokes are one full diagonal plus the two corner stubs, so the
+   line runs unbroken across tile seams instead of breaking into dashes. */
+var FXB_TILE = null;
+function fxbPattern(ctx) {
+  if (!FXB_TILE) {
+    var t = document.createElement("canvas"), s = 6;
+    t.width = t.height = s;
+    var c = t.getContext("2d");
+    c.strokeStyle = FAINT; c.lineWidth = 1.3;
+    c.beginPath();
+    c.moveTo(-1, s + 1); c.lineTo(s + 1, -1);
+    c.moveTo(-1, 1);     c.lineTo(1, -1);
+    c.moveTo(s - 1, s + 1); c.lineTo(s + 1, s - 1);
+    c.stroke();
+    FXB_TILE = t;
+  }
+  return ctx.createPattern(FXB_TILE, "repeat");
+}
+/* The same hatch as a CSS background, for the legend swatch. Kept beside the
+   canvas one so the two cannot drift apart unnoticed. */
+var FXB_HATCH_CSS = "repeating-linear-gradient(45deg,transparent 0 2px," +
+  FAINT + " 2px 3.3px)";
 function renderFxBars(ci) {
   var slug = DATA.ctyIdx[ci], m = DATA.cty[slug] || {};
   var fsel = document.getElementById("fxbCtry");
@@ -2393,7 +2430,8 @@ function renderFxBars(ci) {
      currency losing ground and it makes every dollar price smaller. Saying
      which direction which way round is the whole difficulty of this sentence,
      so it names the rate rather than "the currency" and then says what that
-     did to a dollar price. */
+     did to a dollar price — and then it says, in the same breath, how to read
+     the two edges of a bar, because the geometry is the argument. */
   var moved = (r1 / r0 - 1) * 100;
   document.getElementById("fxbLead").innerHTML =
     "<b>" + esc(m.name || slug) + "</b> &middot; " + win.lo + " &rarr; " + win.hi +
@@ -2402,9 +2440,14 @@ function renderFxBars(ci) {
     "local currency " + (moved >= 0 ? "bought fewer dollars" : "bought more dollars") +
     " at the end than at the start. On its own that " +
     (fxLeg >= 0 ? "adds <b>+" : "takes <b>") + (fxLeg * 100).toFixed(1) +
-    " log points</b> " + (fxLeg >= 0 ? "to" : "off") + " <i>every</i> US$ price in the " +
-    "country alike — the shared bar below, identical on every row. Whatever runs " +
-    "beyond it is that product's own price move.";
+    " log points</b> " + (fxLeg >= 0 ? "to" : "off") + " <i>every</i> US$ price in " +
+    "the country alike. Each <b>solid bar</b> below is one product's own price " +
+    "move with that shared effect already taken out; the <b>hatched tip</b> hung " +
+    "off the end of it <i>is</i> that shared effect, the same length on every row, " +
+    "so <b>where the tip ends is what the product's US$ price actually did</b>. " +
+    "Where the two pull opposite ways the tip folds back over the bar and can " +
+    "cross zero — a product whose own price moved one way while its dollar price " +
+    "moved the other.";
 
   if (!rows.length) return nothing(
     "No product in <b>" + esc(m.name || slug) + "</b> is priced in both " + win.lo +
@@ -2421,19 +2464,24 @@ function renderFxBars(ci) {
     .concat(rows.slice(-FXB_MAX / 2));
 
   sizeCanvas("cFxBars", Math.max(220, show.length * 21 + 70));
+  var hatch = fxbPattern(document.getElementById("cFxBars").getContext("2d"));
   chart("cFxBars", {
     type:"bar",
     data:{
       labels: show.map(function (r) {
         return (r.imp ? "◇ " : "") + r.name + " (" + UNIT_SHORT[r.unit] + ")"; }),
       datasets:[
-        { label:"Exchange rate — the same for every product",
-          data: show.map(function () { return [0, fxLeg * 100]; }),
-          backgroundColor:PAL[1], borderWidth:0 },
+        /* Chart.js draws the HIGHEST `order` first, so the tip's lower number
+           puts it on top of the bar — which is what makes the overlap case
+           (fxLeg against the real move) readable rather than painted over. */
+        { label:"The exchange rate — the same length on every row",
+          data: show.map(function (r) { return [r.real * 100, r.total * 100]; }),
+          backgroundColor:hatch, borderColor:DIM, borderWidth:1,
+          borderSkipped:false, order:1 },
         { label:"The product's own price change",
-          data: show.map(function (r) { return [fxLeg * 100, r.total * 100]; }),
+          data: show.map(function (r) { return [0, r.real * 100]; }),
           backgroundColor: show.map(function (r) { return r.real >= 0 ? DEAR : CHEAP; }),
-          borderWidth:0 }
+          borderWidth:0, order:2 }
       ]},
     options:{ indexAxis:"y",
       onClick:function (e, els) { if (els.length) APP.set("node", show[els[0].index].code); },
@@ -2442,28 +2490,34 @@ function renderFxBars(ci) {
         label:function (it) {
           var r = show[it.dataIndex];
           return [
-            "US$ price: " + (r.total >= 0 ? "+" : "") + (r.total * 100).toFixed(1) + " log %",
-            "of which the currency: " + (fxLeg >= 0 ? "+" : "") + (fxLeg * 100).toFixed(1) +
-              " log %, the same for every product",
-            "of which the price itself: " + (r.real >= 0 ? "+" : "") +
-              (r.real * 100).toFixed(1) + " log %"
+            "the product's own move: " + (r.real >= 0 ? "+" : "") +
+              (r.real * 100).toFixed(1) + " log % — the solid bar",
+            "the exchange rate: " + (fxLeg >= 0 ? "+" : "") + (fxLeg * 100).toFixed(1) +
+              " log %, the same on every row — the hatched tip",
+            "total US$ price change: " + (r.total >= 0 ? "+" : "") +
+              (r.total * 100).toFixed(1) + " log % — where the tip ends"
           ].concat(r.imp ? ["one endpoint is an imputed month"] : []); } } } },
       /* The category axis is stacked so the two datasets share one row rather
          than being dodged into two; the value axis is NOT, because each bar
-         already carries its own [from, to] and stacking them would add the
-         shared leg in twice. */
+         already carries its own [from, to] and stacking them would double the
+         currency leg back in. */
       scales:{
         x:{ stacked:false, grid:{color:RULE}, position:"top",
-            title:{display:true, text:"Change over the 12 months to " + win.hi +
-              " (log %, the two parts add up)"} },
+            title:{display:true, text:[
+              "Change over the " + FX_WIN_MONTHS + " months to " + win.hi + ", log %",
+              "solid bar: the product's own move  ·  hatched tip: the shared " +
+                "exchange rate, ending at the total US$ change"]} },
         y:{ stacked:true, ticks:{font:{size:11}, autoSkip:false}, grid:{display:false} } } }
   });
 
   document.getElementById("fxbLegend").innerHTML =
-    '<span><i class="sw" style="background:' + PAL[1] + '"></i>the exchange rate, ' +
-    "identical on every row</span>" +
-    '<span><i class="sw" style="background:' + DEAR + '"></i>the price itself rose</span>' +
-    '<span><i class="sw" style="background:' + CHEAP + '"></i>the price itself fell</span>' +
+    '<span><i class="sw" style="background:' + DEAR + '"></i>the product&rsquo;s own ' +
+    "price rose</span>" +
+    '<span><i class="sw" style="background:' + CHEAP + '"></i>the product&rsquo;s own ' +
+    "price fell</span>" +
+    '<span><i class="sw" style="background:' + FXB_HATCH_CSS + ';border:1px solid ' +
+    DIM + '"></i>the exchange rate &mdash; same length on every row; it runs from ' +
+    "the end of the bar to the total US$ change</span>" +
     (rows.length > show.length
       ? "<span>" + rows.length + " products split; the " + show.length +
         " widest real moves are drawn</span>"
