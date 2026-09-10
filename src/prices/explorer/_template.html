@@ -340,6 +340,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 .samples code{background:var(--wash);border-radius:var(--r);padding:1px 5px;font-size:11.5px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/*__CATFILTER_CSS__*/
 </style>
 </head>
 <body class="mode-explore">
@@ -452,7 +453,13 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         <button id="wm-subregion" aria-pressed="false" onclick="APP.setGeoMode('subregion')">Subregions</button>
         <button id="wm-country" aria-pressed="false" onclick="APP.setGeoMode('country')">Countries</button>
       </div>
-      <select id="wtNode" aria-label="Category" onchange="APP.setGNode(this.value)"></select>
+      <!-- CATFILTER mount (start). The <select> stays as the state carrier the
+           view layer already writes to and reads back from; it is hidden, and
+           _catfilter.js draws the COICOP tree in front of it. -->
+      <select id="wtNode" aria-label="Category" hidden aria-hidden="true" tabindex="-1"
+              onchange="APP.setGNode(this.value)"></select>
+      <div id="catfilter"></div>
+      <!-- CATFILTER mount (end) -->
       <span id="wtUnits"></span>
           </div>
     <div class="ctlbar">
@@ -823,6 +830,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 
 <script>/*__CHART_JS__*/</script>
 <script>const DATA = /*__DATA__*/;</script>
+<script>/*__CATFILTER_JS__*/</script><!-- CATFILTER: before the app, which calls it -->
 <script>/*__APP_JS__*/</script>
 </body>
 </html>

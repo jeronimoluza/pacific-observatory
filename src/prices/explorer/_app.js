@@ -40,7 +40,9 @@ var S = {
      gsel null means "whatever the default is here" — an explicit list only appears
      once the reader has actually chosen, so a category with thin coverage can never
      silently strike a place off the list for good. */
-  gmode:"region", gsel:null, gnode:"01", gunit:0, gmeasure:"chg12", gcpi:false,
+  /* CATFILTER: the world series opens on the same item Compare does, and for
+     the reason given at OPEN_ON above -- a division is not a thing anyone buys. */
+  gmode:"region", gsel:null, gnode:OPEN_ON, gunit:0, gmeasure:"chg12", gcpi:false,
   gfreq:"Q", gsmooth:0, gwin:36,
   /* Basket weighting: which vector is selected, the raw vector itself, and the
      fixed vector a custom one was seeded FROM -- which is what Reset returns to
@@ -2525,6 +2527,8 @@ var APP = {
     else if (S.view === "compare") renderCompare();
     else if (S.view === "country") renderCountry();
     else if (S.view === "trends") renderTrends();
+    /* CATFILTER: the category tree reads the picker the views just rebuilt. */
+    if (window.CATFILTER) window.CATFILTER.sync();
   }
 };
 document.addEventListener("keydown", function (e) {
