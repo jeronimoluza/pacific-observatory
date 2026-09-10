@@ -532,11 +532,38 @@ def prices_build(region, subregion, country, only, recompute_leaf_tables, worker
     )
 
 
+_unfiltered_opt = click.option(
+    "--unfiltered",
+    is_flag=True,
+    default=False,
+    help=(
+        "DIAGNOSTIC BUILD: take every minimum-evidence gate to its arithmetic "
+        "floor. Output is renamed *_unfiltered.html and stamped with a banner; "
+        "it can never overwrite a published dashboard."
+    ),
+)
+
+
+def _set_unfiltered(on: bool) -> None:
+    """Arm the gate profile BEFORE anything under `prices.` is imported.
+
+    Every threshold in the prices dashboards is read once, at import of
+    `prices.explorer.profile`, and taken by value from there by each consumer.
+    That is what keeps the switch to one place instead of a conditional at every
+    gate -- and it is why this has to run before the import below it, not after.
+    """
+    import os
+
+    if on:
+        os.environ["PO_PRICES_UNFILTERED"] = "1"
+
+
 @prices.command("publish")
 @_region_opt
 @_subregion_opt
 @click.option("--out", "out_path", default=None, help="Override the output HTML path.")
-def prices_publish(region, subregion, out_path):
+@_unfiltered_opt
+def prices_publish(region, subregion, out_path, unfiltered):
     """Generate CPI dashboards.
 
     PoC scope: renders outputs/prices/global_prices_dashboard.html from the
@@ -546,25 +573,37 @@ def prices_publish(region, subregion, out_path):
     just that set, so pair it with --out to avoid overwriting the
     unrestricted dashboard. --subregion is accepted but ignored until the
     basket widens beyond the EAP PoC.
+
+    With --unfiltered every minimum-evidence gate goes to its arithmetic floor
+    -- the lookback window opens to the whole corpus, the coverage floor to
+    zero, and the qa_status=="trusted" restriction is lifted, so rows the QA
+    layer rejected as wrong are drawn too. Diagnostic only.
     """
     import logging
     from pathlib import Path
 
+    _set_unfiltered(unfiltered)
+    from prices.explorer.profile import unfiltered_path
+    from prices.publish import DASHBOARD_HTML
     from prices.publish import publish as _publish
 
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
     )
+    out = unfiltered_path(Path(out_path) if out_path else DASHBOARD_HTML)
     try:
-        _publish(region=region, out_path=Path(out_path) if out_path else None)
+        written = _publish(region=region, out_path=out)
     except ValueError as exc:
         raise click.ClickException(str(exc))
+    if unfiltered:
+        click.echo(f"UNFILTERED diagnostic build written to {written}")
 
 
 @prices.command("explorer")
 @_region_opt
 @click.option("--out", "out_path", default=None, help="Override the output HTML path.")
-def prices_explorer(region, out_path):
+@_unfiltered_opt
+def prices_explorer(region, out_path, unfiltered):
     """Render the interactive unit-value explorer dashboard.
 
     Writes outputs/prices/global_prices_explorer.html from the build parquet:
@@ -574,10 +613,29 @@ def prices_explorer(region, out_path):
     With --region only that region's countries are shown, but every "vs world"
     yardstick stays global -- pair it with --out so the regional build does not
     overwrite the unrestricted one.
-    """
-    from prices.explorer import run as _explorer_run
 
-    _explorer_run(out_path, region)
+    With --unfiltered every minimum-evidence gate goes to its arithmetic floor,
+    including the chain, geography and fixed-effect gates that decide a VALUE
+    rather than a visibility. Those fits are unmeasured at their floor: a
+    chained index may link on one pair and a period effect may be one item.
+    Diagnostic only, renamed and banner-stamped so it cannot be mistaken for
+    the real dashboard.
+    """
+    from pathlib import Path
+
+    _set_unfiltered(unfiltered)
+    from prices.explorer import run as _explorer_run
+    from prices.explorer.profile import stamp_unfiltered, unfiltered_path
+    from prices.explorer.render import OUT_HTML
+
+    out = unfiltered_path(Path(out_path) if out_path else OUT_HTML)
+    written = _explorer_run(out, region)
+    # The explorer's renderer is not this profile's to edit, so the banner goes
+    # on afterwards, to the file. A no-op on a normal build; on an unfiltered
+    # one it raises rather than leaving the page unstamped.
+    stamp_unfiltered(written or out)
+    if unfiltered:
+        click.echo(f"UNFILTERED diagnostic build written to {written or out}")
 
 
 @prices.command("basket-weights")

@@ -30,6 +30,7 @@ import yaml
 from prices.build import unit_collapse
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import RESIDUAL_TITLE_RE, residual_leaves
+from prices.explorer.profile import UNFILTERED, gate, stamp_unfiltered
 from prices.rtcal import fills as fills_mod
 
 logger = logging.getLogger(__name__)
@@ -46,9 +47,29 @@ COICOP_XLSX = REPO_ROOT / "data" / "prices" / "enrich" / "coicop_categories.xlsx
 COUNTRIES_YAML = REPO_ROOT / "src" / "configs" / "countries.yaml"
 REGIONS_YAML = REPO_ROOT / "src" / "configs" / "regions.yaml"
 
-CURRENT_LOOKBACK_DAYS = 60
+# The rolling window the "current" snapshot is taken over. Was 60 days, which
+# silently cost 6 of the 209 countries in the corpus -- they simply had no
+# column, with nothing on the page to say a column had been withheld rather than
+# never collected. 90 days recovers 5 of the 6 (203 -> 208 countries) for 263
+# extra cells, and is still a quarter rather than a year, so "current" keeps
+# meaning current. The sixth needs 180 days; the window is on the page, so a
+# reader can see what they are looking at.
+CURRENT_LOOKBACK_DAYS = gate(90, 100_000)
 FX_HISTORY_FLOOR = pd.Timestamp("2013-01-01")
-MIN_OBS_PER_CELL = 1
+# Already at its arithmetic floor: one observed price, or any fill.
+MIN_OBS_PER_CELL = gate(1, 1)
+# Named COICOP leaves a country must price in the window before its column is
+# OFFERED to the low-coverage toggle. This replaces a 25th-percentile cut, and
+# the replacement is the point rather than the number. A relative cutoff removes
+# a quarter of the countries no matter how good the data gets, and it was doing
+# exactly that: on the September 2026 corpus it labelled 50 of 202 countries
+# "low coverage", among them Belgium (45 named leaves), Kuwait (45), Norway
+# (31), Iceland (36) and Tanzania (43) -- and Northern Mariana Islands at 48,
+# one leaf under a threshold that only existed because three quarters of the
+# world happened to be above it. In EAP it labelled 10 of 38. A fixed floor of
+# 10 named leaves out of 258 labels 8 globally and 1 in EAP, and it retires
+# itself as the corpus fills, which the quartile never could.
+COVERAGE_MIN_NAMED_LEAVES = gate(10, 0)
 # Only rows whose trust_level is in this set reach the published dashboard.
 # Cache rows without trust_level (legacy v1-era) are coalesced to "high" by
 # the build stage, so this default is conservative without dropping vetted data.
@@ -414,28 +435,45 @@ def _region_stats(
 def _coverage_cutoff(
     current: pd.DataFrame, residual: frozenset[str]
 ) -> tuple[int, set[str], dict]:
-    """Countries in the bottom quartile by breadth of COICOP coverage.
+    """Countries whose COICOP breadth is below a FIXED floor, and the counts.
 
     Breadth is counted over named leaves only. A residual leaf is a catch-all,
     so crediting a country for reaching one would reward the classifier giving
     up rather than the country having a real price for a real category.
 
-    The cut is the 25th percentile of the count, applied strictly (``<``).
-    Counts are small integers and pile up on ties, so ``<=`` would carry every
-    country sitting exactly on the boundary over the line with it and drop
-    materially more than the quartile asked for.
+    THE CUT USED TO BE THE 25TH PERCENTILE, and a percentile is a filter that
+    can never be satisfied: it removes a quarter of the countries however good
+    they all become, and it has no opinion about how thin thin is. On this
+    corpus it called Belgium, Kuwait, Norway, Iceland and Tanzania low-coverage
+    alongside Gibraltar's single leaf, and it stranded Northern Mariana Islands
+    one leaf below a boundary that was a fact about the other 201 countries.
+    `COVERAGE_MIN_NAMED_LEAVES` is an absolute claim about the country instead:
+    below it, a column is too empty to be worth a regional median's attention,
+    and it stops being true the moment the country is collected properly.
+
+    The count per country is returned with the set, because the toggle this
+    feeds hides columns and a hidden column has to be able to say why.
     """
     named = current[~current["coicop_code"].isin(residual)]
     per_country = named.groupby("country")["coicop_code"].nunique()
     if per_country.empty:
-        return 0, set(), {"median": 0, "n_countries": 0, "n_named_leaves": 0}
-    threshold = int(np.percentile(per_country.to_numpy(), 25))
+        return 0, set(), {"median": 0, "n_countries": 0, "n_named_leaves": 0,
+                          "n_dropped": 0, "mode": "floor", "counts": {}}
+    threshold = COVERAGE_MIN_NAMED_LEAVES
     low = set(per_country.index[per_country < threshold])
     stats = {
         "median": int(per_country.median()),
         "n_countries": int(per_country.size),
         "n_named_leaves": int(named["coicop_code"].nunique()),
         "n_dropped": len(low),
+        # An ABSOLUTE floor, said out loud, so the label on the toggle can stop
+        # claiming a quartile. A client reading `mode` can print the right
+        # sentence without having to know which release it is looking at.
+        "mode": "floor",
+        # Named leaves per country. This is what makes the toggle honest: the
+        # reader can see how thin each hidden column actually is, and a future
+        # slider can move the floor without a rebuild.
+        "counts": {str(k): int(v) for k, v in per_country.items()},
     }
     return threshold, low, stats
 
@@ -562,6 +600,10 @@ def _payload(
     )
     return {
         "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
+        # True only in the diagnostic build. Carried in the payload as well as
+        # in the banner, so a client can refuse to treat these numbers as
+        # publishable rather than relying on the reader having seen a stripe.
+        "unfiltered": UNFILTERED,
         "lookback_days": CURRENT_LOOKBACK_DAYS,
         "cutoff_date": cutoff,
         "data_through": data_through,
@@ -635,7 +677,20 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
     obs = pd.read_parquet(OBSERVATIONS_PARQUET)
     obs["observation_date"] = pd.to_datetime(obs["observation_date"], errors="coerce")
     obs = obs[obs["observation_date"].notna()]
-    if "qa_status" in obs.columns:
+    if UNFILTERED:
+        # THE ONE GATE IN THE DIAGNOSTIC BUILD THAT IS NOT ABOUT THIN EVIDENCE,
+        # and the one most likely to put a nonsense number on the page. Every
+        # other gate the profile lifts withholds a real figure for being thin;
+        # this one withholds rows the QA layer judged WRONG -- a failed quantity
+        # parse, a failed FX lookup, a unit value outside the plausible band. On
+        # the September 2026 parquet it admits 3,725,851 extra rows on top of
+        # 15,225,019 trusted ones, a 24.5% increase, and none of them have been
+        # checked. It is lifted because "unfiltered" would otherwise be a
+        # half-truth, and the banner says what that means.
+        logger.warning(
+            "UNFILTERED: qa_status filter lifted, %d rows of every status", len(obs)
+        )
+    elif "qa_status" in obs.columns:
         # qa_status == "trusted" already ANDs Layer-1 basis-ok, real quantity,
         # Layer-2 uv-inlier, and FX; it is the single publish gate when present.
         before = len(obs)
@@ -687,6 +742,9 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
     out = out_path or DASHBOARD_HTML
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
+    # No-op unless this is the diagnostic build, in which case it raises rather
+    # than shipping an unstamped page.
+    stamp_unfiltered(out)
     logger.info(
         "wrote %s (%d current cells, %d monthly cells)",
         out,

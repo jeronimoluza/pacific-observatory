@@ -48,7 +48,10 @@ def test_explorer_threads_the_region_through_to_render(monkeypatch):
     monkeypatch.setattr(explorer, "run", fake_run)
     r = _invoke(["prices", "explorer", "--region", "eap", "--out", "/tmp/x.html"])
     assert r.exit_code == 0, r.output
-    assert seen == {"out": "/tmp/x.html", "region": "eap"}
+    # A Path rather than the raw string: the CLI resolves the destination
+    # itself so it can rename it under --unfiltered and stamp the banner onto
+    # the file afterwards. `render.run` has always accepted either.
+    assert seen == {"out": Path("/tmp/x.html"), "region": "eap"}
 
 
 def test_explorer_without_region_still_builds_the_world(monkeypatch):
