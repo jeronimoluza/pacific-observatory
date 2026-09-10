@@ -35,24 +35,31 @@ BUNDLE_POLICIES = ("conservative_risk", "empirical_98")
 #
 # These are calibration-specific: a tau is a threshold on THIS bundle's Platt
 # output, so it is meaningless against another bundle. Solved against
-# `hierlex_select_v1_20260908`; re-solve before pointing them at any other.
+# `hierlex_select_v1_20260910`; re-solve before pointing them at any other.
+#
+# That warning is not theoretical, and the 20260908 -> 20260910 retrain is the
+# worked example. `target_95` moved 0.5893 -> 0.6988. Left stale, the old value
+# accepts 271,764 rows of the new audit at 94.21% -- it misses the target by
+# 0.79 points and ships ~2,145 extra wrong labels as trusted, on the gold audit
+# alone, before scaling to the production corpus. Nothing raises: the stale tau
+# is a perfectly valid float and the run looks clean.
 #
 # Solved on the bundle's own nested-OOF audit (`implementation_oof_decisions`,
-# 278,490 rows, balanced 5-fold), and cross-validated before being written down:
+# 307,773 rows, balanced 5-fold), and cross-validated before being written down:
 # choosing tau on four folds and measuring precision on the fifth reproduces the
-# target to within 0.003 points at every level, and the per-fold tau spread at
-# `target_95` is 0.5865-0.5940. The curve is also flat there -- tau +/-0.10
-# moves precision only 94.4%-95.6% -- so a small error in this number is not a
+# target to within 0.002 points at every level, and the per-fold tau spread at
+# `target_95` is 0.6942-0.7008. The curve is also flat there -- tau +/-0.10
+# moves precision only 94.3%-95.9% -- so a small error in this number is not a
 # cliff.
 #
 # These are OOF scores, so the taus transfer to production rows, which the
-# bundle never trained on. They do NOT transfer to the ~278k gold rows, whose
+# bundle never trained on. They do NOT transfer to the ~308k gold rows, whose
 # production scores are in-sample and inflated; validate against the OOF audit,
 # never against the production cache.
 LOCAL_TAUS = {
-    "target_95": 0.5893453359603882,
-    "target_92": 0.1712740957736969,
-    "target_90": 0.07299648225307465,
+    "target_95": 0.6987841129302979,
+    "target_92": 0.309093713760376,
+    "target_90": 0.1546705812215805,
 }
 
 POLICIES = BUNDLE_POLICIES + tuple(LOCAL_TAUS)
