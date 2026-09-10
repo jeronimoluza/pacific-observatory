@@ -92,28 +92,57 @@ MAD_TO_SIGMA = 1.4826
 UV_SUPPORT_WINDOW = 1
 
 
-def _pooled_support(
-    n_by_period: pd.Series, cell_cols: list[str], window: int
-) -> pd.Series:
-    """Support per (cell, month), widened to the months within `window` of it.
+def _pooled_stats(bw: pd.DataFrame, cell_cols: list[str], window: int) -> pd.DataFrame:
+    """Centre, spread and support per (cell, month), from the months within `window`.
+
+    Every baseline residual is re-keyed to each month it lends support to, then
+    the three statistics are taken over that pooled population at once, so a
+    cell can never be judged by a count one population supplied and a spread
+    another did.
 
     Joined by month ARITHMETIC, not by row position: a cell observed in January
-    and June has adjacent rows in this table but four empty months between them,
-    and a positional roll would pool them as if they were neighbours. Shifting
-    the ordinal and merging keeps a gap a gap.
+    and June has adjacent rows in a grouped table but four empty months between
+    them, and a positional roll would pool them as if they were neighbours.
+    Shifting the ordinal keeps a gap a gap.
+
+    The cell is factorised to an integer code before the residuals are copied
+    `2*window+1` times: on the production corpus that is ~43M rows, and carrying
+    three object columns through it costs about a gigabyte for nothing.
     """
-    s = n_by_period.rename("_n_period").reset_index()
-    s["_ord"] = pd.PeriodIndex(s["_period"], freq="M").astype("int64")
-    total = np.zeros(len(s), dtype="int64")
-    for off in range(-window, window + 1):
-        other = s[cell_cols + ["_ord", "_n_period"]].copy()
-        other["_ord"] = other["_ord"] + off
-        merged = s[cell_cols + ["_ord"]].merge(
-            other, on=cell_cols + ["_ord"], how="left"
-        )
-        total += merged["_n_period"].fillna(0).to_numpy().astype("int64")
-    s["_n"] = total
-    return s.set_index(cell_cols + ["_period"])["_n"]
+    codes, pairs = pd.MultiIndex.from_frame(bw[cell_cols]).factorize()
+    ordinals = pd.PeriodIndex(bw["_period"], freq="M").astype("int64")
+    flat = pd.DataFrame(
+        {
+            "_cell": np.asarray(codes, dtype="int32"),
+            "_ord": ordinals.to_numpy(dtype="int64"),
+            "_resid": bw["_resid"].to_numpy(dtype="float64"),
+        }
+    )
+    lent = pd.concat(
+        [flat.assign(_ord=flat["_ord"] + off) for off in range(-window, window + 1)],
+        ignore_index=True,
+    )
+    grouped = lent.groupby(["_cell", "_ord"], sort=False)["_resid"]
+    med = grouped.transform("median")
+    lent["_absdev"] = (lent["_resid"] - med).abs()
+    stats = lent.groupby(["_cell", "_ord"], sort=False).agg(
+        _cell_med=("_resid", "median"),
+        _mad=("_absdev", "median"),
+        _n=("_resid", "size"),
+    )
+    idx = stats.index
+    cells = pairs.take(idx.get_level_values("_cell"))
+    # from_ordinals, not the constructor: PeriodIndex(ints, freq=...) reads the
+    # integers as date STRINGS and raises on the first one.
+    periods = pd.PeriodIndex.from_ordinals(
+        idx.get_level_values("_ord"), freq="M"
+    ).astype(str)
+    # positional, not by name: factorize() drops the uniques' level names.
+    stats.index = pd.MultiIndex.from_arrays(
+        [cells.get_level_values(i) for i in range(len(cell_cols))] + [periods],
+        names=cell_cols + ["_period"],
+    )
+    return stats
 
 
 def flag_uv_outliers(
@@ -165,28 +194,44 @@ def flag_uv_outliers(
     # Temporal detrend. The per-month level is taken from baseline rows; a
     # (cell, month) with no baseline row falls back to the cell's median month
     # level, so a scored row is never detrended by its own population.
+    #
+    # `min_n` guards that fallback rather than mere presence. A month holding
+    # one baseline row IS that row: its median equals the value, the residual is
+    # zero by construction, and no error however large can register. The same
+    # count that decides whether a cell can judge decides whether a month can
+    # state a level.
     bw = work[work["_base"]]
-    month_med = bw.groupby(group_cols + ["_period"])["_logv"].median().rename("_mm")
-    cell_mm = month_med.groupby(level=group_cols).median().rename("_cmm")
+    by_month = bw.groupby(group_cols + ["_period"])["_logv"]
+    month_med = by_month.median().where(by_month.size() >= min_n).rename("_mm")
+    # The fallback level is the cell's own baseline values, not the median of
+    # its monthly medians. A cell whose every month is under-supported has no
+    # qualifying monthly median left to take a median OF, and the level would go
+    # NaN -- which reopens exactly the unjudged hole this guard exists to close,
+    # one level further down. Taken over rows, the level is defined whenever the
+    # cell has a baseline row at all, and a cell with none is thin regardless.
+    cell_mm = bw.groupby(group_cols)["_logv"].median().rename("_cmm")
     work = work.join(month_med, on=group_cols + ["_period"]).join(
         cell_mm, on=group_cols
     )
     work["_resid"] = work["_logv"] - work["_mm"].fillna(work["_cmm"])
     key = group_cols + ["_period"]
 
-    # Cell centre, spread and support, all from baseline rows only.
-    bw = work[work["_base"]].copy()
-    # Centre and spread within (cell, MONTH) -- Will put the survey period in the
-    # cell key, so a row is compared only against prices from its own month.
-    bw["_absdev"] = (
-        bw["_resid"] - bw.groupby(key)["_resid"].transform("median")
-    ).abs()
-    stats = bw.groupby(key).agg(
-        _cell_med=("_resid", "median"),
-        _mad=("_absdev", "median"),
-        _n_period=("_logv", "size"),
-    )
-    stats["_n"] = _pooled_support(stats["_n_period"], group_cols, support_window)
+    # Cell centre, spread and support, all from baseline rows only, and all from
+    # the SAME evidence: the residuals of every month within `support_window`.
+    #
+    # Estimating the spread from the row's own month while the count came from
+    # its neighbours let a cell borrow its way past `min_n` and then find no
+    # spread at home -- mad 0, z NaN, `outlier` a comparison against NaN, and the
+    # row shipped `trust_uv == "high"` having never been judged. On the
+    # 2026-09-10 corpus that was 585,760 trusted rows, 101,993 of them sitting at
+    # exactly the borrowed minimum of 3. Either the neighbouring rows are good
+    # enough to judge with or they were not good enough to lend support.
+    #
+    # This pools the SUPPORT, never the COMPARISON: `_resid` has already had its
+    # own month's level removed, so a cell drifting with inflation contributes
+    # residuals near zero in every month and no inter-period movement can reach
+    # the score. That is the property `test_uv_period_pooling` pins.
+    stats = _pooled_stats(work[work["_base"]], group_cols, support_window)
     work = work.join(stats, on=key)
 
     cell_n = work["_n"].fillna(0)
