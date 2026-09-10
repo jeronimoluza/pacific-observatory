@@ -17,10 +17,10 @@ An earlier version of this file ranked all discovery methods on a single ladder.
 | Rank | Generator | Why it wins |
 |---|---|---|
 | 1 | **Marketplace / aggregator enumeration** | One seller directory surfaces 5–20 retailers at once. Highest yield per unit of effort by a wide margin. **Walk the directory, don't scrape the catalog** — see below. |
-| 2 | **Local-language search** | Native-language queries surface national chains that English queries never return. |
+| 2 | **Local-language search** | Native-language queries surface national chains that English queries never return. Run it via `ddgs` (`ddgs_search.md`) — and measure its yield, which swings from decisive in CJK/Thai/Vietnamese/Arabic/Indonesian markets to near-zero in anglophone ones. |
 | 3 | **Wikipedia / listicle** ("list of supermarket chains in X") | Decent recall, poor signal on whether anything is scrapeable. |
 | 4 | **App-store charts** | Finds the market leaders, which are usually the *least* scrapeable — see the inverse-correlation law. |
-| — | **Generic English search** ("grocery in X") | **Worst.** This is what the per-country 17-category sweep degenerates into. Cold-start fallback only. |
+| — | **Generic English search** ("grocery in X") | **Worst per query** — and this is what the per-country 17-category sweep degenerates into. But see the note on breadth below: with `ddgs` the cost per query collapses, and a wide sweep buys coverage a narrow one cannot. |
 | — | **A supplied list** (spreadsheet, other team's inventory) | Not a method, but it occupies this slot — and it is the scarcest input we have. Handle per the disambiguation steps in `SKILL.md`. |
 
 **Cost multipliers — these find nothing, but make a candidate you already have far cheaper.** Never count them as discovery:
@@ -31,6 +31,26 @@ An earlier version of this file ranked all discovery methods on a single ladder.
 | **`known_blockers.md` cross-check** | Removes candidates before you spend probe budget on them. Negative yield avoided is yield. |
 
 **Why the distinction matters.** We have exactly *one* strong generator and three weak ones. Platform fingerprinting used to sit at rank 2 on the old ladder, which made discovery look better resourced than it is — it multiplies whatever the generators return and contributes nothing when they return nothing. In a cold-start country with no reachable marketplace, the honest position is that we are down to local-language search, and the run should say so rather than grinding through a generic sweep.
+
+## Run the search with `ddgs`, not WebSearch
+
+The ranking above is per *query*. It was set when search meant WebSearch, whose
+session-wide call cap (shared across every sub-agent) makes a wide sweep expensive
+and pushes a run toward a few careful queries.
+
+`ddgs` is a local Python library, so 20-60 queries cost minutes and no session
+budget — and breadth turns out to buy something narrow querying cannot: **a chain's
+storefront is often on a different domain than its corporate site.** On the
+2026-09-10 Botswana run a wide sweep found `shopsefalana.com` (~316,600 products,
+open JSON API) and `echoppies.com`, both of which an earlier budgeted run had
+written off as dead ends after probing `sefalana.co.bw` and `choppies.co.bw`.
+
+That does not promote generic search above marketplace enumeration — inventory and
+directories are still cheaper and better-targeted. It does mean a thin generator
+list is no longer a reason to stop early.
+
+Mechanics, the mandatory pinned `backend=`, query-pack construction in English and
+local languages, and the noise filter: **`ddgs_search.md`**.
 
 ## A marketplace is a directory, not a source
 

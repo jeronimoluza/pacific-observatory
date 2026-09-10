@@ -220,7 +220,15 @@ Then **platform-fingerprint each name the directory gives you** — that is what
 
 **4. Wholesale / `official_avg` feeds** whenever the gap involves fresh produce, fish, tubers, or live animals. Retail supermarkets structurally do not carry these, and only a handful of `official_avg` manifests exist against 140+ retailer ones — the marginal source is worth most here. Build them as **whole-catalog walkers**, not targeted extractors.
 
-**5. Fresh per-country search — last, and narrow.** Trigger it only when the seed has fewer than 2 `retailer_sku` candidates, a COICOP gap has zero candidates, or a seed URL went stale. Brief a sub-agent on the *specific* gap, not the full sweep. A generic English "grocery in X" search is the lowest-yield method available and should never be the opening move.
+**5. Search — run it with `ddgs`, in English *and* the local languages.** Still last in the order, because the inventory and the marketplace directories are cheaper and better-targeted. But **execute it with the `ddgs` Python library, not WebSearch** — full recipe in `references/ddgs_search.md`.
+
+WebSearch's session-wide call cap forces search into a handful of careful queries; `ddgs` is a local library, so a 20-60 query sweep costs minutes and no session budget. Build one query pack covering grocery/delivery, named chains, platform fingerprints, beverages, secondary cities and official price publishers, in English *and* in every language from `countries.yaml` (plus the regional trade lingua franca). Tag each result with the query that produced it, so the run can report what local-language search actually added.
+
+Three rules that come straight off measured runs — all three are in the anti-patterns:
+
+- **Pin `backend=`.** `ddgs` rotates through `wikipedia`/`grokipedia`, which return no storefronts and can DNS-fail into a silent 0 results.
+- **A 0-result `ddgs` query is not a dead end** until it has been re-run with backends pinned.
+- **Look for the storefront on a sibling domain.** A chain's online store is often not on its corporate domain, and probing only the corporate one writes off the country's biggest retailer.
 
 Never list the cost-of-living aggregators (Numbeo, LivingCost, Expatistan, MyLifeElsewhere, Nomad List) as candidates. They already exist for most countries, carry no real SKUs, and inflate coverage tables.
 
@@ -538,6 +546,7 @@ Load only what the current phase needs — these are not meant to be read togeth
 | Reference | Load when |
 |---|---|
 | `references/discovery.md` | Phase 2 — finding candidates. Generators vs cost multipliers, marketplace-as-directory, inverse-correlation law, the two source regimes, wholesale feeds, recording dead ends, cold-start 17-category table. |
+| `references/ddgs_search.md` | Phase 2 — **how to actually run the search**: the `ddgs` library, the mandatory pinned `backend=`, English + local-language query packs, noise filtering, and the off-domain storefront rule. |
 | `references/platform_fingerprints.md` | Phase 2–3 — identifying the storefront platform, finding the open JSON backend, id-walk, anti-bot cross-checks. |
 | `references/known_blockers.md` | Before **any** probe — skip-on-sight list. Append to it after every run. |
 | `references/probe_patterns.md` | Phase 3 — curl, Playwright dump, API sniffer, PDF/XLS inspectors. |
@@ -585,7 +594,12 @@ Don't bundle these into a routine country onboarding. Each is its own dedicated 
 - Don't leave old-schema YAMLs unmigrated when the skill runs on a country. Phase 1 upgrades them in place via inventory lookup — that's how the repo migrates organically.
 - Don't add a spider's currency by parsing the price symbol — set it at the spider class level (`currency = "VND"`). Sites that display "$" for Brunei dollars (BND) will be miscoded otherwise. But don't blindly take `countries.yaml` either when the site states its own currency code — see Phase 5A.
 - Don't run per-country discovery N times for a region. Anti-bot clusters by tenant and storefronts cluster by platform — both cut across borders, so sweep once and onboard per source. Probing, selectors, and scaffolding stay per-site; only *discovery* generalizes.
-- Don't open with a generic English web search. It is the lowest-yield discovery method measured. Inventory → marketplace enumeration → local-language search all come first, and platform fingerprinting is applied to whatever those return.
+- Don't open with a generic English web search. It is the lowest-yield discovery method measured *per query*. Inventory → marketplace enumeration → local-language search all come first, and platform fingerprinting is applied to whatever those return.
+- Don't run discovery search through WebSearch. Its session-wide cap is shared across every sub-agent in the run and forces a handful of narrow queries; use the `ddgs` library (`references/ddgs_search.md`) so breadth is free, and run English **and** local-language packs.
+- Don't call `ddgs` without pinning `backend=`. It rotates through `wikipedia`/`grokipedia`, which find no storefronts and DNS-fail on `region="wt-wt"` — 9 of 23 Botswana queries returned 0 results for that reason alone. Pin `backend="duckduckgo, google, brave, mojeek, startpage, yahoo"`.
+- Don't read a 0-result `ddgs` query as absence. It is indistinguishable from a backend failure. Re-run with backends pinned before writing any dead-end row into an inventory file.
+- Don't record a chain as a dead end after probing only its corporate domain. Storefronts routinely live on a sibling domain — `shopsefalana.com` not `sefalana.co.bw`, `echoppies.com` not `choppies.co.bw`, `spar2u.co.bw` not `spar.co.bw`. A prior Botswana run wrote off Choppies and Sefalana this way; Sefalana turned out to serve ~316,600 products from an open JSON API.
+- Don't assume local-language search pays the same everywhere. It is the strongest generator after marketplaces in CJK / Thai / Vietnamese / Arabic / Indonesian markets, and mostly academic noise in an anglophone one (Botswana: 46 local-only domains, ~42 junk, 1 real). Run it either way — it costs minutes — but measure and record the yield instead of assuming.
 - Don't scrape a marketplace's catalog when its seller directory is reachable. The directory yields first-party retailers with clean names; the catalog yields seller-authored names that `census.py` throws out. Same URL, opposite value.
 - Don't rank targets by COICOP gap in a country that has little coverage. Every division is a gap there, so the ranking sorts by a constant while costing real analysis time. Take whatever verifies until the country stops yielding new leaves.
 - Don't re-run a search an inventory file already recorded as empty. A "No online supermarket found" row is a result, not a blank. Re-check it only if it's stale (older than ~6 months) — and then update the date.
