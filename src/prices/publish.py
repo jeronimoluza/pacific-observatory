@@ -208,6 +208,11 @@ def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
         .agg(
             median_usd=("unit_value_usd", "median"),
             n_obs=("unit_value_usd", "size"),
+            # Distinct shelf items behind the cell, which is what the table
+            # reports as `n=`. NOT n_obs: one product priced weekly for a year
+            # is 52 observations of the same thing, and reporting that as the
+            # evidence base overstates it by the scrape cadence.
+            n_products=("product_name", "nunique"),
             last_seen=("observation_date", "max"),
         )
         .reset_index()
@@ -292,26 +297,47 @@ def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
 
 def _region_stats(
     keyed: pd.DataFrame, region_cols: list[dict[str, str]]
-) -> tuple[dict[str, dict[str, float]], dict[str, dict[str, int]]]:
+) -> tuple[
+    dict[str, dict[str, float]],
+    dict[str, dict[str, int]],
+    dict[str, dict[str, int]],
+]:
+    """Region medians plus two different counts of what stands behind them.
+
+    The median is unweighted over country medians, so the number of countries
+    is what describes the statistic. The number of distinct products is what
+    describes the evidence, and it is the one the table shows. Both are
+    returned because showing one while the tooltip explains the other would
+    make the tooltip false.
+
+    Products are summed across countries without a cross-country dedup: the
+    same name on a Thai and a Vietnamese shelf is two priced items, not one.
+    """
     medians: dict[str, dict[str, float]] = {}
     counts: dict[str, dict[str, int]] = {}
+    products: dict[str, dict[str, int]] = {}
     for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
         med: dict[str, float] = {}
         cnt: dict[str, int] = {}
+        prod: dict[str, int] = {}
         for col in region_cols:
-            s = (
-                grp["median_usd"]
+            sub = (
+                grp
                 if col["key"] == "world"
-                else grp.loc[grp["_region"].eq(col["key"]), "median_usd"]
+                else grp.loc[grp["_region"].eq(col["key"])]
             )
-            n = int(s.notna().sum())
+            s = sub["median_usd"]
+            have = s.notna()
+            n = int(have.sum())
             if n:
                 med[col["key"]] = float(s.median())
                 cnt[col["key"]] = n
+                prod[col["key"]] = int(sub.loc[have, "n_products"].sum())
         key = _cell_key(code, unit)
         medians[key] = med
         counts[key] = cnt
-    return medians, counts
+        products[key] = prod
+    return medians, counts, products
 
 
 def _coverage_cutoff(
@@ -389,7 +415,9 @@ def _payload(
     # the gap reads as deliberate rather than missing.
     keyed = current.assign(_region=current["country"].map(of_country))
     keyed = keyed[~keyed["coicop_code"].isin(residual)]
-    region_medians, region_n_countries = _region_stats(keyed, region_cols)
+    region_medians, region_n_countries, region_n_products = _region_stats(
+        keyed, region_cols
+    )
 
     # The low-coverage toggle drops countries from the table, so it has to drop
     # them from the region and world medians too: a comparison figure that still
@@ -397,7 +425,9 @@ def _payload(
     # direction nobody would check.
     threshold, low_coverage, coverage_stats = _coverage_cutoff(current, residual)
     kept = keyed[~keyed["country"].isin(low_coverage)]
-    region_medians_kept, region_n_countries_kept = _region_stats(kept, region_cols)
+    region_medians_kept, region_n_countries_kept, region_n_products_kept = (
+        _region_stats(kept, region_cols)
+    )
 
     shown = current[~current["coicop_code"].isin(residual)]
     shown_kept = shown[~shown["country"].isin(low_coverage)]
@@ -434,8 +464,10 @@ def _payload(
         "region_cols": region_cols,
         "region_medians": region_medians,
         "region_n_countries": region_n_countries,
+        "region_n_products": region_n_products,
         "region_medians_kept": region_medians_kept,
         "region_n_countries_kept": region_n_countries_kept,
+        "region_n_products_kept": region_n_products_kept,
         "residual_leaves": sorted(residual & set(current["coicop_code"].dropna())),
         "low_coverage": sorted(low_coverage),
         "coverage_cutoff": {"categories": threshold, **coverage_stats},

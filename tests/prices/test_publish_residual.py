@@ -46,6 +46,7 @@ def _current(codes):
             "standard_unit": ["kg"] * len(codes),
             "median_usd": [2.0, 3.0] * (len(codes) // 2),
             "n_obs": [10] * len(codes),
+            "n_products": [4] * len(codes),
             "last_seen": pd.to_datetime(["2026-09-01"] * len(codes)),
         }
     )

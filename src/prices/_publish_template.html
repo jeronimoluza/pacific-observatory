@@ -202,6 +202,8 @@
     ((hideLowCov ? DATA.region_medians_kept : DATA.region_medians)[key] || {})[k];
   const regionNFor = (key, k) =>
     ((hideLowCov ? DATA.region_n_countries_kept : DATA.region_n_countries)[key] || {})[k];
+  const regionPFor = (key, k) =>
+    ((hideLowCov ? DATA.region_n_products_kept : DATA.region_n_products)[key] || {})[k];
 
   // One row per COICOP leaf. The build puts every row of a leaf onto that
   // leaf's single display unit before publishing, so the unit is a property of
@@ -327,12 +329,16 @@
       } else if (regionVal != null && !isNaN(regionVal)) {
         rTd.textContent = regionVal.toFixed(2);
         const n = regionNFor(cell.key, rc.key);
-        if (n != null) {
+        const np = regionPFor(cell.key, rc.key);
+        if (np != null) {
           const tag = document.createElement('span');
-          tag.className = 'nctry'; tag.textContent = 'n=' + n;
+          tag.className = 'nctry'; tag.textContent = 'n=' + np;
           rTd.appendChild(tag);
         }
-        rTd.title = rc.label + ': median of ' + (n ?? '?') + ' country medians';
+        // n= is the product count, but the median is over country medians, so
+        // the tooltip has to name both or it describes a statistic nobody computed.
+        rTd.title = rc.label + ': median of ' + (n ?? '?') + ' country medians, '
+                  + 'over ' + (np ?? '?') + ' distinct products';
       } else {
         rTd.textContent = '·'; rTd.classList.add('na');
       }
