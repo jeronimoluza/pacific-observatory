@@ -3115,12 +3115,13 @@ var APP = {
     pane.classList.toggle("open", open);
     b.setAttribute("aria-expanded", open ? "true" : "false");
   },
-  setHRegion:function (r) { S.hregion = r; this.render(); },
+  /* Null under IS_REGIONAL: see the boot block that hides the chip groups. */
+  setHRegion:function (r) { S.hregion = IS_REGIONAL ? null : r; this.render(); },
   hsort:function (k) {
     if (S.hsort.k === k) S.hsort.d = -S.hsort.d;
     else S.hsort = {k:k, d:1};
     this.render(); },
-  setRegion:function (r) { S.region = r; this.render(); },
+  setRegion:function (r) { S.region = IS_REGIONAL ? null : r; this.render(); },
   weightPanel:function () {
     var pane = document.getElementById("wPanel"), b = document.getElementById("wToggle");
     var open = pane.hidden;
@@ -3597,12 +3598,29 @@ APP.togglePppUngated = function () { PPP_UNGATED = !PPP_UNGATED; renderPppBench(
     "COICOP divisions " + m.divisions.join(" and ") + " — food, beverages, alcohol and tobacco, " +
     "priced per kilogram, litre or piece";
 
-  /* The first tab holds the countries this payload carries; the Global View
-     tab holds the world they are measured against, and only earns its place
-     where the first tab is not already the world. */
+  /* ONE tab for the scope of the build, named after that scope: "Global View"
+     over the world, "Regional View" over one region. t-global used to appear
+     beside the regional tab as a second "Global View", which is two tabs both
+     claiming to be the world in front of a reader who asked for a region. It
+     is hidden in every build now, and no other code path calls APP.go("global")
+     -- so v-global and renderGlobalView are left standing but unreachable. */
   setTextIfPresent("t-world", IS_REGIONAL ? "Regional View" : "Global View");
   var gtab = document.getElementById("t-global");
-  if (gtab) gtab.hidden = !IS_REGIONAL;
+  if (gtab) gtab.hidden = true;
+
+  /* A regional build is already scoped to one region, so a region filter is a
+     control with exactly one setting -- "All regions", which over this payload
+     IS the region. It read as an offer to narrow further that could not narrow
+     anything. Both chip groups go, in every tab that carries one. The state
+     they write stays null, which is what every reader of S.region/S.hregion
+     already treats as "no region filter"; the setters refuse a non-null value
+     under IS_REGIONAL so a hidden control cannot strand a stale filter. */
+  if (IS_REGIONAL) {
+    ["regionFilter", "hmRegionFilter"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+  }
   /* `build_geo_series` labels the total over whatever countries it was handed
      "World", which in a regional build is a total over one region wearing the
      word "world". Rename it where that is what it is. */
