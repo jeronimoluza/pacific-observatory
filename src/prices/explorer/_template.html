@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Global Retail Prices — Unit Value Explorer</title>
+<title>Retail Prices</title>
 <style>
 /* ---------------------------------------------------------------------
    Every number here is a deviation from a reference — the world median,
@@ -276,6 +276,22 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
 .hm td.ctry:hover{font-weight:600}
 .hm td.c{text-align:center;font-size:10.5px;cursor:default}
 .hm td.na{background:repeating-linear-gradient(45deg,var(--plate),var(--plate) 3px,var(--hair) 3px,var(--hair) 4px)}
+/* An imputed value carries the same mark everywhere it appears: a hollow
+   diamond. On a line it is the point style; in a grid cell or beside a name it
+   is this glyph. It says WHICH figure rests on a filled month and nothing at
+   all about how much to trust it. */
+.impm{font-size:9px;color:#3d4441;margin-left:2px;vertical-align:1px}
+/* The column for the region this build was made from, so a reader can see
+   where they are standing in the world. */
+.hm th.ctyh.mine>span{font-weight:700;color:var(--ink)}
+.hm td.c.mine{box-shadow:inset 1px 0 0 var(--ink),inset -1px 0 0 var(--ink)}
+.hm tr.gvall td{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);
+  font-weight:700;height:23px}
+.hm tr.gvall td.ctry{font-weight:700}
+/* Six region names, not two hundred country ones: the 66px column the country
+   grid needs would truncate every one of them. */
+#gvTbl th.ctyh{height:auto;min-width:132px}
+#gvTbl th.ctyh>span{width:126px;-webkit-line-clamp:3}
 .ramp{display:flex;align-items:center;gap:0;margin-top:10px}
 .ramp i{width:26px;height:10px;display:block}
 .ramp .lab{font-size:11px;color:var(--faint);padding:0 8px}
@@ -349,7 +365,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   <div class="hin">
   <div class="htop">
     <div>
-      <h1>Global Retail Prices — Unit Value Explorer</h1>
+      <h1>Retail Prices</h1>
       <div class="scope" id="scope"></div>
     </div>
     <div class="modesw">
@@ -361,23 +377,26 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 </header>
 
 <nav class="tabs" role="tablist" aria-label="Views">
-  <button id="t-world"    class="on" role="tab" aria-selected="true"  onclick="APP.go('world')">World</button>
+  <!-- The first tab's label is written at boot: it holds the countries this
+       build carries, which is the world in a global build and one region in a
+       regional one. Calling it "World" over regional data is the misreading
+       this rename exists to stop. The Global View tab beside it is the actual
+       world -- every world region against the same world median -- and it only
+       appears where the first tab is NOT already the world. -->
+  <button id="t-world"    class="on" role="tab" aria-selected="true"  onclick="APP.go('world')">Global View</button>
+  <button id="t-global"   role="tab" aria-selected="false" onclick="APP.go('global')" hidden>Global View</button>
   <button id="t-compare"  role="tab" aria-selected="false" onclick="APP.go('compare')">Compare countries</button>
   <button id="t-country"  role="tab" aria-selected="false" onclick="APP.go('country')">Country profile</button>
   <button id="t-trends"   role="tab" aria-selected="false" onclick="APP.go('trends')">Currency effects</button>
 </nav>
 
-<!-- Only the controls that change the view in front of you. Currency is gone
-     from Compare: two hundred currencies cannot be ranked against each other,
-     and a switch the chart then refuses to honour is worse than no switch. -->
+<!-- Only the controls that change the view in front of you. There is no
+     US$/local switch: a cross-country comparison has no common ruler outside
+     the dollar, and where the local figure does mean something -- one
+     country's own items, one product's own history -- BOTH are shown at once
+     rather than hidden behind a control the reader has to find. -->
 <div class="ctlstrip" id="ctlstrip" hidden>
-  <div class="grp" data-views="country"><span class="ctllab" id="lab-cur">Currency</span>
-    <div class="seg" role="group" aria-labelledby="lab-cur">
-      <button id="cur-usd" class="on" aria-pressed="true" onclick="APP.set('cur','usd')">US$</button>
-      <button id="cur-local" aria-pressed="false" onclick="APP.set('cur','local')">Local</button>
-    </div>
-  </div>
-  <div class="grp" data-views="world compare country"><span class="ctllab" id="lab-ev">Evidence</span>
+  <div class="grp" data-views="world global compare country"><span class="ctllab" id="lab-ev">Evidence</span>
     <div class="seg" role="group" aria-labelledby="lab-ev">
       <button id="ev-any" aria-pressed="false" onclick="APP.set('evidence','any')">Any</button>
       <button id="ev-thin" aria-pressed="false" onclick="APP.set('evidence','thin')">5+ obs</button>
@@ -395,7 +414,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   <div class="card">
     <div class="spread">
       <div>
-        <h2>Where is each category dear?<button class="ibtn" id="b-hm" aria-expanded="false"
+        <h2>Where is each category more expensive?<button class="ibtn" id="b-hm" aria-expanded="false"
           aria-controls="i-hm" aria-label="How to read this" onclick="APP.info('hm')">i</button></h2>
         <div class="sub" id="hmSub">Country by category group, against the world median for the same items.</div>
       </div>
@@ -410,7 +429,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     <div class="info" id="i-hm">
       <div class="beginner-only">
         Every cell is one country's prices for one category group, compared with the world median for
-        the <b>same items in the same unit</b>. Red means dearer than the world, blue means cheaper,
+        the <b>same items in the same unit</b>. Red means more expensive than the world, blue means cheaper,
         and the number is the percentage gap. Click a column heading to sort by that group, or a
         country name to open its profile. Hatched cells are groups that country does not price
         often enough to compare. Picking a region <b>narrows who is on screen</b> and nothing else:
@@ -431,7 +450,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       <div class="beginner-only">
         Pick what to compare &mdash; <b>whole regions</b>, <b>parts of a region</b> or <b>single
         countries</b> &mdash; and which category. Each line answers one question: <b>how much
-        dearer is this than it was a year ago?</b> Only items priced in <b>both</b> periods
+        more expensive is this than it was a year ago?</b> Only items priced in <b>both</b> periods
         in the same country count, and each one carries equal weight, so the line moves when
         prices move and not when a different shop happens to get collected.
         <b>Since a year ago</b> is the reading to trust: it compares two months and stops
@@ -519,6 +538,48 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   </details>
 </section>
 
+<!-- ============ 1b. GLOBAL VIEW ============ -->
+<!-- Only present in a regional build, where the tab beside it holds one
+     region. Everything on it comes from the world medians a regional payload
+     already carries: `nodeMeta[code].gmed` is the world median for an item,
+     computed before the region filter, and `rmed` holds the same median for
+     every world region beside it. So this is the actual world, not a second
+     copy of this build's countries under a different heading. -->
+<section id="v-global" role="tabpanel" aria-labelledby="t-global" hidden>
+  <div class="card">
+    <div class="spread">
+      <div>
+        <h2>How the world prices the same basket<button class="ibtn" id="b-gv"
+          aria-expanded="false" aria-controls="i-gv" aria-label="How to read this"
+          onclick="APP.info('gv')">i</button></h2>
+        <div class="sub">Every world region against the world median, item by item.</div>
+      </div>
+    </div>
+    <div class="info" id="i-gv">
+      <div class="beginner-only">
+        The other tabs show the countries this dashboard was built for. This one shows
+        <b>the world they are being compared with</b>. Every figure here is a region's
+        median price for an item set against the <b>world median for the same item in
+        the same unit</b> &mdash; 1&nbsp;kg of rice against 1&nbsp;kg of rice &mdash;
+        and those item-by-item differences are then folded up the category tree, so a
+        finely split branch cannot outvote its neighbours. Red is more expensive than
+        the world, blue cheaper. The outlined column is the region this build is of.
+      </div>
+    </div>
+    <div class="cwrap" style="height:220px"><canvas id="cGlobalBars" role="img"
+      aria-label="Each world region against the world median"></canvas></div>
+    <div class="samples" id="gvLead" style="margin-top:14px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Region by category group</h2>
+    <div class="sub">Each category group in each world region, against the world
+      median for the same items.</div>
+    <div class="hmwrap"><table class="hm" id="gvTbl"></table></div>
+    <div class="ramp" id="gvRamp"></div>
+  </div>
+</section>
+
 <!-- ============ 2. COMPARE ============ -->
 <section id="v-compare" role="tabpanel" aria-labelledby="t-compare" hidden>
   <div class="row-side">
@@ -562,6 +623,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
             placeholder="Filter countries&hellip;" oninput="APP.searchLater()">
         </div>
         <div class="tbl-scroll"><table id="cmpTbl"></table></div>
+        <div id="cmpFlagKey"></div>
       </div>
     </div>
   </div>
@@ -676,7 +738,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   <div class="card">
     <div class="spread">
       <div>
-        <h2 id="ctryChartTitle">Dearest and cheapest, versus the world</h2>
+        <h2 id="ctryChartTitle">Most and least expensive, versus the world</h2>
         <div class="sub" id="ctryChartSub">Ratio of this country&rsquo;s unit value to the benchmark
           for the same item and unit.</div>
       </div>
@@ -713,7 +775,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   <div class="card">
     <div class="spread">
       <div>
-        <h2 id="wfTitle">What makes this country dear or cheap?<button class="ibtn" id="b-wf"
+        <h2 id="wfTitle">What makes this country more or less expensive?<button class="ibtn" id="b-wf"
           aria-expanded="false" aria-controls="i-wf" aria-label="How this is worked out"
           onclick="APP.info('wf')">i</button></h2>
         <div class="sub" id="wfSub">Each group&rsquo;s share of the country&rsquo;s distance from the world.</div>
@@ -722,7 +784,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     <div class="info" id="i-wf">
       <div class="beginner-only">
         A country's overall gap from the world is the sum of what each group contributes.
-        A bar going up means that group is dearer than the world <i>and</i> big enough in the
+        A bar going up means that group is more expensive than the world <i>and</i> big enough in the
         country's basket to matter; a bar going down means it pulls the country's prices below the
         world. The last bar is the total. Groups are ordered from the biggest push upward to the
         biggest pull downward. This one is always against the <b>world</b>, whatever the yardstick
@@ -743,11 +805,46 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         placeholder="Filter items&hellip;" oninput="APP.searchLater()">
     </div>
     <div class="tbl-scroll"><table id="ctryTbl"></table></div>
+    <div id="ctryFlagKey"></div>
   </div>
 </section>
 
 <!-- ============ 4. CURRENCY EFFECTS ============ -->
+<!-- An exchange-rate move shifts every price in the country by the same
+     proportion, so the currency effect is one number and not a property of any
+     product. This first card states it once, as a bar every product shares,
+     and puts each product's own move on top of it. -->
 <section id="v-trends" role="tabpanel" aria-labelledby="t-trends" hidden>
+  <div class="card">
+    <div class="spread">
+      <div>
+        <h2>What moved: the currency, or the price?<button class="ibtn" id="b-fxb"
+          aria-expanded="false" aria-controls="i-fxb" aria-label="How to read this"
+          onclick="APP.info('fxb')">i</button></h2>
+        <div class="sub">Every product's US$ price change, split into the shared
+          exchange-rate move and the product's own.</div>
+      </div>
+      <select id="fxbCtry" aria-label="Country" onchange="APP.set('country',this.value)"></select>
+    </div>
+    <div class="info" id="i-fxb">
+      <div class="beginner-only">
+        A US$ price can move for two reasons: the shop changed its price, or the local
+        currency changed against the dollar. The second one is <b>the same for
+        everything in the country</b> &mdash; it cannot be bigger for rice than for
+        beer &mdash; so it is drawn as a single bar that every row starts with. What
+        runs <b>beyond</b> that shared bar is the product's own price change, with the
+        currency netted out, and that is the part worth comparing across products.
+        Figures are in <b>log points</b> so the two parts add up exactly to the total;
+        for small moves a log point and a per cent are much the same number.
+      </div>
+    </div>
+    <div class="samples" id="fxbLead" style="margin:0 0 12px"></div>
+    <div id="fxbWarn"></div>
+    <div class="cscroll"><div class="cwrap"><canvas id="cFxBars" role="img"
+      aria-label="US$ price change by product, split into the exchange rate and the price"></canvas></div></div>
+    <div class="legend" id="fxbLegend"></div>
+  </div>
+
   <div class="card">
     <h2>How much of a price move is the exchange rate?<button class="ibtn" id="b-fx"
       aria-expanded="false" aria-controls="i-fx" aria-label="How to read this"
@@ -766,14 +863,6 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         <select id="trCtry" aria-label="Country" onchange="APP.set('country',this.value)"></select>
         <select id="trNode" aria-label="Category" onchange="APP.set('node',this.value)"></select>
         <span id="trUnits"></span>
-      </div>
-      <div class="seg" role="group" aria-label="Lines to show">
-        <button id="tr-both" class="on" aria-pressed="true" onclick="APP.set('fxMode','both')">Show all three</button>
-        <button id="tr-nofx" aria-pressed="false" onclick="APP.set('fxMode','nofx')">Remove FX</button>
-      </div>
-      <div class="seg" id="impSeg" role="group" aria-label="Imputed months" hidden>
-        <button id="imp-0" class="on" aria-pressed="true" onclick="APP.set('incImputed',false)">Measured only</button>
-        <button id="imp-1" aria-pressed="false" onclick="APP.set('incImputed',true)">Add imputed</button>
       </div>
     </div>
     <div class="samples" id="trKind" style="margin:0 0 10px"></div>
