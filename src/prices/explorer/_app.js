@@ -570,13 +570,39 @@ function bwHash() {
   return "w=" + S.wbase + (parts.length ? "|" + parts.join(",") : "");
 }
 function bwWriteHash() {
-  /* `history.replaceState` is refused on `file://` in some browsers and this
-     dashboard is opened from a file at least as often as it is served, so the
-     hash is set directly. Written on `change` and never on `input`: a history
-     entry per pixel of drag is not state worth keeping. */
-  var h = bwHash();
+  /* Written on `change` and never on `input`: a history entry per pixel of drag
+     is not state worth keeping.
+
+     WHY THIS IS NOT A BARE `location.hash =`. It was, and it threw the reader
+     to the top of the page. Assigning to `location.hash` is a same-document
+     navigation, and the HTML spec resolves the EMPTY fragment to "the top of
+     the document" -- so every click that landed back on the published vector
+     (which is the one vector that writes no hash at all) scrolled the window to
+     zero, while every click onto a NAMED vector matched no element, had no
+     indicated part, and did not scroll. That asymmetry is why the jump only
+     happened on some of the clicks: switching Equal -> World Bank was quiet and
+     switching World Bank -> Equal was not, depending on which one this build
+     published. Reset and the sliders' `change` commit went through here too, so
+     all three controls carried it.
+
+     `history.replaceState` does not scroll and does not stack a history entry,
+     so it is what runs. It is TRIED rather than assumed because it is refused
+     on `file://` in some browsers -- this dashboard is opened from a file at
+     least as often as it is served -- and the fallback is the old assignment
+     with the scroll position put back by hand. */
+  var h = bwHash(), x, y;
   if ((window.location.hash || "").replace(/^#/, "") === h) return;
+  try {
+    /* An empty vector clears the fragment outright rather than leaving a bare
+       "#" behind, which is what the reader would otherwise copy out of the
+       address bar for a link that is supposed to carry no weights at all. */
+    history.replaceState(null, "",
+      h ? "#" + h : window.location.pathname + window.location.search);
+    return;
+  } catch (e) { /* file:// -- fall through to the assignment below */ }
+  x = window.pageXOffset; y = window.pageYOffset;
   window.location.hash = h;
+  window.scrollTo(x, y);
 }
 function bwReadHash() {
   var m = /(?:^|[#&])w=([^&]*)/.exec(window.location.hash || "");
