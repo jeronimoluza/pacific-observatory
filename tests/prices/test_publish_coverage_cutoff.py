@@ -1,4 +1,14 @@
-"""The bottom-quartile coverage cut that drives the dashboard's hide toggle."""
+"""The coverage floor that drives the dashboard's hide toggle.
+
+It used to be the 25th percentile of named-leaf breadth, which is a filter
+that can never be satisfied: it labels a quarter of the countries
+"low coverage" however good they all become, so a country could be pushed
+under it by its neighbours improving. On the September 2026 corpus that put
+Belgium, Kuwait, Norway, Iceland and Tanzania in the same bucket as
+Gibraltar's single leaf, 50 of 202 countries globally and 10 of 38 in EAP.
+It is now an absolute claim about the country, `COVERAGE_MIN_NAMED_LEAVES`,
+which flags 8 and 1 respectively and retires itself as the corpus fills.
+"""
 
 from __future__ import annotations
 
@@ -37,35 +47,57 @@ def _frame(coverage: dict[str, int], residual_extra: dict[str, int] | None = Non
     return pd.DataFrame(rows)
 
 
-def test_drops_the_bottom_quartile():
-    coverage = {f"c{i:02d}": i + 1 for i in range(20)}  # counts 1..20
+def test_the_floor_is_absolute_and_not_a_quantile():
+    # 1..20 named leaves. Under the old quartile the cut landed at 5 and took
+    # four countries; under the floor it takes exactly those below the floor,
+    # and it would take the same four whatever the other sixteen did.
+    coverage = {f"c{i:02d}": i + 1 for i in range(20)}
     threshold, low, stats = publish._coverage_cutoff(_frame(coverage), RESIDUAL)
-    assert threshold == 5
-    assert low == {"c00", "c01", "c02", "c03"}
-    assert stats["n_dropped"] == 4
+    assert threshold == publish.COVERAGE_MIN_NAMED_LEAVES
+    assert low == {f"c{i:02d}" for i in range(20) if i + 1 < threshold}
+    assert stats["n_dropped"] == len(low)
     assert stats["n_countries"] == 20
-    assert stats["median"] == 10
+    assert stats["mode"] == "floor"
 
 
-def test_the_cut_is_strict_so_ties_on_the_boundary_survive():
-    # Nine countries sit exactly on the 25th percentile. Applying the cut with
-    # <= would carry every one of them over and drop 60% of the set, not 25%.
-    coverage = {"a": 1, "b": 2}
-    coverage.update({f"t{i}": 3 for i in range(9)})
-    coverage.update({f"h{i}": 40 for i in range(9)})
-    threshold, low, _ = publish._coverage_cutoff(_frame(coverage), RESIDUAL)
-    assert threshold == 3
-    assert low == {"a", "b"}
+def test_a_country_is_never_flagged_by_its_neighbours_improving():
+    # THE WHOLE POINT. Two identical countries, one in a thin world and one in a
+    # rich one. A quartile flags the second and not the first; a floor cannot
+    # tell the two worlds apart, because the question is about the country.
+    n = publish.COVERAGE_MIN_NAMED_LEAVES + 5
+    thin = {"subject": n, **{f"p{i}": 2 for i in range(9)}}
+    rich = {"subject": n, **{f"p{i}": 200 for i in range(9)}}
+    _, low_thin, _ = publish._coverage_cutoff(_frame(thin), RESIDUAL)
+    _, low_rich, _ = publish._coverage_cutoff(_frame(rich), RESIDUAL)
+    assert "subject" not in low_thin
+    assert "subject" not in low_rich
+
+
+def test_the_cut_is_strict_so_a_country_exactly_on_the_floor_survives():
+    floor = publish.COVERAGE_MIN_NAMED_LEAVES
+    coverage = {"under": floor - 1, "on": floor, "over": floor + 1}
+    _, low, _ = publish._coverage_cutoff(_frame(coverage), RESIDUAL)
+    assert low == {"under"}
+
+
+def test_the_named_leaf_count_travels_with_the_verdict():
+    # A hidden column has to be able to say how thin it is, and a future slider
+    # has to be able to move the floor without a rebuild, so the per-country
+    # count is in the payload beside the set.
+    coverage = {"a": 3, "b": 40}
+    _, _, stats = publish._coverage_cutoff(_frame(coverage), RESIDUAL)
+    assert stats["counts"] == {"a": 3, "b": 40}
 
 
 def test_residual_leaves_do_not_count_toward_coverage():
     # Reaching a catch-all leaf is the classifier giving up, not the country
     # having a price for a real category, so it must not buy a country breadth.
-    coverage = {f"c{i:02d}": i + 1 for i in range(20)}
-    padded = _frame(coverage, residual_extra={"c00": 1, "c01": 1})
-    threshold, low, _ = publish._coverage_cutoff(padded, RESIDUAL)
-    assert low == {"c00", "c01", "c02", "c03"}
-    assert threshold == 5
+    floor = publish.COVERAGE_MIN_NAMED_LEAVES
+    coverage = {"thin": floor - 2, "fat": floor + 2}
+    padded = _frame(coverage, residual_extra={"thin": 5})
+    _, low, stats = publish._coverage_cutoff(padded, RESIDUAL)
+    assert low == {"thin"}
+    assert stats["counts"]["thin"] == floor - 2
 
 
 def test_empty_frame_drops_nobody():
