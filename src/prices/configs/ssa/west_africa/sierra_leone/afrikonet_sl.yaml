@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: afrikonet_sl
+url: https://www.afrikonet.sl/
+language: en
+cadence: weekly
+channel: marketplace
+notes: |
+  Probed 2026-09-11: bespoke Bootstrap-based marketplace, NOT Shopify/
+  WooCommerce/PrestaShop/OpenCart. No open catalog API found; category
+  listing pages render price inline (`.product__new-price` inside each
+  `.product[data-link]` card, with `.product__old-price` as the pre-
+  discount strike-through), so this is Tier 1A scrapy_html over the
+  category tree, never fetching a PDP.
+  161 categories hardcoded from the homepage nav, spanning most of the
+  COICOP basket (groceries/produce/eggs/beverages, pharmacy/medications,
+  electronics/appliances, home/furniture, fashion/jewelry, toys, books,
+  automotive, gardening). Category pages are small (single page each on
+  every category sampled; ?page=2 on air-conditioners returns zero items,
+  confirming no further pagination rather than a broken paginator).
+  Currency: "Le" symbol on every price. Magnitude check confirms the NEW
+  Leone (SLE, redenominated 2022), not the old SLL -- a 12000BTU air
+  conditioner at Le8,000.00 is a plausible SLE price (~USD 360 at
+  ~22 SLE/USD) but would be absurd as SLL (~USD 0.36 pre-redenomination).
+  Matches countries.yaml's SLE for Sierra Leone.
+  Test run: prices collect --source afrikonet_sl --max-items 20 -> rows
+  priced in SLE, distinct urls. Sample: SLE 8,000.00 "Icona London's Air
+  Conditioner 12000BTU"; SLE 20,000.00 "Icona London Diesel Generator."

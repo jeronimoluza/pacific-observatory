@@ -1,0 +1,50 @@
+scaffolding: spider
+spider: fasita_rw
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: "https://fasita.rw/"
+channel: supermarket
+language: en
+currency: RWF
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Onboarded from ~/gapwork/batches/untried_4.csv (never-probed candidate,
+  build_tier not scored). Fasita is a grocery/food delivery service
+  covering Kigali, Huye, Musanze and Nyanza, Rwanda. Fingerprinted
+  2026-09-11: React/Vite SPA; the raw homepage HTML is a location-picker
+  shell with no server-rendered products, and the site's own sitemap.xml
+  lists only marketing pages (no product routes). Found the backend via a
+  Playwright network-capture pass after clicking through "Order Now": a
+  plain JSON API at /api/products, no auth (every other guessed endpoint,
+  e.g. /api/customer/me, is 401-gated).
+
+  HARD GATES verified live:
+  - Enumerability: /api/products returns the ENTIRE catalog in one response
+    (limit/offset/page query params are accepted but silently ignored --
+    always all 137 items). Not paginated, so the page-1-vs-page-2 test
+    doesn't apply in the usual sense, but the full id set is stable and
+    directly enumerable in a single authenticated-free call.
+  - Non-zero prices: all sampled items carry a decimal base_price (e.g.
+    1500.00, 3000.00, 2000.00, 8000 for "Beef Burger").
+  - Currency: no explicit currency field in the payload; Rwanda-only
+    storefront (Kigali/Huye delivery only) so RWF is unambiguous (matches
+    countries.yaml).
+  - Locality: categories are Fruits/Food/Drinks/Home Care/Kitchen/Personal
+    Care/Pharma/Stationery with Kigali/Huye delivery-area tags per item
+    (`locations` field); rendered site copy is Kigali/Huye specific, not a
+    diaspora audience.
+
+  137 products total as of 2026-09-11. Test run (--max-items 20): see
+  collect log.
+
+  PDP route /product/<id> returns HTTP 200 but is the same client-rendered
+  SPA shell for every id (content does not differ at the HTTP level) --
+  used only as a stable per-product permalink for DuplicationPipeline's
+  url-dedup, not as a page the spider actually parses.
+
+  Spider parses: API only (fasita.rw/api/products JSON); the collected
+  `url` values are PDP permalinks the spider never fetches.
+  origin=gapwork/batches/untried_4.csv

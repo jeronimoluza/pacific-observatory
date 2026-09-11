@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pacific_supply_co_furniture
+url: https://www.pacificsupplyco.online/
+language: en
+cadence: monthly
+channel: home-improvement
+archive_prefix: "pacificsupplyco.online/"
+archive_path_re: '^/product-page/[^/?]+'
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-REVIEW,
+  ambiguous). Wix storefront -- same route as nayelis_closet_gn: sitemap.xml
+  -> store-products-sitemap.xml (40 PDP urls) -> schema.org JSON-LD per PDP
+  via the shared JsonLdSitemapBaseSpider. Furniture/home retailer. Priced in
+  USD, which is the Marshall Islands' own official currency (no dual-currency
+  judgement call needed here, unlike the Liberia/Samoa cases in this batch).
+  Page family: PDP.

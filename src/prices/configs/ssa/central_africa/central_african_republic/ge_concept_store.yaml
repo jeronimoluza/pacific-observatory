@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ge_concept_store
+url: https://www.ge-conceptstore.com/
+language: fr
+cadence: monthly
+channel: dept-store
+archive_prefix: "ge-conceptstore.com/"
+archive_path_re: '^/product-page/[^/?]+'
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-REVIEW,
+  ambiguous). Wix storefront -- same route as nayelis_closet_gn: sitemap.xml
+  -> store-products-sitemap.xml -> schema.org JSON-LD per PDP via the shared
+  JsonLdSitemapBaseSpider. Small catalog (6 PDP urls, no pagination needed --
+  the sitemap is the full enumeration) but priced in XAF, correct for Central
+  African Republic, read from the payload. First retailer_sku source of any
+  kind for Central African Republic (existing CAR configs are CPI/tariff/
+  FEWS NET). Page family: PDP.

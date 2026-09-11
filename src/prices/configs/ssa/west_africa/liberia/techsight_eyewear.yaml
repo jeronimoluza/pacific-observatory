@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: techsight_eyewear
+url: https://www.techsightinc.com/
+language: en
+cadence: monthly
+channel: fashion
+archive_prefix: "techsightinc.com/"
+archive_path_re: '^/product-page/[^/?]+'
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-CUSTOM-
+  CRAWLER). Wix storefront -- same route as nayelis_closet_gn: sitemap.xml ->
+  store-products-sitemap.xml (14 PDP urls, small catalog) -> schema.org
+  JSON-LD per PDP via the shared JsonLdSitemapBaseSpider. Liberia eyewear
+  retailer. Dual-currency judgement call: priced in USD, not LRD -- noted,
+  not silently accepted. Page family: PDP.

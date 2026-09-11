@@ -141,7 +141,12 @@ class GenericWooPlaywrightSpider(WooBaseSpider):
         yield scrapy.Request(
             self._page_url(1),
             callback=self.parse_page,
-            meta=self._meta(1),
+            # A JS-challenge tenant (nesraf.com) can still 403 the very
+            # first page even after a successful cookie warm-up on a later
+            # visit; without handle_httpstatus_list, Scrapy's HttpError-
+            # Middleware silently drops 403 responses before parse_page
+            # ever sees them, and the 403-retry branch below never fires.
+            meta={**self._meta(1), "handle_httpstatus_list": [403]},
             cookies=cookies,
             headers={"User-Agent": _UA},
         )
@@ -156,7 +161,11 @@ class GenericWooPlaywrightSpider(WooBaseSpider):
             yield scrapy.Request(
                 self._page_url(page),
                 callback=self.parse_page,
-                meta={**self._meta(page), "rewarmed": True},
+                meta={
+                    **self._meta(page),
+                    "rewarmed": True,
+                    "handle_httpstatus_list": [403],
+                },
                 cookies=cookies,
                 headers={"User-Agent": _UA},
                 dont_filter=True,

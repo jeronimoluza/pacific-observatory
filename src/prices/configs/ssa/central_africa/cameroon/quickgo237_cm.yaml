@@ -1,0 +1,45 @@
+scaffolding: spider
+spider: quickgo237_cm
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: "https://www.quickgo237.com/"
+channel: marketplace
+language: fr
+currency: XAF
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Onboarded from ~/gapwork/batches/untried_4.csv (never-probed candidate,
+  build_tier not scored). QuickGo237 is a Next.js multi-vendor local
+  marketplace in Cameroon (restaurants + grocery/pharmacy/electronics/
+  fashion vendors). Fingerprinted 2026-09-11: Bootstrap-free Next.js App
+  Router SPA; no server-rendered product data in the raw HTML (React Server
+  Component streaming payload carries no price data). Found the backend via
+  a Playwright network-capture pass on /marketplace/products: plain JSON
+  API at /api/products?limit=N&offset=N, no auth.
+
+  HARD GATES verified live:
+  - Enumerability: limit=5&offset=0 vs limit=5&offset=5 return disjoint
+    product ids (11 total per {"count": 11} in the payload).
+  - Non-zero prices: all 11 items carry a plain integer price (155000,
+    4500, 3500, 6500, 5500, 8500, 850000, 15000, 2500, ...).
+  - Currency: no explicit currency field in the JSON, but the rendered page
+    displays every price with a "FCFA" suffix and the storefront is
+    Cameroon-only -- XAF is unambiguous (matches countries.yaml).
+  - Locality: vendors are named Cameroonian businesses (Restaurant Le
+    Gourmet, Super U Express, Oneclick), French-language names, city
+    references (Yaoundé/Douala) in site metadata.
+
+  Caveat: the live catalog is small -- 11 SKUs total across all vendors as
+  of 2026-09-11 (an early-stage marketplace, not yet mature). Still passes
+  every hard gate and the Phase 6 >=5-row test bar.
+
+  Test run 2026-09-11 (--max-items 20): see collect log. PDP permalink
+  pattern confirmed live: /marketplace/product/<slug> (200, singular
+  "product").
+
+  Spider parses: API only (quickgo237.com/api/products JSON); the
+  collected `url` values are PDP permalinks the spider never fetches.
+  origin=gapwork/batches/untried_4.csv
