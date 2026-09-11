@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: craft_store_ly
+url: https://craft-store.ly/
+language: en
+cadence: weekly
+channel: electronics
+notes: |
+  Probed 2026-09-11. WooCommerce Store API at
+  /wp-json/wc/store/v1/products, no auth needed. Page family: API (spider
+  reads the Store API only, never fetches an HTML page).
+  Currency: LYD (site currency_code field), currency_minor_unit=2 --
+  price "25000" divides to LYD 250.00, matches the price_html on the
+  same row.
+  Enumerability: page1 (per_page=10) returned 10 ids, page2 returned a
+  disjoint set of 10 ids, zero overlap -- DISTINCT, not a re-served page.
+  Catalog size: X-WP-Total header reports 1979 products across 198 pages
+  at per_page=10; at per_page=100 that is roughly 20 pages.
+  Catalog is camera/videography/audio gear (Insta360, Zhiyun gimbals,
+  Boya microphones). Product names and site UI are in English despite
+  Libya official language being Arabic, so language: en (matches what
+  the classifier will actually see), not the countries.yaml default.
+  Products carry no categories values in the Store API payload, so
+  category will be null for every row; classifier assigns COICOP per
+  product name. coicop_codes left unset (wide-enough catalog).
+  channel: electronics (cameras/AV gear retailer, not a general
+  marketplace).
