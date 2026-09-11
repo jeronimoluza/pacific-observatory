@@ -38,13 +38,7 @@ so this overrides `parse_sitemap` here instead of patching the base: same
 depth-gated walk, just strips the query string before testing `.xml`.
 """
 
-import re
-
-import scrapy
-
-from ._woo_sitemap_base import MAX_SITEMAPS, _LOC_RE, WooSitemapBaseSpider
-
-_XML_PATH_RE = re.compile(r"\.xml(?:$|\?)", re.I)
+from ._woo_sitemap_base import WooSitemapBaseSpider
 
 
 class BennetItSpider(WooSitemapBaseSpider):
@@ -61,24 +55,3 @@ class BennetItSpider(WooSitemapBaseSpider):
         "DOWNLOAD_DELAY": 10.0,
     }
 
-    def parse_sitemap(self, response):
-        locs = _LOC_RE.findall(response.text)
-        depth = response.meta.get("depth_sitemap", 0)
-        child_maps = [u for u in locs if _XML_PATH_RE.search(u)]
-        pages = [u for u in locs if not _XML_PATH_RE.search(u)]
-
-        if child_maps and depth == 0:
-            for url in child_maps[:MAX_SITEMAPS]:
-                yield scrapy.Request(
-                    url,
-                    callback=self.parse_sitemap,
-                    meta=self._meta({"depth_sitemap": 1}),
-                )
-
-        product_urls = [u for u in pages if re.search(self.PRODUCT_URL_RE, u)]
-        self.logger.info(
-            f"{self.name} sitemap={response.url} urls={len(pages)} "
-            f"products={len(product_urls)} child_maps={len(child_maps)}"
-        )
-        for url in product_urls:
-            yield scrapy.Request(url, callback=self.parse_product, meta=self._meta())

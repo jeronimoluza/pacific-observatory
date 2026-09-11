@@ -23,6 +23,7 @@ Underscored filename -- Scrapy's SpiderLoader skips classes without `name`.
 import logging
 import re
 from datetime import datetime, timezone
+from urllib.parse import urlsplit
 
 import scrapy
 
@@ -71,11 +72,22 @@ class WooSitemapBaseSpider(scrapy.Spider):
             meta=self._meta({"depth_sitemap": 0}),
         )
 
+    @staticmethod
+    def _is_sitemap_loc(url: str) -> bool:
+        """Does this <loc> point at another sitemap rather than at a page?
+
+        Test the PATH, not the whole URL: bennet.com serves its child sitemaps
+        as `.../sitemap.xml?page=2`, which does not end in ".xml", so a naive
+        endswith() classified each shard as a product page and silently dropped
+        the entire shard.
+        """
+        return urlsplit(url).path.lower().endswith(".xml")
+
     def parse_sitemap(self, response):
         locs = _LOC_RE.findall(response.text)
         depth = response.meta.get("depth_sitemap", 0)
-        child_maps = [u for u in locs if u.lower().endswith(".xml")]
-        pages = [u for u in locs if not u.lower().endswith(".xml")]
+        child_maps = [u for u in locs if self._is_sitemap_loc(u)]
+        pages = [u for u in locs if not self._is_sitemap_loc(u)]
 
         if child_maps and depth == 0:
             for url in child_maps[:MAX_SITEMAPS]:

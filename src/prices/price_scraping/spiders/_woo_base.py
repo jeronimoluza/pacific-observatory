@@ -25,6 +25,7 @@ import logging
 import re
 from datetime import datetime, timezone
 from typing import Iterator
+from urllib.parse import urljoin
 
 import scrapy
 from bs4 import BeautifulSoup
@@ -291,10 +292,14 @@ class WooBaseSpider(scrapy.Spider):
         norm_price = cls._woo_normalize_price(price) if price is not None else None
         if not norm_price:
             return None
+        # offers.url is site-relative on some tenants (bennet.com), and `url`
+        # is the DuplicationPipeline's dedup key -- a relative value is both
+        # useless to a reader and a collision risk, so resolve it against the
+        # page it was parsed from.
         row: dict = {
             "product_name": html.unescape(str(name)).strip()[:500],
             "price": norm_price,
-            "url": offers.get("url") or node.get("url") or url,
+            "url": urljoin(url, offers.get("url") or node.get("url") or url),
         }
         sku = node.get("sku")
         if sku:
