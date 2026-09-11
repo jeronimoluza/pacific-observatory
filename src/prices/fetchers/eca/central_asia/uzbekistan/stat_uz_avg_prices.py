@@ -45,6 +45,29 @@ carried in `notes`. Units are not itemised by the publisher -- they are
 embedded in some item names ("Молоко свежее (1 литр)", "Яйца (10 штук)")
 and implicitly per-kilogram otherwise -- so `unit` is left None rather than
 guessed, same treatment as the sibling `kg_nsc_avg_prices` fetcher.
+
+`_COICOP_MAP` stamps a per-ITEM COICOP-2018 leaf on the emitted row while the
+manifest stays `coicop_classification: classifier`. That pairing is deliberate:
+`concatenate`'s `_classifier_csv_map` ingests a fetcher's price_observations.csv
+ONLY for `classifier` sources, and the per-row code then rides through as
+`declared_coicop_codes` and short-circuits the head in `classify`
+(`state=narrow_source`, confidence 1.0). Declaring `source_curated` instead
+would remove this file from the corpus altogether.
+
+MEASURED CAVEAT, 2026-09-11: a COICOP code is NOT this source's binding
+constraint on the published grid. Of its 322 rows inside the dashboard's 90-day
+window, only 28 were `qa_status: trusted` -- 98 failed `qa_quantity`
+(`review_missing_qty`) and 196 failed the thin-cell check (`review_uv_thin`).
+The quantity failures are the `unit: None` decision above meeting bare Russian
+commodity nouns that carry no parseable quantity; they will keep failing after
+this map lands. Itemising `unit` is the fix for that, and it is a separate job.
+
+The animal-feed tail (Отруби/bran, Шрот/meal, Шелуха/husk, Комбикорм/compound
+feed) is listed in `_NON_COICOP_ITEMS`: it is livestock input, not household
+consumption, so no division-01/02 leaf applies. Those rows keep a null
+`coicop_code` and fall through to the classifier rather than being dropped --
+under `classifier` a null is legitimate, and dropping them would destroy
+observations rather than merely leave them unlabelled.
 """
 
 from __future__ import annotations
@@ -68,6 +91,60 @@ _CURRENCY = "UZS"
 _SOURCE_KEY = "uz_stat_avg_prices"
 _IDENT = ["source_key", "observation_date", "item_name", "subnational_area"]
 
+# stat.uz Klassifikator_ru label -> COICOP-2018 leaf
+# (src/data/prices/enrich/gold/coicop_leaves.txt).
+_COICOP_MAP = {
+    "Арбуз": "01.1.6.5.4",
+    "Баклажаны": "01.1.7.2.3",
+    "Баранина": "01.1.2.2.3",
+    "Виноград": "01.1.6.5.1",
+    "Говядина": "01.1.2.2.1",
+    "Горох": "01.1.7.6.5",
+    "Груши": "01.1.6.3.2",
+    "Дыня": "01.1.6.5.3",
+    "Капуста": "01.1.7.1.2",
+    "Картофель": "01.1.7.5.1",
+    "Кишмиш": "01.1.6.7.1",
+    "Крупа манная": "01.1.1.9.0",
+    "Кукуруза": "01.1.1.1.6",
+    "Лимоны": "01.1.6.2.2",
+    "Лук репчатый": "01.1.7.4.3",
+    "Масло подсолнечное (1 литр)": "01.1.5.1.1",
+    "Масло сливочное": "01.1.5.2.1",
+    "Масло хлопковое (1 литр)": "01.1.5.1.9",
+    "Маш": "01.1.7.6.9",
+    "Молоко свежее (1 литр)": "01.1.4.1.1",
+    "Морковь": "01.1.7.4.1",
+    "Мука пшеничная высшего сорта": "01.1.1.2.1",
+    "Мука пшеничная первого сорта": "01.1.1.2.1",
+    "Мясо птицы": "01.1.2.2.4",
+    "Огурцы": "01.1.7.2.2",
+    "Перец болгарский": "01.1.7.2.1",
+    "Помидоры": "01.1.7.2.4",
+    "Пшеница": "01.1.1.1.1",
+    "Рис": "01.1.1.1.2",
+    "Рыба всякая": "01.1.3.1.9",
+    "Сахар песок": "01.1.8.1.1",
+    "Тыква": "01.1.7.2.5",
+    "Фасоль": "01.1.7.6.1",
+    "Хлеб пшеничный из муки 1-го сорта": "01.1.1.3.1",
+    "Чеснок": "01.1.7.4.2",
+    "Яблоки": "01.1.6.3.1",
+    "Яйца (10 штук)": "01.1.4.8.1",
+    "Ячмень": "01.1.1.1.4",
+}
+
+# Livestock-feed rows the same dehqan-market tables carry. Not household
+# food; no division-01/02 leaf applies, so they stay uncoded.
+_NON_COICOP_ITEMS = frozenset(
+    {
+        "Комбикорм",
+        "Отруби",
+        "Шелуха",
+        "Шрот",
+    }
+)
+
 _CSV_LINK_RE = re.compile(r"sdmx_data_(\d+)\.csv")
 _TAG_TEXT_RE = re.compile(r">([^<>]{15,200})<")
 # "на рынках" / "на дехканских рынках <Region>", but NOT the
@@ -83,6 +160,10 @@ _MARKET_TITLE_RE = re.compile(
 _SHOPS_RE = re.compile(r"магазин", re.IGNORECASE)
 # Accepts both the Cyrillic М (U+041C) and the Latin M used in the header.
 _PERIOD_RE = re.compile(r"^(\d{4})-[MМ](\d{2})$")
+
+# Labels seen in neither collection above, accumulated across datasets and
+# logged once at the end of a run.
+_UNMAPPED: set[str] = set()
 
 
 def _discover_datasets(html: str) -> list[tuple[str, str | None, str]]:
@@ -173,12 +254,16 @@ def _parse_csv(
             note = f"stat.uz average market price ({title})"
             if item_en:
                 note = f"{note}; en={item_en}"
+            coicop = _COICOP_MAP.get(item_ru)
+            if coicop is None and item_ru not in _NON_COICOP_ITEMS:
+                _UNMAPPED.add(item_ru)
             row = {
                 "observation_date": obs_date.isoformat(),
                 "period_kind": "monthly",
                 "country": _COUNTRY,
                 "subnational_area": area,
                 "source_key": _SOURCE_KEY,
+                "coicop_code": coicop,
                 "item_name": item_ru,
                 "price_local": round(price, 4),
                 "currency": _CURRENCY,
@@ -194,6 +279,7 @@ def _parse_csv(
 
 
 def fetch_uz_stat_avg_prices(cutoff: date) -> pd.DataFrame | None:
+    _UNMAPPED.clear()
     session = get_session()
     try:
         page = session.get(_INDEX_URL, timeout=60)
@@ -227,5 +313,13 @@ def fetch_uz_stat_avg_prices(cutoff: date) -> pd.DataFrame | None:
         )
         all_rows.extend(rows)
 
+    if _UNMAPPED:
+        logger.warning(
+            "[%s] %d item label(s) in neither _COICOP_MAP nor _NON_COICOP_ITEMS, "
+            "left uncoded for the classifier: %s",
+            _SOURCE_KEY,
+            len(_UNMAPPED),
+            sorted(_UNMAPPED),
+        )
     logger.info("[%s] %d rows total (cutoff=%s)", _SOURCE_KEY, len(all_rows), cutoff)
     return pd.DataFrame(all_rows) if all_rows else None

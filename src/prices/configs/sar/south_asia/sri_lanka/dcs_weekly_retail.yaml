@@ -26,3 +26,9 @@ notes: |
   is published. Currency LKR matches countries.yaml. Estimate is
   conservative: 122 named products collapse to fewer distinct COICOP leaves
   (multiple rice/onion/fish grades share a leaf).
+  COICOP, added 2026-09-11: the fetcher module carries a `_COICOP_MAP` keyed on
+  the dashboard's `product` code, covering all 122 items. `coicop_classification`
+  is deliberately LEFT as `classifier` -- see the module docstring;
+  `source_curated` would remove the file from the corpus. Betel leaves and
+  arecanuts map to 02.4.0.0, the COICOP home for masticatories, not to a food
+  leaf.

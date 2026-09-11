@@ -59,11 +59,14 @@ from __future__ import annotations
 import io
 import logging
 import re
+from collections import Counter
+from dataclasses import dataclass
 from datetime import date
 
 import pandas as pd
 import pdfplumber
 
+from prices.fetchers import ocr
 from prices.fetchers.utils import get_scrape_ts, get_session, make_hash
 
 logger = logging.getLogger(__name__)
@@ -77,6 +80,13 @@ _IDENT = ["source_key", "observation_date", "subnational_area", "item_name"]
 _PDF_HREF_RE = re.compile(
     r'href="(http://mtcic\.gov\.ki/download/\d+/price-control/\d+/[^"]+\.pdf)"',
     re.I,
+)
+# The WP-File-Download listing prints the publisher's own upload date next to
+# every file ("Date added: 22-02-2024"). That is the authoritative date for the
+# Orders whose filename carries only a year ("...-no-1-of-2024-2.pdf") -- see
+# _doc_date().
+_DATE_ADDED_RE = re.compile(
+    r"Date added:</span>\s*(\d{2})-(\d{2})-(\d{4})", re.I
 )
 
 # "...as-at-14-06-2022.pdf" / "...-13-as-at-17-08-2022.pdf"
@@ -107,14 +117,18 @@ _MONTHS = {
     )
 }
 
-# "1. Flour", "10. Tobacco", "9. Baby Food (bottle) Per carton"
-_SECTION_RE = re.compile(r"^\d{1,2}\s*\.\s*([A-Za-z].*)$")
+# "1. Flour", "10. Tobacco", "9. Baby Food (bottle) Per carton", and the
+# 2024 Order's "1)Flour" / "15) Bicycle".
+_SECTION_RE = re.compile(r"^(\d{1,2})\s*[.)]\s*([A-Za-z].*)$")
 # Trailing column-unit hints the PDF glues onto the section heading.
 _SECTION_NOISE_RE = re.compile(
     r"\s*(per\s+(carton|piece|pieces|bottle|packet|bar|tin|drum|litre|yard|"
     r"inner/pcs)|wp/pcs|r/p/pcs|pcs)\b.*$",
     re.I,
 )
+
+# Scanned pages carry a running "PAGE 3" / "Page 3" in the commodity column.
+_PAGE_MARK_RE = re.compile(r"\b(?:PAGE|Page)\s*\d+\b")
 
 _MAX_PRICE = 100_000.0
 
@@ -159,21 +173,33 @@ def _num(cell: str | None) -> float | None:
     return value
 
 
-def _clean_section(text: str) -> str | None:
+def _clean_section(text: str) -> tuple[int, str] | None:
+    """Parse a numbered commodity heading ("3. Sugar", "15) Bicycle").
+
+    Returns the heading's own ordinal alongside the label; the ordinal is what
+    lets the OCR path notice that a heading went unread -- see _rows_from_doc.
+    """
     m = _SECTION_RE.match(text.strip())
     if not m:
         return None
-    label = _SECTION_NOISE_RE.sub("", m.group(1)).strip(" .:-")
+    label = _SECTION_NOISE_RE.sub("", m.group(2)).strip(" .:-")
     # "5.Prices Regulation Order (No.1) 2022 is repealed" is a preamble line,
     # not a commodity section.
     if not label or "regulation order" in label.lower():
         return None
-    return label
+    return int(m.group(1)), label
 
 
 def _region_labels(rows: list[list[str | None]]) -> list[str]:
     """Region names for each 4-column block, read off the banner row that sits
-    directly above the 'Wholesale' header row."""
+    directly above the 'Wholesale' header row.
+
+    The banner cell is joined across the whole 4-column span rather than read
+    out of the block's first column: a text-layer table puts the name in one
+    merged cell (the other three are empty, so joining is a no-op), but an
+    OCR'd scan has no merged cells and spreads "LINE & PHOENIX GROUP" over
+    three of them.
+    """
     header_idx = next(
         (
             i
@@ -189,9 +215,9 @@ def _region_labels(rows: list[list[str | None]]) -> list[str]:
     banner = rows[header_idx - 1] if header_idx > 0 else []
     labels: list[str] = []
     for block in range(n_blocks):
-        col = 1 + 4 * block
-        raw = banner[col] if col < len(banner) else None
-        label = re.sub(r"\s+", " ", str(raw)).strip() if raw else ""
+        span = banner[1 + 4 * block : 5 + 4 * block]
+        raw = " ".join(str(c) for c in span if c)
+        label = re.sub(r"\s+", " ", raw).strip(" |.-")
         labels.append(label or f"Region {block + 1}")
     return labels
 
@@ -205,40 +231,163 @@ def _parse_pdf(content: bytes) -> tuple[list[str], list[list[str | None]]]:
     return _region_labels(rows), rows
 
 
+def _ocr_pdf(content: bytes) -> tuple[list[str], list[list[str | None]]]:
+    """Same shape as _parse_pdf, but for a scan with no text layer.
+
+    Only pages whose recovered grid has the document's modal column count are
+    kept, and that count must itself be a legal Order shape (one commodity
+    column plus whole 4-column region blocks). A scan page whose ruled lines
+    came back short is therefore dropped entirely rather than contributing a
+    row whose columns mean something other than the header says they do.
+    """
+    grids = ocr.page_grids(content)
+    if not grids:
+        return [], []
+    widths = Counter(len(r) for g in grids for r in g)
+    if not widths:
+        return [], []
+    modal, _ = widths.most_common(1)[0]
+    if modal < 5 or (modal - 1) % 4 != 0:
+        logger.info(
+            "[%s] OCR grid width %d is not a 1+4n Order shape -- page(s) dropped",
+            _SOURCE_KEY,
+            modal,
+        )
+        return [], []
+    rows = [r for g in grids for r in g if len(r) == modal]
+    dropped = sum(n for w, n in widths.items() if w != modal)
+    if dropped:
+        logger.info(
+            "[%s] OCR: %d row(s) dropped on a non-modal grid width (kept %d at "
+            "width %d)",
+            _SOURCE_KEY,
+            dropped,
+            len(rows),
+            modal,
+        )
+    return _region_labels(rows), rows
+
+
+# Plausible AUD ceiling prices in a Kiribati Price Order: the cheapest
+# controlled line is a single battery / bar of soap, the dearest an adult
+# bicycle or a drum of engine oil.
+_OCR_PRICE_LO = 0.05
+_OCR_PRICE_HI = 2000.0
+# 1 kg = 2.2046 lb, so a correctly aligned pair of per-kg / per-lb columns must
+# sit near that ratio. A block whose columns have shifted will not.
+_KG_PER_LB_LO = 1.8
+_KG_PER_LB_HI = 2.7
+
+
+@dataclass
+class _Rejects:
+    price: int = 0
+    item: int = 0
+    wholesale_gt_retail: int = 0
+    unit_ratio: int = 0
+    candidates: int = 0
+
+    @property
+    def total(self) -> int:
+        return self.price + self.item + self.wholesale_gt_retail + self.unit_ratio
+
+
 def _rows_from_doc(
-    *, rows: list[list[str | None]], regions: list[str], doc_date: date, url: str
-) -> list[dict]:
+    *,
+    rows: list[list[str | None]],
+    regions: list[str],
+    doc_date: date,
+    url: str,
+    from_ocr: bool = False,
+) -> tuple[list[dict], _Rejects]:
     ts = get_scrape_ts()
     out: list[dict] = []
+    rej = _Rejects()
     section: str | None = None
+    last_n: int | None = None
     for row in rows:
         if not row:
             continue
         first = str(row[0] or "").strip()
+        if from_ocr:
+            # Every scanned page prints a running "PAGE n" in the commodity
+            # column; it is not part of the heading or the item.
+            first = _PAGE_MARK_RE.sub("", first).strip()
         if not first:
             continue
         heading = _clean_section(first)
         if heading:
-            section = heading
-            continue
-        if section is None:
+            n, label = heading
+            if from_ocr and last_n is not None and n != last_n + 1:
+                # A heading between last_n and n was not read off the scan, so
+                # every row since then belongs to an unknown commodity group.
+                # Carrying the stale label forward would file rice under flour.
+                section = None
+            else:
+                section = label
+            last_n = n
+            # A text-layer heading occupies its own row. An OCR'd one is glued
+            # to the first item of its group ("15) Bicycle Adult Bike"), so the
+            # row still has to be parsed for prices below.
+            if not from_ocr or not any(_num(c) for c in row[1:]):
+                continue
+        if section is None and not from_ocr:
             # Still in the preamble (repeal notice, order number, banner).
             continue
+        item = re.sub(r"\s+", " ", first)
+        if from_ocr:
+            item = _SECTION_RE.sub(r"\2", item).strip()
+            if not ocr.looks_like_item_name(item):
+                rej.item += 1
+                continue
         for block, region in enumerate(regions):
             w_col, r_col = 1 + 4 * block, 2 + 4 * block
+            kg_col, lb_col = 3 + 4 * block, 4 + 4 * block
             if r_col >= len(row):
                 continue
-            retail = _num(row[r_col])
-            if retail is None:
-                continue
-            wholesale = _num(row[w_col])
-            item = re.sub(r"\s+", " ", first)
+            if from_ocr:
+                rej.candidates += 1
+                bounds = {"lo": _OCR_PRICE_LO, "hi": _OCR_PRICE_HI}
+                retail = ocr.money(row[r_col], **bounds)
+                if retail is None:
+                    if row[r_col]:
+                        rej.price += 1
+                    continue
+                wholesale = ocr.money(row[w_col], **bounds)
+                if wholesale is not None and wholesale > retail:
+                    # Either a shifted column or one of the gazette's own
+                    # typos. Unrecoverable either way -- drop, do not publish.
+                    rej.wholesale_gt_retail += 1
+                    continue
+                per_kg = ocr.money(
+                    row[kg_col] if kg_col < len(row) else None, **bounds
+                )
+                per_lb = ocr.money(
+                    row[lb_col] if lb_col < len(row) else None, **bounds
+                )
+                if per_kg and per_lb:
+                    ratio = per_kg / per_lb
+                    if not _KG_PER_LB_LO <= ratio <= _KG_PER_LB_HI:
+                        rej.unit_ratio += 1
+                        continue
+            else:
+                retail = _num(row[r_col])
+                if retail is None:
+                    continue
+                wholesale = _num(row[w_col])
+            name = f"{section} - {item}" if section else item
             note = (
                 "Statutory maximum retail price under the Prices Ordinance "
                 "(Cap 75); administered ceiling, not an observed shelf price."
             )
             if wholesale is not None:
                 note += f" Maximum wholesale price for the same pack: {wholesale:.2f}."
+            if from_ocr:
+                note += (
+                    " Recovered by OCR from an image-only scan: the value is "
+                    "tesseract's reading of the gazetted figure, validated "
+                    "against the Order's own per-kg/per-lb columns."
+                )
             record = {
                 "observation_date": doc_date.isoformat(),
                 "period_kind": "effective_from",
@@ -246,7 +395,7 @@ def _rows_from_doc(
                 "subnational_area": region,
                 "source_key": _SOURCE_KEY,
                 "coicop_code": None,
-                "item_name": f"{section} - {item}",
+                "item_name": name,
                 "price_local": retail,
                 "currency": _CURRENCY,
                 "unit": None,
@@ -257,6 +406,24 @@ def _rows_from_doc(
             }
             record["observation_hash"] = make_hash(record, _IDENT)
             out.append(record)
+    return out, rej
+
+
+def _index_dates(html: str) -> dict[str, date]:
+    """Map every linked PDF url to the listing's own "Date added"."""
+    out: dict[str, date] = {}
+    for chunk in html.split('<div class="file"'):
+        urls = _PDF_HREF_RE.findall(chunk)
+        m = _DATE_ADDED_RE.search(chunk)
+        if not urls or not m:
+            continue
+        dd, mm, yyyy = (int(g) for g in m.groups())
+        try:
+            added = date(yyyy, mm, dd)
+        except ValueError:
+            continue
+        for u in urls:
+            out.setdefault(u, added)
     return out
 
 
@@ -280,24 +447,40 @@ def fetch_ki_mcic_price_control(cutoff: date) -> pd.DataFrame | None:
         return None
     logger.info("[%s] %d Order PDFs linked", _SOURCE_KEY, len(urls))
 
-    dated = [(u, _parse_doc_date(u)) for u in urls]
-    undated = [u for u, d in dated if d is None]
-    if undated:
+    added = _index_dates(index.text)
+    dated: list[tuple[str, date | None, bool]] = []
+    for u in urls:
+        d = _parse_doc_date(u)
+        dated.append((u, d or added.get(u), d is None))
+    from_listing = [u for u, d, fb in dated if d is not None and fb]
+    if from_listing:
         logger.info(
-            "[%s] %d PDF(s) skipped -- no date parseable from filename: %s",
+            "[%s] %d PDF(s) carry no date in the filename; using the listing's "
+            "own \"Date added\" instead: %s",
+            _SOURCE_KEY,
+            len(from_listing),
+            ", ".join(u.rsplit("/", 1)[-1] for u in from_listing),
+        )
+    undated = [u for u, d, _ in dated if d is None]
+    if undated:
+        logger.warning(
+            "[%s] %d PDF(s) skipped -- no date from filename or listing: %s",
             _SOURCE_KEY,
             len(undated),
             ", ".join(u.rsplit("/", 1)[-1] for u in undated),
         )
 
-    todo = [(u, d) for u, d in dated if d is not None and d > cutoff]
+    todo = [(u, d) for u, d, _ in dated if d is not None and d > cutoff]
     if not todo:
         logger.info("[%s] no Order newer than cutoff=%s", _SOURCE_KEY, cutoff)
         return None
 
     all_rows: list[dict] = []
-    no_text: list[str] = []
+    unparsed: list[str] = []
+    ocr_used: list[str] = []
+    totals = _Rejects()
     for url, doc_date in sorted(todo, key=lambda t: t[1]):
+        name = url.rsplit("/", 1)[-1]
         try:
             resp = session.get(url, timeout=120)
             resp.raise_for_status()
@@ -305,30 +488,84 @@ def fetch_ki_mcic_price_control(cutoff: date) -> pd.DataFrame | None:
         except Exception:
             logger.exception("[%s] failed to read %s", _SOURCE_KEY, url)
             continue
+        from_ocr = False
         if not regions or not rows:
-            no_text.append(url.rsplit("/", 1)[-1])
-            continue
-        doc_rows = _rows_from_doc(
-            rows=rows, regions=regions, doc_date=doc_date, url=url
+            # No text layer at all, or a text layer with no ruled table that
+            # pdfplumber can see. Both are recoverable from the rendered page.
+            if not ocr.ocr_available():
+                unparsed.append(name)
+                continue
+            from_ocr = True
+            try:
+                regions, rows = _ocr_pdf(resp.content)
+            except Exception:
+                logger.exception("[%s] OCR failed on %s", _SOURCE_KEY, url)
+                unparsed.append(name)
+                continue
+            if not regions or not rows:
+                unparsed.append(name)
+                continue
+            ocr_used.append(name)
+        doc_rows, rej = _rows_from_doc(
+            rows=rows,
+            regions=regions,
+            doc_date=doc_date,
+            url=url,
+            from_ocr=from_ocr,
         )
-        logger.info(
-            "[%s] %s (%s): %d rows across regions %s",
-            _SOURCE_KEY,
-            url.rsplit("/", 1)[-1],
-            doc_date,
-            len(doc_rows),
-            regions,
-        )
+        if from_ocr:
+            totals.price += rej.price
+            totals.item += rej.item
+            totals.wholesale_gt_retail += rej.wholesale_gt_retail
+            totals.unit_ratio += rej.unit_ratio
+            totals.candidates += rej.candidates
+            logger.info(
+                "[%s] %s (%s) OCR: %d rows kept, %d rejected of %d candidate "
+                "cells (unreadable=%d, wholesale>retail=%d, per-kg/lb ratio=%d, "
+                "junk item name=%d); regions %s",
+                _SOURCE_KEY,
+                name,
+                doc_date,
+                len(doc_rows),
+                rej.total,
+                rej.candidates,
+                rej.price,
+                rej.wholesale_gt_retail,
+                rej.unit_ratio,
+                rej.item,
+                regions,
+            )
+        else:
+            logger.info(
+                "[%s] %s (%s): %d rows across regions %s",
+                _SOURCE_KEY,
+                name,
+                doc_date,
+                len(doc_rows),
+                regions,
+            )
+        if not doc_rows:
+            unparsed.append(name)
         all_rows.extend(doc_rows)
 
-    if no_text:
-        logger.warning(
-            "[%s] %d of %d Order PDF(s) are scanned images with no text layer "
-            "and were skipped (no OCR available): %s",
+    if ocr_used and totals.candidates:
+        logger.info(
+            "[%s] OCR reject rate %.1f%% (%d of %d candidate cells) across %d "
+            "scanned Order(s)",
             _SOURCE_KEY,
-            len(no_text),
+            100.0 * totals.total / totals.candidates,
+            totals.total,
+            totals.candidates,
+            len(ocr_used),
+        )
+    if unparsed:
+        logger.warning(
+            "[%s] %d of %d Order PDF(s) yielded no usable rows even after OCR: "
+            "%s",
+            _SOURCE_KEY,
+            len(unparsed),
             len(todo),
-            ", ".join(no_text),
+            ", ".join(unparsed),
         )
 
     if not all_rows:

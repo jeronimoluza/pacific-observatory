@@ -5,6 +5,28 @@ prices for selected goods and services across Ulaanbaatar and aimags. The open
 API returns JSON-stat2; as with the weekly NSO table, the server certificate
 chain is incomplete from this environment, so requests disable verification for
 data.1212.mn only.
+
+`_COICOP_MAP` stamps a per-ITEM COICOP-2018 leaf on the emitted row. The
+manifest deliberately stays `coicop_classification: classifier`: that is what
+keeps this CSV in the classifier corpus at all -- `concatenate`'s
+`_classifier_csv_map` ingests a fetcher's price_observations.csv ONLY for
+`classifier` sources -- while the per-row code rides through as
+`declared_coicop_codes` and short-circuits the head in `classify`
+(`state=narrow_source`, confidence 1.0). Switching the manifest to
+`source_curated` would drop this file from the corpus entirely.
+
+Why a hand map here at all: 41 of this table's 43 item labels have no vector in
+the embedding store, so the head never scores them (`state=unembedded` -- a
+backlog item, not a model refusal) and 100% of this source's rows were absent
+from the build. The declared-code branch runs BEFORE the unembedded branch, so
+the map rescues those rows without waiting on an embed run.
+
+Non-food rows (fuel, cement, soap, matches, firewood, haircuts, canteen meals)
+are listed in `_NON_COICOP_ITEMS` and deliberately left with a null
+`coicop_code` rather than dropped: under `classifier` a null is legitimate, the
+downstream head already rejects them correctly, and dropping them would destroy
+observations other consumers use. An item in NEITHER collection is a label the
+map has not seen -- it is logged and also left null, never guessed at.
 """
 
 from __future__ import annotations
@@ -33,6 +55,64 @@ _CURRENCY = "MNT"
 _SOURCE_KEY = "mn_nso_monthly_selected_prices"
 _UNIT = "togrogs"
 _IDENT = ["source_key", "observation_date", "subnational_area", "item_name"]
+
+# NSO item label -> COICOP-2018 leaf (src/data/prices/enrich/gold/
+# coicop_leaves.txt). Labels are the PxWeb table's own English valueTexts.
+# NSO item label (the PxWeb table's own English valueText) -> COICOP-2018
+# leaf from src/data/prices/enrich/gold/coicop_leaves.txt.
+_COICOP_MAP = {
+    "Apples, yellow, kg, imported": "01.1.6.3.1",
+    "Beef, with bones, kg": "01.1.2.2.1",
+    "Beef, without bones, kg": "01.1.2.2.1",
+    "Beer, 0.5 litre, bottled": "02.1.3.0",
+    "Bread, sliced, pieces": "01.1.1.3.1",
+    "Cabbage, kg, imported": "01.1.7.1.2",
+    "Carrots, kg, imported": "01.1.7.4.1",
+    "Chicken, thigh, kg, imported": "01.1.2.2.4",
+    "Cigarettes, domestic": "02.3.0.1",
+    "Cigarettes, imported": "02.3.0.1",
+    "Dried grapes, kg, imported": "01.1.6.7.1",
+    "Egg, pieces, дотоодын": "01.1.4.8.1",
+    "Flour, first grade, packaged, kg, domestic": "01.1.1.2.1",
+    "Flour, second grade, packaged, kg, domestic": "01.1.1.2.1",
+    "Garlic, 1 bulb, imported": "01.1.7.4.2",
+    "Goat meat, with bones, kg": "01.1.2.2.3",
+    "Horse meat, with bones, kg": "01.1.2.2.6",
+    "Milk, cows, plain, litre": "01.1.4.1.1",
+    "Milk, packed, carton box ,1 litre, domestic": "01.1.4.1.1",
+    "Millet, plain, kg, imported": "01.1.1.1.5",
+    "Mutton, with bones, kg": "01.1.2.2.3",
+    "Onion, kg, imported": "01.1.7.4.3",
+    "Orange, kg, imported": "01.1.6.2.3",
+    "Potato, domestic, kg": "01.1.7.5.1",
+    "Rice, kg": "01.1.1.1.2",
+    "Sugar, plain, kg, imported": "01.1.8.1.1",
+    "Sweet pepper, kg, imported": "01.1.7.2.1",
+    "Tomatoes, kg, imported": "01.1.7.2.4",
+    "Vegetable oil, 1 litre, imported": "01.1.5.1.9",
+    "Vodka, 0.75 litre": "02.1.1.0",
+    "Yogurt, plain, 1 litre": "01.1.4.6.0",
+}
+
+# Non-food goods and services the same NSO table publishes alongside the food
+# basket -- COICOP divisions 04/05/07/11/12. No division-01/02 leaf applies,
+# so these stay uncoded rather than being force-fit or dropped.
+_NON_COICOP_ITEMS = frozenset(
+    {
+        "Canteen food",
+        "Cement, 1 bag",
+        "Diesel fuel, 1 litre",
+        "Dishwashing Liquid, 500 ml",
+        "Fuelwood, one sack",
+        "Gasoline, AI-92, 1 litre",
+        "Laundry soap",
+        "Matches, 10 box, ОХУ",
+        "Mens haircuts",
+        "Soap",
+        "Washing powder, 800 g",
+        "Womens haircuts, simple cuts",
+    }
+)
 
 
 def _clean_label(value: str) -> str:
@@ -136,6 +216,7 @@ def fetch_mn_nso_monthly_selected_prices(cutoff: date) -> pd.DataFrame | None:
     region_count, item_count, month_count = (int(size[0]), int(size[1]), int(size[2]))
     ts = get_scrape_ts()
     rows: list[dict] = []
+    unmapped: set[str] = set()
     for region_idx in range(region_count):
         region_code = region_values[region_idx]
         subnational_area = region_labels.get(region_code)
@@ -166,13 +247,16 @@ def fetch_mn_nso_monthly_selected_prices(cutoff: date) -> pd.DataFrame | None:
                 obs_date = month_labels.get(selected_month_values[month_idx])
                 if not obs_date:
                     continue
+                coicop = _COICOP_MAP.get(item_name)
+                if coicop is None and item_name not in _NON_COICOP_ITEMS:
+                    unmapped.add(item_name)
                 row = {
                     "observation_date": obs_date,
                     "period_kind": "monthly",
                     "country": _COUNTRY,
                     "subnational_area": subnational_area,
                     "source_key": _SOURCE_KEY,
-                    "coicop_code": None,
+                    "coicop_code": coicop,
                     "item_name": item_name,
                     "price_local": price,
                     "currency": _CURRENCY,
@@ -185,5 +269,13 @@ def fetch_mn_nso_monthly_selected_prices(cutoff: date) -> pd.DataFrame | None:
                 row["observation_hash"] = make_hash(row, _IDENT)
                 rows.append(row)
 
+    if unmapped:
+        logger.warning(
+            "[%s] %d item label(s) in neither _COICOP_MAP nor _NON_COICOP_ITEMS, "
+            "left uncoded for the classifier: %s",
+            _SOURCE_KEY,
+            len(unmapped),
+            sorted(unmapped),
+        )
     logger.info("[%s] parsed %d rows after cutoff %s", _SOURCE_KEY, len(rows), cutoff)
     return pd.DataFrame(rows) if rows else None

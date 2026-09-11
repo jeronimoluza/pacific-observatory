@@ -25,3 +25,17 @@ notes: |
   by the food gate. Whole-catalog walker: one monthly bulk CSV per month
   since cutoff, no auth, no pagination. Malaysia had zero official_avg
   manifest before this. Currency MYR confirmed, matches cfg_currency.
+  COICOP, added 2026-09-11: the fetcher module carries a `_COICOP_MAP` keyed on
+  the raw lookup_item.csv `item` string (365 entries, covering the collected
+  history, the current surveyed vocabulary, and the retired food labels).
+  `coicop_classification` is deliberately LEFT as `classifier` -- see the module
+  docstring; `source_curated` would remove this 2M-row file from the corpus.
+  Measured on the 2026-09 pull: 96.7% of rows now carry a code.
+
+  Also fixed 2026-09-11: rows whose item_code is absent from lookup_item.csv
+  (14 of 342 codes in 2026-08) used to be emitted with the literal item_name
+  "()" -- 228,496 rows, 11.4% of the source. Because item_name is part of
+  `_IDENT`, every such row at the same premise on the same date hashed
+  identically: those 228,496 rows carried only 38,475 distinct
+  observation_hash values. They are now named by item_code, which both keeps
+  them distinct and lets them be resolved when the publisher's lookup catches up.

@@ -61,3 +61,11 @@ notes: |
   sibling stat.kg / stat.gov.kz manifests in this subregion. coicop_codes
   unset because coicop_classification is `classifier` (item_name is
   free-text commodity labels, same as wfp_prices and kg_nsc_avg_prices).
+  COICOP, added 2026-09-11: the fetcher module carries a `_COICOP_MAP` covering
+  38 of the 42 item labels; the animal-feed tail (bran, compound feed, meal,
+  husk) stays uncoded. `coicop_classification` is deliberately LEFT as
+  `classifier` -- see the module docstring; `source_curated` would remove the
+  file from the corpus. MEASURED CAVEAT: COICOP is not this source's binding
+  constraint. Of 322 rows inside the dashboard's 90-day window only 28 were
+  `qa_status: trusted`; 98 failed `qa_quantity` and 196 failed the thin-cell
+  check. Itemising `unit` (currently None) is the fix for the first, separately.

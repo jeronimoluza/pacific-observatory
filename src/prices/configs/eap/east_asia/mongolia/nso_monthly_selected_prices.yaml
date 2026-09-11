@@ -18,3 +18,15 @@ notes: |
   flour, bread, meat, milk, eggs, vegetables, fruit, petrol, diesel, electricity
   and heating-related items. Source unit metadata is "togrogs"; item labels
   carry physical units such as kg, litre, piece, kWh, and cubic metre.
+  COICOP, added 2026-09-11: the fetcher module carries a `_COICOP_MAP` that
+  stamps a per-item COICOP-2018 leaf on 31 of the table's 43 labels (the other
+  12 are fuel, cement, soap, matches, firewood, haircuts and canteen meals and
+  stay uncoded). `coicop_classification` is deliberately LEFT as `classifier`:
+  `concatenate._classifier_csv_map` ingests a fetcher's price_observations.csv
+  only for `classifier` sources, so declaring `source_curated` would drop this
+  file from the corpus entirely (measured: 0 of 311 source_curated fetcher
+  manifests appear in global_prices_observations.parquet). The per-row code
+  instead rides through as `declared_coicop_codes` and short-circuits the head.
+  This source needed the map most: 41 of its 43 item labels have no vector in
+  the embedding store, so the head never scored them (`state=unembedded`) and
+  100% of its rows were absent from the build.

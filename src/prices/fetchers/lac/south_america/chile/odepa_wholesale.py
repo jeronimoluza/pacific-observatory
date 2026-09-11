@@ -48,6 +48,119 @@ _C_MIN = "Precio minimo"
 _C_MAX = "Precio maximo"
 _C_AVG = "Precio promedio"
 
+# Hand-curated COICOP 2018 leaf per ODEPA `Producto`, built by enumerating all
+# 317 distinct product+variety item_names (81 distinct Productos) in the
+# collected catalogue (2026-09-11). Keyed on Producto: the Variedad is a
+# cultivar and collapses to the same leaf, with `_COICOP_BY_VARIETY` holding the
+# one case where it does not. Emitted as the row's `coicop_code` for
+# classify.py's narrow_source short-circuit; the manifest stays
+# `coicop_classification: classifier` so the rows keep reaching the corpus.
+#
+# Audited against the production classifier: 95.8% row agreement, wrong on 7
+# names / 5,667 rows -- all cross-language false friends or fresh-vs-processed
+# slips. `Tuna` (Chilean Spanish for prickly pear, sold by the 16 kg crate) was
+# filed under Tunas/skipjack FISH; `Zapallo (Camote)`, a squash cultivar, under
+# sweet potatoes; `Poroto verde` and `Poroto granado`, fresh off the wholesale
+# floor, under canned and dried respectively.
+_COICOP_MAP: dict[str, str] = {
+    'Acelga': '01.1.7.1.9',
+    'Achicoria': '01.1.7.1.4',
+    'Ajo': '01.1.7.4.2',
+    'Ají': '01.1.7.2.1',
+    'Albahaca': '01.1.9.4.0',
+    'Alcachofa': '01.1.7.1.6',
+    'Apio': '01.1.7.1.9',
+    'Arveja Verde': '01.1.7.3.3',
+    'Arándano': '01.1.6.4.6',
+    'Berenjena': '01.1.7.2.3',
+    'Betarraga': '01.1.7.4.9',
+    'Breva': '01.1.6.1.4',
+    'Bruselas': '01.1.7.1.2',
+    'Brócoli': '01.1.7.1.3',
+    'Caigua': '01.1.7.2.9',
+    'Camote': '01.1.7.5.2',
+    'Caqui': '01.1.6.5.5',
+    'Cebolla': '01.1.7.4.3',
+    'Cebollín': '01.1.7.4.4',
+    'Cebollín baby': '01.1.7.4.4',
+    'Cereza': '01.1.6.3.4',
+    'Chirimoya': '01.1.6.1.9',
+    'Choclo': '01.1.7.4.8',
+    'Ciboulette': '01.1.7.4.4',
+    'Cilantro': '01.1.9.4.0',
+    'Ciruela': '01.1.6.3.6',
+    'Coco': '01.1.6.1.8',
+    'Coliflor': '01.1.7.1.3',
+    'Corazón de apio': '01.1.7.1.9',
+    'Damasco': '01.1.6.3.3',
+    'Durazno': '01.1.6.3.5',
+    'Espinaca': '01.1.7.1.5',
+    'Espárragos': '01.1.7.1.1',
+    'Frambuesa': '01.1.6.4.3',
+    'Frutilla': '01.1.6.4.5',
+    'Granada': '01.1.6.5.9',
+    'Guayaba': '01.1.6.1.5',
+    'Haba': '01.1.7.3.9',
+    'Higo': '01.1.6.1.4',
+    'Jengibre': '01.1.9.4.0',
+    'Kiwi': '01.1.6.5.2',
+    'Lechuga': '01.1.7.1.4',
+    'Limón': '01.1.6.2.2',
+    'Locoto': '01.1.7.2.1',
+    'Mandarina': '01.1.6.2.4',
+    'Mango': '01.1.6.1.5',
+    'Manzana': '01.1.6.3.1',
+    'Maracuyá': '01.1.6.1.9',
+    'Melón': '01.1.6.5.3',
+    'Membrillo': '01.1.6.3.2',
+    'Mora': '01.1.6.4.4',
+    'Naranja': '01.1.6.2.3',
+    'Nectarín': '01.1.6.3.5',
+    'Níspero': '01.1.6.3.9',
+    'Orégano': '01.1.9.4.0',
+    'Palta': '01.1.6.1.1',
+    'Papa': '01.1.7.5.1',
+    'Papaya': '01.1.6.1.6',
+    'Pepino dulce': '01.1.6.5.9',
+    'Pepino ensalada': '01.1.7.2.2',
+    'Pera': '01.1.6.3.2',
+    'Pera asiática': '01.1.6.3.2',
+    'Perejil': '01.1.9.4.0',
+    'Pimiento': '01.1.7.2.1',
+    'Piña': '01.1.6.1.7',
+    'Plátano': '01.1.6.1.2',
+    'Pomelo': '01.1.6.2.1',
+    'Poroto granado': '01.1.7.3.1',
+    'Poroto verde': '01.1.7.3.2',
+    'Puerro': '01.1.7.4.4',
+    'Rabanito': '01.1.7.4.9',
+    'Ramas de apio': '01.1.7.1.9',
+    'Repollo': '01.1.7.1.2',
+    'Sandia': '01.1.6.5.4',
+    'Tomate': '01.1.7.2.4',
+    'Tumbo': '01.1.6.1.9',
+    'Tuna': '01.1.6.1.9',
+    'Uva': '01.1.6.5.1',
+    'Zanahoria': '01.1.7.4.1',
+    'Zapallo': '01.1.7.2.5',
+    'Zapallo italiano': '01.1.7.2.5',
+}
+
+# (Producto, Variedad) pairs where the cultivar changes the leaf.
+_COICOP_BY_VARIETY: dict[tuple[str, str], str] = {
+    ('Plátano', 'Barraganete'): '01.1.7.5.7',
+}
+
+
+def _coicop_for(product: str, variety: str) -> str | None:
+    """Curated leaf for an ODEPA product, or None to defer to the classifier.
+
+    "Fruto del paraiso" is deliberately absent -- the label could not be
+    resolved to a species with confidence.
+    """
+    hit = _COICOP_BY_VARIETY.get((product, variety))
+    return hit if hit else _COICOP_MAP.get(product)
+
 
 def _resolve_csv_urls(session, years: list[int]) -> dict[int, str]:
     try:
@@ -118,6 +231,7 @@ def _national_rows(df: pd.DataFrame, url: str, cutoff: date) -> list[dict]:
             "country": _COUNTRY,
             "source_key": _SOURCE_KEY,
             "item_name": name,
+            "coicop_code": _coicop_for(product, variety),
             "price_local": round(price, 4),
             "currency": _CURRENCY,
             "unit": str(unit).strip() or None,
