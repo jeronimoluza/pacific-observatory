@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: mahajanasuper_lk
+url: https://mahajanaonline.com/api/stores/clr1lr70v004t2k8xe0u7h4qr/products/recommendation
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "mahajanaonline.com/"
+archive_path_re: '^/api/stores/[^/]+/products/recommendation'
+notes: |
+  Mahajana Super, "Shop Fresh Groceries at Mahajana Super – Kandy &
+  Gampola". Mirrored 1:1 at shopmahajana.com (identical title/content
+  -- treated as one tenant; only mahajanaonline.com onboarded to avoid
+  a duplicate manifest for the same catalog).
+
+  Not WooCommerce/Shopify -- runs on the "TakeApp" social-commerce
+  storefront builder (media CDN is storage.googleapis.com/takeapp/...).
+  Playwright network trace found the real catalog at
+  /api/stores/<store_id>/products/recommendation -- despite the name,
+  this returns the store's actual product list (141 items: Fresh
+  Fruits, ice cream, rice, baby items), not a small curated subset. No
+  pagination parameter found; treated as the whole reachable catalog.
+
+  Prices are integers with no explicit minor-unit field in the
+  payload; inferred as cents from magnitude, cross-checked against
+  plausible LKR retail prices (e.g. "Green Grapes" 29000 -> LKR 290.00
+  for 0.1kg; "Taj Mahal Fiesta Basmathi Rice 5Kg+1Kg Free" 800000 ->
+  LKR 8,000.00 for a bulk imported-rice bundle -- both plausible only
+  under a /100 reading).
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 100 run produced rows. Sample:
+  "Green Grapes" LKR 290.00, "Alerics Ice Tub Dark Chocolate 1L" LKR
+  1,950.00.

@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: breadtalk_lk
+url: https://breadtalk.lk/wp-json/wc/store/v1/products
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "breadtalk.lk/"
+archive_path_re: '^/wp-json/wc/store/v1/products'
+notes: |
+  BreadTalk Sri Lanka, "Order Premier Cakes & Bakes Online". WooCommerce
+  Store API, no auth: /wp-json/wc/store/v1/products. Confirmed 137
+  products total (X-WP-Total header). currency_minor_unit=0 read from
+  the payload (not assumed) -- prices are already whole LKR, e.g.
+  "3500" == LKR 3,500 for "Celebration Cherry Cake" -- this store does
+  NOT trigger the usual /100 minor-unit trap, confirmed by reading the
+  field rather than assuming a fixed divisor. channel: specialty-food
+  (bakery chain).
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 5 run produced rows. Sample:
+  "Strawberry Cheesecake" LKR 4,043.00, "Birthday Star Cake" LKR
+  10,500.00.

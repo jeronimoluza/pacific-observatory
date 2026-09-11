@@ -14,13 +14,8 @@ CSV download URL is resolved at run time from the dataset's stable HDX slug via
 the CKAN API, so a resource-UUID change does not break the fetcher. Per-market
 rows are collapsed to a national monthly average per (commodity, unit, currency,
 price type); the market count and USD value are kept in ``notes`` and the retail
-vs wholesale split is kept in the dedup hash.
-
-COICOP is source-curated: every emitted row carries a division-01/02
-leaf from the hand-written commodity map in ``_shared.wfp_coicop``, and a
-commodity the map does not cover -- the panels' fuel, wage, exchange-rate
-and household-goods block included -- is DROPPED with a logged warning
-rather than emitted with a null ``coicop_code``.
+vs wholesale split is kept in the dedup hash. COICOP is deferred to the
+downstream classifier — ``item_name`` is WFP's English commodity label.
 """
 
 from __future__ import annotations
@@ -31,7 +26,6 @@ from datetime import date
 
 import pandas as pd
 
-from prices.fetchers._shared.wfp_coicop import COICOP_MAP as _COICOP_MAP
 from prices.fetchers.utils import get_scrape_ts, get_session, make_hash
 
 logger = logging.getLogger(__name__)
@@ -128,7 +122,6 @@ def _national_rows(
         return []
 
     ts = get_scrape_ts()
-    unmapped: set[str] = set()
     keys = ["obs", "commodity", "unit", "currency", "pricetype", "category"]
     for k in keys:
         if k not in df.columns:
@@ -138,10 +131,6 @@ def _national_rows(
     for (obs, commodity, unit, currency, pricetype, category), g in grp:
         commodity = str(commodity).strip()
         if not commodity:
-            continue
-        coicop = _COICOP_MAP.get(commodity)
-        if not coicop:
-            unmapped.add(commodity)
             continue
         price = float(g["price"].mean())
         if not 0 < price < 1e13:
@@ -153,7 +142,6 @@ def _national_rows(
             "period_kind": "monthly",
             "country": country,
             "source_key": source_key,
-            "coicop_code": coicop,
             "item_name": commodity,
             "price_local": round(price, 4),
             "currency": str(currency).strip() or None,
@@ -170,13 +158,6 @@ def _national_rows(
         row["observation_hash"] = make_hash(row, _IDENT)
         row.pop("price_type")
         out.append(row)
-    if unmapped:
-        logger.warning(
-            "[%s] no COICOP mapping for %d item(s) -- rows dropped: %s",
-            source_key,
-            len(unmapped),
-            ", ".join(sorted(unmapped)),
-        )
     return out
 
 
