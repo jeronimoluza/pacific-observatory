@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dokanmall_sy
+url: https://dokan.com.sy/
+language: ar
+cadence: weekly
+channel: dept-store
+notes: |
+  WooCommerce Store API (/wp-json/wc/store/v1/products). General online
+  mall: phones, beauty, small electronics, home/decor, health & medical
+  aids, kitchenware, car-care -- multi-division catalog, so classified
+  dept-store (single WooCommerce tenant, not a multi-seller directory).
+
+  POSSIBLE-DUPLICATE check resolved: this is NOT the same business as the
+  already-onboarded dokan_sy (www.dokan.sy). Confirmed live 2026-09-11
+  that dokan.com.sy and www.dokan.com.sy both resolve directly (no
+  redirect) to their own 329KB homepage. dokan.sy runs a Laravel/'AIZ'
+  storefront (aiz-card-box markup, /search2 AJAX, USD diaspora
+  gift/remittance/grocery catalog); dokan.com.sy is plain WordPress +
+  WooCommerce (wp-json, woocommerce, react all present in the page
+  source; zero AIZ/Laravel/search2 markers), prices natively in SYP, and
+  its own Store API returns a completely disjoint product-id space.
+  Only the generic Arabic word دكان (shop) is shared between the two
+  brands.
+
+  Verified live 2026-09-11: x-wp-total=4048, x-wp-totalpages=203 at
+  per_page=20. Page 1 vs page 2 returned disjoint product-id sets (20
+  each, zero overlap) -- genuine pagination, not a homepage-carousel
+  undercount.
+
+  Currency: Store API reports currency_code=SYP consistently (checked
+  pages 1-2, 40 products, zero USD) -- matches Syria's country currency.
+  currency_minor_unit=0 (e.g. price "840" -> SYP 840).
+
+  Test run 2026-09-11: prices collect --source dokanmall_sy --max-items
+  20 -> 20/20 rows, all priced, all distinct product_ids.
+
+  Page family: API.

@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: samtronix_sr
+url: https://samtronixsuriname.com/
+language: nl
+cadence: weekly
+channel: electronics
+notes: |
+  WooCommerce Store API (/wp-json/wc/store/v1/products). Phones and
+  electronics (e.g. 'REDMI 17C/8/256GB-BLACK') -- classified
+  electronics.
+
+  Verified live 2026-09-11: x-wp-total=578, x-wp-totalpages=578 at
+  per_page=1 (578 products, ~29 pages at per_page=20). Page 1 vs page 2
+  (per_page=20) returned disjoint product-id sets, zero overlap --
+  genuine pagination.
+
+  Currency: Store API reports currency_code=SRD -- matches Suriname's
+  country currency. currency_minor_unit=2 (e.g. price "663000" -> SRD
+  6,630.00), consistent with the post-devaluation SRD price level for a
+  mid-range smartphone.
+
+  Test run 2026-09-11: prices collect --source samtronix_sr --max-items
+  20 -> 20/20 rows, all priced, all distinct product_ids.
+
+  Page family: API.

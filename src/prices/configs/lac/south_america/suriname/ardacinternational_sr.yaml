@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ardacinternational_sr
+url: https://ardacinternational.sr/
+language: nl
+cadence: weekly
+channel: other
+notes: |
+  WooCommerce Store API (/wp-json/wc/store/v1/products). Mixed
+  corporate-supply catalog: workwear/textiles ('Werkkleding'),
+  promotional awards/trophies ('Awards'), outdoor/tools ('Tools &
+  Outdoor'), paper bags ('Papieren Tassen'). Reads as a promotional-
+  products / corporate-supplies wholesaler rather than a single-category
+  consumer retailer -- classified 'other' (no closed-enum value fits a
+  mixed workwear+awards+packaging catalog; 'fashion' would misrepresent
+  the awards/packaging share).
+
+  Verified live 2026-09-11: x-wp-total=183, x-wp-totalpages=183 at
+  per_page=1 (183 products, ~10 pages at per_page=20). Page 1 vs page 2
+  (per_page=20) returned disjoint product-id sets, zero overlap --
+  genuine pagination. Small catalog (B2B corporate supplier) -- kept per
+  the wave-5 brief's breadth-over-depth guidance; spans textiles,
+  awards, tools, packaging.
+
+  Currency: Store API reports currency_code=SRD -- matches Suriname's
+  country currency. currency_minor_unit=2 (e.g. price "85000" -> SRD
+  850.00).
+
+  Note: product permalinks resolve on www.ardacinternational.sr; the
+  bare apex domain also serves the Store API directly.
+
+  Test run 2026-09-11: prices collect --source ardacinternational_sr
+  --max-items 20 -> 20/20 rows, all priced, all distinct product_ids.
+
+  Page family: API.

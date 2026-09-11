@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: boma_sy
+url: https://boma.sy/
+language: ar
+cadence: weekly
+channel: electronics
+notes: |
+  WooCommerce Store API (/wp-json/wc/store/v1/products). Assignment
+  brief tagged this 'health', and the homepage <title> literally reads
+  'الصحة الرئيسية - BOMA' ('Health Home - BOMA'), but the actual catalog
+  is small kitchen/home electrical appliances -- irons, blenders,
+  microwaves, hand mixers, mini vacuums, air fryers, water coolers
+  (category sample: 'الأجهزة المنزلية الذكية' smart home appliances,
+  'مكواة' irons, 'ميكرويف' microwaves). Classified electronics, not
+  pharmacy/cosmetics; 'health' reads as generic homepage marketing copy,
+  not the product category -- confirm against the actual COICOP leaves
+  this routes to before trusting the brief's label for reporting.
+
+  Verified live 2026-09-11: x-wp-total=83, x-wp-totalpages=83 at
+  per_page=1 (83 products total, ~5 pages at per_page=20). Page 1 vs
+  page 2 (per_page=20) returned disjoint product-id sets, zero overlap
+  -- genuine pagination. Small catalog (single-vendor appliance
+  importer) -- per the wave-5 brief, not a reason to skip; the source
+  still adds distinct products outside groceries.
+
+  Currency: Store API reports currency_code=USD consistently --
+  spread-checked across the full catalog (pages 1-5 of 20, all 83
+  products), zero SYP observed. This is a genuine USD-priced storefront
+  (imported appliances), not a display artifact -- confirmed rather than
+  assumed, per the wave-5 addendum's instruction on Syrian USD pricing.
+  currency_minor_unit=2 (e.g. price "2900" -> USD 29.00).
+
+  Test run 2026-09-11: prices collect --source boma_sy --max-items 20 ->
+  20/20 rows, all priced, all distinct product_ids.
+
+  Page family: API.
