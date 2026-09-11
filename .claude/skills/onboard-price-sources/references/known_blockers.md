@@ -1966,3 +1966,270 @@ as blocked.
 - `iranpharmis.org` — iran (menaap), 209 product URLs
 - `yad2.co.il` — israel (menaap), 75 product URLs
 - `daraz.pk` — pakistan (menaap), 60 product URLs
+
+### Wave 4 outcomes — the "measured but not yet worked" list above is now resolved
+
+The leads listed earlier in this section were worked on 2026-09-11. Their
+outcomes, so nobody re-probes them from that list:
+
+- `auchan.fr` — SHIPPED as auchan_fr (22 rows), but its own grocery business is discontinued
+- `beeyor.tj` — SHIPPED as beeyor_tj (21 rows)
+- `cdiscount.com` — SHIPPED as cdiscount_fr (142 rows)
+- `colruyt.be` — ALREADY BUILT as colruyt_be (collectandgo.be)
+- `coop.nl` — DEAD — plain 301 to plus.nl, which is already onboarded
+- `daraz.pk` — SHIPPED as daraz_pk (80 rows)
+- `esselungaacasa.it` — PULLED — API verified working, host unreachable at TCP level; re-attempt candidate
+- `foodora.hu` — BLOCKED — PerimeterX px-captcha, a real CAPTCHA, on every client incl. Chromium
+- `geramarket.com` — DEAD — not an Armenian retailer at all; a US/UK e-commerce SaaS site
+- `iranpharmis.org` — DEAD — B2B surgical distributor, every price 0 behind a registration wall
+- `mijnspar.be` — DEAD — no catalog route; a fixed 43-row promo flyer is the whole priced surface
+- `noon.com` — BLOCKED — Bahrain storefront is real and prices in BHD, but the catalog is an RSC shell
+- `ocado.com` — BLOCKED — domain-wide AWS WAF challenge, even on /robots.txt
+- `orinabiji.ge` — ALREADY BUILT as orinabiji_ge, already using catalog-api.orinabiji.ge
+- `pampanorama.it` — SHIPPED as pampanorama_it (186 rows)
+- `roksh.com` — SHIPPED as penny_roksh_hu (22 rows) — a 15-tenant marketplace, Penny picked
+
+Still genuinely unworked from that list, and still worth a future wave:
+`njuskalo.hr`, `mumafrica.com`, `yad2.co.il`, `iceland.co.uk`, `diy.com`,
+`auchan.pl`, `aliexpress.com` (cross-border, not a national source),
+`groceries.aldi.ie` (already built as `aldi_ie`).
+
+### Ocado behind a domain-wide AWS WAF, a redirect duplicate, and a promo-flyer-only Spar (UK, NL, BE)
+
+- **www.ocado.com** (GB, Ocado — UK's largest pure-play online grocer) — every
+  path (`/`, `/robots.txt`, and the captured API
+  `/api/webproductpagews/v5/product-pages?decoratedOnly=true&limit=27&tag=...`)
+  returns `HTTP/2 202` with `server: CloudFront` and `x-amzn-waf-action:
+  challenge`, serving a JS `window.awsWafCookie` challenge page instead of
+  content. Confirmed with plain `curl` (Mac) AND `curl_cffi`
+  `impersonate="chrome124"` (a8) — identical result on both, so this is not a
+  TLS-fingerprint block, it's AWS WAF Bot Control's Challenge action, which
+  requires real JS execution to mint a token before CloudFront forwards to
+  origin. `groceries.ocado.com` and `api.ocado.com` do not resolve/respond
+  (curl exit 000) — no lower-friction subdomain found. Per the wave-3
+  addendum's explicit rule, not shipping a Playwright-at-collection-time
+  spider for a source that needs a live browser session; recorded as blocked
+  rather than worked around. Did NOT try: WAF-token harvest-and-replay,
+  residential proxies. Probed 2026-09-10.
+
+- **www.coop.nl / coop.nl** (NL, Coop Netherlands) — not a technical
+  block, a confirmed duplicate: `curl -sIL https://www.coop.nl/` returns a
+  plain `HTTP/2 301` to `https://www.plus.nl`, final response `200` at
+  `url_effective=https://www.plus.nl/`. `plus_nl` is already shipped in this
+  repo. Do not onboard coop_nl — it is not a separate storefront/assortment,
+  it is the same catalog under a redirected domain. Probed 2026-09-10.
+
+- **www.mijnspar.be / www.monspar.be** (BE, SPAR Belgium) — the
+  `content/spar/{fr,nl}.model.json` endpoints named in the discovery trace
+  are Adobe AEM's global app-config model (feature flags, nav paths), not a
+  catalog. The real priced component, found via the page's own
+  `data-model-url` attribute at
+  `/content/spar/{fr,nl}/promoties/promoties/jcr:content/root/responsivegrid/main-content/filter_list_store_sp.model.json`,
+  returns a fixed 43-row weekly promo-flyer list (110 non-empty EUR price
+  fields across `normalPrice`/`unitPrice`/`promoPrice`) that does **not**
+  paginate — `?page=2`, `?p=2`, `?offset=12`, `?start=12` all return the
+  identical 321,822-byte body. `sitemap.xml` (7,637 URLs) confirms there is
+  no `/produits/`, `/shop/`, or `/catalogue/` route anywhere on the site
+  (93% of URLs are `/recettes/` recipe pages, plus `/magasins/` store finder
+  — no online ordering at all). The entire priced surface of the site is this
+  one non-paginated promo list, and several of its 43 rows are bundled/
+  ambiguous descriptions ("500 g + 500 g gratis", "au choix" x8) rather than
+  clean SKU names. Fails both the enumerability gate (no distinct page1 vs
+  page2) and the catalog-size bar. `mijnspar.be` (nl) mirrors the identical
+  AEM path structure — same conclusion, so neither language variant ships.
+  Did NOT try: a fresh Playwright network trace beyond the addendum's
+  captured endpoint — the server-rendered `data-model-url` attributes were
+  sufficient to locate and rule out the real component without one. Probed
+  2026-09-10.
+
+### Esselunga — the API works, the host went unreachable (IT)
+
+- **spesaonline.esselunga.it** (IT, Esselunga -- one of Italy's largest
+  supermarket chains; AngularJS SPA on an Oracle-ATG-style commerce stack
+  behind a BigIP load balancer) -- NOT a store-session gate and NOT a WAF
+  block, unlike the other two Italian sources already filed here
+  (spesaonline.conad.it needs a chosen pickup store before price stops
+  being a hard 0.0; coopshop.it is a recaptcha-enterprise SPA). This one
+  died to a plain TCP-level connectivity failure mid-session, after the
+  real catalog endpoint had already been found and verified against live
+  data.
+
+  Timeline, all UTC 2026-09-10/11: a headless-Chromium network trace of
+  the site's own search box found `POST /commerce/resources/search/facet`
+  with body `{"query":"*","start":N,"length":<=100,"isLargeQuerySearch":
+  true,"filters":[],"rmtCookieAllowed":true}` -- confirmed this is the
+  real enumerable catalog (NOT `search/personalizzazioni`, the homepage's
+  "recommended for you" widget, which is what the pre-probe had flagged).
+  Verified with plain, UNIMPERSONATED curl (no curl_cffi/TLS-profile
+  workaround needed): a same-origin `GET .../commerce/` establishes a
+  JSESSIONID cookie, and the search POST additionally needs header
+  `x-page-path: supermercato` (the literal string; using the SPA's actual
+  client route there gives a different, also-wrong 400). Confirmed
+  `displayables.rowCount`=19,428 and disjoint, stable pagination
+  (start=0 vs start=20 disjoint; two identical start=0 calls returned
+  identical ids; deep offsets to start=19,400 still returned real rows).
+  Confirmed REAL non-zero prices with no store/delivery address selected
+  at all (`config/v1/env` reports `hideProductPrice: true` and an
+  anonymous default store "SULT", yet `search/facet` responses carried
+  populated `price`/`discountedPrice` regardless -- read directly off the
+  response bytes). A live `--max-items 20` run with this endpoint DID
+  scrape 20 real priced rows (e.g. "Rummo Fusilli N° 48 500 g" EUR 1.59)
+  before a self-inflicted bug (a constant per-row URL fallback colliding
+  with the pipeline's duplicate-URL dedup, which dropped 1,399 of 1,400
+  scraped rows) was caught and fixed with a synthesized unique
+  `.../store/ricerca/<code>` URL per row.
+
+  After that fix, the confirmation run returned 0 rows. Signature: the
+  FIRST request of the run (`GET https://spesaonline.esselunga.it/
+  commerce/`) failed 4/4 times with `curl_cffi.requests.exceptions.Timeout:
+  Failed to perform, curl: (28) Connection timed out after 30000
+  milliseconds` -- no HTTP status at all (curl exit 28, not a 403/429/503).
+  Independently reproduced with plain `curl --max-time 20`
+  (`HTTP:000 time:20.0`) and with `nc -zv -w 8 spesaonline.esselunga.it
+  443` (`Operation timed out`, >60s) -- i.e. the TCP handshake itself
+  never completes, ruling out a TLS-fingerprint or application-layer
+  block. DNS resolution is fine and stable (`185.96.117.231` /
+  `185.96.117.18` on repeated lookups). Reproduced independently from TWO
+  separate networks (the a8 host and an unrelated residential network),
+  ruling out an IP/ASN-specific block of just the scraping host. One
+  earlier run (before this final outage) DID get partway through --
+  ~15 successful pages of `search/facet` (offsets 0-1400) before request
+  16 onward started hitting the identical 30s timeout signature, which
+  reads like a connection-rate tarpit that then escalated to a full
+  TCP-level outage; both effects point at the same origin/edge component,
+  not at this spider's request shape.
+
+  NOT tried: waiting past this batch's time window for the outage to
+  clear and re-confirming (explicitly stopped rather than left running);
+  a third, geographically different network/ASN beyond the two already
+  tried; IPv6 connectivity; a lower request rate from the very first
+  request (the successful 15-page run and the immediately-following dead
+  run both used the same DOWNLOAD_DELAY=1.5s / CONCURRENT_REQUESTS_PER_
+  DOMAIN=1 settings, so it's untested whether a much slower ramp avoids
+  the tarpit); contacting the site outside of automated probing to check
+  for a public status page or scheduled maintenance window.
+
+  The spider (`esselunga_it.py`) and manifest were deleted per the
+  zero-row-in-final-test rule rather than left in the tree; the discovery
+  work above (endpoint, auth/session mechanics, pagination proof, price
+  field mapping, the dedup-collision bug and its fix) is preserved here so
+  a future re-attempt does not have to re-derive any of it -- only the
+  TCP-level reachability needs re-checking before rebuilding the spider
+  from this description.
+
+### noon Bahrain's RSC shell, and a B2B distributor with no public prices (BH, IR)
+
+Two of this batch's four candidates shipped (`beeyor_tj`, `daraz_pk` — see
+`batch_16_report.md`, not repeated here). The two below did not ship.
+
+#### SPA shell — no productive endpoint (lazy-load never hydrates)
+
+- **noon.com/bahrain-en/** (BH, Noon — Gulf-wide marketplace, Bahrain
+  storefront) — **Geography confirmed correct first**: `curl_cffi
+  impersonate=chrome124` on `https://www.noon.com/bahrain-en/` returns 200
+  and its own SSR payload states `country:{code:"BH",name:"Bahrain",
+  currencyCode:"BHD",currencyName:"BHD"}` — this is a genuine Bahrain-priced
+  storefront, not the UAE-priced `noon.com` apex (which does return AED).
+  Unlike this campaign's previously-rejected "Caribbean" Antigua stores
+  (US-priced diaspora fronts), noon's Bahrain locale is not a geography
+  mismatch. It is blocked on a different axis: the storefront is a Next.js
+  App Router / React-Server-Components shell (`$R[...]` literals in the
+  HTML, same family as `bigmarket.ge` elsewhere in this file) whose product
+  grid is never SSR'd — `catalogPath:$R[1031]` and `headersForCatalogRequest`
+  are both left unresolved/void in every page checked (homepage, `/search/
+  ?q=rice`, and real category paths harvested from the nav, e.g.
+  `/bahrain-en/noon-supermarket/`). Zero product name/price data appears in
+  raw HTML anywhere. **The mandatory Playwright network-trace gate could
+  not be run**: `page.goto()` fails with `net::ERR_HTTP2_PROTOCOL_ERROR` on
+  the default config, and with `--disable-http2` it instead times out
+  completely (30-45s, both `wait_until="load"` and `"domcontentloaded"`) —
+  headless Chromium cannot complete a connection to this host at all, while
+  the identical URL answers curl_cffi instantly (200, full body). This
+  reads as Akamai bot-manager fingerprinting the automated-browser
+  connection itself (an `akam/13/pixel_...` beacon is present in the SSR
+  HTML), a layer below the page-content challenges this file usually
+  records. Not attempted: a real (non-bundled) Chrome binary via
+  Playwright's `channel="chrome"` (not installed on the probing box this
+  session), a Bahrain-resident proxy, or `--disable-blink-features=
+  AutomationControlled` (unlikely to help — the failure precedes any JS
+  execution — but not empirically ruled out). Worth a dedicated future pass
+  with either lever; the underlying catalog (noon's Bahrain grocery
+  vertical, "noon-supermarket") is large and the geography is clean.
+  Probed 2026-09-10.
+
+#### Login-walled catalog (real backend found via network trace, but core endpoint 401s without auth)
+
+- **www.iranpharmis.org** (IR, "Iran Pharmis" — corrected source_key
+  `iranpharmis_ir`; the batch candidate table had the wrong country suffix,
+  `_dz`) — real Next.js (App Router/RSC) backend, no WAF, full 200s
+  throughout, category-listing JSON is genuinely embedded in the SSR
+  payload (not a shell). But every sampled product across the category tree
+  (`/products/category/general` and its sub-categories: surgical gloves,
+  bone-marrow biopsy systems, intraosseous injection devices, central-
+  venous/hemodialysis catheters, laryngeal masks, endobronchial tubes —
+  this is a **hospital/surgical-equipment B2B distributor**, not a
+  dispensing retail pharmacy, so `channel: pharmacy` as suggested would
+  also have been a mis-tag) carries `"price":{"price":0,"was_price":0,...}`
+  and `"quantity":0` literally, for every one of the 87 titled listing
+  entries sampled. The rendered page carries a live login/registration
+  system ("ورود به ایران فارمیس" / "ثبت نام"). A full Playwright network
+  trace on the category page confirms no client-side product/price API
+  call ever fires beyond an empty `GET /api/auth/session` — the price:0 in
+  the initial SSR payload is the complete anonymous-visitor state, not a
+  value that arrives after hydration. This is a normal B2B procurement
+  pattern (quoted pricing after account registration), not an anti-bot
+  block — nothing to crack, no second surface found. For the record (moot
+  here since every price is 0): the payload does carry
+  `"price_unit_title":"تومان"` (Toman), confirming the brief's Toman/Rial
+  warning was correctly aimed at this class of Iranian site in general,
+  even though this particular tenant never got far enough to need the
+  `_woo_base.py` PRICE_MULTIPLIER mechanism (not WooCommerce, and no
+  onboardable price exists regardless). Probed 2026-09-10.
+
+### PerimeterX on a Delivery Hero property, and a candidate that was not the company at all (HU, AM)
+
+- **foodora.hu** (HU, Foodora Hungary — Delivery Hero food/grocery
+  delivery aggregator) — HTTP 403 "Access to this page has been denied"
+  with an explicit PerimeterX `px-captcha` challenge page
+  (`window._pxAppId = 'PXlJuB4eTB'`, `pxCaptchaSrc` loaded) on every
+  request tried: homepage and the briefed
+  `/groceries/product/EFK6CI/olmeca-gold-tequila-07` PDP, under 5
+  curl_cffi TLS-impersonation profiles (chrome120/124/131/133a/
+  safari17_0 — all identical 4,599-byte 403 body) AND a real headless
+  Chromium via Playwright (also 403, same px-captcha body, confirmed
+  live). This is PerimeterX's CAPTCHA tier specifically (not a JS-
+  computation puzzle a browser can silently solve) — no automated
+  technique clears an actual CAPTCHA. Matches this repo's own
+  known_blockers.md house note verbatim: "Assume PerimeterX is in front
+  of every delivery-hero / foodpanda property." Foodora is a Delivery
+  Hero brand (same corporate family as foodpanda and Talabat). Note the
+  asymmetry: talabat_eg (onboarded in an earlier wave of this same
+  campaign) was NOT behind PerimeterX and shipped via plain TLS-profile
+  selection (chrome133a) — Delivery Hero's WAF tier clearly varies by
+  market/brand, so this is not a blanket "any Delivery Hero site is
+  unreachable" finding, just this one. Did not attempt: manual CAPTCHA
+  solving (out of scope), a residential/mobile proxy pool, or a paid
+  CAPTCHA-solving service. Probed 2026-09-10.
+
+- **geramarket.com** (claimed AM, "geramarket_am") — not a blocker in
+  the access sense; this is the WRONG SITE. geramarket.com is a live,
+  fully-accessible (HTTP 200, no WAF) US/UK-facing e-commerce SaaS/
+  content site for online sellers — pricing page, "how it works",
+  product-photography and product-description-writing guides, "/vs/
+  alibaba" comparison content, and consumer-product-recall datasets for
+  the US and UK. It is not an Armenian retailer, carries no AMD/dram
+  pricing (the string "Armenia" appears exactly once on the homepage, in
+  an unrelated context), and has no product catalog of any kind.
+  Fetched the site's own sitemap.xml (5,702 urls; 211 contain the
+  substring "product") and every one of those is a guide/blog/category-
+  directory page (e.g. `/sell/product-photography`, `/guides/how-to-
+  price-products-to-sell-online`, `/categories/digital-products`), never
+  a retail SKU page. The briefed "72 product URLs matched my pattern" is
+  almost certainly this same class of page, not real products — a
+  discovery-stage false positive, not a scraping problem. No further
+  probing was done (Playwright network trace, category enumeration)
+  since there is no product surface on this domain to find. Recommend
+  removing this candidate from the source list rather than re-queuing it
+  for another batch; if a real Armenian retailer named similarly to
+  "GeraMarket" exists, it is at a different domain than the one briefed.
+  Probed 2026-09-10.
