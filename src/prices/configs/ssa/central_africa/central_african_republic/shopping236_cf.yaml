@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopping236_cf
+url: https://236shopping.com/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Probed 2026-09-11. Shopify /products.json?limit=250&page=N, no auth.
+  Enumerability verified at limit=50: page1 50 ids vs page2 46 ids, overlap
+  0 -> DISTINCT; page3 empty. Catalog is 96 products total, of which 2 carry
+  a zero price and are dropped by _shopify_base.
+
+  Currency XAF, read from the storefront's own currency field. Locality is
+  not in doubt: the store brands itself "votre boutique en ligne 100%
+  centrafricaine", "236" is the CAR dialling code, and every product title
+  carries the suffix "a Bangui RCA" -- so this prices for Bangui rather than
+  for the Central African diaspora abroad, which was the risk worth checking
+  given sangostore.com in the same sweep is explicitly a diaspora
+  marketplace.
+
+  Assortment is home goods: furniture, bedding, small appliances, childcare.
+  No product_type is set on any row, so the classifier gets nothing but the
+  title -- which is French and carries the Bangui suffix on every item, so
+  expect the retailer/location strip to matter here.
+
+  Discovery note: the first ddgs pass (English "online grocery <country>"
+  phrasing) returned ZERO verified candidates for CAR. This surfaced only on
+  a second pass using French local phrasing -- "acheter en ligne Republique
+  Centrafricaine", "boutique en ligne Bangui". For francophone African
+  markets the English pack is close to worthless.
+
+  Test: prices collect --source shopping236_cf --max-items 20.
