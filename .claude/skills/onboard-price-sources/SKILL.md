@@ -313,7 +313,9 @@ text in the rendered HTML?
                         └───────────────────────────────────────┘
 ```
 
-Concrete probe commands and scripts live in `references/probe_patterns.md`. Pre-known blockers we already classified (so you don't waste cycles re-probing) live in `references/known_blockers.md` — **check this first** before probing.
+Concrete probe commands and scripts live in `references/probe_patterns.md`. Pre-known blockers we already classified (so you don't waste cycles re-probing) live in `references/known_blockers.md` — **check this first** before probing. That file is ~10,600 lines; grep `references/known_blockers_index.md` instead, which maps each of 2,051 documented hosts to the section that covers it.
+
+A hit in the index does NOT always mean "blocked" — some entries record a workaround. But an HTTP 200 with a real body does NOT contradict a blocker verdict either: marketing sites, app-only storefronts and store-session-gated catalogues all return exactly that. Read the entry before spending probe budget.
 
 **Fingerprint before you climb the ladder.** Check what the storefront is running (`references/platform_fingerprints.md`). If it's Shopify, WooCommerce, Sapo, Magento, Vendure, Algolia, or Typesense, the catalog endpoint is already known and you land on Tier 1B without probing anything.
 
@@ -548,7 +550,8 @@ Load only what the current phase needs — these are not meant to be read togeth
 | `references/discovery.md` | Phase 2 — finding candidates. Generators vs cost multipliers, marketplace-as-directory, inverse-correlation law, the two source regimes, wholesale feeds, recording dead ends, cold-start 17-category table. |
 | `references/ddgs_search.md` | Phase 2 — **how to actually run the search**: the `ddgs` library, the mandatory pinned `backend=`, English + local-language query packs, noise filtering, and the off-domain storefront rule. |
 | `references/platform_fingerprints.md` | Phase 2–3 — identifying the storefront platform, finding the open JSON backend, id-walk, anti-bot cross-checks. |
-| `references/known_blockers.md` | Before **any** probe — skip-on-sight list. Append to it after every run. |
+| `references/known_blockers_index.md` | Before **any** probe — host → section lookup over 2,051 documented hosts. |
+| `references/known_blockers.md` | The entries themselves. Append to it after every run — in this file, not a scratch file. |
 | `references/probe_patterns.md` | Phase 3 — curl, Playwright dump, API sniffer, PDF/XLS inspectors. |
 | `references/spider_templates.md` | Phase 5A — the three spider skeletons. |
 | `references/fetcher_pattern.md` | Phase 5B — fetcher contract, helpers, worked examples. |

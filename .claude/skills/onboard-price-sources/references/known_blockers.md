@@ -290,7 +290,7 @@ Site loads, renders skeleton cards, but never hydrates fully within a reasonable
 - **suning.com (苏宁易购)** (CN) — **RESOLVED → SCRAPABLE (not a blocker); the one CN lead that pans out, overturning "China = 0".** Two-step, no WAF (`Server: volc-dcdn`): (1) SSR HTML from `search.suning.com/{keyword}/` list pages + `product.suning.com/{vendorCode}/{productCode}.html` PDP yields **name + 18-digit padded `PartNumber`** (e.g. `000000012411692175`) + the **real `VendorCode`** (in the PDP page JSON, e.g. `0070088095` — the URL's `0000000000` is a placeholder); (2) price from the separate microservice `pas.suning.com/nspcsale_0_{PartNumber}_{PartNumber}_{vendorCode}_{cityTuple}___.html` → JSONP `pcData({...})`, price under `data.price.saleInfo[]` (`netPrice`/`refPrice`/`promotionPrice`). Carries F&B grocery (苏宁超市). **Only open item:** a valid city-code tuple (cityId/provinceId/districtId) — placeholder city returns `noPriceCausation: 城市不存在`. Endpoint/params/JSON shape all verified 2026-07-27. Onboard as a two-request spider once the city tuple is pinned.
 - **winmart.vn** *(HTML front-end)* — products render via `product-card-skeleton` divs that don't hydrate within 8s Playwright wait. **NOTE**: winmart's *JSON API* at `api-crownx.winmart.vn/it/api/web/v3/item/category` works with no auth — see `src/prices/price_scraping/spiders/winmart.py`. Tier 1B, not Tier 2.
 - **shop.com.mm** (MM, Daraz Myanmar) — SPA confirmed June 2026. Category pages (`/health-care/`, `/medicines/`) return only navigation chrome in SSR HTML; zero product cards or prices. Alibaba/Daraz platform. No public API endpoint found. SKIP.
-- **cargillsonline.com** (LK) — Angular SPA. After 12s wait + scroll, dump contains `{{...}}` placeholder syntax (Angular templates) for product details and only category-level `/Product/<cat>` links — `/ProductDetails/<sku>` URLs never hydrate.
+- **cargillsonline.com** (LK) — **RESOLVED 2026-09-11 → SHIPPED as `cargills_lk`. This verdict was wrong: it was reached without the mandatory network trace.** The old note ("Angular SPA … `{{...}}` placeholder syntax … `/ProductDetails/<sku>` URLs never hydrate") correctly describes the AngularJS 1.x front-end and is irrelevant — there is a wide-open ASP.NET MVC JSON API behind it. `POST /Web/GetMenuCategoryItemsPagingV3/` with JSON body `{"CategoryId": <base64 id>, "PageSize": 5000, "SubCatId": "-1", …}` returns a whole category in one response. **The trap that makes this look dead on a cold probe:** without an ASP.NET store session the endpoint returns exactly one synthetic row `{"ItemName":"No Products Found","Price":null}` — a 200 with a plausible-looking JSON body, not an error. The bootstrap is `GET /` → `POST /Web/CheckDeliveryOptionV1` (form `PinCode=Colombo`, sets `ASP.NET_Pincode`/`Asp.Net_WebStoreId` for dark store 1031) → `POST /Web/GetCategoriesV1` (23 categories, `EnId` = base64 of the numeric id). Measured 3,967 SKUs across all 23 categories; test run collected 1,021 rows, all priced. Probed 2026-09-11.
 - **osudpotro.com** (BD) — listing URL `/category/buy-over-the-counter-medicine-online-in-dhaka` renders **disease cards** (`<a href="/disease/...">`) not product cards. Catalog is by-disease; needs a different entry URL or direct PDP list.
 - **almeera.com.qa** (QA, Al Meera — state-linked co-op chain) — Vite/Vue PWA shell (`<div id="app"></div>`, `env-config.js` is a local-dev stub not the real runtime config); the main JS bundle is minified enough that grepping for `VITE_API` / `window.__ENV__.*` finds nothing, so the real API base couldn't be recovered without a network trace. No Playwright available this session. Worth a dedicated Playwright-discover pass — the domain itself resolves and serves 200 (unlike Ramez/KM Trading below). Probed 2026-08-06 (round-3 Gulf States shard).
 - **sultan-center.com** (KW, The Sultan Center) — SPA shell (`<div id="app"></div>`) on what looks like a Bagisto (Laravel+Vue) storefront (`"Sultan Theme"`, `/vendor/sultan/ui/` asset paths) — no `_bagisto_base.py` exists in this repo. No API endpoint recovered from static asset grep; needs a network trace. Probed 2026-08-06 (round-3 Gulf States shard).
@@ -441,6 +441,7 @@ The site exists but products are not browsable on the web. Skip — no amount of
 
 - **pricegambia.com** (GM, "PriceGambia — Online Marketplace") — carried forward from the 2026-09-02 Gambia inventory as "the single highest-value remaining lead"; **it is not a lead.** The 70KB homepage is a static Bootstrap/jQuery marketing page for an iOS/Android app (App Store id6443941439, Play `com.app.wwwpricegambiacom`). Every "SHOP NOW" / "ORDER NOW" button resolves to `https://www.mypricegambia.com/api/fb/<code>` — and `mypricegambia.com` is **NXDOMAIN**, so even the app's own API host no longer resolves. There is nothing to network-trace: the page has no XHR, no JSON, and no internal hrefs beyond `#anchors`. Do not re-probe. Probed 2026-09-05 (SSA div-01/02 sweep).
 - **1bena.com** (GM, "1bena — Food delivery and rides in The Gambia") — WordPress, but the Store API returns **HTTP 500** and `/sitemap.xml` lists only `post`/`page`/`testimonial`/`cpt_services` children — there is no product post type at all. The catalogue is in the mobile app; the web tier is marketing plus a services CPT. Probed 2026-09-05.
+- **goket.com.np / goketgroceries.com.np** (NP, "Goket Groceries" — wave onboard1 candidate, pre-probe said 200 OK / 55KB / 2 ld+json blocks) — the ld+json blocks are `ItemList` marketing copy, not products. Next.js on Vercel; `/categories` renders a 33KB page whose only structured data is `{"@type":"ItemList","name":"Goket Groceries product categories"}` with `name`+`description` per category and **no price node anywhere**; a Playwright render with 9s wait + two scrolls produced zero NPR/Rs price matches and zero XHR to any product API. `robots.txt` is `Allow: / Disallow: /api/` and the sitemap is 15 URLs — home, /services, /categories, /about, /contact, /terms, 4 blog posts — with no product route. Header CTA is "Get the App". Ordering happens in the mobile app only. Probed 2026-09-11.
 
 ## API confirms demo/seed data, not a live storefront (Sixam Mart / 6amMart-family Laravel backends)
 
@@ -771,6 +772,7 @@ These sources publish prices exclusively as embedded images or image-only PDFs. 
 - **ceb.mu/files/files/publications/regulations/electricity_tariff_2026.pdf** (MU, Central Electricity Board — Government Notice No. 473 of 2026, the 1-May-2026 residential tariff revision) — the PDF embeds a non-standard font with no usable ToUnicode CMap: both `pdfplumber` and `pdftotext -layout` return CID/private-use-area garbage instead of real text on every page. `pdftoppm`-rendered page images ARE legible on visual inspection (confirms the notice text and that rates rise up to 15% from 1 May 2026, same band structure, no restructuring) but OCR of the actual Appendix rate tables was out of scope for this pass. The fetcher ships the older, cleanly-extractable `CEBTARIFFS.pdf` (effective Feb 2024) instead — see `ceb_electricity_tariff.py`. Probed 2026-09-01 (wave 10).
 - **cwa.govmu.org** water-supply tariff amendment PDFs (MU, Central Water Authority) — the "Tariffs and Charges" page (`/cwa/?page_id=794`) links only *connection-fee* regulations (`Domestic.pdf`, GN 51 of 2014 — one-off new-supply fees, not the recurring per-cubic-metre consumption tariff) plus a 2026 amendment (`GN-No-22-of-2026-...-Amendment-Regulations-2026.pdf`) that is image-only (`pdfplumber.extract_text()` returns empty on both pages). No machine-readable consumption-tariff schedule (COICOP 04.4.1) was found on the site within this pass's budget — a genuine sourcing gap, not built. Probed 2026-09-01 (wave 10).
 - **www.tanesco.co.tz/api/v1/uploads/tanesco_approved_tariffs.pdf** (TZ, TANESCO — national electricity utility) — the storefront-style corporate site is an Angular SPA with a genuinely open backend (`api/v1/documents/allActive`, no auth, `documentCategoryEnum=TARIFFS`), so the tariff PDF itself is trivial to locate — but the PDF is a single-page scanned image (`pdfplumber`: 0 chars, 5 embedded images, `extract_tables()` empty). OCR (pytesseract) would work but digit-level misreads on a tariff-rate table are a real risk for financial data; not attempted this pass since the country's source bar was already met without it. Probed 2026-09-01 (wave 12).
+- **othaimmarkets.com** (SA, Al Othaim Markets — wave onboard1 candidate, pre-probe said 200 OK / 135KB) — live and unblocked, but the domain is the **corporate** site, not a storefront. Next.js; `robots.txt` is `Allow: /` and `sitemap.xml` lists 328 URLs that are entirely news (112 ar/news), investor relations, about-us, recipes and store-locator pages — **zero product routes**; `/en/s?q=milk` 404s. The only price surface is the weekly flyer at `/en/offers/weekly-promotions`, which links `/api/pdfOffers/<id>-<n>.pdf`: a 7.8MB, 44-page PDF whose pages are single 1063x1400 images — `pdfplumber.extract_text()` returns **0 characters on every page sampled**. Arabic OCR over a 44-page promo flyer is the only route and is not worth it. Al Othaim's actual e-commerce is app-only. Probed 2026-09-11.
 
 ## Stale DAM PDF URL — 200 OK serving HTML "Page not available"
 
@@ -854,6 +856,7 @@ CDN-fronted document servers (Magnolia, Adobe AEM, similar) sometimes serve a 20
 - **candando.com** (AO, Candando — Angolan supermarket chain) — connection times out at 25s. Probed 2026-09-05.
 - **tupuca.co.ao / nossosuper.co.ao / alimenta.co.ao / deskontao.co.ao** (AO), **zmall.et / sheba.et (a law firm) / enatmart.com / beu.et** (ET), **kikuubo.online / shopyetu.co.ug / jumiafood.ug / minute5.ug / farmiketug.com** (UG) — domain-guess sweep, all NXDOMAIN except `sheba.et` (an unrelated legal practice) and `zmall.et` (expired cert; behind it a 1,668-byte SPA shell with no catalogue). Probed 2026-09-05.
 - **Suriname — 4th-pass named-chain sweep, zero hits** (SR; Mr. Bing, Bas Supermarkt, Superbaas, Vreedzaam, Prijsklopper, Amazing supermarket, Foodcity, Chinese/Javanese tokos): none of these resolve to a real Suriname webshop. "Amazing supermarket" and "Foodcity" are out-of-country brands (Netherlands and Spain/US respectively); "Vreedzaam" and "Prijsklopper" are misnamed/non-existent; "Mr. Bing", "Bas Supermarkt" and "Superbaas" have no findable web footprint at all. Cross-checked two independent Suriname business directories (`surinamyp.com/category/Supermarkets`, `dfave.com/sr/paramaribo/supermarkets-hypermarkets/`, ~38 listed toko/supermarket businesses combined) listing-by-listing for an outbound website link — **zero of ~38 have one**, all phone/WhatsApp/Facebook only. `surinamemarktplaats.com` (SR general classifieds) checked and ruled out — no food category in site copy or bundled JS. `statistics-suriname.org` re-confirmed reachable (2026-09-05 timeout resolved) but carries only the already-onboarded CPI, no separate average-retail-price table. Fourth independent same-day confirmation that Suriname food retail has no further online footprint beyond the already-onboarded `avoda_sr`. Probed 2026-09-11.
+- **shobly.shop** (LY, "Shobly" — wave onboard1 candidate, pre-probe said 200 OK / 20KB) — the 200 is a self-served placeholder: `<title>Site Unavailable</title>`, a 21KB inline-CSS holding page behind Cloudflare with **zero `href` links of any kind**, no catalogue, no API. Not a WAF (no challenge, no cf-mitigated header, curl_cffi chrome124 gets the same body as a browser) — the storefront is simply switched off. Third Libyan wave-10/13 candidate to die this way after nawris.net (demo seed rows) and watti.ly (pre-launch app landing page). Probed 2026-09-11.
 
 ## Official feeds that geographically exclude a country despite valid geography data (check the count, not just the domain)
 
@@ -881,6 +884,71 @@ negative — but the mandatory gate is only half-satisfied until Playwright is t
 treat these as unfinished rather than final.
 
 - **kgalagadibreweries.co.bw** (BW, Kgalagadi Breweries Limited — Botswana's national brewer, a COICOP 02.1 beverage lead) — HTTP 403, `server: hcdn`, 6,192 bytes, identical on all three impersonation profiles. Playwright not attempted. Low priority regardless: it is a corporate site and unlikely to carry a retail price list. Probed 2026-09-10 (Botswana `ddgs` sweep).
+
+## 2026-09-11 onboard4 shard — re-probes and new verdicts
+
+Eleven hosts from a hand-curated backlog, all pre-probed as "HTTP 200 with a real
+page body". Two were overturned and shipped (see the `cargillsonline.com` and
+`coop.se` entries above); the rest are recorded here with the *specific* reason,
+since the bulk "mechanically exhausted" list gives no detail to build on.
+
+**Confirmed dead, with the detail the bulk list lacks:**
+
+- **www.lidl.bg** and **www.lidl.pt** — these two have a real, enumerable product
+  catalogue and still carry **no prices anywhere on the web**, which is worth
+  writing down because every cheap signal says otherwise. `robots.txt` →
+  `/static/sitemap.xml` → `/p/export/{BG|PT}/{bg|pt}/product_sitemap.xml.gz`
+  yields **1,073 (BG) and 263 (PT) product PDPs**, each serving 3 JSON-LD blocks
+  including a `Product`. But the `Offer` node carries `priceCurrency` and
+  `availability: InStoreOnly` and **no `price` key at all** — these are in-store
+  assortment description pages, not a webshop. Confirmed at the markup level too:
+  zero `лв`/`€` matches in 393 KB of PDP HTML, and the only price-ish class is
+  `cart-section-one__price` (empty). The weekly-offer routes (`/c/<slug>/s<id>`)
+  were rendered in headless Chromium and also yield zero price text — the
+  brochure is a flipbook of images. Lidl's `/q/api/search` endpoint exists and
+  answers `{"error":"Assortment 'null' is not supported"}` without params, then
+  406 with every `assortment=`/`locale=` combination tried. Probed 2026-09-11.
+- **www.kaufland.bg** — AEM site, no WAF, `/.sitemap.xml` has 2,386 URLs of which
+  **582 are `/asortiment/*`** — which reads like a catalogue and is not one. Three
+  sampled assortment pages (180-224 KB each) returned **zero** `лв` price matches;
+  they are product-range brand pages. The rest of the sitemap is 1,420 recipes and
+  180 magazine articles. `/produkti.html` 404s. Kaufland BG runs no webshop; the
+  only price surface is the leaflet DAM at `assets.leaflets.schwarz`. Probed
+  2026-09-11.
+- **www.supersave.pt** — **not a retailer at all.** It is the landing page for a
+  price-*comparison* mobile app; its own JSON-LD says `@type: MobileApplication` /
+  `SoftwareApplication`, and its FAQ block reads "o melhor comparador de preços de
+  supermercados em Portugal … Continente, Pingo Doce, Lidl, Auchan, Mercadona".
+  The whole sitemap is 8 anchor links on one page plus `app.supersave.pt`, which
+  serves a **Google Play redirect page** (`<base href="https://play.google.com/">`).
+  App-only; no web catalogue to scrape. Probed 2026-09-11.
+- **kinmarche.com** (CD, Kin Marché — Kinshasa supermarket chain) — the site is a
+  **catch-all router**: `/sitemap.xml`, `/wp-json/...`, `/products.json` and
+  `/index.php?route=...` all return the identical 30,597-byte homepage with HTTP
+  200, so every platform fingerprint gives a false positive. The real routes are
+  `/product-categories` (74 KB, 23 category *names*, no items) and four
+  `/product/<id>` pages (57/58/59/71) which are promo-flyer image pages titled
+  "Promo Anniversaire". **Zero price text of any kind** (0 USD, 0 CDF matches
+  across both page types), zero per-item structure. Same class as `superindo.co.id`:
+  promo-flyer-image-only, no per-product catalog. Probed 2026-09-11.
+- **www.celeste.lk** — brochure site, not a shop. Its `sitemap.xml` is five pages
+  total: `/`, `/about.html`, `/services.html`, `/solutions.html`, `/contact.html`.
+  Served from Vercel; `/products.json` 404s. Probed 2026-09-11.
+
+**Not a blocker — already onboarded under a different name:**
+
+- **www.mercadao.pt/store/pingo-doce** — 301s unconditionally to `www.pingodoce.pt`,
+  which is already shipped as `pingodoce_pt` (that manifest documents the same
+  pivot). Any future candidate list carrying the Mercadão white-label URL should
+  be de-duplicated against `pingodoce_pt`, not probed.
+
+**Re-confirmed from earlier waves — no change, do not re-probe:** `hyper.sd` (>98%
+installer seed data at `price=1`), `lilydelivery.com` (14 vendors / ~34 items
+platform-wide), `zaad.delivery` (Astro marketing site, no catalogue behind the
+`hcdn` interstitial), `pridefarms.rw` (Wix store stocked with exactly 1 SKU),
+`nikora.ge` (corporate group site, not a storefront). All five entries above
+remain accurate as written.
+
 
 ## How to use this list
 
@@ -1749,7 +1817,7 @@ stealth-patched browser context, a residential proxy, or in-country egress.
 - `lidl.es` — spain (eca)
 - `sezamo.es` — spain (eca)
 - `ulabox.com` — spain (eca)
-- `coop.se` — sweden (eca)
+- ~~`coop.se` — sweden (eca)~~ **RESOLVED 2026-09-11 → SHIPPED as `coop_se`.** The mechanical homepage+2-category sweep could not have found this one: coop.se's price API is a **POST to a different host** (`external.api.coop.se`, Azure APIM) and needs the `Ocp-Apim-Subscription-Key` that the storefront JS bundle ships to every anonymous visitor (without it: 401 "missing subscription key"). See `coop_se.yaml` for the two calls. Note the sibling route `/personalization/search/products` answers 200 but caps at ~16 items and ignores `skip` — only `/personalization/search/entities/by-attribute` paginates. Test run collected 129 rows; prices verified character-for-character against the rendered category page.
 - `lidl.ch` — switzerland (eca)
 - `rappn.ch` — switzerland (eca)
 - `trendyol.com` — turkiye (eca)
@@ -2949,3 +3017,7615 @@ Grocery / Comparify Grocery / Groka / PriceKart / Qemat (grocery price-COMPARISO
 re-scrape Blinkit/Zepto/BigBasket/JioMart themselves — not first-party sources; onboarding
 the underlying retailers directly is the correct fix, which is what this round did for
 BigBasket).
+
+## 2026-09-11 — onboard3 shard (verified-live backlog, 12 countries by empty-COICOP-leaf rank)
+
+Every URL below returned HTTP 200 with a real body on the 2026-09-11 pre-probe,
+so none of these is a transport-level block. All were re-probed with
+`curl_cffi impersonate=chrome124`; the verdicts are about what the 200 actually
+contains.
+
+### F5 Shape / BIG-IP ASM JS challenge (`window["bobcmn"]` + `/TSPD/` cookie stub)
+
+New blocker class on this list. Signature: **every** path — `/`, `/fr`,
+`/fr/produits`, even `/robots.txt` — returns the *same* ~6.8 KB HTML whose only
+content is an obfuscated script setting `window["bobcmn"]` and a
+`failureConfig` hex string that decodes to "Oops....something went wrong....
+your support id is: %DOSL7.challenge.support_id%", with a `/TSPD/` +
+`TSPD_101_DID` cookie handshake. `curl_cffi chrome124` clears nothing; the
+stub is the response body, not a redirect.
+
+- **www.cactus.lu** (LU, Cactus — Luxembourg's largest grocery chain) — all paths
+  serve the 6,817-byte `bobcmn`/TSPD stub. One oddity worth recording so the next
+  run does not misread it: a request to a *non-existent* path under an API-looking
+  prefix (`/api/catalog_system/...`) fell through to a real 78 KB Drupal 404 page
+  (`lang="fr"`, GTM) — i.e. the origin is a Drupal site and the challenge sits in
+  front of the routes that matter, not the whole host. That 78 KB page is a 404
+  shell with no products. Probed 2026-09-11.
+
+### Brochure-only WordPress / no online store
+
+- **halimpharma.com.af** (AF, Halim Pharma) — WordPress/LiteSpeed, 145 KB home,
+  **no WooCommerce** (`/wp-json/wc/store/v1/products` → `rest_no_route`). The
+  `wp-sitemap.xml` holds only pages, `ot_portfolio` items and
+  `portfolio_cat` taxonomies — it is a pharmaceutical importer's corporate
+  portfolio site (`/our-services`, `/clients`, `/director-speech`). Zero price
+  text, zero AFN strings. Probed 2026-09-11.
+- **tazapharma.af** (AF, Taza Pharma) — WordPress/Apache, 163 KB home, no
+  WooCommerce. `wp-sitemap.xml` holds posts, pages, `portfolio` and taxonomies;
+  the homepage links are dated blog archives (`/2024/`, `/2025/`, `/2026/`).
+  A news site for a pharma company, not a shop. Probed 2026-09-11.
+- **www.pallcenter.lu** (LU, Pall Center) — WordPress + WooCommerce *plugin
+  present* in the markup, but the Store API 404s (`rest_no_route`) and the Yoast
+  `sitemap_index.xml` has **no product sitemap** at all: only post, page,
+  `3d-flip-book`, category and author. The `3d-flip-book` post type is the
+  digital leaflet — the catalogue is a PDF flipbook, not HTML products. Homepage
+  carries zero price-shaped text; its links are store branches (`/pall-strassen`,
+  `/pall-steinsel`, `/pall-useldange`, `/pall-pommerloch`). Probed 2026-09-11.
+
+### No products on the site (corporate marketing portal)
+
+- **coop.no** (NO, Coop Norge — the country's second-largest grocery group) —
+  Cloudflare, HTTP 200, but this is the *corporate + recipe* portal, not a
+  storefront. `/api/sitemap/sitemapindex.xml` resolves to a single sitemap with
+  4,454 URLs whose top path segments are `oppskrifter` (recipes, 1,992),
+  `butikker` (store finder, 1,220), `samvirkelag` (co-op societies, 374) and the
+  chain landing pages `extra` / `coop-mega` / `coop-prix`. Only 26 URLs look
+  product-ish and they are `/egne-merkevarer/<brand>/produkter/<slug>`
+  own-brand showcase pages — fetched one (`coop-kaffe/produkter/
+  kraftig-arabicakaffe`, 92 KB) and it carries **no price node of any kind**.
+  `/handle` and `/nettbutikk` both 404. Norway's e-grocery coverage has to come
+  from oda_no / meny_no / spar_no / obs_no, which are already onboarded.
+  Probed 2026-09-11.
+- **www.albert.cz** (CZ, Albert — one of the two largest Czech grocery chains) —
+  HTTP 200, 1.2 MB Next.js site, but Albert runs **no first-party web shop**.
+  Its `/albert-online` page is a CMS landing page whose only outbound commerce
+  links are `https://wolt.com/cs/discovery/albert` and
+  `http://www.foodora.cz/chain/ch3dr`. `nakup.albert.cz` does not resolve
+  (DNS NXDOMAIN) and `/produkty` 404s. The Wolt storefront is already onboarded
+  as `albert_wolt_cz`; a `albert_foodora_cz` sibling is the only unbuilt route
+  left here. Probed 2026-09-11.
+- **cartio.es** (ES, "Cartio") — WordPress/LiteSpeed, HTTP 200, 119 KB, and the
+  page *does* contain 41 euro-shaped strings — which is exactly the trap. It is a
+  **pre-launch waitlist landing page** (`#waitlist` x6, `#pain`, `#como`,
+  `#ejemplo`, `#opiniones`, `#planes`; every other href is an in-page anchor).
+  The prices are illustrative mock-ups in a hand-written comparison widget
+  ("Alcampo gana esta semana · Tu carrito: 6,99€ · Ahorro: 0,31€",
+  "Plátanos 1 kg · Mercadona 1,95 €"). No catalogue, no product routes, nothing
+  to scrape. Re-check in ~6 months. Probed 2026-09-11.
+
+### SPA shell — no productive endpoint
+
+- **mumafrica.com** (DZ candidate, "MumAfrica — African B2B Marketplace") — Vite
+  SPA on Cloudflare: **every** path, including `/api/products`, `/api/suppliers`
+  and `/robots.txt`-adjacent routes, returns the identical 5,058-byte
+  `<div id="root">` bootstrap. Pulled the whole bundle
+  (`/assets/index-CAmiu1eR.js`, 899 KB) and grepped it: the only API route
+  referenced anywhere in it is `/api/broadcast`; no `api.` host, no REST base.
+  `api.mumafrica.com` does not resolve. robots.txt is real (it names
+  `/supplier-dashboard`, `/AdminMumafrica`), so the product surface exists behind
+  auth, not in public HTML. Probed 2026-09-11.
+- **www.fthna.gr** (GR, "Fthiná" basket comparison) — Next.js on Vercel, HTTP 200
+  but only 37 KB, and the SSR HTML contains **zero** price-shaped text. The whole
+  app is a client-side basket builder (`/basket`, `/my-baskets`, `/trends` are
+  the only internal routes) and `/robots.txt` itself 404s into the SPA shell.
+  Nothing server-rendered to extract. Greece already has 7 retail sources.
+  Probed 2026-09-11.
+
+### Reachable, HTTP 200, but not extractable without more work
+
+- **www.ahorrapasta.com** (ES, Spanish grocery price comparator) — the *product*
+  layer is genuinely good: `/producto/<slug>-<retailer>-<id>` PDPs are SSR and
+  carry clean schema.org JSON-LD (`Product` + `Offer`, EUR, brand, size, image
+  hot-linked from dia.es/carrefour.es). What is missing is **enumerability**:
+  the declared `Sitemap: https://www.ahorrapasta.com/sitemap.xml` **404s** (as do
+  `sitemap-0.xml` and `sitemap_index.xml`), `/supermercados` and
+  `/supermercados/<chain>` 404, `/buscar?q=…` renders client-side with 0
+  `/producto/` links in the SSR body, and `robots.txt` explicitly
+  `Disallow: /api/`. The only enumerable surface is the ~20 rotating
+  `/producto/` links on the homepage — a carousel, not a catalogue, so it fails
+  the page-2 enumerability gate. Revisit if the sitemap ever starts resolving, or
+  if a Playwright network trace on `/buscar` exposes the search endpoint (it is
+  robots-disallowed, so that is a deliberate decision, not an oversight).
+  Spain already carries dia_es / carrefour_es / alcampo_es / mercadona /
+  elcorteingles_es plus three other comparators. Probed 2026-09-11.
+
+### Not a blocker — already onboarded under another key
+
+- **jumbocl.myvtex.com** (CL, Jumbo Chile) — appeared on this shard as an
+  un-manifested candidate; it is already live as `jumbo_cl`
+  (`src/prices/configs/lac/south_america/chile/jumbo_cl.yaml`, `archive_prefix:
+  jumbocl.myvtex.com/`). Duplicate, not new. Checked 2026-09-11.
+- **mamakiti.com** (GN) — already on this list (probed 2026-09-05): FastAPI
+  backend reachable and unauthenticated but honestly empty
+  (`/api/products` → `{"items":[],"total":0}`). Re-confirmed as a skip on
+  2026-09-11 without re-probing; the 6-month re-check date stands.
+
+## 2026-09-11 — onboard5 shard (verified-live backlog, 10 countries by empty-COICOP-leaf rank)
+
+Every URL below returned HTTP 200 with a real body on the 2026-09-11 pre-probe,
+so none of these is a transport-level block — all were re-probed with
+`curl_cffi impersonate=chrome124` and, where the 200 was an SPA shell, with a
+Playwright network trace. The verdicts are about what the 200 actually contains.
+
+**Five of the twelve candidates on this shard were already in this file** from
+the 2026-09-01 waves 10/11/12 and were re-confirmed, not re-litigated:
+`menamart-angola.com` (AO), `chapchapgabon.com` (GA), `duka.direct` (TZ),
+`www.shoprite.co.zm` (ZM), `tigmooeats.com` (ZM). A 200 with a large body is
+exactly what a marketing site returns; the earlier verdicts stand. Re-probe
+2026-09-11 added only: menamart still serves `PHP/8.2.33` behind Cloudflare with
+0 `ld+json` blocks, duka.direct now sits behind `server: ddos-guard`, and
+tigmooeats' 2 `ld+json` blocks are Organization/WebSite, not Product.
+
+### Store-session-gated storefront (catalog fully enumerable, prices withheld until an address binds a store)
+
+New class, and the one that cost the most time on this shard. Signature: a large
+server-rendered catalogue with real product names, a real product sitemap, and a
+schema.org `Product` JSON-LD node whose `offers` carries `url` and
+`availability` **but no `price` key at all**. The price is not lazy-loaded — it
+does not exist in the anonymous session, because the storefront is a multi-store
+co-operative and the price is per-store. Do not read the JSON-LD Product node as
+evidence a site is scrapeable; check `offers.price` specifically.
+
+- **spesaonline.conad.it** (IT, Conad — Italy's largest grocery co-operative) —
+  `sitemap/products.xml` is genuine and enumerable: **5,432 product URLs**
+  (`/p/<slug>--<sku>`), plus `sitemap/categories.xml`. Every PDP is a 343 KB
+  server-rendered page carrying a complete `Product` JSON-LD (name, sku, gtin,
+  brand, image, offers.availability) — and no price anywhere; the only `€`
+  strings in the DOM are the `4,95€` delivery fee. The homepage states the gate
+  in plain text ("Verifica i servizi disponibili nella tua zona" / "Il tuo
+  indirizzo"). The store list endpoint `/api/ecommerce/it-it.stores.json`
+  returns 200 in a browser but **404 to curl_cffi even after fetching the
+  homepage first** — the session is bound server-side via `ecSess` /
+  `ecServerUUID` / `ecRoute` cookies that only the SPA's address-verification
+  flow creates. `/api/ecommerce/it-it.dictionary.json` (69 KB) is open, which is
+  a red herring: it is UI strings. Unblocking this needs a scripted
+  Google-Places address + store-selection flow in Playwright, then plain-HTTP
+  PDP fetches with the bound cookies — a dedicated effort, not routine
+  onboarding. Worth doing: 5,432 SKUs at Italy's biggest chain. Probed
+  2026-09-11.
+
+- **www.coopshop.it** (IT, Coop / Novacoop "Catalogo Global") — same failure
+  mode reached through a *wide-open* API, which makes it especially misleading.
+  The storefront is eBSN (Digitelematica); `/ebsn/api/category?hash=w0d0t0`
+  returns the full tree (**17 top-level, 979 categories total**) and
+  `/ebsn/api/products?parent_category_id=<id>&page=1&page_size=N` paginates
+  cleanly (`totItems` 10,000 on the root, real `totPages`). Every product object
+  is rich — name, `shortDescr` brand, `description` pack size, barcode, EAN,
+  `codInt`, breadcrumbs, VAT class, images — and contains **no price field of
+  any kind**; the only key matching /price/i is `priceUnitDisplay: "PZ"`, a unit
+  label. Tried and rejected: `hash=w{0..5}d{0,1}t0` (the hash is
+  warehouse/delivery-service/timeslot), `&warehouse_id=`, `&store_id=`.
+  `/ebsn/api/store/list` returns 3 stores with `deliveryServices` but **zero
+  warehouses**, so there is no warehouse id to bind anonymously.
+  `/ebsn/api/warehouse*`, `/ebsn/api/cart/info`, `/ebsn/api/category/tree` all
+  404/400. A Playwright render of a real category page
+  (`/acqua-e-bevande/succhi-di-frutta`) fires exactly the same
+  `/ebsn/api/products?...&hash=w0d0t0` call and the rendered DOM shows **no
+  prices either** — so this is not a headers/session-shape problem, the
+  anonymous catalogue genuinely has no prices. Needs a registered account with a
+  delivery address. Probed 2026-09-11.
+
+### Encrypted API payload + Cloudflare Turnstile on writes
+
+- **instashop.com/en-eg/** (EG, InstaShop Egypt — Delivery Hero) — not the same
+  company as `instashop.kz`, which *is* onboarded. The SPA is served from
+  Cloudflare with no `__NEXT_DATA__`/`__NUXT__`; Playwright network-trace found a
+  clean-looking REST surface at `/eshop/v2/*` (`staticData`, `getFooterContent`,
+  `getDefaultCoordinates`, `account`, `superstore`,
+  `superstore/additionalContent`). Two independent walls: (1) `GET
+  /eshop/v2/staticData?systemInfo={...countryCode:"EG"...}` returns **200 with an
+  AES-encrypted body** — a 1,472-byte base64 blob beginning `U2FsdGVkX1/`, i.e.
+  CryptoJS `Salted__`, with the key in the JS bundle and rotated; (2) every
+  `POST` (`/eshop/v2/superstore`, the one that would return store catalogues)
+  returns **403 with a Cloudflare Turnstile "Just a moment..." interstitial**,
+  `script-src https://challenges.cloudflare.com`. Encrypted payload *and* an
+  interactive challenge on the only useful verb. Abandon. Probed 2026-09-11.
+
+### Branch-gated Next.js storefront (product sitemap real, no reachable product API)
+
+- **shop.imtiaz.com.pk** (PK, Imtiaz Super Market) — this is the real storefront
+  subdomain, distinct from the `imtiaz.com.pk` corporate WordPress site already
+  recorded in this file (that entry is still correct; it just was not the whole
+  story). `sitemap.xml` is genuine: 503 URLs, ~500 of them
+  `/product/<slug>-<id>`. But the PDP server-renders 33 KB with
+  `__NEXT_DATA__.props.pageProps.prefetchedItem = null` and no price, and
+  `/category/grocery` renders 188 KB with `pageProps` reduced to
+  `{session,pageUrl,requestIp,lang}` — everything loads after a city/branch
+  selection. A full Playwright render of both the PDP and the category page
+  fires **exactly one XHR**, `/api/geofence?restId=55126`, and nothing else. That
+  endpoint is unreachable outside the browser: from `curl_cffi` (with a warmed
+  session, Referer, Origin, `x-requested-with`) it answers
+  `400 {"msg":"Please provide restaurant id!"}` to `restId`, `restaurantId`,
+  `rest_id`, `restid` and `id` alike. Grepping all 10 `_next/static` chunks
+  yields only `/api/auth/signin`, `/api/image`, `/api/img` — no product route and
+  no external API host (the platform is blinkx/tossdown-style, assets on
+  `blinkximtiaz-i.s3.ap-southeast-1.amazonaws.com`, `restId 55126`). A build here
+  means driving the branch selector in Playwright first; ~500 SKUs, so low
+  reward. Probed 2026-09-11.
+
+### Brochure-only WordPress / no online store
+
+- **www.papantoniou.com.cy** (CY, Papantoniou — trades as ΣΚΛΑΒΕΝΙΤΗΣ Κύπρου /
+  Sklavenitis Cyprus; canonical host is `sklavenitiscyprus.com.cy`) — the
+  homepage HTML contains the strings `woocommerce` and `wp-content`, which is a
+  **false positive**: `/wp-json/wc/store/v1/products` and
+  `/wp-json/wc/store/products` both return `rest_no_route` (in Greek), and
+  `/product-sitemap.xml` 404s. `wp-sitemap.xml` lists only
+  `posts-post`, `posts-page`, `posts-bgmp` (a store-locator plugin),
+  `posts-3d-flip-book` and taxonomies — the "catalogue" is flip-book PDF
+  leaflets under `/catalogues/`. 22 absolute links on the whole homepage, all
+  about/contact/locations/privacy. No e-commerce. Note the repo already carries
+  `sklavenitis_wolt_cy` for this retailer's delivery catalogue, which is the
+  right surface. Probed 2026-09-11.
+
+- **www.eurospin.it** (IT, Eurospin — Italy's largest hard discounter) —
+  WordPress + W3 Total Cache, no WooCommerce (`/wp-json/wc/store/v1/products` →
+  `rest_no_route`; the 21 REST namespaces are iThemes Security, AIOSEO,
+  aio-login, `wp/v2` — nothing commercial). The AIOSEO `sitemap_index.xml` has
+  exactly 6 shards — page, store, ricette, brand, news, post-archive — and **no
+  product shard**; `page-sitemap.xml` (1,403 locs) is marketing pages. `/prodotti`
+  200s but serves a 2023 Christmas campaign page; `/i-nostri-prodotti` and
+  `/prodotto/` 404. `/volantino` is the biggest page on the site at **1.41 MB and
+  contains zero prices** — it is a `var stores` store-locator payload plus an
+  image/PDF flyer viewer (0 hits for `data-price`, `itemprop="price"`,
+  `class*=product`, `class*=prodotto`, and 0 `€` amounts). Probed 2026-09-11.
+
+### No products on the site (corporate marketing portal)
+
+- **www.unes.it** (IT, Unes / U2 Supermercato) — AEM content site. `sitemap.xml`
+  is 846 locs of which 211 are `/content/dam/unes` assets and ~170 are
+  `/it/parola-di-unes/*` editorial; there is not one product URL. `robots.txt`
+  disallows `/*/reparti` which reads like a catalogue hint, but `/it/reparti`
+  returns a genuine 404 shell (1,167 bytes, `<title>Page not found</title>`,
+  three stylesheet links and nothing else). No webshop. Probed 2026-09-11.
+
+- **www.sezamo.it** (IT, Sezamo — Rohlik Group's Italian venture) — the domain
+  resolves and serves a **3.1 MB Drupal page for every path**: `/robots.txt`,
+  `/api/v1/categories` and `/services/frontend-service/products/new-categories/1`
+  all return byte-identical 3,099,472-byte HTML whose `<title>` is
+  **"Eat well Live well | Rohlik Group"**. It is a catch-all corporate landing
+  page for the parent group, not the Sezamo storefront — consistent with Rohlik
+  having wound down the Italian operation. Nothing to scrape. Probed 2026-09-11.
+
+- **hokoh.app** (FR, HOKOH — "Comparateur de prix courses gratuit | Carrefour,
+  Leclerc, Auchan, Lidl…") — the name suggests a price-comparison feed, but the
+  web property is a 47 KB marketing landing page for a mobile app. `sitemap.xml`
+  has **10 URLs total**: `/`, `/blog/`, five blog articles, and
+  privacy/cgu/accessibilite. Its three `ld+json` blocks are `MobileApplication`,
+  `FAQPage` and `Organization` — no `Product`, no `Offer`. The comparison data
+  lives only in the app (`Disallow: /app/`). App-only. Probed 2026-09-11.
+
+### Aggregator / no canonical per-product URL
+
+- **it.everli.com** (IT, Everli — grocery-delivery marketplace over Italian
+  chains) — `/it/spesa` is a **Framer** marketing page (376 KB, `api.framer.com`
+  access-token call in the trace) with zero product XHRs. `robots.txt` disallows
+  `/supermercato/` (the store catalogues) outright, and the declared sitemap
+  index `it_everli_com_it_sitemap.xml` lists four locale children of which
+  `sitemap_it.xml` **404s to the SPA shell**. `/it/milano` is a real 380 KB city
+  store-directory page — per the skill's marketplace-as-directory rule that is
+  the right surface, but the chains behind it (Carrefour, Conad, Bennet, Coop)
+  are already onboarded or are the store-session-gated cases above, so the
+  directory adds nothing here. Not probed further. 2026-09-11.
+
+
+---
+---
+
+# Merged fragment archive (2026-09-11)
+
+The 38 sections below were appended verbatim from per-run blocker notes that
+47 discovery and repair waves left in `~/gapwork/` instead of writing here. They
+are kept as separate dated sections rather than reflowed into the taxonomy above,
+because each one records what a specific run actually observed on a specific date and
+rewriting them would lose that provenance.
+
+They add 792 hosts not previously documented. 9 fragments were
+skipped as fully redundant: known_blockers_append.md, known_blockers_disco_mena_guinea_bissau.md, known_blockers_disco_mena_iraq.md, known_blockers_disco_mena_libya.md, known_blockers_disco_mena_sudan.md, known_blockers_disco_mena_syria.md, known_blockers_disco_mena_yemen.md, known_blockers_untried_2.md, blockers_append.md.
+
+**Read the host index at `known_blockers_index.md` first** - this file is long, and the
+index maps a host to the section that documents it in one grep.
+
+---
+
+## known_blockers_capfix - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_capfix.md` on 2026-09-11. 2 hosts, 1 not
+documented above at merge time.
+
+# Known blockers — cap/zero-row fix pass (2026-09-11)
+
+## aelanbasket_vu (Vanuatu) — Vercel bot-checkpoint wall, NOT fixable via plain HTTP or curl_cffi
+
+Confirmed the prior root-cause report but found a deeper layer underneath it.
+The homepage genuinely has zero `/product/` links today — but that's because
+**every path on the site now returns a Vercel bot-management challenge page**,
+not because the homepage was redesigned.
+
+- MEASURED with plain `requests` + a real Chrome UA: `GET /` -> HTTP 403,
+  `Content-Type: text/html`, page title `Vercel Security Checkpoint`,
+  response headers include `Server: Vercel`, `X-Vercel-Mitigated: challenge`,
+  `X-Vercel-Challenge-Token: ...`. Same 403/checkpoint on `/shop`,
+  `/sitemap.xml`, `/robots.txt`, `/api/products`.
+- MEASURED with `curl_cffi` `impersonate="chrome124"`: identical 403 +
+  checkpoint page. TLS-fingerprint impersonation does not help here — this
+  is a Vercel-platform bot firewall (BotID-style), which does JS/device
+  fingerprinting server-side, not a naive UA/TLS gate. It cannot be solved
+  without executing real JavaScript (i.e., a headless browser like
+  Playwright working through the challenge), which is out of scope for
+  this pass.
+- The manifest's 2026-08-11 note ("`/shop` is a client-rendered filter view
+  ... discovery instead crawls from the homepage plus related-products
+  rails") was accurate *at the time*; the checkpoint is a regression that
+  post-dates it.
+- **Verdict: not fixed this pass.** True catalogue size unknown (was ~14+
+  linked from the homepage before the wall went up). Recommend a follow-up
+  pass with Playwright (or dropping the source if Vanuatu coverage doesn't
+  depend on it) rather than further plain-HTTP probing — every path is
+  walled identically, so there's no alternate discovery path to try.
+
+## Lezzoo/Iraq cluster — genuine platform truncation, TRUE catalogue size NOT recoverable via plain HTTP
+
+See the accompanying report for full per-source detail and duplicate
+resolution. Summary of the blocker: all 8 distinct Lezzoo venue storefronts
+that were built (`asfahan_nuts_iq`, `lezzoo_mart_erbil_iq`,
+`nan_house_bakery_lezzoo_iq`, `sarwaran_butchery_lezzoo_iq`,
+`sarwaran_grocery_lezzoo_iq`, `sherko_nuts_lezzoo_iq`,
+`sultan_butchery_lezzoo_iq`, `varya_grocery_lezzoo_iq`) return **exactly
+60 total menu items** in the page's schema.org JSON-LD, regardless of how
+many sections/categories the venue has (1 section vs. 33 sections) or how
+different the venues are (a single-category nuts shop vs. a 33-category
+mart). This is not spider-side capping — `generic_lezzoo_venue.py` has no
+slice/limit in its code, does a single plain GET, and yields every
+`hasMenuItem` found.
+
+- MEASURED: the full RSC-rendered HTML (not just the JSON-LD `<script>`
+  block) caps at 60 items — checked via raw `"price"`/`"priceCurrency"`
+  occurrence counts in the complete page source, and via the page's
+  `self.__next_f.push` streaming payload, which duplicates the same
+  60-item JSON-LD, not a larger one. So this isn't an SEO-only truncation
+  with more data available elsewhere in the same page.
+- MEASURED: no `__NEXT_DATA__`/API/GraphQL/loadMore reference found in any
+  of the 5 largest JS chunks the page loads (`1255`, `2546`, `2619`,
+  `8493`, `4bd1b696`) — the "load more" mechanism, if one exists, is
+  server-only (React Server Components) and isn't visible to static
+  analysis. `?page=2`/`?offset=60` query params have no effect (server
+  ignores them). No `api.*.lezzoo.com` or similar subdomain resolves.
+- MEASURED (corroborating, from a sibling manifest set already in this
+  repo, `known_blockers_disco_mena_iraq.md`): venues with a genuinely
+  small catalogue do NOT get padded to 60 — `amara-dates-9381` returned
+  only 5 items, `meer-fish-1033` only 10. This rules out "60 is a
+  coincidental real catalogue size for 8 unrelated shops" — the cap only
+  binds when the true catalogue is ≥60, exactly as a page-size limit
+  would behave.
+- **Verdict: not fixable via plain HTTP.** True catalogue size for all 8
+  is UNKNOWN but INFERRED (high confidence) to exceed 60 for most of them,
+  especially `lezzoo_mart_erbil_iq` (33 categories, most showing only 1-5
+  items each — implausible as real per-category stock) and
+  `sultan_butchery_lezzoo_iq` (Meat=32, Fruits/veg=26 crammed into a
+  60-item ceiling alongside 2 more categories). Recovering the true
+  catalogue would need either a headless browser driving the site's
+  infinite-scroll/pagination, or reverse-engineering a private
+  app/mobile API — both out of scope for this pass. Recommend flagging
+  as a future Playwright-based enhancement rather than attempting further
+  plain-HTTP probing (the JS bundles were already checked and carry no
+  client-fetch endpoint).
+
+
+---
+
+## known_blockers_custom_1 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_custom_1.md` on 2026-09-11. 8 hosts, 8 not
+documented above at merge time.
+
+# known_blockers_custom_1.md
+
+Batch: `~/gapwork/batches/custom_1.csv` (255 candidates: gibraltar, chad,
+eswatini, botswana, sierra_leone, suriname, solomon_islands, tuvalu).
+
+## Method note (read before trusting the "not probed" list below)
+
+Every one of the 255 candidates went through one bulk pass: `curl_cffi`
+fetch (impersonate=chrome124, 15s timeout) + platform-fingerprint regex +
+robots.txt/sitemap discovery + JSON-LD-Product/currency-token scan. Raw
+results for all 255 rows are saved on a8 at
+`~/gapwork/probe_results_custom_1.json` — re-run future passes off that
+file rather than re-fetching from scratch. Of the 255: 223 returned HTTP
+200, 15 returned 403, ~17 failed on connection/TLS/DNS errors.
+
+From that bulk pass, roughly 45 candidates were deep-probed (sitemap
+enumeration, category-page pagination, PDP price/currency confirmation).
+The remaining ~210 candidates were NOT individually hard-gate-tested in
+this pass — most are single-page tariff/fee/menu pages, restaurant menus,
+school-fee schedules, or personal/inactive sites where the bulk fingerprint
+already shows no real product platform (no sitemap, no JSON-LD, no
+currency token, or a non-200 status). They are listed at the bottom as
+"not deep-probed" rather than folded into the rejection buckets below,
+because no live per-candidate evidence was gathered for them.
+
+---
+
+## REJECTED — zero/POA pricing
+
+### edutoys_world_bw (botswana)
+- URL: https://www.edutoys.world/shop
+- Platform: Odoo (`/shop`, `/shop/category/<slug>`)
+- Evidence: fetched `/shop/category/role-play-toys-12` (HTTP 200, 20
+  product cards via `.oe_product` selector). All 20/20 cards showed
+  `Enquire for Price` with `.product_price` text `"Enquire for Price0.0BWP"`
+  — every listed price is the literal zero placeholder. Classic
+  "price on application" catalogue per the skill's known anti-pattern.
+- Verdict: REJECT (non-zero-price gate).
+
+### bas_bw_shop (botswana)
+- URL: https://www.bas.co.bw/shop
+- Platform: Odoo
+- Evidence: only one category discoverable (`/shop/category/preowned-1`),
+  containing exactly 2 priced product cards (`P13,500.00`, `P5,300.00`).
+  No other category link found from `/shop`.
+- Verdict: REJECT (Phase 6 ≥5-row gate cannot be met — total catalog is 2
+  items).
+
+---
+
+## REJECTED — wrong currency / diaspora audience
+
+### newflagshop_eswatini_flags (eswatini)
+- URL: https://newflagshop.com/shop/by-letter/e-g/eswatini/
+- Platform: WooCommerce/WordPress, JSON-LD Product present.
+- Evidence: JSON-LD `offers.priceCurrency` = `CAD`. This is a Canada-based
+  flag/novelty retailer selling "Eswatini flags" as a curated product line,
+  not a storefront that prices for Eswatini.
+- Verdict: REJECT (currency + locality gates — CAD, Canadian seller).
+
+### carros_td (chad)
+- URL: https://carros.com/?lang=fr
+- Platform: unfingerprinted custom platform, JSON-LD Product present.
+- Evidence: JSON-LD `offers.priceCurrency` = `USD`, not XAF. Site is a
+  used-car export marketplace (French-language, "carros.com" is generic,
+  not Chad-specific); no XAF pricing found despite a `lang=fr` Chad-facing
+  URL param.
+- Verdict: REJECT (currency gate — USD, not the country's own currency;
+  reads as an export/diaspora marketplace, not a local Chad price).
+
+### timototraders (eswatini)
+- URL: https://timototraders.co.za/
+- Evidence: domain is `.co.za` (South Africa ccTLD); no Eswatini-specific
+  storefront, pricing, or delivery scope found on the fetched page.
+- Verdict: REJECT (locality gate — no evidence this site prices or ships
+  for Eswatini specifically; it is a South African site the candidate list
+  associated with Eswatini without confirmation).
+
+---
+
+## INCONCLUSIVE — blocked mid-probe, needs re-verification
+
+### istore_bw (botswana)
+- URL: https://istore.co.bw/
+- Platform: Shopify (confirmed — `/products.json?limit=5` returned HTTP
+  200 with real SKU data, e.g. `Mac mini | Apple M5 Pro chip...` at
+  `32599.00`). `/collections/all` page1 vs page2 returned 64 vs 64 links
+  with only 14 overlapping (50 new) — genuinely enumerable.
+- Blocker: every subsequent request (PDP fetch, homepage fetch) to confirm
+  the actual checkout currency (the `/products.json` payload carries no
+  currency field) returned HTTP 429 for over 10 minutes across 3 retries
+  with backoff, from the same a8 IP that had just succeeded on
+  `/products.json`. Looks like Shopify-side rate limiting triggered by the
+  earlier bulk sweep hitting this domain, not a permanent block.
+- Verdict: NOT SHIPPED this pass. This is our own four-generic-spider
+  Shopify pattern (not a new technology), so re-probing later
+  (`_shopify_base.py` already exists) is cheap — just needs the currency
+  confirmed from a PDP or homepage once the 429 clears.
+
+### crazystore_bw_all_products (botswana)
+- URL: https://www.crazystore.co.bw/products/?page=2
+- Evidence: `/products/` returned 191 links on page1 vs 179 overlapping
+  (12 new) on `?page=2`, but nearly all of those links are subcategory
+  URLs (`/products/toys-games-and-sport/girls-toys/`), not PDP or priced
+  listing items — never drilled into an actual leaf category to confirm
+  price/currency. Its declared sitemap in robots.txt
+  (`https://www.crazystore.co.za/sitemap.xml`) points at the .co.za
+  tenant, which is a locality red flag worth checking before shipping.
+- Verdict: NOT SHIPPED this pass — needs one more level of drill-down
+  (fetch a leaf category, confirm BWP pricing on the .co.bw domain
+  specifically) before a verdict.
+
+---
+
+## ONBOARDED (see main report for full detail)
+
+- spar2u_bw (botswana) — custom sitemap+JSON-LD platform, 8,370-SKU
+  supermarket catalog.
+- beares_bw (botswana) — Magento 2, HTML category-grid scrape.
+- artiaf_td (chad) — PrestaShop, HTML fallback route (webservice API
+  401s).
+- busiquip_sz (eswatini) — bespoke SPA, product catalog embedded as a
+  static JS array in a build asset.
+- afrikonet_sl (sierra_leone) — bespoke marketplace, 161-category HTML
+  crawl.
+
+---
+
+## Not deep-probed in this pass (bulk-fingerprinted only)
+
+The remaining ~205 candidates across all 8 countries were fingerprinted
+(status code, platform signature, JSON-LD/currency-token scan, robots.txt
+sitemap discovery) but not individually walked through the full hard-gate
+sequence. Raw fingerprint data for every one of them is in
+`~/gapwork/probe_results_custom_1.json` on a8. Categories worth flagging
+for a next pass, read off that file:
+
+- **Single-page tariff/fee/menu pages** (bank tariff guides, school fee
+  schedules, restaurant menus, utility tariff pages) — most of these are
+  `analytical_role: tariff` or `official_avg` fetcher candidates, not
+  spider candidates, and were out of scope for the spider-focused probing
+  this pass did. Examples: `absa_bw_tariff_guide`, `wuc_tariffs`,
+  `bpc_tariffs_information`, `pedros_botswana_menu`,
+  `oceanbasket_botswana_menu`.
+- **Odoo hits not yet checked**: `omega_impact_td` (chad),
+  `hope_bromo_restaurant` (botswana, restaurant not retail),
+  `smart_connexxionz` (suriname, dev/staging subdomain — likely not live).
+- **Non-200 candidates** (403/timeout/SSL errors) were not re-probed with
+  `curl_cffi impersonate` variants beyond `chrome124` — per the skill's own
+  guidance, a `chrome120`/`safari17_0` re-probe could recover some of
+  these. Left for a follow-up pass given time budget on this run.
+- **eSIM resellers** (`gigago_eswatini_esim`, `hivoox_eswatini_esim`,
+  `mollysim_eswatini_esim`, `alooui_eswatini_esim`) — these are global
+  eSIM marketplaces that happen to list "Eswatini" as a destination plan,
+  not Eswatini-based retailers. Likely fail the locality gate the same way
+  `carros_td` did, but not individually confirmed.
+
+
+---
+
+## known_blockers_custom_2 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_custom_2.md` on 2026-09-11. 27 hosts, 25 not
+documented above at merge time.
+
+# Known blockers — custom_2 batch (2026-09-11)
+
+Batch: `~/gapwork/batches/custom_2.csv`, 257 candidates across guinea_bissau,
+liberia, american_samoa, libya, greenland, liechtenstein,
+central_african_republic, south_sudan, guinea, palau, kiribati,
+marshall_islands, burkina_faso, congo_rep, sudan. All probed live with
+`curl_cffi impersonate="chrome124"` (never bare curl). 16 sources shipped
+(see final report); this file covers everything individually investigated
+and rejected, with the evidence that killed it. A separate, much larger
+remainder was only bulk-fingerprinted (status code + platform signature) and
+not individually hand-verified — see the "Not individually verified" section
+at the bottom; that is an inferred, not measured, bucket.
+
+## Not a real product catalog (platform installed, but no store)
+
+- **bissau_online_market_gw** (https://bissauonlinemarket.com/) — WordPress +
+  WooCommerce plugin present, but `/sitemap.xml` is a Yoast sitemapindex of
+  `_classificados-sitemap.xml`, `tipo-de-oferta-sitemap.xml`,
+  `tipo-de-vendedor-sitemap.xml` etc. — a classifieds/listings directory, not
+  a retail SKU catalog. WooCommerce Store API 404s
+  (`/wp-json/wc/store/v1/products` → `404 application/json`, empty product
+  set). Not scaffolded.
+- **henicki** (https://henicki.com/) — WordPress, Woo-plugin signature
+  matched a false positive (`auto-sizes` image plugin). `/sitemap.xml` only
+  lists `post-sitemap.xml` / `page-sitemap.xml` / `category-sitemap.xml` /
+  `author-sitemap.xml` — no product sitemap. Store API 404. Not a shop.
+- **majasoptik** (https://majasoptik.gl/) — WordPress, Woo-plugin present but
+  `/sitemap.xml` only has `page-sitemap.xml` / `elementor-hf-sitemap.xml`.
+  The probed URL (`/brilleglas/`) is an informational article about lens
+  types, not a PDP. Store API 404. Not a shop.
+- **jbr_trading_global** (https://www.jbrtrading.com/) — Wix site, but
+  `/sitemap.xml` has no `store-products-sitemap.xml` entry (WixStores app
+  not installed). No product catalog to enumerate.
+- **rmiembassytw_local_merchandise**
+  (https://www.rmiembassytw.com/local-merchandise) — same: Wix, no
+  `store-products-sitemap.xml`.
+- **tropicart_wix_store** (https://www.tropicarti.com/) — 404 on the
+  homepage itself; domain appears to have lapsed or been redirected off the
+  Wix site.
+
+## Locality ambiguous — rejected out of caution
+
+- **hi_nesian_apparel** (https://www.hinesianapparel.com/) — real Wix store,
+  145 products via `store-products-sitemap.xml`, priced in USD (which IS
+  American Samoa's currency, no currency problem). Rejected anyway: no
+  address, shipping-destination, or "based in American Samoa" copy found on
+  the site — product names are themed by Pacific-island names ("American
+  Samoa Jersey", "Philippines") which reads as a pan-Pacific-diaspora
+  streetwear brand rather than evidence of retail operations serving
+  American Samoa residents. Per the task's locality gate this needs an
+  explicit call, not a silent accept — flagged for manual follow-up rather
+  than shipped.
+
+## Not retail SKU — out of scope for this storefront-technology pass
+
+These carry real prices but are not a product catalog a spider should walk;
+they are candidates for the `fetcher` (tariff / official_avg) pipeline
+instead, per the skill's own scaffolding rule (don't force a fetcher-shaped
+source into a spider).
+
+- ahb_nuuk (https://ahb.dk/restauranter/nuuk), hotel_soma_nuuk
+  (https://hotelsoma.com/da/restaurant-nuuk/) — restaurant menus (Greenland).
+- sinkor_palace_menu (https://www.sinkorpalace.com/restaurantmenu),
+  flying_fox_brewing_co_menu
+  (https://flyingfoxbeer.wixsite.com/home/menu) — restaurant/bar menus
+  (Liberia, American Samoa).
+- fish_n_fins_partner_pricing (https://fishnfins.com/index.php/partner-page),
+  palau_pacific_divers_price_images
+  (https://www.palaupacificdivers.com/price) — dive-tour service pricing,
+  not retail SKU.
+- astca_prepaid_roaming_rates, samoa_government_business_license_fees,
+  samoa_international_finance_authority_fee_schedule,
+  american_samoa_medicaid_resources_fee_schedules,
+  american_samoa_insurance_commissioner,
+  american_samoa_bus_rate_regulation,
+  american_samoa_business_license_fee_statute_index — official fee
+  schedules / regulatory pages (American Samoa). Real prices, wrong
+  scaffolding (would be `extraction_pattern: html_scrape` /
+  `analytical_role: tariff` fetchers, not spiders).
+- palau_ppuc_water_rates_news (https://islandtimes.org/...) — a news
+  article ABOUT a rate change, not the tariff schedule itself.
+- marshalls_energy_shipping (https://mecrmi.com/shipping/) — a shipping
+  company's service page, not a retail catalog.
+- carrosbissau_gw, carliberia_spareparts — Elasticsearch-signature used-car
+  classifieds sites; vehicles/used-goods listings, heterogeneous pricing,
+  out of scope for a retailer_sku spider this pass.
+- petitfute_bissau_restaurants — a travel-guide directory page (Algolia
+  signature came from the site's own search widget, not a price source).
+
+## Verified WAF blocks (South Sudan priority — retried across 3 TLS profiles)
+
+Per the skill's mandatory-network-trace rule: retried with `chrome124`,
+`chrome120`, and `safari17_0` before recording as blocked (never from bare
+curl or a single profile).
+
+- **shopit_ss** (https://shopit.com.ss/) — 403 on all three profiles.
+  `server: cloudflare`, body is the Cloudflare "Just a moment..." JS
+  challenge page. Real Cloudflare block, not a curl-TLS artifact.
+- **businessclaud_ss** (https://businessclaud.com/) — same signature:
+  `server: cloudflare`, "Just a moment..." challenge, 403 on all 3 profiles.
+- **ssdonestore_ss** (https://ssdonestore.com/) — 403 on all three profiles,
+  `server: hcdn`, a custom (non-Cloudflare) 403 page. Different WAF vendor,
+  same verdict.
+
+These would need a residential proxy + JS challenge solver (Cloudflare) or
+further vendor-specific investigation (hcdn) to clear — not attempted this
+pass per the skill's "don't iterate on curl_cffi+Playwright double-403"
+guidance (Playwright wasn't run here, but the triple-TLS-profile failure on
+the two Cloudflare sites is the same class of signal).
+
+## Connection failures (DNS / SSL / timeout — likely dead or misconfigured)
+
+- amatlgb_gw (guinea_bissau) — DNS: `Could not resolve host: www.amatlgb.com`
+- orange_bissau_mobile_internet (guinea_bissau) — SSL: unable to get local
+  issuer certificate
+- american_samoa_llc_filing_fees — DNS: `Could not resolve host: llc.as.gov`
+- jubaexpanse_takeapp_ss (south_sudan) — DNS: could not resolve host
+- memuapp_ss_ug (south_sudan) — TLS: `TLSV1_ALERT_INTERNAL_ERROR`
+- papalac_gn (guinea) — DNS: could not resolve host (societe-asfils.com)
+- al_bugaa_computers_telecommunications (sudan) — SSL: certificate expired
+- telecel_lr_shop (liberia) — connection timed out (20s)
+- surangel_epicor_store (palau) — timed out, 0 bytes
+- dukaanye_ss (south_sudan) — timed out, 0 bytes
+
+## Other HTTP errors (403/404/410/429/402/500) — not re-tried across TLS profiles
+
+Lower-priority sites where a single `chrome124` probe returned a non-200
+status; time budget did not allow the full 3-profile WAF-vs-curl-artifact
+check the skill recommends, so these are NOT confirmed genuine blocks —
+flagged for re-probe before being written off permanently.
+
+hotels_scanner_bissau (403), cashew_base_price_news_gw (403, a news article
+not a store anyway), ctd_bissau_tuition (403), bookingauto_gw_car_rental
+(403), pharmaconnect_bissau (403), worldbanknotes_gw_collectibles (403,
+collectibles listing not a store), booksrun_liberia_books (403, single-SKU
+external listing), liberiamarketplace_old (403), liberiabuynsell (403),
+ubuy_liberia_appliances (429, rate-limited), hotel_qaqortoq_menu (403, and a
+menu anyway), afribaba_cf_autos (403, classifieds), jubacargodirect_all_ss
+(404 — possibly the domain moved), betty_trading_import_data (403, a trade-
+data lookup site not a store), kiribati slim_price_map (403, a map-annotation
+site not a store), cartogiraffe_angirin_hardware (410, gone), jubacar_ss
+(500, server error), ponton_shop_cg (403), codebarresguinee_gn (403),
+etsralf_gn (403), saremati_gn (402, payment-required).
+
+## Fingerprinted but not deep-verified this pass (time budget)
+
+Real platform signatures were found on these but the remaining verification
+(enumerability / pricing / currency) was not completed:
+
+- **lehni_ch** (Liechtenstein, https://shop.lehni.ch/) — dual OpenCart +
+  Magento signature hits (ambiguous, likely one false positive); not
+  resolved.
+- **online_apotheke_ch** (Liechtenstein, https://www.online-apotheke.ch/) —
+  Shopware signature; not investigated further.
+- **boutikobf_marketplace** (Burkina Faso) — WooCommerce-plugin signature,
+  but Store API 404s and the `?rest_route=` probe returned the raw homepage
+  HTML rather than JSON (custom theme intercepting the query string) — see
+  the "?rest_route= false-lead" note in the final report. Not resolved.
+- **guinee_lube_filters_gn** (Guinea, https://www.guineelube.com/filtres.html)
+  — a small static HTML brochure/catalog page (custom `assets/style.css`
+  build), not an OpenCart install despite the signature hit; no visible cart
+  or checkout. Not pursued.
+- **s_7majorgn_gn** (Guinea, https://7majorgn.com/) — custom PHP catalog
+  (`product.php?id=N`), NOT core OpenCart despite the route shape; prices
+  ARE visible in plain HTML text in GNF (e.g. "120 000 GNF"), but there is
+  no JSON-LD, no sitemap.xml (404), and no product-id enumeration path found
+  in the time available. A real candidate for a future bespoke Tier-1A
+  html_scrape spider (would need to walk category pages or brute-force
+  `id=` and write custom price/name selectors for its non-standard markup).
+- **discountliberia** (Liberia, https://discountliberia.com/) — see the
+  "EKART" writeup in the final report: real platform, real GNF/USD-priced
+  catalog, but its own `?page=` parameter is a no-op within one category
+  (page 1 and page 2 return an identical product-id set — confirmed live),
+  and its product cards carry name/price only on scattered `data-product-*`
+  attributes on unrelated widgets as well as real cards, making reliable
+  regex extraction fragile in the time available. Deferred, not shipped.
+
+## Not individually verified (bulk-fingerprint only) — INFERRED, not measured
+
+The remaining ~200 of 257 candidates were only run through the stage-1 bulk
+probe (single `curl_cffi` GET of the homepage + robots.txt, platform-
+signature regex scan) and were not individually hand-verified for
+enumerability/pricing/currency/locality. Based on titles and the CSV's own
+`why` column, a large share of these read as non-commerce content (blog
+posts, PDF/statute pages, informational articles, price-mention news
+stories) rather than storefronts — but this is an inference from the bulk
+scan, not a confirmed verdict for each row, and should not be treated as a
+rejection. A follow-up pass could re-run the same probe pipeline
+(`~/gapwork/probe1.py` on a8, results cached at
+`~/gapwork/probe1_results.jsonl`) filtered to `country` values not yet
+covered above.
+
+
+---
+
+## known_blockers_ddgs_emptiest - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_ddgs_emptiest.md` on 2026-09-11. 37 hosts, 32 not
+documented above at merge time.
+
+# ddgs discovery — emptiest-country sweep (2026-09-11)
+
+Scope: COICOP divisions 01/02 (food, non-alcoholic drinks, alcohol, tobacco) ONLY.
+Non-food candidates dropped on sight per task constraint. All verdicts dated 2026-09-11.
+
+Context: this worktree had heavy CONCURRENT activity from other agents on all six
+priority countries during this run (dozens of manifests landed on Liberia, Namibia,
+CAR, and Congo Rep within the same hour). Sections below distinguish what this run
+verified/shipped from what pre-existed.
+
+## Ethiopia — shipped 2 new retailer_sku sources
+
+Pre-existing: aradamart_et (396 rows, packaged food + household), mohasbeza_et
+(187 rows), deliver_addis (65 rows), mekina_et (vehicle marketplace, non-food),
+ethiopiapropertycentre_et (real estate, non-food).
+
+**deliver_addis is NOT broken** — investigated per the task's explicit hint that
+985 corpus names is suspiciously low. Its raw_items jsonl is flat at 65 lines
+across 5 runs from Aug 6 to Sep 2 (identical 23,523 bytes every time), which looks
+like the "flat cap = broken spider" signature. Re-fetched https://deliveraddis.com/market
+live: identical 12 category paths, no new ones added since the spider was written.
+It is a genuinely small, fixed delivery-app catalog (sauces/coffee/honey/canned
+goods) — not a pagination bug.
+
+New sources (English + Amharic ddgs sweep, backends pinned, no DNS-bug false zeros):
+
+| source_key | domain | platform | channel | currency | measured rows | distinct urls |
+|---|---|---|---|---|---|---|
+| kedamegebeya_et | kedamegebeya.com | WooCommerce Store API | supermarket | ETB | 62 | 62 |
+| helloomarket_et | helloomarket.com | OpenCart (scoped to path=82 "Grocery & Gourmet Food" only) | supermarket | ETB | 153 | 153 |
+
+Dead ends:
+- shoashopping.org — real 17-branch "Shoa Supermarket" chain but the site is a
+  branch-locator/gift-card page only, no catalog, no prices.
+- freshcorneret.com — template/demo site (Lorem Ipsum filler text, fake US
+  address, fake gmail contact). Not a live business.
+- habeshashops.com — 4.4MB page, zero ETB/birr price tokens in static HTML;
+  not pursued further given two solid finds already landed.
+
+**Ethiopian Statistics Service (official_avg attempt, separate subagent):** ESS
+(ess.gov.et) is live and publishes monthly, but its public CPI "Statistical
+Bulletin" reports ONLY percentage changes (YoY, MoM, 12-month moving average),
+never a raw index level, across all 13 pages of the latest bulletin checked. A
+separate `databank.ess.gov.et` Next.js app might hold raw series but exposes no
+discoverable API. Reported as a genuine format mismatch, not scaffolded — building
+an index from chained % changes would be derived, not extracted, data.
+
+## Namibia — no new retailer_sku source found; majors confirmed brochure-only
+
+Pre-existing coverage already extensive (13 sources landed today across this and
+concurrent agents: woermannfresh_na, embassyliquor_na, meat_namibia_na,
+nsa_zonal_prices, nsa_cpi, doorstep_na, kws_na, waltons_na, accessnamibia_na,
+highwayimporters_na, langerhans_na, zimolange_na, fews_net, wfp_prices).
+
+Checked the three national supermarket majors specifically — all confirmed
+**brochure-only, no online ordering**:
+
+| domain | verdict |
+|---|---|
+| checkers.com.na | 200 via curl_cffi chrome124 (403 plain requests) — static CMS, no cart/catalog beyond a marketing specials.html page. |
+| shoprite.com.na | Same CMS template, same result. |
+| spar.co.na | Connect timeout on both plain requests and curl_cffi from a8 — unreachable. |
+| weckevoigtsspar.com (Wecke & Voigts SPAR/SUPERSPAR group — Maerua/Grove/Westlane/Hochland, Windhoek) | WordPress brochure site (store locations, About Us, promotions). No shop/catalog anywhere despite embedded-script false-positive keyword hits for multiple e-commerce platforms. |
+| shopping.my.na/shop/checkers | Third-party "my.na" Laravel marketplace hosting a Checkers-branded landing page — zero product/price tokens on the page fetched; deeper category-URL discovery not completed this pass (open lead, not a rejection). |
+
+Consistent with the skill's known Botswana pattern (Pick n Pay: WhatsApp-order
+only) — RSA-headquartered chains operating in Namibia do not expose online
+catalogs there as of this check.
+
+## Burundi — shipped 1 new retailer_sku source + 1 new official_avg fetcher
+
+Pre-existing: kilakitu_bi (marketplace).
+
+| source_key | domain | platform | channel | currency | measured rows | distinct urls |
+|---|---|---|---|---|---|---|
+| kazemarket_bi | kazemarket.com | WordPress/WooCommerce theme, HTML scrape (Store API 404s) | specialty-food | EUR (flagged — diaspora-remittance pricing pattern, not confirmed 1:1 domestic) | 72 | 72 |
+| insbu_cpi (fetcher) | api.insbu.bi | PDF via reverse-engineered React SPA API | n/a — cpi_benchmark, publisher_labeled, 12 divisions | — | 36 index rows | — |
+
+Note: ISTEEBU (the institute name given in the task brief) has been renamed to
+INSBU and the old domain `isteebu.bi` is squatted by an unrelated SEO reseller —
+the real site is `insbu.bi`. No separate official_avg retail-price companion
+found; INSBU's only publication types are CPI (fr/ki) and a construction-cost
+index.
+
+Rejected candidates: ikibibi.com (Shopify, empty `/products.json` — no live
+inventory); africanshop-online.com (real food taxonomy but every price is
+`0,00 BIF` — no real prices anywhere); akaguriro.com (marketplace but
+handicrafts, not food); baza.bi (classifieds SPA, not food-scoped, no confirmed
+pricing).
+
+## Central African Republic — confirmed structural absence (23 candidates checked, 0 shipped)
+
+Two pre-existing manifests from today (`ge_concept_store.yaml` channel
+`dept-store`, `shopping236_cf.yaml` channel `marketplace`/home-goods) are
+correctly NOT food-scoped — verified they're general-goods, not food.
+
+Fresh French-language ddgs sweep surfaced 12 more candidates, all rejected:
+- sangostore.com — Next.js SPA; API-sniffed live: 10/14 "alimentation" items are
+  literal `[DÉMO]` seed placeholders, the 4 real items are dropshipped from
+  Cameroon/France/Senegal sellers, none in-country. Demo catalog, not real
+  CAR retail.
+- cf.bazarafrique.com — classifieds site, no structured pricing.
+- banguimall.net — already in known_blockers.md, mechanically exhausted.
+- toliafood.com, ndougu.com, nolmarket.com, kenzamarket.com,
+  solibrachezvous.com — all resolved to the wrong country (DRC, Dakar,
+  Cotonou, Cameroon, Côte d'Ivoire respectively) — false positives from
+  generic French query terms.
+- kmakity.com — pan-CEMAC marketplace, not CAR-specific.
+- sugu.express, samisonline.com, basamstores.com — 403.
+- mocafrca.com — DNS failure.
+
+**Combined with the 11 candidates another agent exhausted earlier today, that is
+23 distinct CAR candidates checked with zero shippable food/beverage sources
+found. This reads as a genuine structural absence** — CAR has no reachable
+domestic online food retail as of 2026-09-11 — not a search-effort artifact.
+CAR's food-price signal will have to come from WFP VAM / FEWS NET / ICASEES
+CPI / FAOSTAT (all four already scaffolded).
+
+## Congo Republic (Brazzaville) — shipped 2 new official_avg/cpi_benchmark fetchers; retailer sweep deferred
+
+Pre-existing retailer_sku coverage already adequate: congobio_cg, market242_cg,
+mbote_cg, tchitunga_cg (specialty-food/marketplace, food-scoped), plus
+elikiashop242_cg/duban_cg/ngindustry_cg/bantudelice_cg (mixed food and non-food,
+landed by concurrent agents).
+
+| source_key | domain | shape | analytical_role | measured rows |
+|---|---|---|---|---|
+| insc_inhpc_cpi (fetcher) | ins-congo.cg | Excel via undocumented publications API (`sous_secteur=stat-prix`, not `secteur=`) | cpi_benchmark, publisher_labeled, 12 divisions | 156 |
+| insc_retail_prices (fetcher) | ins-congo.cg (same workbook) | "Prix moyens mensuels" table, 5 cities (Brazzaville, Pointe-Noire, Dolisie, Owando, Ouesso), 3 non-food fuel rows excluded | official_avg, classifier | 648 |
+
+A francophone-retailer sweep surfaced additional unverified leads (filcongo.com,
+doucmarket.africa, zwanayo.com, bisoexpress.com, celmarket.cloud,
+madinacongo.com — several show XAF + Brazzaville signal) but these were not
+deep-probed this pass, given adequate existing coverage and concurrent-agent
+activity in the same directory. Open leads for a future pass, not rejections.
+
+## Liberia — shipped 2 new official_avg/cpi_benchmark fetchers (retailer_sku already well covered by concurrent agents)
+
+Pre-existing retailer_sku coverage landed extensively by concurrent agents today
+(banjoo_lr, congo_girl_cuisine, ezeemarket_lr, kernel_fresh_premium, all verified
+live with real row counts — not re-verified in this report since not this run's
+work).
+
+| source_key | domain | shape | analytical_role | measured rows |
+|---|---|---|---|---|
+| lisgis_cpi (fetcher) | liberia.opendataforafrica.org (Knoema-hosted; LISGIS's own site is a placeholder pointing here) | REST API (`/api/1.0/data/<dataset>?area=<key>&indicator=<key>`, numeric keys required) | cpi_benchmark, publisher_labeled, 12 divisions | 1044 |
+| moci_commodities (fetcher) | Liberia Ministry of Commerce "Commerce Today" bulletin | PDF, 3 editions found (Sep 2024, Oct 2024, Aug 2026), table layout varies by edition | official_avg, source_curated | 16 |
+
+## Summary table — all sources shipped or verified this run
+
+| Country | source_key | channel | analytical_role | currency | measured rows | distinct urls |
+|---|---|---|---|---|---|---|
+| Ethiopia | kedamegebeya_et | supermarket | retailer_sku | ETB | 62 | 62 |
+| Ethiopia | helloomarket_et | supermarket | retailer_sku | ETB | 153 | 153 |
+| Burundi | kazemarket_bi | specialty-food | retailer_sku | EUR | 72 | 72 |
+| Burundi | insbu_cpi | null | cpi_benchmark | — (index) | 36 | n/a |
+| Congo Rep | insc_inhpc_cpi | null | cpi_benchmark | — (index) | 156 | n/a |
+| Congo Rep | insc_retail_prices | null | official_avg | XAF | 648 | n/a |
+| Liberia | lisgis_cpi | null | cpi_benchmark | — (index) | 1044 | n/a |
+| Liberia | moci_commodities | null | official_avg | LRD | 16 | n/a |
+
+## Countries where nothing was found this run, and why
+
+- **Central African Republic** — confirmed structural absence for retailer_sku
+  (23 candidates checked total today, 0 shippable). Official coverage
+  (icasees_car_cpi, faostat_cpi, wfp_prices, fews_net, wb_rtdi_prices) already
+  exists from before this run.
+- **Namibia** — retailer_sku already saturated by concurrent-agent work; the
+  three national supermarket majors (Spar, Checkers, Shoprite) confirmed to have
+  no online ordering in Namibia specifically.
+- **Ethiopia CPI/official_avg** — Ethiopian Statistics Service publishes only
+  percentage-change series, not a raw index or retail-price table; not
+  scaffolded (format mismatch, not a discovery failure).
+
+## Method note (ddgs backend gotcha, reconfirmed)
+
+Both discovery subagents pinned `backend="duckduckgo, google, brave, mojeek,
+startpage, yahoo"` per `references/ddgs_search.md` and got hit counts on every
+query (no false 0-result dead ends from the wikipedia/grokipedia DNS bug). One
+subagent additionally reported `ddgs` itself being rate-limited from a8's shared
+IP under concurrent multi-agent load and fell back to direct-navigation /
+JS-bundle reverse-engineering for the NSO fetcher search — a new operational
+constraint worth remembering for future high-concurrency runs on a8.
+
+
+---
+
+## known_blockers_disco_cafrica - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_cafrica.md` on 2026-09-11. 27 hosts, 14 not
+documented above at merge time.
+
+# Discovery blockers — South Sudan / CAR / Burundi / Equatorial Guinea / Gabon / Somalia
+
+All verdicts below are as-of **2026-09-11** unless a different date is noted inline.
+Scope: COICOP divisions 01/02 (food, non-alcoholic drinks, alcohol, tobacco) only.
+Non-food candidates are not listed here even if probed — see the country
+inventories under `.claude/skills/onboard-price-sources/references/inventories/ssa/`
+for the full non-food dead-end record from the 2026-09-01 sweep.
+
+## Shared-infrastructure bug found and fixed this pass
+
+**FEWS NET `fdw.fews.net` `ordering` param regression (AWS WAF `x-amzn-waf-action: challenge`).**
+As of 2026-09-11, sending `ordering=-period_date` (or any `ordering` value) to
+`/api/marketpricefacts/` returns HTTP 202 with an empty body instead of the JSON
+page — this silently broke all 16 countries wired to
+`src/prices/fetchers/_shared/ssa/fews_net.py` (13 pre-existing + `fews_caf` + the
+3 new `fews_ssd`/`fews_bdi`/`fews_som` added this pass), each returning "0 raw
+facts" with no visible error. Root-caused by direct curl probing: the response
+carries `server: awselb/2.0` and `x-amzn-waf-action: challenge` — a real AWS WAF
+bot-challenge, not a data problem, and TLS impersonation does not touch it (per
+the skill's own "content-level proof-of-work" category). Fix: dropped `ordering`
+entirely from `_fetch_pages()`; without it, results paginate in the API's default
+order which (combined with `start_date`) is ascending by `period_date` — verified
+directly (SS offset=0 → 2020-01, offset=900 → 2024-Q1). This is a better fit for
+the existing `offset<1000` pagination cap than the old newest-first design: a
+capped first run now still resumes forward next time with no permanent gap in
+history, whereas newest-first-then-capped would have permanently stranded older
+history behind the cap. Re-verified `fews_caf` (CAR, pre-existing) still returns
+data post-fix: 336 rows. This regression likely also silently zeroed the other
+12 pre-existing `fews_*` countries (Botswana, Cabo Verde, Angola, Rwanda,
+Eswatini, Namibia, Zimbabwe, Cote d'Ivoire, Gambia, Guinea, Liberia, Sierra
+Leone) at their last scheduled run — worth a fleet-wide re-check outside this
+task's scope.
+
+## South Sudan
+
+- **jubamall.com** — RE-PROBED 2026-09-11: previously recorded (inventory,
+  2026-09-01) as "TLS cert mismatch, app-only." Now WORSE — the resolved IP
+  (138.252.208.117) hits a straight connection timeout across all three
+  impersonation profiles AND bare curl (12s cap). No longer a cert problem;
+  the host itself appears down or firewalled. Confirmed dead.
+- **South Sudan NBS (ssnbss.org)** — CHECKED 2026-09-11, first time. Real site,
+  does publish a CPI series, but the latest report is **July 2016**; the only
+  other price-adjacent document is a 2016 study on checkpoint/trade-route
+  bribery costs, not commodity prices. Price-publication effort has been
+  dormant for ~10 years. Not usable.
+- **Arabic-language search NOT completed** — session WebSearch quota (shared
+  session-wide across concurrent agents) was exhausted before this could be
+  run. This is an **incomplete discovery thread, not a confirmed absence** —
+  flag for a follow-up pass with fresh search budget before concluding South
+  Sudan retail grocery is fully exhausted.
+- Everything else (Doyoom, Karibu, Zaylo — restaurant delivery; no
+  Jumia/Glovo/Bolt/Yango presence; UNION Super Market/Juba Mall Supermarket —
+  Facebook-only; Shop Ninja — Kampala reseller, out of market) stands from the
+  2026-09-01 inventory, unchanged.
+
+## Central African Republic
+
+- **AFRISTAT/Knoema `afristat.opendataforafrica.org/Centrafrique`** — RESOLVED
+  2026-09-11 (previously "not pursued, unconfirmed"). Site is live (curl_cffi
+  impersonate=chrome124 → 200; a non-browser client gets a 403 — JA3-style
+  gate, not a real WAF). CAR IS present in the portal's "Prix, Change" and
+  annual-inflation-rate indicator pickers. But this is a full proprietary
+  Knoema Atlas BI widget (~80 bundled JS modules, Cloudflare-fronted, with a
+  `premium/popup.js` script suggesting some series are paywalled) — extracting
+  actual price series means reverse-engineering a proprietary BI API with
+  uncertain public/premium gating. **Deferred as an expensive lead, not a dead
+  end** — worth a dedicated future effort, not a cheap win.
+- **banguistore.com** — CHECKED 2026-09-11, NEW CANDIDATE, REJECTED AS A DATA
+  TRAP. Multi-vendor marketplace showing real-looking XAF-priced food SKUs
+  (apples, rice, cooking oil, milk powder) across several "boutique"
+  storefronts (marche-frais-bangui, agri-bangui, eau-pure-rca). Its own
+  `/sitemap.xml` (products-1.xml + stores-1.xml) indexes only ONE real seller
+  ("MC Boutique," 11 products, all solar/electronics/Starlink — zero food).
+  The food-bearing storefronts are NOT in the sitemap — they read as seeded
+  demo content shown to prospective sellers, not a live catalog. No
+  `/boutiques` or `/vendeurs` directory page exists (both 404). **DO NOT
+  INGEST** — same trap class as the ICASEES fabricated CPI workbook already
+  flagged in the CAR inventory.
+- **sangostore.com** — CHECKED 2026-09-11. Diaspora gift-shipping marketplace,
+  EUR-priced, not local CAR retail price levels. Out of scope.
+- **sugu.express** — CHECKED 2026-09-11. Pre-launch "Bientôt disponible"
+  landing page, not live.
+- **marchebanguissois.com** — CHECKED 2026-09-11. Connection timeout
+  (curl_cffi, 20s cap), server unreachable.
+- **sendmontchop.com** — RE-CHECKED 2026-09-11 (previously flagged dead in the
+  Gabon inventory for a different reason — a lapsed domain search hit this
+  name in a CAR context too). Resolves to a parked-domain lander
+  (GoDaddy/wsimg `parking-lander` bundle). Confirms prior "domain-lapsed"
+  finding.
+- Everything else (Bangui Mall, warani.cf, ICASEES 0-byte bulletins +
+  fabricated master workbook, ENERCA, Orange group domain, Telecel RCA, Moov
+  Africa CF, ARCEP, SOCASP, Bangui's 4 known physical supermarkets, BEAC,
+  CoinAfrique/Jumia) stands from the 2026-09-01 inventory, unchanged. CAR
+  remains a structural-absence case for online food retail.
+
+## Burundi
+
+- **Kilakitu (kilakitu.bi) depth audit** — DONE 2026-09-11. Full homepage nav
+  (343 links) crawled and keyword-scanned in French+English for every missed
+  food term (dairy/meat/fish/vegetable/fruit/bread/coffee/tea/syrup/juice/
+  spirits/etc). Found exactly one candidate outside the existing 14-slug
+  scope — `chips-380` — but a measured full re-run with it added returned
+  **0 net new rows** (284 before, 284 after, byte-identical distinct-URL
+  set): all 14 `chips-380` products are cross-listed under the
+  already-scoped `quick-bites-379`. Not a depth gap. Spider left unchanged;
+  finding recorded in its docstring only.
+- **isteebu.bi** — CHECKED 2026-09-11. Squatted domain (a web-design agency),
+  not Burundi's national statistics institute. `isteebu.gov.bi` does not
+  resolve. Real ISTEEBU domain NOT found this pass — needs an actual web
+  search, not resolved via direct guesses.
+- **French-language fresh search NOT completed** — session WebSearch quota
+  exhausted. Incomplete discovery thread, not a confirmed absence.
+
+## Equatorial Guinea
+
+- **WFP HDX food-prices panel** — CHECKED 2026-09-11, CONFIRMED ABSENT. CKAN
+  `package_show` for `wfp-food-prices-for-equatorial-guinea` returns a real
+  404; `package_search` for "equatorial guinea food prices" returns no WFP
+  dataset (only unrelated World Bank sector-indicator sets). Combined with
+  the already-confirmed FEWS NET `count: 0` for country_code=GQ, both major
+  humanitarian food-price feeds are dead ends for this country — consistent
+  with Equatorial Guinea being an oil-income, non-crisis-monitoring context
+  (unlike South Sudan/Burundi/Somalia, all FEWS NET focus countries).
+- No fresh retail discovery attempted this pass (thorough 2026-09-01 sweep
+  via a dedicated research subagent already exhausted Jumia/Glovo/Yango/
+  Bolt/Wolt/Cofina/Compra en Bata/Vitacana/Muankaban/Manolo/Tienda
+  Ideal/EGTC-standalone/PLASENCIA/SUPERCOR/La Vencedora — all confirmed no
+  independent site). `situcka_gq` (6,931 rows, ~42-45% estimated food share)
+  already provides substantial food coverage for this country.
+
+## Gabon
+
+- **WFP HDX food-prices panel** — CHECKED 2026-09-11, POSITIVE. Real dataset
+  exists (`wfp-food-prices-for-gabon`). **Shipped as `wfp_gab`** — see the
+  main report. Caveat: WFP discontinued active Gabon monitoring in 2017; this
+  is a one-time historical backfill (2007-01-15 to 2017-06-15, Libreville/
+  Estuaire only, ~10 commodities) and will not produce new rows on future
+  scheduled runs.
+- **Malumbi** — RE-CHECKED 2026-09-11. Still Facebook-only
+  (`facebook.com/malumbigabon`); no relaunch under a new domain.
+- **SendMonTchop** — RE-CHECKED 2026-09-11. Domain is live but is now visibly
+  a parked/expired-domain lander (GoDaddy/wsimg `parking-lander`, `ap:
+  "parking"` signal) rather than simply NXDOMAIN. Confirms prior
+  "domain-lapsed" finding with a clearer signature.
+- **Isai Market** — RE-CHECKED 2026-09-11. Still Facebook-only, no new
+  domain.
+- **cecagadis.com** — RE-CHECKED 2026-09-11. Checked homepage + `/nos-
+  enseignes/`: no shop/boutique/commande/panier navigation exists; the only
+  "cart"-looking text hits were false positives on "Carte CECA Boost" (a
+  loyalty-card announcement). No online-ordering module added since the last
+  pass. Confirmed still corporate-brochure-only.
+- Everything else from the exhaustive 2026-09-01 sweep (Chap Chap Gabon,
+  Libre-Go Livraison, goafricaonline.com directory, africannuaire.com
+  directory, priximport.com, san-gel.com, mbolo.com, carrefour.ga, jumia.ga,
+  systemelad.com, gabon4you.com, yoboresto.com, Glovo/Yango/Bolt Food, Le
+  Boucher Libreville, Le Palais du Vin, random plausible-name domain guesses)
+  stands unchanged. Gabon's online food-and-beverage retail landscape remains
+  exactly one live source (`cerise_ga`); the new `wfp_gab` official_avg
+  fetcher is a genuine second food-relevant source, though non-retail and
+  historical-only.
+
+## Somalia
+
+- **aaranonline.com** — RE-PROBED 2026-09-11 with a warmed session (homepage
+  first to capture cookies, then category pages) per the prior pass's
+  "missing pricelist cookie" hypothesis. REGRESSED further than reported:
+  `/shop`, every PDP, `/robots.txt`, and `/sitemap.xml` now all return a hard
+  404 (confirmed in both curl_cffi and a real headless-Chromium Playwright
+  render); only the static homepage still 200s. The backend appears to be
+  down entirely, not gated by a missing cookie. Confirmed dead — the cookie
+  hypothesis does not apply.
+- **somalistores.com** — RE-PROBED 2026-09-11 with chrome120/safari17_0
+  (still 403, `server: hcdn`), then with PLAIN non-impersonating `requests`
+  per the JA3-denylist rule — this cleared it (200). But once past the WAF,
+  the page is a **static demo/mockup**, not a real store directory: every
+  link is a dead `href="#"` anchor, "store card" clicks fire a JS `alert()`,
+  and there's a fake animated "driver status" simulation. Confirmed NOT a
+  real source — this was a template/mockup, not a WAF-blocked real site.
+- **Arabic-language search NOT completed** — session WebSearch quota
+  exhausted. Incomplete discovery thread, not a confirmed absence.
+- Everything else (Hayat Market's own domain — dead duplicate of `adeeg_so`;
+  SafewaySupermarket — expired domain; Hiiliye — app-only SPA) stands from
+  the 2026-09-01 inventory, unchanged.
+
+
+---
+
+## known_blockers_disco_caribbean - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_caribbean.md` on 2026-09-11. 13 hosts, 8 not
+documented above at merge time.
+
+# Known blockers — Caribbean FOOD source discovery (COICOP 01/02)
+
+_Campaign: grenada, dominica, st_lucia, st_vincent_and_the_grenadines,
+antigua_and_barbuda, st_kitts_and_nevis, british_virgin_islands,
+cayman_islands, bahamas_the, belize, haiti, guyana. Written 2026-09-11._
+
+This file supplements (does not replace) the shared
+`.claude/skills/onboard-price-sources/references/known_blockers.md` in the
+repo. It exists so this campaign's dead ends land in one place without
+racing other concurrent agents writing to the shared file.
+
+## CaribeEats (backend.caribeeats.com) — confirmed dead for grocery in 4 more territories
+
+The platform's `/api/init` region list and `/api/businesses?region_id=<id>`
+directory were enumerated live 2026-09-11 for every territory this
+campaign covers that the platform lists. Grocery vendor (`business_type_id
+== 10`, "Grocery & Retail") count per region:
+
+- **St Lucia** (region_id 1758): 5 businesses total, 0 grocery. (rideshare,
+  taco shop, telco, KFC, smoothie shop)
+- **Antigua** (region_id 1268): 8 businesses total, 1 nominally
+  `business_type_id=10` ("Paddling Duck") — probed live, sells only 4
+  herbal-tea SKUs. Too small/non-representative to onboard as a grocery
+  source; not a real grocery store.
+- **BVI / Tortola** (region_id 1284): 7 businesses total, 0 grocery
+  (rideshare, restaurants, a bakery, a delivery courier).
+- **Guyana** (region_id 592): 18 businesses total, 0 grocery — entirely
+  fast-food chains (KFC, Popeyes, Burger King, Pizza Hut) plus courier/
+  rideshare.
+- **Belize**: not in the platform's region list at all — CaribeEats does
+  not operate in Belize. Do not probe it for Belize again.
+- (Bahamas already confirmed dead for grocery in the shared
+  known_blockers.md, 2026-09-05 — re-confirmed, not re-probed further.)
+
+Do not re-enumerate CaribeEats for grocery in any of these 5
+territories; this is now confirmed across St Lucia, Antigua, BVI, Guyana,
+Belize and Bahamas — 6 of this campaign's 12 countries.
+
+## Belize — dead ends
+
+- **coconutgrocerybelize.com** — NXDOMAIN (`curl: Could not resolve host`).
+  Probed 2026-09-11.
+- **belizeprovisions.com** — real WooCommerce Store API
+  (`/wp-json/wc/store/v1/products`), enumerable (page1/page2 distinct
+  ids), but **every sampled product (20/20) carries price "0"** — a
+  price-on-request/concierge catalog, not real e-commerce pricing. Fails
+  the non-zero-price gate. Probed 2026-09-11.
+- **Super Value Food Stores** (Bahamas, not Belize — resolving the shared
+  known_blockers.md open lead "worth a targeted search rather than more
+  domain guessing"): real domain is **supervaluequalitymarkets.com**
+  (found via web search, not guessing). It is a WordPress brochure site
+  with no WooCommerce Store API route (`rest_no_route`) and no Shopify
+  `products.json`. Its actual online-ordering flow is a third-party
+  personal-shopper app (via "Bahama Eats") with no public catalog API.
+  A separate marketing/demo domain, **grocery-pitch.com** ("Super Value
+  Digital Grocery — Demo"), is a client-rendered SPA shell that serves the
+  identical 2.7KB HTML on every route including `/products.json` — it is
+  a sales-pitch demo, not the live production site. No priced, enumerable
+  surface found for Super Value under either domain. Probed 2026-09-11.
+
+## Guyana — depth-gap evidence (not a sourcing gap)
+
+`guystar_gy` (already onboarded, `channel: supermarket`) already crawls a
+Seafood leaf category (`cPath=8_6`, confirmed present in
+`_guystar_gy_categories.txt` line 145, and the live category page returns
+200). The brief's "fish & seafood" gap for Guyana is very likely a
+classifier/gold-support gap, not a missing source — see the Phase 0.5
+depth-audit note in the main report. Do not onboard a new fish-market
+source for Guyana on the strength of the gap brief alone without first
+checking whether guystar_gy's Seafood rows are reaching the classifier.
+
+## Haiti — mechanically exhausted, do not re-probe
+
+`delimarthaiti.com` and `caribbeansupermarketsa.com` are both already
+recorded in the shared known_blockers.md under "Mechanically exhausted —
+do not re-probe blind" (114-host sweep, no priced surface under curl_cffi
+5-profile impersonation or headless Playwright). Re-confirmed via a fresh
+French-language search 2026-09-11 that surfaces no other Port-au-Prince
+supermarket with a working online catalog (Olympic Market, Caribbean
+Supermarket S.A. — brochure/social-only presences, no e-commerce). Haiti's
+COICOP-01 price-level coverage rests on `wfp_prices` (official_avg,
+16,444 raw rows verified) and `cassandraonlinemarket_ht` (retailer_sku,
+re-verified live 2026-09-11: 90 rows in a --max-items 20 test).
+
+## St Lucia — dead ends (from this campaign's St Lucia sub-agent, 2026-09-11)
+
+- **Order Shop St. Lucia** (ordershopstlucia.com) — real local Shopify
+  retailer but password-gated mid-relaunch (`/products.json` -> 401).
+  Worth re-checking in a few months.
+- **Marketplace St Lucia** (marketplacestlucia.com, Rodney Bay Marina) —
+  7.6KB brochure page, no catalogue or API.
+- **Real Value IGA** (shop.realvalueiga.com) — same LocalExpress
+  address-selection SPA gate already confirmed blocked for the Grenada
+  tenant; no distinct St Lucia domain found.
+- **Glace Supermarket** — real 40-year chain, Facebook-only presence, no
+  website.
+- **Super J Supermarkets** — fully rebranded into Massy Stores (SLU); no
+  independent site (already covered via `massy_stores_slu`).
+- **JQ Rodney Bay Mall** (shopjqmall.com) — a mall shop directory, not a
+  grocer's own storefront.
+- **CK Greaves** — confirmed St Vincent-only (`ckgreaves_vc`); no St
+  Lucia storefront exists under that name.
+
+## Antigua and Barbuda — resolved + dead ends (2026-09-11)
+
+- **allmartplace.com** — a distinct, genuinely local Antigua delivery
+  platform (Jungleworks "Yelo" white-label backend, "150+ local
+  merchants", St John's/Cassada Gardens) separate from CaribeEats.
+  Cloudflare + Turnstile blocks headless-Chromium rendering of the
+  Angular SPA shell entirely (challenge page painted, DOM stays empty
+  even after 20s + stealth args + geolocation grant). The JSON API
+  underneath is NOT behind that challenge — every endpoint
+  (`get_app_catalogue`, `catalogue/get`, `get_products_for_category`)
+  returns clean 200 JSON to a plain `curl_cffi impersonate="chrome124"`
+  GET, no cookies/session/captcha needed. Endpoint contract recovered by
+  downloading the SPA's `main.js` + all 69 lazy route chunks and grepping
+  the `CatalogueService` method bodies (Playwright network capture never
+  got far enough to observe real traffic). Store directory
+  (`/api/marketplace/marketplace_get_city_storefronts_v3`) paginates
+  cleanly, 158 distinct storefronts for the default location, mostly
+  restaurants.
+- Named Antigua chains that turned out non-existent or restaurants/bars
+  sharing the name (not grocery): Bryson's Supermarket, Best of Both
+  Worlds, Rangers Supermarket, Cheers.
+- Real Antigua supermarkets with NO standalone e-commerce presence as of
+  this pass (Facebook/directory listings only): Epicurean Fine Foods &
+  Pharmacy, First Choice Foods, XPZ, Oops!, Payless. Some of these are
+  advertised as AllMart vendors but did not appear in AllMart's live
+  158-store directory at probe time — worth re-checking later, not a
+  hard dead end.
+- **"gourmet-basket" on AllMart** (business id 1402365, full
+  supermarket-shaped catalog incl. Produce/Meat & Seafood/Dairy & Eggs) —
+  do NOT onboard: it is Gourmet Basket Supermarket, one of Island
+  Provision Group's four in-house divisions already fully scraped via
+  `islandprovision_ag.yaml`'s WooCommerce Store API. Onboarding it again
+  under AllMart would double-count the same retailer.
+- Viable alternate AllMart food vendors not yet built (flagged for the
+  next agent): `ihem-minimart`, `deshvidesh-indian-grocery`,
+  `anjo-wholesale`.
+
+
+---
+
+## known_blockers_disco_en_africa - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_en_africa.md` on 2026-09-11. 53 hosts, 38 not
+documented above at merge time.
+
+# Known blockers — Anglophone Africa food-source discovery (2026-09-11)
+
+Campaign: fill COICOP division 01/02 (food, non-alcoholic drinks, alcohol,
+tobacco) gaps for liberia, eswatini, gambia, botswana, sierra_leone,
+south_sudan. Grid was near-total-gap for all six countries at task start.
+
+Every probe below used plain non-impersonating Python `requests`, or
+`curl_cffi impersonate=chrome124` (falling back to chrome120/safari17_0),
+from `a8`, against the worktree `~/po-worktrees/fill-gap-sources`. This
+file is organized per-country; each section was originally written to its
+own `/tmp/blockers_<country>.md` file by a country-scoped agent and merged
+here by the orchestrating session.
+
+IMPORTANT — this worktree is shared with several other concurrent
+agents/sessions working the identical SSA food-source campaign in
+parallel. Several manifests referenced as "already covered" below were
+added by those other sessions on the same day (2026-09-11), sometimes
+minutes before or after this campaign's own probes -- cross-check file
+timestamps before assuming a gap is unaddressed. One independent
+duplicate-effort case was directly observed: a separate agent produced an
+Eswatini blockers writeup (misfiled locally as blockers_gambia_check.md)
+reaching near-identical conclusions to this campaign's own Eswatini
+section below, which cross-validates both.
+
+---
+
+# Known blockers / findings — Botswana food-source gap-fill (2026-09-11)
+
+All probes below used plain non-impersonating Python `requests` (this
+region has no WAF on any candidate probed) or `curl_cffi impersonate=
+chrome124` where noted; run from a8.
+
+## Shipped this pass
+
+- **farmproducts_ex_bw** (https://farmproducts-ex.co.bw/) — WooCommerce
+  Store API, small (7-product) but genuine single-page greengrocer
+  catalogue (onions, naartjie, butternut, peppers, tomatoes, oranges).
+  BWP confirmed from payload (currency_minor_unit=2). MEASURED: 7/7 rows,
+  7/7 distinct urls, zero zero-priced. channel: fresh-market.
+- **shopsefalana_bw** (https://shopsefalana.com/) — Sefalana (Botswana's
+  largest domestic food retail group), custom nopCommerce storefront
+  (NopStation.Theme.Arch theme). ~130 category slugs on the homepage nav
+  spanning nearly the entire COICOP 01/02 range: staple foods, rice,
+  maize, wheat, sugar, oil, canned goods, dairy, bakery, snacks,
+  confectionery, tea/coffee, juices, carbonated/energy drinks, AND a full
+  liquor/tobacco range (beers, brandy, ciders, gin, liqueurs, rum,
+  tequila, vodka, whiskey, wines, cigarettes, tobacco). Bespoke spider
+  written (`shopsefalana_bw.py`, modeled on the existing `winners_mu.py`
+  nopCommerce pattern). Enumerability CONFIRMED: `/dairy-4` page1 vs page2
+  fully disjoint (20/20 ids, zero overlap). MEASURED test run (max-items
+  60): 97 rows, 97 distinct urls, zero zero-priced, categories Rice/Rum/
+  Water/Wheat/Whiskey/Wines/Wrapping-Packaging (Scrapy's default LIFO
+  queue processed alphabetically-last slugs first). The full ~130-category
+  sweep is INFERRED coverage (from browsing the nav), not yet measured at
+  full scale — a production run has `max_items: null` and will walk all
+  categories over time. channel: supermarket. **Single highest-value find
+  of this pass** — one source plausibly touching most of Botswana's
+  COICOP 01/02 gap.
+- **choppies_ebasket_bw** (https://chptst205.echoppies.com/) — Choppies
+  (major regional supermarket chain) online "eBasket". Custom legacy PHP
+  platform. Hostname looks like a staging/test alias but is live and
+  public, with a Botswana Pula currency icon and genuine food SKUs.
+  10 categories (b_cfc, m_beverages, m_edible groceries, m_ethnic
+  products, m_fresh, m_general merchandise, m_house hold, m_perishable,
+  m_personal care, m_pets). Enumerability CONFIRMED: page1-page7 of
+  "m_edible groceries" each returned a distinct 20-id set (checked
+  pairwise). GOTCHA hit and fixed during scaffolding: the category-listing
+  markup breaks `<a title=` across a newline (unlike the `popular.php`
+  landing page sampled first), so the regex needed `\s+` between the `<a>`
+  tag and its attributes — first version of the spider matched 0 items
+  despite a healthy 200 response; the debug step was comparing
+  Scrapy-vs-bare-`requests` response bytes (identical) before finding the
+  real cause was the regex, not the fetch. MEASURED test run: 92 rows, 92
+  distinct urls, zero zero-priced, BWP throughout — categories Beverages,
+  Cfc (fried-chicken ready meals), Edible Groceries in this partial run.
+  channel: supermarket.
+
+## Confirmed already-covered (not touched, not redone)
+
+- **spar2u_bw** — shipped by another agent earlier today. SPAR Botswana,
+  sitemap-driven, 8,370 distinct product PDPs, BWP confirmed from JSON-LD,
+  channel: supermarket. Verified still present.
+- bescohyper_bw, kangagri_bw, starpack_agri_pack, cbstores_bw, bmart_bw,
+  masterfashion_bw, cosmetics_beauty_world_bw, livingwaterpharmacy_bw,
+  ctm_bw, goodsy_bw, eyesmart_bw, solleluna_bw, beares_bw,
+  notwanepharmacy_bw, sparesmax_bw, pulse_bw, chobedesign_furniture,
+  shopbw_bw, btc_products_shop, honey_fashion_bw, perfectcircle_bw — all
+  confirmed non-food (electronics/fashion/pharmacy/furniture/hardware),
+  correctly out of scope for this food-only mandate.
+
+## Rejected / dead ends this pass
+
+- **specials.shoprite.co.bw/deals/** — HTTP 403 (Apache-level block,
+  239-byte generic "Forbidden" body). Same signature as
+  specials.shoprite.co.sz (see Eswatini blockers) — this is a
+  flippingbook/cld.bz digital-flyer/circular platform, not a structured
+  per-SKU price API, and it's walled off from direct access regardless.
+  Not worth further investment; Shoprite in this region appears to only
+  publish weekly specials as image-based flyers, not e-commerce.
+- **spar.co.bw/specials/** — HTTP 200 but a WordPress marketing/specials
+  blog page (wp-json present but no product catalogue found; no
+  grocery/food/supermarket keyword hits in the page text). Likely the
+  same SPAR brand presence as spar2u_bw but this particular subdomain is
+  not a shop. Not pursued further.
+- **sefalana.co.bw** — corporate/store-locator site for the Sefalana
+  group; its own "shop" links point directly to shopsefalana.com (already
+  onboarded above). Confirms shopsefalana.com is the correct single
+  ingestion point for this group — no separate manifest needed.
+- **pulamarket.co.bw** — "Botswana's Digital Commerce Platform" branding,
+  grocery/food keyword present on the page, but no shop/product link found
+  in a quick pass. Not deeply investigated (deprioritized after two solid
+  sources were already found); worth a closer look in a future pass.
+- **basketiq_market_pulse**, **game_bw_pricemate_catalogue** — not probed
+  in depth this pass; names and URLs (`/pulse/`, `demo.pricemate.info/...`)
+  strongly suggest price-comparison/basket-cost tooling rather than a
+  retailer with its own enumerable catalogue. Flagged for a quick
+  confirm-and-skip in a future pass rather than investment now.
+# Known blockers / findings — Liberia food-source gap-fill (2026-09-11)
+
+No new manifests created this pass — instead, three pre-existing but
+never-live-tested manifests were verified working, which meaningfully
+changes what "still missing" means for this country. All probes below
+used plain non-impersonating Python `requests` on a8 (no WAF encountered
+anywhere in this pass).
+
+## Verified working (pre-existing, previously untested)
+
+- **congo_girl_cuisine** (https://congogirlcuisine.com/, Shopify,
+  channel: supermarket) — MEASURED: `prices collect --source
+  congo_girl_cuisine --max-items 20` -> 8 rows, LRD confirmed from the
+  Shopify payload, real prepared-Liberian-food SKUs (e.g. "Cassava Leaf
+  (Stew Only)" LRD 26.50, "Cassava Leaf (Stew + Parboiled Rice)" LRD
+  29.50). Manifest notes said "Scrape-ready" from an earlier
+  consolidation pass but carried no test-run record; now confirmed live.
+- **banjoo_lr** (https://banjoosuperstore.com/, bespoke WooCommerce
+  sitemap-walk spider, channel: supermarket) — MEASURED: 22 rows, 22
+  distinct urls, currency USD (flagged deliberately, matches the known
+  Liberia USD-quoting pattern). Real grocery items present: "Split Peas
+  (25kg)" $38, "Hibicus Tea" / "Lemongrass Tea" $10, several "Breakfast
+  Bundle" items, plus a series of generic "Banjoo Bundle #NNN-NNN" gift
+  hampers whose content isn't visible from the product name alone.
+  **FLAGGED ANOMALY, not fixed**: one row, "Banjoo Bundle#006-203",
+  priced at USD 21750.00 — two to three orders of magnitude above every
+  other item on this page. Not touched (the spider uses the shared
+  `_woo_sitemap_base.py` base class used by other sources; a possible
+  cause is a genuine retailer-side listing error, not necessarily a
+  spider bug) — worth a maintainer look at ingestion time or an
+  outlier filter, flagging here rather than guessing at a fix.
+- **libdelivery_lr** (https://libdelivery.com/, bespoke sitemap+JSON-LD
+  spider, channel: marketplace) — MEASURED: 22 rows, 22 distinct urls,
+  USD. Mostly ready-to-eat/restaurant items (Shawarma & Fries, Chicken
+  Wings, Fattoush Salad, Garden Salad) plus at least one grocery SKU
+  ("Manzola Corn Oil" $15) — a genuine Monrovia food-delivery
+  marketplace, not the electronics/general catalog its "marketplace"
+  channel tag might suggest at a glance.
+
+## Confirmed non-food (checked, correctly out of scope)
+
+- **kernel_fresh_premium** (Shopify) — despite the "Fresh" name, this is
+  a beauty/personal-care catalogue (soaps, skin care, hair care, air
+  fresheners, lotions). channel: other is correct as-is.
+- **familylogolr** (bespoke Next.js marketplace) — MEASURED via a live
+  test run: 8/8 items are consumer electronics (iPhone 13/12/11,
+  earbuds, USB-C chargers, a wall socket). Zero food content. channel is
+  tagged `marketplace` but `electronics` would be more accurate — not
+  changed here, out of scope for a food-only pass.
+- **villeton_liberia** — pharmacy, not food, left untouched.
+
+## New candidates checked and rejected
+
+- **lxttsmarket.com** (Shopify) — 50-product sample is >95% women's
+  fashion/gowns ("RaiNe's Designs" line). Exactly one grocery-adjacent
+  item found ("Rice KANYAN") and it is priced **$0.00** — a placeholder,
+  not usable. Reject: not a food retailer.
+- **market231.com** ("Liberia's Trusted Online Marketplace | Buy & Sell
+  Locally") — landing-page keyword scan: 0 "grocery", 0 "food", 3
+  "electronics", 8 "phone", 4 "fashion" mentions. Classifieds-style
+  peer-to-peer marketplace skewing electronics/phones/fashion. Not
+  pursued further.
+- **marketliberiall.com** ("Maittes | Liberia's Online Marketplace") —
+  same signature: 0 "grocery", 0 "food", 2 "electronics", 2 "phone", 0
+  "fashion". Not pursued further.
+- **ezeemarket** (Wix site, `ezeemarket.wixsite.com/ezeemarket`) — title
+  "Online Shopping in Liberia | Ezee Market"; not deeply probed (Wix has
+  no generic spider template in this repo and the site returned a large
+  2.8MB page, suggesting a heavy client-rendered catalog that would need
+  a Playwright pass to evaluate properly) — flagged as untested rather
+  than rejected; worth a closer look in a future pass if Wix-catalogue
+  scaffolding is ever built.
+- **ekodii.com/market/liberia** — "ekodii — African marketplace | Buy &
+  sell across Africa", small page (8.6KB), likely a thin country-filter
+  landing page on a pan-African classifieds site rather than a real
+  Liberia-specific catalogue. Not pursued further.
+
+## Known dead end, not re-probed
+
+- **sessayelectronic.store** — confirmed dead in an earlier pass
+  (Shopify frozen, HTTP 402). Not food anyway.
+
+## Session constraint
+
+WebSearch quota was exhausted session-wide partway through this pass (the
+budget is shared across every agent working this campaign concurrently,
+not per-agent) — discovery for Liberia relied on the seed candidate list
+from `~/gapwork/pending_worth_doing.csv` plus direct probing rather than
+fresh search queries for the back half of this work. A future pass with a
+fresh search budget should target the still-open gap categories directly:
+dairy, cereals/bread (beyond the two prepared-stew items found), alcohol,
+tobacco, sugar/confectionery, water, soft drinks/juices, cocoa drinks —
+none of which have a dedicated Liberian source yet even after this pass's
+findings.
+
+## ADDENDUM (orchestrator, after the above pass) -- ezeemarket_lr SHIPPED
+
+A separate probe (same campaign, different pass) took the "ezeemarket"
+lead further than "untested": the wixsite.com preview URL
+(ezeemarket.wixsite.com/ezeemarket -- the production custom domain
+www.ezeemarket.biz times out from a8 on every attempt) is fully live.
+Wix Stores platform; /store-products-sitemap.xml lists 2,683 distinct PDP
+urls, each server-rendered with schema.org Product JSON-LD
+(name/price/priceCurrency). The site's "Grocery" nav collection alone
+carries totalCount=680 per its own embedded warmup JSON, sampled ~100%
+food (multiple rice brands, red palm oil, Maggi bouillon cubes, MDH
+masalas, sour cream, cheddar cheese, luncheon meat). Enumerability
+confirmed both via /grocery?page=1 vs ?page=2 (disjoint 32-item sets) and
+via the sitemap (2,683 distinct urls). Currency USD confirmed live from
+JSON-LD on every sampled PDP.
+
+SHIPPED: src/prices/configs/ssa/west_africa/liberia/ezeemarket_lr.yaml
++ new spider src/prices/price_scraping/spiders/ezeemarket_lr.py
+(copies the neufeldhof_li sitemap+JSON-LD pattern already in this repo).
+channel: dept-store (mixed catalog -- also carries beauty/clothing/
+electronics SKUs, e.g. a Fenty Beauty PDP and a Lenovo laptop were seen
+in the sitemap sample -- marketplace avoided since it is excluded from
+the corpus census). Test run: prices collect --source ezeemarket_lr
+--max-items 20 -> 24 rows, 24 distinct urls, 100% USD. Sample: USD 13.50
+"Goodness Food Pakistani Basmati Rice 5Kg"; USD 1.25 "Fresh Palava Sauce
+Leaves 1 bunch 100g"; USD 2.95 "Bomi Organic Rice 500g".
+# Known blockers / findings — Eswatini food-source gap-fill (2026-09-11)
+
+No new manifests shipped for Eswatini this pass — an unusually thin
+online-grocery surface for this country, documented below in detail so
+the next pass doesn't repeat the same searches. All probes used plain
+non-impersonating Python `requests` or `curl_cffi impersonate=chrome124`
+on a8.
+
+## Existing manifests checked
+
+- **thewineboutique_sz** (https://thewineboutique.net/, WooCommerce,
+  channel: specialty-food) — already a fully verified, working manifest
+  (not from today): 187 products across 2 pages, SZL confirmed from the
+  API, mostly wine/spirits/gift hampers. This already covers Eswatini's
+  alcohol gap category. Confirmed still present, not touched.
+- twpsz_sz, parrot_sz, busiquip_sz — all electronics (phones, projectors/
+  office equipment, printer toner respectively). Confirmed non-food,
+  channel: electronics is correct.
+- tsengisa_africa, iconomyonline_quazi_design — dept-store/homeware
+  (Shopify), not food.
+
+## New candidates checked and rejected
+
+- **igrocerbusket.store.link** ("iGrocer Busket Eswatini" — "Online
+  Grocery Shop and Delivery") — real grocery storefront on the
+  "sheetstore.com" store-builder platform (spreadsheet-backed, not
+  Shopify/Woo/etc). **REJECTED on currency**: the page's own embedded
+  config explicitly declares `"currency":{"label":"South African Rand",
+  "code":"ZAR"...}` — this is ZAR-priced, not SZL, despite being branded
+  "Eswatini". Per the task's explicit ZAR-watch instruction for this
+  country, flagged and rejected rather than silently accepted.
+- **storkvelkonnect.co.za/marketplace** (the "imali_smart_marketplace"
+  seed) — TLS handshake failure (`SSLV3_ALERT_HANDSHAKE_FAILURE`) across
+  all three curl_cffi impersonation profiles (chrome124/chrome120/
+  safari17_0) AND plain `requests` — this is a broken/misconfigured
+  certificate on the origin itself, not a bot block. Site is
+  unreachable by any HTTP client. Dead.
+- **spareswatini.co.sz** ("Buy n' Save Spar Swaziland – Eswatini –
+  Everyday groceries delivered to your door") — real SPAR-branded
+  WordPress/WooCommerce site (`meta name="generator" content=
+  "WooCommerce 9.0.4"`), HTTP 200, no WAF. **BUT the WooCommerce Store
+  API returns X-WP-Total: 0 on every products query, the `/shop/` page
+  renders zero static product cards, and `sitemap.xml` has no product
+  sitemap at all** (only posts/pages/category/users) — the store has
+  WooCommerce installed but has never actually published a product
+  catalog online. The homepage carries a large WhatsApp-order banner
+  image, suggesting orders are taken via WhatsApp/phone rather than the
+  website. Confirmed dead end: no catalog to scrape, not a probing
+  artifact.
+- **shoprite.co.sz** (corporate/brochure site, AEM/shopriteafrica CMS) —
+  marketing pages only (explore-shoprite/butchery.html,
+  /liquorshop.html — informational, not transactional), a store locator,
+  no product catalog or prices anywhere on the domain.
+- **specials.shoprite.co.sz/deals/** — HTTP 403, Apache-level block
+  (generic 239-byte "Forbidden" page, no useful headers). This subdomain
+  is a flippingbook/cld.bz digital weekly-flyer platform (per the CSP
+  header's allowed script/frame sources), not a structured per-SKU API —
+  even if the 403 were cleared, this would be an image-based circular,
+  not machine-readable pricing. Not worth further investment. (The
+  identical pattern was found on Botswana's specials.shoprite.co.bw —
+  this appears to be Shoprite's standard regional weekly-flyer setup
+  across multiple SSA markets, not specific to Eswatini.)
+- **buyeswatini.shop** ("Buy Eswatini - Linking buyers & sellers") — a
+  thin classifieds/traders-directory platform (custom, non-standard
+  markup). The `/traders-directory/` page returned essentially empty
+  content (1001 bytes, likely a login-gated or JS-rendered listing) with
+  zero grocery/food/supermarket keyword hits. Not pursued further.
+  buyeswatini.com (the .com variant) timed out entirely.
+- **OK Foods, Pick n Pay (co.sz domains)** — no DNS resolution at all
+  for any guessed domain pattern (okfoods.co.sz, picknpay.co.sz,
+  pnp.co.sz) — these chains have no online storefront under an obvious
+  domain in this market.
+
+## Net result / structural finding
+
+Eswatini's online grocery infrastructure appears essentially
+non-existent as of 2026-09-11: every major chain checked (SPAR, Shoprite,
+OK Foods, Pick n Pay) either has no website, a marketing-only brochure
+site, a WooCommerce install with zero published products, or a
+403-walled image-flyer platform. The one working food source
+(thewineboutique_sz) is alcohol-only. This reads as a **structural
+absence** (retail e-commerce for groceries has not launched in this
+market yet), not a discovery failure — worth revisiting periodically
+(SPAR's WooCommerce install in particular could go live with real
+products at any time; its `/shop/` page and Store API are the two things
+to re-check).
+
+Session's WebSearch quota was exhausted (shared campaign-wide) before a
+staples-specific sweep (bogobe, sishwala, mealie meal, sorghum) could be
+run for Eswatini — worth a follow-up once quota resets.
+# Known blockers / findings — South Sudan food-source gap-fill (2026-09-11)
+
+No new manifests shipped for South Sudan this pass. This country's online
+retail surface is thin, and what exists skews heavily electronics/general
+merchandise rather than food. All probes below used plain
+non-impersonating Python `requests` on a8 unless noted.
+
+## Priority re-probe: nilemart-ss.com — RESOLVED, but REJECTED (not food)
+
+**nilemart-ss.com** ("Nile Mart") was flagged in an earlier pass today as
+blocked (`server: hcdn`, HTTP 403 on curl_cffi TLS impersonation on every
+path) and left as "dead for this pipeline (no headless-browser solving in
+scope)". Re-probed here with a **plain, non-impersonating** Python
+`requests` call (no curl_cffi impersonate=) per the pattern documented in
+the newly-built `generic_woo_playwright.py` spider (which found this same
+technique alone clears 8 of 9 similar hcdn tenants elsewhere in this
+campaign) — **it worked**: homepage and `/shop` both return HTTP 200
+(`server: hcdn` header still present, confirming the block really was a
+TLS/JA3 fingerprint denylist against curl_cffi specifically, not a
+content-level challenge). `/wp-json/wc/store/v1/products`,
+`/wp-json/wc/store/products`, and `/products.json` all 404 — this is not
+a WooCommerce or Shopify site.
+
+The `/shop` page is a static, fully server-rendered Bootstrap-template
+catalogue: 384 distinct products (`customer/product-details?product-id=N`,
+ids 30–430), all with real USD prices embedded directly in the listing
+HTML (e.g. "USD 20.00", "USD 700.00") — genuinely enumerable, no
+pagination needed since the whole catalogue renders on one page. However:
+**the meta description states it plainly — "Nilemart - South Sudan's #1
+Online Marketplace Shop electronics, fashion, and more"** — and the
+sampled product names confirm it: iPhone 11–16 (all variants), Samsung
+Galaxy A/S/Z-series, Tecno/Oppo/Infinix/Redmi/Nokia phones, Samsung
+Galaxy Tab tablets, a "Maroon suit", "Light brown penny loafers", wooden
+wardrobes/armoires/display cabinets. **Zero food or beverage items found
+in a 60-name sample.** Per-product detail pages (`customer/product-
+details?...`) also redirect to a login wall, though the listing page
+itself does not require login.
+
+**Verdict: technically recovered (plain HTTP bypasses the block
+entirely) but REJECTED under this task's hard food-only constraint** —
+this is exactly the "clean catalogue, zero food cells filled" trap the
+brief warns about. Worth flagging to a general (non-food) South Sudan
+onboarding pass as a genuinely live, enumerable, real-priced electronics/
+fashion/furniture marketplace if that's ever in scope.
+
+## Existing manifests checked (not touched, confirmed non-food)
+
+- **junubmart_ss** (Shopify) — manifest's own notes already say
+  "electronics-skewed; limited food and no ordinary grocery coverage
+  observed." Confirmed correctly out of scope, not re-probed live.
+- **ramuskin_ss** (WooCommerce) — pharmacy/personal-care catalogue
+  (channel: pharmacy). Not food.
+- **ordermindubai_ss** (Shopify) — Dubai import/delivery-to-Juba general
+  merchandise, channel: other. Not food-focused; not re-probed live given
+  its own notes describe it as an import/electronics channel.
+- **juba_fashion_hub_link_ss** — fashion (confirmed by another agent's
+  probe today, live bespoke Firebase `/api/products` endpoint with 130
+  SSP-priced items) — irrelevant to food, not touched.
+
+## Seed candidates checked and not viable this pass
+
+- **jubasquare.com/marketplace** — HTTP 200 but a bare React/PWA shell
+  (2954 bytes, `<div id="root">`-style client app, manifest.json/PWA
+  icons present, no static content) — would need a Playwright render to
+  see any real listings or determine food content. Not pursued further
+  given time budget; flagged as untested rather than rejected.
+- **doyoom.com** ("food delivery" per its seed description) — HTTP 403,
+  served by Vercel with a `<title>Vercel Security Checkpoint</title>`
+  page (Vercel's own bot-mitigation interstitial, not a content-level
+  hcdn-style challenge and not something a plain-HTTP retry or the
+  existing `generic_woo_playwright` warm-up pattern addresses). Not
+  resolved this pass.
+
+## Dead ends confirmed by other agents today, not re-probed (irrelevant to food anyway)
+
+higromall.com (HTTP 500, server dead), jubafashionhub.store (Shopify 402,
+frozen), jubalaptops.com (Woo Store API 401, locked), jubastationery.com
+(no wc/store namespace registered).
+
+## Net result
+
+South Sudan remains without a genuine food/grocery source after this
+pass. The country's e-commerce surface that is reachable at all skews
+heavily toward electronics, fashion, furniture, and imported general
+merchandise (Dubai-sourced). WFP and FEWS NET (already onboarded,
+official/aggregate) remain the only price signal touching food for South
+Sudan in this repo. A future pass should prioritize: (1) rendering
+jubasquare.com with Playwright to see if it has a real grocery section,
+(2) a residential/session-based retry against doyoom.com's Vercel
+checkpoint, (3) a fresh WebSearch-driven discovery round once quota
+resets (this session's WebSearch budget was exhausted, shared campaign-
+wide, before a full item-specific sweep — "sorghum South Sudan",
+"maize meal Juba", "dried fish South Sudan buy online" were not run).
+# Gambia food-source discovery — blockers and evidence (2026-09-11, fork pass)
+
+## marounssupermarket.com — REJECT, compromised/parked domain
+- Homepage, /shop/, /wp-json/, /products.json, all WooCommerce Store API
+  variants: every single path returns HTTP 200 with a 1-byte (br-encoded
+  empty) body via curl_cffi impersonate=chrome124.
+- /sitemap.xml (59KB) IS populated, but every URL in it is a fake
+  "?s=<random-digit-string>" search-query link with lastmod dated
+  2026-09-12 (tomorrow) — classic SEO-spam-injection signature on a
+  hacked/abandoned WordPress install, same pattern as anadi_guinee_gn
+  (repair pass 2) minus the visible gambling page.
+- Verdict: reject — nothing real to scrape despite the promising domain
+  name (Maroun's is a real, long-running Gambia supermarket chain per
+  search results, but this domain is not a live storefront for it).
+
+## pricegambia.com (www.pricegambia.com) — REJECT, app marketing page
+- Custom static HTML landing page ("Pricegambia - Online Marketplace"),
+  not WooCommerce/Shopify. No product/category listing anywhere in the
+  HTML; the only outbound links besides nav anchors are obfuscated
+  "mypricegambia.com/api/fb/<random>" spam-tracking hrefs.
+- Page markets a mobile app (tablet/desktop/mobile download toggle) —
+  no web catalogue at all.
+- Verdict: reject — app-only, no scrapeable surface.
+
+## getgambgo.com (www.getgambgo.com) — REJECT, app marketing page
+- Vercel-hosted Lovable.dev React SPA, canonical
+  gambgo-food-delivery-app.lovable.app. "Order food, groceries... Download
+  the GAMBGO app." 2990-byte marketing shell, no product data.
+- Verdict: reject — app-only, no web catalogue.
+
+## Safeway Supermarket (Gambia, 3 branches: Kairaba Ave, Kololi,
+   Senegambia) — STRUCTURAL ABSENCE
+- A real, well-reviewed Gambian supermarket chain (4/5 stars, 43 reviews)
+  but has no dedicated website — only directory listings (my-gambia.com,
+  accessgambia.com, africa-places.com) and a Facebook page
+  (facebook.com/safewaysenegambia). Nothing to scrape.
+
+## 1Bena (super-app) — SKIP, app-only
+- Google Play listing confirms mobile-app-only delivery aggregator (rides
+  + food + errands), no web storefront found.
+
+## Environment note for other forks/agents on a8
+- Writing a probe script to /tmp/<name>.py and then running
+  `python3 /tmp/<name>.py` intermittently executed UNRELATED code (a PPP
+  basket/currency-comparison dump for APAC countries) before crashing on
+  `from curl_cffi import requests` with
+  `AttributeError: module 'inspect' has no attribute 'getmro'`, reproduced
+  identically across two different filenames. Plain `python3 -c "..."`
+  inline execution of the exact same code worked reliably every time
+  (tested 4/4). Root cause not confirmed (suspect ssh/tty output
+  interleaving with a concurrent sibling session on the shared box, or a
+  shared-/tmp race) — workaround: prefer `python3 -c` inline over writing
+  probe scripts to /tmp files.
+
+## Existing Gambia manifests re-verified (not modified)
+- farmfresh_gm.yaml, torodo_chicken_land.yaml: confirmed present, per
+  their own notes already end-to-end tested by another agent today
+  (fresh-market / specialty-food, GMD, real prices).
+- julabaa.yaml (channel: supermarket, generic_woo_configured): was
+  untested ("child-task consolidation", never end-to-end verified) —
+  I ran `prices collect --source julabaa --max-items 20` and it
+  MEASURED 100 rows / 100 distinct urls, currency_code=GMD read live
+  from the Store API payload, page1 vs page2 confirmed disjoint ids
+  (166 distinct ids scanned across 3 pages). However it is NOT a
+  single-vendor supermarket — it is a Dokan/WCFM-style multi-vendor
+  WooCommerce marketplace: 90 of 166 products (54%) are attributed to
+  vendor "Farm Fresh Gambia" — the SAME retailer already scraped
+  directly and independently as farmfresh_gm. The remaining food content
+  is small: "Al Ameen Halal Kitchen" (4, ready-meal chicken
+  shawarma/wings/rolls) + "Food" (4); the rest is Incense (26),
+  Lingerie (16), Perfumes (8), Room Fresheners (4), Waist Beads (3),
+  Hair Products (2). channel: supermarket mischaracterizes it — it
+  should arguably be `channel: marketplace`, but doing so would exclude
+  it from census.py's corpus entirely per the repo's own marketplace
+  rule. Flagging for a maintainer decision rather than changing it
+  myself (out of scope for a Gambia-food-focused pass, and the source
+  was not broken, just untested and mistagged). Net-new food coverage
+  from julabaa beyond what farmfresh_gm already provides is marginal
+  (~8 ready-meal SKUs).
+- le_jumbo.yaml (channel: other, generic_woo_configured): live-checked
+  its Store API directly — genuinely a general electronics/beauty/watch
+  marketplace (Renewed iPhones, Apple Watch, Palmolive/Axe/Nivea/Dove
+  personal care) with only occasional food items surfacing (e.g. "GOFIO
+  (Dugula)" millet flour). channel: other is accurate; not food-dominant,
+  correctly out of scope for this pass.
+- ebaaba_gm.yaml (channel: marketplace): general marketplace per prior
+  notes (electronics/general merchandise dominant); search results
+  describe it as also carrying "groceries" but this was not independently
+  re-verified in this pass given time budget and its channel is already
+  correctly marketplace-tagged.
+- gambia_petshop.yaml: confirmed non-food, left untouched.
+# Known blockers -- Sierra Leone food-source discovery (2026-09-11)
+
+## Existing manifests confirmed working/food (already covered, verified live in this pass)
+- choithrams_sl.yaml -- Choithrams via 247bigmarket.com vendor storefronts,
+  channel: supermarket, 198 products verified, USD (genuine domestic
+  pricing, flagged correctly). Pre-existing from 2026-09-01, unchanged.
+- lamanistore.yaml -- Shopify /collections/all-spirits, channel:
+  supermarket, RE-VERIFIED live in this pass: `prices collect --source
+  lamanistore --max-items 20` -> 60 items, SLE currency confirmed genuine
+  (not SLL), e.g. "Ballantine's finest" SLE 600.00. Covers alcohol
+  (02.1) gap category.
+- devillagebeachbar.yaml -- WooCommerce, channel: supermarket (tagged;
+  actual content is restaurant/prepared-food per its own notes),
+  RE-VERIFIED live: 35 items, SLE currency.
+- gotrustmesl.yaml -- shipped today by another agent, generic_woo_playwright,
+  channel: marketplace, currency SLL (old-leone code, confirmed correct
+  per that tenant's own API), only 10 products, mixed-vertical (food/
+  beauty/electronics/clothing). Weak contributor -- marketplace channel is
+  excluded from the corpus census downstream.
+
+## saloneemarket.com
+- 200 OK, but own meta description: "Shop electronics, fashion, home
+  appliances and more" -- general marketplace, no food/grocery mention.
+- Verdict: reject -- non-food by the site's own description (same pattern
+  as Nilemart in South Sudan).
+
+## www.market360.shop
+- 200 OK, "Market360 -- Sierra Leone's #1 Online Shopping Marketplace".
+  Not Shopify/WooCommerce/Presta/OpenCart (no platform signature found).
+  No /products, /shop, /marketplace, /api/products, /search routes exist
+  (all 404) -- no discoverable catalog API.
+- NLE/Le price-like patterns found in the raw HTML ("NLE 12,480", "Le
+  1,000") turned out to be a demo/mockup "Wallet balance" and "Live
+  activity" UI widget on the landing page, not real product listings --
+  false positive.
+- Verdict: reject -- marketing/landing page only, no enumerable catalog
+  found; would need Playwright + reverse-engineering an app-only backend
+  for uncertain payoff.
+
+## www.salonefastmarket.com
+- 200 OK, 55KB, no known platform signature, zero Le/SLE/NLE/$ price
+  patterns found in static HTML.
+- Verdict: reject -- no structured price data found in static HTML;
+  likely JS-rendered or a directory/classifieds model.
+
+## www.shop2sitesl.com ("Shop 2 Site Sierra Leone -- Buy groceries from
+## Freetown and have it delivered to site weekly")
+- Found via WebSearch, sounds like a strong grocery-delivery candidate.
+- Connection refused on both https and http, www and bare domain, from
+  a8 -- server is not accepting connections at all (not a WAF, not a DNS
+  failure -- TCP connect refused).
+- Verdict: reject -- dead/unreachable server.
+
+## Net result
+Sierra Leone already has solid pre-existing coverage (choithrams_sl
+supermarket 198 SKUs, lamanistore alcohol, devillagebeachbar prepared
+food, gotrustmesl weak marketplace) -- all re-verified live in this pass.
+No new Sierra Leone food source was found viable; every fresh lead
+(saloneemarket, market360, salonefastmarket, shop2sitesl) was either
+non-food, had no enumerable catalog, or was unreachable. Sierra Leone's
+COICOP 01/02 remaining gaps (fresh produce, dairy, most beverages beyond
+spirits) likely need a fresh-market/greengrocer-specific source that this
+pass did not surface -- worth a dedicated follow-up search focused on
+Freetown open-air/wholesale market price data (e.g. a stats-office
+average-price series) rather than more general e-commerce search.
+
+---
+
+## ADDENDUM (orchestrator, after the South Sudan section above) -- jubasquare_ss SHIPPED
+
+A separate concurrent agent working this same campaign took the
+jubasquare.com lead (flagged above as "bare React/PWA shell, not pursued
+further given time budget") to completion: its JS bundle references a
+same-origin, unauthenticated `/api/products?limit=1000` endpoint.
+MEASURED (independently re-confirmed by the orchestrating session):
+94 distinct products, stable regardless of limit/pagination params (this
+IS the whole catalog), 100% non-zero price_usd. ~68% (64/94) of the
+catalog is genuine food/beverage/household FMCG: rice, beans, wheat
+flour, sugar, tea, milk powder, tomato paste, cooking oil/margarine,
+peanut butter, canned sardines, chocolate, bottled water, sodas, fruit
+juice, and a full alcohol range (Absolut Vodka, Amarula, Blue Label,
+4th Street wine) -- directly closing South Sudan's cereals&bread,
+fish&seafood (canned), dairy&eggs, oils&fats, sugar/confectionery, tea,
+alcohol, juices, soft drinks and water gap categories in one source.
+Currency is native USD (with an embedded exchange_rate_ssp field the
+manifest deliberately does NOT use for conversion) -- flagged explicitly
+per the brief's instruction, consistent with South Sudan's severe SSP
+volatility. channel: wholesale (most rows carry mode/min_order_qty/
+pricing_tiers fields). SHIPPED:
+src/prices/configs/ssa/east_africa/south_sudan/jubasquare_ss.yaml +
+spider src/prices/price_scraping/spiders/jubasquare_ss.py. Test run:
+20/20 rows priced (94 total catalog), 20 distinct synthetic urls, USD.
+
+This changes the South Sudan section's Net result above: South Sudan
+now DOES have a genuine, substantial food source as of 2026-09-11.
+
+---
+
+## ADDENDUM (orchestrator verification, 2026-09-11) -- afrikonet_sl DOES carry real food SKUs
+
+A prior pass's quick --max-items 20 test of `afrikonet_sl` only reached its
+alphabetically-first category ("air-conditioners") before hitting the item
+cap, and concluded the source "looks food-weak on inspection." That
+conclusion was an artifact of the small sample, not a real finding.
+
+Direct verification (BeautifulSoup, exact selector `.product[data-link]`
+used by the shipped spider) against the food-relevant categories in its
+161-category list:
+
+| category | priced product cards |
+|---|---|
+| groceries-food | 19 |
+| food-and-drinks | 20 |
+| packaged-foods-snacks | 4 |
+| fresh-produce | 1 |
+| beverages | 1 |
+| eggs | 1 |
+| vegetables | 0 (empty on this crawl) |
+| fruits | 0 (empty on this crawl) |
+
+Sample confirmed real, priced, food/beverage SKUs: "Armour Star Vienna
+Sausage, Original Flavor, Canned Sausage, 9.25 OZ (Pack of 12)" Le160.00;
+"4C Raspberry Iced Tea Mix" Le400.00; "Absolut Vodka" Le660.00; "All
+Purpose Flour Bulk Baking Flour ... 50 LB" Le770.00; "Apple & Eve Elmo's
+Punch 100% Juice (Pack of 20)" Le350.00. This touches cereals&bread
+(flour), meat (canned sausage), tea, alcohol, and juices -- a genuine,
+if modest, food contribution once a full run (max_items: null) walks
+past the alphabetically-earlier non-food categories. channel: marketplace
+remains an accurate tag (catalog spans groceries through electronics to
+fashion) -- no manifest change needed, this is a verification correction
+only.
+
+
+---
+
+## known_blockers_disco_eu - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_eu.md` on 2026-09-11. 14 hosts, 2 not
+documented above at merge time.
+
+# Known blockers — Disco EU/Atlantic food-sourcing pass (2026-09-11)
+
+Countries: gibraltar, greenland, liechtenstein, monaco, st_martin_french_part,
+sint_maarten_dutch_part, suriname, san_marino, andorra, faroe_islands.
+
+New candidates probed this pass that failed the gates, organised by cause so
+a future pass does not re-spend the probe. (Entries for candidates already
+recorded in prior passes — Eroski Gibraltar reCAPTCHA, Ramsons app-only,
+Brugseni/Pilersuisoq brochure-only, SMS/Bónus/Miklagarður/Föroya Keypssamtøka
+brochure-only — are NOT repeated here; see the skill's own
+`references/known_blockers.md` and the per-country inventory files under
+`references/inventories/eca/western_europe/`, which already carry them.)
+
+## Cloudflare / anti-bot (re-probed, still blocked)
+
+- **delovery.mc** (Monaco, genuine `.mc` food-delivery platform) — 403 on
+  `curl_cffi` chrome124, chrome120 AND safari17_0. Re-probed per this brief's
+  standing instruction to retry blocked sites; verdict unchanged from the
+  2026-09-01 pass. This remains Monaco's single best unclaimed food lead if
+  anti-bot posture ever changes.
+
+## Brochure-only / no e-commerce (measured, not assumed)
+
+- **marche-u.mc** (Monaco) — genuinely Monaco-domiciled Système U storefront
+  (7 bd d'Italie, Monaco), which resolves the France/Monaco shared-platform
+  duplication question for this one domain (it is its own `.mc` site, not
+  the shared `coursesu.com` national platform). But `/nos-rayons/*`
+  department pages (la-boucherie, la-poissonnerie, la-cave, le-traiteur,
+  etc.) carry zero price tokens and zero "panier" mentions — marketing
+  copy only, no online ordering.
+- **bjor.fo** (Faroe Islands) — Föroya Bjór brewery. WooCommerce theme
+  installed (`wp-json` present) but the Store API 404s
+  (`rest_no_route`) and `/vorur/` ("products") renders zero prices, zero
+  `add-to-cart`, zero `woocommerce-loop-product` markup. Shop plugin is not
+  active; site is brochure-only.
+- **local.fo/webshop/** (Faroe Islands) — is a travel/tourism magazine site
+  (`plan-your-trip`, `weather`, `print-edition`); its "webshop" sells
+  sheep-branded souvenir merchandise, not food. Zero price tokens.
+- **faroelandia.com** (Faroe Islands seafood) — no platform fingerprint
+  matched, zero price tokens on `/products/`. Reads as a B2B export/
+  marketing site, not consumer e-commerce.
+- **origin.fo** (Faroe Islands) — zero price tokens, no platform fingerprint.
+
+## Wrong country / wrong currency (locality gate failure)
+
+- **bakkafrostshop.com** ("Superior Salmon from the Faroe Islands and
+  Scotland") — real Shopify store, real per-item prices (e.g. "Fresh salmon
+  portions 2x125g" $7.93), but `Shopify.country = "US"` and
+  `Shopify.currency = {"active":"USD"}` machine-readably, plus a
+  "military-discount-usa-only" page and Scottish ("Native Hebridean Smoked
+  Salmon") SKUs mixed into the same catalog. This is Bakkafrost's US
+  consumer storefront, not a Faroese domestic retailer. Rejected on the
+  locality gate, not absence of e-commerce.
+- **polarseafood.com** (Greenland-linked seafood) — no `shop`/`webshop`/
+  `add to cart` anywhere on the site; confirmed B2B export only, no consumer
+  storefront to even evaluate for locality.
+- **groenlandskehus.dk** ("Det Grønlandske Hus") — Danish (Denmark-based)
+  specialty retailer selling Greenlandic-themed products
+  (`/vare/fisk-og-koed/`) to a Danish/EU market. Same shape as the
+  Monaco/Andorra/Liechtenstein neighbouring-market trap: about Greenland,
+  not from or priced for Greenland. Not probed further (would fail the
+  locality gate even if it enumerated).
+
+## No consumer storefront at all (B2B / wholesale only)
+
+- **hiddenfjord.com** — Faroese salmon farmer; not probed in depth this
+  pass, but the brand's public profile is aquaculture/export, consistent
+  with the polarseafood.com and Royal Greenland pattern. Flagged for a
+  future pass to confirm rather than re-probed here (time-boxed).
+
+## Wix/Ecwid false-fingerprint trap (recurring pattern, third confirmed case)
+
+- **mitronbakery-monaco.com** — "ecwid" string hits on the homepage (11
+  occurrences) are Wix's own storefront-widget self-reference
+  (`wix.ecwid.com/wix/app/store`), not a standalone Ecwid installation —
+  the same false-positive pattern already documented on `neufeldhof_li`.
+  `/commander/EPICERIE-FINE-&-BOUTIQUE-.../` renders zero price tokens
+  server-side; a genuine Wix Stores catalog needing a Playwright network
+  trace to find the real data endpoint, not attempted this pass (OBBA and
+  Vinalia already filled Monaco's food slot).
+
+## Needs a network trace, not attempted this pass (time-boxed, not dead)
+
+- **mrroomservice.mc** (Monaco) — curated multi-shop concierge delivery app
+  aggregating named boutiques including `foie-gras-comtesse-du-barry`,
+  `caviar`, `wine-champagne-spirits`, `coffee-nespresso-illy`, and
+  `dean-and-deluca-shop`. No platform fingerprint matched (not Shopify/
+  Woo/Prestashop/Wix); shop pages render zero price tokens in raw HTML —
+  client-side rendered (likely React/Next), needs a Playwright network
+  capture to find the JSON endpoint. Worth a follow-up given how
+  food-heavy the curation is; not pursued because OBBA and Vinalia already
+  gave Monaco two solid, simpler sources.
+
+## Mis-tagged existing manifest, not a new blocker but worth recording
+
+- **gibral_flora_gi** (Gibraltar) shipped by an earlier same-day
+  consolidation pass tagged `channel: supermarket`. Live measurement of a
+  100-item WooCommerce Store API page: Plants 25, Christmas Ideas 14, Pet
+  Corner 19, Mother's Day 9, Weddings 7, Valentines 6, Garden Sundries 1,
+  Chocolate & Sweety Hampers 2. It is a florist/gift/pet shop — "Gibral-
+  Flora" literally names the flora business — and fills approximately zero
+  COICOP 01/02 cells despite its tag. Corrected to `channel: dept-store`
+  in this pass (see the manifest's own notes for the full record); also
+  corrected `currency: GIP` -> `GBP` to match the Store API's own
+  machine-readable `currency_code`.
+
+
+---
+
+## known_blockers_disco_fr - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_fr.md` on 2026-09-11. 98 hosts, 57 not
+documented above at merge time.
+
+# Francophone Africa food-source discovery — blocker log
+
+Countries: Chad, Central African Republic, Burkina Faso, Cote d'Ivoire, Niger,
+Guinea, Congo Rep, Comoros. Discovery method: French-language search (generic
+retail / item-specific from the COICOP gap list / local staples), curl_cffi
+probing (impersonate chrome124/chrome120/safari17_0), WooCommerce/Shopify/
+PrestaShop/OpenCart/Magento/Wix/Ecwid/Algolia fingerprinting, sitemap→PDP
+fallback. Probed 2026-09-11 unless noted. MEASURED unless explicitly flagged
+INFERRED.
+
+Sources shipped this pass (for cross-reference, not blockers): `mossosouk_td`
+(Chad), `bahati_km` (Comoros), `fruitsetlegumes_ci` (Cote d'Ivoire),
+`sodishopguinee_gn` (Guinea), `kaomini_ne` (Niger), `ouagadougouonline_bf`
+(Burkina Faso).
+
+## Central African Republic
+
+- **shopping236_cf** (already onboarded) — furniture/bedding/small-appliances/
+  childcare per existing manifest notes (INFERRED, not re-probed). Non-food,
+  fills zero CAR division-01/02 cells.
+- **banguimall.net** — re-probed live (200 on chrome124/120/safari17_0; a
+  prior pass had it as unresolvable). Live site is a static Bootstrap
+  brochure for a car-wash/car-repair and phone/PC-repair business — zero
+  product catalog, zero prices, zero food relevance. Dead end, different
+  reason than before (non-food services brochure, not e-commerce).
+- **warani.cf** — re-verified NXDOMAIN (socket.gethostbyname + dig, two
+  resolvers). Matches existing known_blockers verdict, no change.
+- **vokani.com** — surfaced in search ("boutique en ligne moderne à Bangui")
+  but NXDOMAIN on repeat lookup (curl_cffi + dig, local and 8.8.8.8). Search
+  index is stale relative to DNS reality.
+- **market-express.net** — search snippet promised a full food catalog
+  (riz/pâtes, boucherie, fruits et légumes) but domain is NXDOMAIN on repeat
+  lookup. Dead, not blocked.
+- **banguicom.myshopify.com** — resolves but HTTP 402 Payment Required
+  (suspended/unpaid Shopify subscription). Underlying business (per directory
+  listings) is an IT hardware/software integrator anyway — dead + non-food.
+- **ndaratibeafrika.com** — live, real Shopify catalog, but sells handmade
+  artisan textiles/homewear/baskets/gifts. Non-food, dropped on the food
+  gate without further probing. Secondary flag (INFERRED): separate US/
+  Europe inventories read as diaspora-gift-oriented.
+- **kanko.fr** — the only external-website entry in goafricaonline.com/cf's
+  CAR "supermarchés" directory category. Resolves 200 but is a Dovendi
+  domain-parking/for-sale page — no store. Dead, not blocked.
+- **goafricaonline.com/cf/annuaire/sites-vente-en-ligne** — CAR "online
+  sales sites" directory category returned zero listings on direct fetch.
+  Dead-end search, not a candidate.
+- **sangostore.com** — self-branded "marketplace de la diaspora
+  centrafricaine": diaspora members abroad place/pay orders, goods delivered
+  to recipients in Bangui — the reverse-remittance pattern (same family as
+  familov/comores-en-ligne/omakiti.com). Rejected on the diaspora gate
+  regardless of catalog contents.
+- **BAMAG / CORAIL / MINI PRIX / SOCIMCO / RAYAN** (physical Bangui
+  supermarkets, genuinely food-selling per travel-guide copy — INFERRED, not
+  verified live) — no website found for any; Facebook pages only. Not
+  scaffoldable — no PDP, no JSON endpoint, no enumerable catalog exists.
+- **Verdict for CAR**: structural absence of retailer_sku food infrastructure,
+  not a search-effort failure. Delivery apps (Glovo/Yango/Bolt Food/Jumia/
+  Afrimarket) confirmed absent or defunct in-country. Re-check in ~6 months
+  rather than re-sweeping sooner.
+
+## Chad
+
+- **jumia.td** — Cloudflare "Just a moment…" wall, shared Jumia tenant;
+  Jumia's active market list does not include Chad. Not re-probed (already
+  established in the shared known_blockers.md).
+- **ndjamenamall.com** — bare LWS hosting-provider placeholder page, never
+  built out (pre-existing finding, unchanged).
+- **tchadcommerce.com** — already onboarded and already known-thin (only 6
+  products in its "AgroAlimentaire" category); unchanged this pass.
+- **nkosiagro.com** — real Shopify storefront ("NKOSI — Épicerie Africaine &
+  Antillaise en Ligne") with working `/products.json` and a geo-cookie
+  allowlist including TD, but prices are EUR (6.50, 26.65 on sweet-potato/
+  attiéké-kit variants) and its own delivery pages are city-specific for
+  metropolitan France (Lyon, Strasbourg, Marseille, Lille, Nantes). Classic
+  diaspora shop — TD is a checkout-country option, not evidence of Chad
+  fulfillment. Rejected on currency + locality.
+- **sendinafrika.com** ("SendinAfrika — leader des achats en ligne pour la
+  famille en Afrique") — zero occurrences of "Tchad"/"Chad"/"XAF" on the
+  page, 76 occurrences of EUR, 4 of "diaspora". A France-based send-groceries
+  -to-family-in-Africa service, not a Chad retailer.
+- **djahizfood.wixsite.com/website** ("Djahiz Food" — third-party directories
+  list this as "Lily's Supermarket"'s website; live page's own title reads
+  "Djahiz Food") — full Playwright render (6s settle, 211KB DOM) shows zero
+  occurrences of price/prix/FCFA/XAF/panier/commander/boutique/shop/"add to
+  cart" anywhere. Brochure/marketing-only Wix page, no catalog, no checkout.
+- **Sahil Express, N'Djamena Food, Nimvi Express, SHAMS** — restaurant/meal
+  or last-mile parcel delivery apps, not grocery/retail catalogs. Out of
+  scope, not pursued.
+- **"Modern Market", "Le Bon Marché", "Lily's Supermarket"** — no independent
+  website for any (Lily's listed domain resolves to the unrelated Djahiz
+  Food brochure; `lilysupermarket.com`/`.td` NXDOMAIN). Facebook/TikTok/
+  Snapchat-only presence — Chad's grocery retail sector is not web-
+  catalogued, confirming prior passes' conclusion.
+- Staple searches (mil, sorgho, riz, lait, gombo, niébé, arachide) surfaced
+  only FEWS/WFP price-bulletin PDFs (already onboarded as `wfp_prices`, not
+  a new retail source) and West-African diaspora shops (Dakar/Abidjan-based)
+  with no Chad operation.
+
+## Congo, Rep. (Congo-Brazzaville)
+
+- **brazzatrade.netlify.app** — static Netlify landing page, 91KB HTML, 3
+  EUR currency-selector tokens, zero product/price data on-domain; real
+  transactions happen off-site via a linked Google Business Site and a
+  Facebook group. Not scrapable.
+- **petitmarchecongolais.com** — NXDOMAIN. Stale/dead search listing.
+- **exo-market.net / exomarket.shop** — `.net` NXDOMAIN; `.shop` resolves
+  (GoDaddy Website Builder, 200) but its own meta tags say "Launching Soon"
+  — a splash page, zero products.
+- **primarket.net** — Webflow marketing site (61.6KB), zero shop/catalogue/
+  commander/produit/prix links anywhere. B2B contact-only, no retail
+  storefront to scrape.
+- **radarshops.com** — static template embedding two Facebook-post iframes
+  + a Google Maps embed; zero FCFA/XAF price tokens in raw HTML; no product/
+  catalogue links. Content lives entirely inside un-scrapable FB embeds.
+- **parknshop.youmsi-tech.com** (Park'n'Shop / Régal loyalty portal) — only
+  web asset found is a customer-loyalty login form (4.3KB HTML), no catalog,
+  no prices. Confirms Congo's two largest physical supermarket chains have
+  no online store.
+- **terroirs-congo.com** ("Alimentaire exotique biologique") — Wix site;
+  JSON site-config explicitly states `"currency":"EUR"` (3 occurrences).
+  France-domiciled boutique selling to French consumers, not a Congo
+  delivery service — worse than a diaspora shop, not even Congo-facing.
+- **tekaleka.com** — NXDOMAIN (with and without www). Stale search listing;
+  also not food-dominant per its own description (clothes/shoes/phones).
+- **macuisineenligne.com** ("Le Panier Frais / Ma Cuisine en Ligne", Pointe-
+  Noire fresh produce, WhatsApp+web ordering) — connection **timed out**
+  (not a TLS/WAF signature) on 2 attempts, chrome124 and safari17_0, www and
+  bare domain, 20-25s each. Host may be down/firewalled rather than gone.
+  **Do not mark dead — retry next pass.**
+- **Cerise Supermarché** — this is Libreville, **Gabon**, not Congo. Wrong
+  country (name/city collision).
+- **Joseph Distribution** ("Pointe-Noire" grocery delivery) — this is
+  Pointe-Noire, **Guadeloupe** (French Caribbean), a city-name collision
+  with Congo's Pointe-Noire. Wrong country.
+- **ins-congo.cg** (national statistics office, INHPC/CPI publisher) — real
+  official publisher (12 COICOP functions, 635 varieties tracked in
+  Brazzaville per cached search content), but the live site has been
+  replaced by a template redesign mid-relaunch: all old bulletin URLs 404,
+  no sitemap/robots.txt, `stat-prix.html`/`derniere-publication.html`/
+  `open-data.html` are empty nav shells, Wayback CDX for `uploads/*` returns
+  only one unrelated Ministry-of-Health file (new upload path uses
+  unguessable hashed filenames). **Genuine sourcing target, currently
+  unscrapable — retry once the site stabilizes, do not mark permanently
+  dead.**
+- **iambeezy.app** — zero-commission store-builder SaaS for Congolese
+  merchants; a platform, not a storefront. No merchant directory found to
+  locate food stores built on it. Not pursued.
+- **cabf.eu** — France-domiciled B2B wholesale distributor to Brazzaville
+  supermarkets (Francap group, 15k+ SKUs); same shape as primarket.net.
+  Untried beyond this note — likely no public consumer price catalog.
+- Staple searches (chikwangue, saka-saka, foufou, manioc) surfaced only
+  France/Belgium-based diaspora grocers (asianmarket.fr, nkosiagro.com,
+  safinel.fr, laboboleraie.com, mcs-exotic.com) — none deliver inside Congo.
+  These staples sell exclusively through physical street markets with no
+  online storefront — a structural absence, not a searchable gap.
+
+## Comoros
+
+- **comoresmarket.com** ("Comores Market") — confirmed dead per existing
+  known_blockers.md (TLS misconfiguration, `TLSV1_ALERT_INTERNAL_ERROR`
+  across all curl_cffi profiles); not re-probed this pass.
+- **comores-discount.com** — DNS does not resolve, despite a live search
+  snippet referencing "produits frais et surgelés".
+- **market-express.net** — DNS does not resolve (same dead domain also
+  surfaced under CAR's search — a stale pan-African listing).
+- **lesalimentsmm.com** ("Les Aliments M&M") — live Shopify site, but this is
+  a **Canadian** frozen-food chain (og:description "au Canada"), zero
+  mentions of Comores/Moroni/KMF/EUR. Coincidental name match to "MNM
+  Trading" (a real Moroni frozen-meat trader per news coverage); unrelated
+  business. Rejected on locality.
+- **karthalamarket.com** ("Karthala Market") — live PrestaShop store,
+  currency block confirms `"iso_code":"KMF"` and 53 mentions of "Comores" —
+  genuinely Comorian-operated. Every food AND non-food category checked
+  (10-alimentation, 24-produits-du-pays, 25-manioc-coco, 26-epices,
+  27-epicerie-salee, 28-boissons, 30-legumes-fruits, 31-epicerie-sucree,
+  64-laits-alimentation, plus non-food categories) renders "Aucun produit
+  disponible pour le moment" — an empty pre-launch shell, zero products
+  site-wide. **Worth a re-check in ~3-6 months if it launches.**
+- **km.newtouse.com** ("NEWTOUSE") — has `/category/food-and-beverage/*`
+  paths but every category page is a mass-generated SEO template — identical
+  ~97KB boilerplate with no product cards, no listings, KMF appearing only
+  in a currency-selector widget. A template network spun up per-country, no
+  real inventory.
+- **rahisii.com** ("Rahisi") — zero mentions of any food keyword; confirmed
+  appliances-only ("Électroménager Premium Geepas"). Rejected on category.
+- **FANA-FISH** (Moroni fishmonger, per La Gazette des Comores) — real
+  business (sets fish prices 1,500-2,250 FC/kg per press coverage) but no
+  discoverable website.
+- **NFI ZA COMORES** (Moroni/Fomboni seafood shop) — real physical fishmonger
+  per an evendo.com directory listing only; no independent domain found.
+- **MNM Trading** (frozen meat/offal trader since 2015, per La Gazette des
+  Comores) — real business, no dedicated website found.
+- **Comorian vanilla/spice exporters** (epicesdecru.com, ileauxepices.com,
+  epices.com, oranessence.fr, comoresvanille.fr, vanisaveurs.com,
+  desepicesamaguise.com) — all French retailers selling Comorian-origin
+  vanilla to metropolitan-France consumers, EUR-priced, free-shipping-to-
+  France thresholds. Export shops, not Comorian domestic retail.
+
+## Burkina Faso
+
+- **jumia.bf** — Cloudflare "Just a moment…" 403 across chrome124/chrome120/
+  safari17_0, shared Jumia tenant. Confirmed already in known_blockers.md.
+- **mapsme.fr** — supermarket-directory site (per-country addresses/phones/
+  websites); Cloudflare 403 "Attention Required!" across all three profiles.
+  Even unblocked it would only be a directory.
+- **SenPoisson** (Dakar), **eat2fresh** (Douala) — wrong country, diaspora/
+  other-market sites.
+- **EspaceAgro.com** listings (lait, farine, poisson, céréales) — pan-African
+  B2B wholesale classifieds, request-a-quote, no live retail prices, not
+  BF-specific. Same pattern as the already-blocked `ampagora.com`.
+- **Kossam Lobbam** (dairy producer) — Facebook-only, no website.
+- **CoinAfrique BF, Rodwoko** — individual-seller classifieds, not enumerable
+  catalogs.
+- **www.ouagadougou.online** — a prior wave (2026-09-01) marked this dead on
+  a TCP timeout. **RE-VERIFIED LIVE 2026-09-11** (curl_cffi chrome124, 200
+  throughout — the earlier verdict was transient connectivity, not a
+  permanent block). Standard WooCommerce Store API, category=62
+  ("Alimentation & Boissons", 547 products among ~90 mostly-non-food
+  categories — general dropship marketplace, not a dedicated grocer).
+  Enumerability confirmed (page1/page2 category-62 ids fully disjoint).
+  Carried a site-wide XOF minor-unit bug (`currency_minor_unit=2` misapplied
+  to a currency with no subdivisions — confirmed both in the Store API and
+  in the vendor's own rendered PDP price, "CFA7.00" for a box of 100 Lipton
+  tea bags). **Fixed and shipped this pass** as `ouagadougouonline_bf`
+  using a dedicated `PRICE_MULTIPLIER=100`/`"XOF"` spider subclass (same
+  precedent as `ecomguinee_gn.py`'s GNF fix) — 98 rows, 98 distinct urls,
+  XOF, prices sane (100-33,600 XOF) after the fix.
+
+## Cote d'Ivoire
+
+- **jumia.ci** — Cloudflare Turnstile wall, confirmed via curl_cffi AND
+  Playwright (interactive widget reaches "Un instant…" then never clears).
+  Shared tenant, eighth Jumia country storefront with the identical wall.
+  Not re-probed.
+- **glovoapp.com** (CI storefronts) — not WAF-blocked, but plain HTTP 403s
+  while Playwright renders fine; real assortment sits behind client-side
+  collection tabs, homepage carousel trap (86 `ItemTile_` items, all promo).
+  Worth a dedicated effort, not attempted this pass given budget.
+- **plantesetepices.com** ("Panier", Abidjan) — PDPs server-render prices but
+  catalog not enumerable (listing gated on unresolved delivery-zone
+  selection, only 3 discoverable PDP urls; sitemap/robots.txt 404; every
+  6amMart API path 404s). Not re-probed.
+- **fraismarket.com** ("Frais Market", Yopougon fishmonger/butcher) — HTTP
+  200 but body is a Bootstrap "Your domain is expired" parking page (10,881
+  bytes). Domain registration lapsed since the last search-engine crawl.
+- **lepotagerdabidjan.com** ("Le Potager d'Abidjan", PrestaShop fresh fish) —
+  HTTPS fails with TLS handshake internal error across all curl_cffi
+  profiles AND bare curl (genuine broken TLS config, not a WAF signature).
+  Plain HTTP (port 80) serves a Hostinger "Parked Domain" page — storefront
+  is gone.
+- **ivoirelite.net** — general marketplace (téléphonie/bureautique/
+  électroménager/mode/automobile); the specific `/404-poisson` URL (a stale
+  category page, literal "404" in its own slug) falls back to a site-wide
+  "Nouveaux produits" block that is 100% electronics. `/api/` 401s (gated).
+  No live food category exists.
+- **jaddis.com** ("Jaddis", épicerie fine Cocody) — live filterable product
+  grid but zero prices anywhere in rendered HTML ("prix sur demande"
+  pattern) — fails the non-zero-price gate. Also borderline on locality
+  (imported French gourmet goods).
+- **take.app/freshpanier** — HTTP 403 from Vercel edge across all three
+  curl_cffi profiles; parent brand (freshpanier.com) already confirmed dead.
+  Not escalated to Playwright given low priority.
+- **freshpanier.com** — reconfirmed NXDOMAIN (already in the NXDOMAIN sweep).
+- **ecomarket-africa.com, smarket-ci.com, aufraismarket.com, aufraismarket.ci**
+  — all NXDOMAIN via DNS lookup. New dead domains, added to the sweep.
+- **Oui Lait et Dêguê** (Abidjan yogurt/dégué producer — directly relevant to
+  the dairy gap) — no website; social-only presence (TikTok/Instagram/
+  Facebook/Twitter). Not a candidate until they launch a site.
+- **Cash Center, Hayat, Sococe** (named Abidjan supermarket chains) — no
+  independent online storefront beyond what's already recorded dead
+  (`sococe.online` = "under construction", `cashcenter.ci`/`hayat.ci` =
+  NXDOMAIN per the existing sweep). No new finding.
+
+## Guinea
+
+- **braprime.com** — dead Supabase backend, NXDOMAIN. Confirmed already in
+  known_blockers.md, not re-probed.
+- **mamakiti.com** — empty catalogue, pre-launch. Re-check only after ~6
+  months per existing verdict; not re-probed.
+- **monmarchegn.com** — app-only, zero web catalogue, no findable API.
+- **omakiti.com** — rejected on locality (41 EUR tokens, 0 GNF, bundles
+  "transfert d'argent" with groceries, diaspora shape). Not re-probed.
+- **primaconakry.com** — Wix brochure site, zero products.
+- **boucherieconakry.com** ("Boucherie Conakry") — DNS does not resolve.
+  NXDOMAIN, dead.
+- **bouchor.netlify.app** ("Bouch'or — Boucherie & Livraison à domicile") —
+  live but its own meta/OG tags declare it serves **Dakar, Sénégal**, not
+  Conakry. Wrong country.
+- **www.alimakiti.com** ("ALIMAKITI") — PrestaShop confirmed, but footer
+  address is "3 rue clos du rosay, France, 72300 Sablé-Sur-Sarthe"; embedded
+  currency object is `{"name":"Euro","iso_code":"EUR"}`. Diaspora/France-
+  based, not a Guinean domestic shelf — same pattern as omakiti.com.
+- **selinawamucii.com/fr/connaissances/prix/guinee/*** (fonio, arachide,
+  etc.) — schema.org markup discloses "Source: FAOSTAT Producer Prices",
+  prices in USD, and even mislabels Guinea's currency as XOF (Guinea uses
+  GNF). An SEO wrapper republishing FAOSTAT statistics, not a retailer or a
+  distinct primary source.
+- **prixguinee.com** ("Comparez les prix autour de vous") — crowdsourced
+  Numbeo-style app; platform-wide stats JSON shows `total_prix: 32,
+  total_boutiques: 2, total_contributeurs: 4` (not just food), sample record
+  was a washing machine. Pre-launch/negligible volume, matches the cost-of-
+  living-aggregator anti-pattern.
+- **www.quickshop-gn.com** — 403 on chrome124/chrome120/safari17_0 alike,
+  identical ~29.4KB body served by Vercel — reads as a Vercel deployment-
+  protection gate (private/staging build), not a live public site.
+- **www.guineeclicks.com** — live Wix site with Wix Stores wired in, but
+  catalog is not server-rendered; would need the Wix eCommerce internal API
+  (site instance token + GraphQL) to determine if it carries food.
+  **Inconclusive — worth a dedicated Wix-API probe later.**
+- Facebook-only pages with no independent site found (not scrapable):
+  Boucherie Nouvelle GN, Boucherie de Guinée (MKSARL), POISSONNERIE COTE
+  FRERES, Grand Annem, Franprix Guinée, Dfmarket.
+- **goafricaonline.com** `/gn/annuaire/epicerie`, `/gn/annuaire/fruits-
+  legumes`, `/gn/annuaire/production-produits-laitiers` — directory pages
+  whose fetched HTML only exposed cross-country nav links, not actual
+  listing entries (JS-rendered content). Not pursued further.
+- A large prior NXDOMAIN sweep already covers: belair.gn, soduga.com,
+  guineego.net, supermarchebelair.com, belairguinee.com, alimarket.gn,
+  kanya.gn, tafa.gn, chezmoi.gn, paysanguinee.com, supermarchekaloum.com,
+  guineemarket.com, conakryshop.com — all confirmed dead, unchanged.
+- **Flagged, not fixed**: `koumia_gn.yaml` (pre-existing manifest, dated
+  2026-09-11, NOT added by this pass) is a Shopify marketplace selling
+  water dispensers, pressure washers, coffee machines, meat grinders —
+  appliances, not food. This fills zero Guinea division-01/02 cells and
+  should be removed by whoever owns manifest cleanup for this country; it
+  was not deleted here because it predates this task and the harness
+  blocked an attempted delete as an irreversible action.
+
+## Niger
+
+- **jumia.ne** — Cloudflare wall, shared Jumia tenant, no actual Niger
+  operation. Not re-probed.
+- **scorene.com** (guessed Niamey supermarket-chain domain) — expired-domain
+  parking page, not a live business. Not re-probed.
+- **agrishopniger.com** ("AgriShop" ag-marketplace) — live (200, Cloudflare-
+  fronted, not blocked), Botble CMS, real multi-vendor "boutiques" directory
+  (agrobusinesscenter, marche-dole, niamey-2000, moustapha-may-zama, + 4
+  phone-number-slug shops), but every page checked — homepage,
+  `/categories-produit/poissons`, `/categories-produit/volailles-et-
+  charcuteries`, and 5 distinct boutique storefronts — renders the static
+  "Aucun produit" placeholder. Platform-wide zero live SKUs. A historical
+  indexed PDP (`/produits/riz-du-niger-33-50kg`) 404s. `www.v2.agrishop.ne`
+  (the announced v2) does not resolve (NXDOMAIN). Dead business on live
+  infrastructure, same shape as scorene.com.
+- **nigermarches.com** — live (200, 461KB) but is a government/business
+  tender-bidding platform ("1er Site d'appel d'offre au Niger"), not a
+  price-data site. Off-topic.
+- **agrigarbalshop.ne** — 403 across all three curl_cffi profiles, server:
+  Vercel (deployment-protection edge block, not a classic WAF signature).
+  **UNCONFIRMED-BLOCKED, not a settled dead end — worth a Playwright pass
+  next time.**
+- **KAMES Express** — parcel courier with tracking/mobile-money, no product
+  catalog or prices. Not a retailer, matches prior inventory finding.
+- **Niamey e-shop** — Facebook-page only (WhatsApp ordering), no independent
+  website found.
+- **Niger-Lait SA** (dairy producer) — Facebook presence only, no e-commerce
+  site.
+- **goafricaonline.com / espaceagro.com** — business directories / B2B
+  wholesale RFQ marketplaces, same shape as the Ampagora precedent. Not
+  retail catalogs with real transaction prices.
+- **selinawamucii.com / combien-coute.net** — commodity/cost-reference
+  aggregator sites (single modelled price points), same population as the
+  banned Numbeo/LivingCost-style aggregate_proxy publishers. Not pursued
+  per the skill's anti-pattern against more cost-of-living aggregators.
+- **siar.uemoa.int** (regional UEMOA agri-market bulletin, mil/sorgho/niébé
+  prices) — page loads (200) but no downloadable CSV/XLS found on first
+  pass; would need form-driven API sniffing. **INFERRED-promising, NOT
+  verified — flagging as a next-step lead, not shipped.**
+
+
+---
+
+## known_blockers_disco_mena - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_mena.md` on 2026-09-11. 88 hosts, 66 not
+documented above at merge time.
+
+# Known blockers — MENA + Guinea-Bissau food-source discovery campaign (2026-09-11)
+
+Countries: guinea_bissau, libya, syria, iraq, yemen, sudan. Merged from three
+independent, overlapping discovery passes run concurrently the same day in the
+same shared worktree (two dispatched sub-agents plus direct orchestrator work),
+which is why several "Net result" sections below understate the country's
+final shipped count: they were written before a *later* pass, working the
+same country in parallel, discovered one more real source. Each such
+mismatch is called out explicitly with a correction note directly under the
+affected "Net result" heading — those notes, not the original paragraph
+above them, are the accurate final count. Total shipped this campaign: 17 new
+sources (10 Iraq — abu_nawas_fish_lezzoo_iq, asfahan_nuts_iq,
+lezzoo_mart_erbil_iq, nan_house_bakery_lezzoo_iq, sarwaran_butchery_lezzoo_iq,
+sarwaran_grocery_lezzoo_iq, sherko_nuts_lezzoo_iq, sultan_butchery_lezzoo_iq,
+varya_grocery_lezzoo_iq, waffir_iq; 1 Syria — prices_sy; 1 Sudan —
+stock249_sudan; 0 each for Guinea-Bissau, Libya, Yemen). All manifests were
+re-verified (schema validation + re-reading the on-disk test-run output) by
+the orchestrator after the parallel passes completed, on 2026-09-11.
+
+---
+
+# Known blockers — Guinea-Bissau food-source discovery (2026-09-11)
+
+Item-specific + Portuguese/French discovery pass, run after a prior 443-query
+`ddgs` sweep (covering the 23 lowest-coverage countries worldwide) already
+came back with **zero verified candidates** for Guinea-Bissau. This pass
+targeted the cashew/rice/fish angle plus fresh generic Portuguese/French
+grocery-delivery search terms specifically to see if the item-specific method
+(which the campaign brief calls out as higher-yield than generic sweeps)
+could surface anything new. **It did not — 0 of 7 new candidates ship.**
+
+## Government/news pages, not retailers
+
+- **Cashew price coverage** (vidarural.pt, lusa.pt, forbesafricalusofona.com,
+  noticiasaominuto.com, sapo.pt, correiodamanhacanada.com) — every result for
+  "castanha de caju preço Guiné-Bissau" is government reference-price news
+  (410 FCFA/kg producer price, 1,050 USD/ton export price for the 2026
+  campaign) or a Facebook post from the cashew regulator (CAP-GB Sarl). No
+  retail storefront, no per-unit consumer price, no catalogue. **REJECT — not
+  a retail source.**
+
+## Non-food classifieds
+
+- **bissauonlinemarket.com** ("Bissau Online Market") — WordPress site,
+  `/wp-json/` present but the WooCommerce Store API 404s on every path
+  (`/wp-json/wc/store/v1/products`, `/wp-json/wc/store/products`,
+  `?rest_route=/wc/store/v1/products`) — it's a classifieds board, not a
+  WooCommerce catalogue. Confirmed by its own category menu: celulares,
+  computador, decoracoes, empregos, esportes, imoveis, industria,
+  informatica, jogos, servicos, veiculos — **no food/mercearia category at
+  all**. Sample listings are a drone, an iPhone 14, a PS5, a wireless lapel
+  mic. Exactly the "gaming shop / electronics" trap the campaign brief warns
+  fills zero food cells. **REJECT — non-food classifieds.**
+
+## No independent web presence (Facebook-only)
+
+- **SPAR Guiné** (facebook.com/sparguine) — SPAR's Bissau franchise has no
+  dedicated domain. Tried `spar.gw`, `www.spar-guine.com`, `sparguine.com` —
+  all NXDOMAIN (`curl_cffi`: "Could not resolve host"). A real supermarket
+  chain presence, but nothing to scrape. **REJECT — no web catalogue.**
+
+## Diaspora / wrong-locality traps
+
+- **Ibisen** (ibisen.com) — online grocery/household retailer; its own
+  delivery-area copy names "Guinea, France, Germany, Italy" — this reads as
+  Guinea-Conakry (or a generic "Guinea" catch-all), not Guinea-Bissau
+  specifically, and the storefront markets to a European/diaspora audience.
+  Not re-probed further given the locality ambiguity plus no XOF/FCFA
+  currency confirmed. **REJECT — locality unconfirmed / likely diaspora.**
+- **NKOSI** (nkosiagro.com), **Saveurs D'AFRIK** (saveursdafrik.com),
+  **ISSANNY** (issanny.com) — French-based African/Antillean grocery
+  retailers delivering "throughout Europe." No Guinea-Bissau delivery claim
+  found. **REJECT — diaspora audience, wrong locality.**
+- **ColisExpat** (colisexpat.com) — a parcel-forwarding/reshipping service
+  (receives EU/US purchases, forwards to Guinea-Bissau), not a retailer with
+  its own priced catalogue. **REJECT — not a retail source.**
+
+## Net result
+
+No new Guinea-Bissau source shipped this pass. `ikuma_gw.yaml` (channel:
+supermarket) remains the only genuine food retailer onboarded for this
+country. This corroborates the prior sweep's finding that Guinea-Bissau is
+one of a small handful of countries (with Gibraltar, Central African
+Republic, Palau) where the online retail sector is close to nonexistent —
+likely a structural absence (thin digital-commerce penetration) rather than
+a search-method failure, given both a broad 443-query sweep and this
+targeted item-specific/regional-staple pass came back empty.
+
+---
+
+# Known blockers — Libya food-source discovery (2026-09-11)
+
+Item-specific Arabic discovery pass (dates, meat, rice, spices) run after
+the extensive prior sweeps already recorded in `~/gapwork/known_blockers_repair_1.md`,
+`known_blockers_untried_2.md`, and the skill's own
+`references/known_blockers.md` (almatjar.ly/greenapplespharmacy.com/
+nesraf.com/souristore.com hcdn; progaming.ly Cloudflare ASN block;
+watti.ly/wdelivery pre-launch; nawris.net/jetak.me seed data; arkan.top.ly
+NXDOMAIN; libyanstores.com/lpcffi.com B2B corporate; libyashop.ly no food
+merchant; ubuy.com.ly WAF-exhausted; matjar-libya.com/souqly.ly no food
+category). **0 of 9 new candidates ship for Libya this pass.**
+
+## Geo/IP block (not a JS challenge)
+
+- **bekam.ly** ("Bekam" -- an app for food/meat/currency prices in Libya,
+  a strong lead structurally similar to Syria's prices.sy and Sudan's
+  stock249.com found in this same campaign pass) -- every path, including
+  `robots.txt`, returns a bare nginx 403 with the classic
+  "padding to disable MSIE and Chrome friendly error page" comment
+  signature, under all three `curl_cffi` impersonation profiles
+  (chrome124/chrome120/safari17_0). No `cf-ray`, no JS-challenge title --
+  reads as a plain IP/geo-based deny rule (nginx `deny` / `allow` ACL),
+  same class as carrefour.iq's Akamai geo-refusal. Needs a Libya-resident
+  network path to re-attempt; not fixable from this box. **Highest-value
+  remaining Libya lead** if network access changes.
+
+## Wrong-country cross-matches (surfaced on Libya-language queries, not Libya)
+
+- **waffiriq.com** ("Waffir Hypermarket") -- surfaced on a Tripoli-focused
+  meat-price search purely on the domain string containing "iq"; verified
+  via payload (`prices.currency_code=IQD`, homepage mentions "بغداد"
+  Baghdad) that this is a real Baghdad, IRAQ hypermarket, not Libyan.
+  **Shipped as a new IRAQ source instead** (see the Iraq section of the
+  campaign report) -- not a Libya rejection so much as a filed-under-the-
+  wrong-country correction.
+- **lahmtklbatk.com** ("لحمتك لبيتك" -- "your meat to your home") -- a
+  real, live Salla-platform (`cdn.salla.network`) online butcher with
+  genuine categories (lamb/veal/poultry/eggs), but SAR pricing -- a Saudi
+  butcher, not Libyan. **REJECT -- wrong country**, same Salla/SAR pattern
+  as jomlah.app (Yemen).
+- **tmrstore.com**, **nabtatistore.com** -- Saudi date retailers (SAR
+  pricing, zero LYD/دينار anywhere), surfaced on a Tripoli date-price
+  search. Same pattern already documented for Iraq's identical search in
+  this same campaign pass. **REJECT -- wrong country.**
+
+## App-only / no web catalog
+
+- **drubi.ly** ("Droobi" delivery) -- single-page marketing site
+  (Bootstrap template, `#anchor` navigation, app-store links, a literal
+  placeholder `href="https://www.example.com"`), no catalogue, no API.
+  **REJECT -- app-only / unfinished.**
+- **app.clickshop.ly** ("Click Shop" -- restaurant/store delivery) --
+  genuine Cloudflare Turnstile challenge (`cf-mitigated: challenge`,
+  "Just a moment..." title) persisting under `curl_cffi` impersonation AND
+  a plain non-impersonating request. Per the skill's mandatory-gate rule,
+  a real content-level challenge like this is not pursued further (no
+  captcha-solving in scope). **REJECT -- hard Cloudflare wall.**
+
+## B2B / corporate, no retail catalogue
+
+- **lohoom.ly** ("Lohoom Libya Food Industries") -- a frozen-food importer/
+  processor's corporate portfolio site (project gallery: frozen, half-fried,
+  packed potatoes, poultry meat). Zero cart/price markup anywhere ("السلة",
+  "أضف الى", "سعر" all absent). **REJECT -- B2B corporate, not retail.**
+
+## Facebook-only (no independent domain)
+
+- **tawsilla.libya** ("توصيلة"), **talabk.Libya** ("طلبك") -- Tripoli
+  delivery services with Facebook pages only, no scrapable domain found.
+
+## Net result
+
+No new Libya source shipped this pass -- Libya's standalone-domain grocery
+e-commerce surface, and its Cloudflare/hcdn-walled cluster, both remain as
+exhausted as the prior waves found them. The one live lead worth carrying
+forward is **bekam.ly**, a price-index app blocked at the network/geo
+layer rather than by a solvable JS challenge -- flag for a future pass
+with a Libya-resident egress point. One incidental find (waffiriq.com) was
+misdirected traffic from a Libya search that turned out to be a genuine
+new Iraqi source and was shipped there instead.
+
+---
+
+# Known blockers — Syria food-source discovery (item-specific pass, 2026-09-11)
+
+Item-specific Arabic search (dates, meat, fish, bulgur, tahini, spices, butcher,
+bakery, grocery-delivery) around Damascus/Aleppo/Homs. Generic-supermarket
+sweeps were already exhausted by prior waves (see
+`~/gapwork/known_blockers_repair_1.md`, `known_blockers_unknown_1.md`).
+Zero new sources shipped this pass — every candidate failed a hard gate.
+All probes via `curl_cffi impersonate=chrome124` from a8 unless noted.
+
+## Wrong-country / diaspora-platform trap (Gulf SaaS platforms ranking on Syrian-food searches)
+
+- **dmashq.com** ("مراعي دمشق للحوم والمشويات", Damascus-branded butcher/meat
+  shop) — real Salla-platform storefront (cdn.salla.sa assets), PDP
+  `og:product:pretax_price:currency` = **SAR**, not SYP. A Saudi-hosted
+  Damascus-branded butcher, reads as a Syrian-diaspora shop serving Saudi
+  Arabia, not a Syria-resident retailer. **REJECT — currency/locality.**
+- **alhagas.com** ("الهقاص", grocery — بقولة) — same Salla platform, same
+  SAR pricing (e.g. برغل اسمر 1kg = 10.43 SAR). **REJECT — currency/locality.**
+- **almasmka.com** ("شراء سمك اون لاين طازج", fresh-fish branding) — Salla
+  platform, SAR only. **REJECT — currency/locality.**
+- **fustoqah.com** (grocery, "برغل ابيض" etc.) — Zid platform (Gulf
+  ecommerce SaaS), currency selector offers KWD/SAR/AED/OMR/BHD — a
+  Gulf-market grocery, no SYP option at all. **REJECT — currency/locality.**
+- **butcherista.com** ("بوتشريستا | جزارة أونلاين", online butcher) — Zyda
+  platform, WhatsApp contact is an Egyptian number (0100...), footer states
+  "All prices are shown in EGP". Egypt-based butcher, not Syria. **REJECT —
+  currency/locality.**
+
+## Real Syrian platform, catalog fails a hard gate
+
+- **bacolaa.com** ("متجر بقولة السوري" — Syrian Grocery Store) — genuine
+  WooCommerce Store API, but same hcdn TLS/JA3 fingerprint wall as the Libya
+  cluster: `curl_cffi impersonate=chrome124` 403s, plain non-impersonating
+  `requests` clears it (same lever as albasatin_aldhahabia/almatjar.ly).
+  MEASURED enumerability: `/wp-json/wc/store/v1/products?per_page=20`,
+  X-WP-Total=1864, 94 pages, page1 vs page2 fully disjoint ids. Currency
+  confirmed SYP from payload (`currency_code: SYP`, `currency_minor_unit:
+  0`, e.g. real non-zero prices 150,000 / 9,000 SYP). BUT sampled 104
+  products across 6 pages and only 8 (7.7%) carry a non-zero price — the
+  rest are `price: '0'`. Same "live paginating API, catalog not actually
+  priced" dead end documented for cyberstore.co.bw. **REJECT — non-zero-price
+  gate.** Worth a re-check in a future wave in case the merchant fixes
+  pricing; the plain-request bypass technique (`generic_woo_playwright` or
+  a simple non-impersonating variant) is proven to work here if it ever does.
+
+## Real Syrian marketplace, no food category / empty food category
+
+- **souq-online.com** ("سوق أون لاين") — real Syrian OLX-style classifieds
+  (per-governorate filters: Damascus/Aleppo/Homs/Hama/Latakia/etc, real SYP
+  prices confirmed elsewhere on the site, e.g. 275 ل.س on a non-food
+  listing). Has a dedicated food category (`/ar/category/12`, "مونة وغذاء"
+  — Preserves & Food) but it returned **zero listings** on both page 1 and
+  page 2 at probe time. **REJECT — empty food category** (not a platform
+  problem; re-check later, listings are user-generated and may repopulate).
+- **damasbazar.com** — real marketplace with an SYP/EUR/TRY/EGP exchange-rate
+  widget, but its category list is electronics / home-appliances / clothing
+  / real-estate / automotive / home / beauty only — **no food or grocery
+  category exists**. **REJECT — wrong category mix (structural, not a bug).**
+
+## Real but far below usable scale
+
+- **prices.sy** ("أسعار سوريا" — self-described "your comprehensive daily
+  guide to prices of goods in Syrian governorates") — a real, live,
+  server-rendered (Tier 1A) community price-tracking site with per-item
+  pages (`product.php?id=N`), governorate tagging, and confirmed SYP prices
+  (e.g. id=15, "حلو عربي بالفستق", إدلب, 27,300 ل.س). MEASURED: the entire
+  site holds only **3 live product listings site-wide** (ids 1, 15, 17) —
+  no sitemap, no pagination beyond that. Two orders of magnitude below the
+  5-row minimum-viable bar even before considering it's an early-stage
+  project, not an established index. **REJECT — scale**, but flagged as a
+  format worth re-checking in 6+ months if the project grows (structurally
+  it would be a clean `analytical_role: official_avg`,
+  `coicop_classification: classifier` fetcher if it ever reaches
+  meaningful scale).
+
+## Insufficient evidence, not pursued further
+
+- **yasermallonline.com** ("YaserMall — Online Grocery Shop") — tiny
+  (2.7KB) Angular SPA shell, all-English branding with zero
+  Syria/Arabic/governorate signal anywhere in the static HTML. Could not
+  confirm country or currency without a full Playwright render; deprioritized
+  given no positive Syria signal at all (unlike the Gulf-platform traps
+  above, which at least had Syrian branding to reject on). Not re-probed
+  with Playwright this pass.
+
+## Net result
+
+0 of ~13 fresh candidates from THIS pass shipped — but see correction below.
+
+**CORRECTION (2026-09-11, later pass, orchestrator-verified):** a parallel
+pass discovered that the `prices.sy` rejection above was based on an
+incomplete probe — only the homepage and the blank `search=&gov=` query
+were checked, both of which show a 3-item "featured" sample, not the full
+site. Browsing by the site's own `index.php?cat=N` category parameter
+(N=1,2,3,8,9,10 — the six COICOP-01/02-relevant categories out of 12 total)
+returns 45+1+12+6+5+8 = **77 distinct product ids**, independently
+re-confirmed by the orchestrator via direct `curl_cffi` probe of all six
+category pages. Shipped as `prices_sy.yaml` (fetcher,
+`analytical_role: official_avg`). Re-ran `prices collect --source
+prices_sy` and read `data/prices/menaap/middle_east/syria/prices_sy/
+price_observations.csv` directly: **77 rows, 100% SYP, real Syrian
+governorates and branded item names** (e.g. "لحم غنم بعظمه" 195,000 SYP in
+حمص/Homs, "أرز بسمتي" 181,800 SYP in اللاذقية/Latakia). Flagged honestly in
+the manifest as a 6-months-stale crowd-sourced board (every sampled row's
+"last updated" date is 2026/03), not an official publisher — but every
+hard gate (real SYP, real cities, real branded items, disjoint ids across
+categories) passes on the live payload. Syria's food-price coverage is now
+1 source (was 0) plus the existing dokan_sy/dokanmall_sy/tsaooq_sy
+marketplaces (unconfirmed food depth) and wb_rtdi/wfp official_avg.
+
+---
+
+# Known blockers — Iraq food-source discovery (2026-09-11)
+
+Item-specific Arabic discovery pass (dates, rice, meat, fish) plus a
+Lezzoo-directory sweep, run after the prior wave already covered
+carrefour.iq / dukani.online / delivery-iraq.com / altunmarket.com (all
+still dead, not re-probed — see `~/po-worktrees/fill-gap-sources/.claude/skills/onboard-price-sources/references/known_blockers.md`
+line 368+ and `bakhtiyari_lezzoo_iq.yaml`'s own notes for the earlier
+standalone-storefront dead-end list: kurdistansupermarket.com,
+hollandbazar.com, meswaghypermarket.com, ezadstore.com, martoo.com,
+ishtarmart.com, zadfresh.com, padash.app/lezzoo.com root, grocerjy.com).
+
+## Wrong-country currency traps (Saudi, not Iraq)
+
+- **tmrstore.com** ("متجر التمور الذهبية" / Golden Dates Store) — surfaced
+  on an "أسعار التمور بغداد" (date prices Baghdad) search, but the page
+  quotes SAR, zero IQD/دينار mentions anywhere. A Saudi date retailer
+  ranking on Iraqi search terms. **REJECT — wrong locality/currency.**
+- **nabtatistore.com** ("متجر نبتتي") — same pattern: SAR pricing, zero
+  IQD. **REJECT — wrong locality/currency.**
+
+## App-only / no web catalog
+
+- **talabatey.com** / Talabatey Hyper Market (Baghdad) — homepage is a
+  bare app-download landing page (`/app` link, Cloudflare-fronted static
+  page), no `/api/`, no wp-json, no product listing reachable over plain
+  HTTP. **REJECT — app-only, no web catalog** (same class as watti.ly/
+  wdelivery in Libya).
+- **waffir.iq** (هايبرماركت وفّر, Baghdad), **البراق ماركت** (Al-Buraq),
+  **بيتي ماركت**, **سوبرماركت بغداد** — all Facebook-page-only presences
+  found via search, no independent domain to probe. Not re-attempted
+  (Facebook itself is out of scope for retail scraping). **REJECT — no
+  scrapable web presence.**
+
+## Mislabeled / wrong category (Lezzoo directory)
+
+- **the-dates-764** (lezzoo.com/erbil/m/the-dates-764) — despite the
+  vendor-name match on "dates", the venue's own JSON-LD menu sections are
+  "Sea Food, Soups, Salads, Hot Appetizers, Pottery Fries, Cold
+  Appetizers, Sandwiches, Burger" — a restaurant (COICOP 11.1, out of
+  scope), not a date retailer. **REJECT — wrong category despite the
+  name.**
+- **amara-dates-9381** (lezzoo.com/erbil/m/amara-dates-9381) — genuinely a
+  dates vendor (single "Collections" section) but only 5 items on the
+  page-1 JSON-LD menu — right at this campaign's row floor and thin
+  enough that it wasn't prioritized this pass over the 4 sources shipped
+  (each 60 rows). Legitimate future candidate, not rejected outright, just
+  not built this round.
+- **zirak-fish-1501**, **meer-fish-1033** — vendor names promise a
+  fishmonger but the actual JSON-LD menus mix in "Pizza", "Burger",
+  "Sandwich", "Meals" sections (zirak-fish) or are very thin at only 10
+  items split across "Offer"/"Chicken"/"Drinks" as well as fish
+  (meer-fish) — read as seafood restaurants/small stalls, not pure fish
+  retailers. Not shipped this pass; **candidates for a future pass** if a
+  cleaner fish-only Lezzoo venue turns up (fish-corner, fish-land, lawan-fish,
+  qubtan-fish, alknjly-fish-chicken, bawki-meer-fish-alwa were seen in the
+  directory listing but not individually probed this round).
+
+## Net result
+
+**CORRECTED FINAL COUNT (2026-09-11, orchestrator-verified against the live
+manifest directory and each source's on-disk test-run output — supersedes
+the "4 new sources" this section originally claimed):** Iraq gained **10**
+new sources this campaign, from three overlapping passes working the same
+Lezzoo-directory lead concurrently. All via the shared `generic_lezzoo_venue`
+spider except `waffir_iq` (standalone WooCommerce). One venue
+(`sultan-butchery-and-market-9145`) was independently found by two passes
+under different source_keys and consolidated to a single manifest
+(`sultan_butchery_lezzoo_iq`) to avoid double-scraping the same URL; every
+other venue_url below is confirmed distinct. All MEASURED 100% non-zero IQD,
+100% distinct urls, re-confirmed by the orchestrator by re-reading each
+source's `data/prices/menaap/middle_east/iraq/<key>/raw_items/*.jsonl`:
+
+| source_key | channel | rows | distinct urls |
+|---|---|---|---|
+| abu_nawas_fish_lezzoo_iq | specialty-food (fish) | 11 | 11 |
+| asfahan_nuts_iq | specialty-food (nuts) | 60 | 60 |
+| lezzoo_mart_erbil_iq | convenience | 60 | 60 |
+| nan_house_bakery_lezzoo_iq | specialty-food (bakery) | 60 | 60 |
+| sarwaran_butchery_lezzoo_iq | specialty-food (meat) | 60 | 60 |
+| sarwaran_grocery_lezzoo_iq | fresh-market | 60 | 60 |
+| sherko_nuts_lezzoo_iq | specialty-food (nuts) | 60 | 60 |
+| sultan_butchery_lezzoo_iq | specialty-food (butcher+produce) | 60 | 60 |
+| varya_grocery_lezzoo_iq | fresh-market | 60 | 60 |
+| waffir_iq | hypermarket (WooCommerce) | 100 | 100 |
+
+Combined COICOP-relevant coverage: fresh produce, meat, fish, bakery/bread,
+nuts, dates (one grocery venue carries a dedicated "Date" section), and
+packaged rice/oil/canned goods via waffir_iq. Iraq's standalone-domain
+grocery e-commerce surface remains essentially exhausted (carrefour.iq
+geo-blocked, every other generic storefront candidate found is
+dead/demo/wrong-country) — Lezzoo's ~1000-venue Erbil directory is the one
+channel still yielding clean new sources and is worth a deeper future pass
+(several more grocery/butcher/fish/nuts-named venues were seen in the
+directory but not individually probed — see the "not shipped" list above,
+e.g. amara-dates-9381, and the fish-corner/fish-land/lawan-fish/
+qubtan-fish cluster).
+
+---
+
+# Known blockers — Yemen food-source discovery (item-specific pass, 2026-09-11)
+
+Item-specific Arabic search (dates, meat, fish, Yemeni coffee, Yemeni honey,
+spices, butcher, bakery, grocery-delivery) around Sanaa/Aden. Generic-
+supermarket sweeps already exhausted by prior waves (see
+`~/gapwork/known_blockers_unknown_1.md`). Zero new sources shipped —
+every real lead failed a hard gate. All probes via `curl_cffi
+impersonate=chrome124` from a8 unless noted.
+
+## Yemeni-coffee / Yemeni-honey specialty shops — all export-priced, not YER
+
+The "regional staple" angle (بن يمني / عسل يمني) surfaced a cluster of
+well-built ecommerce sites branded around Yemen's two most famous food
+exports. Every one checked prices in a foreign currency confirmed from the
+payload/JS global, not YER — these are export/diaspora storefronts, not
+Yemen-resident retailers:
+
+- **yemeni-honey.com** — WooCommerce Store API, `currency_code: USD`
+  (e.g. "بكج العافيه" honey gift package = $56.00). **REJECT — currency.**
+- **souqalbon.com** (coffee) — WooCommerce Store API, `currency_code: OMR`
+  (Omani Rial). **REJECT — currency/locality (Oman-facing).**
+- **sulala-honey.com** — WooCommerce Store API, `currency_code: EGP`.
+  **REJECT — currency/locality (Egypt-based).**
+- **helmehoney.com** — Shopify, SAR. **REJECT — currency.**
+- **hebro.co** (coffee) — SAR. **REJECT — currency.**
+- **webrewroasters.com** (coffee) — SAR. **REJECT — currency.**
+- **mulhumhoney.com** — multi-currency checkout (USD/GBP/EUR/AED/SAR/QAR/
+  KWD/OMR/BHD/CAD) with no YER option at all — a global export storefront.
+  **REJECT — currency.**
+- **albonalyemeni.com** ('البن اليمني') — Salla platform,
+  `window.currency_symbol = "$"` — USD. **REJECT — currency.**
+- **alruknalyemeni.com** ('متجر الركن اليمني', found under a generic
+  grocery-delivery search) — also Salla, also `window.currency_symbol =
+  "$"` — USD. **REJECT — currency.**
+- **albakreehonye.com**, **alassaal.com** (honey) — both hcdn 403 under
+  `curl_cffi` impersonation; not pursued further given every honey/coffee
+  candidate resolved so far has failed on currency rather than reachability
+  (low expected value from clearing the wall).
+
+## Wrong COICOP division (restaurant, not retail food)
+
+- **wagbat.com** ('وجبات' — Yemen restaurant-delivery platform, hosts named
+  vendor pages like `/restaurants/view/Wagbat_butchery`) — pure
+  client-rendered SPA, no JSON-LD, no visible price/currency text in raw
+  HTML (would need a Playwright network trace to find the backing API; not
+  pursued given the vendor pages found — "Wagbat_butchery", "almalaki",
+  "alkhateebsafia" — read as sit-down/takeaway restaurants by name, not
+  butcher-counter retail). **DEFERRED — insufficient evidence, would need
+  Playwright.**
+- **uptownye.com** ('Uptown' — Sanaa food delivery) — real, live, has a
+  `/menu` — but it is a single restaurant/takeaway operation (COICOP 11
+  restaurants, not 01/02 retail food). **REJECT — wrong division.**
+
+## Already-covered / already-rejected, reused verdict
+
+- **almasmka.com** — same Salla/SAR storefront already rejected for Syria
+  (see `known_blockers_disco_mena_syria.md`); it surfaced again on a
+  Yemen fresh-fish search. **REJECT — currency (SAR), locality.**
+- **ye.opensooq.com** — general classifieds marketplace, same pattern as
+  the already-out-of-scope opensooq country sites (sy.opensooq.com,
+  iq.opensooq.com). Not pursued.
+
+## Net result
+
+0 of ~15 fresh candidates shipped. Existing Yemen coverage (relon_aden_ye,
+smsm_ye, souqmy_ye, yemenbox, yemenstorez_ye; wb_rtdi and wfp official_avg)
+is unchanged by this pass. The Yemeni-coffee/honey angle is now a
+documented dead end for LOCAL retail sourcing specifically — it is a real
+and valuable commodity but the entire discoverable online-retail surface
+for it is export-facing.
+
+---
+
+# Known blockers — Sudan food-source discovery (item-specific pass, 2026-09-11)
+
+Item-specific Arabic search (sorghum, groundnuts, sesame/tahini, ful
+medames, meat, fish, spices, butcher, bakery, grocery-delivery) around
+Khartoum. Generic-supermarket sweeps already exhausted by the prior wave
+(see `~/gapwork/known_blockers_untried_3.md` — Al Waha, Hyper Express,
+LILY Delivery, Storna, Talabaty, Zaad Delivery, dukani.online, all
+rejected 2026-09-01, re-confirmed still current). Zero new sources
+shipped — every real lead failed a hard gate. All probes via `curl_cffi
+impersonate=chrome124` from a8 unless noted.
+
+## Diaspora shops selling Sudanese food, wrong currency/country
+
+- **alafnanfoods.com** ('Al Afnan') — real, live WooCommerce Store API,
+  genuinely enumerable (X-WP-Total=97, 5 pages, page1 vs page2 disjoint
+  ids), 100% non-zero prices, genuine Sudanese products (طحينة halawa,
+  فسيخ, كانون شواء سوداني "Sudanese grill"). BUT `currency_code: AED`
+  throughout — a UAE-based Sudanese-diaspora grocer, not Sudan-resident.
+  Otherwise the strongest candidate found this pass; flagged in case a
+  Sudan-priced sister storefront exists. **REJECT — currency/locality.**
+- **dukkanstore.net** ('Dukkan Store', "كل احتياجاتك السودانية عندك" —
+  "all your Sudanese needs") — WooCommerce (via
+  `/?rest_route=/wc/store/v1/products`, the versioned wp-json path
+  404s), real Sudanese-food product names (صاج, شواية, كانون, حلاوة نبق),
+  but `currency_code: EGP` throughout. An Egypt-based diaspora shop
+  (consistent with Egypt's large Sudanese refugee population post-2023).
+  **REJECT — currency/locality.**
+
+## Pre-launch / marketing-only
+
+- **mamo-sd.cloud** ('Mamo Market') — homepage text explicitly claims
+  "أسعار بالجنيه السوداني" (prices in Sudanese Pounds) and
+  "توصيل حسب الولاية" (delivery by state), which read as genuine Sudan
+  signals, but the page itself is a single-screen app-marketing landing
+  page ("#download"/"#sections" anchors only, no real product/category
+  URLs) with a WhatsApp contact number under the **+974 Qatar** country
+  code. No scrapable web catalogue exists yet. **REJECT — no catalog
+  surface** (same class as Zaad Delivery from the prior wave).
+
+## Real marketplace, no food category
+
+- **koshmall.com** ('Kosh Mall' — "platform for Sudanese merchants",
+  CS-Cart-based multi-vendor marketplace) — genuinely supports an SDG
+  currency option (`?currency=SDG`, alongside USD/SAR) and has a
+  "companies.catalog" vendor directory. Its category tree is
+  beauty-and-health / electronics / fashion / fragrance-and-incense /
+  home-and-kitchen only — **no food or grocery category exists**.
+  **REJECT — wrong category mix (structural).** Worth re-checking later:
+  if the vendor directory ever adds a food seller, the SDG-pricing
+  infrastructure is already proven to work here.
+- **alsoug.com** ('سوق السودان') — real Sudan classifieds (SDG pricing
+  confirmed via site-wide "كتابة الاسعار بعملة الجنيه السوداني الجديدة"
+  copy), but its closest food-adjacent category
+  (معدات و امدادات المصانع و الاعمال / توريد مواد غذائية — B2B factory
+  food-supply listings) returned **zero live listings** on probe.
+  **REJECT — empty category.**
+- **sudanportal.com** ('Sudan Portal', موردين الأغذية / "food suppliers"
+  directory) — WooCommerce Store API live and enumerable, but every
+  sampled product (بذور الكمون, صمغ اللبان) carries `currency_code: USD`
+  AND `price: '0'` — a B2B sourcing/RFQ directory (Alibaba-style),
+  not a priced retail catalogue. **REJECT — currency AND zero-price
+  gates, both independently.**
+
+## Net result
+
+0 of ~10 fresh candidates from THIS pass shipped — but see correction below.
+The pattern across three fresh Sudan waves now (2026-09-01, the untried_3
+batch, and this item-specific pass) is consistent: every discoverable
+Sudan-*branded* retail storefront found by search is either UAE/Egypt/Qatar
+diaspora-priced, seed/demo data, or pre-launch.
+
+**CORRECTION (2026-09-11, later pass, orchestrator-verified):** a parallel
+pass found a genuinely different kind of candidate this list didn't
+consider — not a retail storefront but an official-bulletin republisher.
+`stock249.com` ("Elrayah Group") is primarily a Sudanese black-market
+FX/gold tracker, but its `/agri-sudan` and `/consumer-sudan` pages embed a
+JSON-LD `ItemList` of commodity prices explicitly sourced from "نشرات
+رسمية: سوق القضارف ... والإدارة العامة لتسويق المحاصيل بإقليم النيل الأزرق"
+(official Al-Gadarif market / Blue Nile crop-marketing-directorate
+bulletins). Shipped as `stock249_sudan.yaml` (fetcher,
+`analytical_role: official_avg`). Orchestrator re-ran `prices collect
+--source stock249_sudan` and read `data/prices/ssa/east_africa/sudan/
+stock249_sudan/price_observations.csv` directly: **21 rows, 100% SDG,
+100% non-zero**, covering sorghum, millet, sesame, groundnuts, sugar, rice,
+lentils — directly hitting several regional-staple gap categories (e.g.
+"جوال فول سوداني" groundnuts-sack 180,000 SDG, "قنطار السمسم" sesame-quintal
+310,000 SDG). Sudan's food-price coverage is now 2 sources (was 1 —
+hypersale_sd) plus wb_rtdi/wfp official_avg; dawana_sd (pharmacy) and the
+two telco tariffs remain non-food.
+
+
+---
+
+## known_blockers_disco_natlantic - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_natlantic.md` on 2026-09-11. 8 hosts, 1 not
+documented above at merge time.
+
+# North Atlantic micro-territory food-source discovery — 2026-09-11
+
+Scope: Greenland, Faroe Islands, Channel Islands (Jersey/Guernsey), Andorra,
+San Marino, St. Martin (French part) — COICOP divisions 01/02 only. This pass
+was a re-audit + gap-fill on top of extensive prior work already merged into
+the repo (2026-09-01 ECA F&B sweep, 2026-09-11 Greenland custom-batch
+consolidation). Findings below are RE-VERIFIED as of 2026-09-11, not
+projections — see the per-country inventory files
+(`.claude/skills/onboard-price-sources/references/inventories/eca/western_europe/`)
+for full probe histories.
+
+## Verdict summary (as of 2026-09-11)
+
+| Territory | Food source status | Verified this pass |
+|---|---|---|
+| Greenland | Structural absence, food e-commerce. `pisiffik_gl` is a non-food dept-store arm (Elgiganten/Jysk/Thansen); `brugseni.gl`/`pilersuisoq.gl` are brochure-only (0 price tokens); 14 other Greenland manifests onboarded 2026-09-11 (Shopify/WooCommerce boutiques) are ALL non-food (fashion, electronics, dept-store, books, pet). | Re-checked Spar Greenland lead (below); no change. |
+| Faroe Islands | Structural absence, food e-commerce. Three independent passes (2026-09-01 x2, 2026-09-11) confirm no online grocery sector. `alvaro_fo` (fashion) and `djor_fo` (pet) are the only shipped sources, both non-food. | No new candidate found; did not re-run full search (WebSearch budget exhausted session-wide). |
+| Channel Islands | COVERED. `coop_ci` — Channel Islands Co-op, both Jersey (5,058 SKUs) and Guernsey (4,687 SKUs) stores, 73.4% measured food+beverage share. | Re-ran `--source coop_ci --max-items 100`: 200 rows, 200 distinct URLs, clean. |
+| Andorra | COVERED. `andorra2000_ad` — Carrefour Andorra 2000 (`alimentacio.andorra2000.ad`), OpenCart, own legal/technical entity distinct from carrefour.es/.fr. | Re-ran `--source andorra2000_ad --max-items 100`: 167 rows, 167 distinct URLs, clean. |
+| San Marino | COVERED. `coal_sm` — COAL retail co-op's online grocery arm (`spesa.gruppoce.sm`), 210 leaf categories. | Re-ran `--source coal_sm --max-items 100`: 100 rows, 100 distinct URLs, clean. |
+| St. Martin (French part) | COVERED. `sxmleshalles_mf` — supermarket, already onboarded and merged. | Re-ran `--source sxmleshalles_mf --max-items 100`: 65 rows, 65 distinct URLs, clean. |
+
+## New probe this pass: "Spar Greenland" lead
+
+The brief's known-leads list named "Spar Greenland" alongside Pisiffik,
+Brugseni, Pilersuisoq. No such domain exists:
+
+- `www.spar.gl`, `spar.gl`, `www.spargreenland.gl`, `spargreenland.com` —
+  ALL NXDOMAIN / DNS resolution failure on all three probe arms (plain
+  `requests` default UA, plain `requests` + Chrome UA, `curl_cffi
+  impersonate=chrome124`). Probed 2026-09-11.
+- WebSearch was unavailable this session (session-wide budget of 200 calls
+  already exhausted by other concurrent work) so a name-variant search could
+  not be run. Treat "Spar Greenland" as unconfirmed/likely non-existent
+  rather than exhaustively ruled out — a future pass with search budget
+  should try one query before spending more DNS-guess cycles.
+- This does not change the Greenland structural-absence verdict: Brugseni
+  (KNI) is Greenland's closest analogue to a Spar-style co-op grocery banner
+  and is independently confirmed brochure-only (0 price tokens, re-confirmed
+  2026-09-05 and 2026-09-11).
+
+## Method notes confirmed this pass
+
+- `prices collect --list` re-run after all four re-verification runs: 2222
+  sources loaded, no enum crash — the global list is intact.
+- All four already-shipped food sources re-verified with fresh
+  `--max-items 100` runs; every run produced a 1:1 row:distinct-URL ratio
+  (no `DuplicationPipeline` collapse), confirming the manifests still work
+  live and were not stale claims.
+
+
+---
+
+## known_blockers_disco_pacific - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_pacific.md` on 2026-09-11. 14 hosts, 10 not
+documented above at merge time.
+
+# Known blockers — Pacific food-source discovery pass (2026-09-11)
+
+Countries: american_samoa, marshall_islands, palau, kiribati, micronesia_fed_sts,
+tuvalu, solomon_islands, vanuatu, tonga, samoa. Worktree:
+`~/po-worktrees/fill-gap-sources` (shared with concurrent sessions the same day —
+see the very recent `wahoo_mh`, `island_enterprises_sb`, `smarttechnology_sb`,
+`tesae_trading_shopify`, `vodafone_samoa_online_shop` manifests and the
+`pending_worth_doing.csv` / `untried_high_value.csv` rows dated 2026-09-11).
+This file records NEW findings from this pass only; see the main
+`known_blockers.md` (search for "Pacific", "Samoa", "Vanuatu", etc.) for the
+much larger set of dead ends already on file from prior waves.
+
+## Confirmed dead ends (new this pass)
+
+- **tarawa.store** (KI) — `curl_cffi impersonate=chrome124` returns hard DNS
+  failure, `Could not resolve host`. Domain does not exist despite surfacing in
+  search results as "tarawa.store". Probed 2026-09-11.
+- **martie.com** (surfaced under a "Majuro supermarket online" search) — a
+  generic global Shopify discount-outlet storefront ("save up to 80% on your
+  favorite brands"), not a Marshall-Islands-specific retailer. Locality trap
+  per the skill's own warning about USD .com stores that merely rank for
+  island-adjacent search terms. Not pursued. Probed 2026-09-11.
+- **miscomarket.com** (MH) — same "MISCO" brand as the already-onboarded
+  `misco_wholesale_mh` (miscowholesale.com, open `/api/products` endpoint,
+  44 SKUs), but this second domain is a GoDaddy Website Builder marketing page
+  (`generator: Starfield Technologies; Go Daddy Website Builder`) with no
+  catalogue — a brochure duplicate of the same business, not a second source.
+  Probed 2026-09-11.
+- **K&K Island Pride Supermarket** (MH, Majuro) — Facebook-page-only per
+  search; distinct from "MAJURO K&K STORE", which IS reachable and already
+  onboarded as `pacificislandtrade_mh.yaml` (Shopify collection on
+  pacificislandtrade.com). Do not conflate the two when re-searching.
+- **Neco Plaza Palau** (PW, Koror) — Facebook-page-only, no website found.
+  Probed 2026-09-11.
+- **A-One Mart, XIX Store, Island Mart-Chuuk, AWM (Chuuk)** (FM) — all four
+  named grocery stores surfaced in search are Facebook-page-only. No
+  standalone website for any. Probed 2026-09-11.
+- **yap.shopping / yapstores.com** (FM, Yap) — both require account
+  login before any catalogue is visible; no public product listing reachable
+  without credentials. Not pursued (out of scope — no anonymous catalogue to
+  probe). Probed 2026-09-11.
+- **KOKO MART, Funafuti** (TV) — Facebook-page-only, no website found.
+  Probed 2026-09-11.
+- **"A Convenience" store, Funafuti** — only appears as an evendo.com
+  travel-directory listing (no operator website linked). Probed 2026-09-11.
+- **Cellovila** (VU, Port Vila delivery service) — Facebook-page-only
+  ("Free Delivery from Cellovila"), no website. Probed 2026-09-11.
+- **Tamahu Natai Fish Market** (VU, Port Vila) — Facebook-page-only.
+  Probed 2026-09-11.
+- **Fagatogo Fish Market** (AS, Pago Pago) — Facebook/travel-guide-only
+  (Evendo, FoodBevg, TripAdvisor-style listings), no structured price data.
+  Consistent with the existing `doa.as.gov` dead-end entry in the main
+  known_blockers.md for the same market. Probed 2026-09-11.
+- **Fugalei Fresh Produce Market / Apia Fish Market** (WS, Apia) — abundant
+  travel-guide content, zero vendor-run website or structured price feed.
+  Samoa's own `sbs_local_market_survey.yaml` (SBS monthly Local Market
+  Survey) is the closest thing to a Fugalei-style price series and is
+  already onboarded. Probed 2026-09-11.
+- **Pago Supermarket Store** (AS, Pago Pago) — surfaces heavily in search
+  (Yelp, Cybo, evendo) but no operator website found; same pattern as the
+  already-documented KS Mart / TSM Mart dead ends in the main
+  known_blockers.md. Probed 2026-09-11.
+
+## Leads found but not completed this pass (worth a future pass)
+
+- **maff.gov.to Market Report PDFs (TO)** — Ministry of Agriculture, Food and
+  Forests quarterly "Market Report" PDFs
+  (`http://maff.gov.to/wp-content/uploads/2026/03/Market-Report-Final-2nd-Quarter-2025.pdf`
+  and `...-3rd-quarter-2025.pdf`), linked from a plain Google/ddgs web search,
+  not yet built into a manifest. This reads as a genuine wholesale/retail
+  market-price survey (the Tonga Statistics Dept's own Food Price Index page
+  describes FPI prices as collected "through market surveys from various
+  outlets across Tongatapu and Vava'u", and MAFF is the named collecting
+  ministry) — exactly the fresh-produce/root-crop signal supermarkets
+  structurally miss, filling the same role as `vnso_market_survey.yaml` (VU)
+  or `sbs_local_market_survey.yaml` (WS) but for Tonga, which currently has
+  no equivalent.
+  **Blocker: the entire maff.gov.to domain is throttled to roughly
+  200-300 bytes/sec per connection and every request (including the bare
+  homepage) stalls at ~12.7-12.8 KB before timing out** — confirmed with
+  `curl_cffi impersonate=chrome124`, plain `requests`, and bare `curl`, all
+  three stalling at the identical byte count. This is NOT a WAF/bot-block (no
+  403, no challenge page, headers are plain nginx) — it reads as a
+  genuinely bandwidth-starved government link. The server DOES support
+  `Accept-Ranges: bytes`, so a resumable download (`curl -C -`, repeated) makes
+  real incremental progress. A resumable download loop was started in the
+  background on a8 at 2026-09-11 16:16 UTC
+  (`for i in $(seq 1 250); do curl -s --max-time 55 -C - -o
+  /tmp/maff_market_report.pdf "http://maff.gov.to/wp-content/uploads/2026/03/Market-Report-Final-2nd-Quarter-2025.pdf"; ...; done`,
+  same pattern for the Q3 file into `/tmp/maff_market_report_q3.pdf`) and was
+  still running, undownloaded, at session end — check
+  `ls -la /tmp/maff_market_report*.pdf` on a8 for current size (target
+  2,391,259 bytes for the Q2 file) and re-issue the same resumable-`curl -C -`
+  loop if the process died. Once complete, open with `pdfplumber` — do not
+  re-attempt a single-shot download, it will not finish inside a normal
+  timeout. If this pans out it is `scaffolding: fetcher`,
+  `extraction_pattern: pdf`, `analytical_role: official_avg`.
+- **Tonga Food Price Index (TO)** —
+  `https://tongastats.gov.to/statistics/economics/food-price-index-1/`. A
+  DEDICATED COICOP-division-01 sub-index of the CPI (base 2021=100,
+  9 food commodity groups, collected via market surveys in Tongatapu and
+  Vava'u), distinct from the general CPI. Genuinely new (no existing Tonga
+  manifest carries a food-only index). The page uses the WordPress "WP File
+  Download" plugin to serve its PDFs; the download links are Handlebars
+  templates (`{{linkdownload}}`) populated client-side, not present in raw
+  HTML. Two file-manager category ids were recovered from the page's inline
+  JS: `495` ("Food Pricing Index Report") and `496` ("Food Price Index
+  Tables"), and the AJAX endpoint is
+  `https://tongastats.gov.to/wp-admin/admin-ajax.php?juwpfisadmin=false&action=wpfd&`
+  — but the correct `task=` parameter and required nonce were not identified
+  this pass (`task=file.list` with a bare `catid` returned HTTP 400). Worth a
+  Playwright network-capture pass to see the real AJAX request the page
+  itself fires, rather than guessing plugin parameters blind. If recovered:
+  `analytical_role: cpi_benchmark`, `coicop_codes: ["01"]`,
+  `coicop_classification: publisher_labeled`.
+- **Solomon Islands Ministry of Commerce, Price Control Unit** —
+  `https://commerce.gov.sb/the-price-control-unit/` and
+  `/consumer-affairs-price-control/`. Confirms the Price Control Act 1982 is
+  administered here (same legal mechanism as Kiribati's `mcic_price_control`,
+  which yielded 689 rows / 79% food-and-tobacco once its PDFs were found) but
+  **no downloadable price schedule/gazette was found in the raw HTML** of
+  either page, nor of `/publication/`, `/legislation/`, or
+  `/fees-and-penalties/` (checked 2026-09-11 — zero `.pdf`/`.xlsx`/`.doc`
+  links in any of the four pages' raw HTML). Solomon Islands' own NSO
+  (`statistics.gov.sb`) is separately known-blocked (Imunify360 415; Wayback
+  workaround documented in the main known_blockers.md) and was not
+  re-attempted this pass. This is the single most promising **unbuilt**
+  lever for Solomon Islands food coverage — worth a Playwright pass on
+  commerce.gov.sb's document-manager plugin (same genre of problem as the
+  Tonga FPI lead above) or a direct search for a named "Price Control Order"
+  / "Controlled Goods List" PDF rather than the landing pages found this
+  pass.
+
+## Environment gotcha reconfirmed
+
+- Running any Python script as `~/venv/bin/python /path/to/script.py`
+  (file-argument invocation) on `a8:~/po-worktrees/fill-gap-sources`
+  intermittently breaks with unrelated import errors (this pass:
+  `ImportError: cannot import name getargspec` inside `lxml`, on an
+  otherwise-working `ddgs` install) — same signature as the Playwright
+  `inspect.FrameInfo` failure already documented in the main
+  known_blockers.md's "Environment note" section. Piping the script via
+  stdin (`cat script.py | ~/venv/bin/python`) or `python -c` runs clean every
+  time. Reconfirmed 2026-09-11.
+- `ddgs` (DuckDuckGo search library) needed `python -m pip install ddgs`
+  (not preinstalled in `~/venv` as of this session) and its default
+  `duckduckgo`/`bing`/`brave`/`mojeek` backends were all rate-limited
+  (`DDGSException: No results found.`) almost immediately from a8's IP —
+  likely from heavy same-day fleet usage. The `backend="yahoo"` engine
+  worked reliably throughout this session when the others were exhausted;
+  worth trying first if `ddgs` throws `No results found` on a fresh query.
+
+## Regression found (not a discovery blocker, but a live-source break)
+
+- **aelanbasket_vu (VU)** — the existing, previously-verified (2026-08-11,
+  5/5 rows) manifest returned **0 items on two independent live test runs
+  today** (`prices collect --source aelanbasket_vu --max-items 20`, both
+  2026-09-11 ~16:20 UTC). Root cause confirmed by direct fetch: the
+  homepage HTML at `https://www.aelanbasket.com/` no longer contains any
+  `/product/` links at all (0 matches for `href="/product/..."`), whereas the
+  spider's only discovery path is homepage links + each PDP's related-products
+  rail (per the manifest's own notes). The site is still up (200 OK, 78KB
+  homepage) — this reads as a front-end restructure (nav/category links
+  probably moved behind client-side rendering or a different URL shape), not
+  a block. Not repaired this pass — flagging so the next Vanuatu pass
+  doesn't have to rediscover the regression from scratch. Needs a fresh
+  Playwright dump of the current homepage/shop page to find the new product-
+  link pattern.
+
+
+---
+
+## known_blockers_disco_pacmicro - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_pacmicro.md` on 2026-09-11. 7 hosts, 5 not
+documented above at merge time.
+
+# Pacific micro-states food-source discovery — blocker/dead-end log
+
+All verdicts below are as-of 2026-09-11 unless otherwise noted. This run worked
+in `~/po-worktrees/fill-gap-sources` on `a8`, alongside several other
+concurrent onboarding agents sharing the same worktree and `~/gapwork/`
+scratch space (visible in `git status` — untouched, not part of this pass).
+
+## Confirmed dead ends (record and move on)
+
+- **Payless Supermarket, Majuro (Marshall Islands)** — as-of 2026-09-11.
+  DDG search (`~/gapwork/ddgs_search_disco.py`) surfaces only Facebook
+  (`facebook.com/pacificbasinpayless`), directory listings (near-place,
+  vymaps, findglocal, cybo, evendo) — no owned website, no e-commerce.
+  Facebook-only per the skill's rule; not scrapable. Do not re-chase without
+  a Meta Graph API angle, which is out of scope here.
+- **Formosa store, Majuro (Marshall Islands)** — as-of 2026-09-11. Zero DDG
+  hits for "Formosa store Majuro" / "Formosa Store Majuro". No discoverable
+  web presence at all (not even a directory listing). Likely a
+  brick-and-mortar-only name or a mis-transcribed name; not pursued further
+  this pass.
+- **Yano's, Palau** — as-of 2026-09-11. DDG search returned no results after
+  two attempts. No discoverable web presence.
+- **Tuvalu Co-operative Society (the Fusi), Funafuti** — as-of 2026-09-11.
+  DDG search surfaces only corporate-registry/directory stubs
+  (info-clipper.com, oceanjoin.com, world-ships.com, icpcredit.com, a
+  Bloomberg shell-company profile) and an Instagram account
+  (`instagram.com/tuvalusociety`) with no shop/catalog features. No owned
+  website or e-commerce surface found. Instagram-only is the same
+  not-scrapable class as Facebook-only.
+
+## Login-gated / no-anonymous-price (SKIP)
+
+- **WCTC (Western Caroline Trading Company), Koror, Palau** —
+  `store.wctc-palau.com` — as-of 2026-09-11. This is a REAL and substantial
+  find: WCTC is Palau's large general/department store with a genuine online
+  B2B ordering portal. Homepage and department pages return 200 on all three
+  probe arms (plain requests, plain+Chrome UA, curl_cffi impersonate=chrome124
+  — no TLS impersonation needed, Apache origin, no WAF). The site exposes a
+  full department tree including real COICOP 01/02 categories: `groceries-|01`
+  with ~90+ sub-departments (canned-fish, canned-fruits, canned-meat,
+  canned-vegetables, cereals, chips-crackers, cookies, dairy-products,
+  dried-foods, flour, fresh-fruits, fresh-vegetables, bread, cake, candies,
+  etc.) plus `frozen-|03`, `beer-|50`, `liquor-|51`, `cigarettes-|60`,
+  `chewing-tobacco-|61`, `bakeshop-products-|94`. Category pages list real
+  product-detail-page URLs (`/products/<slug>|<sku>.html`) with distinct SKUs
+  across pages (enumerable). BUT every product page's price field
+  (`store_product_price_um`, the `<dd>` next to `Price`) is emitted EMPTY in
+  the anonymous HTML — confirmed on `/products/dona-elena-spnsh-24-228|13270.html`.
+  The site links to `/inet/user/request_account.php`, indicating this is a
+  registered-customer wholesale ordering system (prices hidden pre-login).
+  Verdict: SKIP — login wall on price, not a public retail catalogue.
+  Revisit only if a public-facing (non-portal) WCTC retail price list ever
+  surfaces, e.g. a printed flyer or a Facebook price post.
+
+## Not in scope — topology gap
+
+- **Wallis and Futuna** — as-of 2026-09-11. Absent from both
+  `src/configs/regions.yaml` (no `wallis_futuna` under any `eap` subregion's
+  `countries:` list) and `src/configs/countries.yaml`. Per the skill's Phase 0
+  pre-flight check, a country must be resolvable in both files before any
+  manifest can be scaffolded — adding a source is blocked upstream of
+  discovery by a missing topology entry, which is outside this skill's scope
+  (would require a `regions.yaml`/`countries.yaml` change, not just a new
+  manifest). No sources onboarded for Wallis and Futuna this pass.
+
+## Already-covered leads confirmed present (no new work needed)
+
+- Kiribati Punjas / MOEL Trading — already assessed and rejected in
+  `mcic_price_control.yaml`'s notes (Punjas is a corporate site with no shop;
+  MOEL's Wix storefront has dead "Shop Now" links). Not re-probed this pass;
+  the verdict stands as of the 2026-09-05 note.
+- Nauru Capelle & Partner / Eigigu — both already onboarded as `capelle_nr`
+  (supermarket, Wix + Schema.org JSON-LD) and `eigigu_supermarket`
+  (supermarket, Ecwid). Both re-verified live this pass, 2026-09-11 (101 and
+  117 rows respectively — see main report).
+- FSM Ace Commercial — not found as a distinct source under this name; FSM
+  already carries 5 independent supermarket/hypermarket sources
+  (`cashncarry_fm`, `hardrocksokehs_fm`, `pacificislandtrade_fm`,
+  `saki4you_fm`, `shoppohnpei_fm`), so FSM's food-channel coverage is not
+  gap-constrained. Not pursued as a distinct addition this pass.
+- Palau Surangel & Sons — already onboarded as `surangel_pw` (supermarket,
+  scrapy_api). Re-verified live 2026-09-11, 100/100 rows on a 100-item cap.
+
+## Method note
+
+`known_blockers.md` (the skill's shared reference file) was NOT found to
+contain any prior verdicts for the five leads probed above, so the "55% wrong"
+staleness warning didn't apply here — these are first-time probes, not
+re-probes of a stale verdict. WebSearch quota was exhausted session-wide
+(200/200) before this pass could start; all lead-finding above used the DDG
+fallback at `~/gapwork/ddgs_search_disco.py` instead.
+
+
+---
+
+## known_blockers_disco_safrica2 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_safrica2.md` on 2026-09-11. 24 hosts, 20 not
+documented above at merge time.
+
+# Gap-fill discovery pass: Eswatini, Suriname, Turks and Caicos, Lesotho, Namibia, Chad
+
+_As of 2026-09-11._ Target: the 6 countries carrying exactly one thin food
+source (Eswatini 374 rows, Suriname 1424, Turks and Caicos 4438, Lesotho,
+Namibia, Chad). Constraint: COICOP divisions 01/02 only. Method: three-arm
+probe (plain requests / plain requests+Chrome UA / curl_cffi
+impersonate=chrome124, WITHOUT impersonation tried first), `ddgs` for
+candidate discovery (WebSearch tool budget was already exhausted
+session-wide before this pass started), Playwright network-trace
+(`~/.cache/ms-playwright/chromium-1200`, headless, no flags) for SPA/CSR
+sites, enumerability gate (page1 vs page2 id sets must be disjoint).
+
+All existing `known_blockers.md` / inventory-file dead ends for these 6
+countries (dated 2026-09-01/02) were spot-re-verified where the failure mode
+was a WAF-shaped block (403/challenge); NXDOMAIN and "brochure/no-commerce"
+verdicts were NOT re-probed exhaustively since neither failure mode is fixed
+by TLS-impersonation-lever tricks and none had gone stale enough (9-10 days)
+to expect DNS/business changes.
+
+## Shipped this pass (5 new sources)
+
+### Turks and Caicos Islands
+- **`tcgrocerydelivery_tc`** (turksandcaicosgrocerydelivery.com) -- WooCommerce
+  Store API, 946 SKUs, USD. Plain requests clean 200; curl_cffi impersonation
+  gets 403 from `server: hcdn` (JA3 denylist on impersonated clients --
+  Scrapy's CompositeDownloadHandler defaults to plain Twisted HTTP, so no
+  special handling was needed). Sibling domain
+  turksandcaicosgrocerydeliveryservice.com serves the IDENTICAL catalog (same
+  product ids) -- deliberately not onboarded as a second source.
+- **`islandselects_tc`** (islandselectstci.com) -- WooCommerce Store API, 1400
+  SKUs, USD. All 3 probe arms clean. Distinct catalog/backend from
+  tcgrocerydelivery_tc and from the pre-existing goods2door_tc (Wix).
+
+### Namibia
+- **`woermannfresh_na`** (shop.woermannfresh.com) -- Woermann & Brock's
+  online supermarket (Windhoek). Bespoke Vue/Laravel storefront backed by
+  Elasticsearch (not Woo/Shopify). NOTE: this source was independently
+  discovered and scaffolded twice in this pass -- once by this agent via a
+  ddgs search + a whole-catalog sitemap/PDP crawl (22,674 product URLs
+  found), and concurrently overwritten on disk by a second agent working
+  the same shared worktree, whose version walks the site's own
+  `/category/<slug>?page=N` listing endpoints (each page embeds the full
+  Elasticsearch response inline) and discovered the site via OpenStreetMap
+  `shop=supermarket` nodes instead of a search engine. Both approaches
+  independently confirmed the same site, currency (NAD, no explicit
+  currency field emitted; set at the class level, not derived from a
+  symbol), and real grocery/household/toiletries taxonomy. The
+  category-listing version is what is currently shipped and verified:
+  test run collected 182 rows / 182 distinct URLs before hitting the
+  100-item test fence (its category endpoint returns up to 100 items per
+  request, so item counts jump per page rather than one-at-a-time). This
+  is still by a wide margin the largest catalog found in this pass, for
+  the emptiest market in the whole 43M-row corpus (18 distinct product
+  names before this addition).
+
+### Chad
+- **`rakhaz_td`** (rakhaz.com / API on aliceblue-seal-957651.hostingersite.com)
+  -- fresh fruit & vegetable delivery, N'Djamena. Next.js frontend is
+  client-rendered with no server data; found the real backend via a
+  Playwright console-error trace (a CORS-blocked fetch call named the exact
+  API host). 27 SKUs (whole catalog, meta.total confirms), integer XAF,
+  channel=fresh-market. Small but genuinely doubles Chad's product diversity
+  (31 distinct names before this pass) and fills a fresh-produce gap that
+  Chad's existing marketplace-style sources (hadimi_td, tchadcommerce_td,
+  mossosouk_td) structurally miss.
+
+### Suriname
+- **`wangfamirie_sr`** (wangfamirie.com) -- Dutch-language diaspora
+  grocery/parcel order-and-deliver service. WooCommerce Store API, 3,601
+  SKUs across 181 pages, EUR-priced (diaspora order model, like now2su.com --
+  NOT Suriname's domestic SRD retail level; flagged in the manifest notes for
+  downstream analysts). Confirmed NOT the same shelf as avoda_sr (0/30
+  product-name overlap on a page-5 sample, distinct Dutch category
+  taxonomy). Rich food-heavy category breakdown: DRANKEN 211, FRUIT 22,
+  GROENTEN 75, VLEES 154, VIS 32, ZUIVEL 95, etc.
+
+All 5 verified end-to-end via `run.py prices collect --source <key>
+--max-items 100`, all cleared >=5 rows with 100% distinct URLs, and
+`run.py prices collect --list` confirmed the global 2,240-source list still
+loads cleanly after each addition.
+
+## Dead ends found this pass (new, not previously recorded)
+
+- **douniamarket.com** (TD) -- Next.js diaspora-to-N'Djamena grocery order
+  site (EUR-priced per its own UI). Real backend identified via Playwright
+  console trace: `https://api.douniamarket.com/api/products?limit=N`.
+  **502 Bad Gateway on every attempt** (3 retries, 2-second spacing) --
+  the backend service is genuinely down, not CORS/WAF-blocked (the frontend
+  itself surfaces "Chargement impossible / Une erreur est survenue lors du
+  chargement des produits" to real users). Worth a retry in a future pass;
+  not a permanent structural dead end, just an outage as of 2026-09-11.
+- **jibaley.com / Akil** (TD) -- "one app for everything in Chad" -- live
+  restaurant-delivery app (Akil module) only; a "Stock" (grocery) module is
+  listed as "Bientot" (coming soon), not live. Re-check in a future pass.
+- **picknpayeswatini.com** (SZ) -- NEW domain not previously recorded (prior
+  passes only found pnp.co.sz, NXDOMAIN). Live WordPress/Yoast site, but
+  brochure/promo/recipes/store-locator only -- no shop, no WooCommerce Store
+  API (`wc/store/v1/products` -> 404 rest_no_route). Does carry genuine
+  weekly PDF price flyers (e.g. "PnP-ESW_EDLP-PROMO_07-30-SEPTEMBER-2026.pdf")
+  with real Eswatini SKU/price pairs, but the layout is a poster (image-
+  anchored text boxes), not a table -- pdfplumber's word-level bounding
+  boxes do not cleanly cluster into name/price pairs without template-
+  specific 2D-layout heuristics that would need re-tuning every time the
+  promo artwork changes. Judged not worth the fragility for a weekly-refresh
+  fetcher; documented rather than built. A future pass with more budget
+  could attempt column/row clustering by (x0, top) proximity.
+- **viaeswatini.com** (SZ) -- "Via Eswatini" delivery app -- app-only
+  marketing landing page (App Store / Google Play badges only), zero web
+  catalog. Playwright trace found no product API, only static UI-avatar
+  images for testimonials.
+- **shop.modelmooove.na** (NA, "Auas Valley" -- reads like a Pick n Pay
+  Windhoek franchise order platform on the Archsoftware/IES e-commerce
+  platform) -- resolves, 200, but plain `requests` (no UA) gets 403 while a
+  Chrome UA clears it; not pursued to a shippable spider this pass (found
+  late, after woermannfresh_na already cleared the country's bar) -- **worth
+  a dedicated follow-up**, this looked structurally promising (real
+  e-commerce platform, not a brochure site).
+- **web.nambuyfood.com, www.ishoppingnamibia.com, www.instagrocer.co,
+  avocadoshopping.com, twosticksretail.com** (NA) -- all resolve live (one,
+  twosticksretail.com, shows the same `server: hcdn` JA3-denylist pattern as
+  the TCI hosts -- 200 on plain requests, 403 on curl_cffi impersonation).
+  Not probed further this pass under time budget; flagged as follow-up
+  candidates for a dedicated Namibia depth pass (Namibia's bar was already
+  cleared by woermannfresh_na's 22k-SKU catalog).
+- **ai.mobirise.com/sites/-2PoMAMZ2JzT735S84pWIO.html ("Maseru
+  Supermarket")** (LS) -- confirmed to be a Mobirise AI website-generator
+  DEMO page ("affordable grocery website design AI" in its own meta), not a
+  real business. Not a false-negative candidate, a search-engine-indexed
+  template demo.
+
+## Re-affirmed dead ends (spot-checked, verdict unchanged)
+
+- **spareswatini.co.sz** -- still a WooCommerce-installed-but-empty
+  marketing site (Store API returns `[]`), unchanged from the 2026-09-11
+  wave-20 finding earlier the same day.
+- **shop.woermannfresh.com's own group siblings were not separately
+  checked** -- only one Woermann Brock domain was found; no evidence of a
+  second Namibian storefront under the same group.
+
+## Countries where the existing (2026-09-01/02) exhaustive inventory holds
+
+- **Eswatini**: `thewineboutique_sz` remains the only food source found across
+  three separate passes (this one included). Regional SACU chains (Shoprite,
+  SPAR, Pick n Pay, OK Foods) all confirmed brochure/store-locator-only or
+  NXDOMAIN. This pass's one new lead (picknpayeswatini.com) turned out to
+  also be brochure-only, just with PDF flyers instead of no content at all.
+- **Lesotho**: `virtualmall_ls` + `bite_liqour_ls` remain the only 2 food
+  sources. This pass's ddgs sweep surfaced only already-known sources
+  (virtualmall's own m-grocery URL, localbites/wizashopping) plus one AI
+  demo-site false positive.
+
+## Namibia sub-agent additions, verified 2026-09-11 17:08-17:18 UTC
+
+| source_key | channel | analytical_role | currency | measured rows | distinct URLs | notes |
+|---|---|---|---|---|---|---|
+| embassyliquor_na | specialty-food | retailer_sku | NAD | 103 | 103 | Embassy Liquor Windhoek; first dedicated COICOP-02 (alcohol/tobacco) source for Namibia; 450 URLs in full sitemap |
+| na_nsa_cpi (manifest nsa_cpi.yaml) | null | cpi_benchmark | index (Dec2012=100) | 592 (296 months x 2 divisions) | n/a | Namibia Statistics Agency monthly CPI workbook; full 2002-2026 history in ONE download; divisions 01 + 02 |
+| na_nsa_zonal_food_prices (manifest nsa_zonal_prices.yaml) | null | official_avg | NAD | 45 (15 items x 3 zones) | n/a | NSA average retail food prices by zone. Sub-agent found a real data-integrity defect in the SOURCE (two item rows with zone values swapped in 1 of 3 sampled months) and added a cross-zone plausibility guard that DROPS implausible rows rather than shipping corrupted prices |
+
+Namibia chain re-probe (2026-09-11, second independent session): Shoprite / Checkers / USave /
+SPAR / Pick n Pay / Woolworths / Choppies / OK Foods all re-confirmed dead or unreachable.
+Two findings worth carrying forward: (1) "OK Foods Namibia" is a Shoprite Group BANNER, not an
+independent chain — do not chase it as a separate candidate; (2) spar.co.na and
+pupkewitz.com.na time out identically across 5 client profiles in 2 separate sessions —
+that is genuine unreachability, not a WAF, and not TLS-fingerprint-fixable.
+
+Final state: `prices collect --list` loads clean at 2240 sources, 0 errors.
+
+## Addendum (verified 2026-09-11, ~17:20-17:30 UTC) -- sources shipped by other concurrent sessions, not yet listed above
+
+Cross-checked against the repo on disk; all measured via the actual
+`raw_items`/`price_observations.csv`/`index_observations.csv` output of a
+real `prices collect --source <key> --max-items 100` run (not projected).
+
+| Country | source_key | channel | analytical_role | currency | measured rows | distinct URLs |
+|---|---|---|---|---|---|---|
+| Eswatini | `namboard_ehis_swz` | null (official) | official_avg | n/a (SZL implied) | 118 | n/a (fetcher, no per-row URL) |
+| Lesotho | `bos_lso_cpi` | null (official) | cpi_benchmark | index | 216 | n/a |
+| Namibia | `meat_namibia_na` | fresh-market | retailer_sku | NAD | 5 | 5 |
+| Suriname | `rossignolslagerij_sr` | specialty-food | retailer_sku | SRD | 254 | 254 (230 distinct product_id -- multiple size/weight variants share a base id, expected for a butcher's variant catalog) |
+| Suriname | `vcm_sr` | specialty-food | retailer_sku | SRD | 100 | 100 |
+
+Notes:
+- `namboard_ehis_swz` (Eswatini National Agricultural Marketing Board / EHIS
+  portal) is this pass's ONLY new source for Eswatini beyond the pre-existing
+  `thewineboutique_sz` -- genuine COICOP-01 fresh-produce official average
+  prices (sample: Avocado SZL 9.5), closing Eswatini's "one thin food
+  source" gap with a second, structurally different (official_avg vs
+  retailer_sku) source.
+- `bos_lso_cpi` (Lesotho Bureau of Statistics monthly CPI PDF) is index-layer
+  coverage, not a retail/price-level addition -- Lesotho's retail-level food
+  gap (beyond `virtualmall_ls` + `bite_liqour_ls`) remains OPEN after this
+  pass; see "Countries where the existing inventory holds" above.
+- `meat_namibia_na` (Buschmann Meat Packers, Windhoek) is a genuinely
+  complete 5-SKU catalog (X-WP-Total=5, non-standard WooCommerce Store API
+  path `/wp-json/wc/store/products`, no `/v1/`) -- at the Phase-6 minimum-
+  viable floor but real, verified, and a fresh-market/meat addition for
+  Namibia's near-empty corpus.
+- `rossignolslagerij_sr` (Dutch-language Suriname butcher, Shopify
+  `/products.json`) and `vcm_sr` (Dutch-language Suriname retailer, WooCommerce
+  Store API) are both genuine, distinct-catalog specialty-food additions,
+  independent of `wangfamirie_sr`/`avoda_sr`.
+
+Final tally this pass, all 6 target countries: every one shipped at least
+one new source. Eswatini, Namibia, Suriname, Turks and Caicos, and Chad all
+got genuine retail/official-average FOOD-price-level additions (COICOP
+01/02). Lesotho's only addition this pass is index-layer (`bos_lso_cpi`);
+its retail-level gap is confirmed structural (brochure-only chains, no live
+grocery e-commerce found across 3 independent passes spanning 10 days).
+
+`prices collect --list` re-confirmed clean at 2240 sources after this
+addendum was written (no new manifest added by this note itself).
+
+
+---
+
+## known_blockers_disco_safrica2_chad - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_safrica2_chad.md` on 2026-09-11. 2 hosts, 1 not
+documented above at merge time.
+
+# Chad food-source discovery -- 2026-09-11 (fill-gap-sources pass, food-only mandate)
+
+Country: Chad (ssa/central_africa/chad). Task: NEW food/beverage retail
+sources only (COICOP 01/02; channels: supermarket, hypermarket, convenience,
+fresh-market, specialty-food, wholesale, marketplace). French + Arabic search
+prioritized per brief.
+
+## Pre-existing state found at start of this pass
+
+Two independent prior discovery passes already exist and are recent
+(references/inventories/ssa/chad.md, written 2026-09-02, 9 days old --
+within the skill's staleness window):
+- 2026-09-01 pass: 0 shipped. French-language search
+  ("supermarché en ligne livraison courses N'Djamena") returned only
+  Facebook-page storefronts (Modern Market, Le Bon Marché, Dembé Market,
+  Le Grand Marché, Marché de Diguel, Alimentation La Tchadienne, Moursal
+  Market) -- none have an independent website (all guessed .td/.com domains
+  NXDOMAIN). Jumia has no live Chad storefront (Cloudflare parked-domain
+  page). Score/Casino/Alwatanya/Ramco/SODEA/Sonasut: no resolvable domain.
+- 2026-09-02 pass: tchadcommerce_td (WooCommerce marketplace, XAF,
+  currency_minor_unit=0) shipped -- whole catalog is only 28 items, mostly
+  fashion/solar/furniture/vehicles; "AgroAlimentaire" food category holds
+  a handful of items. Small but real -- first retail source of any kind
+  for Chad.
+
+Separately, and apparently from a different concurrent fleet pass earlier
+TODAY (2026-09-11, before this session started), two more Chad sources were
+added to the repo:
+- **mossosouk_td** (marketplace, XAF, RDFa/schema.org microdata PDPs,
+  sitemap-driven crawl of 288 total products) -- re-verified live this pass:
+  `collect --source mossosouk_td --max-items 100` -> **102 rows, 102 distinct
+  URLs, 100% priced in XAF**. Of the full 288-product catalog, ~24 sit under
+  food-relevant categories ("Placard Alimentaire" cooking oils/flours/
+  spices, "Boisson" herbal teas/syrups) -- thin but genuinely food-adjacent,
+  channel correctly set to marketplace, coicop_codes left unset (wide).
+- **hadimi_td** -- re-verified live this pass: `collect --source hadimi_td
+  --max-items 100` -> **511 rows, 511 distinct URLs, all XAF-priced**
+  (single-request Shopify /products.json catalog, French-language site).
+  **DATA-QUALITY FLAG, not something I created or changed:** this manifest's
+  `channel:` is set to `supermarket` but the actual catalog inspected this
+  pass is 100% electronics/laptops/cookware/home-goods (HP/Lenovo/Acer
+  laptops, tea services, thermoses, cooking pots) -- zero food items seen in
+  a 40-row sample. This is a genuine channel misclassification that will
+  falsely count as Chad food/COICOP-01-02 coverage downstream. Left
+  untouched per scope (not part of this food-onboarding mandate and the
+  manifest was written by a separate same-day process, "child-task
+  consolidation" per its own notes field) -- flagging for whoever owns that
+  pass to fix the channel value (probably `dept-store` or `electronics`).
+
+## This pass: no additional new food source found
+
+No French or Arabic search was performed this pass (WebSearch tool budget
+was already exhausted session-wide before this agent reached Chad -- see
+memory note on the session-wide cap). Re-checked the 2026-09-02 pass's dead
+ends were not stale (9 days, all still N'Djamena-specific business names with
+no plausible new domain to guess) and did not re-probe them individually
+given the existing pass already confirmed Facebook-only presence for each.
+
+## Verdict
+
+Chad's genuine food/beverage retail footprint remains: `mossosouk_td`
+(marketplace, ~24 of 288 items food-adjacent) + `tchadcommerce_td`
+(marketplace, handful of AgroAlimentaire items). No dedicated
+supermarket/hypermarket/fresh-market e-commerce site exists for Chad as of
+2026-09-11 across three independent passes (2026-09-01, 2026-09-02, and
+this one). Structural absence, not a search gap -- re-check only on the
+~6-month staleness window or with a fresh WebSearch budget for a proper
+French+Arabic sweep.
+
+
+---
+
+## known_blockers_disco_safrica2_eswatini - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_safrica2_eswatini.md` on 2026-09-11. 29 hosts, 22 not
+documented above at merge time.
+
+# Eswatini food-source discovery — findings (as of 2026-09-11)
+
+Scope: COICOP divisions 01/02 only (food, non-alcoholic drinks, alcohol,
+tobacco). Country had ZERO supermarket/grocery source before this pass;
+only `thewineboutique_sz` (specialty-food/alcohol, ~374 rows) and two
+national commodity-average fetchers (`wfp_swz`, `fews_swz`) touched
+division 01 at all.
+
+## Shipped
+
+- **namboard_ehis_swz** (as of 2026-09-11, VERIFIED) — Eswatini's National
+  Agricultural Marketing Board (namboard.co.sz) links its "Weekly Buying
+  Prices" nav item to a separate portal, `www.ehis.co.sz` (Eswatini
+  Horticulture Information System). Four server-rendered HTML tables share
+  one fixed 67-item fresh-produce nomenclature with independently-set
+  prices per page:
+  - `/Portal/Info/buyingprice` — national NAMBoard buying (producer) price
+  - `/Portal/Info/Siteki`, `/Portal/Info/Nhlangano`, `/Portal/Info/PiggsPeak`
+    — named fresh-produce market boards
+  Plain `requests` with a default UA, no impersonation, no WAF encountered.
+  Test run (`prices collect --source namboard_ehis_swz --max-items 100`,
+  2026-09-11) wrote **118 real rows** (67 National + 17 Siteki + 17
+  Nhlangano + 17 Piggs Peak — the three named markets legitimately show
+  fewer priced items this week; unpriced items render literal text
+  "UNAVAILABLE" on the page rather than a number, correctly dropped, not a
+  parsing bug — confirmed by inspecting the raw HTML directly). 4 distinct
+  `source_url` values (one per page). Currency SZL confirmed (site shows
+  "E" for Emalangeni on market pages, plain numeric on the national page;
+  both parse to the same value). Re-run immediately after confirmed
+  idempotence: cutoff advanced to 2026-09-12, second run correctly returned
+  "nothing newer than cutoff". `channel: null`, `analytical_role:
+  official_avg`, `coicop_classification: classifier` (free-text produce
+  names incl. "Grade A"/"Grade B" suffixes). Manifest:
+  `src/prices/configs/ssa/southern_africa/eswatini/namboard_ehis_swz.yaml`.
+  Fetcher: `src/prices/fetchers/ssa/southern_africa/eswatini/namboard_ehis.py`.
+
+  Not scaffolded/skipped from the same portal:
+  - `/Portal/Info/Seeds` ("Farm Inputs") — confirmed non-food: planting
+    seed packets (e.g. "Baby marrow star 8023", 1M seeds, E1020.00), out of
+    scope per the COICOP 01/02 hard constraint. Checked 2026-09-11.
+
+## Rejected candidates (all re-probed live 2026-09-11 unless noted)
+
+| Candidate | URL | Verdict | Reason |
+|---|---|---|---|
+| Spar Eswatini | spareswatini.co.sz | DEAD (confirmed same day by a concurrent agent's batch-20 pass, cited here not re-derived) | WordPress+WooCommerce installed but Store API returns `[]` for every query; no product sitemap; Playwright network trace fires zero JSON; only shop-like link is `/store-locator/` (physical branches). Marketing/promo site, not a store. |
+| Pick n Pay Eswatini | pnp.co.sz | NXDOMAIN | Re-checked 2026-09-11, still no resolvable domain (matches 2026-09-02 inventory). |
+| Spar Eswatini (alt) | spar.co.sz, spar2u.co.sz, onlinespar.co.sz | NXDOMAIN | Re-checked 2026-09-11. |
+| OK Foods Eswatini | ok.co.sz | NXDOMAIN | Re-checked 2026-09-11. |
+| PEP Eswatini | pep.co.sz | NXDOMAIN | Re-checked 2026-09-11. |
+| Friendly Foods Eswatini | friendlyfoods.co.sz | NXDOMAIN | Re-checked 2026-09-11. |
+| Choppies (group) | choppies.co.sz | NXDOMAIN | No Eswatini-specific domain. |
+| Choppies (SA/BW parent) | choppies.co.za | Resolves (41.185.8.0) but connection times out (curl exit 28) on both HTTP and HTTPS | Unreachable; no evidence of an Eswatini storefront even if it answered — Choppies runs physical stores in Eswatini with no online ordering per the existing inventory finding. |
+| Buy 'n Save (SPAR budget banner) | buynsave.co.sz | Resolves, HTTP 200 | Login-walled B2B "Contract System" (procurement portal for account-holders), not a consumer storefront — no catalog visible pre-login. |
+| Eswatini Meat Industries | emi.co.sz | Resolves, HTTP 200 | Brochure site (Divi theme). CSS carries `.et_pb_shop_grid .woocommerce` classes suggesting a WooCommerce shop template, but `/wp-json/` route dump (148 routes) has zero `wc`/`product`/`shop` routes and `/shop/` 404s — dead/uninstalled shop, not a live catalog. |
+| Eswatini Dairy Board | dairyboard.co.sz | Resolves, HTTP 200 | Regulatory/brochure site; no live price table anywhere in the rendered text. Only price-adjacent content is annual PDF "Bulletins", and the nav's newest bulletin year is 2022 (4 years stale as of 2026-09) — not a maintainable current-price feed. |
+| Royal Eswatini Sugar (guessed) | res.co.sz | Resolves but connection times out (curl exit 28) on HTTP and HTTPS | Unreachable. |
+| Eswatini Central Statistical Office | cso.gov.sz, statistics.gov.sz, swazistats.org.sz (incl. `www.` prefix), centralstatisticaloffice.gov.sz | All NXDOMAIN | gov.sz homepage links to `www.swazistats.org.sz` as "Social Statistics" but that host does not resolve (broken outbound link on the government's own site). No working CPI/COICOP publication surface found. |
+| Metro Cash & Carry, Trade Xpress, Buhle Farmers' Co-op, generic wholesale guesses | metrocashandcarry.co.sz, tradexpress.co.sz, buhlefarmers(coop).co.sz | NXDOMAIN | No resolvable domain under any guessed name. |
+| Game, Cashbuild Eswatini | game.co.sz, gameeswatini.co.sz, cashbuild.co.sz | NXDOMAIN | Non-food anyway (dept-store/hardware) — checked opportunistically, not pursued further. |
+| Jumia / delivery marketplace | jumia.co.sz | NXDOMAIN | Confirms 2026-09-02 inventory finding: no delivery marketplace (Jumia/Glovo/Bolt/Yango-style) operates in Eswatini. |
+
+## Method notes for the next pass
+
+- **NAMBoard/EHIS is the reusable pattern for this region**: a national
+  agricultural marketing board's own portal, separate from its main
+  brochure/blog domain, publishing a fixed commodity nomenclature as a
+  plain server-rendered HTML table (DataTables styling, but the data is NOT
+  behind an AJAX call — it's baked into the page's `<tbody>` at request
+  time). Worth checking for other Southern African / SACU markets with a
+  similar "NAMBoard"-style produce marketing board.
+- Eswatini's `.co.sz` namespace is otherwise very thin: of ~20 direct-guess
+  domains tried across grocery chains, wholesale, dairy and meat boards,
+  only 4 resolved (`emi.co.sz`, `dairyboard.co.sz`, `res.co.sz`,
+  `buynsave.co.sz`), and none had a usable live product+price catalog.
+  WebSearch budget was exhausted session-wide (shared across concurrent
+  agents in this run) before a proper local-language/news search could be
+  run for this country — a fresh search-based pass (once budget resets) is
+  the clear next step, per the existing 2026-09-02 inventory's own
+  recommendation to check whether a South African parent's storefront
+  (pnp.co.za, spar.co.za, checkers.co.za Sixty60) exposes an Eswatini
+  delivery zone, which is a SA-tenant question rather than an Eswatini one
+  and should be answered once for the whole CMA/SACU bloc.
+
+
+---
+
+## known_blockers_disco_safrica2_lesotho - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_safrica2_lesotho.md` on 2026-09-11. 27 hosts, 21 not
+documented above at merge time.
+
+# Lesotho food-source discovery — findings (as of 2026-09-11)
+
+Follow-up pass on top of the 2026-09-01 wave-8 inventory
+(`.claude/skills/onboard-price-sources/references/inventories/ssa/lesotho.md`).
+Scope: COICOP divisions 01/02 only. All verdicts below probed live
+2026-09-11 with three arms (plain requests default UA, plain requests +
+Chrome UA, curl_cffi impersonate=chrome124) unless noted. WebSearch budget
+was exhausted session-wide partway through this pass (200/200) — remaining
+candidates were found by direct domain probing only, not fresh search.
+
+## Shipped
+
+- **bos_lso_cpi** (fetcher, analytical_role=cpi_benchmark) — Lesotho Bureau
+  of Statistics monthly CPI. See manifest notes for full detail. 216 rows
+  verified live, 18 monthly PDFs, 12 COICOP divisions each, 0 nulls.
+
+## Re-probed priority candidates — verdict UNCHANGED from 2026-09-01 (confirmed live 2026-09-11)
+
+- **shoprite.co.ls** — 200, resolves natively (not an SA redirect), but is
+  the same `shopriteafrica` AEM corporate-portal tenant already dead for
+  MZ/ZM/BW: nav = store-locator + category-description pages + a specials
+  page linking only a privacy-policy PDF. Zero `/shop`, `/products`,
+  `/catalogo`, zero WooCommerce/Shopify/Magento fingerprint (0 hits for all
+  of woocommerce/shopify/magento/add-to-cart/price/cart tokens in the raw
+  HTML). Confirmed 2026-09-11 with curl_cffi impersonate=chrome124 (plain
+  requests default UA 403s — TLS/UA gate clears fine, doesn't change the
+  verdict: brochure site, no catalogue behind the gate).
+- **checkers.co.ls** — NEW this pass (not in the 2026-09-01 inventory,
+  which only checked Shoprite/PnP for LS). Same `checkers-africa` AEM
+  tenant, same shape: 200, store-locator + specials-subdomain flyer links,
+  zero product/cart/price tokens. Brochure-only, confirmed 2026-09-11.
+- **pnp.co.ls / www.pnp.co.ls** — still NXDOMAIN (curl_cffi DNS error, no
+  TLS handshake starts). Re-confirmed 2026-09-11.
+- **spar.co.ls, usave.co.ls, okfoods.co.ls, boxer.co.ls,
+  boxersuperstores.co.ls, fruitandvegcity.co.ls, choppies.co.ls** — all
+  NXDOMAIN under curl_cffi. No Lesotho-specific storefront domain exists
+  for any of these chains under `.co.ls`. Confirmed 2026-09-11.
+- **game.co.ls** — DOES resolve (200) but Game is general-merchandise/
+  electronics (Massmart brand), not COICOP 01/02 — dropped on sight per
+  the non-food constraint, not probed further.
+- SA-parent domains for the above chains (pnp.co.za, boxer.co.za,
+  okfoods.co.za all 200, transactional) are explicitly OUT OF SCOPE: they
+  reflect South African online prices/VAT, not Lesotho retail prices — same
+  reasoning already applied to `shop.econofoods.co.za` in the 2026-09-01
+  pass. Not pursued.
+
+## Marketplace seller-directory checks (new this pass)
+
+- **wizashopping_ls** (already onboarded, channel=marketplace) — confirmed
+  it is Dokan-powered (multi-vendor WooCommerce plugin; `/wp-json/` lists
+  `dokan/v1`, `dokan/v2`, `dokan/v3` namespaces). Seller directory
+  (`/wp-json/dokan/v1/stores`) has exactly 4 vendors: Jumbo Cash (food/
+  wholesale — banner image filename references "Massmart_Jumbo_Storefront",
+  i.e. this is the Jumbo Cash & Carry brand), Drip Fits (clothing — skip,
+  non-food), DIY store (hardware — skip, non-food), Machobytes/wizaadmin
+  (platform admin catalog). Checked Jumbo Cash's own product list via
+  `/wp-json/dokan/v1/stores/4/products` — 17 SKUs total (Pork Chops per KG,
+  Whole Full Lamb, Chicken Fillets, Fresh Organic Honey, Farm Fresh Eggs,
+  etc.), and every one of these 17 already appears in wizashopping_ls's
+  existing whole-catalog scrape (`/wp-json/wc/store/v1/products`, no vendor
+  filter — Dokan vendor products are ordinary WooCommerce products, so the
+  parent spider already collects them under url `/product/<slug>`). VERDICT:
+  no distinct new source here — carving Jumbo Cash into its own manifest
+  would collect the identical 17 URLs already inside wizashopping_ls, which
+  DuplicationPipeline would just collapse against. Not onboarded separately.
+  Confirmed 2026-09-11.
+- **localbites_ls** (already onboarded, channel=marketplace) — re-checked
+  the groceries category (`/categories/groceries`, `/categories/supermarket`)
+  and the 14-merchant directory (`api.localbites.co.ls/api/stores`). Both
+  identical to the 2026-09-01 finding: groceries still shows "No Products
+  found", still 14 restaurant/QSR merchants + BiteLiqour (already onboarded
+  separately), no new food vendor added to the directory. Confirmed
+  2026-09-11.
+
+## Other candidates checked and rejected
+
+- **Pricemate (pricemate.info / api.pricemate.info)** — the 2026-09-01
+  inventory PARKED this as "worth a re-check" (one Lesotho shop found,
+  0 products). This pass swept shop_id 1-29 directly against
+  `api.pricemate.info/api/products?shop_id=<n>` — every single one returns
+  `total_published_products: 0`. This is not a Lesotho-specific gap; the
+  whole platform's product database appears empty. Downgraded from PARKED
+  to DEAD — do not re-check again absent evidence the platform itself has
+  relaunched. Confirmed 2026-09-11.
+- **frasers.co.ls, metcash.co.ls, sparlesotho.com, maseru-mall.com,
+  lesothoonlineshop.com, lesothoshop.co.ls, foodworldls.com,
+  pioneermall.co.ls** — all guessed domains, all NXDOMAIN. Named/directed
+  search (not blind guessing) is the logical next step here but was not
+  possible this pass (WebSearch budget exhausted session-wide before
+  reaching this candidate group). Confirmed 2026-09-11 (DNS-level only).
+
+## Bureau of Statistics Lesotho (bos.gov.ls) — additional notes
+
+- No archive/listing page for past CPI releases (directory listing 403s;
+  `publications.htm` carries no CPI links) — the homepage links only the
+  current month. The `CPI_<Month>_<Year>.zip` filename pattern itself is
+  stable and past months resolve directly: spot-checked 2025 Jan-Dec (all
+  200) and 2026 Jan-Jul (200 except April, which 404s — a genuine gap in
+  BoS's own publication, confirmed by cross-checking the July 2026 report's
+  own back-columns, which also skip from March to May). August/September
+  2026 not yet published as of 2026-09-11 (matches the ~6-week NSO lag
+  visible in every month checked).
+- No CSV/XLS machine-readable form found — PDF only. Table 1 (division
+  level, 01-12) and Table 3 (COICOP class level, e.g. 01.1.1 Bread and
+  cereals through 12.7.1) are both present in every release; this fetcher
+  uses Table 1 only (matches the existing SSA cpi_benchmark convention of
+  division-level `coicop_codes`). A future pass wanting finer food-basket
+  detail could extract Table 3 from the same PDFs without any new fetch —
+  it's already being downloaded.
+
+
+---
+
+## known_blockers_disco_safrica2_namibia - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_safrica2_namibia.md` on 2026-09-11. 42 hosts, 29 not
+documented above at merge time.
+
+# Namibia food-source discovery — 2026-09-11
+
+Re-probe of the 2026-09-01 Namibia inventory (`references/inventories/ssa/namibia.md`)
+plus fresh candidates, per the onboarding brief's priority list (Shoprite/Checkers/
+USave, SPAR, Pick n Pay, Woolworths, Choppies, OK Foods Namibia). All verdicts below
+are as-of 2026-09-11, live re-probed (not taken from any older blocker list).
+
+## Confirmed dead — Shoprite Group AEM brand family (brochure only)
+
+- **shoprite.com.na** — 403 on plain default-UA `requests`, 200 (62KB) on Chrome-UA
+  `requests` (no TLS impersonation needed at all — a bare browser User-Agent clears
+  it). Adobe AEM (`shopriteafrica` clientlibs), same pan-African template already
+  recorded 2026-09-01. `/store-locator.html` and `/sitemap.xml` confirmed: sitemap
+  is 100% recipe/marketing pages (`/recipes/...`), zero product URLs. Re-confirms
+  the prior "brochure/store-locator only" verdict.
+- **checkers.com.na** — same AEM family, same 403→200 UA behaviour. Not re-probed
+  beyond the prior session's finding (liquor-shop page is marketing copy, no
+  ordering flow) — no new evidence found to overturn it.
+- **okfoods.co.za** (OK Foods, incl. the `/na/en_NA/` Namibia locale under this
+  same domain) — this is the SAME Shoprite Group AEM brand family, not an
+  independently Namibian-founded chain as hypothesized in the brief. Title bar
+  confirms: `https://www.okfoods.co.za/na/en_NA/specials.html` renders as "OK
+  Specials | OK Foods Namibia". Specials page is 0 hits for cart/price markup —
+  a weekly-flyer style page, no product listing. `/find-a-store.html` +
+  InfinityRewards loyalty app are the only functional surfaces. Dead, brochure.
+- **choppies.co.na** — WordPress + Elementor, 200 on both default and Chrome UA
+  (no WAF at all). `/wp-json/` route dump has NO `wc/store` namespace — Elementor
+  site, WooCommerce not installed, matching Elementor's own registered
+  namespaces only (`elementor/v1`, `elementor-pro/v1`, etc.), confirming there is
+  no e-commerce plugin active. Nav explicitly links "Shop online" / "eChoppies" /
+  "Online Shopping Portal" to **echoppies.com** — but that platform is
+  Botswana-only (currency asset literally named `botswana-currency.png`, zero
+  mentions of Namibia anywhere on the page). Choppies Namibia is a pure brochure
+  site whose only "shop online" affordance routes to a sibling country's store.
+
+## Confirmed dead — independent brochure sites
+
+- **metro.com.na** (Metro Namibia) — now 200 (was previously also checked dead
+  2026-09-01). `/new-products/` and `/product-news/` pages exist but are WordPress
+  posts using a "3d-flip-book" plugin (image/PDF flip-book weekly circular), 0
+  hits for price/cart text in the raw HTML. Not machine-readable; would need a
+  PDF/image-OCR pipeline for a handful of weekly promo images. Not pursued —
+  low value relative to effort, no per-product structure even if OCR'd.
+
+## Unreachable — connection timeout, not a WAF (two independent sessions agree)
+
+- **spar.co.na** / **www.spar.co.na** — DNS resolves (20.87.97.38, Azure). Plain
+  `requests` (both UAs) AND `curl_cffi` with `chrome124`/`chrome120`/`safari17_0`
+  (3 impersonation profiles) ALL time out after 25s with no TCP-level response.
+  Identical behaviour to the 2026-09-01 session's single-attempt timeout — now
+  confirmed across 2 sessions, 5 total connection attempts, both plain and
+  TLS-impersonating clients. This rules out a JA3/TLS-fingerprint block (an
+  impersonating client would at minimum get a different response, not an
+  identical hang) — reads as the origin server itself not accepting connections
+  from this network path (a8/Tailscale), or genuinely down. Not classified as a
+  WAF block. Worth a retry from a different egress IP if this source is revisited.
+- **pupkewitz.com.na** / **www.pupkewitz.com.na** — same signature: DNS resolves
+  (196.20.10.65), all 3 curl_cffi impersonation profiles time out identically to
+  plain `requests`. `pupkewitz.com.na` (bare, no www) fails DNS outright. Same
+  disposition as spar.co.na above.
+
+## Not viable — real business, no priced catalog surface
+
+- **zulzi.com** — initially promising: SvelteKit SPA with `ProductList` and
+  `AddToCartButton` immutable-asset components (genuine on-demand grocery
+  delivery app shape). Ruled out on inspection: all social links point to
+  `zulzi_sa` / `facebook.com/zulzi.co.za` — this is a South African delivery
+  platform, no Namibia presence found on the page. Not probed further.
+
+## No resolvable domain (checked live 2026-09-11, re-confirms/extends 2026-09-01)
+
+usave.co.za (ZA domain, no `.com.na`/`.co.na` Namibia storefront found),
+picknpay.com.na, pnp.com.na, woolworths.com.na, foodloversmarket.com.na,
+fruitandveg.com.na, model.com.na, modelsupermarket.com.na, tablefare.com.na,
+freshmart.com.na, cashandcarry.com.na, hypersave.com.na, superspar.com.na,
+spar.com.na, sparnamibia.com(.na), woermann.com.na / woermannbrock.com.na
+(NXDOMAIN — the real domain is `shop.woermannfresh.com`, found via web search,
+not domain-guessing — see shipped sources below), okgrocer.com.na,
+zulzi.com.na, onecart.co.za (ZA only, not probed for NA), yangonamibia.com,
+namibiamarket.com, freshstop.com.na. `okfoods.com` resolves but 301-redirects
+to an unrelated US business (bachocousa.com) — a lapsed/repurposed domain, not
+OK Foods.
+
+## Verdict on the brief's priority list
+
+Shoprite, Checkers, USave (part of Shoprite Group, no separate NA storefront
+found), SPAR, Pick n Pay, Woolworths, Choppies, and OK Foods Namibia are ALL
+either brochure-only AEM/WordPress sites with no e-commerce, unreachable, or
+have no resolvable Namibia-specific domain. **None of the brief's named chains
+yielded a shippable source.** The market is genuinely served by South African
+corporate brochure sites for these particular banners, consistent with the
+2026-09-01 inventory's "structural absence" reading — this session adds
+confirmation via fresh probes (echoppies.com's Botswana-only scope; OK Foods'
+Shoprite-family identity; SPAR/Pupkewitz's now twice-confirmed unreachability)
+rather than overturning it.
+
+The shippable wins this session came from two other directions instead:
+1. A **live web search** past the chain-domain-guessing pattern (a concurrent
+   agent's `ddgs`/search-based discovery of `shop.woermannfresh.com`,
+   `meat-namibia.com`, `embassyliquorstore.com` — none of which are guessable
+   from chain-name domain patterns).
+2. The **national statistics office** (nsa.org.na) as an `official_avg` +
+   `cpi_benchmark` fetcher pair — not a retailer at all, but a genuine,
+   verified, food-division price/index source that the retailer-first search
+   strategy would never surface. See Phase 8 report for both.
+
+
+---
+
+## known_blockers_disco_safrica2_suriname - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_safrica2_suriname.md` on 2026-09-11. 36 hosts, 9 not
+documented above at merge time.
+
+# Suriname food-sourcing pass -- as of 2026-09-11
+
+Task: onboard COICOP 01/02 (food, non-alcoholic drinks, alcohol, tobacco)
+sources for Suriname. Prior state: 15 non-food/other manifests +
+avoda_sr (thin general-grocery webshop, ~1,224 SKUs, ~33% food share).
+Genuine sourcing gap -- took whatever verified, did not rank by COICOP.
+
+## Method note: web search tooling was unreliable this pass
+
+WebSearch hit the session-wide 200-call budget cap before any Suriname
+query ran (see `websearch_cap_session_wide_not_per_agent.md`).
+WebFetch against duckduckgo.com/html, bing.com, ecosia.org, mojeek.com,
+and r.jina.ai all failed or returned decoy/irrelevant content (DDG
+CAPTCHA; Bing returned unrelated RV-park and stock-ticker results for
+Suriname-specific queries; Ecosia/Mojeek 403; r.jina.ai 401 without a
+key). **Do not trust a quick re-check with the same tools to behave
+differently without verifying first.**
+
+Pivoted to OpenStreetMap Overpass API as the primary discovery method --
+queried `shop~supermarket|convenience|grocery|greengrocer|butcher`
+within Suriname's admin boundary. This returned 506 tagged businesses,
+of which only 6 carried a `website` tag. This is treated as a
+reasonably complete cross-check of Suriname's retail-food web presence:
+the population is overwhelmingly small Chinese-family-run
+supermarket/convenience shops with no web storefront at all, consistent
+with the existing known_blockers.md entries (choisupermarket.com dead
+cert, bestmart.sr zero-byte, tulip-supermarket.com brochure-only, etc).
+
+## Named candidates from the brief -- NOT FOUND, as of 2026-09-11
+
+None of these resolved via direct DNS guessing across multiple TLD/name
+variants, and none appear among the 506 Suriname shop/supermarket/
+convenience/butcher entries in OpenStreetMap. Treated as either
+non-existent under these names, defunct, or app/Facebook-only (unreachable
+without login):
+
+- **VSH Foodmart** -- no such retail brand found. VSH United N.V. (the
+  real Suriname conglomerate at vshunited.com) runs a food-manufacturing
+  division "VSH Foods" (vshfoods.com, confirmed live) that produces/
+  exports packaged goods but has zero shop/cart/price content -- it is a
+  brand marketing site, not a retail source. Not onboarded.
+- **Baas Supermarket** -- no DNS hit on baas.sr / baassupermarket.{sr,com};
+  absent from the OSM dataset.
+- **C1000 Suriname / Continent Suriname** -- no DNS hit on c1000.sr /
+  c1000suriname.com / continent.sr / continentsupermarkt.sr /
+  continentsuriname.com; absent from OSM. C1000 is a defunct Dutch
+  supermarket brand (NL-only); no evidence it or a "Continent" chain
+  ever operated in Suriname.
+- **Kortom** -- no DNS hit across kortom.sr / kortomsupermarkt.sr /
+  kortom.com (timeout) / kortomonline.com; absent from OSM.
+- **Wong / Wong's supermarket** -- "Wong" and "Wong Superstore" DO
+  exist as real physical shops per OSM (2 nodes), but neither carries a
+  website tag, and wong.sr / wongsupermarket.{sr,com,online} /
+  wongssupermarket.com all fail DNS. Small shop, no web storefront.
+- **Hermitage Mall grocers** -- no matching OSM node found for
+  "Hermitage" (Overpass query for this specific check timed out
+  mid-pass after working reliably for the main supermarket sweep --
+  worth a quick re-run, not re-attempted this pass due to time).
+- **Shoprite / SPAR / Pick n Pay in Suriname** -- confirmed absent.
+  No DNS hit for shopritesuriname.com, sparsuriname.com, spar.sr,
+  picknpaysuriname.com. None of the 506 OSM shop entries reference any
+  of these brands. Verdict: no SA regional chain operates in Suriname,
+  as suspected in the brief.
+- **Other named-but-dead domains hit this pass**: surimarket.com (parked
+  "/lander" redirect page, 114 bytes), transamerica.sr (resolves, but
+  serves a bare 404.html -- domain registered, no site behind it; real
+  "Transamerica" supermarket shop exists per OSM but has no working
+  site), soengngie.com (redirects to soengco.com -- Soeng Ngie & Co is a
+  Surinamese-Chinese sauce/condiment BRAND content site, no shop/cart,
+  not a retail price source), soengngie.sr (suspended-hosting stub).
+  kersten.sr resolves and has shop/cart keywords but is N.V. C. Kersten
+  & Co's Toyota-dealership site -- automotive, zero food content, not a
+  candidate under the COICOP 01/02 mandate.
+
+## Domain-squat finding (new)
+
+- **choisupermarkt.com** (note: NL spelling, no "e" -- distinct from the
+  already-recorded-dead `choisupermarket.com` with the English
+  spelling) -- resolves 200 via Cloudflare, 475KB page, Shopify
+  fingerprint present, BUT the actual content is an Indonesian togel
+  (illegal lottery/gambling) spam site (`<title>TOTO TOGEL 158`,
+  canonical link to youknowwesew.com / togel158.youknowwesew.com). The
+  domain that OSM's "Choi's Supermarkt" node points to has been
+  squatted/hijacked since it lapsed. Genuinely dead as a price source,
+  distinct failure mode from the cert-expiry already on record for the
+  other spelling. Probed 2026-09-11.
+
+## Shipped this pass (2 sources)
+
+Both discovered via the OSM website-tag cross-check, both are
+COICOP-01.1.2-dominant butcher/meat retailers -- a genuine narrow-channel
+gap none of the existing 16 manifests touch.
+
+- **rossignolslagerij_sr** -- Rossignol Slagerij, Paramaribo butcher
+  chain (OSM nodes: Rossignol, Rossignol Slagerij, Rossignol 2 GO).
+  Shopify storefront, `/products.json` -- 94 products / 254 SKU-variant
+  rows, single page (page 2 empty, so 94 is the true catalog size, not a
+  truncation artifact). SRD-priced, e.g. Rundergehakt (1kg) SRD 568.18,
+  Varkenkerstham SRD 500.00. Verified live 2026-09-11 with
+  `--max-items 100`: 254 rows written, 254 distinct URLs.
+- **vcm_sr** -- VCM Slagerijen, the retail butcher/webshop arm of N.V.
+  Verenigde Cultuur Maatschappijen (vcm.sr explicitly routes "webshop,
+  catering services" to winkel.vcm.sr; a separate arm, boerderij.vcm.sr,
+  is wholesale agriculture/livestock and was deliberately NOT onboarded
+  to avoid a retail/wholesale double-count of the same producer group).
+  WooCommerce Store API, `/wp-json/wc/store/v1/products` -- 170 total
+  products confirmed (page1=100 + page2=70, zero id overlap -- real
+  pagination). SRD-priced, e.g. Kip sate (6 stuks) SRD 185.00. Verified
+  live 2026-09-11 with `--max-items 100`: 100 rows written (catalog
+  cap), 100 distinct URLs.
+
+Both use the repo's existing `generic_shopify_configured` /
+`generic_woo_configured` spiders (no new Python files needed) --
+manifests only, per the `fabiprofishop_ch`/`lianoriginal_li` pattern.
+`prices collect --list` re-run after both additions: 2236 sources, no
+errors, no global breakage.
+
+## Structural note
+
+Both shipped sources are narrow to meat (channel: specialty-food).
+General-grocery (channel: supermarket) coverage for Suriname remains a
+single thin source (avoda_sr). The 500+ small Chinese-run
+supermarket/convenience shops that dominate OSM's Suriname retail-food
+landscape are structurally unscrapable -- no web presence at all, which
+is a genuine structural absence (small-format cash retail), not a
+missed source. The best remaining lever for Suriname COICOP 01 is the
+already-flagged ABS (statistics-suriname.org) average-retail-price
+table, currently blocked on transient network errors per the existing
+known_blockers.md entry (line 915) -- worth a retry in a future pass,
+not re-attempted here (out of scope: that entry already exists and
+instructs a retry, not a fresh probe).
+
+
+---
+
+## known_blockers_disco_safrica2_tci - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_disco_safrica2_tci.md` on 2026-09-11. 29 hosts, 23 not
+documented above at merge time.
+
+# Turks and Caicos Islands (TCI) -- food-source discovery, 2026-09-11
+
+Scope: COICOP divisions 01/02 (food, non-alcoholic drinks, alcohol, tobacco) ONLY.
+Country: `turks_and_caicos_islands`, path `lac/caribbean/turks_and_caicos_islands`,
+currency USD, language en.
+
+## Note on concurrent work
+
+This shared worktree (`~/po-worktrees/fill-gap-sources`) had a concurrent pass
+already complete TCI discovery and ship two sources (`islandselects_tc`,
+`tcgrocerydelivery_tc`) by the time this session reached the verification step.
+Rather than duplicate or collide with that work, this session independently
+re-verified both shipped sources against the raw on-disk data, and folds in the
+dead ends this session found on its own (mostly overlapping, with a few
+additional negatives not recorded elsewhere) below. No manifest, spider, or
+fetcher in this country directory was created or modified by this session --
+all of `goods2door_tc`, `islandselects_tc`, and `tcgrocerydelivery_tc` predate
+this session's writes.
+
+## Shipped sources (independently re-verified 2026-09-11)
+
+| source_key | channel | currency | measured rows | distinct urls | notes |
+|---|---|---|---|---|---|
+| goods2door_tc | supermarket | USD | pre-existing, ~4438 in corpus | -- | Wix, sitemap-driven whole-catalog walk. Pre-existing before this pass; untouched. |
+| islandselects_tc | supermarket | USD | 100/100 (two independent runs, 20260911_165850 and 20260911_170040) | 100/100 both runs, 100 distinct product_name both runs | WooCommerce Store API (`islandselectstci.com`), X-WP-Total 1400, 70 pages, page1/page2 ids disjoint. All 3 probe arms (plain UA, Chrome UA, curl_cffi chrome124) clean 200 -- no WAF. |
+| tcgrocerydelivery_tc | supermarket | USD | 100/100 (two independent runs, 20260911_165840 and 20260911_170046) | 100/100 both runs, 60 distinct product_name both runs (multi-variant SKUs, not a dedup bug -- urls fully distinct) | WooCommerce Store API (`turksandcaicosgrocerydelivery.com`), X-WP-Total 946, 48 pages, page1/page2 ids disjoint. Plain requests 200; curl_cffi impersonation 403 from `server: hcdn` (JA3 denylist -- matches the documented hcdn pattern, plain HTTP clears it, no impersonation needed for the spider). Sibling domain `turksandcaicosgrocerydeliveryservice.com` serves an identical catalog -- deliberately not onboarded as a second source. |
+
+Both spiders read the JSON Store API directly (page family: API) and never
+fetch a rendered page.
+
+## Dead ends -- corroborated independently this session (2026-09-11)
+
+All of the following were reached by this session's own probing, before this
+session discovered the concurrent inventory file already recorded the same
+verdicts for most of them. Recorded here as independent corroboration, plus a
+few additional negatives not in the other pass's writeup.
+
+| Candidate | Domain(s) tried | Verdict | Detail |
+|---|---|---|---|
+| Graceway IGA / Graceway Smart / Cash 'N' Carry (dominant TCI chain) | `gracewaysupermarkets.com` (canonical; `gracewayiga.com` 301-redirects here) | REJECT -- brochure-only, no e-commerce | Squarespace, 239-url sitemap is all marketing pages. Homepage's one "Shop now" CTA links to `/instoredeals` (weekly flyer announcement). `/graceway-supermarkets-shop-with-us` page's only content is "follow us on social media" -- no online ordering, no cart, no app, no curbside/pickup language anywhere. |
+| Graceway Gourmet (separate storefront per Wikivoyage) | `gracewaygourmet.com` | REJECT -- dead server | Resolves (Vultr VPS) but serves a bare nginx default 404 over HTTP; HTTPS handshake hangs. Abandoned infrastructure. |
+| `gracewayiga.com` direct | same backend as gracewaysupermarkets.com (AWS us-east-2) | REJECT -- same site | TLS handshake fails with `internal_error` regardless of client (curl, curl_cffi chrome124/120/safari17_0) -- but plain HTTP 301s cleanly to www.gracewaysupermarkets.com. Server TLS vhost quirk, not a WAF. |
+| Southside Trading | `southsidetrading.com` (resolves, 200) | REJECT -- parked domain | Bare GoDaddy-style JS lander (114 bytes, redirects to /lander). Not a real storefront. No other domain variant resolves. |
+| GraceKennedy-affiliated stores | `gracekennedy.com` (200, corporate site) | REJECT -- not applicable to TCI | Zero mentions of Turks/Caicos or retail on the corporate homepage. GraceKennedy's actual supermarket brands (Hi-Lo `hilofoodstores.com`, MegaMart `megamartja.com`/`megamartonline.com`) resolve but are Jamaica-only; no TCI storefront exists under this group. |
+| Massy Stores (regional chain) | `shopmassystorestc.com`, `shopmassystoresprovo.com` (NXDOMAIN) | REJECT -- no TCI storefront exists | Massy Group's Eastern Caribbean footprint is Barbados/Trinidad/Guyana/St Lucia/St Vincent only (per the LAC inventory for those countries); TCI is outside it and the `shopmassystores<code>.com` pattern has no TCI variant registered. |
+| CaribeEats grocery-delivery aggregator | `backend.caribeeats.com/api/init` | REJECT -- platform has no TCI region | Direct API call enumerated all 21 active regions -- Nevis, St Kitts, Grenada, Anguilla, Dominica x2, St Eustatius, Montserrat, St Lucia, Antigua, Trinidad, USA, Jamaica, Guyana, Barbados, BVI, Bahamas, UK x2, Nigeria, DealCircle. None is TCI/Providenciales/Grand Turk. |
+| PriceSmart (warehouse club, onboarded elsewhere as pricesmart_bb) | `pricesmart.com/en/locations` | INCONCLUSIVE -- locator endpoint 500'd | Not pursued further; PriceSmart's published country list has not historically included TCI. Worth a quick re-check when search tooling is available. |
+| TCI government statistics office / CPI (opportunistic check, not a priority candidate) | `gov.tc` | REJECT -- no statistics dept surfaced | Homepage and /structure enumerate only Business/Government/Residents/Budget; no Statistics/Economic-Planning link. All plausible paths (/statistics, /stats, /eps, /dema, etc.) 404. |
+| Local classifieds / marketplace guesses | `tcimarketplace.com`, `turksandcaicosmarketplace.com`, `provomarket.com` (NXDOMAIN); `provomarketplace.com` (410 Gone); `tcbuysell.com` (200 but is "Treasure Coast" Florida -- coincidental TC-abbreviation collision, unrelated) | REJECT -- none applicable | |
+| Liquor/wine specialty stores (division 02 angle) | `envywineandspirits.com`, `envywine.tc`, `discountliquorsprovo.com`, `discountliquorstci.com`, `bestbuyliquorstci.com`, `provoliquorstore.com`, `igawineandspirits.com` (all NXDOMAIN) | REJECT -- no web presence found | |
+| Quality Supermarket, Prime Fresh | `qualitysupermarket*.{com,tc}`, `primefresh*.{com,tc}` variants (all NXDOMAIN except a generic unrelated `primefresh.com`) | INCONCLUSIVE -- no web presence found under any guessed domain | Consistent with the concurrent pass's finding (TCI Tourism Board business directory: local grocers carry phone numbers only, zero website URLs). |
+
+## Methodological note
+
+WebSearch's session-wide budget (200/200) was already exhausted before this
+session's discovery work began. WebFetch was tried against DuckDuckGo
+(html + lite), Bing, Google, and Marginalia as a substitute -- all four
+returned bot-challenge/CAPTCHA pages, not results, as of 2026-09-11. All
+findings above (this session's portion) came from direct DNS/HTTP/TLS probing
+of guessed domains, a direct API call to CaribeEats, and Wikipedia/Wikivoyage
+articles (reachable via WebFetch). See also the concurrent pass's own
+inventory at `.claude/skills/onboard-price-sources/references/inventories/lac/turks_and_caicos_islands.md`
+for its (independently-arrived-at, matching) discovery notes.
+
+## Verdict
+
+TCI's resident-shopper grocery channel remains a structural gap: Graceway (the
+chain locals actually use) is brochure-only with no online catalog, and no
+local grocer has any web presence. The tourist/guest grocery-delivery niche is
+now covered by three independent storefronts -- goods2door_tc (Wix),
+islandselects_tc and tcgrocerydelivery_tc (both WooCommerce) -- all verified
+against real collected rows. No further food source was found reachable
+within this session's tooling constraints.
+
+
+---
+
+## known_blockers_playwright - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_playwright.md` on 2026-09-11. 3 hosts, 1 not
+documented above at merge time.
+
+# Known blockers — generic_woo_playwright pass (2026-09-11)
+
+Built `generic_woo_playwright` (src/prices/price_scraping/spiders/generic_woo_playwright.py),
+a Playwright-capable sibling of `generic_woo_configured` for WooCommerce
+storefronts behind an hcdn-style JS interstitial. Onboarded 8 of the 9
+hcdn-flagged sources named in ~/gapwork/known_blockers_repair_1.md and
+_repair_2.md: leskanso_gn, lexmakyty_gn, gotrustmesl, torodo_chicken_land,
+albasatin_aldhahabia, almatjar_ly, green_apples_pharmacy, nesraf. One
+failed a hard gate. See the full report for the launch recipe and the
+measured mechanism (curl_cffi impersonation is what hcdn blocks on 8 of
+the 9 tenants; plain non-impersonating HTTP already clears them with no
+cookie at all — Playwright is required only for the 9th, nesraf.com, and
+only as a session that never hands off to a different HTTP client).
+
+---
+
+## **souristore.com** (Syria, not Libya — the workbook candidate's country
+tag was wrong)
+
+- The hcdn block is real but not the failure here: `generic_woo_playwright`
+  clears it exactly like the other 8 (plain HTTP, no cookie needed) and the
+  Store API returns clean JSON.
+- **Rejected on catalog size, not reachability.** `X-WP-Total: 4` — the
+  entire catalog is 4 products (Lipton Ice Tea Peach Flavour, and 3 others
+  in "مشروبات"/"مركز المدخن" categories). This fails the Phase-6 ≥5-rows
+  gate outright, the same failure mode as `salonebuy` in
+  known_blockers_repair_2.md (3 products, no pagination).
+- Currency is SYP (matches the country), so this is purely a too-small-
+  catalog rejection, unrelated to the currency disqualification that
+  killed the unrelated `syrazo.com` candidate in
+  known_blockers_repair_1.md.
+- **Verdict: reject — catalog too small to ship (4 products, no page 2).**
+  No manifest written. If the store's catalog grows past 5 products in a
+  future re-check, `generic_woo_playwright` with
+  `api_url: "https://souristore.com/wp-json/wc/store/v1/products"` would
+  work unmodified — same tenant, same recipe as the 8 that shipped.
+
+
+---
+
+## known_blockers_repair_1 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_repair_1.md` on 2026-09-11. 8 hosts, 2 not
+documented above at merge time.
+
+# Known blockers — Libya + Syria repair pass 1 (2026-09-11)
+
+8 of 9 targeted sources could not be repaired. `glo_ly` was fixed (see final
+report) — its manifest now lives at
+`src/prices/configs/menaap/north_africa/libya/glo_ly.yaml` in the worktree.
+
+All probes below used `curl_cffi` with `impersonate="chrome124"` (and
+additional profiles where noted), hitting, in order: `/wp-json/wc/store/v1/products?per_page=50&page=1`,
+`/wp-json/wc/store/products`, `/?rest_route=/wc/store/v1/products`,
+`/products.json?limit=50`, and the plain homepage.
+
+---
+
+## **albasatinaldhabia.com**
+
+- Every path tested (homepage, all 4 API-shape probes, `/store/...`,
+  `/shop/...`) returns HTTP 403 with `server: hcdn` and a
+  "Checking your browser before accessing... Just a moment" JS-challenge
+  page (meta-refresh every 30s, no `Set-Cookie` issued).
+- Re-probed with a persistent `requests.Session()`: still 403 on the second
+  request, so it's not a one-shot fingerprint miss — the edge never issues a
+  cookie that a plain HTTP client could carry forward.
+- This is a JS-execution challenge (canvas/browser fingerprint), not a
+  simple UA/TLS block; `curl_cffi` impersonation cannot solve it because it
+  never runs JavaScript. Would need a real headless browser (Playwright)
+  with challenge-solving, which is out of scope here.
+- **Verdict: reject.** No page 1 vs page 2 comparison was possible — the API
+  was never reachable.
+
+## **almatjar.ly**
+
+- Identical `hcdn` 403 JS-challenge wall on every path, same evidence as
+  albasatinaldhabia.com (same edge provider, same challenge page).
+- Note: the overlay manifest's notes claimed "X-WP-Total 975 on
+  2026-09-10" — that number could not be reproduced today; the API is fully
+  walled off now.
+- **Verdict: reject.**
+
+## **greenapplespharmacy.com**
+
+- Identical `hcdn` 403 JS-challenge wall on every path (homepage included).
+- **Verdict: reject.**
+
+## **nesraf.com**
+
+- Identical `hcdn` 403 JS-challenge wall on every path (homepage included).
+  The overlay's own notes already flagged this ("browser-check page on
+  2026-09-10") — reprobing today with TLS impersonation did not change the
+  outcome.
+- **Verdict: reject.**
+
+## **souristore.com**
+
+- Identical `hcdn` 403 JS-challenge wall on every path (homepage included).
+- **Verdict: reject.**
+
+## **progaming.ly**
+
+- Every path (homepage and all 4 API probes) returns HTTP 403 with
+  `server: cloudflare` and a static "Sorry, you have been blocked" /
+  "Attention Required!" Cloudflare WAF page — a custom firewall rule, not a
+  JS challenge (no spinner/refresh, no cookie dance).
+- Reprobed with 4 different `impersonate` profiles (`chrome120`,
+  `chrome131`, `safari184`, `edge101`): 403 on all four. Consistent across
+  fingerprints points to an IP/ASN-level WAF rule against this box's egress
+  network, not a client-fingerprint issue.
+- **Verdict: reject.**
+
+## **poststore.ly**
+
+- Homepage and `/shop/` are live (HTTP 200) and genuinely WooCommerce: the
+  page markup contains `woocommerce` and `woocommerce-Price-amount` classes,
+  and `/shop/` lists 15 distinct product permalinks.
+- However the WordPress REST API is disabled site-wide, not just the Store
+  API: `/wp-json/` returns 404, and the query-param fallback
+  `/?rest_route=/` — which normally lists every registered namespace —
+  also returns 404. There is no API surface at all to point
+  `generic_woo_configured` at, under any of the 4 URL shapes.
+- A product sitemap does exist and is populated:
+  `/product-sitemap.xml` returns 200 with 199 `<loc>` entries (mostly
+  `/product/...` PDPs, in Arabic slugs), which is exactly the situation
+  the repo's `_woo_sitemap_base.py` pattern (see `ikuma_gw.py`) was built
+  for — a bespoke sitemap-walking spider subclass would very likely work.
+- **Verdict: reject for a manifest-only fix.** None of the 4 generic
+  `*_configured` spiders (Woo Store API, Shopify, OpenCart, PrestaShop) fit
+  an HTML/sitemap-only WooCommerce store; onboarding this source needs a new
+  per-source spider file (a `WooSitemapBaseSpider` subclass), which is
+  outside this task's manifest-repair scope.
+
+## **www.syrazo.com**
+
+- The storefront itself is real and live: homepage returns 200 (2.17MB),
+  is a custom platform (not WooCommerce, not Shopify — `/products.json`
+  returns the same HTML app shell as the homepage, consistent with
+  client-side routing / a catch-all backend route), and lists 210 distinct
+  `/products/...` permalinks on the homepage alone.
+- Currency check fails: a sampled PDP
+  (`/products/fakir-upright-vacuum-cleaner-800-watts`) carries its own
+  JSON-LD `"offers":{"price":"69","priceCurrency":"USD", ...}`, and the
+  page's own currency-switcher widget defaults to `USD` with a manual link
+  to switch to `SYP` (`/currency/switch/SYP`). The canonical, structured
+  price data is USD-denominated; SYP is a display-only toggle, not the
+  underlying currency.
+- Per the task's currency gate ("if a storefront prices in USD/EUR/TRY it
+  may not be a local source at all"), this disqualifies it as a Syria
+  local-currency source regardless of platform/API questions.
+- **Verdict: reject** (currency, not reachability).
+
+
+---
+
+## known_blockers_repair_2 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_repair_2.md` on 2026-09-11. 8 hosts, 5 not
+documented above at merge time.
+
+# Known blockers — Guinea + Sierra Leone + Gambia repair pass 2 (2026-09-11)
+
+12 of 13 targeted sources could not be shipped as a manifest-only fix.
+`gambia_petshop` was fixed (see final report) — its manifest now lives at
+`src/prices/configs/ssa/west_africa/gambia/gambia_petshop.yaml` in the
+worktree.
+
+All probes used `curl_cffi` with `impersonate="chrome124"` (then
+`chrome120`, `safari17_0` where the first failed), hitting, in order:
+`/wp-json/wc/store/v1/products?per_page=50&page=1`,
+`/wp-json/wc/store/products`, `/?rest_route=/wc/store/v1/products`,
+`/products.json?limit=50`, and the plain homepage. Where curl_cffi 403'd
+uniformly, a real headless Chromium (Playwright, cached at
+`~/.cache/ms-playwright/chromium-1200` on `a8` — installs via
+`playwright install` fail on this box's OS but the cached browser launches
+fine) was also run for the mandatory network-trace check, 8-9s wait,
+before any WAF verdict was recorded.
+
+---
+
+## **leskanso_gn**, **lexmakyty_gn**, **gotrustmesl**, **torodo_chicken_land** — LIVE, but not a manifest fix
+
+All four are hosted behind the same `hcdn` (Hostinger CDN-style) edge and
+serve an identical JS proof-of-work interstitial to any non-JS client:
+HTTP 403, `server: hcdn`, title "Checking your browser before
+accessing... Just a moment...", meta-refresh 30s, obfuscated JS that
+computes a SHA-256-style hash over a per-request seed served by
+`/hcdn-cgi/jschallenge` and POSTs it back before reloading. `curl_cffi`
+with all 3 TLS profiles, plus a persistent-cookie `Session` retried 3x
+with a 6s gap, got 403 on every attempt on every path (including the
+API endpoints directly) — no `Set-Cookie` is ever issued to a client
+that can't run the JS, so there is no cookie to carry forward.
+
+**This is a real block, but it is not a dead end** — re-probed all four
+with headless Chromium via Playwright:
+- Homepage clears the challenge and renders the real storefront in all 4
+  cases (confirmed by title: "Kanso Industrie – Le shopping qui vous
+  simplifie la vie" / "Accueil - lexmakyty.com" / "Online Shopping Sierra
+  Leone | GoTrustMe SL Marketplace" / "Torodo Chicken Land").
+- Navigating Playwright directly to
+  `/wp-json/wc/store/v1/products?per_page=20&page=N` (after the homepage
+  warm-up) returns real JSON, confirming all four run genuine WooCommerce
+  Store APIs with live, non-zero-priced catalogs:
+  - `leskanso_gn`: 17 products, GNF, e.g. id=2753 price=11,200,000 GNF.
+    Page 2 empty (catalog fits on one page).
+  - `lexmakyty_gn`: 40 products across 2 pages (20+20), GNF, e.g.
+    id=5342 price=300,000 GNF. Page 1 vs page 2 ids fully disjoint
+    (5342/5323/5301/... vs 4658/4654/4645/...) — genuinely paginates.
+  - `gotrustmesl`: 10 products, **SLL** (not SLE — this tenant's
+    WooCommerce currency setting still uses the pre-2022 old-leone ISO
+    code), e.g. id=4367 price=45,000 SLL. Single page.
+  - `torodo_chicken_land`: 9 products, GMD, e.g. id=15738 price=8,000
+    GMD. Single page.
+- `arabinene_gn` (see below) is the only one of the five 403'd sites
+  that stayed blocked under Playwright too — these four are a genuinely
+  different, weaker class of block.
+
+**Why this isn't a manifest fix:** the repo's `generic_woo_configured`
+spider (`WooBaseSpider`) issues plain `scrapy.Request`s with no
+Playwright involvement, and curl_cffi TLS impersonation cannot execute
+the hcdn JS challenge (it isn't a TLS/JA3 fingerprint check — it's a
+content-level proof-of-work). The repo does have `scrapy-playwright`
+wired in repo-wide (`settings.py` line ~91,
+`meta['playwright']=True`) and several bespoke spiders already use it
+(`makro.py`, `central_th.py`, `express_market_cm.py`, etc.), but there is
+no generic Playwright-capable WooCommerce spider today — only the
+plain-HTTP `generic_woo_configured`. Pointing these manifests at
+`generic_woo_configured` would ship a spider guaranteed to 403 on every
+run.
+
+**Recommendation (not done here, needs separate sign-off):** write a
+`generic_woo_playwright_configured` spider (or extend `WooBaseSpider`
+with an opt-in `meta={"playwright": True}` per request) that lets a
+manifest ask for the Playwright path. All four of these sources are
+small catalogs (9-40 products) but genuinely live and correctly priced —
+worth the one-time cost of building that template, then reusing it
+across all four in one pass, per the skill's own "build the anti-bot
+template once, then reuse" guidance.
+
+**Verdict: not merged, pending Playwright-Woo scaffolding.**
+
+## **arabinene_gn**
+
+- Every path (homepage and all 4 API-shape probes) returns HTTP 403 with
+  `server: cloudflare`, `cf-mitigated: challenge`, title "Just a
+  moment...", and an inline Cloudflare Turnstile challenge
+  (`challenges.cloudflare.com/turnstile/...`).
+- Reproduced identically across `chrome124`/`chrome120`/`safari17_0`
+  curl_cffi profiles.
+- Re-probed with headless Chromium via Playwright (real JS execution,
+  9s wait): **still 403**, page title still "Just a moment...", content
+  length 28544 (the Turnstile shell, not the site). The Turnstile widget
+  itself loaded (`challenges.cloudflare.com/turnstile/v0/g/.../api.js`)
+  but did not clear headlessly.
+- This is the one site where both curl_cffi impersonation AND a real
+  headless browser failed — the genuine "stop" condition. A residential
+  proxy plus a captcha-solving service would be needed; out of scope.
+- **Verdict: reject.**
+
+## **anadi_guinee_gn**
+
+- Homepage returns HTTP 200, but the content is **not a Guinea
+  storefront at all**: `<title>PASCOL4D Login : Akses Alternatif Resmi
+  Situs Toto Slot Gacor 4D Terpercaya Paling Instan</title>`, an
+  Indonesian online-gambling ("toto slot") SEO-spam page, styled via
+  `global.microless.com` (a legitimate small-business e-commerce SaaS —
+  this domain appears to have been a Microless-hosted electronics/pet
+  supplies storefront previously, now hijacked/repurposed). `/wp-json/`,
+  `/boutique/`, `/shop/` all 404 — there is no WordPress/WooCommerce
+  installation to find a Store API on.
+- Confirmed via direct HTML fetch and grep for `<title>`, `og:title`,
+  and `product:price:currency` meta tags — the only price meta present
+  (`product:price:amount=9`, `currency=USD`) belongs to the gambling
+  page's own OG tags, not a real product.
+- **Verdict: reject — domain squatted/repurposed, not a live Guinea
+  retailer.** Nothing about this is a probing-client artifact.
+
+## **madinaenligne_gn**
+
+- All 3 WooCommerce Store API variants (`/wp-json/wc/store/v1/products`,
+  `/wp-json/wc/store/products`, `/?rest_route=/wc/store/v1/products`)
+  return **HTTP 500** with an identical PHP fatal error:
+  `Uncaught TypeError: substr(): Argument #1 ($string) must be of type
+  string, int given in /htdocs/wp-content/plugins/wp-rocket/...` — this
+  reproduces on every retry; it's a real server-side crash (the
+  WP-Rocket cache plugin), not a bot block. `/wp-json/` root,
+  `/sitemap.xml`, and `/sitemap_index.xml` crash the same way (the whole
+  REST/sitemap stack is down site-wide).
+- The HTML shop page (`/boutique/`) returns 200 but is an **Elementor
+  Canvas** template (`elementor-template-canvas`,
+  `woocommerce-no-js` body class) with **zero static product cards or
+  PDP links** — WooCommerce's product loop here is populated
+  client-side/AJAX only, so a non-JS crawler sees an empty shell.
+  `/boutique/page/2/` also 500s.
+- Individual product-detail pages **do** work and carry real prices:
+  fetched two known PDP URLs directly
+  (`/produit/iphone-11-128gb/` → JSON-LD price 2,700,000 GNF;
+  `/produit/ordinateur-portable-hp-g7/` → 2,500,000 GNF) — the catalog
+  is genuinely live and GNF-priced.
+- The problem is **discovery**: with the API dead and the listing pages
+  JS-only, there is no static path (no sitemap, no product-category
+  archive links found on the homepage) for a crawler to enumerate PDP
+  URLs at scale. `generic_woo_configured` only speaks the Store API, so
+  it cannot use the PDP-JSON-LD path either.
+- **Verdict: reject as a manifest fix.** Would need either the WP-Rocket
+  bug to be fixed site-side, or a bespoke Playwright-based
+  listing-discovery spider — both out of scope here.
+
+## **salonebuy**
+
+- All 3 WooCommerce Store API variants return HTTP 500 (generic
+  "WordPress › Error" critical-error page — a broken plugin, not
+  specifically identified). `/wp-json/` root also 500s.
+- The HTML shop page (`/shop/`, Martfury theme) does render statically
+  and does carry 3 real product cards/links (Cetaphil skincare set,
+  solar floodlight, solar home system) — but that is the **entire**
+  catalog: `/shop/page/2/` returns 404 (the page doesn't exist), so
+  there is no pagination to test and the source fails the ≥5-rows
+  Phase-6 bar outright at 3 unique products.
+- **Verdict: reject — catalog too small to ship (3 products, no
+  pagination) and the API is separately broken.**
+
+## **national_centre_for_arts_and_culture_shop** (ncac.gm)
+
+- Every path tested (homepage, `/shop/`, `/shop/page/2/`, `/wp-json/`,
+  the Store API) returns the **identical 2576-byte page**: `<title>Access
+  Denied</title>` / "This site is currently suspended... If you are the
+  owner of this site, please contact support for more information." The
+  original probe's "200 but HTML not JSON" verdict undersold it — the
+  200 status is a hosting-provider suspension page, not a working site
+  at all.
+- **Verdict: reject — hosting account suspended, nothing to scrape.**
+
+## **djickai_gn**, **media7plus_gn**
+
+- Both return HTTP 402 on every path and every TLS profile — Shopify's
+  own "payment required" response for a store frozen for non-payment
+  (per the known gotcha: 402 on a `*.myshopify.com`-backed domain means
+  the store is closed, not blocked).
+- **Verdict: reject — confirmed dead, no further probing warranted.**
+
+## **femb6y_shopify_haircare_gn**
+
+- Returns HTTP 423 on every path: `<title>This store is
+  unavailable</title>` (Shopify's "store deactivated" page, distinct
+  from the frozen-for-payment 402 above). `/products.json` returns
+  `{"errors":"Not Found"}` (404). `/admin` redirects to the standard
+  Shopify login, no custom-domain hint anywhere in the response.
+- Checked for a migrated custom domain (the standard fix for a stale
+  `*.myshopify.com` host per the task's own gotcha) — no redirect, no
+  canonical link, nothing in the 423 page pointing elsewhere.
+- **Verdict: reject — store deactivated, not merely moved.**
+
+
+---
+
+## known_blockers_repair_3 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_repair_3.md` on 2026-09-11. 12 hosts, 6 not
+documented above at merge time.
+
+# Known blockers — repair batch 3 (South Sudan, Greenland, Botswana)
+
+All probes below used `curl_cffi` with `impersonate="chrome124"` (TLS/JA3 impersonation), run 2026-09-11 from `a8`. Each site was re-probed live — none of the verdicts below are carried over from the original overlay notes without re-confirmation. None of the 12 targets produced a corrected manifest; details per source follow.
+
+## **higromall.com** (higromall_ss)
+- Tried: `/`, `/products.json`, `/wp-json/wc/store/v1/products`, `/wp-json/wc/store/products`, `/?rest_route=/wc/store/v1/products`.
+- Every path, including the bare homepage, returned **HTTP 500 with a 0-byte body**, 3x on retry with a 2s gap.
+- Impersonation made no difference — this is a server-side failure, not a bot block. Site is not currently serving any content at all.
+- Verdict: dead. Not a probing-client artifact; the origin itself is broken.
+
+## **jubafashionhub.link** (juba_fashion_hub_link_ss)
+- Homepage is a client-rendered Vite/React SPA (`<div id="root">`, JS bundle at `/assets/index-*.js`); every path including `/products.json` returns the **identical 7891-byte SPA shell** (client-side routing, no server route for that path).
+- Found the real data source by reading the JS bundle: a same-origin endpoint `GET /api/products` (Firebase-backed custom Node app) returns a **live, non-paginated JSON array of 130 products**, all with non-zero `priceSSP` (e.g. 320000, 640000, 200000 SSP — these look like SSP-denominated, consistent with hyperinflation). Pagination params (`?page=`, `?limit=`) are accepted but ignored — the endpoint just returns the full 130-item catalog every time, so the page-1-vs-page-2 gate doesn't apply (there's only one page).
+- This IS a live, verified, correctly-priced South Sudan source. It is **not Woo or Shopify** — it's a bespoke JSON API with its own schema (`fragranceFamily`, `priceSSP`, `notesTop`, etc.). Neither `generic_woo_configured` nor `generic_shopify_configured` can parse it; there is no existing generic-JSON spider in the repo to point at it.
+- Verdict: **not a manifest fix** — needs a bespoke fetcher/spider written against `/api/products`, which is out of scope for a spider/spider_kwargs/currency correction. Flagging as a good candidate for a follow-up scaffolding task, not folding it in here without sign-off on writing new spider code.
+
+## **nilemart-ss.com** (nilemart_ss)
+- All paths return **HTTP 403** behind a JS proof-of-work challenge (`server: hcdn`, title "Checking your browser before accessing... Just a moment...", obfuscated JS computing a SHA-256-style hash and POSTing it to `/hcdn-cgi/jschallenge` before a reload).
+- This persists under TLS impersonation because the block is a JS challenge, not a TLS/UA fingerprint check — curl_cffi does not execute JavaScript, so it can't complete the challenge.
+- Verdict: dead for this pipeline (no headless-browser solving in scope).
+
+## **jubafashionhub.store** (juba_fashion_hub_ss)
+- `/` returns Shopify's own 402 "Store unavailable" page; `/products.json` returns `{"errors":"Unavailable Shop"}` with HTTP 402.
+- Verdict: dead. Shopify store frozen for non-payment (per the known gotcha for 402 on Shopify domains).
+
+## **jubalaptops.com** (jubalaptops_ss)
+- Homepage 200 (WordPress/WooCommerce theme). `/products.json` 404 (not Shopify, expected). All 4 Woo Store API variants return **HTTP 401** `rest_api_authentication_required`.
+- Verdict: dead. Store API is locked to authenticated users; no public product feed exists for `generic_woo_configured` to hit.
+
+## **jubastationery.com** (jubastationery_ss)
+- Homepage 200, `wp-json/` root lists only `wc/v1`, `wc/v2`, `wc/v3` (legacy WooCommerce REST, requires consumer key/secret) — **no `wc/store` namespace is registered at all**, hence the 404 `rest_no_route` on every Store API path tried.
+- Category page (`/product-category/computer-and-mobiles/`) is genuine WooCommerce HTML (`class="woocommerce"` present, price markup present) — a human/HTML crawl could see prices, but `generic_woo_configured` (`src/prices/price_scraping/spiders/generic_woo_configured.py`) only talks to the Store API (`WooBaseSpider`, no HTML fallback path).
+- Verdict: not repairable with the existing generic Woo spider. Would need a bespoke HTML-crawling spider for this specific store — out of scope here.
+
+## **aknittersworld.dk** (aknittersworld)
+- All paths return **HTTP 403** behind a Bunny CDN "Shield" JS proof-of-work challenge (`/.bunny-shield/assets/shield-challenge.js`, `data-pow="..."` attribute).
+- Same class of block as nilemart-ss: JS challenge, not solvable by TLS impersonation alone.
+- Could not get far enough to verify the Greenland-vs-Denmark locality question raised in the task (whether this `.dk` domain actually prices/ships to Greenland) — the site never rendered past the challenge page.
+- Verdict: dead for this pipeline.
+
+## **jajja.gl** (jajja_gl)
+- Homepage and `/collections/all` both return HTTP 200, but the page's embedded Shopify bootstrap JSON explicitly declares `"pageType":"password"`, `"productVariants":[]`, `"products":[]`. `/collections/all/products.json` and `/collections/all.json` both return **HTTP 401** with an empty body.
+- Currency confirmed as DKK in the same bootstrap JSON (`"paymentSettings":{"currencyCode":"DKK"}`), `countryCode":"GL"` — so locality is correct, but irrelevant since the storefront is locked.
+- Verdict: dead. Password-protected Shopify storefront (matches the known 401-on-Shopify gotcha) — no product data is served to unauthenticated requests despite the 200s on HTML pages.
+
+## **nanoqmedia.gl** (nanoqmedia_gl)
+- Homepage 200 (WordPress/WooCommerce theme, Danish locale). `/products.json` 404 (not Shopify, expected). `wp-json/` root itself returns **HTTP 401** with an empty `namespaces` list — the entire REST API, not just Store API, is locked to authenticated users.
+- Verdict: dead. No public API surface at all for `generic_woo_configured` to use.
+
+## **hoodmarket.com** (hoodmarket_liquor_bw)
+- `/` returns Shopify's 402 "Store unavailable" page; `/products.json` returns `{"errors":"Unavailable Shop"}`, HTTP 402.
+- Verdict: dead. Frozen Shopify store (non-payment), same as juba_fashion_hub_ss.
+
+## **houseofgentlemen.co.bw** (houseofgentlemen_bw)
+- Identical signature to hoodmarket.com: HTTP 402, `{"errors":"Unavailable Shop"}` on `/products.json`.
+- Verdict: dead. Frozen Shopify store.
+
+## **totaltools.co.bw** (totaltools_phakalane)
+- Correction to the handover table: this is **not Shopify** — it is a live WordPress/WooCommerce site, and its Store API works fine publicly: `GET /wp-json/wc/store/v1/products?per_page=50&page=N` returns HTTP 200 with real JSON, `X-WP-Total: 580`, `X-WP-TotalPages: 12`, currency `BWP`, and page 1 vs page 2 return fully disjoint product-id sets (paginates correctly — passes the gate on that count).
+- Failed on the second half of the gate: pulled all 580 products across all 12 pages and checked `prices.price`. **567 of 580 (97.8%) are priced "0"** — this is a quote-only industrial/hardware catalogue (tools, PPE, generic hardware), matching the overlay's own prior note "Not-ready / quote-only P0 catalog." Only 13 items (2.2%) carry a real price.
+- Verdict: rejected on price coverage, not on access. Live API, wrong content — a catalogue that's almost entirely "price on application" is not a usable price source.
+
+
+---
+
+## known_blockers_repair_4 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_repair_4.md` on 2026-09-11. 4 hosts, 3 not
+documented above at merge time.
+
+# Known blockers — repair pass 4 (2026-09-11)
+
+## **compraonline.alcampo.es** (alcampo_es, Spain, EUR) — capped, NOT dead
+
+Already merged and shipping; left unchanged (reverted after a failed
+improvement attempt, see below) because it still clears the repo's
+>=5-row bar. Documented here so a future pass doesn't re-attempt the
+same fix without new capability (a CAPTCHA-solving service or IP
+rotation).
+
+- The spider already walks the FULL catalogue (both sitemap product
+  shards, 86,263 URLs total) — the low row count is NOT a narrow
+  category/search-endpoint problem and NOT a `DuplicationPipeline`
+  URL-collapse. Direct evidence: a live run's 7 rows carried 7 fully
+  distinct product ids/urls spanning unrelated categories (a laptop, a
+  glass container, chocolate, a broom, pool chemicals, boxer shorts,
+  setting powder) — proof the sitemap walk is correct and broad.
+- Real root cause: AWS WAF Bot Control on `compraonline.alcampo.es`.
+  A fresh IP/session gets a small grace allowance (5-10 real HTTP 200
+  PDP responses, reproduced across three separate live attempts on
+  2026-09-10 and 2026-09-11), then every further request against
+  `/products/*` gets HTTP 202 (`x-amzn-waf-action: challenge`), which
+  itself escalates to **HTTP 405 with `x-amzn-waf-action: captcha`** —
+  a real interactive "Human Verification" image-CAPTCHA page (confirmed
+  by inspecting the response headers and HTML title directly), not a
+  passive JS-only proof-of-work.
+- Tried and disproven: the "Playwright once to mint an aws-waf-token,
+  then plain-HTTP-replay the cookie" pattern that already works
+  elsewhere in this repo for `taw9eel_kw.py`/`cdiscount_fr.py`. Those
+  tenants use AWS WAF's `challenge` action only, which a real browser
+  auto-solves by executing the page's JS. Alcampo's PDP surface uses the
+  `captcha` action: a real headless Chromium navigated directly to a PDP
+  and left running for 20 seconds never auto-solved or redirected — it
+  is a genuine visual puzzle, not automatable JS. Worse, replaying a
+  cookie jar minted from a bare homepage visit made things WORSE than
+  the no-cookie baseline: a live test run carrying that cookie jar got
+  **0 real rows across 239 requests** (120x202 + 119x405-captcha)
+  against 85,714 distinct candidate PDP URLs, versus 7-10 real rows for
+  the existing no-cookie approach. Presenting a token that was never
+  actually solved appears to read as a stronger bot signal than
+  presenting none.
+- A fresh (cookie-less) Playwright browser launched per item avoided
+  the immediate captcha escalation seen with a reused session (stayed
+  at the lighter `challenge` action across 5 distinct fresh-context
+  requests) but still got 0 real content through in that test window —
+  inconclusive, and not clearly better than the shipped approach.
+- Conclusion: reverted `alcampo_es.py` to the pre-existing, already-
+  verified version (the only change kept is an addendum to its
+  docstring recording this investigation). A real fix to reach
+  "thousands of rows" needs infrastructure this repair pass doesn't
+  have — a CAPTCHA-solving service or rotating IPs to keep re-arriving
+  as a fresh grace-allowance identity — not a spider-code change.
+
+## **calpepharmacy.gi** (calpepharmacy_gi, Gibraltar, GIP)
+
+Not merged; no viable fix found — dead end confirmed.
+
+- Every endpoint probed (homepage, `/shop/`, WooCommerce Store API
+  `/wp-json/wc/store/v1/products`, `/products.json`, sitemap) returns
+  **HTTP 403** with a Cloudflare "Attention Required! | Cloudflare" /
+  "Sorry, you have been blocked" firewall page.
+- Reproduced identically across 6 curl_cffi TLS-impersonation profiles
+  (chrome120/124/131, safari17_0/18_0, chrome99_android, edge101) **and**
+  from a real headless Chromium via Playwright (full JS execution, real
+  browser fingerprint) — still 403, same "Attention Required" title.
+- Only `/robots.txt` returns 200.
+- Probed from a8's residential IP (73.201.6.61, AS7922 Comcast), not a
+  flagged datacenter range, so this is not an IP-reputation artifact.
+- Conclusion: a Cloudflare firewall-rule-level block that a genuine browser
+  cannot clear either — not a bot-fingerprint or JS-challenge problem that
+  impersonation or Playwright can solve. No spider built.
+
+## **allvision.sr** (allvision_optics, Suriname, SRD)
+
+Not merged; no viable fix found — dead end confirmed.
+
+- Homepage responds 200 but the site is a static **Astro v5.18.2** build
+  (`<meta name="generator" content="Astro v5.18.2">`), not
+  WordPress/WooCommerce — the manifest's `generic_woo_configured` spider
+  and Store API assumption were wrong from the start.
+- All WooCommerce/Shopify-style probes (`/wp-json/wc/store/v1/products`,
+  `/wp-json/wc/store/products`, `/products.json`, `/sitemap_index.xml`,
+  the manifest's seed URL `/product/multifocaal/`) return 404.
+- The site's real sitemap (`https://www.allvision.sr/sitemap.xml`, 200)
+  lists exactly 13 URLs, all marketing/informational pages: homepage,
+  `/oogmeting`, `/brillen-glazen`, `/verzekerd-zien`, `/locaties` (+4
+  location subpages), `/contact`, `/start-hier`, `/veelgestelde-vragen`,
+  `/privacy`.
+- Checked `/brillen-glazen` ("Glasses & Lenses") directly: 23.8KB of HTML,
+  zero SRD/price patterns found.
+- Conclusion: a brochure site for an optician chain with no online
+  catalogue or listed prices of any kind — nothing to scrape. No spider
+  built.
+
+## **sessayelectronic.store** (sessayelectronic, Liberia)
+
+Not merged; confirmed dead (Shopify store frozen).
+
+- Homepage title "Store unavailable", `class="shop-404"`, HTTP 402.
+- `robots.txt` itself states "we use Shopify as our ecommerce platform"
+  and `Disallow: /`.
+- `/products.json`, `/collections/all/products.json`, and `/sitemap.xml`
+  all return **HTTP 402** with body `{"errors":"Unavailable Shop"}`
+  (sitemap.xml returns the XML-wrapped equivalent).
+- Conclusion: confirmed store-frozen at the platform level (matches the
+  known Shopify-402-for-non-payment pattern exactly), not a probing-client
+  issue. Not worth further investment per the task brief. No spider built.
+
+
+---
+
+## known_blockers_retest_1 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_retest_1.md` on 2026-09-11. 49 hosts, 22 not
+documented above at merge time.
+
+# Known blockers — retest batch onboard_1.csv (2026-09-11)
+
+174 previously-rejected hosts (`~/gapwork/retest/onboard_1.csv`: 10 `RECOVERED`,
+164 `STALE-OK`). Worked in priority order (RECOVERED+foodish -> RECOVERED+rest
+-> STALE-OK+foodish -> STALE-OK+rest). One source shipped:
+`palacesuperstores_gh` (Ghana) — see the manifest and final report for detail.
+
+**Headline finding, MEASURED**: of the 174 hosts, 161 (92.5%) answered HTTP 200
+to a plain, non-impersonating GET when independently re-probed live during
+this session (separately from the CSV's own probe arms that put them in this
+batch). The original "blocked" verdicts were overwhelmingly wrong about
+*reachability*. They were far less wrong about *value* — reachable is not the
+same claim as "worth onboarding," and the gap between those two numbers is
+the real finding of this pass (full breakdown in the final report).
+
+All probes below used plain `requests` with a Chrome-124 UA string (no
+`curl_cffi`, no TLS impersonation) unless stated otherwise. Per the skill's
+own gate: a 200 plus a long body is not evidence of a working endpoint —
+several hosts below are Wix/React/Next.js catch-alls that return their own
+homepage HTML (identical byte length) for every path probed, including
+`?rest_route=`/`/api/`-shape guesses.
+
+---
+
+## RECOVERED class (10 hosts, all confirmed HTTP 403 to curl_cffi
+impersonate=chrome124 but HTTP 200 to plain HTTP at CSV-generation time)
+
+- **foodstore2go.com** — NOT new. Already shipped
+  (`src/prices/configs/lac/caribbean/bahamas_the/foodstore2go_bs.yaml`,
+  onboarded 2026-09-05). This batch's row was a stale duplicate of that prior
+  work.
+- **kgalagadibreweries.co.bw** (Botswana, `server: hcdn`) — reachable
+  (WordPress, generator meta confirms), but it is Kgalagadi Breweries'
+  corporate/investor site, not a storefront. Sitemap has only
+  `post-sitemap.xml`/`page-sitemap.xml` — no product catalog exists to scrape.
+  **Reject: no shop.**
+- **thegambiamarket.com** (`server: hcdn`) — reachable but the whole site is
+  a 5.7KB "Hostinger Horizons" AI-site-builder shell; `/sitemap.xml` 429s.
+  Consistent with Will's 2026-09-11 handover note calling this not viable.
+  **Reject: dead/placeholder site**, not a real block.
+- **5ka.ru** (Pyaterochka delivery app, Russia) — flaky. CSV recorded
+  B_ua=200; my independent re-probe got 403 on the homepage and on both
+  WooCommerce Store-API guesses (which returned 200 but with fake/near-empty
+  HTML bodies, not real endpoints — this tenant is not WooCommerce).
+  **Reject: not reliably reachable, and not the platform the 200 implied.**
+- **buyonwasapp.ng** (Nigeria, `server: hcdn`) — genuinely reachable, genuine
+  WooCommerce Store API (`/wp-json/wc/store/v1/products`), but the entire
+  catalog is 16 SKUs, nearly all ad-placement/membership products at price=0
+  ("Space Advertisement" NGN 500000, several NGN 0 listings, "Miss
+  Buyonwasapp.ng 2025" NGN 1). **Reject: fails the non-zero-real-price gate**
+  — this is a classifieds/ad marketplace wearing a WooCommerce skin, not a
+  product catalog.
+- **dukan.af** (Afghanistan, `server: hcdn`) — reachable, real e-commerce
+  (cart/add-to-cart present, 614-URL sitemap with `/product/<slug>` PDPs
+  confirmed live). Catalog is general dropship merchandise (USB juicers,
+  inflatable sofas, watches, Labubu toys, slimming tea) — sampled ~30 product
+  names, effectively zero core-food SKUs. **Reject for this pass: reachable
+  and real, but not a food source** (COICOP 01/02 fill would be ~0).
+- **margaarou.com** (`server: hcdn`) — reachable, genuine WooCommerce Store
+  API, verified enumerable (5 pages x 50 items, all disjoint ids). Catalog is
+  furniture/office/appliances (desks, shoe racks, wardrobes); of 250 sampled
+  names, food-keyword hits were all false positives (bottled water, a juice
+  *extractor appliance*, not juice). **Reject for this pass: not a food
+  source.**
+- **onecitizendaily.com** (South Sudan, `server: hcdn`) — reachable, but it's
+  a WordPress newspaper (title: "One Citizen Daily Newspaper — The Leading
+  English Newspaper in South Sudan"). `/products.json` 200 is the WP
+  catch-all, not Shopify. **Reject: non-commerce site.**
+- **quincaillerie.ci** (Côte d'Ivoire, `server: hcdn`) — reachable, genuine
+  WooCommerce (`woocommerce`/`add-to-cart`/`panier` in page source, real
+  `/shop` sitemap entry). It is a hardware store ("quincaillerie" = hardware/
+  ironmongery in French) — zero COICOP 01/02 relevance. **Reachable and real,
+  but out of scope for food** (counts toward the headline reachability number
+  only; not scaffolded).
+- **sococe.online** (`server: hcdn`) — reachable but the entire site is a
+  7.9KB "Votre site est en Construction" (site under construction) page.
+  **Reject: not live.**
+
+**RECOVERED summary: 10/10 reachable (confirms the hypothesis at 100% for
+this sub-batch), 0 new food sources** (1 was already shipped under a
+different retest pass; 4 are real, live, non-food commerce sites; 4 are
+non-commerce or dead sites; 1 is a degenerate ad-listing catalog; 1 was not
+reliably reachable on re-check).
+
+---
+
+## STALE-OK + foodish class (30 hosts)
+
+- **palacesuperstores.com** (Ghana) — **SHIPPED.** See
+  `src/prices/configs/ssa/west_africa/ghana/palacesuperstores_gh.yaml`.
+- **africamedicalmarketplace.com** — reachable but a pharmacy/medical
+  marketplace (COICOP 06, not 01/02). `/wp-json/wc/store/v1/products` 200 is
+  a homepage-HTML catch-all, not a real Woo endpoint. **Reject: non-food.**
+- **alloshmart.com** / real domain **allosh-eg.com** (Egypt, "Alloush Market
+  — 24-hour supermarket") — genuinely a real Egyptian grocery chain (sitemap
+  lists `/brand/pepsi`, `/brand/cocacola`, `/brand/juhayna` — Juhayna is a
+  major Egyptian dairy brand). Frontend is a React/Next SPA; every guessed
+  REST path on both `alloshmart.com` and `allosh-eg.com` 404s or catch-alls.
+  **Needs a Playwright network trace to find the real product API — not
+  a manifest-only fix. Worth a dedicated follow-up: real supermarket, high
+  food relevance.**
+- **bazaar-baghdad.com** (Iraq) — reachable, real PDP structure
+  (`product.php?id=N`, confirmed live at id=160 with a rendered price
+  section), but price is injected by client JS from data not present in the
+  static HTML (no embedded `var product = {...}`, no discovered `fetch()`
+  target beyond a cart-actions endpoint). **Needs a Playwright trace to find
+  the price data source — not a manifest-only fix this pass.**
+- **bookshop.org** — reachable, but books (non-food). **Reject: non-food.**
+- **decker.shop** (Dagenham, England — `meta.json` confirms `country: GB`,
+  `currency: GBP`) — genuine Shopify storefront, and it does sell food
+  (oats, evaporated milk, tea), but the entire catalog is 26 SKUs on a single
+  page (page 2 empty). **Reject: catalog too thin to treat as a real
+  source, and GB is not a priority gap country for this project.**
+- **foodbevg.com** — reachable but the crawlable link structure is dominated
+  by a `/US/...` country-selector pattern and a login wall on internal pages
+  — reads as a B2B food/beverage trade-directory site, not a consumer
+  storefront with fixed retail prices. **Not verified as a real catalog this
+  pass — needs deeper investigation before a verdict.**
+- **foodpanda.com.mm** (Myanmar) — reachable, but foodpanda is a
+  restaurant-delivery + darkstore (pandamart) aggregator requiring
+  city/location context through its own app API, not a simple REST catalog.
+  **Out of scope for a single-pass manifest fix — dedicated effort per the
+  skill's "market leader" guidance.**
+- **fresh-hot-pizza.pages.dev** — a Cloudflare Pages-hosted single-pizzeria
+  site ("Hot Pizza — Juba's Hottest Pizza"). Reads as a small
+  demo/marketing site, not a catalog with enumerable SKUs. **Reject: not a
+  price source shape.**
+- **gcc.luluhypermarket.com** — reachable, but this is the *same* GCC LuLu
+  Hypermarket platform already onboarded per-country
+  (`lulu_ae`/`lulu_bh`/`lulu_om`/`lulu_sa`/`lulu_kw`/`lulu_qa`). **Reject:
+  redundant, not a new source.**
+- **gnakrystore.com** (Guinea) — reachable, real French-language storefront
+  (`/catalogue`, `/panier`, `/promotions/flash` routes in its own sitemap),
+  but no discoverable REST endpoint from static probing (`/wp-json/`,
+  `/rest/V1/products`, `/api/products` are all the SPA's homepage catch-all).
+  **Needs Playwright network trace — not a manifest-only fix this pass.**
+- **imvelomarketplace.vercel.app** — reachable at CSV-generation time, but
+  now consistently returns Vercel's own bot-challenge page ("Vercel Security
+  Checkpoint", 403) on every path. **Reject: re-blocked / inconsistent since
+  the batch was generated.**
+- **kmart.com.au** (Akamai) — reachable, but Kmart AU is general merchandise
+  (apparel/homewares), not a food retailer, and Australia already has
+  established coverage from other sources. **Reject: non-food + low
+  marginal value.**
+- **libyashop.ly** — reachable but the entire site is a 690-byte placeholder
+  page, identical across every path probed. **Reject: not a live catalog.**
+- **lumogambia.shop** ("Lumo — Buy & Sell Anything in Gambia") — reachable,
+  but reads as a general classifieds marketplace (mixed user listings), not
+  a structured retailer catalog. No Woo/Shopify/generic REST endpoint found.
+  **Not pursued this pass** — would need per-listing category filtering and
+  is unlikely to carry reliable fixed retail pricing.
+- **marketplace.com.mm** (Myanmar) — reachable, and `/api/products` is a
+  genuine REST endpoint (proven by a 429 rate-limit response, not a 404/
+  catch-all), but it stayed 429 across 4 retries with 10s backoff and a
+  `Referer` header. **Needs session/auth investigation — not a manifest-only
+  fix this pass.**
+- **nassaugrocer.com** (Nassau, Bahamas — "Nassau Grocer") — CSV recorded
+  A_plain=200, but every independent re-probe this session (including a
+  dedicated retry) got HTTP 403 with an identical 75,193-byte body also seen
+  on `shop.gambia.com` (see below) — looks like a shared intermediary/CDN
+  block page, not two coincidentally-similar sites. **Reject: not reliably
+  reachable at verification time**, despite the STALE-OK verdict.
+- **ogs.channelislands.coop** ("Online Grocery Shopping — Channel Islands
+  Co-operative Society") — reachable, but the entire catalog sits behind a
+  customer login wall (`Login` page title, password field present, every
+  guessed API path 404s). **Reject: login-walled, per the standard skip
+  criterion.**
+- **quinkashop.com** (Côte d'Ivoire — "Materiaux de construction &
+  Quincaillerie") — reachable, real structured site (`/produit/<slug>`,
+  `/categorie/<slug>`, `/boutique?ville=Korhogo` routes all present) but
+  it's a building-materials/hardware store. **Reject: non-food.**
+- **shop.americasnationalparks.org** — genuine Shopify storefront, but it's
+  a national-park gift-shop (souvenirs), not food. **Reject: non-food.**
+- **shop.gambia.com** — same as nassaugrocer.com: CSV recorded a 200 arm,
+  but every re-probe this session got HTTP 403 with the identical
+  75,193-byte body. **Reject: not reliably reachable at verification time.**
+- **shop.sumut.dk** ("Webbutikken i Det Grønlandske Hus i København" — the
+  Greenlandic House webshop, physically based and shipping from
+  Copenhagen, Denmark) — genuine Shopify storefront selling Greenlandic
+  specialty food, but it is a Denmark-based diaspora storefront, not a
+  Greenland-domestic retailer. **Reject: fails the locality gate** (prices
+  are Copenhagen retail prices for an export/diaspora audience, not
+  Greenland shelf prices).
+- **shoprite.co.mz** (Mozambique) / **www.shoprite.co.ls** (Lesotho) — both
+  reachable, both running the enterprise Adobe-Experience-Manager
+  ("shopriteafrica" AEM clientlibs) platform. No public REST/GraphQL product
+  endpoint found from static probing; likely needs a full account/
+  store-selection flow. **Needs dedicated Playwright investigation — real,
+  high-value supermarket chains, but not a quick manifest fix.**
+- **smartbazar.af** (Afghanistan) — reachable, real Next.js marketplace,
+  confirmed AFN currency in its own cart-total copy and a `/dr/currency/...`
+  page, but the product-listing page (`/dr/market`) is heavily client-
+  rendered with no embedded `__NEXT_DATA__` product payload found by static
+  fetch. **Needs Playwright network trace — not a manifest-only fix this
+  pass.**
+- **storna-shopping.vercel.app** — same as imvelomarketplace: now serving
+  Vercel's "Security Checkpoint" 403 on every path. **Reject: re-blocked /
+  inconsistent.**
+- **suqan.store** (Sudan) — reachable, Next.js app, has an `/api` route
+  root (200) but no discoverable `/api/products`-shape endpoint (404s).
+  **Needs Playwright trace — not pursued this pass.**
+- **walmart.com** — **out of scope by project topology**: the US is
+  explicitly excluded from `regions.yaml` (per prior project memory); not
+  pursued regardless of reachability.
+- **www.okmarket.ru** (Russia) — reachable; has a real `/catalogs/` section
+  and a large legitimate sitemap, but no product-level API found in a quick
+  pass. **Not pursued this pass — would need deeper platform ID.**
+- **www.wumart.net** — reachable, but it's a GoDaddy Website Builder
+  brochure page (generator meta confirms), not a real e-commerce backend.
+  **Reject: no live catalog.**
+
+---
+
+## STALE-OK + rest class (134 hosts, foodish=False)
+
+Per the task's own priority order, this bucket was deprioritized behind the
+food-focused buckets above. It received a **bulk reachability re-check only**
+(single plain-HTTP GET per host, 12 concurrent workers, no per-site content
+inspection, no gate-checking) — this is a shallower pass than the two
+buckets above and should be read as such.
+
+**Result: 123/134 (91.8%) answered HTTP 200 on independent re-probe.**
+11 did not:
+
+- `bigw.com.au` — timed out (12s)
+- `etsy.com` — 403
+- `facebook.com` — 400
+- `ferabeton.com` — 403 (non-food: concrete/building materials, "beton")
+- `gao.gov` — 403 (US federal agency, non-commerce, out of topology anyway)
+- `klikindomaret.com` — 403 (Indonesia's Indomaret chain — a market-leader
+  storefront; per the skill's inverse-correlation law this is exactly the
+  class of target expected to stay hardened even after impersonation is
+  dropped)
+- `minagro.gov.ua` — 403 (Ukrainian ministry site, non-commerce)
+- `powerbuy.co.th` — 403
+- `seria.supasave.com.bn` (Brunei "Supasave" grocery) — 403, same
+  75,193-byte block-page fingerprint seen on nassaugrocer.com/
+  shop.gambia.com above; worth flagging as a recurring shared-infrastructure
+  signature rather than 3 independent site-level blocks
+- `watsonswine.com` — 403
+- `zazzle.com` — 403
+
+None of these 134 hosts were individually assessed for platform, food
+content, or the hard gates (enumerability/price/currency/locality) — that
+work remains open. Given the volume, a follow-up pass should re-run the
+foodish heuristic against actual page content (title/meta keywords) rather
+than filename, since — as seen in the foodish=True bucket above — the
+heuristic both over- and under-fires (`quincaillerie.ci`/`quinkashop.com`
+are hardware, not food, despite the "store"/"shop" naming pattern that
+likely got them flagged; conversely, `5ka.ru`/`dukan.af`-style names in the
+"rest" bucket may include real grocery apps that the heuristic missed).
+
+---
+
+## Recurring shared-infrastructure signature
+
+Three hosts across two different priority buckets — `nassaugrocer.com`,
+`shop.gambia.com`, `seria.supasave.com.bn` — all returned an *identical*
+75,193-byte HTTP 403 body on every path probed at verification time, despite
+each having recorded at least one 200 arm in the original CSV. This is
+consistent with one shared reverse-proxy/CDN tenant enforcing a block across
+otherwise-unrelated storefronts, rather than three independent site-level
+WAF decisions. Worth a dedicated look (server header / IP-range fingerprint)
+before writing off all three individually in a future pass.
+
+
+---
+
+## known_blockers_retest_2 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_retest_2.md` on 2026-09-11. 51 hosts, 17 not
+documented above at merge time.
+
+# Retest batch 2 — onboard_2.csv (174 hosts) — findings
+
+_Written: 2026-09-11._ Source list: `~/gapwork/retest/onboard_2.csv` (10 `RECOVERED`,
+164 `STALE-OK`). Every host in this file received a live HTTP probe this session
+(plain `requests` + a Chrome124 UA, homepage + up to 5 standard catalog endpoints:
+Shopify `/products.json`, WooCommerce Store API v1 + legacy, an Odoo `/shop` check,
+and `/sitemap.xml`). Hosts flagged in the probe as carrying a real catalog signal got
+a full manual deep-dive (categories, page-1-vs-page-2 enumerability, price + currency
+fields). **Net result: zero net-new sources.** Below is why, grouped by cause.
+
+## Bottom line
+
+- 174/174 hosts got a live measured probe today.
+- Access verdict confirmed: the `RECOVERED`/`STALE-OK` reclassification is real —
+  every one of the 10 `RECOVERED` hosts and all sampled `STALE-OK` hosts DID return
+  200 to plain, non-impersonating HTTP (or to `curl_cffi` for `STALE-OK`). The
+  "WAF-blocked" verdict on these specific hosts was not a real defense measurement in
+  most cases.
+- But reachability was never the actual constraint for this batch. Of the ~35 hosts
+  that were reachable AND exposed some catalog-shaped endpoint, every single one
+  failed on a *different* gate: already onboarded elsewhere, not food, empty/demo
+  catalog, or brochure/SPA with no product data at all.
+- **Count of previously-"blocked" hosts confirmed newly reachable: 10/10 RECOVERED +
+  164/164 STALE-OK sampled = 174/174.** Count of those 174 that cleared the
+  full onboarding bar (food-relevant + real catalog + enumerable + non-trivial
+  price data): **0**.
+
+## Group 1 — Already onboarded under a different candidate row (duplicates)
+
+Confirmed by direct string match against `src/prices/configs/**/*.yaml` (url/notes
+fields), not a ccTLD/substring artifact:
+
+| Host (this batch) | Already covered by |
+|---|---|
+| `shop.ilovesaipan.net` | `eap/pacific_islands/northern_mariana_islands/ilovesaipan.yaml` — same Odoo storefront, already scraping `shop/category/grocery-262` + 7 other categories. Manually re-verified live: real food SKUs (Folgers, Gerber, Nutella, Spam) at `/shop`, enumerable across pages. This candidate's "marshall_islands" framing was a mismatch — the site is a Saipan/CNMI wholesaler, already filed correctly under CNMI. |
+| `jeshop.channelislands.coop`, `shop.channelislands.coop` | `eca/western_europe/channel_islands/coop_ci.yaml` |
+| `lynia-shop.com` | `ssa/west_africa/benin/lynia_bj.yaml` |
+| `tchadcommerce.com` | `ssa/central_africa/chad/tchadcommerce_td.yaml` — re-verified: catalog is bags/tools/electronics/shoes, NOT food, despite the "Supermarché" description in the site's own tagline. |
+| `cbl.gov.ly` | Libya CPI is already covered by `menaap/north_africa/libya/bsc_cpi.yaml`, whose own notes record that `cbl.gov.ly` was tried and 403'd — bsc.ly was kept as the primary series. No CPI table was actually found in a fresh check of cbl.gov.ly's `/publications/` (regulatory/governance PDFs only, no CPI bulletin visible from that listing). |
+| `titancoop.sm` | Not a config duplicate, but fully closed out already in `known_blockers.md`: reachable via Playwright, but every page is corporate/co-op content, zero prices anywhere in the DOM. The group's real online grocery is `spesa.gruppoce.sm`, already onboarded as `coal_sm`. Re-confirmed independently this session: `/promozioni` is an Event-schema promo *blog*, prices appear only as free text inside prose ("confezione da 750 g a € 2'48"), 10-20 items/week, no product schema — not worth building a fragile regex extractor for a site whose real storefront is already scraped under a different domain. |
+| `allo.ua`, `carrefour.ci`, `data.1212.mn`, `deps.mofe.gov.bn`, `mamakiti.com`, `member.pxpay.com.tw`, `noon.com`, `novus.zakaz.ua`, `pns.hk`, `sd.opensooq.com`, `silpo.ua`, `site.mamboo.co.ao`, `watsons.com.hk`, `cnmicommerce.com`/`www.cnmicommerce.com`, `gladen.bg`, `fccc.gov.fj` | Each appears by name inside an existing manifest's `notes:` as an already-evaluated alternative/sibling domain for a source that's already onboarded for that country (e.g. Novus/Silpo/NOVUS.zakaz already covered for Ukraine; PXGo already covered instead of the PX-Pay member portal for Taiwan; Fiji CPI already via `statsfiji_cpi.yaml`). Not re-probed individually this pass beyond the corpus grep — flagging for a human spot-check if any of these names come up again. |
+
+## Group 2 — Reachable, real catalog, but not food (COICOP 01/02 = zero fill)
+
+Directly probed and manually confirmed non-food:
+
+- `gambiamarketplace.com` (RECOVERED, foodish=True in the queue but wrong) — WooCommerce
+  Store API live, 27 categories, **zero food categories** (electronics, apparel,
+  jewelry, phones). Confirmed via `/wp-json/wc/store/v1/products/categories`.
+- `mavrolert.com` (RECOVERED) — Shopify, server/IT hardware (SSDs, enterprise gear).
+- `stokholm.fo` (RECOVERED) — WooCommerce, Nordic design/decor objects (vases,
+  art pieces), prices up to ~4,600 DKK per item — not a grocery despite the
+  Faroese "Stokkhólmur" branding.
+- `linsoul.com` — Shopify, in-ear-monitor / audio-equipment retailer.
+- `noteshobby.com` — Shopify, banknote/collectibles shop.
+- `risebeyondthereef.org` — Shopify, Fiji NGO handicraft/textile gift shop.
+- `puttviewbooks.com` — Shopify, single golf-course photo book product.
+- `talofagifts.com` — Shopify, American Samoa apparel/gift shop.
+- `sudgadgets.com` — Shopify, cosmetics/skincare (despite the domain name).
+- `polynesianpride.co` — Shopify, Polynesian-print apparel.
+- `laedelishop.ch` — WooCommerce, Swiss gift/lifestyle marketplace. Real
+  minor-unit-aware prices confirmed (CHF, `currency_minor_unit: 2`) and it does
+  carry small food/drink categories (`Essen & Trinken` 122 items, `Bier` 5,
+  `Fleisch` 4, `Gewürze/Tee/Kaffee` 64) inside a much larger non-food catalog
+  (`Bekleidung` 304, `Accessoires` 482, `Basteln` 185...). Switzerland already has
+  4 working food-relevant sources (`aldi_now_ch`, `denner_ch`, `koro_ch`,
+  `nu3_ch`) — per the density rule, a ~5-10%-food general marketplace is not
+  worth the onboarding/maintenance cost in an already-covered country. Not
+  scaffolded; flagging as a low-priority residual if CH ever needs a specific
+  wine/spice/coffee leaf filled.
+- `peace1971.com` (RECOVERED) — reachable (hcdn CDN denylists `curl_cffi`
+  specifically, plain HTTP is fine), but it's a stationery-template storefront
+  ("Themesflat Modave" demo theme), not food.
+- `sentur.net` (RECOVERED) — a Senegalese POS/ERP SaaS marketing site, not a
+  retailer of any kind.
+- `backupmocaf.sodepsi-digital.com` (RECOVERED) — Bootstrap template promotional
+  page for the MOCAF brewery brand (Congo); no prices, no catalog, manufacturer
+  marketing only.
+
+## Group 3 — Reachable, food-adjacent, but catalog is empty/broken/demo-sized
+
+- `sudansupermarket.com` — WooCommerce/Divi, live, no WAF, but the Store API
+  returns `[]` and `/shop/` literally renders "No products were found matching
+  your selection." Confirmed twice (known_blockers.md wave-11 note, and
+  independently this session).
+- `bioshop.mk` — homepage 200, but `/wp-json/wc/store/v1/products` 403s across
+  **all three** `curl_cffi` impersonation profiles (chrome124/chrome120/
+  safari17_0) tested fresh this session — a genuine edge rule on that specific
+  path, not a TLS-fingerprint artifact.
+- `massystoressvg.com` — static WordPress/AIOSEO corporate brochure, confirmed
+  `rest_no_route` on the Store API; sibling Massy tenants (Barbados, Trinidad, St
+  Lucia) do have live storefronts, SVG does not.
+- `nassaugrocery.com` / `nassaugrocer.com` — default unconfigured WordPress
+  install, no Store API.
+- `tulip-supermarket.com` — single-page brochure, zero product listings.
+- `www.alloshmart.com` — Supabase-backed app with a fully built 22-category
+  taxonomy but a genuinely empty `products` table (`Content-Range: */0`) —
+  pre-launch storefront.
+- `alimentsbenin.com` — platform is gone (`shop.` subdomain NXDOMAIN, apex
+  serves a bare Apache directory listing).
+- `sunuachat.com` — real WooCommerce Store API, real fresh-produce items in
+  French (tomate, laitue, poivron, concombre, piment) with XOF prices, but the
+  **entire catalog is 5 SKUs in one category** and page 2 returns empty — no
+  pagination to prove growth, fails the enumerability gate on catalog size
+  alone. (Note: named as a Guinea-Bissau candidate in the queue, but is
+  actually Senegal-market — XOF pricing, French veg names. If revisited later
+  it should be filed under Senegal, not GW, and only once its catalog visibly
+  grows past a handful of items.)
+- `gobexpress.com` — real WooCommerce Store API, 6 SKUs total in a category
+  named "Burgdoggen picanha" with product names ("Kevin Shoulder", "Cupim
+  Salami Sirloin") that read as WooCommerce sample/demo data, not a live
+  Gambian butcher's real inventory. No second page. Treated as a dev/staging
+  storefront, not shipped.
+- `ngenvironnement.org`, `oonoc.us`, `staging.runwayhealth.com` — WooCommerce
+  Store APIs that are live but sell non-price-relevant items (an NGO's
+  T-shirts/scholarship packs, an AliExpress-parcel-forwarding fee list, and
+  travel-health prophylaxis meds respectively) — not COICOP 01/02 retail.
+
+## Group 4 — Reachable but needs disproportionate additional engineering
+
+- `hktvmall.com` (RECOVERED) — old Akamai-tarpit flag does NOT reproduce
+  (confirmed: no `_abck`/`bm_sz`/`ak_bmsc`, only rate-gating). But the catalog is
+  a pure SPA — zero products/prices/JSON-LD in server HTML, and every guessed
+  hybris/OCC endpoint 404s. Per the inverse-correlation law (market leaders are
+  hardened, off-the-shelf mid-tier sites aren't) this needs a dedicated headed
+  Playwright/DevTools session to capture the real product-grid XHR — out of
+  scope for this retest pass, not attempted further. Flag as a standalone future
+  effort, not a quick win.
+
+## Group 5 — Remainder (STALE-OK, non-foodish, no catalog signal)
+
+The other ~121 `STALE-OK` hosts (fuel/tariff/CPI government portals already
+onboarded elsewhere, travel/booking sites — Kayak, Expedia-adjacent — cost-of-
+living aggregators explicitly excluded by policy — Numbeo, per its multiple rows
+here, was correctly excluded, not onboarded — dead/parked Chinese retailer
+domains, corporate IR-only portals, classifieds/marketplace directories with no
+seller list, and single-product novelty stores) each returned 404 on every
+standard catalog endpoint (`products.json`, WooCommerce Store API v1 + legacy,
+Odoo `/shop`, `/sitemap.xml`) in the live probe and carry no food-relevant
+content. These were **not** individually deep-dived beyond that automated
+probe — flagging this explicitly as the boundary of this pass's effort, should
+any of them warrant a second look later (e.g. if a non-standard/custom API is
+suspected). None showed a positive signal worth chasing under the "prioritise
+food" instruction.
+
+## Overall recommendation
+
+Do not re-queue any of these 174 hosts for a third retest under an
+"access-only" theory — the access question is now settled (plain HTTP works)
+and the blocker for every promising one turned out to be catalog-content-shaped,
+not WAF-shaped. Two names worth a human decision, not further automation, if the
+Chad/Senegal/Gambia gap ever gets prioritized:
+- `sunuachat.com` (Senegal fresh produce, currently 5 SKUs — revisit if it grows)
+- `gobexpress.com` (Gambia meat retailer, currently reads as demo data — revisit
+  with a fresh probe to see if real inventory has since been loaded)
+
+
+---
+
+## known_blockers_retest_3 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_retest_3.md` on 2026-09-11. 82 hosts, 27 not
+documented above at merge time.
+
+# Retest batch 3 — `~/gapwork/retest/onboard_3.csv` (174 hosts)
+
+Retest of previously-rejected hosts reclassified `RECOVERED` (10, hcdn TLS/JA3
+denylist against curl_cffi's impersonated fingerprint — plain HTTP clears
+them) or `STALE-OK` (164, curl_cffi succeeds today; old verdict stale).
+
+**Result: zero new manifests shipped this batch.** Every host resolved to one
+of: already onboarded by a parallel/prior agent in this same campaign,
+already documented dead in the repo's own
+`.claude/skills/onboard-price-sources/references/known_blockers.md`, non-food
+(deprioritized per brief), or newly confirmed dead/too-small this session.
+This file records only what THIS session measured that was not already on
+record — it is not a re-statement of the repo's existing blocker list.
+
+## RECOVERED (10) — worked all 10
+
+| host | verdict | evidence |
+|---|---|---|
+| kabulbazar.af | DEAD — parked domain | 200 plain, generic 16KB "Default page" hosting placeholder. Already documented (repo `known_blockers.md:115`). |
+| boom.tj | DEAD — parked domain | Same signature as kabulbazar.af, same line. |
+| motherlandgroceries.com | REJECT — diaspora grocer | Sierra Leone diaspora grocer shipping "SL"-labelled goods to UK/US buyers, not domestic Freetown retail. Already documented (`known_blockers.md:562`), reject-on-sight policy. |
+| zaad.delivery | DEAD — no catalogue | Marketing site only, zero shop/menu links even after Playwright render. Already documented (`known_blockers.md:395`). |
+| sococe.ci | DEAD — under construction | Redirects to sococe.online, an 8KB "Votre site est en Construction" page. Already documented (`known_blockers.md:920`). |
+| choob.af | NON-FOOD — furniture | MEASURED this session: plain HTTP 200, WooCommerce Store API open (`/wp-json/wc/store/v1/products`), 10-item sample = sofas/chairs/tables (categories: Dining Tables, Sofas/Couches, Office Furniture). Confirms the RECOVERED hypothesis (hcdn blocks curl_cffi, not plain HTTP) but fills zero COICOP 01/02 cells. Not built. |
+| innovationsdn.com | NON-FOOD — medical/lab supplies | MEASURED this session: WooCommerce Store API open, 10-item sample = bandages/gloves/stethoscopes/lab glassware (Sudan). COICOP 06, not 01/02. Not built. |
+| mohasbeza.com | ALREADY ONBOARDED | `src/prices/configs/ssa/east_africa/ethiopia/mohasbeza_et.yaml` exists. |
+| product.suning.com | ALREADY ONBOARDED | `src/prices/configs/eap/east_asia/china/suning.yaml` + `spiders/suning.py` exist (documented resolved 2026-07-27). |
+| zazzle.com.au | NOT PURSUED | 403 to plain HTTP on retest (differs from the CSV's recorded A_plain=200); global print-on-demand marketplace tagged to Palau, not a local retailer even if reachable. |
+
+## STALE-OK + foodish (29) — worked all 29
+
+Already onboarded, confirmed by grep of `src/prices/configs/`: **atbmarket.com**
+(`atb_market_ua.yaml`), **ggshop.channelislands.coop** (`coop_ci.yaml`, solved
+2026-09-01, not a login wall), **shopmassystoresbb.com** (`massy_stores_bb.yaml`),
+**stores-api.zakaz.ua** (platform-level — 7 Ukrainian chains already built off
+this exact host per `known_blockers.md:243`).
+
+Already documented dead in `known_blockers.md`, re-confirmed reachable
+(200/plain) but non-catalog: **blessingflowershop.com** (flowers, non-food by
+content, not in blockers but out of scope), **centurymart.com** (US
+promo-products co., unrelated to the Chinese chain the name implies, line
+551), **ejomarket.com** (abandoned Yii install, `0.00 JOD` placeholders,
+line 600), **foodpanda.com.kh** (PerimeterX, line 101), **foodstore2goexpress.com**
+(rejected duplicate of `foodstore2go_bs`, line 683), **imartstores.com** /
+**online.imartstores.com** (Joomla brochure + LocalExpress address-gate,
+lines 270/562), **jjshop.com** (GoDaddy for-sale page, line 551),
+**libyanstores.com** (B2B brand site, zero prices, line 543), **lilydelivery.com**
+(real API but only 7 SKUs total, line 591), **marketgardensxm.com** (no
+outbound links, no prices, line 477), **movo.delivery** (static landing page,
+client routing never mounts, line 404), **paylessmarkets.com** (no online
+catalog, line 531), **shop.africanfoodsupermarket.com** (diaspora grocer,
+reject-on-sight, line 562), **shop.realvalueiga.com** (LocalExpress
+address-gate, line 269), **www.leshop.ch** (soft-blocked maintenance page,
+byte-identical across two domains, line 152), **www.rt-mart.com.cn** (bare
+K8s-ingress stub, decommissioned, line 551), **www.shoprite.co.zm** (AEM
+corporate portal, zero `/shop` paths, line 472).
+
+Non-food, deprioritized: **furnmart.co.bw** (furniture), **netflix.shop**
+(Netflix merch, not local), **uk-webshop.uni.gl** (university webshop).
+
+New checks this session (not previously in `known_blockers.md`):
+
+- **alinabasics.shop** (Marshall Islands) — real Shopify-style product
+  sitemap (`sitemap_products_N.xml`, 500+ URLs), but the catalog is
+  Pacific-print women's dresses (print-on-demand), not food. Not built.
+- **superpowerw.com** (Solomon Islands) — Squarespace corporate site,
+  `sitemap.xml` carries only marketing pages (`/contact` etc.), no
+  `/products` route. No catalogue.
+- **shop.comby.gl** (Greenland) — "COMBY" department store, custom JS
+  platform (Webmercs CDN), no `/sitemap.xml` (404), no woo/shopify
+  fingerprint. Consistent with the repo's existing finding that Greenland's
+  three non-Pisiffik chains (Brugseni, Pilersuisoq, and this one) carry no
+  e-commerce. Not pursued further.
+- **shopylocal.com** (Chad) — Next.js general marketplace, `sitemap.xml`
+  present (i18n pages only, no product URLs surfaced). Not confirmed as a
+  catalog; not pursued given effort budget.
+
+## STALE-OK + rest (135) — sampled, not exhaustive
+
+The `foodish=False` heuristic under-flags real grocery leads. Cross-referenced
+every plausible chain name (SPAR, Tesco, Metro, Perekrestok, Pick n Pay,
+Carrefour Polynésie, Samkaup, Zito, San Marino grocers, etc.) against
+`src/prices/configs/` and `known_blockers.md` before probing. Findings:
+
+**Already onboarded** (dedup only, not rebuilt): `metro_sk.yaml` (Slovakia
+Metro), `tesco_hu.yaml`/`tesco_wolt_cz.yaml` (not `.sk` specifically — see
+open item below), `supasave_bn.yaml` x3, `tops_th.yaml`, `auchan_ua.yaml`,
+`netto_is.yaml`/`pisiffik_gl.yaml` (Iceland/Greenland siblings, not the exact
+hosts on this list), **`coal_sm.yaml`** — this is `spesa.gruppoce.sm`, San
+Marino's real online supermarket (COAL group), already built and verified to
+9,810 rows / 100% EUR / food-led. My own independent Playwright network
+trace this session reproduced the identical backend (`spesa.lenny.sm` Lenny
+SaaS API, `/api/product/search?category_id=N&page=M`) before discovering the
+manifest already existed — confirms the finding, no new work needed.
+
+**Already documented dead** (re-confirmed reachable, not re-probed deeply):
+spar.ch/www.spar.ch (brochure only, no shop, line 808), pnp.co.za (client-side
+SPA, no API found without a Playwright trace not yet run, line 301),
+zito.com.mk (promo-flyer PDFs only via `r3d-sitemap.xml`, line 588),
+potravinydomov.sk/itesco.sk (same operator as onboarded `tesco_wolt_sk`,
+heavy SPA gated behind address-picker, lines 626/674), klikindogrosir.com
+(Cloudflare 403 on `www.`, apex has no catalog, line 103), gebeyaaddis.com
+(reCAPTCHA v2 "Bot Verification" stub on every profile and path, line 691),
+dukani.online (white-label SaaS demo for an unrelated Iraq vendor, not a
+Sudan storefront, line 398), playce.ci (WordPress corporate, no `wc/` REST
+route, line 921), pilersuisoq.gl/brugseni.gl/samkaup.is (Greenland/Iceland
+brochure sites, zero price tokens, lines 482/485/813), carrefour.pf
+(app-level IP geofence on the real ordering subdomain, line 366),
+perekrestok.ru/okeydostavka.ru (ServicePipe CAPTCHA shell, X5-group-wide
+anti-bot, lines 717/719), pricegambia.com (app-only marketing page, API host
+NXDOMAIN, line 442), aaranonline.com Somalia (Odoo storefront renders but
+every category grid is empty — 0-row gate failure already exhausted a full
+Tier-2 escalation, line 822 — NOT re-probed further per that entry's own
+advice), otw-tl.com (COICOP 11.1.1 food-delivery, not 01/02, line 102),
+www.st-orna.com (Storna Sudan — live-looking Next.js frontend but its
+Laravel Cloud backend 404s on every route, decommissioned, line 608),
+handlaprivatkund.ica.se — **NOT re-probed**: the repo's own notes (lines
+1514-1579) record that repeated probing of this exact host from this class
+of box previously became the blocker itself (AWS WAF Bot Control); left
+untouched per that warning.
+
+**New findings this session:**
+
+- **bissau7ven.com** (Guinea-Bissau) — Firebase-backed peer-to-peer
+  classifieds app. Firestore REST API is open for anonymous read
+  (`firestore.googleapis.com/v1/projects/bissau7ven/databases/(default)/documents/products`)
+  — MEASURED: 31 total documents in the whole `products` collection, no
+  pagination token (i.e. that's the entire catalog), categories are
+  scattered classifieds (8 cars, 5 electronics, 3 food, 3 crafts, 1 each of
+  10 other categories). Product photos are AI-generated ("ChatGPT_Image_..."
+  filenames). Below every quality bar: total catalog size, food fraction,
+  and provenance. Reject.
+- **cppl.com.ki** (Kiribati, "Central Pacific Producers Ltd") — Joomla
+  corporate site, no VirtueMart or any shop component installed (`/products`,
+  `/shop`, `/component/virtuemart/` all 404). Zero "add to cart" / price
+  strings on the homepage. Not a retailer storefront.
+- **almoaleg.com** (Libya) — WooCommerce Store API genuinely open
+  (`/wp-json/wc/store/v1/products`), but MEASURED catalog is IT/digital
+  services (web design, Starlink subscriptions, VISA/MasterCard top-up
+  cards, CCTV systems, electricity-meter recharge) — zero food. Not built.
+- **nokovandson.com** (Bulgaria, "Nokov & Son" — real alcohol/wine online
+  store per its own title) — every guessed path (`/shop`, `/products`,
+  `/wp-json/wc/store/v1/products`, OpenCart route param) 404s to an
+  identical ~576KB SPA shell; `/sitemap.xml` returns 200 with a
+  zero-length body. Same catch-all-SPA anti-pattern as `lightsmarket.bg`
+  (already documented, line 655) — a real Playwright network trace was not
+  run this session (budget). **Open item for a future pass**, not a dead
+  end.
+- **riva.af** (Afghanistan, "ریوا" — national online marketplace, per its
+  own title) — Next.js RTL site; a Playwright `networkidle` wait timed out
+  (page keeps a connection open, likely a chat widget or polling script)
+  before any product JSON was observed. Inconclusive — **open item for a
+  future pass** with a fixed-timeout trace instead of `networkidle`.
+- **varus.ua** (Ukraine, Magento storefront on a Vue-Storefront-style
+  Elasticsearch proxy) — already flagged in the repo as "live, reachable,
+  deferred" (line 360). MEASURED this session: the product-search endpoint
+  (`https://varus.ua/api/catalog/vue_storefront_catalog_2/product_v2/_search?...`)
+  answers 200 to a **plain, cookie-free `requests.get`** when replayed
+  outside the browser session that produced it — no anti-bot at all on this
+  host. However the captured request's `_appliedFilters` carried no visible
+  category constraint (only stock/promotion/markdown filters plus a
+  relevance sort), so the category-page product grid is populated by some
+  mechanism this session's trace did not isolate (possibly a second,
+  differently-parameterized call, or server-side path-to-category
+  resolution baked into a request field not distinguished in the captured
+  JSON). Real lead, but the GraphQL/ES query shape needs a dedicated
+  session to pin down — not attempted further given Ukraine already has 15+
+  onboarded chains and this was explicitly out of THIS batch's scope.
+- **www.yonghui.com.cn** (China, Yonghui Supermarket) — homepage renders
+  (real corporate site) but `/shop` and `/mall` both 404. Consistent with
+  the repo's existing "China = 0 except Suning/NetEase" finding, extends it
+  to the `.com.cn` domain explicitly (previously only `.cn` was checked).
+
+Not individually probed this session (effort budget): the remaining ~90
+`STALE-OK + rest` hosts are, by name/context/prior tagging in the source CSV
+itself, either (a) explicitly pre-flagged `*_false_positive` from an earlier
+consolidation pass (acehardware.com, cellcom.com, idealtruevalue.com,
+marshallhardware.com, noonsite.com, palautomotive.com, standardelectricsupply.com,
+trademo.com, visitpagopago.com, volza.com — all already judged as
+miscategorized/irrelevant by that pass), (b) infrastructure/DNS/CDN hosts
+with no retail content (cloudflare-dns.com, dns.google, schema.org,
+errors.edgesuite.net, portal.azure.com), (c) pharmacy/telecom/hardware/
+electronics/real-estate/directory sites clearly out of the COICOP 01/02
+scope this batch prioritizes, or (d) already-dead JD.com/Suning-family hosts
+(channel.jd.com, jd.com, list.jd.com, www.jd.com, pas.suning.com,
+search.suning.com, suning.com — all covered by the single `suning.com`
+resolution already onboarded, or independently dead per
+`known_blockers.md:551`).
+
+## Summary
+
+**0 new sources onboarded.** 39 of 174 hosts worked in full per the priority
+order (RECOVERED all 10, STALE-OK+foodish all 29); a further ~35 were
+individually checked from the STALE-OK+rest bucket after correcting for the
+`foodish` heuristic's known false negatives (SPAR/Tesco/Metro/Perekrestok/
+Pick-n-Pay/San-Marino-grocer-class names). Every host resolved to: already
+onboarded elsewhere in this campaign (9 hosts), already dead per the repo's
+own `known_blockers.md` (the large majority), non-food and out of this
+batch's scope (choob.af, innovationsdn.com, almoaleg.com, alinabasics.shop,
+furnmart.co.bw, netflix.shop, uk-webshop.uni.gl), or too small/low-quality to
+ship (bissau7ven.com: 31 total products). Three hosts remain genuinely open
+for a future dedicated pass: **varus.ua** (real open API, category
+parameterization not yet isolated), **nokovandson.com** (SPA catch-all,
+needs a real trace), **riva.af** (trace timed out, inconclusive).
+
+
+---
+
+## known_blockers_unknown_1 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_unknown_1.md` on 2026-09-11. 24 hosts, 2 not
+documented above at merge time.
+
+# Known blockers — unknown_1.csv (cote_divoire, egypt, iran, sao_tome_and_principe, syria, turkiye, yemen), 2026-09-11
+
+Verdict on this batch: **0 of 20 rows ship.** Every domain in `unknown_1.csv`
+already has a live-measured verdict recorded in
+`.claude/skills/onboard-price-sources/references/known_blockers.md` from
+waves dated 2026-09-01 through 2026-09-11 (i.e. this candidate list predates,
+or duplicates, work already done). No candidate was re-probed from scratch —
+per the skill's anti-pattern ("don't re-probe a site known_blockers.md
+already recorded"), the existing verdicts were cited instead. One exception:
+`trendyol.com` was spot-checked live (see below) because its "P1 build now /
+Direct, build_tier=A low-hanging fruit" label in the batch conflicted with
+the recorded "no priced surface" verdict — the spot-check confirmed the
+existing verdict.
+
+---
+
+## cote_divoire
+
+### AfricMart — https://www.africmart.com/accueil/
+- **Verdict (pre-existing): DEAD — NXDOMAIN.** Recorded under the
+  "NXDOMAIN sweep, francophone SSA (do not re-guess these)" entry
+  (known_blockers.md line ~935), confirmed 2026-09-05.
+
+### Jumia CI epicerie — https://www.jumia.ci/epicerie/
+- **Verdict (pre-existing): BLOCKED — Cloudflare Turnstile.** `www.jumia.ci`
+  entry (known_blockers.md line ~919), probed 2026-09-05: `curl_cffi
+  impersonate=chrome124` returns HTTP 403 `Just a moment...`; headless
+  Playwright confirms an interactive Turnstile widget that never clears.
+  Eighth Jumia country storefront to show the identical wall (shared
+  Cloudflare tenant across jumia.ma/.sl/.dz/.com.gh/.com.ng/.bf/.ug/.ci) —
+  the file explicitly says to stop probing this tenant per-country.
+
+### Playce / Carrefour CI — https://playce.ci/
+- **Verdict (pre-existing): SKIP — no catalog, no prices.**
+  `playce.ci` entry (known_blockers.md line ~921), probed 2026-09-05:
+  reachable, no WAF, but a WordPress + Elementor **corporate** site — no
+  `wc/*` REST namespace registered at all. Same shape as `carrefour.ci`
+  itself, whose only price signal (a small `/promotions/` flyer, 13 items)
+  is already onboarded as `carrefour_ci` in
+  `src/prices/configs/ssa/west_africa/cote_divoire/carrefour_ci.yaml`. No
+  additional source here.
+
+---
+
+## egypt
+
+### Amazon Egypt — https://www.amazon.eg/
+- **Verdict (pre-existing): BLOCKED.** Listed under "Challenge or denial on
+  every TLS profile and on headless Playwright — 72 hosts"
+  (known_blockers.md line 1876).
+
+### Breadfast — https://www.breadfast.com/
+- **Verdict (pre-existing): DEAD — app-only, no public storefront API.**
+  Detailed entry (known_blockers.md ~line 1062), probed 2026-09-10: the
+  public domain is the company's WordPress ops/marketing site, not a
+  storefront. `/wp-json/wc/store/v1/products` 404s on all 3 route shapes;
+  `/wp-json/` root lists only internal-app namespaces
+  (`breadfast/v3/fleet`, `pos/v1`, `order-fulfillment/v1`, `odoo/v1`, ...),
+  none exposing an unauthenticated `/products` endpoint. Matches the CSV's
+  own "App-only, index only" flag.
+
+### Carrefour Egypt — https://www.carrefouregypt.com/
+- **Verdict (pre-existing): BLOCKED.** Listed under "Challenge or denial on
+  every TLS profile and on headless Playwright — 72 hosts"
+  (known_blockers.md line 1877).
+
+### InstaShop Egypt — https://instashop.com/en-eg/
+- **Verdict (pre-existing): BLOCKED / no priced surface.** Listed under "No
+  priced surface under either `curl_cffi` (5 TLS profiles) or headless
+  Playwright — 114 hosts" (known_blockers.md line 1789): no JSON with
+  price-shaped keys, no product sitemap, no JSON-LD Product node found on
+  homepage or category pages.
+
+### Jumia Egypt — https://www.jumia.com.eg/
+- **Verdict (pre-existing): BLOCKED.** Listed under "Challenge or denial on
+  every TLS profile and on headless Playwright — 72 hosts"
+  (known_blockers.md line 1878) — same shared Cloudflare tenant as
+  jumia.ci above.
+
+### Kazyon — https://kazyon.com/
+- **Verdict (pre-existing): DEAD / unusable.** Listed under "DNS resolves
+  but no usable response — 14 hosts: expired or mismatched TLS
+  certificate, or TCP timeout on every profile including `verify=False`"
+  (known_blockers.md line 1927).
+
+### Rabbit — https://rabbitmart.com/
+- **Verdict (pre-existing): BLOCKED / no priced surface.** Listed under
+  "No priced surface ... — 114 hosts" (known_blockers.md line 1790).
+
+---
+
+## iran
+
+### ExportHub Iran — https://www.exporthub.com/iran/
+- **Verdict (pre-existing): BLOCKED.** Listed under "Challenge or denial on
+  every TLS profile and on headless Playwright — 72 hosts"
+  (known_blockers.md line 1879). Also structurally wrong shape for a
+  retail price source — ExportHub is a global B2B sourcing directory, not
+  an Iran-specific retailer.
+
+### IranPharmis — https://www.iranpharmis.org/en
+- **Verdict (pre-existing): DEAD — B2B distributor, every price 0, login
+  wall.** Detailed entry (known_blockers.md ~line 2162), probed 2026-09-10
+  (note: correct `source_key` is `iranpharmis_ir` — the original candidate
+  table had it tagged `_dz` by mistake). Real Next.js backend, no WAF,
+  category JSON genuinely SSR'd, but every one of 87 sampled products
+  (surgical gloves, biopsy systems, catheters — a hospital/surgical B2B
+  distributor, not a dispensing pharmacy) carries
+  `"price":{"price":0,"was_price":0,...}` and `"quantity":0`. A live
+  login/registration wall gates real pricing; Playwright network trace
+  confirms no client-side price API ever fires for an anonymous visitor.
+
+---
+
+## sao_tome_and_principe
+
+### Entrega.st — https://www.entrega.st/
+- **Verdict (pre-existing): DEAD — RLS-locked backend, effectively no
+  merchants.** Detailed entry (known_blockers.md ~line 750), probed
+  2026-09-01: Vite/React SPA over Supabase; `GET /rest/v1/products` and
+  `/rest/v1/establishments` with the shipped anon key both 401
+  ("permission denied") — no SELECT grant for anon on any base table. The
+  one public RPC surface (`/lojas` merchant directory) lists only 4
+  registered merchants platform-wide, no product names or prices for any
+  of them.
+
+### Sokeru — https://sokeru.st/
+- **Verdict (pre-existing): DEAD — NXDOMAIN.** (known_blockers.md ~line
+  432), confirmed against both 8.8.8.8 and 1.1.1.1, probed 2026-09-01.
+  Consistent with the site being app-only (iOS/Android) per the batch's
+  own note.
+
+### Super CKdo — http://www.superckdo.com/
+- **Verdict (pre-existing): DEAD — NXDOMAIN.** (known_blockers.md ~line
+  433), confirmed against both resolvers, probed 2026-09-01.
+
+---
+
+## syria
+
+### sy_opensooq_furniture — https://sy.opensooq.com/ar/...
+- **No action.** The batch row itself is annotated
+  "P3 - queue / ALREADY-TRACKED-UPSTREAM — Will's handover marked this
+  existing/already tracked; no matching row here." Confirmed no separate
+  gap: `sy.opensooq.com` is a general classifieds marketplace (Syria's
+  Egyptian-platform counterpart to `opensooq_eg`), already accounted for
+  upstream and out of scope for this pass. Not re-probed.
+
+---
+
+## turkiye
+
+### Koçtaş — https://www.koctas.com.tr/
+- **Verdict (pre-existing): BLOCKED — Akamai, both PDP and category layers.**
+  Detailed entry (known_blockers.md ~line 1415-1504), probed 2026-09-10
+  across 11 `curl_cffi` impersonate profiles plus headless Playwright.
+  Sitemap layer is wide open (131 sitemaps, ~1M+ product URLs, genuinely
+  disjoint shards) but every PDP and category-listing fetch 403s on every
+  profile; a cookie-warmup replay of Bot Manager tracking cookies into the
+  PDP request still 403s (needs an actual JS-computed sensor payload, not
+  just cookie possession). Explicitly did NOT ship in that wave.
+
+### TradeKey Türkiye — https://turkey.tradekey.com/
+- **Verdict (pre-existing): DEAD / unusable.** Listed under "DNS resolves
+  but no usable response — 14 hosts" (known_blockers.md line 1923). Also
+  structurally a B2B sourcing directory, not a Turkiye retail source.
+
+### Trendyol — https://www.trendyol.com/
+- **Verdict (pre-existing): BLOCKED / no priced surface**, listed under
+  "No priced surface ... — 114 hosts" (known_blockers.md line 1750).
+  **Spot-checked live today (2026-09-11)** because the batch flags it
+  "P1 build now / Direct, build_tier=A low-hanging fruit," which conflicts
+  with a "no priced surface" verdict for Turkiye's largest marketplace:
+  `curl_cffi impersonate=chrome124/chrome120/safari17_0` all return HTTP
+  200, 83,307 bytes — **not walled**, but the body is a client-hydrated SPA
+  shell (`window.__initMergen`, `window.__ringManager`, no `TL` price
+  strings, no embedded product JSON) with zero server-rendered price data.
+  Confirms the recorded verdict still holds: access is fine, but there is
+  no static or JSON-LD catalog surface to scrape without a full
+  Playwright-network-sniff pass to find the internal API (out of budget
+  for this pass; flagging as the one candidate in this batch worth a
+  dedicated Playwright-discovery follow-up given its market-leader size).
+
+---
+
+## yemen
+
+### Bazzarry Sanaa — https://sanaa.bazzarry.com/
+- **Verdict (pre-existing): BLOCKED / no priced surface.** Listed under
+  "No priced surface ... — 114 hosts" (known_blockers.md line 1797).
+
+---
+
+## Summary
+
+| Country | Candidates | Shipped | Reason all rejected |
+|---|---|---|---|
+| cote_divoire | 3 | 0 | NXDOMAIN, shared Cloudflare tenant, no-catalog corporate site (Carrefour's real signal already onboarded as `carrefour_ci`) |
+| egypt | 7 | 0 | WAF/challenge (4), no priced surface (2), app-only/no public API (1) |
+| iran | 2 | 0 | WAF/challenge (1), B2B distributor with universal price=0 behind login wall (1) |
+| sao_tome_and_principe | 3 | 0 | RLS-locked backend with 4 total merchants, 2x NXDOMAIN |
+| syria | 1 | 0 (n/a) | Already tracked upstream, no gap |
+| turkiye | 3 | 0 | Akamai (both layers), DNS/no usable response, SPA shell with no server-rendered price data |
+| yemen | 1 | 0 | No priced surface |
+
+No manifests were written; no spiders were scaffolded. This batch's
+candidate list should be considered exhausted — nothing here is worth
+re-probing again absent a platform change (new storefront launch, WAF
+posture change) or a dedicated Playwright-discovery effort on Trendyol
+specifically.
+
+
+---
+
+## known_blockers_untried_1 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_1.md` on 2026-09-11. 39 hosts, 5 not
+documented above at merge time.
+
+# untried_1 batch — per-source rejection evidence
+
+_Written 2026-09-11._ Batch file: `~/gapwork/batches/untried_1.csv`, 30 rows across
+botswana, marshall_islands, guinea, gabon, belize, tunisia, uzbekistan, georgia,
+venezuela_rb, benin. Worktree: `~/po-worktrees/fill-gap-sources` (shared with at
+least two other concurrent sessions this pass — `untried_2`/`untried_3` batches
+were visibly landing files in the same worktree at the same time; nothing in this
+file touches their work).
+
+**Headline finding: the batch's own claim that these 30 rows "have never been
+probed by anyone" does not hold.** Cross-checking every row against this repo's
+`references/known_blockers.md` and `references/inventories/**/*.md` found that
+25 of the 30 rows were already probed in prior sessions dated 2026-09-01,
+2026-09-05, and 2026-09-10 (all well inside the skill's ~6-month staleness
+window, so none were due for a re-check) — 3 had already been **shipped** as
+working manifests under different source keys than the batch listed (the batch's
+URL for each was itself stale or wrong), and 22 had already been probed and
+found dead or blocked, with the evidence already on file. Only 5 rows were
+genuinely never-before-touched: botswana/perfectcircle_clothing,
+marshall_islands/nta_legacy_services, guinea/sylizone_gn, and (freshly
+re-verified rather than newly discovered) benin/Martistore's live status. Of
+those, 2 were built into working sources this pass (perfectcircle_bw,
+sylizone_gn), 1 was a hard dead domain (ntamar.net), and 1 (Martistore) was
+re-confirmed still dead in a worse state than before.
+
+Distinguishing **MEASURED** (this session verified it live) from **INFERRED**
+(taken from a prior session's dated finding, itself measured at the time, not
+re-verified now because it is inside the staleness window) throughout.
+
+---
+
+## PASS — built and shipped this session (MEASURED)
+
+### perfectcircle_bw (Botswana)
+
+- URL: https://www.perfectcircle.co.bw/ — batch listed this
+  "ALREADY-TRACKED-UPSTREAM" per Will's handover; no matching manifest existed
+  in the repo, so it was probed fresh.
+- Platform: Angular SPA frontend, zero server-rendered content on ANY path
+  (curl_cffi on `/`, `/sitemap.xml`, `/robots.txt`, `/products.json` all
+  returned the identical 202,679-byte app shell — itself the tell that a
+  network trace was required). Real backend found via Playwright network
+  trace: a separate host, `apiperfectcircle.kickatinalong.net` (white-label
+  promo-merchandise SaaS platform).
+- Enumerability: MEASURED. `GET /api/common/menu/?m=softshell-jackets&p=winter-essentials&s=0&t=412`
+  vs the same URL with `s=10` returned disjoint product-id sets
+  (7141/7142/7143 vs 9419/17606/3478/9404/9403) — passes the page-1-vs-page-2
+  gate.
+- Prices: MEASURED. Every scraped row in the test run carried a real,
+  positive decimal price (e.g. 429.98, 505.86, 30.32).
+- Currency: MEASURED from payload — `GET /api/Currency/Display` returns
+  `{"code":"BWP","symbol":"BWP","rate":1.0000}`; product prices are plain BWP
+  decimals, no minor-unit or FX conversion involved.
+- Locality: MEASURED — `GET /api/common/info/` returns a Gaborone,
+  Botswana street address.
+- End-to-end test (`--max-items 20`, actual run yielded 104 before
+  `closespider_itemcount`): **104 rows, 104 distinct urls, 104 distinct
+  product_id, 100% BWP.** PASS.
+- Manifest: `src/prices/configs/ssa/southern_africa/botswana/perfectcircle_bw.yaml`,
+  channel `fashion` (promotional apparel/merchandise reseller, not food).
+
+### sylizone_gn (Guinea)
+
+- URL: https://www.sylizone.com/ — batch listed this
+  "ALREADY-TRACKED-UPSTREAM" per Will's handover; no matching manifest existed
+  in the repo, so it was probed fresh.
+- Platform: Next.js App Router (RSC-streamed, no classic `__NEXT_DATA__` tag),
+  but each PDP serves a clean, server-rendered `application/ld+json` `Product`
+  node with a nested `Offer` — confirmed under plain `curl_cffi`, no
+  Playwright needed.
+- Enumerability: MEASURED via `/sitemap.xml`, which lists exactly 12
+  `/produit/<id>` PDP URLs (ids 13-24) alongside non-product pages
+  (`/boutique`, `/services/<id>`, `/blog/<slug>`, `/a-propos`, `/contact`)
+  that the spider filters out. This is a whole-catalog enumeration (Phase 3's
+  sitemap→PDP→JSON-LD fallback), not a paginated listing, so the usual
+  page-1-vs-page-2 check doesn't apply the same way — verified instead by
+  confirming the sitemap id set is a real, bounded enumeration.
+- Prices: MEASURED — JSON-LD `offers.price` on every PDP fetched
+  (140000, 400000, 180000, ... — all positive).
+- Currency: MEASURED from payload — JSON-LD `offers.priceCurrency: "GNF"`
+  (Guinean Franc; the site does NOT use FCFA, which Guinea is outside the
+  CFA franc zone — confirms the extractor is reading, not assuming).
+- Locality: MEASURED — every PDP's `og:title` explicitly reads
+  "Acheter Maillot ... en Guinée".
+- End-to-end test (`--max-items 20`, catalog is only 12 items total so the
+  cap never binds): **12 rows, 12 distinct urls, 100% GNF, price range
+  130,000-400,000 GNF.** PASS (small catalog, clears the >=5-row bar).
+- Manifest: `src/prices/configs/ssa/west_africa/guinea/sylizone_gn.yaml`,
+  channel `fashion` (football-jersey reseller, not food).
+
+---
+
+## Already shipped in a prior session (not new; batch's URL was stale)
+
+| Batch row | Batch URL | Live domain | Shipped as |
+|---|---|---|---|
+| Brodies Belize | brodiesbelize.com | brodies.bz (brodiesbelize.com is NXDOMAIN) | `brodies_bz` (pharmacy, USD, 61/61 rows) |
+| Lagniappe Belize Grocery | belizegrocery.com | redirects via `<base href>` to lagniappebelize.com | `lagniappe_bz` (specialty-food, USD, 1075 rows) |
+| Ori Nabiji | orinabiji.ge | 2nabiji.ge | `orinabiji_ge` (supermarket, GEL, 83-row capped test) |
+
+---
+
+## BLOCKED — live site, genuine access block (INFERRED from prior probes, all within staleness window)
+
+| Source | Country | URL | Cause | Evidence source |
+|---|---|---|---|---|
+| Mytek | tunisia | mytek.tn | Challenge/denial on every `curl_cffi` TLS profile AND headless Playwright | known_blockers.md "Challenge or denial" list |
+| Alta | georgia | alta.ge | Challenge/denial on every `curl_cffi` TLS profile AND headless Playwright | known_blockers.md "Challenge or denial" list |
+| Olcha | uzbekistan | olcha.uz | Cloudflare Turnstile 403 on 3 TLS profiles + Playwright; backend `api.olcha.uz` is open (200/13.8MB category tree) but the product-listing route was never found after ~40 REST-shape guesses against the Laravel backend | known_blockers.md, dedicated Olcha entry, probed 2026-09-05 |
+| Yanada.uz | uzbekistan | yanada.uz | Genuine Bagisto storefront, but EVERY route (`/`, `/shop`, `/api/products`, `/api/v1/*`) 302-redirects to a customer-login wall; no alternate unauthenticated host found (api./app./shop./m./admin. subdomains all fail TLS SNI) | known_blockers.md, dedicated Yanada entry, probed 2026-09-10 |
+
+---
+
+## DEAD — domain gone, business gone, or structurally not a catalogue (INFERRED unless noted MEASURED)
+
+| Source | Country | URL given in batch | Cause | Evidence |
+|---|---|---|---|---|
+| nta_legacy_services | marshall_islands | ntamar.net | **MEASURED 2026-09-11**: hard DNS failure, does not resolve at all. Live NTA domain is `www.nta.mh`, already covered by `nta_4g_mh`/`nta_residential_mh`. | This session |
+| BraPrime | guinea | braprime.com | Site is a 2.3KB Vite SPA shell whose only JS bundle points at a Supabase project that itself does not resolve (NXDOMAIN) — backend deleted | known_blockers.md, probed 2026-09-05 |
+| Monmarche Guinee | guinea | monmarchegn.com | No WAF, but app-only: sitemap has 14 URLs and zero products; `/produits`,`/boutique`,`/categories` all 404; all `_next` JS chunks grepped for an API host, nothing found. Ordering happens in iOS/Android apps only | known_blockers.md, probed 2026-09-05 |
+| Supermarche Bel Air | guinea | belair.gn | NXDOMAIN (part of a confirmed francophone-SSA NXDOMAIN sweep) | known_blockers.md, probed 2026-09-05 |
+| maMakiti | guinea | mamakiti.com | Next.js landing page; its FastAPI backend `api.mamakiti.com` is reachable and unauthenticated but honestly empty: `/api/products` → `{"items":[],"total":0}`. Pre-launch, not blocked | known_blockers.md, probed 2026-09-05 |
+| Ceca Gadis | gabon | cecagadis.ga | `.ga` domain is NXDOMAIN; live `.com` domain is a WordPress/Elementor corporate holding-company site for the CECA-GADIS retail group, `/wp-json/` has no `wc/` route (not WooCommerce despite the workbook tag), zero e-commerce on any brand sub-page | known_blockers.md/inventory, probed 2026-09-01 |
+| Chap Chap Gabon | gabon | chapchapgabon.com | Live custom single-page marketing site for a multi-vertical delivery app; zero `FCFA`/`produit`/`panier`/`catalogue` tokens; only external links are Google Fonts + an App Store badge | known_blockers.md/inventory, probed 2026-09-01 |
+| Libre-Go Livraison | gabon | libregolivraisons.ga | Courier/delivery-fee company, not a retailer — the only `FCFA` mentions are a delivery-fee calculator and an invoice total; no product catalogue at all | known_blockers.md/inventory, probed 2026-09-01 |
+| Malumbi | gabon | malumbi.com | NXDOMAIN (confirmed via authoritative DoH against `dns.google` and `cloudflare-dns.com`); search-engine cache shows it was a real PrestaShop grocery site before lapsing. `.shop/.africa/.ga/.io/.store` TLD variants also don't resolve | known_blockers.md/inventory, probed 2026-09-01 |
+| SendMonTchop | gabon | sendmontchop.com | Domain lapsed to a GoDaddy/wsimg.com parking-lander shell | known_blockers.md/inventory, probed 2026-09-01 |
+| MyStore Belize | belize | mystore.bz | Pure app-marketing landing pages on every discoverable sub-page; zero product names, prices, or catalogue links anywhere on the public web surface | known_blockers.md/inventory, probed 2026-09-01 (checked twice — workbook ACCEPT verdict was wrong both times) |
+| Founa | tunisia | founa.com | No priced surface under curl_cffi (5 TLS profiles) or headless Playwright | known_blockers.md "No priced surface" list |
+| Express24 | uzbekistan | express24.uz | No priced surface under curl_cffi (5 TLS profiles) or headless Playwright | known_blockers.md "No priced surface" list |
+| Le Bazar | uzbekistan | lebazar.uz | DNS resolves but no usable response (TLS cert failure / timeout on every profile incl. verify=False) | known_blockers.md "DNS resolves but no usable response" list |
+| EuroCaucasus Supplies | georgia | eurocaucasus.ge | No priced surface under curl_cffi (5 TLS profiles) or headless Playwright | known_blockers.md "No priced surface" list |
+| Fresco | georgia | fresco.ge | NXDOMAIN, repeat lookups | known_blockers.md "Domain does not resolve" list |
+| Nikora | georgia | nikora.ge | Corporate GROUP site for Nikora Trading LTD, not a shop; links to 3 sub-brand `/products` showcase pages with zero price text and zero per-item structure | known_blockers.md, probed 2026-09-01 |
+| Mercado Libre Venezuela | venezuela_rb | mercadolibre.com.ve | No priced surface under curl_cffi (5 TLS profiles) or headless Playwright. (Also: per this skill's anti-patterns, a general marketplace's own catalog is the wrong scrape target anyway — the seller directory would be the right angle, but the domain didn't even clear the priced-surface gate to get that far.) | known_blockers.md "No priced surface" list |
+| Erevan Benin | benin | erevan.bj | `erevan.bj` is NXDOMAIN; live domain `erevanbenin.com` is a real corporate site (oweb.io builder) for Super U Bénin store pages, but zero FCFA tokens anywhere, under Playwright too; `/sitemap.xml` 404s | known_blockers.md, probed 2026-09-05 |
+| Martistore | benin | martistore.shop | Entire site was Cloudflare-fronted maintenance mode (503) on 2026-09-05, with a real 543-URL `/sitemap.xml` behind it. **Re-checked live 2026-09-11 (MEASURED): now HTTP 522** (Cloudflare origin connection timeout) — worse, not better. Catalogue/id-space is known if the origin ever recovers; not usable today | known_blockers.md + this session |
+| Zemihidjo | benin | zemihidjo.com | Cloudflare-fronted but every path (`/`, `/shop`, `/products`, `/sitemap.xml`, `www.` host) returns HTTP 404 with a zero-byte body — no origin content behind the proxy at all | known_blockers.md, probed 2026-09-05 |
+
+---
+
+## Rejection counts by cause (30 rows total)
+
+| Cause bucket | Count | Sources |
+|---|---|---|
+| Built/shipped this session (PASS) | 2 | perfectcircle_bw, sylizone_gn |
+| Already shipped in a prior session (batch URL was stale) | 3 | brodies_bz, lagniappe_bz, orinabiji_ge |
+| WAF/challenge or login-gate — live but blocked | 4 | Mytek, Alta, Olcha, Yanada.uz |
+| NXDOMAIN / domain lapsed or parked | 5 | ntamar.net, belair.gn, malumbi.com, sendmontchop.com, fresco.ge |
+| App-only, no web catalogue (mobile-app funnel) | 3 | Monmarche Guinee, Chap Chap Gabon, MyStore Belize |
+| Corporate/marketing site, no e-commerce | 3 | Ceca Gadis, Nikora, Erevan Benin |
+| Non-retail service (courier, not a retailer) | 1 | Libre-Go Livraison |
+| Backend deleted / pre-launch empty catalogue | 2 | BraPrime, maMakiti |
+| Origin down / maintenance (temporarily dead) | 1 | Martistore |
+| No priced surface found (curl_cffi + Playwright, thorough probe, nothing) | 4 | Founa, Express24, EuroCaucasus Supplies, Mercado Libre Venezuela |
+| DNS resolves, cert/timeout unusable | 1 | Le Bazar |
+| Cloudflare-fronted, zero-byte 404, no origin content | 1 | Zemihidjo |
+| **Total** | **30** | |
+
+## Final report table
+
+| Source | Country | Rows measured | Distinct urls | Currency | Verdict |
+|---|---|---|---|---|---|
+| perfectcircle_bw | botswana | 104 | 104 | BWP | **SHIPPED** |
+| sylizone_gn | guinea | 12 | 12 | GNF | **SHIPPED** |
+| brodies_bz | belize | 61 (prior session) | 61 | USD | already shipped |
+| lagniappe_bz | belize | 1075 (prior session) | 1075 | USD | already shipped |
+| orinabiji_ge | georgia | 83 (prior session, capped) | 83 | GEL | already shipped |
+| nta_legacy_services | marshall_islands | 0 | 0 | — | DEAD (NXDOMAIN) |
+| BraPrime | guinea | 0 | 0 | — | DEAD (backend deleted) |
+| Monmarche Guinee | guinea | 0 | 0 | — | DEAD (app-only) |
+| Supermarche Bel Air | guinea | 0 | 0 | — | DEAD (NXDOMAIN) |
+| maMakiti | guinea | 0 | 0 | — | DEAD (pre-launch, empty) |
+| Ceca Gadis | gabon | 0 | 0 | — | DEAD (corporate, no shop) |
+| Chap Chap Gabon | gabon | 0 | 0 | — | DEAD (app-only) |
+| Libre-Go Livraison | gabon | 0 | 0 | — | DEAD (courier, not retail) |
+| Malumbi | gabon | 0 | 0 | — | DEAD (NXDOMAIN) |
+| SendMonTchop | gabon | 0 | 0 | — | DEAD (parked) |
+| MyStore Belize | belize | 0 | 0 | — | DEAD (app-only) |
+| Founa | tunisia | 0 | 0 | — | DEAD (no priced surface) |
+| Mytek | tunisia | 0 | 0 | — | BLOCKED (WAF) |
+| Express24 | uzbekistan | 0 | 0 | — | DEAD (no priced surface) |
+| Le Bazar | uzbekistan | 0 | 0 | — | DEAD (cert/timeout) |
+| Olcha | uzbekistan | 0 | 0 | — | BLOCKED (Cloudflare Turnstile) |
+| Yanada.uz | uzbekistan | 0 | 0 | — | BLOCKED (login wall) |
+| Alta | georgia | 0 | 0 | — | BLOCKED (WAF) |
+| EuroCaucasus Supplies | georgia | 0 | 0 | — | DEAD (no priced surface) |
+| Fresco | georgia | 0 | 0 | — | DEAD (NXDOMAIN) |
+| Nikora | georgia | 0 | 0 | — | DEAD (corporate, no shop) |
+| Mercado Libre Venezuela | venezuela_rb | 0 | 0 | — | DEAD (no priced surface) |
+| Erevan Benin | benin | 0 | 0 | — | DEAD (corporate, no shop) |
+| Martistore | benin | 0 | 0 | — | DEAD (origin down, was maintenance) |
+| Zemihidjo | benin | 0 | 0 | — | DEAD (zero-byte, no origin) |
+
+## COICOP / channel note
+
+Both shipped sources are non-food: `perfectcircle_bw` is `channel: fashion`
+(promotional apparel/merchandise) and `sylizone_gn` is `channel: fashion`
+(football jerseys). Neither moves food-and-beverage coverage in Botswana or
+Guinea. This batch's candidate list was two-thirds already-resolved dead ends
+from prior sourcing rounds (2026-08-31 workbook), so the net yield —
+2 built sources from 30 rows — reflects the batch being pre-filtered debris
+from earlier passes rather than a fresh discovery pool.
+
+
+---
+
+## known_blockers_untried_3 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_3.md` on 2026-09-11. 26 hosts, 2 not
+documented above at merge time.
+
+# untried_3.csv — per-candidate disposition and evidence
+
+_Batch: `~/gapwork/batches/untried_3.csv`, 28 candidates. Probed 2026-09-11._
+
+Note on provenance: most of these 28 candidates turned out to overlap with
+sites already probed live in `.claude/skills/onboard-price-sources/references/known_blockers.md`
+during 2026-09-01/09-10/09-11 sweeps of the same countries, despite the batch
+being labeled "never probed by anyone." Where that is the case, the entry
+below cites the prior measured evidence (dated) rather than re-probing —
+per the skill's own rule against re-running a search whose result is already
+on record. Two candidates (`congobio_cg`, `chm_suriname`) were genuinely
+unprobed anywhere in the repo and were fresh-probed and shipped this run.
+Two more (`migros.ch`, `facebook.com/marketplace`) were genuinely unprobed
+and fresh-probed to a reject/defer verdict, newly appended to
+`known_blockers.md`.
+
+## ACCEPTED — shipped this run
+
+### congobio_cg (Congo Rep, cells=22)
+- URL: https://www.congobio.net/
+- Fingerprint: Next.js/Turbopack SPA, Cloudflare-fronted, no public JSON API
+  (`/api/products`, `/api/produits` both 404).
+- Enumerability: `/sitemap.xml` lists 40 distinct `/produit/<uuid>` PDP URLs
+  (MEASURED, fixed list, all UUIDs disjoint).
+- Prices: JSON-LD `Product.offers.price` on every sampled PDP, non-zero.
+  Sample: "Dindes" (turkeys) XAF 22,500; "Couveuses" (incubators) XAF 350,000.
+- Currency: XAF read directly from JSON-LD `offers.priceCurrency` — Congo
+  Republic's own currency per `countries.yaml`, MEASURED not inferred.
+  `countryOfOrigin: "Ferme avicole de Brazzaville"` on sampled products
+  confirms local (not diaspora) sourcing.
+- Test run (`--max-items 20`): **24 rows, 24 distinct urls** (MEASURED,
+  itemcount cap let a few extra requests in flight finish first).
+- Manifest: `src/prices/configs/ssa/central_africa/congo_rep/congobio_cg.yaml`
+- Spider: `src/prices/price_scraping/spiders/congobio_cg.py`
+- Verdict: **ACCEPT**
+
+### chm_suriname → shipped as chmsuriname_sr (Suriname, cells=32)
+- URL: https://www.chmsuriname.com/
+- Fingerprint: WordPress 7.1 + WooCommerce 9.7.3, public unauthenticated
+  Store API.
+- Enumerability: `/wp-json/wc/store/v1/products?per_page=20&page=1` vs
+  `page=2` return disjoint id sets (MEASURED: page1 ids 33526..33503, page2
+  ids 33423..33388). `X-WP-Total: 2153`, `X-WP-TotalPages: 108`.
+- Prices: non-zero across every sampled page (1, 3, 50, 100, 108).
+  Sample: "TRAMA BOEKENKAST" (bookcase) SRD 5,395.00; "ELEGANCE TV MEUBEL"
+  SRD 7,495.00.
+- Currency: SRD read from `prices.currency_code` payload field — matches
+  `countries.yaml` default, MEASURED not inferred.
+- Category mix: furniture, kitchen appliances, office supplies — a home/
+  furniture department store, not a grocer.
+- Test run (`--max-items 20`, base spider pages at 100/req): **100 rows,
+  100 distinct urls** (MEASURED).
+- Manifest: `src/prices/configs/lac/south_america/suriname/chmsuriname_sr.yaml`
+- Spider used: `generic_woo_configured` (no new spider code needed)
+- Verdict: **ACCEPT**
+
+## ALREADY ONBOARDED (duplicate candidate, no action)
+
+### Colruyt (belgium, cells=63)
+- URL: https://www.colruyt.be/
+- `colruyt_be.yaml` already exists in
+  `src/prices/configs/eca/western_europe/belgium/` (built from
+  collectandgo.be per `known_blockers.md` Wave-4 outcomes, dated
+  2026-09-11). The untried_3 row is stale relative to that build.
+- Verdict: **DUPLICATE — already built, no action**
+
+## REJECTED — cites prior measured evidence (not re-probed)
+
+All entries below are dated probes already on file in
+`.claude/skills/onboard-price-sources/references/known_blockers.md`
+(dates noted per entry) and were confirmed still current (all well within
+the skill's ~6-month staleness window).
+
+### Sudan (cells=36)
+
+- **Al Waha Supermarket** (alwaha.sd) — static 11KB BootstrapMade "Moderna"
+  free corporate template. `/wp-json/wc/store/products` and `/shop` both
+  404. No cart, no product pages, no prices anywhere. Prior probe
+  2026-09-01. **REJECT — no catalog surface.**
+- **Hyper Express** (hyper.sd) — real StackFood/6amMart Laravel backend
+  (confirmed live zones, SDG currency_id) but the one grocery module's
+  698-item catalog is 689/698 (98.7%) unreplaced installer seed data
+  (`price=1`, `slug: "demo-product"`, Arabic "test" footer, created_at
+  predates the store's own created_at). Only 8 SKUs carry plausible real
+  SDG prices. Prior probe 2026-09-01. **REJECT — seed/demo data, below
+  usable bar.**
+- **LILY Delivery** (lilydelivery.com) — real Node/Mongo+Postgres backend,
+  no WAF, but whole platform is 14 vendors / ~34 items total; the single
+  grocery vendor carries exactly 7 SKUs at suspiciously round prices,
+  reads as a recently-seeded MVP. Prior probe 2026-09-01. **REJECT —
+  catalog too small / MVP seed, below usable bar.**
+- **Storna** (storna-shopping-vercel.app / st-orna.com) — frontend renders
+  fully but the API backend (`storna-core.laravel.cloud`) 404s on every
+  path including `/` itself. Backend decommissioned or migrated. Prior
+  probe 2026-09-01. **REJECT — backend dead.**
+- **Talabaty** (mytalabaty.com) — connection timeout (28s) on curl_cffi
+  chrome124, host effectively unreachable; app store listing says "coming
+  soon." Prior probe 2026-09-01. **REJECT — unreachable.**
+- **Zaad Delivery** (zaad.delivery) — Astro+Vue marketing site only,
+  zero shop/menu/product links, zero price mentions after full Playwright
+  render. JS proof-of-work interstitial guards a site with no catalogue at
+  all. Prior probe 2026-09-01. **REJECT — no catalog surface.**
+
+### Tanzania (cells=56)
+
+- **Jambo Supermarket** (jambosupermarket.online) — React SPA on a
+  public-anon Supabase table; exactly 34 rows, ALL sharing one
+  `created_at` timestamp to the microsecond, Unsplash stock photos,
+  generic seed names — a template installer's demo catalog, not a live
+  branch-selector storefront. Prior probe 2026-09-01. **REJECT —
+  seed/demo data.**
+- **duka.direct (Selcom)** — public domain is a Tilda page-builder
+  marketing site only (no app markers); every CTA redirects to an
+  app-install page that itself timed out. No product/store data reachable
+  from the web domain. Prior probe 2026-09-01. **REJECT — app-only, no
+  web catalogue.**
+
+### Ethiopia (cells=58)
+
+- **Queens Supermarket / Shoa** (shoashopping.com) — DNS resolves but no
+  usable response (recorded in known_blockers.md's "DNS resolves but no
+  usable response" bucket). **REJECT — dead.**
+- **klik Grocery** (klik.delivery/grocery) — recorded in known_blockers.md's
+  "Challenge or denial on every TLS profile AND headless Playwright" bucket
+  (72-host genuine-block class). **REJECT — WAF/anti-bot block, both
+  levers failed.**
+
+### Belgium (cells=63)
+
+- **Albert Heijn Belgium** (ah.be) — same Ahold Delhaize platform/block as
+  ah.nl, verified independently on both hosts 2026-09-10. Product-sitemap
+  access is open (16,999 `.be` PDP urls) but every PDP request returns a
+  ~2.6KB Akamai Bot Manager challenge instead of content. **REJECT —
+  Akamai block on the PDP page itself.**
+- **Bol.com Belgium** (bol.com/be) — recorded in the 72-host
+  challenge/denial bucket. **REJECT — WAF/anti-bot block.**
+- **Cora Belgium** (cora.be) — recorded in known_blockers.md's "DNS
+  resolves but no usable response" bucket. **REJECT — dead.**
+- **Spar Colruyt Group** (mijnspar.be) — the only priced component
+  reachable (`filter_list_store_sp.model.json`, an Adobe AEM component) is
+  a fixed 43-row weekly promo flyer that does not paginate
+  (`?page=2`/`?p=2`/`?offset=12` all return the identical body); sitemap
+  confirms no `/produits/`/`/shop/`/`/catalogue/` route exists anywhere on
+  the site. Fails the enumerability gate outright. Prior probe 2026-09-10.
+  **REJECT — no real catalog route, fails enumerability gate.**
+
+### Antigua and Barbuda (cells=67)
+
+- **Caribbean Eat** (caribbeaneat.com) — live, enumerable Shopify
+  storefront (`/products.json` pages 1-5: 250/250/250/127/0, ~877 products,
+  disjoint ids) but rejected on geography: `Shopify.country="US"`,
+  `Shopify.currency.active="USD"`, tag sample dominated by
+  jamaican/west-indian/colombian/venezolano/argentino tags, **zero**
+  Antigua tags anywhere. A US diaspora grocer selling import-marked-up
+  prices, not a domestic AG retailer. Prior probe 2026-09-10. **REJECT —
+  wrong geography (US diaspora catalog).**
+- **Mercado Libre** (mercadolibre.com) — recorded in the 72-host
+  challenge/denial bucket; also structurally a cross-border regional
+  marketplace with no AG-specific storefront. **REJECT — WAF block +
+  out-of-scope marketplace class.**
+- **My Caribbean Grocer** (mycaribbeangrocer.com) — live Shopify, 86 SKUs,
+  single-page catalog (page 2 empty). Same reject class as Caribbean Eat:
+  `Shopify.country="US"`, 35 distinct vendor brands nearly all Jamaican,
+  zero "Antigua"/"Barbuda" mentions anywhere, USD gift-card SKUs (diaspora
+  signature). Prior probe 2026-09-10. **REJECT — wrong geography.**
+
+### Albania (cells=73)
+
+- **AliExpress** (aliexpress.com) — explicitly flagged in known_blockers.md
+  Wave-4 outcomes as "cross-border, not a national source" — out of scope
+  for a country-attributed manifest regardless of access. **REJECT —
+  out-of-scope marketplace class.**
+- **Amazon** (amazon.com) — recorded in the 72-host challenge/denial
+  bucket. **REJECT — WAF/anti-bot block.**
+- **Facebook Marketplace** (facebook.com/marketplace) — fresh-probed
+  2026-09-11: HTTP 200, no WAF/TLS block, but a personalized, login-gated
+  social feed with no public catalogue, no product sitemap, no anonymous
+  API. **REJECT — structural, not a retailer/price-source class.**
+- **Gjirafa50** (gjirafa50.com) — recorded in the 72-host challenge/denial
+  bucket. **REJECT — WAF/anti-bot block.**
+- **Kaufland Marketplace** (kaufland.com) — recorded in known_blockers.md's
+  distinct "no priced surface under curl_cffi (5 profiles) OR Playwright"
+  bucket (114 hosts) — no WAF challenge observed, simply no discoverable
+  catalog surface. **REJECT — no priced surface found.**
+- **Zalando** (zalando.com) — same 114-host "no priced surface found"
+  bucket as Kaufland.com. **REJECT — no priced surface found.**
+- **eBay** (ebay.com) — recorded in the 72-host challenge/denial bucket.
+  **REJECT — WAF/anti-bot block.**
+
+### Liechtenstein (cells=9)
+
+- **Coop / Migros (via CH)** — two distinct sites under one candidate row:
+  - **coop.ch**: HTTP 403, `server: DataDome`, `x-datadome: protected`,
+    JS-challenge stub; headless Playwright confirms the identical DataDome
+    challenge after an 8s wait — both levers fail per the mandatory gate,
+    genuine block. Prior probe 2026-09-01. **REJECT — DataDome block,
+    confirmed on both curl_cffi and Playwright.**
+  - **migros.ch**: fresh-probed 2026-09-11 — Angular SPA shell,
+    `window.prerenderReady = false`, no product data in the raw response
+    even on a search URL. No WAF challenge observed, just needs a full
+    Playwright render + network trace. **DEFER — SPA needs Playwright,
+    not a hard reject; worth a dedicated future pass.** (Matches the
+    batch's own build_tier=D scoring.)
+
+## Rejection counts by cause (25 rejected rows + 1 duplicate + 1 deferred; 2 accepted)
+
+| Cause | Count | Sources |
+|---|---|---|
+| WAF/anti-bot challenge confirmed on curl_cffi (5 profiles) AND Playwright | 8 | coop.ch, klik.delivery, ah.be (Akamai), bol.com, mercadolibre.com, amazon.com, gjirafa50.com, ebay.com |
+| No priced surface found (no WAF challenge, just nothing to scrape) | 2 | kaufland.com, zalando.com |
+| Dead / unreachable domain (DNS resolves, no usable response, or timeout, or backend decommissioned) | 4 | shoashopping.com, cora.be, storna-shopping-vercel.app, mytalabaty.com |
+| No catalog surface — marketing/template site only, app-only | 3 | alwaha.sd, zaad.delivery, duka.direct |
+| Seed/demo data — real backend, catalog is installer/test data | 3 | hyper.sd, lilydelivery.com, jambosupermarket.online |
+| Fails enumerability/catalog-size gate (fixed non-paginating list) | 1 | mijnspar.be |
+| Wrong geography (diaspora/foreign catalog, not domestic) | 2 | caribbeaneat.com, mycaribbeangrocer.com |
+| Cross-border / out-of-scope marketplace class | 1 | aliexpress.com |
+| Structural — social platform, login-gated, no public catalog API | 1 | facebook.com/marketplace |
+| Deferred — SPA shell, needs Playwright, not conclusively rejected | 1 | migros.ch |
+| Already onboarded (duplicate candidate) | 1 | colruyt.be |
+| **ACCEPTED** | **2** | **congobio_cg, chmsuriname_sr** |
+| **Total** | **28** | |
+
+
+---
+
+## known_blockers_untried_4 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_4.md` on 2026-09-11. 28 hosts, 1 not
+documented above at merge time.
+
+# Known blockers — untried_4 batch (2026-09-11)
+
+Batch: `~/gapwork/batches/untried_4.csv`, 28 never-probed candidates across
+central_african_republic, cameroon, iceland, norway, haiti, kuwait, rwanda,
+lesotho, malawi, algeria, zambia, mauritania, togo. 2 shipped
+(`quickgo237_cm`, `fasita_rw`); 26 rejected/deferred below, grouped by cause.
+All numbers below are MEASURED live on 2026-09-11 via `curl_cffi`
+(`impersonate="chrome124"`, then `chrome120`/`safari17_0` where noted) and,
+where flagged, a real headless-Chromium Playwright pass with network
+capture — not inferred from the batch CSV's `build_tier`/`scrapability`
+columns, which were all `not scored`/`nan` for this batch.
+
+## DNS never resolves (domain dead)
+
+- **warani.cf** (Supermarche Prima, Central African Republic) — `curl_cffi`
+  DNS resolution fails on both `https://warani.cf/` and
+  `https://www.warani.cf/`, and again over plain `http://`. Domain does not
+  resolve at all; no alternate TLD/subdomain found. Confirmed dead.
+- **eaglemarket.ht** (Eagle Market, Haiti) — same: DNS fails on bare,
+  `www.`, and `http://` variants. Confirmed dead.
+- **pnp.co.ls** (Pick n Pay Lesotho, Lesotho) — same: DNS fails on
+  `www.pnp.co.ls`, bare `pnp.co.ls`, and `http://`. Confirmed dead; no
+  South-Africa-hosted Pick n Pay subdomain found serving Lesotho.
+
+## Site broken / parked / under construction
+
+- **comphaiti.com** (CompHaiti, Haiti) — TLS certificate hostname mismatch
+  on the live cert; re-probed with `verify=False` to see the actual origin
+  content: HTTP 200, body `"Site Under Constuctions"` (23 bytes, sic).
+  Confirmed dead — not a probing-client issue.
+- **batolis.com** (Batolis, Algeria) — HTTP 200 but body is literally
+  `<html>webserver is functioning normally</html>` (47 bytes) on every path
+  tried, including `/index.php?route=product/product` (16-byte "File not
+  found."). Confirmed a parked/placeholder web server, not a storefront.
+
+## Cloudflare / WAF hard block (verified, not a bare-curl artifact)
+
+- **boutiqaat.com** (Boutiqaat, Kuwait) — 403 "Attention Required! |
+  Cloudflare" reproduced across THREE `curl_cffi` TLS-impersonation
+  profiles (`chrome124`, `chrome120`, `safari17_0`) **and** a real headless
+  Chromium via Playwright (`domcontentloaded`, full JS execution) — same
+  "Sorry, you have been blocked" page, HTTP 403. Per the mandatory gate,
+  both levers failing means this is a genuine block, not a TLS-fingerprint
+  artifact. Boutiqaat is the GCC's leading livestream/social-commerce
+  beauty marketplace — consistent with the inverse-correlation law (market
+  leader, hardened). No spider built.
+- **koumbimarket.eu** (KoumbiMarket, Mauritania) — `https://` gives a raw
+  OpenSSL handshake failure; `http://` returns HTTP 409 with a Cloudflare
+  error page titled "DNS resolution error | koumbimarket.eu | Cloudflare" —
+  Cloudflare's edge cannot reach the origin at all (not a bot challenge,
+  the origin appears to be gone). Confirmed dead.
+
+## Catalog confirmed real but too small to ship (0-1 SKUs)
+
+- **bonus.is** (Bonus, Iceland) — genuinely live WooCommerce Store API
+  (`/wp-json/wc/store/v1/products`), no auth needed. But
+  `X-WP-Total: 1` — the entire "catalog" is one SKU, a gift-card top-up
+  ("Inneignarkort – Áfylling", price 1 ISK). Matches the real-world fact
+  that Bónus (Iceland's discount grocery chain) does not run online
+  grocery ordering; this WooCommerce install is a gift-card microsite, not
+  the storefront. No spider built.
+- **pridefarms.rw** (Pride Farms, Rwanda) — genuine Wix store confirmed via
+  `store-products-sitemap.xml` and a real `Product`/`Offer` JSON-LD block
+  on the one listed PDP (`priceCurrency: RWF, price: 5700`). But the
+  products sitemap lists exactly ONE product URL, and that product's own
+  schema reports `availability: OutOfStock`. Live catalog is effectively
+  zero sellable SKUs. No spider built.
+- **maurikilchi.com** (Maurikilchi, Mauritania) — real Laravel/Inertia app
+  with a working public REST endpoint, `/api/products` returns valid JSON
+  (`{"count":0,"next":null,"previous":null,"results":[]}`) — confirmed
+  empty catalog, not a probing failure. No spider built.
+
+## Real local business, no online prices / no catalog
+
+- **banguimall.net** (Bangui Mall, Central African Republic) — despite the
+  "Mall" name, this is a Bootstrap template site for a CAR **automobile
+  service** (car wash / mechanic / tire shop) — nav is
+  Home/About/Gallery/Services/Contact, and `/services.html` is entirely
+  "Car Wash / Car Wheels / Car Mechanic / Motor Repairs / Car Paint" copy.
+  No product catalog of any kind, retail or otherwise; this is not a
+  supermarket. Does not satisfy the French-branding/city-suffix check
+  because there are no products to check.
+- **caribbeansupermarketsa.com** (Caribbean Supermarket S.A., Haiti) — a
+  genuine, long-established local retailer (French copy: "Le supermarche
+  principal de detail en Haiti... depuis 1995", Pétion-Ville address,
+  Haiti phone number — passes the locality check cleanly). But the site is
+  an about/marketing page only ("1000+ produits disponibles" is a claim,
+  not a catalog) — no product listing, no prices, no API found.
+- **africamedicalmarketplace.com** (Africa Medical Marketplace, Algeria) —
+  `sitemap.xml` lists exactly one URL, the homepage. No category/product
+  pages exist to crawl; this is a B2B lead-generation page, not a catalog.
+
+## Real site, no extractable machine-readable prices
+
+- **coop.no** (Coop Norge, Norway) — real product pages exist and appear in
+  the sitemap (e.g. `/egne-merkevarer/coop-kaffe/produkter/kraftig-
+  arabicakaffe`), but the page's only JSON-LD is a `BreadcrumbList` — no
+  `Product`/`Offer` schema, and no `\d+,\d{2}\s?kr` price pattern anywhere
+  in the rendered HTML. Norway's Coop appears to gate actual purchase
+  prices behind a membership/app login; the public web catalog is
+  editorial/informational only.
+- **spctrmafrica.com** (SPCTRM Grocery Lilongwe, Malawi) — homepage/landing
+  page loads fine over `curl_cffi` (200, 202KB, AIOSEO-generated
+  WordPress), but the WooCommerce Store API is disabled
+  (`/wp-json/wc/store/v1/products` → `{"code":"rest_no_route"}`), and the
+  page HTML has zero `class="product*"` markup and zero price-pattern
+  matches. `sitemap.xml` itself is blocked by Cloudflare (HTTP 429,
+  "Access denied... error code 1015"), and a Playwright pass on the
+  grocery-delivery page also hit a Cloudflare "Performing security
+  verification" challenge (inconsistent with the curl_cffi success on the
+  same URL — likely a behavioral/JS heuristic rather than a TLS check).
+  No extractable prices found by any lever tried.
+- **easymartmalawi.com** (EasyMart Malawi, Malawi) — empty React/Vite SPA
+  shell (`<div id="root"></div>`, 562 bytes) served identically for every
+  guessed route (`/`, `/api/products`, `/api/shop/products`, `/api`).
+  Site's `robots.txt` is live but there is no discoverable backend; needs
+  a real browser render + longer network trace than was budgeted this
+  pass to determine if any API exists at all.
+
+## Not locally scoped (fails the locality gate structurally)
+
+- **mumafrica.com** (MumAfrica, Algeria) — confirmed via its own meta
+  description: "B2B & B2C marketplace connecting global trade with 54
+  African countries." This is a pan-African supplier directory, not an
+  Algeria-specific retailer; it has a `/browse` page but the site is a
+  React SPA and there is no way to scope it to Algeria specifically even
+  if scraped. Rejected on locality grounds, independent of the JS-shell
+  probing cost.
+
+## App-only (mobile-app ordering, no browsable web catalog)
+
+- **yassir.com** (Yassir Market, Algeria) — Next.js app; its own
+  `sitemap.xml` (43.8KB) contains only static marketing/language/legal
+  pages (`/en/algeria`, `/en/algeria/about-us`, `/en/algeria/contact-us`,
+  ...) for every supported country — zero product or restaurant listing
+  URLs. Yassir is Algeria's leading ride/delivery super-app (inverse-
+  correlation law: market leader). Ordering happens inside the mobile app
+  only.
+- **tigmooeats.com** (TigmooEats, Zambia) — `sitemap.xml` lists only
+  static pages (contact, privacy, restaurant/deliver signup). Confirmed
+  via Playwright: clicking "Order" immediately drops into a **mobile-
+  number + OTP login wall** before any restaurant/menu content is shown —
+  no public catalog exists pre-authentication.
+- **marsarim.com/fr** (Almersoul, Mauritania) — French delivery-app
+  marketing site ("l'application de livraison à domicile... Nouakchott").
+  Playwright network capture on page load and after clicking "Commander"
+  shows only i18n string files and a Google Maps ping — no product/catalog
+  API of any kind. App-only ordering.
+- **lotieapp.com** (Lotié, Togo) — page is generated by **v0.app** (Vercel's
+  AI page generator) per its own `<meta name="generator" content="v0.app">`
+  — an app-store marketing splash page (App Store / Play Store badges),
+  not a functioning ordering site. No clickable path led to any catalog or
+  API.
+
+## Deferred — technically feasible, needs more engineering than this pass budgeted
+
+- **heimkaup.is** (Heimkaup, Iceland) — the site's own `products-
+  sitemap.xml` and `product-categories-sitemap.xml` are STALE: every
+  sitemap PDP and category URL tested 404s live. Playwright network
+  capture reveals the real, currently-live backend is a third-party quick-
+  commerce platform, **Jiffy Grocery** (`api2.jiffygrocery.co.uk`) —
+  real ISK grocery prices render on the homepage (e.g. "Gull 12x500ml —
+  5.889 kr."). But every Jiffy API endpoint requires a bearer token
+  (`{"code":"TOKEN_MISSED_OR_INVALID"}` / `"UNAUTHORIZED"` on direct
+  `curl_cffi` calls with no token) — the token is issued client-side
+  during the Playwright session and was not captured/replayed this pass.
+  Building this needs a `scrapy_playwright` (Tier 2) spider that bootstraps
+  an anonymous Jiffy session per run and re-hits the catalog/search
+  endpoints — real engineering, not a manifest edit. Iceland is not the
+  neediest country in this batch (cells=43, 10 existing manifests already);
+  deferred rather than built this pass.
+- **shoprite.co.ls** (Shoprite Lesotho, Lesotho) and **shoprite.co.zm**
+  (Shoprite Zambia, Zambia) — both run the shared "shopriteafrica" Adobe
+  AEM corporate template (no product catalog on the main site — confirmed
+  via link inventory: only `/specials.html`, `/store-locator.html`,
+  `/explore-shoprite/*` info pages). BUT `/specials.html` links to a real,
+  current weekly-specials PDF per country
+  (`.../specials-leaflets/lesotho/2026/september/LSFOSLDXMW_CP.pdf`,
+  `.../zambia/2026/sep/ZMFOSRDWXK_CP.pdf`) — genuine retailer price
+  flyers. Downloaded both (524KB / 507KB, 1 page each): `pdfplumber`
+  extracts **zero text** from either — both are scanned/rasterized
+  image-only flyers, so OCR is required. `pytesseract` is not installed in
+  `~/venv` on a8, and installing new deps into the shared venv (other
+  concurrent collect jobs were running on a8 during this pass) was judged
+  out of scope for this run. Deferred: needs `pytesseract` +
+  `pdf2image`/`poppler` added to the environment, then a `pdf`-extraction-
+  pattern fetcher per country, re-run weekly.
+
+## Duplicate of an already-covered source
+
+- **dataviz.vam.wfp.org** ("Fallback - WFP VAM", Central African Republic)
+  — this is WFP's VAM Data Viewer, a different UI over the same underlying
+  WFP food-price data CAR already gets via
+  `src/prices/configs/ssa/central_africa/central_african_republic/
+  wfp_prices.yaml` (fetcher `_shared.ssa.wfp_food_prices.fetch_wfp_caf`,
+  sourced from HDX/humdata.org, re-verified 2026-08-06: 30,357 rows, XAF,
+  39 commodities, current through 2026-06-15). Onboarding the dataviz
+  front-end would duplicate data already in the corpus. No action taken.
+
+## Rejection counts by cause (26 rejected/deferred of 28 probed)
+
+| Cause | Count | Sources |
+|---|---|---|
+| DNS never resolves | 3 | warani.cf, eaglemarket.ht, pnp.co.ls |
+| Site broken / parked | 2 | comphaiti.com, batolis.com |
+| Cloudflare WAF hard block | 1 | boutiqaat.com |
+| Cloudflare origin unreachable | 1 | koumbimarket.eu |
+| Catalog confirmed real but 0-1 SKUs | 3 | bonus.is, pridefarms.rw, maurikilchi.com |
+| Real business, no online catalog | 3 | banguimall.net, caribbeansupermarketsa.com, africamedicalmarketplace.com |
+| Real site, no extractable prices | 3 | coop.no, spctrmafrica.com, easymartmalawi.com |
+| Not locally scoped (pan-African directory) | 1 | mumafrica.com |
+| App-only, no web catalog | 4 | yassir.com, tigmooeats.com, marsarim.com (Almersoul), lotieapp.com |
+| Deferred — needs more engineering | 3 | heimkaup.is (Jiffy auth token), shoprite.co.ls + shoprite.co.zm (OCR) |
+| Duplicate of already-covered source | 1 | dataviz.vam.wfp.org |
+| Also rejected as a duplicate flyer flag under Delimart (see below) | (see report) | delimarthaiti.com |
+
+Note: `delimarthaiti.com` (Delimart Haiti) is a real, well-established local
+chain (25 years, 4 Port-au-Prince stores — passes the Haiti locality check
+cleanly) but carries no machine-readable prices anywhere probed
+(`/produits`, `/promotions`, `/`, all rendered via Playwright): its "Pri Atè
+Plat" promos read as a monthly campaign name with no price text or JSON
+API found. Grouped with "no extractable prices" in spirit; listed
+separately here because, unlike coop.no/spctrm/easymart, its business
+reality (real supermarket, real promos) suggests prices may exist only as
+promotional images not yet located — worth a follow-up image/OCR check in
+a future pass, distinct from a hard block.
+
+
+---
+
+## known_blockers_untried_mix - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_mix.md` on 2026-09-11. 21 hosts, 11 not
+documented above at merge time.
+
+# Untried-mix gap-fill pass — Botswana / Syria / Afghanistan / Liberia / Sierra Leone / Chad
+
+_As of 2026-09-11._ Source: `~/gapwork/still_untried_20260911.csv`, filtered to
+`country in (botswana, syria, afghanistan, liberia, sierra_leone, chad) and
+foodish==True` -> 194 candidates. All verdicts below are dated 2026-09-11 and
+were re-probed live (per the "block verdicts are 55% wrong" rule) rather than
+taken from any prior blocker list.
+
+## Shipped (6)
+
+| Country | source_key | channel | currency | rows (test) | distinct urls |
+|---|---|---|---|---|---|
+| Botswana | hawkers_cash_carry_bw | wholesale | BWP | 104 | 104 |
+| Botswana | basketiq_pulse_bw | null (official_avg) | BWP | 78 | 78 |
+| Afghanistan | yaganchiz_af | convenience | AFN | 66 | 66 |
+| Afghanistan | smartbazar_af | marketplace | AFN | 85 | 85 |
+| Syria | bawabatdayaatna_sy | supermarket | SYP | 143 | 143 |
+| Sierra Leone | salonebly_sl | marketplace | SLE | 120 | 120 |
+
+Liberia and Chad shipped 0 this pass — every food-plausible candidate in the
+queue failed dead/blocked/non-food/not-enumerable (see below).
+
+## Botswana (60 candidates probed)
+
+Already covered before this pass: spar2u_bw, shopsefalana_bw,
+choppies_ebasket_bw, farmproducts_ex_bw (+ several non-food BW manifests).
+
+**Shipped:**
+- `hawkers_cash_carry_bw` — Wix Stores cash-and-carry wholesaler, 339-URL
+  product sitemap, genuine FMCG/food catalogue (washing powder, juice,
+  yoghurt, biscuits, tomato sauce, cigarettes, sweets, canned beans).
+- `basketiq_pulse_bw` — private company aggregating "typical" prices from
+  till-verified receipts, 70-78 categories, BWP, official_avg. Does NOT
+  paginate (single static page is the whole board) — flagged honestly in
+  the manifest rather than claimed as a growing catalogue.
+
+**Dropped — duplicate (same brand/chain already onboarded):**
+- `sefalana_main_specials` (sefalana.co.bw) — Sefalana Group's corporate
+  marketing site ("Hyper, Shopper, Shopper BIG One, Cash & Carry, Liquor
+  and Shopper Quick stores"). Same retail group as the already-onboarded
+  `shopsefalana_bw` (shopsefalana.com). Confirmed via schema.org
+  Organization block on sefalana.co.bw naming "Sefalana Cash & Carry
+  Limited".
+- `spar_bw_specials` (spar.co.bw/specials) — SPAR Botswana's WordPress
+  corporate/flyer site, same brand as the already-onboarded `spar2u_bw`
+  (spar2u.co.bw, 8,370 SKUs via sitemap). Not enumerable either way (WP
+  specials page, not a structured catalogue).
+- `spar_bw_pricemate_flyers` (pricemate.co.za) — third-party South African
+  blog "insights" post about Botswana grocery prices, not a live source;
+  also SPAR-branded, same duplicate concern.
+
+**Dropped — non-food (confirmed by content, not just name):**
+- `homeandallstore_bw` — Wix store, 155-product sitemap, ALL household
+  goods/clothing/gadgets (egg-omelette maker was the closest thing to
+  food; no actual food SKUs).
+- `stockroombw` — Wix store, 35-product sitemap, 100% clothing.
+- `pretty_potions_bw` — WooCommerce store API confirms 100% K-beauty
+  skincare (toners, cleansers, masks).
+- `crazystore_bw_all_products` — South African variety/houseware chain;
+  sitemap has no product URLs at all (only static pages), and the brand
+  is toys/stationery/kitchenware, not food.
+- `bms_allcats` (bmsonline.co.bw) — stationery/office-supplies wholesaler
+  (nav: Art Supplies, Battery, Book Covers, Exercise Books, school
+  uniforms). Zero food categories.
+- `botswanashop_bw` — "Botswana 60th Anniversary Merchandise &
+  Souvenirs", not a grocer.
+- `dita_holdings_products`, `celestialspaces_bw`, `areliada_bw`,
+  `barcodesbotswana`, `bas_bw_shop`, `musimboti_bw`, `tswanawana_bw`,
+  `clickconnect_bw`, `thefellasden_bw`, `westdraytonbrands_bw`,
+  `afm_tlokweng_shop`, `dellkorse_bw`, `anaconda_store_bw` — remaining
+  "generic shop" names from the queue; content-probed and none showed a
+  food-dominant catalogue (mostly agriculture-inputs/services, outdoor
+  gear, general merchandise). `westdraytonbrands_bw` is the one partial
+  exception (see below).
+- All restaurant/menu/tariff/hardware/pharmacy/electronics/cosmetics/
+  fashion/pet/auto/hotel/book/toy/school-fee/church-shop/regulator-tariff
+  candidates dropped on name+content without a deep probe (28 of the 60):
+  absa_bw_tariff_guide, biblesociety_shop_bw, botswana_art_online,
+  cottoncloud_social, dikhung_books, edutoys_world_bw,
+  fearless_fitness_bw, hibiscus_schools_fees, hope_bromo_restaurant,
+  kfcbotswana_menu, lionpark_restaurant_menu, monko_perfumes_bw,
+  mpatise_seedlings, oceanbasket_botswana_menu, orekatech_store,
+  pedros_botswana_menu, platinumhotel_rooms, pulacars_bw,
+  rocomamas_botswana_menu, shedol_cosmetics_bw, titanburgers_bw,
+  uniflora_gardens_bw, zencafe_bw, autoline_bw, bocra_tariffs,
+  gabseats_social, haskins_hardware_bw, istore_bw, partscityafrica_bw,
+  pets_home_social_bw, shopbotswana_artisans, specsavers_bw, ubuy_bw
+  (general/electronics-heavy marketplace).
+
+**Dropped — diaspora/non-domestic pricing (flagged explicitly, not silently
+accepted):**
+- `westdraytonbrands_bw` — WooCommerce Store API confirms real food SKUs
+  (organic eggs, Foster Farms, Angie's Kettle Corn, Seeds of Change red
+  rice) but priced in **USD** (`currency_code: "USD"` in the payload, not
+  BWP), 39 total products. Reads as an imported-gourmet/diaspora-gift
+  boutique rather than a domestic Botswana price level. Skipped per the
+  skill's diaspora-storefront caution rather than shipped with a silent
+  USD assumption.
+
+**Dropped — not enumerable / low signal:**
+- `pulamarket_bw` — "Botswana's Digital Commerce Platform", a genuine
+  vendor marketplace shell, but the public homepage requires sign-in to
+  browse vendor catalogues; no reachable seller directory or product
+  listing found without an account.
+- `stockroombw`, `homeandallstore_bw` sitemaps were enumerable but 100%
+  non-food (see above).
+
+## Syria (32 candidates probed)
+
+Already covered: `prices_sy` (crowd price board), `dokan_sy`, `tsaooq_sy`,
+`glowhaven_sy`, `boma_sy`, `dokanmall_sy`, `wb_rtdi_prices`, `wfp_prices`.
+
+**Note on `prices_sy`:** the task brief flagged that its real content sits
+behind a `cat=N` parameter that an earlier probe missed. Checked the current
+manifest (`src/prices/configs/menaap/middle_east/syria/prices_sy.yaml`) —
+this was **already fixed** by other work earlier on 2026-09-11 (manifest
+documents cat=1/2/3/8/9/10 walking 77 rows across 6 food categories). No
+action needed from this pass.
+
+**Shipped:**
+- `bawabatdayaatna_sy` ("بوابة ضيعتنا") — genuine Syrian online grocery
+  store, custom Laravel storefront. Confirmed real brands via /brands/
+  pages (Maggi, Nutella, Oreo, Mars, Snickers, Pringles, Almarai). 17
+  food/beverage categories crawled (cleaning-household excluded), SYP,
+  paginated listing confirmed disjoint page-1-vs-page-2/3.
+
+**Dropped — non-food (individual sellers on a hosted multi-vendor
+platform, sampled and confirmed, not assumed):** the `*.sooqnaa.com` and
+`*.dex.sy` hosts in this queue are all storefronts on the SAME hosted
+e-commerce SaaS (identical Next.js build fingerprint across nana.dex.sy,
+mid.dex.sy, karazzah.dex.sy). Five were opened and sampled directly:
+  - `a14km_zad_sooqnaa` — branded "ZAD" (زاد, "provisions") but the
+    catalogue is NOVELS (product titles are book titles like "مأساة
+    مغترب" / "Tragedy of an Expat").
+  - `alnabaalkaber_sooqnaa`, `barllina_sy` — pants/clothing.
+  - `amanibook_sooqnaa` — books.
+  - `sidrahandmade_sooqnaa` — handmade crafts.
+  Given this consistent pattern across the platform, the remaining
+  un-sampled sellers on the same two hosts were not individually probed:
+  `s_3alndha_sooqnaa`, `vipstore_sooqnaa`, `sawanhoney` (honey — actually
+  food-plausible by name, NOT sampled, worth a follow-up probe),
+  `sidrahandmade_sooqnaa`, `nana_dex`, `mid_dex`, `karazzah_dex`.
+  `emarkabat` — confirmed non-food (car marketplace, "E-Markabat" =
+  vehicles).
+- `daralamirat_shop` — WooCommerce store API confirms cosmetics (eye
+  masks, lip masks).
+- `itel_group` — phone-accessory brand site.
+- `damasbazar`, `bzorya`, `s_2s3ar`, `medetora`, `midad_bookstore`,
+  `emalabes`, `al_duha`, `cars_sy`, `karazzah_dex`, `mid_dex`,
+  `daralamirat_shop`, `silverstoreapp` (bookshelf/furniture),
+  `damascus_now_economy_telegram` (a Telegram channel, not scrapable as a
+  catalog) — dropped on name+quick-content, non-food.
+
+**Dropped — blocked (Vercel Security Checkpoint, confirmed on TWO
+independent hosts, both survived curl_cffi impersonation AND a Playwright
+render — a genuine content-level challenge, not a TLS/JA3 issue):**
+- `syrianmarkt` — same Astro/Vercel checkpoint signature as Liberia's
+  ourricebridge (see below). Per the skill's rule ("when curl_cffi AND
+  Playwright both 403, stop"), not pursued further.
+
+**Dropped — not enumerable:**
+- `syria_yousale_furniture_decor` (furniture, non-food anyway),
+  `syriastoreonline`, `tinawistore`, `damascus_store`,
+  `bawabatdayaatna`-adjacent single-product-listing candidates
+  (`cloudmartsy` — one PDP given as the "url", not a category) were not
+  pursued once the higher-confidence `bawabatdayaatna_sy` cleared the
+  ≥5-row gate comfortably.
+
+## Afghanistan (26 candidates probed)
+
+Already covered: `maiwandbazar_af`, `sawdagar_af`, `sale_af`,
+`dostonline_af`, `kabulshop_af`, `4sough_af`, `thoffragrance_af`,
+`melat_shop_af`, `etohfa_af`, `superstan_af`, `wb_rtdi_prices`,
+`wfp_prices`, `nsia_kabul_prices`.
+
+**Shipped:**
+- `yaganchiz_af` — Shopify grocery-delivery storefront ("Monthly Family
+  Essentials Box", "Fresh Fruit & Vegetable Box", Alokozay diapers), 63
+  SKUs, AFN confirmed from the storefront's own Apple Pay capabilities
+  blob AND rendered PDP price text. Flagged: Shopify account country code
+  is "CA" (Canada) — likely a diaspora-run operator — but prices are
+  AFN-denominated for delivery within Afghanistan, so treated as a
+  domestic price level, not silently assumed.
+- `smartbazar_af` ("SmartBazar.af supermarket category" in the queue) —
+  multi-vendor marketplace. The queue's own `categorySlug=supermarket`
+  URL was a red herring (that category is non-food-dominant, top items
+  were laundry powder/soap); Playwright network trace found the site's
+  open GraphQL API (`api.smartbazar.af/graphql`, no auth) and a real
+  "Foodstuffs" category (85 items) was queried instead. AFN confirmed
+  from the payload's own `currency` field per item.
+
+**Dropped — dead:**
+- `Kefayat Supermarket` (kefayatsupermarket.com) — domain resolves to a
+  default Plesk Obsidian control-panel page, not a live site. Genuinely
+  dead, not blocked.
+
+**Dropped — blocked / not pursued further:**
+- (none beyond the two SmartBazar/Yaganchiz leads pursued — `Choob.af`
+  and `Rasteen Bazar`, both explicitly flagged in the task brief as
+  WAF-recovery examples, cleared HTTP access fine via plain requests but
+  turned out non-food on content inspection, see below — no actual
+  blocking encountered for these two once fetched.)
+
+**Dropped — non-food (confirmed via WooCommerce store API, not
+assumed):**
+- `Choob.af` — "Choob" = "wood" in Dari; WooCommerce API confirms 100%
+  furniture (tables, chairs, sofas).
+- `Rasteen Bazar` (rasteenltd.com) — WooCommerce API confirms consumer
+  appliances (washing machines, TVs).
+- `Afghan China Shopping Center`, `Fiber Technology Services Co`,
+  `Peace Stationery` (peace1971.com), `ZmaDookan`, `Kharid`,
+  `Maihandost Shop`, `Zhmary`, `Hamachiz`, `Karwaan`, `Afzon`,
+  `Tizkart`, `LilamLilam`, `Liwal Htay Afghanistan marketplace`,
+  `AfghanBazar`, `Asan Bawar`, `Zarangwal` — content-probed or
+  name-confirmed non-food (general marketplaces/electronics/classifieds/
+  furniture/fragrance).
+- `Afghanistan Ministry of Industry and Commerce market prices`
+  (old.moci.gov.af) — page exists but is a static informational node, no
+  price table found in the probe window; not pursued further given time
+  budget (worth a follow-up if MENAAP official_avg coverage is
+  prioritized later).
+- `Agrix agricultural marketplace`, `Ubuy Afghanistan`, `Jamshidi Mart`,
+  `Yaganchiz`(shipped)/`Leelam.af` — Ubuy is a general international
+  marketplace (electronics-heavy), not pursued.
+
+## Liberia (31 candidates probed) — 0 shipped
+
+Already covered: `ezeemarket_lr`, `congo_girl_cuisine`, `familylogolr`,
+`villeton_liberia`, `banjoo_lr`, `commbeauty`, `mbcenter_shop`,
+`libdelivery_lr`, `techsight_eyewear`, `babyboomshop`,
+`kernel_fresh_premium`, `wb_rtdi_prices`, `wfp_prices`.
+
+**Dropped — non-food (confirmed via sitemap/API sampling):**
+- `lxttsmarket` — Shopify sitemap, 50 products, all fashion/wigs
+  ("Ivory Royale", "RaiNe's Designs").
+- `yanabuy` — Shopify sitemap, 50 products, all housewares (travel mugs,
+  humidifiers, can coolers).
+- `africanpride_liberia_collection` — Shopify sitemap, novelty
+  print merchandise (pet hoodies, lunch bags), not food despite "African
+  Pride" sounding food-adjacent (it's actually a hair-care brand's fan
+  merch storefront).
+- `shoptsev` — "Electronics, Services, Property & Motors", confirmed via
+  schema.org Organization block.
+- `jmartliberia` — Odoo storefront, "Flooring, Furniture & Appliances".
+- `booksrun_liberia_books`, `starlongman_books` — books.
+- `libno1_computers`, `duke_electronics_social` — electronics.
+- `carliberia_spareparts`, `ali_building_material` — auto parts /
+  construction material.
+- `usgs_monrovia_map` — USGS map product page, not a Liberian retailer.
+- `artstation_monrovia_asset` — digital art asset marketplace listing,
+  unrelated to Liberia retail.
+- `amseaview_menu`, `sinkor_palace_menu` — restaurant menus.
+- `kawtal_super_electronics` — electronics despite "Super" in the name.
+
+**Dropped — blocked (Vercel Security Checkpoint, confirmed on curl_cffi
+impersonation AND Playwright, both failing — genuine content-level
+challenge, not TLS):**
+- `ricebridge` (ourricebridge.com) — a Liberian rice company (would have
+  been high-value if reachable). Both impersonation and a Playwright
+  render returned the same "Vercel Security Checkpoint" title/markup.
+  Documented here rather than re-attempted.
+- `martiva_all`, `libshop_net`, `makay_marketplace`, `litwaypicks` — same
+  Astro/Vercel checkpoint signature (identical CSS class names
+  `data-astro-cid-*`), confirmed on all four independently.
+
+**Dropped — empty / not enumerable:**
+- `marketliberia_ll` (rebrands as "Maittes") — SPA shell, `/categories`
+  page explicitly renders "No categories available"; pricing shown in
+  USD (another diaspora/non-domestic flag) even before the empty-catalog
+  finding made it moot.
+- `market231` — "Liberia's Trusted Online Marketplace", homepage has no
+  reachable category/product links in static HTML; not pursued further
+  (would need a Playwright trace, out of budget this pass).
+- `bestventure_liberia` — "Best Venture — Catering and Food Delivery
+  Services in Monrovia" (b12.io site builder), a services/catering
+  business page, not an enumerable product catalogue.
+
+**Dropped — wrong scope:**
+- `modelsvillegroup.com` product page is a single kitchen-appliance SKU
+  (egg poacher), not a category or storefront worth crawling.
+- `xpress_liberia` — general delivery-app storefront, sampled content
+  inconclusive for food-dominance within budget; not pursued.
+
+## Sierra Leone (27 candidates probed)
+
+Already covered: `choithrams_sl`, `trillingoexpress`, `lamanistore`,
+`gotrustmesl`, `afrikonet_sl`, `statssl_cpi`, `africell_tariffs`,
+`orange_tariffs`, `wfp_prices`, `fews_net`.
+
+**Shipped:**
+- `salonebly_sl` ("magic_sl" was probed separately and dropped, see
+  below — this source, "Yu Don Bay - VLN Solutions" at salonebly.com, was
+  the queue's `salonebly*` cluster) — FleetCart storefront, scoped
+  deliberately to its "food-beverages" category only (157 total items;
+  the site's "food"/"drinks"/"rice"/"biryani"/"naan" etc categories were
+  sampled and found to be prepared RESTAURANT items, out of the
+  01/02-retail scope, and deliberately left uncrawled). SLE confirmed
+  from the payload.
+
+**Dropped — genuinely valuable but not enumerable (recorded for a
+possible future revisit, not silently discarded):**
+- `akis_aid` (akisaid.com) — an NGO platform for rural women farmers
+  publishing REAL farmgate/wholesale prices (Fresh Fish, Cassava,
+  Groundnut, Red Palm Oil, Gari, Parboiled Rice) with seller names,
+  phone numbers and rural locations across Kambia/Bombali/Bo/Port Loko —
+  exactly the kind of source the "wholesale feed" doctrine wants. BUT: no
+  per-product URLs, no pagination (`?page=2` returns byte-identical
+  content to page 1), and the richer "Average Prices of Commodities"
+  section is subscription-gated behind "Subscribe to view more" (only 3
+  commodities shown free). The visible "Trending Products" teaser is a
+  fixed ~7-item homepage section, not a crawlable catalogue. Recorded
+  here rather than force-shipped on a technicality.
+
+**Dropped — non-food (confirmed via sitemap/content):**
+- `denkoelectronics`, `tealexelectronics`, `xtratechsl` (Wix sitemap, 15
+  products, all electronics — chromebooks, flash drives) — electronics.
+- `blake_electronics_sl` — electronics.
+- `digisolsl_gift_card` — gift cards.
+- `firsttouchlimited` (firsttouchlimited.com) — Wix site; sitemap has NO
+  store-products-sitemap (booking-services + pricing-plans only) — a
+  sports/coaching booking business, not a shop.
+- `kenema_longrich` — single MLM product page (sanitary napkins), not a
+  catalogue.
+- `ordergo_sl` — single product page (earrings), not a catalogue.
+- `magic_sl` (magic-sl.com) — "Magic Trading", homepage returns HTTP 406
+  to a plain UA; a `categorysearch?brand=...` URL loaded but titles
+  extracted were generic UI chrome (search/login/wishlist), no food
+  signal found within budget.
+- `insalone_emall` — the single product URL given ("Starlink SET
+  Enterprise Version-Digital Product") is a digital/electronics SKU; the
+  mall's other categories were not explored (Chinese-language mixed-
+  content mall app, out of budget to navigate further).
+
+**Dropped — blocked (Vercel Security Checkpoint, same signature as the
+Liberia/Syria cluster):**
+- `salonecart`, `salonefastmarket` — both same Astro/Vercel checkpoint.
+
+**Dropped — restaurant/service, not retail:**
+- `cokiesrestaurant`, `francosresort_menu`, `goldenrestaurant_menu`,
+  `ibflavorsl_menu`, `lor_clicks_reservation_menu`,
+  `royalhotelmakeni_restaurant`, `crownxpresssl` (menu path) — restaurant
+  menus.
+
+**Dropped — not enumerable / low signal:**
+- `adobricgreenfields`, `market360` — no product catalogue found within
+  budget.
+
+## Chad (18 candidates probed) — 0 shipped
+
+Already covered: `mossosouk_td`, `rakhaz_td`, `tchadcommerce_td`,
+`artiaf_td`, `wfp_prices`. `hadimi_td` confirmed (per task brief) as
+100% electronics/cookware despite `channel: supermarket` tag — NOT
+treated as coverage, NOT treated as a duplicate for any new candidate.
+
+**Dropped — diaspora/non-domestic pricing (flagged, not silently
+shipped):**
+- `daarishop_fr` — WooCommerce store API confirms REAL bulk food SKUs
+  (Riz importé 25kg, Chocolat Tartina 2.5kg, Ketchup Alfa 340g, "Pack
+  Ravitaillement +, Maïs 100kg") but priced in **EUR**
+  (`currency_code: "EUR"`), on a `.fr` domain — reads as a diaspora
+  "send groceries home to Chad" remittance-gift service (pay in Europe,
+  deliver in N'Djamena), not a domestic Chadian price level. 41 total
+  products. Skipped per the diaspora-storefront caution.
+
+**Dropped — non-food:**
+- `dukafrica_td` — WooCommerce API confirms electronics (GPS watches,
+  blood-pressure monitors, sealing machines).
+- `belivay_cemac_td` — "BelivaY — Marketplace camerounaise" — this is a
+  CAMEROONIAN marketplace (CEMAC-regional), not Chad-specific; wrong
+  country for a Chad price level even if reachable.
+- `abdramani_solutions_td`, `ampktechnology_td`, `vepaar_lossirimou_td` —
+  IT/computer equipment.
+- `aboufarissolar_td` — solar equipment.
+- `abou`/`iambeezy_chad_price_blog` — a blog post about N'Djamena grocery
+  prices, not a live, scrapable source.
+- `perle_tchadienne_social`, `petitfute_ndjamena_restaurants` — a
+  business-directory listing and a restaurant guide, not retail sources.
+- `librairie_numerique_africaine_chad` — digital bookstore.
+
+**Dropped — not enumerable / thin:**
+- `nibiya_td` — a Livewire classifieds/OLX-style platform ("boutiques"),
+  not a structured retailer catalogue. Its "Agro-pastorale" category DOES
+  carry some real food items (chili powder, chia seeds, cashew/dried-
+  fruit mix, vegetable broth) mixed with non-food (goat sale, fodder
+  crop, veterinary medicine) as individual classified-ad postings —
+  judged too thin/unsystematic to onboard as a structured spider within
+  this pass's budget.
+- `saweek_td` — multi-vendor marketplace (Afrimarket, Chad Power,
+  NECHIVA, Auto et Outils, Tech Office, "Agro", pharma Light, Maison Kids
+  ...); the "Agro" vendor-shop page returned an empty product grid in
+  static HTML (likely AJAX-loaded, not pursued further within budget).
+- `magazana_td` — Cloudflare JS challenge (`cf-mitigated`), confirmed
+  still challenged even with curl_cffi `chrome124` impersonation; per the
+  skill's rule this would need a Playwright pass to confirm a genuine
+  block vs a clearable challenge — not pursued given the generic
+  "Votre boutique en ligne" title carried no food signal to justify the
+  extra probe budget.
+- `sultana_market_td` — 2KB SPA shell, no content in static HTML; not
+  pursued via Playwright within budget.
+
+## Cross-cutting notes
+
+- **Vercel "Security Checkpoint" cluster**: seen on Syria
+  (syrianmarkt), Liberia (ourricebridge, martiva_all, libshop_net,
+  makay_marketplace, litwaypicks) and Sierra Leone (salonecart,
+  salonefastmarket) — 8 distinct hosts, all Astro-on-Vercel, all
+  confirmed still challenged under BOTH curl_cffi `chrome124`
+  impersonation AND a full Playwright render (6-8s wait). Per the
+  skill's rule ("when curl_cffi AND Playwright both 403, stop"), none
+  were pursued further. Worth a dedicated future effort if any of these
+  (especially `ourricebridge`, a genuine Liberian rice company) are
+  high-priority.
+- **Diaspora-pricing pattern hit twice** (`westdraytonbrands_bw` in USD,
+  `daarishop_fr` in EUR) — both real food catalogues on real WooCommerce
+  backends, both explicitly skipped rather than silently shipped with an
+  assumed local currency, per the task's hard-constraint guidance.
+- **Hosted multi-vendor SaaS platforms are a systematic false-positive
+  source** for "food" name matches: Syria's sooqnaa.com/dex.sy cluster
+  (5 sellers sampled, 0 food) and Sierra Leone's individual product-page
+  candidates (kenema_longrich, ordergo_sl) all turned out to be one-off
+  non-food sellers on generic platforms.
+
+
+---
+
+## known_blockers_untried_sar1 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_sar1.md` on 2026-09-11. 80 hosts, 76 not
+documented above at merge time.
+
+# SAR1 gap-fill sweep — Nepal / Bhutan / Bangladesh (foodish==True)
+
+_As of 2026-09-11._ Source: `~/gapwork/still_untried_20260911.csv` filtered to
+`country in (nepal, bhutan, bangladesh) & foodish==True` = 185 candidates
+(nepal 95, bangladesh 65, bhutan 25).
+
+## Summary
+
+- 185 candidates in scope.
+- 88 dropped on sight, never probed, per the hard COICOP 01/02-only constraint
+  (see "Non-food, dropped without probing" below) plus 1 exact duplicate
+  (sherza.bt — already onboarded as `bhutan/sherza.yaml`).
+- 97 probed (3-arm block probe: plain requests, Chrome-UA requests, curl_cffi
+  chrome124 — all2026-09-11).
+- 26 shipped as working manifests (23 generic Woo/Shopify configs + 2 custom
+  spiders + 1 fetcher), all verified with a real `collect --source` run.
+- 13 confirmed dead/unreachable on this network as of 2026-09-11.
+- 6 deferred (live, food-relevant, blocked on a specific reverse-engineering
+  step not completed this round).
+- 54 remaining leads: confirmed 200 + food-relevant per the candidate's own
+  evidence, but no open JSON API found (custom HTML platform) — selectors not
+  built this round. Listed below for the next pass.
+
+## Shipped (26) — verified via `collect --source <key> --max-items 100`
+
+| country | source_key | channel | currency | measured rows | distinct urls |
+|---|---|---|---|---|---|
+| nepal | aashrayafood_com | specialty-food | NPR | 37 | 37 |
+| nepal | barahibakery_com_np | specialty-food | NPR | 94 | 94 |
+| nepal | ganeshpauroti_com_np | specialty-food | NPR | 35 | 35 |
+| nepal | germanbakery_com_np | specialty-food | NPR | 100 (capped) | 100 |
+| nepal | kathmandubakery_com | specialty-food | NPR | 24 | 24 |
+| nepal | masupasal_com_np | specialty-food | NPR | 9 | 9 |
+| nepal | nepalbasket_com | specialty-food | NPR | 46 | 46 |
+| nepal | nepalteaexchange_com_np | specialty-food | NPR | 59 | 59 |
+| nepal | onlinetarkaripasal_com | fresh-market | NPR | 100 (capped) | 100 |
+| nepal | organicshopnepal_com | specialty-food | NPR | 22 | 22 |
+| nepal | parajulizbakery_com_np | specialty-food | NPR | 11 | 11 |
+| nepal | sastodookan_com | specialty-food | NPR | 376 | 376 |
+| nepal | shopwholly_com | specialty-food | NPR | 100 (capped) | 100 |
+| nepal | tarkari_com_np (fetcher, official_avg) | null | NPR | 101 | n/a (fetcher) |
+| bangladesh | agromartshop_com | specialty-food | BDT | 61 | 61 |
+| bangladesh | baking_hut_com | specialty-food | BDT | 22 | 22 |
+| bangladesh | bestbazarbd_com | fresh-market | BDT | 100 (capped) | 100 |
+| bangladesh | drotobuy_com | supermarket | BDT | 199 | 199 |
+| bangladesh | fishvally_com | specialty-food | BDT | 132 | 132 |
+| bangladesh | onlinefishbazar_com | specialty-food | BDT | 92 | 92 |
+| bangladesh | shadho_com | fresh-market | BDT | 199 | 199 |
+| bangladesh | shelaidahdairy_giftcard_com | specialty-food | BDT | 26 | 26 |
+| bangladesh | shutkibazar_com | specialty-food | BDT | 77 | 77 |
+| bhutan | ogop_bt | specialty-food | BTN | 39 | 39 |
+| bhutan | greenhands_bt (custom spider) | fresh-market | BTN | 91 | 91 |
+| bhutan | diwakstore_bt (custom spider, scoped to groceries-5) | dept-store | BTN | 27 | 27 |
+
+All Woo sources use `generic_woo_configured` against `/wp-json/wc/store/v1/products`
+(currency read from the payload's `prices.currency_code`, minor-unit division
+handled by `_woo_base.py`). All Shopify sources use `generic_shopify_configured`
+against `/products.json`. `greenhands_bt` and `diwakstore_bt` are bespoke
+scrapy.Spider files (no JSON API found on either site).
+
+Manifests: `src/prices/configs/sar/south_asia/{nepal,bangladesh,bhutan}/<key>.yaml`.
+Spiders: `src/prices/price_scraping/spiders/{greenhands_bt,diwakstore_bt}.py`.
+Fetcher: `src/prices/fetchers/sar/south_asia/nepal/tarkari_com_np.py`.
+
+`collect --list` re-run after every addition; global list stayed healthy
+(2315 sources after the full pass, no crash).
+
+## Confirmed dead / unreachable (13) — as of 2026-09-11
+
+| host | country | symptom (3-arm) |
+|---|---|---|
+| sastodeal.com | nepal | ConnectTimeout on all 3 arms. Flagged `P1 build now / ACCEPT` in the queue (Magento marketplace) but genuinely unreachable from this network today — matches the pre-existing `known_blockers.md` "DNS resolves but no usable response" line. Worth a retry from a different egress before writing off — Magento + 50k SKUs claimed is a large prize if it comes back. |
+| gopasal.com | nepal | ConnectTimeout on all 3 arms. |
+| bbsm.com.np (Bhat-Bhateni, www + bare) | nepal | Resolves fine (200, 73KB) — but it is a **corporate/marketing site only**: nav is Home/About/History/Leadership/News, zero occurrences of "shop", "cart", "catalog", "delivery"; 2 hits on "product" (both prose). No online storefront exists at this domain. Structural absence, not a block — the pre-existing known_blockers "DNS resolves but no usable response" verdict for this host was wrong (re-probed live), but the corrected verdict is still "not scrapeable." |
+| aziztraders.store | bangladesh | DNS resolution failure on all 3 arms. |
+| shop.ekotamart.com | bangladesh | DNS resolution failure on all 3 arms. |
+| wellfoodsylhet.com | bangladesh | DNS resolution failure on all 3 arms. |
+| krishibidbazaar.com | bangladesh | ConnectionError/SSLError on all 3 arms. |
+| sharedealnow.com | bangladesh | HTTP 526 (Cloudflare: invalid origin SSL certificate) on all 3 arms — origin server itself is down/misconfigured, not a WAF block. |
+| sorboraho.com.bd | bangladesh | HTTP 404 on all 3 arms (site gone; queue evidence describes a Shopify soft-drinks collection that no longer resolves). |
+| emarketltd.com | bangladesh | HTTP 404 on all 3 arms. |
+| khan.com.bd | bangladesh | SSLError on all 3 arms; retried with `verify=False` → HTTP 500 (server error, not a cert-only issue). |
+| 8elevenbhutan.bt (www + bare) | bhutan | Cert fails default verification; `verify=False` retry returns a **bare Apache "Index of /" directory listing** — the storefront described in the queue evidence is gone, domain now serves nothing. |
+| sibjam.com | bhutan | `ConnectionError: Remote end closed connection without response` on plain requests even with `verify=False`; curl_cffi also fails. Genuinely unreachable today. |
+
+## Deferred — live and food-relevant, blocked on unfinished reverse-engineering (6)
+
+| host | country | priority | status |
+|---|---|---|---|
+| meenabazaronline.com (Meena Bazar Online) | bangladesh | H — supermarket chain | Angular SPA; Playwright network-trace (after fixing its cert with `ignore_https_errors=True`) found the real API host `mbonlineapi.com` — `nav/categories/list` (pure grocery: Fish/Meat/Beef/Chicken/Duck/...) and `home/section` both return live JSON over plain HTTP, no auth needed. But `offer/product/count?AreaId=null&SubUnitId=null` returns `TotalItem: 0` — **product listing is gated behind a delivery-area selection** (matches the FAQ note: "perishable prices vary by selected location"). `areas/search` (POST) returns `data: []` for every guessed query string. Needs the area-picker UI flow reverse-engineered (open DevTools, click through the picker, capture the real AreaId/SubUnitId pair) before a product-list endpoint can be found. Not attempted further this round — same shape as the pre-existing `countrydelight.in` entry in `known_blockers.md`. |
+| shop.medhey.app (Medhey Shop) | bhutan | M | Next.js app; plain `requests` gets the full SSR homepage including a `__NEXT_DATA__` category tree with `product_count` per leaf (confirms it is mostly groceries/home goods) — but category pages (`/c/groceries`, etc.) render products client-side with no embedded links, and **Playwright itself gets a Cloudflare `challenge-platform` bot-check** that plain requests does not trigger (the reverse of the usual "TLS impersonation causes the block" pattern — here headless-browser fingerprinting is the trigger, not TLS). No API host found in the 5KB challenge page. Would need a non-headless or stealth-patched browser to get past the challenge and capture the real XHR calls. Not attempted further this round. |
+| shoppergreen.bt (ShopperGreen) | bhutan | H | Cartzilla-style Bootstrap storefront, 10 departments (5 food: bakery, dairy-eggs-fridge, drinks, fruit-vegetables, pantry). Category pages return 200 but ship an **empty product grid** in both plain HTML and Playwright-rendered DOM; the page JS references `ajax/load-cities` — the storefront requires a city/locality selection (stored client-side) before it will show or fetch inventory, same shape as Meena Bazar. Not attempted further this round. |
+| ajantatea.com | nepal | data-quality concern | Shopify `/products.json` is live and returns real variant prices, but (a) body copy prices in ₹ (Indian rupees) for "Darjeeling Oolong leaf tea... sourced from Darjeeling, India" despite the queue's Nepal/Ilam framing, and (b) one sampled variant's title says "RS 5000/-PER KG" while its actual price field is 500.00 — internally inconsistent. Likely India-facing storefront cross-listed under Nepal search terms (matches the `jomlah.app`/Yemen pattern already in `known_blockers.md`). Not shipped pending a clearer signal of Nepal-only fulfillment. |
+| kabiremart.com.bd | bangladesh | M | Homepage 200s only with `verify=False` (cert error otherwise); once past that it's real content (Teer soyabean oil, Pusti oil, rice — grocery). But `/wp-json/wc/store/v1/products` and `/products.json` both 404 — custom Laravel-style routes (`/allsubcategory/{id}/{slug}` per the queue notes) rather than WooCommerce. Needs selector/route work, not attempted this round. |
+| tarkari.com.np fetcher cadence | nepal | shipped but thin | Shipped (see table above) but flagged here too: the page has published only 3 distinct dates ever (2026-05-01, 05-22, 07-07) with no pagination — likely an occasionally-updated snapshot, not a live daily feed. Re-check staleness on the next pass. |
+
+## Non-food, dropped without probing (88)
+
+Per the hard scope constraint (COICOP 01/02 only), the following were dropped
+on sight from the 185-row queue based on their own `notes`/`why` evidence,
+without spending probe budget. Grouped by reason:
+
+- **Pharmacy** (7): Lazz Pharma, OsudPotro, MedPlus Nepal, PharmaShop Nepal,
+  Neevan Welcare Center, 24Seven (skincare/pharmacy), Arogga Food and
+  Nutrition (primarily pharmacy; its "food-and-nutrition" category is a
+  sub-aisle of a pharmacy chain, not a food retailer).
+- **Electronics/appliances/computers/mobile** (17): Star Tech, Fair
+  Electronics, TekzoBD, KPEBAZAR, Gadget Zone, Pickaboo, Rinors (BD); GBN
+  Store, Good Gadgets Nepal, Mobilemandu, Neptronics, Neshop, Appliances
+  Nepal, Dakshinkali Electronics, GharOne (NP); BD Commercial, iDruk
+  Computers, KT Mobile, Tharlam Tek, YenaMena, TD Tyres & Electronics,
+  Bhutan Telecom device catalog (BT).
+- **Cosmetics/beauty** (8): Korean Cosmetics Love/K-Beauty eStore (BT), Hamro
+  Shringar, Korean Beauty Point, Maake Beauty Nepal, The Makeup Factory
+  Nepal, Welcome International, RiwanMart, NOri Botanical (NP/BT).
+- **Furniture** (4): Ashley Furniture Nepal, GNS Store, Nepo Furniture,
+  Furniture Mahal.
+- **Clothing/fashion/footwear/eyewear** (6): Laconic Fashion, Online Clothing
+  Store Nepal, E-Bazar Nepal (shoes), SRS Shopping, Lookscart, Titan Optical.
+- **Automotive/car accessories** (3): Neo Store, Moto World Nepal, Kinaun.
+- **Stationery/books/toys** (4): WeShopNepal, Scolar, Rokomari, NepKids.
+- **Pet shop** (1): Pet Store Nepal (also carries live-animal listings —
+  excluded regardless).
+- **Telecom tariff / service plans** (1): Nepal Telecom FTTH Tariff (COICOP 08,
+  not 01/02).
+- **Sports goods** (1): Himalayan Ox Sports.
+- **Handicraft/botanical/herbal-only** (5): Yuesel Handicraft Bhutan, OGOP's
+  handicraft SKUs are incidental (OGOP itself shipped — mostly food), Druk
+  Herbal Cordyceps (supplement/tea-adjacent but framed as wellness, not
+  staple food), Ecoco Official Bhutan (household goods), Nima Tshongkhang
+  (household goods).
+- **Household goods (non-food)** (2): (see above, Ecoco/Nima already counted).
+- **Adult products** (1): itsnaughtytime Bhutan pages.
+- **Cafe/restaurant menus (COICOP 11, not retail)** (3): Pelbu Suites,
+  Mountain Cafe Bhutan, Dhukka Sekuwa (raw-meat-by-weight bundled with a
+  restaurant menu — the retail meat component is small and inseparable from
+  the menu evidence given).
+- **Garden/agri-input supplies, not food** (1): JaiboVumi (seeds, fertilizer,
+  neem oil — inputs, not food).
+- **Health supplement / non-staple** (2): Krishok Bazar (spirulina tablets,
+  supplement niche), Shree Shyam Ji Marketing (baking tools/ingredients like
+  fondant moulds and cutters, not food itself).
+- **Price-comparison aggregators, not merchants** (5): Jachai Price, Daam
+  Kemon, PaisaBachau, Price Compare Nepal — all explicitly describe
+  themselves as comparing OTHER stores' prices, not an enumerable catalog of
+  their own.
+- **Demo/non-operational storefront** (1): "Kazi Store" at
+  `supershop.isoftdemo.com` — the domain is a software vendor's public demo
+  instance, not a real merchant.
+- **Broad non-food marketplace (fashion/tools/furniture-led)** (3): Sarnyas
+  (840-SKU shop dominated by shoe racks/laptop tables/GPS trackers), Yalula
+  (stationery/clothing/toys marketplace), LR Bazar (apparel-led, unclear
+  category evidence), Grey.com.np (tea SKU present but dominated by bags/
+  fashion evidence), Near Me (groceries claimed in FAQ copy only, no
+  item-level food evidence captured), NeerKart (cosmetics/fashion-led
+  evidence despite a "groceries/pets" category claim).
+- **Duplicate** (1): Sherza Allstore (sherza.bt) — already onboarded as
+  `src/prices/configs/sar/south_asia/bhutan/sherza.yaml`.
+- Remaining ~17 rows across the three countries were dropped on the same
+  non-food grounds under close variants of the categories above (mixed
+  electronics/appliances/general-merchandise storefronts whose own evidence
+  names a non-food dominant category).
+
+## Remaining leads — confirmed 200, food-relevant, NOT yet built (54)
+
+All returned 200 on at least one probe arm 2026-09-11 and their own queue
+evidence describes real food/grocery pricing, but none exposed an open
+WooCommerce Store API or Shopify `/products.json` (spot-checked with
+`?rest_route=` and bare `/wp-json/wc/store/products` variants too — still
+nothing). Each needs individual Tier-1A selector work (custom
+`scrapy.Spider`, in the `greenhands_bt`/`diwakstore_bt` style) that wasn't
+in scope to build for all 54 this round. Listed for the next pass, roughly
+in priority order within each country (chains/dairies/produce specialists
+first):
+
+**Nepal (30):** tarkari.com.np market-price page already shipped as a
+fetcher; the following are still spiders-to-build: aafnaipasal.com,
+agrimart.com.np, anganbaari.pythonanywhere.com, buytarkari.com,
+down2earthorganics.com, drinksnepal.com, falfruitnepal.com, golocal.com.np,
+hamrokaresabari.com, harikrishifarm.com, kathmanduorganics.com,
+khushibazar.com.np, malbhog.com, mato.com.np, mountemart.com,
+navadurgadairy.com.np, nepalgramodhyog.store, nubrimart.com,
+okhaldhungadhamaladairy.com.np, parsabazar.com, pourwithpresence.com,
+rasanmart.com, sitabazar.com, smartgau.com, smsdairy.com,
+thepatisserienp.com, ugcakes.com, uliaa.com.np, valleycoldstore.com.np,
+wholesalepasalplus.com.
+
+**Bangladesh (23):** abirfoodsbd.com, agorasuperstores.com, agrotownbd.com,
+ashbazarbd.com, banglashoppers.com, basketshopbd.com, breadandbeyondbd.com,
+fenimart.com, foodlandproducts.websites.co.in (low-trust website-builder
+disclaimer, verify merchant authenticity first), foodpanda.com.bd
+(marketplace — lower priority, vendor-specific), gbanglanetwork.com,
+grameenfoodbd.com, greenfarm.com.bd, hamakerehaat.com, isratsupershop.com,
+keedorkar.com, kdsbd.com, krishimartbd.com, metromartonline.com,
+nutrifyfoodbd.com, pundramart.com, sodaikutir.com, sodaipati.com.bd.
+
+**Bhutan (0):** all live Bhutan candidates from the keep-list were either
+shipped, deferred with a documented reason, or confirmed dead above.
+
+## Method notes for the next pass
+
+- The bulk 3-arm block probe + catalog-endpoint auto-discovery script is at
+  `~/gapwork/sar1/probe.py` (input: a CSV with `country,source,host,url`
+  columns; output: JSONL with per-arm status/bytes plus a `catalog_probe`
+  column recording which of `/wp-json/wc/store/v1/products`,
+  `/wp-json/wc/store/products`, `/products.json` returned real JSON).
+- `requests` + `verify=False` recovers several hosts that fail with the
+  default certifi bundle (self-signed/misconfigured certs, common on small
+  Bhutanese/Nepali/Bangladeshi storefronts) — always retry with
+  `verify=False` before writing off a `SSLError`/`CertificateVerifyError`.
+- In the Scrapy pipeline itself, the project-wide `RandomBrowserMiddleware`
+  routes **every** request through curl_cffi impersonation, so a
+  requests+`verify=False` fix does not carry over automatically — set
+  `meta["impersonate_args"] = {"verify": False}` per request (precedent:
+  `goto_pk.py`, `mojsupermarket_me.py`; used here in `greenhands_bt.py` and
+  `diwakstore_bt.py`).
+- `Nu. 40`-style prices (a currency abbreviation ending in its own period,
+  immediately followed by the amount) will silently parse as `0.40` under a
+  naive `re.sub(r"[^\d.]", "", text)` regex — strip the currency word first,
+  *then* extract digits. Caught and fixed in `greenhands_bt.py`; worth
+  grep-checking every Bhutan spider for the same trap (`Nu.` is the only BTN
+  symbol in use).
+- Never run a Playwright/curl_cffi trace script from `/tmp` on a8 — hit the
+  documented `/tmp/inspect.py` stdlib-shadowing landmine firsthand this
+  session (a stray `/tmp/inspect.py` broke `import inspect` inside
+  playwright's internals with no useful traceback pointing at the cause).
+  Always run from `~/gapwork/`.
+- This worktree (`~/po-worktrees/fill-gap-sources`) is shared with at least
+  one other concurrent session — mid-session a `waafiro_gm.py` (Gambia,
+  unrelated to this task) briefly had a syntax error that broke Scrapy's
+  SpiderLoader for every spider in the repo, then self-resolved a few
+  minutes later without any edit from this session. If `collect --source`
+  fails with a `SyntaxError` in an unrelated spider file, re-check before
+  editing it — it may be another session's in-progress write, not a stable
+  bug.
+
+
+---
+
+## known_blockers_untried_sar2 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_sar2.md` on 2026-09-11. 148 hosts, 145 not
+documented above at merge time.
+
+# SAR untried-queue pass — Maldives + Sri Lanka, foodish==True
+
+All verdicts below are as of **2026-09-11**, from `~/gapwork/still_untried_20260911.csv` filtered to
+`country in (maldives, sri_lanka) and foodish == True` (166 rows). Probing used the three-arm
+pattern (plain requests default UA, plain + Chrome UA, curl_cffi impersonate=chrome124/chrome120/
+safari17_0) plus Playwright network traces for SPA/API discovery, per the onboard-price-sources
+skill's mandatory gates. Re-probed live rather than trusting any prior verdict.
+
+**166 candidates total. 162 were bulk-probed** (4 were dropped before probing as pre-existing
+duplicates — see below). Of the 162: **20 shipped**, 4 further duplicates found during
+investigation, 83 non-food, 13 dead/unreachable, 7 genuinely blocked, 35 food-plausible but not
+pursued this pass (budget).
+
+## Pre-existing duplicates (dropped before probing, 2026-09-11)
+
+The queue's de-dup against existing manifests missed these — same host, different display name:
+
+- **Good Food Maldives** (`goodfoodmaldives.com`) — already `good_food_mv.yaml`
+- **Redwave Online** (`redwave.mv`) and **Redwave Online - order subdomain** (`order.redwave.mv`) — already `redwave_mv.yaml` (same `allowed_domains`)
+- **WHIM Dhiffushi** (`whim.com.mv`) — already `whim_mv.yaml`
+
+## Duplicates found during investigation (2026-09-11)
+
+- **Ithuru.lk** (`ithuru.lk`, sri_lanka) — price-comparison app explicitly covering Keells/Cargills/Glomark/SPAR; SPAR is already covered via `spar2u_lk`.
+- **PriceCut LK** (`pricecutlk.shop`, sri_lanka) — inline React state (`initialProducts`) carries `product_url: "https://spar2u.lk/products/..."` for every sampled item — this is a re-publication of `spar2u.lk`'s own catalog, not an independent source.
+- **One Market** (`onemarket.appcloudpro.com`, sri_lanka) — "Sri Lanka Price Hunter", meta keywords list `keells,cargills,lassana,glomark` — same aggregator pattern.
+- **ShopMahajana.com** (`shopmahajana.com`, sri_lanka) — byte-identical title/content to `mahajanaonline.com`; same TakeApp store tenant. Only `mahajanaonline.com` onboarded.
+
+## Shipped (20)
+
+See the final report table for full detail (channel/currency/rows/urls). Maldives: `zettamart_mv`,
+`bluecart_mv`, `mustore_mv`, `oneclick_mv`, `confood_mv` (spiders), `mv_agumagu`, `mv_agucheck`
+(fetchers). Sri Lanka: `grocerybasket_lk`, `conveniencestore_lk`, `ksuper_lk`, `bringmaalu_lk`,
+`meatzone_lk`, `umaimart_lk`, `tropicalfresh_lk`, `livelife_lk`, `islandcoffee_lk`, `lionstea_lk`,
+`dssupermart_lk`, `breadtalk_lk`, `mahajanasuper_lk`.
+
+## New method findings this pass (worth carrying forward)
+
+- **`server: hcdn` denylists curl_cffi impersonation specifically.** `ksuper-shop.com` 403'd on all
+  three TLS profiles but cleared instantly to 200 on plain `requests` with no impersonation and no
+  special headers. Same for `islandcoffee.lk` and `lionstea.lk` (though those didn't carry the
+  `hcdn` server header — just a plain 403 under curl_cffi that plain requests clear). **Try plain
+  requests before curl_cffi impersonation on Sri Lankan `.lk` WooCommerce sites** — this pattern
+  repeated 3 times in one afternoon.
+- **A synthesized per-row URL is required whenever the catalog has no routable PDP.**
+  `ksuper-shop.com` (static `data.js` array), `dssupermart.com` (in-house PHP API, id-only), and
+  `mahajanaonline.com` (TakeApp `/recommendation` endpoint) all lack a real per-product page.
+  `DuplicationPipeline` dedups on `item["url"]`, so all three spiders synthesize a `?id=`/`#id`
+  suffix — without it, each would have silently collapsed to 1 row.
+- **"Recommendation" and "cart" endpoints are sometimes the real catalog.** TakeApp-platform stores
+  (`mahajanaonline.com`) expose their full product list at a URL literally named
+  `/products/recommendation` — don't assume an endpoint name describing a UI feature means a
+  filtered subset; check the actual count against the site's own claimed catalog size.
+- **Derivative price-comparison apps cluster around the same 3-4 already-covered chains.** Three
+  separate SL domains (`ithuru.lk`, `pricecutlk.shop`, `onemarket.appcloudpro.com`) all aggregate
+  Keells/Cargills/Glomark/SPAR/Lassana. Recognize the pattern after the first hit (embedded
+  `product_url`/keywords naming those chains) rather than re-investigating each one fully.
+- **A government price-monitoring SPA can hide a huge historical dataset behind one bootstrap
+  call.** `agumagu.trade.gov.mv` (Maldives Ministry of Economic Development) is a Next.js app with
+  zero data in the server-rendered HTML; a single Playwright-discovered `/api/bootstrap` endpoint
+  returned the WHOLE dataset (~29k price observations, 118 items, 510 outlets, 21 atolls, history
+  back to 2025-03-05) in one ~7MB unauthenticated call.
+- **A reachable site with a real category taxonomy can still be near-dead inventory.**
+  `familymart.lk` has a genuine PHP grocery catalog (categories, cart, real Rs prices) but ~96% of
+  its ~50 SKUs are marked Out of Stock — read stock status before treating "categories exist" as
+  "coverage exists."
+
+## Genuinely blocked (2026-09-11)
+
+- `shop.etukuri.mv`, `shop.linkserve.mv`, `moolee.mv` (maldives) — Cloudflare "Attention Required"
+  403 on chrome124, chrome120, AND safari17_0. Not re-attempted with Playwright given ambiguous
+  food value (generic small-shop names) and time budget — worth a network-trace pass if revisited.
+- `hardwaremart.lk`, `hardwares.lk` (sri_lanka) — Cloudflare challenge on all 3 profiles; also
+  non-food (hardware stores), so not worth a Playwright follow-up regardless.
+- `catchme.lk` (sri_lanka, mineral water brand) — Cloudflare 403 on plain requests AND chrome124.
+- `rumikmart.com` (sri_lanka) — returns HTTP 200 but the body is a bot-management JS challenge page
+  (`class="a-no-js" data-*="dingo"`, WebSocket focus-tracking) on both plain requests and chrome124
+  impersonation — a genuine challenge, not a curl TLS artifact. Food-plausible ("grocery/daily
+  essentials" per title) but not pursued further given the challenge is content-level, not
+  TLS-level.
+
+## Dead / unreachable (2026-09-11)
+
+DNS resolution failures (domain does not resolve, plain + chrome124): `lightbaazaaru.com`,
+`satheyka.mv`, `vectoshop.com` (all maldives); `pickly.lk`, `jingles.lk`, `evive.lk`,
+`cosmeticslanka.lk` (all sri_lanka, last one also non-food).
+
+TLS/SSL errors (cert invalid or verify failure, both profiles): `leostore.mv`,
+`store.ayalabubbles.com`, `noveltybookshop.com.mv` (maldives, last one also non-food);
+`kasagalasuper.com` (sri_lanka — a genuine "Super Market" name, worth re-checking once the cert is
+fixed, but currently unreachable on any client).
+
+Connect timeout (both profiles): `sahanakade.lk` (sri_lanka).
+
+Site removed: `navaahi.wixsite.com` ("Navaahi Traders Fresh Market") — the Wix site is unpublished,
+404 on both the listed sub-path and the account root.
+
+## Non-food (83) — dropped on sight per the division 01/02 hard constraint
+
+Full per-host list with the specific non-food signal in
+`~/gapwork/classification_final.csv` (category=NON_FOOD). Buckets, for orientation:
+
+- **Electronics/computers/gadgets** (maldives): qutech.mv, esselectronics.mv, quikrbiz.mv,
+  beta.imtech.mv, levendonline.com, leadtechmv.com, nessoinfinity.com, swiftech.mv, click.mv,
+  shop.personalcomputers.mv, nightowlmv.com, timetech.mv
+- **Hardware/tools/furniture** (maldives): blueseahardware.com, sonee.com.mv, whetstone.com.mv,
+  lykus.mv, styla.mv, tenon.mv, aivahome.mv, relaxmv.net (confirmed via Shopify sample — sells
+  welding machines, not groceries, despite grocery-adjacent footer noise)
+- **Cosmetics/beauty/perfume/spa**: goldengate.mv, mv.britishcosmetics.com, plaza.com.mv,
+  icm4online.com, misobeautyshop.com, amperfumetime.com, spaceylon.mv, skintreatsmv.com,
+  cosmetics.lk
+- **Fashion/apparel/jewelry**: brandloom.mv, weartoddy.com, berrycollection.com, soneesports.com,
+  cuddlycottonlk.com, lurreli.lk, wear.lk, apparel.lk
+- **Baby/kids**: lamoonbaby.mv, babypromv.com, hydrosphere-maldives.com, noq.mv, shop.peekaboo.mv,
+  babystore.lk, babyneeds.lk, tashbabycare.lk, kidsmart.lk, nesh.lk, kiddoz.lk
+- **Optical/pharmacy/health**: eyecare.mv, oagaaoptical.com, unionchemistspharmacy.lk,
+  beyondhealth.lk, shop.visioncare.lk, majayasingheopticians.lk
+- **Books/stationery**: mrpencil.mv, craftyworld.mv, bookstoremaldives.com, bookbooks.lk,
+  bookpack.lk, lol.lk, pothpancha.lk
+- **Pet supplies**: petmart.lk, petbarn.lk
+- **Restaurant/prepared food (COICOP 11, not retail)**: shellbeans.com ("Enjoyable Dining
+  Experiences")
+- **Telecom/services/misc**: ooredoo.mv (telco), pestexmaldives.com (pest control),
+  palmalandscapeinv.com (landscaping), pinkcoral.mv (aquarium supplies), shop.scout.mv (scout
+  gear), sparepartsmarket.lk / sumanamotorstores.com (auto parts), leemacreations.com (interior
+  design), finez.lk / agc.lk / homemart.lk (furniture/hardware despite "Homemart"/"Concept Store"
+  branding), pricetoday.lk (general multi-category local-deals directory, sampled deal was
+  cosmetics — not food-focused despite the "prices" name), primehome.lk (kitchen decor/houseware,
+  not food), lassana.com (gifting platform)
+- **General merchandise dropshipping confirmed non-food despite "shopping"/"grocery"-adjacent
+  branding**: **trolleyz.lk** — 2,005-product catalog fully enumerated via embedded JSON-LD on the
+  homepage (31MB page); every "foodish" keyword hit traced back to kitchenware (choppers, milk
+  pots, fruit baskets, food-storage containers) — zero actual edible groceries in the catalog. This
+  is the wave's clearest case of the "flat-earth" trap the brief warns about: a clean, fully
+  enumerable, well-structured catalog that is nonetheless entirely non-food.
+
+## Food-plausible, not pursued this pass (35)
+
+Full list with individual reasons in `~/gapwork/classification_final.csv`
+(category=NOT_PURSUED). Grouped by why:
+
+**Needs deeper reverse-engineering (SPA/custom platform, no API found via an 8s Playwright trace):**
+tookary.com (fresh-market: fruit/veg/meat), neilbakery.lk (bakery), hurryhurry.lk (strong grocery
+signal), srilankastores.com (Ceylon tea/spices), neviscoffee.lk (coffee), naturescorner.lk (organic
+foods), stassentea.com (major tea producer), alphadairygoat.com (specialty dairy), cargillsonline.com
+(major chain, AngularJS POST-only API), foodele.com (Fuvahmulah delivery SPA, multi-vendor).
+
+**Ambiguous / weak or mixed signal, not individually investigated given time budget:** estore.mv
+(STO — likely significant, deserves a dedicated look), nextyle.mv, edhumashi.mv, ebazaar.mv,
+dianatradingmv.com, newbizz.com.mv, eurostoremv.com, imcmaldives.com, nuomimaldives.com,
+essential.mv, rightspot.mv, misraab.com.mv, zenovahotelsupplies.com (B2B hotel supplier),
+island-bazaar.com, maxcom.com.mv, colombomall.lk, foodcolanka.com, tudo.lk, shaz.lk, tns-go.com,
+store.topaz.lk (keyword hits likely false positives — Topaz is a known electronics brand),
+aquaswift.lk.
+
+**Reachable but not a real source:** familymart.lk (real catalog structure, but only 50 SKUs and
+~96% out-of-stock — dormant), ubereats.com / "Keells via Uber Eats" (not a distinct first-party
+source; the platform, not Keells, is what's reachable).
+
+## Currency note
+
+Every Maldives source shipped this pass reads MVR directly off the payload (Odoo `itemprop`
+microdata, WooCommerce `currency_code`, or the site's own displayed price string) — none needed a
+`countries.yaml` fallback. No USD-priced Maldives source was found in this batch (all six live
+retailer spiders + both fetchers are MVR-native), so no resort/expat-pricing flag applies this
+round.
+
+
+---
+
+## known_blockers_untried_sar3 - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_sar3.md` on 2026-09-11. 27 hosts, 2 not
+documented above at merge time.
+
+# India/Pakistan still_untried sweep — 2026-09-11
+
+Source: `~/gapwork/still_untried_20260911.csv`, filtered to `country in (india, pakistan)` and
+`foodish == True` → 148 candidates. Full detail/why/notes columns for all 148 read and triaged
+by hand against the hard COICOP-01/02 constraint before any network probe.
+
+## Triage summary
+
+| Stage | Count |
+|---|---|
+| Total candidates in filtered queue | 148 |
+| Dropped on sight as non-food (pharmacy/electronics/furniture/books/toys/eyewear/auto-parts/beauty/general-marketplace/comparison-aggregator/dead-lead) | 55 |
+| Probed live (liveness + platform fingerprint + enumerability) | 93 |
+| **Shipped (manifest + spider, verified via `collect --max-items 100`)** | **25** |
+| Probe-passed but blocked/unextractable/dead after live re-probe | remainder of the 93 (see `known_blockers.md`, "2026-09-11 SAR sweep" section) |
+
+93 probed, not 148, because 55 were non-food by name/description alone and probing them would
+have been pure loss under the hard constraint (a pharmacy or eyewear catalogue fills zero
+COICOP 01/02 cells no matter how clean). This matches the skill's own guidance to drop non-food
+on sight rather than spend probe budget on it.
+
+## Method notes for this run
+
+- Block-verdict re-probe was done live for every candidate that returned non-200 (plain
+  `requests` default UA, then `curl_cffi impersonate=chrome124`) — no verdict here is copied
+  from a prior wave without re-checking.
+- Enumerability was verified by comparing page-1 vs page-2 product-id sets for every shipped
+  Shopify/WooCommerce source (all 24 generic-spider sources showed zero id overlap between
+  pages) — not just a 200 status.
+- Currency was read off the live payload for every shipped source (Shopify `/cart.js`
+  `currency` field; WooCommerce Store API `prices.currency_code`), not inferred from the TLD
+  or symbol. All matched the country default (INR / PKR) — no surprises this round.
+- Hindi/Urdu search was not needed: no candidate's food-relevance was ambiguous enough to
+  require it — English evidence from the supplied queue (with sample prices already captured
+  by a prior research pass) was sufficient to classify every row.
+- One candidate (`chiltanpure_pk`) passed every technical bar (Shopify, working
+  `/products.json`, clean pagination) but was dropped anyway after sampling 1,250 products
+  showed it is 85%+ a perfume/cosmetics manufacturer — a reminder that "enumerable" and
+  "food" are independent checks.
+
+## Shipped sources
+
+| Country | source_key | channel | currency | Measured rows | Distinct URLs | Spider |
+|---|---|---|---|---|---|---|
+| India | atithifresh_in | specialty-food | INR | 122 | 122 | generic_shopify_configured |
+| India | doorbasket_org | fresh-market | INR | 239 | 239 | generic_shopify_configured |
+| India | kruncho_in | specialty-food | INR | 69 | 69 | generic_shopify_configured |
+| India | freshfishfusion_in | fresh-market | INR | 135 | 135 | generic_shopify_configured |
+| India | indiafishcompany_in | fresh-market | INR | 161 | 161 | generic_shopify_configured |
+| India | pickfreshfish_in | fresh-market | INR | 224 | 224 | generic_shopify_configured |
+| India | sidsfarm_in | specialty-food | INR | 44 | 44 | generic_shopify_configured |
+| India | freshbinge_in | fresh-market | INR | 100 | 100 | generic_woo_configured |
+| India | maalpani_in | specialty-food | INR | 100 | 100 | generic_woo_configured |
+| India | onlinemeatstore_in | fresh-market | INR | 66 | 66 | generic_woo_configured |
+| India | ppsnco_in | wholesale | INR | 100 | 100 | generic_woo_configured |
+| India | agroeats_in | specialty-food | INR | 20 | 20 | generic_woo_configured |
+| India | odhi_in | hypermarket | INR | 198 | 198 | generic_opencart_configured |
+| India | bigbasket_in | supermarket | INR | 192 | 192 | custom (bigbasket_in.py) |
+| Pakistan | cart24_pk | supermarket | PKR | 250 | 250 | generic_shopify_configured |
+| Pakistan | alkhaleej_pk | supermarket | PKR | 250 | 250 | generic_shopify_configured |
+| Pakistan | tawaqqo_pk | fresh-market | PKR | 391 | 391 | generic_shopify_configured |
+| Pakistan | shaheenonline_pk | dept-store | PKR | 250 | 250 | generic_shopify_configured |
+| Pakistan | greenvalley_pk | supermarket | PKR | 250 | 250 | generic_shopify_configured |
+| Pakistan | freshbasket_pk | specialty-food | PKR | 271 | 271 | generic_shopify_configured |
+| Pakistan | esajee_pk | specialty-food | PKR | 250 | 250 | generic_shopify_configured |
+| Pakistan | nestle_eshop_pk | specialty-food | PKR | 250 | 250 | generic_shopify_configured |
+| Pakistan | snapcart_pk | marketplace | PKR | 250 | 250 | generic_shopify_configured |
+| Pakistan | eurohypermarket_pk | hypermarket | PKR | 75 | 75 | generic_woo_configured |
+| Pakistan | karachimartonline_pk | supermarket | PKR | 20 | 20 | generic_woo_configured |
+
+All 25 manifests verified live with `~/venv/bin/python run.py prices collect --source <key>
+--max-items 100`, rows confirmed on disk under `data/prices/<region>/<subregion>/<country>/
+<source>/raw_items/`, and `prices collect --list` re-run after every batch to confirm the
+global 2000+ source list still loads (no enum breakage from a bad `channel:` value).
+
+`bigbasket_in` is the one custom spider (Next.js SSR, `__NEXT_DATA__` JSON, no generic base
+fits); see its manifest notes for a known pagination caveat (category pages redirect `?page=2`
+to a path that drops the page param, so each category currently yields ~page-1 depth — still
+192 rows, well past the 5-row bar).
+
+## Why the rest failed (of the 93 probed)
+
+- **Non-food** (dropped after probing revealed the catalog, not before): `chiltanpure_pk`
+  (85%+ perfume/cosmetics manufacturer).
+- **Not enumerable / not extractable without further work**: `jiomart.com` (CMS page-builder
+  schema, real catalog API not located in a first pass), `krishidhara.com` / `storepanda.pk`
+  (WooCommerce Store API disabled, 403), `akshayakalpa.org` (Store API 404, not registered).
+- **Blocked (genuine WAF, re-probed live)**: `carrefour.pk`, `magnikart.com`, `golbazar.pk`,
+  `fairo.pk`, `kolkatafish.com`, `naturesbasket.co.in` (re-confirmed, previously documented).
+- **Blocked (explicit anti-scrape policy, not a WAF)**: `amazon.in` (503 pointing to its own
+  paid APIs).
+- **Blocked (quick-commerce SPA needing pincode/geo session)**: `zepto.com`,
+  `countrydelight.in` (previously documented, re-confirmed).
+- **Access-restricted (not a WAF)**: `bombayfisher.com` (402, store suspended),
+  `continentalfresh.in` (401, password-gated pre-launch page).
+- **Dead / unreachable**: `angaadionline.com`, `graceonline.in`, `rcmymall.in`, `serveu.pk`
+  (DNS failures), `chitki.com` (timeout), `uttampk.com`, `asanbazar.pk` (TLS failures),
+  `bazaarapp.com` (503 on every probe).
+- **Duplicate of a source already shipped this round**: none — every shipped source is a
+  distinct host; `bigbasket_in` supersedes the queue's separate "BigBasket dry fruits category"
+  and "bigbasket business" rows (same platform, would be redundant manifests).
+- **Not a real source** (dropped pre-probe): 9 rows — see `known_blockers.md` "Not a real
+  source" bullet (news articles, B2B directories, gift-card pages, price-comparison apps that
+  re-scrape other platforms rather than being first-party retailers).
+- **Non-food, dropped pre-probe without a network call** (55 rows total; see
+  `india_pakistan_foodish.csv`/triage.py `DROP_NONFOOD` set): pharmacy chains (KSI Pharma,
+  Shopaholic.pk, Flashi, Hafiz Imran, DawaaiMart, Nova Health), electronics/appliances
+  (Eastcom, Azan, PEL eShop, Surmawala, Selecto, SkyTech, PC Wala, HomeShopping), hardware
+  (OffersWala, Adnan Brothers), furniture (Home Factree, Themes.pk), books/stationery (Prince
+  Book Centre, BookShop.com.pk, Pak Online Books), toys (ToyDost, Toywee, Toy Company,
+  ToyVerse, KiddieWink, Mirha Toys, Buyon Toys), eyewear (Lenskart, Eyezaar, Zujaj), fashion
+  (Myntra, HS Wear), beauty (Nykaa), baby (FirstCry), auto parts (Boodmo, Dhundo), general
+  marketplaces (Flipkart, Tata CLiQ, Meesho), and grocery price-comparison apps with no
+  first-party catalog (PriceBasket, BudgetBasket, FantasticFood, Smartprix, Comparify, Groka,
+  PriceKart, Gavyam, Qemat).
+
+## Next gaps to target (priority order, for a future dedicated session)
+
+1. **Zepto / country-delight-style pincode flow** — reverse-engineer the lat/lon or pincode
+   header via a real Playwright interaction session (set delivery address, capture the
+   resulting category/search API call), then hit that endpoint over plain HTTP. Two
+   candidates already queued for this exact fix.
+2. **Carrefour Pakistan** — re-probe with a longer Playwright network-capture session; Majid
+   Al Futtaim storefronts elsewhere expose an open commerce API behind the WAF.
+3. **JioMart** — find the real category URL structure (the CMS section-preview URL from the
+   candidate list was the wrong entry point) and re-run the network capture against it; this
+   is a Fynd Platform backend, and its catalog endpoint is very likely
+   `api/service/application/catalog/v1.0/...` by analogy with the cart/logistics endpoints
+   already captured.
+4. **BigBasket depth** — widen `CATEGORY_SLUGS` in `bigbasket_in.py` beyond the 7 hardcoded
+   food categories, and reverse-engineer the real "next page" contract (current `?page=N`
+   redirects to a path without it) to get past ~48 SKUs/category.
+
+
+---
+
+## known_blockers_untried_territories - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_territories.md` on 2026-09-11. 50 hosts, 33 not
+documented above at merge time.
+
+# Known blockers -- untried micro-territories food-source campaign
+
+_All verdicts below dated 2026-09-11 unless noted otherwise._
+
+Scope: `~/gapwork/untried_unassigned.csv` filtered to `foodish==True` and
+country in {greenland, eswatini, south_sudan, palau, american_samoa,
+gibraltar, marshall_islands, kiribati, faroe_islands, liechtenstein,
+san_marino, andorra, monaco, new_caledonia, french_polynesia, curacao,
+aruba, bermuda}. 84 rows matched (9 countries had rows; the other 9 had
+zero untried rows in the queue).
+
+## Shipped (see Phase 8 report for full detail)
+
+- `sheshasd_sz` (Eswatini) -- liquor + butchery, sheshasd.com
+- `igrocerbusket_sz` (Eswatini) -- grocery delivery, igrocerbusket.store.link
+- `bonfood_gi` (Gibraltar) -- fresh produce/deli/pantry, bonfood.gi (Wix)
+- `dutyfree_airports_gl` (Greenland) -- airport duty-free (travel-retail
+  flag), dutyfree.airports.gl
+
+## Confirmed dead / rejected -- queue candidates
+
+| Candidate | Country | Verdict (2026-09-11) |
+|---|---|---|
+| tutila_store (tutuilastore.com) | american_samoa | Template site with hard-coded "Demo Products when no data" placeholder cards -- no real backend/catalog. |
+| hi_nesian_apparel, tanoa_hawaii, toa_samoa_shop, myus_parcel_shipping, neil_s_ace_home_center, samoamarket, samoa_company_registration_fees, prescription_eyewear_local_storefront, flying_fox_brewing_co_menu | american_samoa | Non-food (clothing/hardware/telecom/admin-fees/restaurant) -- dropped on sight per the COICOP 01/02 hard constraint, not probed. |
+| buyeswatini_shop (buyeswatini.shop) | eswatini | Generic Chinese-template B2B storefront SaaS shell; `/291/Product/All` has zero real product markup (no price class, no product-item class anywhere in the page) -- empty demo store, same pattern as the already-documented SPAR-WooCommerce-zero-products case. |
+| imali_smart_marketplace (storkvelkonnect.co.za) | eswatini | Domain returns Cloudflare "DNS resolution error" -- the origin no longer exists behind the CF proxy. Dead domain. |
+| patos_co_za (patos.co.za) | eswatini | Parked/expired domain (generic "Find the best information..." parking page, `noindex`). Dead. |
+| quickmessanger_qm_store (quickmessanger.com) | eswatini | Real, live site, but it is a business DIRECTORY/digital-marketing platform ("Eswatini's all-in-one digital marketing and business directory"), not a storefront. No products. |
+| marketsquare_cars, timototraders, newflagshop_eswatini_flags, skyfly_mobi_store, swaziswap, hivoox_eswatini_esim | eswatini | Non-food (cars/flags/apparel/appliances/esim) -- dropped on sight. |
+| shoprite_specials_eswatini (specials.shoprite.co.sz) | eswatini | A single dated promotional-leaflet page (10KB), not a browsable/enumerable catalog -- fails the enumerability gate (no page-2 to diff against). Not scaffolded; revisit if Shoprite ever exposes a real catalog page (it hasn't as of three prior passes per country notes). |
+| floweradvisor_com_gibraltar, gibraltarpass_com, gibtechstore_com, inhome_gi, interbuild_gi, lionsgibraltarfc_com_vx3_store, rockhero_gi_4_stagioni | gibraltar | Non-food (flowers/tourism/electronics/furniture/hardware/sportswear/restaurant-menu -- restaurant is COICOP 11, out of the 01/02 hard scope) -- dropped on sight. |
+| rockvapour_com (Gibraltar vape/e-cig shop) | gibraltar | Real WordPress/WooCommerce site (`woocommerce` markup present) but the WooCommerce Store REST API (`/wp-json/wc/store/v1/products`) 404s and no prices are visible in the raw homepage HTML -- likely needs a Playwright render or a different WC endpoint path. DEFERRED, not probed to conclusion (borderline COICOP fit too: vaping hardware/e-liquid is not cleanly "tobacco" under COICOP 2018). |
+| ahb_nuuk, hotel_qaqortoq_menu, nuukeats, sawadii_gl | greenland | Restaurant/takeaway menus -- COICOP 11, out of the 01/02 hard scope. Confirms country notes. |
+| babysam_gl, davidsen_nuuk, glaciershop_store, ittu_net, noenne_net, illerfissarsiutileqatigiit, naleraq_sea_safari | greenland | Non-food (baby goods/hardware/souvenirs/sportswear/eyewear/funeral goods/tours) -- dropped on sight. |
+| geedo.gl | greenland | Confirmed a pure comparison-shopping-engine template (identical layout at geedo.af, geedo.ax, geedo.al, ... one per ccTLD) with no in-house search/category route found (`/sog/tobak`, `/search?q=` both 404). Does not resolve the "/webshop/tobacco/" lead -- that lead was airports.gl's duty-free shop, found and shipped separately as `dutyfree_airports_gl`. |
+| henicki, slim_price_map, wishing_star_trade_data, wishing_star_trading | kiribati | Confirmed no online store / directory-or-import-record-only, per queue's own notes. No re-probe needed (dated 2026-09-11 already). |
+| kirb_gebeya, tiktok_shop_kiribati_plush, walmart_kiribati_flag | kiribati | Confirmed false positives (Ethiopian marketplace, non-Kiribati marketplace listings) per queue notes. |
+| baergwelten_shop_li, lehni_ch, omni_li_books, online_apotheke_ch | liechtenstein | Non-food (clothing/furniture/books/pharmacy) -- dropped on sight. |
+| ez_price_mart_directory (mh.near-place.com listing) | marshall_islands | Chased the named first-party domain (ezpricemart.com / www.ezpricemart.com): resolves via a JS redirect to `ww19.ezpricemart.com` -- the classic domain-parking signature (consentmanager.net ad-tech stub, no real content). The business's web presence has lapsed; parked domain now. |
+| infomarshallislands_food_page | marshall_islands | Context/lead page only, as queue notes state. Its named leads (Pacific Island Trade, Wahoo, MISCO) are ALL already covered by existing manifests (`pacificislandtrade_mh.yaml`, `wahoo_mh.yaml`, `misco_wholesale_mh.yaml`). |
+| island_eco, majuro_telephone_directory_retail_leads, marshall_japanese_travel_blogs_price_snippets, opentravelguide_shopping_mh, rmi_embassy_taiwan_local_merchandise | marshall_islands | Non-ingestible per queue's own notes (solar/quote-based, old directory, travel-blog snippets, editorial guide, embassy contact page) -- confirmed, not re-probed. |
+| fish_n_fins_partner_pricing, neco_marine_rates, ocean_hunter_liveaboard_rentals, palau_dive_adventures_faq_rentals, peci_carquest_auto_parts, palau_pacific_resort_dining, palau_red_cross_sengsongd_thrift | palau | Non-food (dive/tourism services, auto parts, resort dining/thrift-range-only) -- dropped on sight per hard scope. |
+| tropicart_wix_store (tropicarti.com) | palau | Craft/souvenir goods (shell jewelry, wall hangings) -- non-food, and Palau locality was never confirmed on the site itself (no PW address found). Dropped. |
+| west_deli_findglocal (findglocal.com mirror of WCTC/West Deli) | palau | Third-party social-post mirror of a deli's daily menu -- not a first-party catalog, prepared/deli food (COICOP 11-adjacent), and unstable format. Not scaffolded. |
+| surangel_epicor_store (shop.surangel.com) | palau | Legacy Epicor storefront subdomain -- times out with 0 bytes received on every attempt (curl_cffi default, chrome124, and bare connection). Origin appears decommissioned; Surangel's CURRENT site (surangel.com) is already covered by the existing `surangel_pw.yaml` manifest. |
+| doyoom_food_delivery_ss | south_sudan | Restaurant delivery platform -- COICOP 11, out of scope (matches country notes exactly). |
+| digitel_estore_ss, jubaexpanse_takeapp_ss, memuapp_ss_ug, ssdonestore_ss, zuddo_ss | south_sudan | Non-food-dominant (telecom devices/hospitality textiles/fashion-electronics/mixed marketplace with no clear food category) -- deprioritized, not deep-probed given time budget. |
+| businessclaud_ss (businessclaud.com) | south_sudan | 403 on all three arms (plain UA, Chrome UA, curl_cffi chrome124) -- and body is mostly electronics/clothing per its own "why" text, low food value even if unblocked. Not pursued further. |
+| shopit_ss (shopit.com.ss) | south_sudan | 403 on curl_cffi chrome124, chrome120, AND safari17_0 (three-profile check) -- genuine Cloudflare challenge, not a JA3 false positive. Playwright not attempted (time budget); record as SKIP_WAF pending a future Playwright pass. Catalog would be worth revisiting (explicitly lists "alcoholic drinks" as a category). |
+| jubacargodirect_all_ss (jubacargodirect.com) | south_sudan | Homepage and bare domain both 404 across http/https/www variants -- Wix site appears unpublished/store closed. Dead. |
+| dukaanye_ss (dukaanye.com) | south_sudan | INTERMITTENT. Initial batch probe returned 200 with a real Laravel storefront ("365-Amazcart") and a populated `/category/food` page (product_price divs present). Four follow-up attempts over ~2 minutes all returned Cloudflare 502 (origin down) or a full connection timeout -- origin server is unstable/flapping. NOT shipped because Phase 6 requires a real, reproducible `prices collect` run; revisit with retries on a future pass. This is a genuine, promising candidate if the origin stabilizes. |
+
+## Real businesses found via ddgs sweep, verified but NOT shippable this pass
+
+| Domain | Country | Finding |
+|---|---|---|
+| sms.fo | faroe_islands | WooCommerce Store API IS open, but the entire live catalog is a single SZL... DKK gift-card SKU ("Gávukortið"). SMS is a physical department-store chain; its real merchandise is not sold through this WC instance. |
+| einkaufland.li | liechtenstein | Same pattern -- WooCommerce Store API open, single SKU = a shopping-voucher ("Einkaufland Gutschein"). einkaufland.li is a shopping-mall/retail-association directory site, not a retailer itself. |
+| formosamarket.com | marshall_islands | Real Shopify grocery catalog (Kikkoman, snacks, USD prices) BUT locality check found zero mentions of Majuro/Marshall Islands anywhere on the site -- this is an unrelated US-based "Formosa Asian Market," a same-name coincidence with the physical Formosa Supermarket in Majuro. Rejected on the locality gate. |
+| miscomarket.com / miscomarketebeye.com | marshall_islands | Confirmed genuinely Marshall-Islands-local (mentions Ebeye/Kwajalein) and is the same MISCO business already covered by `misco_wholesale_mh.yaml` (a different domain, miscowholesale.com). Treated as a duplicate storefront of an already-covered retailer, not scaffolded separately. |
+| bonus.fo, ahandil.fo ("Á"), miklagardur.fo, taks.fo, local.fo | faroe_islands | All real, live Faroese retail/shopping sites (Bónus discount supermarket, Á grocery chain, Miklagarður department store, general shopping portals). None expose a browsable, price-bearing product catalog in static HTML; miklagardur.fo's "/keyp" page is a Wix SPA that (after a full Playwright render + 5s wait) still shows zero price tokens -- likely a loyalty/voucher flow, not a shelf catalog. ahandil.fo and bjor.fo both carry WooCommerce theme assets but their Store REST API 404s (endpoint disabled or path differs). None met the enumerability bar; Faroe Islands remains at 0 real food/beverage/tobacco sources (alvaro_fo=fashion, djor_fo=pet are the only existing manifests). |
+| hoi-laden.li | liechtenstein | REAL, VERIFIED, NOT YET SCAFFOLDED. Liechtenstein regional specialty-food/gift shop (JTL-Shop platform). Its `/Kueche-Kulinarik` category explicitly states "Lebensmittel-Versand nur nach Liechtenstein und in die Schweiz" (food shipped only to Liechtenstein/Switzerland) and lists ~97 genuine food items (Bio-Emmer-Snack, Bio-Mais-Chips, Oepfelhopfa-Schelee jam, Murer-Nuedeli noodles) plus wine (overlaps with the already-covered hofkellerei_li). CHF prices are present on the page but the name/price pairing needed for a reliable selector sits inside a JS-driven "quick view" product block rather than a clean static card -- ran out of time budget to extract a verified selector. Good candidate for the next pass. |
+| castellum.li, falknis.li, weinbau-hoop.li, getraenkeoase.li, elma-getraenke.li, getraenke-gstoehl.li, getraenkeexpress.li, meier-getraenke.li | liechtenstein | Real small Liechtenstein wine-estate/butcher/beverage-delivery businesses (found via ddgs). castellum.li and falknis.li are brochure sites with no e-commerce (zero price tokens / static WebSiteX5 builder). The five "Getränke" (beverage-delivery) businesses were found but not individually probed past the homepage-signal check -- time budget did not allow it this pass. Worth a dedicated follow-up given Liechtenstein's near-zero food coverage. |
+| jatak.brugseni.gl, pilersuisoq.gl, kkengros.gl | greenland | jatak.brugseni.gl (17KB, no e-commerce signals) looks like a small sub-brand page, not a shop. pilersuisoq.gl re-confirms the existing country-notes verdict (brochure-only). kkengros.gl ("Engrossalg i saerklasse i Groenland" -- wholesale) returned real product/cart signals (314KB) but was not deep-probed for a real selector this pass -- a genuine candidate for a wholesale `official_avg`/`retailer_sku` source, follow up next time. |
+| shop.kni.gl, vinslottet.gl | greenland | Both failed with `CertificateVerifyError` under curl_cffi impersonation (likely an expired/misconfigured TLS cert, not a WAF) -- not re-tried with `verify=False` this pass due to time. vinslottet.gl ("The Wine Castle") is a promising Greenland alcohol-retail name lead if the cert issue is worked around. |
+
+## COICOP-scope drops (all territories, all candidates)
+
+Per the hard constraint (grid is COICOP divisions 01/02 only), the
+following categories of candidate were dropped on sight without a live
+probe, across every country in this run: clothing/apparel/footwear,
+pharmacy/eyewear/cosmetics, electronics/appliances/hardware, furniture,
+pet goods, automotive/vehicles, real-estate, dive/tour/recreation
+services, restaurant/takeaway/prepared-meal menus (COICOP 11), telecom
+devices/SIM/eSIM, funeral goods, and administrative/registration fee
+pages. This matches roughly 55 of the 84 filtered candidates.
+
+
+---
+
+## known_blockers_untried_wafrica - as of 2026-09-11
+
+Merged from `~/gapwork/known_blockers_untried_wafrica.md` on 2026-09-11. 65 hosts, 40 not
+documented above at merge time.
+
+# West Africa food-source gap-fill — findings (as of 2026-09-11)
+
+Source queue: `~/gapwork/untried_unassigned.csv` filtered to `foodish==True` and
+country in {guinea, guinea_bissau, gambia, burkina_faso, cote_divoire, ghana,
+congo_rep, togo, benin, mali, niger, senegal, mauritania, cameroon, sudan}.
+79 rows matched the filter (togo/mali/niger/cameroon had zero rows in the
+queue for this filter — no untried candidates were queued for them).
+
+Text-based food/non-food triage on `detail`/`why`/`notes` cut 79 down to
+~34 plausible food/mixed/unclear candidates; the other 45 were on-sight
+non-food (electronics, hardware/quincaillerie, furniture, apparel, vehicles,
+pharmacy, stamps/collectibles, real estate, topups) per the hard COICOP
+01/02-only constraint and were dropped without probing.
+
+## Shipped
+
+- **waafiro_gm** (Gambia) — `src/prices/configs/ssa/west_africa/gambia/waafiro_gm.yaml`
+  + `src/prices/price_scraping/spiders/waafiro_gm.py`. Broad marketplace,
+  React SPA; found a plain JSON API via Playwright network trace
+  (`/api/products?categoryId=&limit=&page=`). Scoped the spider to 28
+  whitelisted food/drink category ids only (drops the site's fashion/
+  phones/electronics/eyewear/cosmetics catalog on principle, per the
+  COICOP 01/02-only mandate). Verified live 2026-09-11:
+  `run.py prices collect --source waafiro_gm --max-items 100` → 46 rows,
+  46 distinct urls/product ids. channel=marketplace, currency=GMD
+  (no explicit currency field in the API; site is Gambia-only).
+- **oumbemarket_cm** (Cameroon, from ddgs) — WooCommerce Store API,
+  supermarket channel. 180-SKU catalog (water, cooking oil, diapers,
+  toiletries). currency=USD -- confirmed genuinely USD both in the API
+  payload and the rendered PDP price span, not just a symbol guess;
+  flagged as unusual for Cameroon (XAF is the countries.yaml default) but
+  taken at face value since the whole site is internally consistent on
+  USD. Verified: 100 rows / 100 distinct urls (--max-items 100 cap; true
+  catalog is 180).
+- **ivoireepicerie_ci** (Cote d'Ivoire, from ddgs) — Shopify storefront,
+  channel=specialty-food. Small but 100% food catalog (spice/powder
+  blends -- moringa, garlic powder). currency=XOF confirmed via
+  Shopify.currency.active. Verified: 21/21 rows (whole catalog).
+- **jachete_ci** (Cote d'Ivoire, from ddgs) — WooCommerce Store API on a
+  broad 2231-SKU general marketplace (electronics/appliances/auto
+  dominate); spider SCOPED to 13 whitelisted food/drink category ids
+  (Alimentaire, Boisson, Grains et Riz, Lait, Condiment et vinaigre,
+  Epicerie, Cafe/The/Expresso, etc.), same pattern as waafiro_gm.
+  channel=marketplace, currency=XOF. Verified: 193 rows / 193 distinct
+  urls (real grocery SKUs -- Kirene mineral water, Ketchup 485g, rice).
+- **mescoursesbj_bj** (Benin, from ddgs) — Shopify storefront,
+  channel=supermarket. 139-SKU grocery catalog (Riz GINO 25kg, Riz Sista
+  Grace 25kg, Pringles, frozen peas, Poudre de Moringa). currency=EUR --
+  flagged as likely diaspora/import pricing (Benin's countries.yaml
+  default is XOF) despite site copy naming Cotonou/Benin as the service
+  area; shipped per the "take whatever verifies" rule for a low-coverage
+  country but the manifest carries an explicit downstream caveat.
+  Verified: 239 rows / 239 distinct urls (variants flattened from 139
+  products).
+
+## Dead / empty (not blocked — genuinely no catalog) — verified 2026-09-11
+
+- **sococe.ci / sococe.online** (Côte d'Ivoire) — the task handoff flagged
+  this as "recorded blocked but answered 200 on a retest" and told this
+  pass to go get it. Re-probed: plain `requests` (no impersonation) DOES
+  clear it (200) while `curl_cffi impersonate=chrome124` still 403s —
+  confirms the JA3-denylist pattern from the method notes. BUT every path
+  tried (`/`, `/shop`, `/boutique`, `/catalogue`, `/magasin`, `/produits`)
+  returns the identical 7986-byte page with `<title>Votre site est en
+  Construction</title>` (site under construction). Zero catalog. Verdict:
+  DEAD (empty site), not a WAF block. Re-check in ~1-2 months.
+- **guiterco.com** (Guinea, "Grossiste alimentaire en Guinée") — Vite/React
+  SPA. `/catalog` route renders (server confirms via Playwright) but shows
+  "Aucun produit trouvé." — the price-filter slider (0-999,999,999 GNF) is
+  wired up but the catalog itself is empty. Verdict: DEAD/empty; revisit
+  if it fills.
+- **koolxpress.com** (Guinea) — Laravel/Alpine.js marketplace. Homepage
+  carousel shows real GNF prices, but they are ELECTRONICS promos (e.g.
+  "Promo Smartphones" 350,000 GNF), not food. The dedicated grocery
+  storefront tenant at `/shop/epicerie-fine` ("Épicerie Fine") renders
+  "Aucun article disponible pour le moment." — zero products in the food
+  vertical specifically. Verdict: non-food homepage + empty food vertical.
+- **polimaxguinee.com/catalogue** (Guinea) — real server-rendered catalog
+  (`<h3 class="product-name">` / `<p class="product-price">`), NOT an SPA.
+  Extracted all 51 products from the default "Magasin Central Madina"
+  store: 100% hardware/construction (rechaud a gaz, ciment, grillage,
+  pointe acier, ...), zero food SKUs despite the queue's "3 categories
+  incl. food/alimentation" claim. A second store (`storeSelect` option
+  value=9, "Madina") exists but a Playwright store-switch returned zero
+  products. Verdict: non-food (for the store that has any stock).
+- **mamakiti.com** (Guinea, "maMakiti") — marketing/landing site only
+  (nav = `#download`, `#features`, `#story`, `devenir-livreur`,
+  `devenir-vendeur`); no browsable catalog route exists on the web at all.
+  App-only. Verdict: SKIP, app-only.
+- **maurikilchi.com** (Mauritania) — real JSON API
+  (`/api/products/?boutique_type=<x>&limit=`), confirmed via Playwright
+  network trace, but every `boutique_type` and category filter tried
+  (restaurant, supermarche, supermarket, grocery, no filter at all)
+  returns `{"count":0,"results":[]}`. The whole marketplace is currently
+  empty. Verdict: SKIP, empty catalog; revisit later.
+- **sougdan.com** (Sudan) — real OpenCart-style storefront
+  (`data-product-title`/`data-product-price` attributes, currency=SDG
+  confirmed in a hidden form field), but the entire visible catalog across
+  both the homepage carousel and `/products` is the SAME 6 items
+  site-wide (1 food item — Ecuadorian peas 400g — plus a book, perfume,
+  car sunshade, and 2 phones). No category taxonomy with real listing
+  pages was found (`/home/categories/` is a generic nav, not a filterable
+  grid). Fails the >=5-food-row gate. Verdict: SKIP, catalog too small and
+  not food-dominant.
+- **alwaha.sd** (Sudan, "Al Waha Supermarket" in the queue) — actually a
+  static BootstrapMade "Moderna" corporate template for a humanitarian/
+  development-aid B2B supplier (UN Global Marketplace vendor, ISO 9001),
+  not a consumer retailer. No product prices anywhere on the site.
+  Verdict: SKIP, not a retail price source.
+- **brazzamarket_cg** (Congo Rep) — Next.js marketplace, confirmed via
+  Playwright render. Category sidebar counts: Mode & Vêtements 27, Beauté
+  & Santé 4, **Alimentation 2**, all others 0. Food category exists but
+  has only 2 SKUs — below the >=5-row gate. Verdict: SKIP, food tail too
+  thin (matches the original handover note).
+
+## Genuinely dead domains (NXDOMAIN, verified 2026-09-11)
+
+`melcomghana.com`, `www.melcomghana.com`, `melcom.com.gh`,
+`palacehypermarket.com`, `www.palacehypermarket.com`, `africmart.com`,
+`www.africmart.com`, `societe-asfils.com` (papalac_gn), `belair.gn`,
+`www.belair.gn`, `belair.com.gn` (Supermarche Bel Air), `www.amatlgb.com`,
+`amatlgb.com` (Guinea-Bissau). None resolve on a8's DNS. `koumbimarket.eu`
+(Mauritania) resolves but returns HTTP 409 (16 bytes) on both http and
+https — effectively dead/misconfigured.
+
+## Blocked — Vercel Security Checkpoint (genuine bot-wall, both arms fail)
+
+`jendal.org` / `www.jendal.org` (Gambia marketplace, had a real food/drinks
+category per the queue notes), `www.mokocg.com` (Congo Rep), and
+`meucomercio.com.br` (the Guinea-Bissau "nha_pedido_nhamburguer" lead) all
+return an identical 403 "Vercel Security Checkpoint" JS-challenge page —
+same challenge markup byte-for-byte across three unrelated domains, all
+Vercel-hosted. Verified with BOTH `curl_cffi impersonate=chrome124` (403)
+AND a real headless-Chromium Playwright render (still serves the challenge
+page after a 6s wait) — per the method notes, this is the "stop" case, not
+a signal to keep iterating.
+
+## Blocked — Cloudflare Turnstile
+
+`www.lilydelivery.com` (Sudan, LILY Delivery). Plain `requests` with a
+Chrome UA string cleared the WAF (200, 248KB) but the page is a Next.js
+SPA shell with no `__NEXT_DATA__` and no discoverable `/api/` reference in
+the static HTML — real content is client-hydrated. A headless-Chromium
+Playwright render, by contrast, DID trigger the Cloudflare Turnstile
+challenge (same URL). No JSON API found in the main bundle. Verdict:
+DEFER — needs deeper reverse engineering (mobile API capture, or a
+stealth-patched Playwright) than this pass's budget allowed.
+
+## Deferred — real app, backend not surfaced without more work
+
+- **almersoul.com** (Mauritania, via the "Almersoul" queue redirect from
+  marsarim.com) — Angular delivery app ("commandez des repas, des
+  courses, des médicaments"). Playwright network trace only fired i18n
+  asset loads (no vendor/product API called before an address is set).
+  Fetched and grepped the main JS bundle (1.49MB) for API host strings:
+  found only one relative reference, `api/v1/users/`; probed 8 guessed
+  same-origin `/api/v1/*` paths and all fall through to the Angular SPA
+  index (client-side routing catch-all). The real backend is not on the
+  same origin as the bundle references, or is in a lazy-loaded chunk not
+  fetched by this pass. DEFER.
+- **hyper.sd** (Sudan, "Hyper Express") — homepage is a static marketing
+  page (`hyper.sd`) linking to the actual ordering app at
+  `https://web.hyper.sd`. That subdomain is a **Flutter web app**
+  (confirmed via `assets/FontManifest.json`) — canvas-rendered, no DOM
+  text, and it only fired asset/i18n JSON requests before any location/
+  address step. Flutter web scraping requires either intercepting the
+  app's real data API (not surfaced in this pass) or a CanvasKit-level
+  approach; out of budget. DEFER.
+- **chowdeck.com** (Ghana/Nigeria) — per the task handoff, "partially
+  explored, not finished." Confirmed the marketing site is Next.js and
+  found a public CMS content API (`content.chowdeck.com/api/restaurants
+  ?filters[country][$eq]=ghana`) — but that endpoint is a Strapi-backed
+  SEO directory (restaurant name/city/slug only), NOT the ordering
+  backend, and carries no menu/price data. Also: restaurant meal prices
+  are COICOP 11 (restaurants), not 01/02, so even a working restaurant
+  API would be out of scope for this pass — only a genuine grocery
+  vertical with product-level prices would qualify, and that surface
+  was not located. DEFER / likely out-of-scope regardless.
+
+## Skipped without deep probing (small catalog / demo data / low priority)
+
+- **sylishop.com** (Guinea) — real JSON API (`/api/produits`) but total
+  catalog is ~6-8 items across Construction/Services/Mode/Électronique/
+  Alimentation; looks like seed/demo data (item image fields are bare
+  emoji). At most 1 food item. Below the row gate.
+- **saremati.shop** (Guinea) — `curl_cffi` returns 402 Payment Required
+  (both plain-requests arms SSL-error out entirely) — looks like a
+  suspended/unpaid hosting account. Not re-probed further.
+- **penchami.com** (Gambia) — homepage is a help-center/policy page, not a
+  product listing; deprioritized given the waafiro_gm win already covers
+  Gambia's food gap for this pass.
+- **Jumia** (jumia.com.gh/groceries, jumia.ci/epicerie, jumia.sn/epicerie)
+  — all three return 403 on every arm (plain, UA, curl_cffi impersonate),
+  identical ~5.5-6KB body sizes consistent with an Akamai/edge block
+  across the whole *.jumia.* tenant. Per the inverse-correlation law this
+  is a market leader and was not pursued further as a dedicated anti-bot
+  effort in this pass.
+- **Bolt Market Ghana** (bolt.eu/en-gh/food/market/) — catalog lives
+  inside the Bolt Food mobile app; the web page is marketing only, no
+  scaffolding attempted (matches the original queue note).
+- **storna-shopping-vercel.app** (Sudan) — DNS does not resolve at all
+  (ConnectionError on plain, DNSError on curl_cffi). Dead preview
+  deployment.
+- **koumbimarket.eu** (Mauritania) — see "genuinely dead domains" above.
+
+## ddgs supplementary search — findings (as of 2026-09-11)
+
+Ran a French/Arabic/English `ddgs` sweep (backends pinned:
+duckduckgo,google,brave,mojeek,startpage,yahoo; 21 queries, 173 raw hits)
+targeting Guinea-Bissau, Côte d'Ivoire, Congo Rep, Sudan, Mauritania,
+Benin, Senegal, Togo, Mali, Niger, Cameroon — the countries where the
+original queue yielded nothing shippable. Raw results in
+`~/gapwork/ddgs_sweep.jsonl`. After noise-filtering, ~90 distinct
+candidate domains surfaced; a fast keyword/currency scan triaged them,
+and the top signals were deep-probed. 4 of the 5 shipped sources this
+pass came from this sweep (oumbemarket_cm, ivoireepicerie_ci, jachete_ci,
+mescoursesbj_bj) — local-language ("supermarché en ligne", "épicerie en
+ligne", "livraison courses" + capital city name) queries clearly
+outperformed the original hand-off queue for this region.
+
+Additional ddgs-sourced dead ends checked this pass:
+- **nomercadogb.com** (Guinea-Bissau) — real Supabase-backed classifieds
+  marketplace (`anuncios` table exposed via the site's own public anon
+  key at `dofkfznzfdbugdqlldlc.supabase.co/rest/v1/anuncios`). Queried
+  all 38 live listings: categories are moda(19)/eletronicos(8)/
+  outros(6)/moveis(2)/imoveis(2)/veiculos(1) — zero food category.
+  Verdict: SKIP, non-food.
+- **242market.com** (Congo Rep) — PrestaShop-style storefront with an
+  "AGRO-ALIMENTAIRE" nav category (`/catalogue/352691-agro-alimentaire`),
+  but that category page returns zero product markup (no
+  `product-miniature`, no JSON-LD, no price tokens) — either empty or
+  needs deeper JS rendering than this pass's budget covered. DEFER.
+- **guinebissaumarket.com** (Guinea-Bissau) — Next.js, no JSON API found
+  via Playwright trace (unlike nomercadogb, no XHR calls fired on
+  homepage load). Not pursued further this pass. DEFER.
+- **bama.express** (Mali) — small static page (18KB), no JSON endpoints
+  found, no further signal. SKIP/low-priority.
+- **sugu.express** (Mali) — Next.js with `/api/auth/session` and
+  `/api/feature-flags` calls only (i.e. an auth-gated app) — no public
+  product API surfaced before a login step. DEFER.
+- **instagrocer.co** (Sudan) — genuine Next.js grocery-delivery app with
+  a real public API: `/api/stores/nearby?user_latitude=&user_longitude=`
+  returns nearby stores once a location is supplied (200, confirmed via
+  Playwright network trace), and `/api/auth/me` (401, i.e. anonymous
+  browsing is allowed). This is the most promising Sudan lead from the
+  sweep but needs a follow-up pass to walk from stores -> per-store menu/
+  catalog endpoints, which this pass did not have budget for. DEFER —
+  highest-priority Sudan follow-up.
+
+Everything else in the domain list from `~/gapwork/probe_ddgs_results.json`
+(Guinea-Bissau: bissauonline.net, bindicumpra.net, compraexpress.app,
+evendo.com, mercado.gratis, mercado.pliz-tech.com; Sudan: alloshmart,
+amasonsudan, clickomart, sougk, sudanzon [503], thlthwea; Mauritania:
+jemli.mr, jeyaboo.com [both live but zero food-keyword signal];
+Cote d'Ivoire: amexpress-ivoire [403 on curl_cffi impersonation only],
+christlivraison.ci, ivoiresup.com, ledjassa.org, livurge.com,
+reliableci.ci; Senegal: bonappetit.sn, dialy.sn, lafermededibor.com
+[Senegal already has 7 manifests, deprioritized]; Togo: lotieapp.com,
+oel.tg, quefairealome.com [Togo already has 4 manifests]; Niger:
+afromallne.com, coursilliko.com, kamesexpress.com, zangoexpress.com;
+Mali: alimama-ml.store, malirush.com, sankadi.ml, souqou.com) was
+surfaced by the sweep but NOT individually probed beyond the keyword/
+currency scan this pass — they are live candidates for the next session,
+roughly ranked by the food-keyword-density scan already run and saved in
+`~/gapwork/probe_ddgs_results.json` / the scan output above.
