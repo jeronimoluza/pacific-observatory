@@ -313,6 +313,84 @@ class <ClassName>Spider(scrapy.Spider):
 - Set Origin + Referer to match the site's actual origin. Some APIs reject requests without these (returning 429 or 403 even when no auth is required).
 - Test the curl call from outside Scrapy first. If `curl -H 'Origin: ...' -H 'Referer: ...' '<url>'` returns 200 JSON, the spider will work. If it returns 401/429/403, the API needs auth — abandon and try Pattern B (Playwright).
 
+## Shared-pipeline traps that silently delete rows
+
+Four traps live in shared code, not in your spider. All four have cost a real
+spider most or all of its output, and none of them raises an error you would
+notice — you just get fewer rows than the site has. Check these before blaming
+the site.
+
+### `item["url"]` is the dedup key — never reuse one URL across products
+
+`pipelines.py`'s `DuplicationPipeline` hashes `item["url"]` and drops repeats. So
+a spider that parses ten products off one listing page and stamps the *listing
+page's* URL on all ten keeps **one** of them.
+
+Measured twice in one campaign:
+
+- `willys_se`'s first draft emitted the category URL for every product and lost
+  roughly **80%** of its items before anyone noticed the count was low.
+- `talabat_eg` parses multi-item pages and had to append a per-item suffix for
+  the same reason.
+
+Always emit a genuinely per-product URL. If the API gives you a product id or
+slug but no URL, build the canonical PDP URL from it (`asda_uk` derives one from
+the `CIN` field and verified it against the live page's `og:title`) — do not fall
+back to a constant.
+
+**And do not "fix" a missing URL with `None`.** The same pipeline does
+`item.get("url", "").encode()`, whose default applies only when the key is
+**absent**, so a present-but-`None` url raises. The two obvious workarounds are
+both wrong: `None` crashes the pipeline, a constant string collapses the whole
+catalog to one row.
+
+### `CustomUserAgentMiddleware` overwrites every User-Agent, and `settings.USER_AGENT` is dead
+
+`price_scraping/middlewares.py`'s `CustomUserAgentMiddleware` unconditionally
+rewrites the UA on every request. And `settings.USER_AGENT` is a **dead-letter
+setting repo-wide**, because Scrapy's own `UserAgentMiddleware` (the thing that
+would read it) is already disabled.
+
+So if your source needs a specific UA — Googlebot-style SEO dynamic rendering, or
+a UA that must match your TLS fingerprint — setting `custom_settings["USER_AGENT"]`
+does nothing at all. Disable the middleware for your spider and set the header on
+each `Request` explicitly:
+
+```python
+custom_settings = {
+    "DOWNLOADER_MIDDLEWARES": {
+        "price_scraping.middlewares.CustomUserAgentMiddleware": None,
+    },
+}
+```
+
+`plus_nl` ships this way (it needs a Googlebot UA to trigger OutSystems' SEO
+rendering into real JSON-LD); `realestate_co_nz` established the pattern.
+
+Note the mirror-image trap for Playwright: Scrapy's `USER_AGENT` does not reach a
+browser context either. scrapy-playwright needs
+`PLAYWRIGHT_CONTEXTS = {"default": {"user_agent": ...}}`.
+
+### A UA override can also be the thing that *unblocks* a site — or backfires
+
+Two hosts (`margaarou.com`, `lynia-shop.com`) 403 on `curl_cffi` across several
+profiles AND on headless Playwright, and open on the first navigation once the
+browser context UA is overridden to a plain Chrome string. A bare headless 403 is
+no more evidence of a WAF than a bare-curl 403 is.
+
+But it is not a general trick: on `ah.nl` and `ah.be`, spoofing Googlebot — which
+worked on `plus_nl` — makes Akamai **blackhole the connection** instead. Try it,
+measure it, and record which way it went.
+
+### `_woo_sitemap_base` and `_woo_base` edge cases
+
+- `parse_sitemap` misclassifies a child sitemap when the `<loc>` URL carries a
+  query string after `.xml` (bennet.com's shape). `bennet_it` overrides
+  `parse_sitemap` locally to work around it.
+- `_woo_row_from_product_node` prefers `offers.url`, which on some tenants is
+  **site-relative** — so those rows carry a relative `url`. Since `url` is the
+  dedup key, resolve it against the page URL rather than emitting it raw.
+
 ## YAML manifest template
 
 For all three patterns. Place at `src/prices/configs/<region>/<subregion>/<country>/<source>.yaml`:
