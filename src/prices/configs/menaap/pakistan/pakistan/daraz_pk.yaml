@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: daraz_pk
+url: https://www.daraz.pk/
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.daraz.pk/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Probed 2026-09-10. Same Lazada-derived platform as daraz_np (Nepal),
+  same unauthenticated/unsigned catalog-search AJAX surface:
+  GET /catalog/?ajax=true&isFirstRequest=true&page=N&q=<keyword>.
+
+  Enumerability: q=rice page=1 -> 40 items, page=2 -> 40 items, 0 itemId
+  overlap between pages -> DISTINCT. Sample: "Poha / Flattened Rice /
+  White Poha Rice - 100g" Rs. 171, "Falak Bachat 5 Kg" Rs. 1,487.
+
+  The batch's original probe found only 60 product URLs (sitemap-style
+  pattern) and flagged it as certainly an undercount for Daraz Pakistan --
+  confirmed: the search AJAX alone returns 40 distinct products per
+  keyword per page across at least 3 pages, with no sign of running out.
+  This is a marketplace with a very deep catalog; a single-category crawl
+  would not reach it (same finding as daraz_np), so this walks the same
+  ~48-term food/staple keyword list (_daraz_pk_keywords.txt, copied
+  verbatim from _daraz_np_keywords.txt), 3 pages/keyword cap.
+
+  Currency: the JSON payload carries no currency field; the site's own
+  display string is "Rs. <amount>" (Pakistani rupee) -- hardcoded PKR at
+  the spider level, not parsed from the symbol.
+
+  Page family: API (search AJAX; itemUrl values in the raw payload are
+  permalinks the spider never fetches).
+
+  Test run 2026-09-10: `prices collect --source daraz_pk --max-items 20`
+  -> 20 rows, all priced, e.g. PKR 171 "Poha / Flattened Rice / White Poha
+  Rice - 100g", PKR 1,487 "Falak Bachat 5 Kg".

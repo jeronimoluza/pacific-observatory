@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: beeyor_tj
+url: https://beeyor.tj/ru
+coicop_codes: ["11.1.1"]
+archive_prefix: "beeyor.tj/"
+archive_path_re: '^/ru/restaurant/detail/[a-z0-9\-]+/?$'
+language: ru
+cadence: weekly
+channel: other
+notes: |
+  Probed 2026-09-10. Beeyor (https://beeyor.tj/) is a Dushanbe, Tajikistan
+  restaurant food-delivery marketplace (like Wolt/Glovo) -- narrow COICOP
+  11.1.1, channel: other (same precedent as hotpepper_jp, dining).
+
+  Enumerability: the homepage (https://beeyor.tj/ru) card-links every
+  currently active restaurant (46 confirmed 2026-09-10). Cross-checked all
+  24 cuisine-category pages (/ru/restaurant/<cuisine>, e.g.
+  /ru/restaurant/plov) -- zero restaurants found beyond the homepage's 46,
+  so the homepage IS the complete listing (no separate "all restaurants"
+  paginated page exists). Each restaurant detail page
+  (/ru/restaurant/detail/<slug>) server-renders its full menu inline as
+  `.es-product-item` cards, no auth, no JS required. Sampled 3 restaurants:
+  ily-patio 222 dishes, romashka 85, czn-burak 145 -- catalog size is in
+  the low thousands of dishes across 46 restaurants, well above the
+  394-URL estimate that flagged this candidate.
+
+  Currency: Tajik somoni, TJS. The site prints the currency name inline
+  ("40.00 cом", "от 4.00 cом" for variable-weight items) -- Cyrillic/Latin
+  "c" mixed inconsistently in the site's own markup -- never an ISO code,
+  so TJS is hardcoded at the spider level per repo convention.
+
+  IMPORTANT -- beeyor.tj's own /sitemap.xml is bogus: every single <loc> in
+  it points at https://cakelab.uz/... (an unrelated Uzbek cake shop),
+  dated 2022-04-23, looks like a leftover "Free Online Sitemap Generator"
+  template output never regenerated for this domain. This is almost
+  certainly what produced the original "394 product URLs on beeyor.tj"
+  candidate signal, and it is NOT beeyor.tj's catalog -- do not use that
+  sitemap for anything, and do not confuse cakelab.uz with a Tajikistan
+  source. This spider crawls from the live homepage instead, which is
+  unaffected by the sitemap bug.
+
+  Page family: listing (homepage restaurant cards) + PDP-equivalent
+  (per-restaurant menu page, itself a dish listing).
+
+  Test run 2026-09-10: `prices collect --source beeyor_tj --max-items 20`
+  -> 20 rows, all priced, e.g. "Фритатта с пармезаном и томатами" TJS 40.00,
+  "Шаурма куриная" TJS 29.00.
