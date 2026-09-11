@@ -1,0 +1,68 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: stock249_sudan
+module: ssa.east_africa.sudan.stock249_sudan
+function: fetch_stock249_sudan
+url: https://stock249.com/agri-sudan
+language: ar
+currency: SDG
+cadence: daily
+fallback_date: 2025-01-01
+notes: |
+  stock249.com ("Elrayah Group") is primarily a Sudanese black-market FX
+  and gold-price tracker, but publishes two structured commodity-price
+  pages this fetcher reads: `/agri-sudan` (raw crops: sorghum varieties,
+  millet, sesame, sunflower seed, groundnuts, dried okra powder, plus
+  cotton and gum arabic which are excluded as non-food) and
+  `/consumer-sudan` (packaged staples: sugar, flour, cooking oil, rice,
+  lentils, tea, plus construction materials which are excluded as
+  non-food).
+
+  MEASURED 2026-09-11: both pages embed a JSON-LD `@graph` with an
+  `ItemList` of `Product`+`Offer` nodes, `priceCurrency: "SDG"` read
+  directly from the payload. An `FAQPage` node on `/agri-sudan` explicitly
+  names its source: "الأسعار منقولة من نشرات رسمية: سوق القضارف ...
+  والإدارة العامة لتسويق المحاصيل بإقليم النيل الأزرق" (prices drawn from
+  official bulletins: Al-Gadarif market and the Blue Nile region's
+  crop-marketing directorate, most recently 2026-07-23/07-29, held fixed
+  until the next official update). `/sitemap.xml` shows `<lastmod>` of the
+  CURRENT date on both pages with `changefreq: daily` -- fresher than the
+  6-months-stale `prices.sy` (Syria) crowd-board found in the same
+  campaign pass, though the underlying official bulletins update
+  irregularly (the FAQ text itself says prices "remain fixed until a new
+  tariff is issued").
+
+  Sudan had ZERO food-price sources of any analytical_role before this.
+
+  FILTER: an EXCLUDE-list (not allow-list) drops cotton, 3 grades of gum
+  arabic, cement, rebar, bricks, sand and gravel -- the non-food items
+  mixed into these two otherwise food/commodity-themed pages. 21 food
+  items verified 2026-09-11 (15 from agri-sudan, 6 from consumer-sudan),
+  all non-zero SDG prices, all distinct item_name values. Sample: جوال
+  السكر (sugar sack) 185,000 SDG, جوال الأرز (rice sack) 240,000 SDG,
+  قنطار السمسم (sesame quintal) 310,000 SDG, جوال فول سوداني (groundnuts
+  sack) 180,000 SDG.
+
+  UNIT left NULL on purpose: item names carry non-standard local measures
+  (جوال=sack, قنطار=quintal/~100kg, كيلة=a local volume measure) whose
+  exact kg-equivalent varies by commodity -- inventing one would silently
+  corrupt any per-kg normalisation downstream. The measure stays in
+  `item_name` verbatim.
+
+  coicop_classification: classifier -- free-text Sudanese commodity names
+  with local varietal/dialect terms ("فتريتة", "ود باكو", "ويكة") are
+  exactly the classifier's shape. coicop_codes deliberately unset.
+
+  End-to-end tested 2026-09-11 via
+  `python run.py prices collect --source stock249_sudan --max-items 20`:
+  21 rows written, 100% SDG, 100% non-zero prices, 0 duplicate
+  observation_hashes. `source_url` is one of only 2 distinct values
+  (the /agri-sudan or /consumer-sudan page itself) -- like
+  ocpv_infoprix.yaml's per-day URL, individual commodities are not
+  separately linked on this site, so per-row url enumerability (the
+  page-1-vs-page-2 gate used for retailer_sku spiders) does not apply
+  here; enumerability instead rests on the JSON-LD ItemList carrying 21
+  distinct item_name entries with distinct prices.

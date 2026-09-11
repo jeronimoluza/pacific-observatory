@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: palacesuperstores_gh
+url: https://palacesuperstores.com/
+language: en
+cadence: weekly
+channel: hypermarket
+archive_prefix: "palacesuperstores.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Onboarded 2026-09-11, retest batch onboard_1.csv (STALE-OK + foodish).
+  Previously rejected; retest found it fully reachable to plain,
+  non-impersonating HTTP (no curl_cffi, no Playwright needed) -- the prior
+  reject verdict was stale, not a real block.
+
+  Page family: API (bespoke Laravel-style JSON, not WooCommerce/Shopify) for
+  live collection; PDP at /products/<slug> for archived HTML.
+
+  Custom REST API at /api/products?page=N, 12 items/page, meta.last_page=1457
+  at probe time (~17.5k SKUs). Enumerability MEASURED live: page 1 ids
+  [164720,164721,164723,...], page 2 ids [164425,164426,...], page 3 ids
+  [164460,164466,...] -- all three pages pairwise disjoint. Every sampled
+  item across pages 1/50/300/700/1000/1400 carried a non-zero numeric price.
+
+  Currency: GHS. MEASURED from the PDP's own GA4 ecommerce tracking payload
+  ({"event":"view_item","data":{"currency":"GHS","value":"12.99",...}}) --
+  not inferred from the Cedi symbol shown in the list API's formatted_price
+  field, and not from the .com TLD. Matches countries.yaml Ghana currency.
+
+  Locality: homepage copy "For you, for your, for Ghana." Ghana-domestic
+  retailer, not a diaspora storefront.
+
+  Channel: general/hypermarket-style catalog, not a pure grocer -- sampled
+  pages show a mix of food (Moulin d'Or biscuits, frozen broccoli, frozen
+  pea/carrot, lobster), kitchenware (Tramontina), small appliances (Super
+  Crest irons/kettles), and seasonal decor (UBL tinsel/ornaments). Food
+  share on the 6 sampled pages (72 items): ~15/72 ~= 21%, comparable to
+  other hypermarket sources already onboarded (e.g. lulu_ae ~31%).
+
+  End-to-end test (--max-items 20): see run log. product_id = sku (falls
+  back to numeric id when sku absent), url built from the item slug
+  (/products/<slug>), verified live to resolve to a real, matching PDP.

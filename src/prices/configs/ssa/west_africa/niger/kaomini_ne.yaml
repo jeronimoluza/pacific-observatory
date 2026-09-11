@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kaomini_ne
+url: https://www.kaomini.ne/
+language: fr
+cadence: weekly
+channel: dept-store
+notes: |
+  Probed 2026-09-11. Custom (non-platform) PHP storefront, single seller,
+  Niamey. No sitemap/robots.txt (both 404 to a custom error page); category
+  taxonomy hardcoded from the homepage nav (34 categories). Product cards
+  render server-side on category listing pages (div.product-cart-wrap) --
+  no PDP visit needed or even useful: the PDP page renders the name in
+  <title> but the price widget there is client-rendered, no "Fcfa" text in
+  raw PDP HTML. Page family: listing (PDP does not carry a usable price).
+
+  Currency: prices read directly off the page as "2 000 Fcfa" -> XOF,
+  space thousands separator, zero decimal minor unit (matches XOF
+  convention used elsewhere in this country's sources).
+
+  Catalog is SMALL and cross-division: 68 distinct products total across
+  all 34 categories (most fashion/electronics/auto-parts categories
+  returned 0 live). Food/drink-relevant: AGRO-ALIMENTAIRES (12: sesame
+  oil, honey, bissap/ginger juice, tisanes), Specialite_Africaine (2),
+  Restaurant (16, prepared meals -- left to the classifier, not declared
+  narrow), RECHARGE_GAZ (2, cooking-gas refill, non-food). Also carries
+  Sante (32) and Cosmetique (11), non-food. coicop_codes left unset --
+  wide, cross-division catalog like ekhumaisa_ne.
+
+  Pagination proof: `?page=N` on Sante_31_categorie -- page 1 returns 24
+  cards, page=2 returns 14 (8 new, 6 repeated -- tolerated, dedup is by
+  item["url"] in DuplicationPipeline), page=3 returns 0. Verified no
+  additional pages exist for AGRO-ALIMENTAIRES or Restaurant (page=2 was
+  empty on both).
+
+  Test run (--max-items 20): distinct-URL rows returned with clean XOF
+  prices, e.g. "Tisane energissante" 2000 XOF (PROD-20251201051629-842,
+  category TISANES).

@@ -35,8 +35,15 @@ direct guess-and-check rather than by following a link.
 Enumerability: CONFIRMED live 2026-09-11 -- `index.php?cat=m_edible
 groceries` page1 vs page2 (`&page=2`) returned 20 vs 20 product ids with
 ZERO overlap (genuinely different products, not a re-served page). No
-published total, so the spider walks pages until an empty page (0 matches)
-or MAX_PAGES is hit, per category.
+published total, and some categories (`m_pets`, MEASURED 2026-09-11) loop
+back and re-serve an already-seen tail page forever once exhausted rather
+than returning an empty page -- so the spider tracks product ids seen per
+category and stops on the first page that adds zero new ids, in addition
+to stopping on a literally empty page or MAX_PAGES. `m_edible groceries`
+and `m_ethnic products` were MEASURED still returning 20 new, non-repeat
+ids per page all the way to the old MAX_PAGES=30 ceiling (600 SKUs) with
+zero duplicates -- the old cap was truncating real catalogue, not just
+guarding against a loop, hence the higher MAX_PAGES below.
 
 Currency: BWP (Pula) confirmed from the site's own currency icon and price
 display convention (no "$"/"R" ambiguity); prices are plain decimal Pula
@@ -67,10 +74,10 @@ CATEGORIES = [
     "m_personal care",
     "m_pets",
 ]
-MAX_PAGES = 30  # safety cap per category (600 SKUs)
+MAX_PAGES = 150  # safety cap per category (3,000 SKUs) -- see loop-detection below
 
 _PRODUCT_RE = re.compile(
-    r'<div class="itemBox[^"]*">\s*<a title="[^"]*" href="(?P<url>[^"]+)" '
+    r'<div class="itemBox[^"]*">\s*<a\s+title="[^"]*"\s+href="(?P<url>[^"]+)"\s+'
     r'id="productImageWrapID_(?P<pid>\d+)">.*?'
     r'<h5 id="productNameWrapID_\d+">(?P<name>[^<]+)</h5>.*?'
     r'id="productPriceWrapID_\d+">(?P<price>[\d.]+)</span>',
@@ -92,6 +99,10 @@ class ChoppiesEbasketBwSpider(scrapy.Spider):
         "AUTOTHROTTLE_ENABLED": True,
     }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._seen_pids = {cat: set() for cat in CATEGORIES}
+
     async def start(self):
         for cat in CATEGORIES:
             yield scrapy.Request(
@@ -105,10 +116,14 @@ class ChoppiesEbasketBwSpider(scrapy.Spider):
         category = response.meta["category"]
         page = response.meta["page"]
         matches = list(_PRODUCT_RE.finditer(response.text))
+        seen = self._seen_pids[category]
+        new_matches = [m for m in matches if m.group("pid") not in seen]
         logger.info(
-            f"{self.name}: category={category} page={page} count={len(matches)}"
+            f"{self.name}: category={category} page={page} count={len(matches)} "
+            f"new={len(new_matches)}"
         )
-        for m in matches:
+        for m in new_matches:
+            seen.add(m.group("pid"))
             yield {
                 "product_id": m.group("pid"),
                 "product_name": m.group("name").strip(),
@@ -120,7 +135,10 @@ class ChoppiesEbasketBwSpider(scrapy.Spider):
                 "language": self.language,
                 "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
             }
-        if matches and page < MAX_PAGES:
+        # Stop on a literally empty page, or a page that re-serves only
+        # already-seen ids (some categories loop back to a tail page
+        # forever instead of ever returning empty) -- see docstring.
+        if new_matches and page < MAX_PAGES:
             next_page = page + 1
             yield scrapy.Request(
                 f"{BASE_URL}/index.php?cat={quote(category)}&page={next_page}",

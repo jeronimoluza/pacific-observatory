@@ -1,0 +1,95 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tmlminimart_ag
+url: https://www.allmartplace.com/en/vendor/TML-Mini-Mart
+language: en
+currency: XCD
+cadence: weekly
+channel: convenience
+timeout: 900
+notes: |
+  Discovery: Antigua had no channel:supermarket/hypermarket/fresh-market
+  source; CaribeEats (the other Caribbean delivery aggregator, already
+  checked per the onboarding brief) has only 8 Antigua businesses, none a
+  real grocery. Generic web search for the brief's named Antigua chains
+  (Bryson's, Epicurean, Best of Both Worlds, Food City, Roystons, Rangers,
+  Sunshine, Cheers, GEO F Huggins) turned up either non-existent
+  businesses, restaurants/bars sharing a name, or real supermarkets
+  (Epicurean, First Choice Foods, XPZ, Oops!, Payless) with NO standalone
+  website -- Facebook pages and directory listings only.
+
+  Several of those directory listings pointed at "AllMart" ("AllMart -
+  Local Marketplace, Cassada Gardens, Antigua and Barbuda"; app-store
+  description "150+ local merchants"; WhatsApp support +1 268 713 0040) as
+  where Oops!, XPZ, Payless etc. actually take online orders -- a
+  DIFFERENT, genuinely local delivery platform from CaribeEats, running on
+  a Jungleworks "Yelo" white-label backend (confirmed via the webapp's JS
+  bundle referencing yelo.red infrastructure). Its store directory
+  (/api/marketplace/marketplace_get_city_storefronts_v3) is real and
+  paginates cleanly (skip=0/50/100/150 -> disjoint id sets, 158 distinct
+  storefronts total for the default St John's/Cassada Gardens location),
+  but is dominated by restaurants; the named big-box chains (Oops!, XPZ,
+  First Choice, Payless) did NOT actually appear in that 158-store list at
+  probe time, only smaller independent grocers/mini-marts did.
+
+  Two real grocery vendors stood out: "gourmet-basket" (business id
+  1402365, 15 top-level categories incl. Produce/Meat & Seafood/Dairy &
+  Eggs/Bakery -- a full supermarket-shaped catalog) and "TML-Mini-Mart"
+  (business id 1589747, platform-tagged custom_tag_for_merchant="GROCERY",
+  business_categories_name="Groceries,Home & Decor", physical address
+  "Sir George Walter Highway, Osbourn, Saint George, Antigua, Antigua and
+  Barbuda" read directly from the storefronts payload). "gourmet-basket"
+  was SKIPPED: its name matches Gourmet Basket Supermarket, one of Island
+  Provision Group's four in-house divisions already scraped in full via
+  islandprovision_ag.yaml's WooCommerce Store API -- building it again
+  here would double-count the same retailer under a different channel.
+  TML Mini Mart is a distinct, independent business (not an Island
+  Provision brand) and became the build target.
+
+  channel is "convenience", not "supermarket" -- TML Mini Mart is a small
+  neighbourhood mini-mart (52 leaf categories, ~800+ SKUs sampled), not a
+  full-aisle supermarket. This still fills the wider gap this wave
+  targeted (Antigua had zero non-specialty grocery/retail-food channel of
+  any kind before this).
+
+  ACCESS: allmartplace.com sits behind Cloudflare with a Turnstile
+  challenge that blocks headless-Chromium rendering of the Angular SPA --
+  Playwright hits challenges.cloudflare.com/turnstile before the store
+  list paints, and the DOM stays empty even after a 20s wait with stealth
+  args + geolocation permission granted. The JSON API itself is NOT behind
+  that challenge: every endpoint the spider uses returns clean 200 JSON to
+  a plain curl_cffi GET (impersonate="chrome124"), no cookies/session/
+  captcha needed. Endpoint names and required params (get_app_catalogue,
+  catalogue/get with parent_category_id, get_products_for_category with
+  parent_category_id+offset+limit+date_time) were recovered by downloading
+  the SPA's main.js AND all 69 lazy route chunks (chunk-hash manifest
+  lives inline in runtime.js) and grepping the CatalogueService method
+  bodies, since Playwright network capture never got far enough to observe
+  real traffic. Full narrative and the has_children/has_products category-
+  walk logic are in the spider's module docstring.
+
+  Currency MEASURED, not inferred: each product's own layout_data.lines
+  field renders the platform's own price string, e.g. "EC$13.00" for
+  product_id 108831831 "Grace Corned Beef" (raw price field = 13, a plain
+  decimal in major units, not minor-unit cents). EC$ is the unambiguous
+  Eastern Caribbean Dollar symbol.
+
+  Enumerability verified pre-build: page1 (offset=0) vs page2 (offset=25)
+  of get_products_for_category returned ZERO product_id overlap on every
+  one of the store's 52 leaf categories that had more than 25 products.
+
+  No per-product web page exists (app-only PDP) -- item urls are synthetic
+  '<vendor-page>#product-<id>' fragments, same pattern as
+  _caribeeats_base.py. Page family: API (see spider docstring) -- no
+  archive_prefix/archive_path_re set, since the fetched URLs are JSON API
+  calls and the emitted item urls are synthetic SPA-route anchors, neither
+  of which is a Common-Crawl-archivable permalink.
+
+  timeout raised to 900s: full crawl walks 52 leaf categories x N pages
+  each (~800+ products sampled from just the first two pages per leaf).
+
+  --max-items 20 smoke test (2026-09-11): see collect run log for row
+  count / distinct urls / sample record, recorded in the onboarding report
+  for this wave.

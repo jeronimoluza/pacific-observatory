@@ -1,0 +1,54 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://fruitsetlegumes.ci/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "fruitsetlegumes_ci"
+  base_url: "https://fruitsetlegumes.ci"
+  currency: "XOF"
+  language: "fr"
+  api_url: "https://fruitsetlegumes.ci/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11. Found via French item-specific search ("primeur en
+  ligne Abidjan", "fruits et légumes livraison Abidjan") rather than the
+  generic-supermarket sweep, which had already exhausted CI's obvious
+  domains. Self-described "Plateforme de vente de produits maraicher" --
+  Abidjan greengrocer/butcher/fishmonger hybrid, NOT a generalist
+  supermarket, which is exactly the gap the existing adjovan/megamarche/
+  carrefour trio structurally under-carries.
+
+  Live-verified: standard versioned WooCommerce Store API, zero auth,
+  GET /wp-json/wc/store/v1/products?per_page=20&page=N -> HTTP 200.
+  page 1 vs page 2 returned ZERO overlapping product ids (20/20 each),
+  x-wp-total=186. currency_code XOF matches countries.yaml default;
+  currency_minor_unit=0 so displayed prices need no division (e.g.
+  "Granulé de mil" = 1300 XOF, "Escalope" = 5000 XOF -- sane magnitudes).
+  One sampled item ("Piment Moulu Nature") carries price 0 (likely
+  unstocked); majority priced.
+
+  Catalog spans fresh/local categories our other 3 CI sources barely touch:
+  fruit baskets (Panier fruits/gourmand), poultry (Poulet de chair BIO,
+  Pondeuse fumée, Gésier, Ail de poulet, Canard), fish (Machoiron, Sole,
+  thon), and cereal/staple flours (Granulé de mil, Maïs concassé, Poudre de
+  Baobab) -- i.e. plausible coverage for meat, fish & seafood, cereals, and
+  some fruit & nuts / vegetables leaves. Whole-catalog walk; COICOP left to
+  the classifier since the catalog is genuinely mixed across those
+  divisions, not narrow.
+
+  Fourth retailer_sku source for Côte d'Ivoire alongside adjovan_ci,
+  megamarche_ci, carrefour_ci -- and the first one specifically oriented at
+  fresh butcher/fishmonger/greengrocer categories rather than packaged
+  supermarket SKUs.

@@ -41,3 +41,12 @@ notes: |
   coicop_codes left unset -- catalogue spans multiple COICOP-01 classes
   (fresh produce, dairy, bakery, groceries) plus some non-food categories,
   wide by the narrowness rule.
+
+  MEASURED test run 2026-09-11 (after a regex whitespace fix -- the
+  category-listing markup breaks '<a title=' across a newline, unlike the
+  popular.php landing page sampled during scaffolding, so the pattern
+  needs \s+ between the <a> tag and its attributes): `prices collect
+  --source choppies_ebasket_bw --max-items 60` -> 92 rows, 92 distinct
+  urls, ZERO zero-priced rows, currency BWP throughout. Categories
+  captured in this partial run: Beverages, Cfc (fried-chicken ready
+  meals, e.g. CFC 2PIECE AND CHIPS, BWP 39.95) and Edible Groceries (e.g. E/T 1KG RED KIDNEY BEANS, BWP 32.95).

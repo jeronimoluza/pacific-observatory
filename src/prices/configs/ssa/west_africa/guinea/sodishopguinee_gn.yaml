@@ -1,0 +1,58 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.sodishopguinee.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: GNF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "sodishopguinee_gn"
+  base_url: "https://www.sodishopguinee.com"
+  currency: "GNF"
+  language: "fr"
+  api_url: "https://www.sodishopguinee.com/wp-json/wc/store/v1/products"
+  category_id: "454,643,660,657,662,4280"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Found 2026-09-11 via ddgs French search ("epicerie en ligne Conakry
+  Guinee alimentation"). SodiShop Guinee is a broad general-merchandise
+  WooCommerce store (electronics/appliances/clothing dominate --
+  ELECTROMENAGER 1905, Electronique 603, Chaussures Homme 887, etc.) but
+  carries a genuine, substantial food section, which this manifest scopes
+  to via CATEGORY_ID so only food/drink categories are crawled:
+  Alimentation (id 454, 1224 products), Alimentation|Supermarche (4280, 3),
+  Charcuterie (643, 48), Condiment & Vinaigrette (660, 333), Eau Soda &
+  Jus de Fruits (657, 125), Boite de Conserve (662, 48).
+
+  Verified live: /wp-json/wc/store/v1/products?category=<comma-list> is
+  open, unauthenticated, 200 JSON. Page1 vs page2 (per_page=100): 0 id
+  overlap -- DISTINCT and enumerable. currency_minor_unit=0 on every
+  sampled row, so prices ARE the GNF integer as displayed (no /10^n
+  needed) -- confirmed against rendered magnitude (Nescafe 200g poudre =
+  50 000 GNF, Lait concentre PEACK 2500g = 250 000 GNF, both plausible).
+  currency field pinned to GNF at the spider-kwargs level (matches
+  countries.yaml; Store API payload itself doesn't carry a currency key
+  on this install).
+
+  Sample product names in the scoped categories: Nescafe en poudre 200g,
+  Ovaltine, Sucre Saint Louis, Lait pour bebe NAN 3, Lait concentre en
+  poudre PEACK/NIDO (several sizes), Jus de fruit Pressia 1L. Covers
+  dairy & eggs (powdered/concentrated milk, baby formula), coffee/tea
+  (Nescafe, Ovaltine), sugar/confectionery, condiments, canned goods,
+  and soft drinks/juice. Does NOT cover fresh produce, meat, or fish --
+  this is a packaged-goods-only shelf.
+
+  channel: dept-store (broad, first-party-looking product-name pattern
+  -- every item carries the same "MKD500" batch/SKU suffix, consistent
+  with one operator's stock rather than third-party seller listings; not
+  grocery-led overall). Ninth source for Guinea, third genuinely
+  food-carrying one (with beryz_gn and konalivr_supermarket_gn).

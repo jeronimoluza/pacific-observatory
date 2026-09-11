@@ -1,0 +1,46 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://waffiriq.com/"
+channel: hypermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: ar
+currency: IQD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+source_key: waffir_iq
+spider_kwargs:
+  source_label: "waffir_iq"
+  base_url: "https://waffiriq.com"
+  currency: "IQD"
+  language: "ar"
+  api_url: "https://waffiriq.com/wp-json/wc/store/v1/products"
+notes: >
+  Waffir Hypermarket (هايبرماركت وفّر), Baghdad, Iraq -- found via a Libya
+  discovery search (query included "طرابلس"/Tripoli) that cross-matched on
+  the domain string "waffiriq" containing "iq"; verified the true country
+  via the payload itself (prices.currency_code=IQD on every sampled item,
+  "بغداد"/Baghdad mentioned on the homepage) rather than trusting the
+  domain name or the search context it was found under -- this is an
+  IRAQI source, NOT Libyan, despite surfacing on a Libya-focused query.
+  Filed under Iraq for that reason.
+
+  MEASURED 2026-09-11 via `generic_woo_configured` (open, unauthenticated
+  WooCommerce Store API, no hcdn/WAF wall unlike several Libyan tenants):
+  page=1 vs page=2 of `/wp-json/wc/store/v1/products?per_page=20` return
+  ZERO overlapping product ids (full enumerability). Wide supermarket
+  catalog spanning packaged groceries (rice, cooking oil, canned beans,
+  flatbread) and household cleaning products. Sample: "بركة زادي ارز
+  بسمتي هندي 1121 4 كغم" (Baraka Zadi basmati rice, 4kg) 8,000 IQD, "عافية
+  زيت ذرة" (corn oil, 1.5L) 5,990 IQD, "قيصر زيت زيتون للطبخ والقلي" (olive
+  oil for cooking/frying, 2L) 18,500 IQD, "نارت خبز صاج ابيض" (white
+  flatbread, 10 pcs) 2,500 IQD. 100% non-zero prices, currency IQD read
+  from `prices.currency_code` (minor_unit=0, no division needed).
+  channel=hypermarket, coicop_codes left unset (wide catalog spans food +
+  household goods -- classifier assigns per-product).
+  End-to-end tested via
+  `python run.py prices collect --source waffir_iq --max-items 20`.

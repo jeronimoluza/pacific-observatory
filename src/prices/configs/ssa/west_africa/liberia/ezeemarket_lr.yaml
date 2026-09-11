@@ -1,0 +1,70 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: dept-store
+spider: ezeemarket_lr
+url: https://ezeemarket.wixsite.com/ezeemarket/
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+notes: |
+  Discovered 2026-09-11 (SSA anglophone-Africa food-source gap-fill
+  campaign). "Ezee Market" -- "Online Shopping in Liberia | Ezee Market",
+  a Wix Stores marketplace based in Monrovia. Production custom domain
+  www.ezeemarket.biz times out from a8 on every probe (DNS resolves but
+  connection never completes) -- the site is only reachable via its
+  wixsite.com preview/staging URL, which serves the identical live
+  storefront (confirmed by comparing product data and prices).
+
+  Platform: Wix Stores. No open commerce REST API found (Wix's storefront
+  data API needs a site-scoped token not exposed here, same finding as
+  neufeldhof_li in this repo). Working route: Wix auto-generates
+  /store-products-sitemap.xml -- MEASURED 2,683 distinct <loc> PDP urls
+  across the whole site (not just groceries -- also beauty/cosmetics
+  PDPs observed, e.g. a Fenty Beauty product). Each PDP is
+  server-rendered with a schema.org Product JSON-LD block carrying
+  name/price/currency/availability -- Tier 1A, no Playwright needed.
+  Sample: {"@type":"Product","name":"Heartland premium triple clean pinto
+  beans","offers":{"priceCurrency":"USD","price":"60",...}}.
+
+  Catalog is genuinely mixed (general marketplace, not purely food) --
+  its own "Grocery" nav collection alone carries totalCount=680 per the
+  collection page's embedded warmup JSON, and a 32-item sample from that
+  collection was ~100% food (multiple rice brands/origins -- Uncle Sam,
+  Riceland, Lido, Goodness Foods, DAAWAT Basmati; Korto's Fresh Red Palm
+  Oil; Maggi bouillon cubes; MDH curry/biryani/chaat masalas; sour cream;
+  cheddar cheese; luncheon meat), directly touching Liberia's
+  cereals&bread, oils&fats, dairy&eggs and ready-meals/condiments gap
+  categories. `channel: dept-store` (not `marketplace`, which is
+  excluded from the corpus census, and not `supermarket`, since the
+  wider sitemap also carries non-food beauty/home SKUs) -- matches the
+  wide general-merchandise convention used elsewhere in this repo
+  (le_jumbo, tsengisa_africa). `coicop_codes` left unset; the classifier
+  assigns COICOP per product.
+
+  ENUMERABILITY (measured two ways):
+  1. The /grocery collection gallery page paginates via a plain
+     `?page=N` query param -- page=1 and page=2 return fully disjoint
+     32-item product-name sets (page1 starts "Ezee Combo #5"/"Nura...
+     Oats 400g", page2 starts "MDH Chicken Curry Masala"). (`?PageNum=2`
+     is silently ignored -- `?page=N` is the working param, noted for
+     any future direct-gallery approach.)
+  2. The sitemap itself lists 2,683 distinct product URLs city-wide,
+     confirmed by direct fetch and dedup on <loc>.
+  This spider crawls the full sitemap rather than scoping to /grocery,
+  since the sitemap+JSON-LD route needs no gallery pagination logic at
+  all (matches the neufeldhof_li spider pattern already in this repo).
+
+  CURRENCY: USD confirmed live from the JSON-LD `priceCurrency` field on
+  every sampled PDP. Liberia is a dual-currency (USD/LRD) economy; this
+  retailer prices in USD -- noted explicitly per the onboarding brief's
+  instruction to flag rather than silently accept/reject.
+
+  Test run: `prices collect --source ezeemarket_lr --max-items 20` ->
+  20/20 rows priced, 20 distinct urls, currency USD. Sample: USD 60.00
+  "Heartland premium triple clean pinto beans" (50lb bag); USD 2.95
+  "Nura Quick & Easy Cooking White Oats 400g".

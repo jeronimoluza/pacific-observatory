@@ -1,0 +1,47 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ouagadougouonline_bf
+url: https://www.ouagadougou.online/
+language: fr
+cadence: weekly
+channel: dept-store
+notes: |
+  Discovery candidate found via item-specific French search (dairy/fish/
+  cereal queries), 2026-09-11. Wave-9 (2026-09-01) had marked this domain
+  dead on a TCP timeout; re-probed live this pass (curl_cffi
+  impersonate="chrome124", 200 throughout) -- the earlier verdict was
+  transient connectivity, not a permanent block.
+
+  Standard WooCommerce Store API (/wp-json/wc/store/v1/products), no auth.
+  General dropship marketplace (~90 categories, electronics/hardware/
+  pharma dominate) -- scoped via category=62 ("Alimentation & Boissons",
+  547 products) rather than walking the whole non-food catalog.
+  Enumerability MEASURED: page 1 vs page 2 of category 62 return fully
+  disjoint product ids.
+
+  MINOR-UNIT TRAP: prices.currency_minor_unit reports 2 for XOF, but XOF
+  has no subdivisions -- the tenant's currency config is misconfigured.
+  Confirmed both in the Store API payload AND in the vendor's own
+  rendered PDP markup (e.g. "CFA7.00" for a 100-sachet box of Lipton tea)
+  -- this is the site's own display bug, not a parsing artifact, and it
+  is uniform across the sampled catalog. The shared _woo_base's unconditional
+  /10**minor_unit would ship every row ~100x underpriced, so the spider
+  sets PRICE_MULTIPLIER=100 gated on PRICE_MULTIPLIER_CURRENCY="XOF" to
+  cancel it (same pattern as ecomguinee_gn.py's GNF fix). Sanity-checked:
+  undivided raw values are plausible XOF retail prices (e.g. butter 500g
+  ~1800 XOF, Emmental 500g ~3500 XOF, Lipton tea ~700 XOF, LS crevettes
+  40/60 500g ~4700 XOF).
+
+  Category 62 mixes real food/drink (dairy: mozzarella, Emmental, lait
+  concentre/NIDO; fish: frozen shrimp/crevettes; cereals: flour; sugar/
+  confectionery: chocolates; coffee/tea) with herbal-remedy and cosmetic-
+  essential-oil products also filed under "Alimentation & Boissons" by
+  the site's own taxonomy -- left wide (coicop_codes unset), classifier
+  routes each row per product name rather than trusting the category
+  label.
+
+  Test run (`prices collect --source ouagadougouonline_bf --max-items 20`):
+  item_scraped_count 98, currency XOF throughout, distinct urls -- see
+  collect log / raw_items jsonl for exact count.
