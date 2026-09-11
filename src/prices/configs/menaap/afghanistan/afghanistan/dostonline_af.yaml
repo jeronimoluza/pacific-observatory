@@ -1,0 +1,35 @@
+scaffolding: spider
+spider: dostonline_af
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: fa
+currency: AFN
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+url: "https://dostonlinestore.com/"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 2
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Batch untried_2 (libya/angola/afghanistan), 2026-09-11. Kabul-based
+  mobile-phone/laptop/accessories retailer ("فروشگاه آنلاین دوست" / Dost
+  Online Store). No storefront-platform fingerprint (not
+  Shopify/WooCommerce/etc) -- custom-built site, so a custom spider was
+  written using the sitemap -> PDP -> JSON-LD pattern. Verified live:
+  https://dostonlinestore.com/sitemap.xml lists 215 urls, 193 of them
+  /products/<slug> (a real catalog, not a small fixed set). Each PDP
+  embeds clean schema.org Product/Offer JSON-LD with native AFN pricing,
+  e.g. /products/galaxy-s24-ultra-256gb ->
+  {"offers":{"priceCurrency":"AFN","price":38396}}. Locality confirmed
+  from the page's own description text, which names Kabul and Afghanistan
+  explicitly ("... در کابل و سراسر افغانستان") and the Organization
+  JSON-LD's address (addressLocality: کابل, addressCountry: AF) -- this is
+  a domestic retailer, not a diaspora remittance/gifting storefront
+  (contrast with kharid.af and yaganchiz.com, both rejected in this same
+  batch for USD pricing / diaspora audience). Page family: both (sitemap
+  listing + PDP; PDP is what markup was characterised from).

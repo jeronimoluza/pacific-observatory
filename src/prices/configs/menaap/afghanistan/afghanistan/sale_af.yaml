@@ -1,0 +1,38 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://sale.af/"
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fa
+currency: AFN
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "sale_af"
+  base_url: "https://sale.af/wp-json/wc/store/v1/products"
+  currency: "AFN"
+  language: "fa"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Batch untried_2 (libya/angola/afghanistan), 2026-09-11. Multi-vendor
+  WooCommerce marketplace ("Sale.af Afghanistan Online Stores", vendor
+  storefronts under /store/<vendor>/). Verified live: GET
+  /wp-json/wc/store/v1/products?per_page=20&page=1 vs page=2 return zero
+  overlapping ids. currency_code field is natively AFN (currency_minor_unit
+  0, no scaling needed). Sampled 10 products: 6 of 10 carried a plausible
+  non-zero price (220-1000 AFN range); 2 of 10 were exactly 0 AFN (dropped
+  automatically -- WooBaseSpider._item treats a parsed price of 0 as "not a
+  price"); 2 of 10 were exactly 1 AFN, a suspected unset-price placeholder
+  used by this multi-vendor platform -- these are non-zero so they ship as
+  rows, not filtered here. Per the repo convention already used on
+  kabulshop_af (leaving unit-value outlier gating to the enrich layer
+  rather than the spider), this is left unfiltered but flagged: expect a
+  minority of rows in this source's output at implausibly low AFN values.
+  Page family: API (Store API), no PDP fetched.

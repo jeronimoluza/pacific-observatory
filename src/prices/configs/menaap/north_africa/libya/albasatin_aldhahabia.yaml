@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: generic_woo_playwright
+url: "https://albasatinaldhabia.com/"
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_playwright
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "albasatin_aldhahabia"
+  base_url: "https://albasatinaldhabia.com"
+  currency: "LYD"
+  language: "ar"
+  api_url: "https://albasatinaldhabia.com/wp-json/wc/store/v1/products"
+notes: >
+  Benghazi frozen-food importer/store (frozen fruit and vegetables). Same
+  hcdn JS interstitial as the Guinea/Sierra Leone/Gambia sources in this
+  batch -- see ~/gapwork/known_blockers_repair_1.md. An earlier manifest
+  attempt against generic_woo_configured (Will's 2026-09-11 handover, see
+  ~/gapwork/added_rows.csv) failed with JSONDecodeError because that
+  spider has no Playwright path and 403s here. MEASURED 2026-09-11 via
+  generic_woo_playwright: X-WP-Total=8, single page (no page 2 -- catalog
+  genuinely fits on one page), 100% non-zero prices, currency_code=LYD
+  from the API, minor_unit=2 (e.g. first item "توت مجمد" (frozen
+  berries) price 22500 -> LYD 225.00). Small catalog (8 SKUs) but the
+  value here is the technique, not the row count. End-to-end tested via
+  `prices collect --source albasatin_aldhahabia --max-items 20`.

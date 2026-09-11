@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: juba_fashion_hub_link_ss
+url: https://jubafashionhub.link/
+language: en
+cadence: weekly
+channel: cosmetics
+active: true
+max_items: null
+notes: >
+  Bespoke React SPA (client-side routed, not Shopify/Woo/Presta/OpenCart)
+  selling imported perfumes and skincare, delivery in Juba. The whole catalog
+  is served in one shot by a same-origin JSON endpoint at GET /api/products --
+  no auth, no query params, no pagination. Verified live 2026-09-11: 130
+  items, re-fetched twice with an identical id set both times (single fixed
+  catalog, not a broken paginator), 130/130 carry a non-zero priceSSP
+  alongside priceUSD -- priceSSP used since South Sudan's own currency is SSP,
+  read from the payload rather than assumed. No per-item permalink in the
+  payload; the spider builds /product/<id> as a stable per-item url (the SPA's
+  catch-all route resolves it client-side, HTTP 200, but it is never itself
+  fetched -- data comes entirely from the API response). Page family: API.

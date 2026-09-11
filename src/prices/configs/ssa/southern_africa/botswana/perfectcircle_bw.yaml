@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: perfectcircle_bw
+url: https://www.perfectcircle.co.bw/
+language: en
+currency: BWP
+cadence: weekly
+channel: fashion
+notes: |
+  Botswana promotional-merchandise/apparel reseller (Gaborone; Plot 66, Unit 7,
+  Gaborone International Commerce Park, per /api/common/info/). Batch row
+  called this "ALREADY-TRACKED-UPSTREAM" per Will's handover, but no matching
+  manifest was found in this repo, so it was probed fresh -- untried_1 batch,
+  2026-09-11.
+
+  Front end is an Angular SPA with NO server-rendered content at all: a bare
+  curl_cffi GET on any path, including /sitemap.xml and /robots.txt, returns
+  the identical 202KB app shell (200 for every path is itself the tell that
+  this needs a network trace, not a real response). Playwright network trace
+  on the homepage and a category page found the real backend on a separate
+  host: apiperfectcircle.kickatinalong.net (a white-label promo-merch SaaS
+  platform vendor, not Perfect Circle's own infra).
+
+  GET /api/common/GetDisplayMenus -> 274 flat category nodes (id, slug,
+  parentMenuId). GET /api/common/menu/?m=<slug>&p=<parent slug or "">&s=<skip>&t=<id>
+  returns that node's product array, page size 10. Confirmed against a known
+  leaf (softshell-jackets, id 412): distinct products at s=0 vs s=10 (7141/7142/7143
+  vs 9419/17606/3478/...) -- passes the page-1-vs-page-2 enumerability gate.
+  Root nodes (p="") also return real priced products, just loosely categorized
+  -- the spider queries every node in the flat list and lets DuplicationPipeline
+  dedup by url rather than trying to infer which nodes are "true" leaves
+  (productTotal in the menu list is always 0, not a usable leaf signal).
+
+  Currency: GET /api/Currency/Display -> {"code":"BWP","symbol":"BWP","rate":1.0000}.
+  Prices in the product payload are already plain BWP decimals (e.g. 429.983,
+  505.8615) -- no minor-unit or FX conversion needed.
+
+  Many products carry slug: null; url falls back to a productId-based path
+  for those so every row still gets a stable, unique url (DuplicationPipeline
+  dedups on item["url"]). Spider parses: API only.
+
+  Test run 2026-09-11 (--max-items 20): see collect log for row/url counts.

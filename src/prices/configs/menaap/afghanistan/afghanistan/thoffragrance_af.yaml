@@ -1,0 +1,37 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://thoffragrance.com/"
+channel: cosmetics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: AFN
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "thoffragrance_af"
+  base_url: "https://thoffragrance.com/wp-json/wc/store/v1/products"
+  currency: "AFN"
+  language: "en"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Batch untried_2 (libya/angola/afghanistan), 2026-09-11. "The House of
+  Fragrance Afghanistan" -- single-vendor WooCommerce perfume/fragrance
+  retailer. Verified live: GET /wp-json/wc/store/v1/products?per_page=20
+  returns the FULL catalog in one page (8 products total, currency_code
+  natively AFN, minor_unit 2, e.g. "Hundred silent ways X 100-200 ml" =
+  AFN 1500.00) -- page 2 of the same query returns 0 rows. This is a real,
+  complete small catalog via the official Store API (not a curated
+  homepage carousel), but it is small: only 8 SKUs, so the standard
+  page1-vs-page2-distinct-ids proof does not apply (there is no page 2).
+  Shipped anyway per this run's "take whatever verifies" density rule for
+  a near-zero-coverage country, flagged here as a narrow single-vendor
+  catalog rather than a general retailer. COICOP relevance: 12.1.3
+  personal-care fragrance line, division 12 -- a division AF otherwise
+  lacks. Page family: API (Store API), no PDP fetched.

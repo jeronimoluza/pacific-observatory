@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: generic_woo_playwright
+url: "https://greenapplespharmacy.com/"
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_playwright
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "green_apples_pharmacy"
+  base_url: "https://greenapplespharmacy.com"
+  currency: "LYD"
+  language: "ar"
+  api_url: "https://greenapplespharmacy.com/wp-json/wc/store/v1/products"
+notes: >
+  Libya pharmacy/health-and-beauty store (creams, vitamins, skincare,
+  supplements). Same hcdn JS interstitial as albasatin_aldhahabia -- see
+  ~/gapwork/known_blockers_repair_1.md. An earlier manifest attempt
+  against generic_woo_configured (Will's 2026-09-11 handover, see
+  ~/gapwork/added_rows.csv) failed with JSONDecodeError because that
+  spider has no Playwright path and 403s here. MEASURED 2026-09-11 via
+  generic_woo_playwright: X-WP-Total=150 (confirms the original probe's
+  figure), page 1 vs page 2 ids fully disjoint, 100% non-zero prices,
+  currency_code=LYD from the API, minor_unit=2 (e.g. "Novaclear Collagen
+  Firming Neck & Decollete Cream" price 8500 -> LYD 85.00). End-to-end
+  tested via `prices collect --source green_apples_pharmacy --max-items 20`.

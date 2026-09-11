@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_playwright
+url: "https://lexmakyty.com/"
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_playwright
+language: fr
+currency: GNF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "lexmakyty_gn"
+  base_url: "https://lexmakyty.com"
+  currency: "GNF"
+  language: "fr"
+  api_url: "https://lexmakyty.com/wp-json/wc/store/v1/products"
+notes: >
+  Guinea health/cosmetics/nutrition e-boutique (Conakry). Same hcdn JS
+  interstitial as leskanso_gn -- see ~/gapwork/known_blockers_repair_2.md.
+  MEASURED 2026-09-11 via generic_woo_playwright: X-WP-Total=79,
+  paginates genuinely (page 1 ids 5342..4677 fully disjoint from page 2
+  ids 4658..4247), 100% non-zero prices, currency_code=GNF from the API
+  (e.g. id=5342 "MINOXIDIL 5% Amazon" price=300,000 GNF). End-to-end
+  tested via `prices collect --source lexmakyty_gn --max-items 20`.

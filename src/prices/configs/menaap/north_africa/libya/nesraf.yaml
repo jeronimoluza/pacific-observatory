@@ -1,0 +1,45 @@
+scaffolding: spider
+spider: generic_woo_playwright
+url: "https://nesraf.com/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_playwright
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "nesraf"
+  base_url: "https://nesraf.com"
+  currency: "LYD"
+  language: "ar"
+  api_url: "https://nesraf.com/wp-json/wc/store/v1/products"
+notes: >
+  Libya bookstore, not the "broad marketplace with grocery-adjacent
+  categories" the original workbook candidate claimed. A 2026-09-01 wave
+  10 probe (see references/known_blockers.md "nesraf.com" entry) found
+  hcdn intermittently clearing under Playwright but all 18 declared
+  categories (including a dedicated grocery one) empty, with only ~15
+  live book/legal-history titles under a single publisher, and rejected
+  the source on that basis. RE-VERIFIED 2026-09-11: the catalog has grown
+  and the API's own categories[] array is now empty for every item
+  (a Store API data-quality gap, not a probing artifact), but sampling
+  100 product names end to end (page 1 and page 10) shows the entire
+  catalog is books/novels/poetry collections -- consistent with the
+  earlier finding, just far larger (X-WP-Total=774, was ~15). Ships as
+  channel=other (no book-specific Channel enum value exists) rather than
+  the food-adjacent framing of the original candidate.
+  Recovery-technique note: nesraf is the ONE site in this whole batch
+  where plain (non-impersonating) HTTP alone was NOT enough -- it still
+  403s. Its own Playwright homepage navigation also returns 403, but the
+  challenge page's JS solves the proof-of-work in the background and
+  sets a real `hcdn` cookie regardless; carrying that cookie forward on
+  a plain HTTP request then returns 200. This is the genuine JS-PoW case
+  generic_woo_playwright's re-warm-up-on-403 path exists for. Page 1 vs
+  page 10 ids fully disjoint, 100% non-zero prices, currency_code=LYD
+  from the API. End-to-end tested via
+  `prices collect --source nesraf --max-items 20`.

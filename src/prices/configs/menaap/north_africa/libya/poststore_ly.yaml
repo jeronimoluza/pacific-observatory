@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: poststore_ly
+url: https://poststore.ly/
+language: ar
+cadence: monthly
+channel: other
+archive_prefix: "poststore.ly/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Libya Post's philatelic/collectibles store (postage stamps, commemorative
+  issues). WooCommerce with WP REST disabled site-wide (Store API and wp-json
+  both unreachable), so the spider walks product-sitemap.xml (198 PDP urls,
+  no pagination needed -- the sitemap IS the full enumeration) and parses each
+  PDP via the shared JSON-LD/OpenGraph/Woo-DOM chain. OpenGraph
+  product:price:currency verified LYD across a random 12-item sample, all
+  priced (0.1-30 LYD), no FORCE_CURRENCY override needed. Page family: PDP.

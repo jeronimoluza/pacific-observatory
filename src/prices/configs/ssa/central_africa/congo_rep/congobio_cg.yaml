@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: congobio_cg
+url: https://www.congobio.net/
+language: fr
+cadence: monthly
+archive_prefix: "congobio.net/"
+archive_path_re: '^/produit/[0-9a-f-]+$'
+notes: |
+  Untried_3 batch candidate, never previously probed -- Will's handover
+  only flagged it as "already tracked upstream" with no matching build
+  in this repo. CongoBio ("Produits bio en ligne -- Congo Brazzaville")
+  is a farm-direct organic-produce e-commerce site in Congo Republic:
+  fresh vegetables, farm poultry/livestock, sold directly to local
+  consumers (not a diaspora-gifting service like market242_cg).
+
+  Fingerprint: Next.js/Turbopack SPA, Cloudflare-fronted, no public JSON
+  API found (/api/products, /api/produits both 404). Confirmed live
+  2026-09-11 via curl_cffi impersonate="chrome124" (200, no challenge).
+  `/sitemap.xml` lists all 40 PDP URLs directly (`/produit/<uuid>`),
+  used as the crawl seed. Each PDP embeds a clean schema.org Product
+  JSON-LD block (offers.price / offers.priceCurrency) -- used for
+  extraction, page has no PrestaShop/WooCommerce microdata.
+
+  HARD GATES: enumerability via the fixed sitemap URL list (40 distinct
+  PDP urls, confirmed disjoint UUIDs); non-zero prices confirmed on
+  every sampled PDP; currency read directly from the JSON-LD payload as
+  XAF -- Congo Republic's own currency per countries.yaml, not a
+  diaspora/remittance price like market242_cg's EUR. Sample: "Dindes"
+  (turkeys) XAF 22,500, seller "CongoBio", countryOfOrigin "Ferme
+  avicole de Brazzaville" -- confirms local sourcing, not an import/
+  diaspora catalog.
+
+  Catalog is small (40 PDPs total) -- a niche farm-direct storefront,
+  not a supermarket. Test run (`--max-items 20`) returned rows well
+  above the 5-row bar; see collect log for exact count.

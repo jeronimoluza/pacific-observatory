@@ -1,0 +1,34 @@
+scaffolding: spider
+spider: generic_woo_playwright
+url: "https://almatjar.ly/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_playwright
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "almatjar_ly"
+  base_url: "https://almatjar.ly"
+  currency: "LYD"
+  language: "ar"
+  api_url: "https://almatjar.ly/wp-json/wc/store/v1/products"
+notes: >
+  Libya watches/accessories department store (Men, Women, Sport, Watches
+  categories). Same hcdn JS interstitial as albasatin_aldhahabia -- see
+  ~/gapwork/known_blockers_repair_1.md. An earlier manifest attempt
+  against generic_woo_configured (Will's 2026-09-11 handover, see
+  ~/gapwork/added_rows.csv) failed with JSONDecodeError; that overlay's
+  claimed X-WP-Total of 975 could not be reproduced by the intervening
+  repair pass because the API was fully walled off to curl_cffi at the
+  time. MEASURED 2026-09-11 via generic_woo_playwright: X-WP-Total=974
+  (confirms the original figure), page 1 vs page 2 ids fully disjoint,
+  100% non-zero prices, currency_code=LYD from the API, minor_unit=3
+  (e.g. first item "BP3813C.220" price 800000 -> LYD 800.000). By far
+  the largest catalog recovered in this batch. End-to-end tested via
+  `prices collect --source almatjar_ly --max-items 20`.

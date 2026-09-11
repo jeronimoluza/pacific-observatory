@@ -1,0 +1,39 @@
+scaffolding: spider
+spider: sawdagar_af
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: AFN
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+url: "https://sawdagaraf.com/"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 2
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Batch untried_2 (libya/angola/afghanistan), 2026-09-11. General
+  cross-COICOP marketplace with an open, unauthenticated REST catalog API
+  at GET https://sawdagaraf.com/api/products?page=N&limit=100 -- no
+  generic template fits (bespoke Next.js/Node backend, not
+  Shopify/WooCommerce/Presta/OpenCart), so a custom spider was written.
+  Verified live: the endpoint reports {"total":883,"totalPages":89} and
+  page=1 vs page=2 return zero overlapping product ids (confirmed at both
+  the default per_page=10 and limit=100). A separate, NOT used, path --
+  category listing pages at /categories/<slug> -- was tried first and
+  rejected: it returns a FIXED 3-item set regardless of ?page=, i.e. a
+  curated "featured" rail, not a real paginated listing; the /api/products
+  endpoint is the one that actually enumerates.
+  Prices are the `retailPrice` field, plain AFN amounts (not minor units)
+  -- cross-checked against the product-detail page's own rendered
+  `"priceLabel":"AFN","priceValue":"؋850"` for id 1031, which matches
+  retailPrice:850 field-for-field. Category taxonomy includes explicit
+  food categories (food, milk, juice, curd, baverages [sic]) alongside
+  electronics/clothing/home/medical -- a genuine general marketplace, not
+  single-division. Each product carries its own named supplier + province
+  (multi-vendor, Dokan-style, but bespoke backend). Page family: API
+  (custom REST), no PDP fetched.

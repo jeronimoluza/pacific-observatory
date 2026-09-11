@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nayelis_closet_gn
+url: https://www.nayelicloset.com/
+language: fr
+cadence: monthly
+channel: fashion
+archive_prefix: "nayelicloset.com/"
+archive_path_re: '^/product-page/[^/?]+'
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-CUSTOM-
+  CRAWLER, "no standard platform API found"). Correctly so for the four
+  generic spiders -- this is Wix (WixStores app), not Shopify/Woo/Presta/
+  OpenCart, and Wix's own ecommerce storefront API needs an instance token
+  this pass doesn't have. NEW EXTRACTION ROUTE found instead: Wix's
+  auto-generated sitemap index (/sitemap.xml, generatedBy="WIX") links a
+  store-products-sitemap.xml with 830 PDP urls; each PDP is a Wix SPA shell
+  but server-injects standard schema.org Product/offers JSON-LD for SEO,
+  which a plain HTTP GET sees without any JS rendering. Verified live:
+  priceCurrency "GNF" (Guinea's own currency, read from the payload, not
+  inferred from the .com TLD), fashion/beauty catalog. Uses the new
+  JsonLdSitemapBaseSpider base (src/prices/price_scraping/spiders/
+  _jsonld_sitemap_base.py) -- the platform-agnostic sibling of
+  _woo_sitemap_base.py, built on the existing shared rows_from_jsonld/
+  row_from_meta helpers in archived.py. Applicable to any other Wix (or
+  JSON-LD-emitting) storefront in the batch. Page family: PDP.

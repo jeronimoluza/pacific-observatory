@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://maiwandbazzar.com/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: AFN
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "maiwandbazar_af"
+  base_url: "https://maiwandbazzar.com"
+  currency: "AFN"
+  language: "en"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Batch untried_2 (libya/angola/afghanistan), 2026-09-11. Fashion/clothing
+  storefront on Shopify. Verified live: GET /products.json?limit=50&page=1
+  and page=2 return zero overlapping product ids (50+13 across 2 pages
+  probed). Shop currency confirmed natively AFN via GET /cart.js
+  ({"currency":"AFN",...}) and the embedded Shopify.currency JS object
+  ({"active":"AFN","rate":"1.0"}) -- not inferred from the domain or symbol.
+  Sample product: "LK353 Mittoo Long Kurtis" at AFN 1150.00. Page family:
+  API (products.json), no PDP fetched.

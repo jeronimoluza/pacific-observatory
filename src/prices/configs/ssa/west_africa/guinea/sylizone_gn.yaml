@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sylizone_gn
+url: https://www.sylizone.com/
+language: fr
+currency: GNF
+cadence: monthly
+channel: fashion
+notes: |
+  Football-jersey ("maillot") reseller, Conakry. Batch row called this
+  "ALREADY-TRACKED-UPSTREAM" per Will's handover, but no matching manifest
+  was found in this repo, so it was probed fresh -- untried_1 batch,
+  2026-09-11.
+
+  Next.js App Router site (RSC-streamed, no __NEXT_DATA__ tag), but each PDP
+  serves a clean server-rendered application/ld+json Product node with a
+  nested Offer: priceCurrency "GNF", plain-integer price -- confirmed on
+  /produit/13 (Maillot FC Barcelone 2024 2025, 140000 GNF) and /produit/24
+  (400000 GNF). og:title explicitly says "... en Guinée" confirming
+  locality.
+
+  Catalog is small and fully enumerated from /sitemap.xml, which lists
+  exactly 12 /produit/<id> PDPs (ids 13-24 as of 2026-09-11) alongside
+  non-product pages (/boutique, /services/<id>, /blog/<slug>, /a-propos,
+  /contact) that the spider filters out. No separate paginated category
+  listing exists -- sitemap enumeration is the whole catalog, so the
+  page-1-vs-page-2 gate does not apply the usual way; verified instead by
+  confirming the sitemap's product-id set (13-24) is a fixed, real
+  enumeration rather than a single static page.
+
+  Test run 2026-09-11 (--max-items 20): see collect log for row/url counts.
+  Spider parses: PDP (sitemap for enumeration, JSON-LD for extraction).

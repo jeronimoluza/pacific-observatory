@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://ariah.gw/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: pt
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "ariah_gw_services"
+  base_url: "https://ariah.gw"
+  currency: "XOF"
+  language: "pt"
+  api_url: "https://ariah.gw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-REVIEW,
+  ambiguous). Live-verified: standard WooCommerce Store API works (200, JSON,
+  8 items, all priced in XOF). ARIAH is a Guinea-Bissau beauty/skincare
+  services catalog (eyebrow micropigmentation, facial treatments) sold as
+  WooCommerce "products" -- priced services, not physical SKUs; channel left
+  as "other" pending a clearer enum fit. Small catalog; page2 empty (8 items
+  fit on page1) so enumerability could not be tested against a second page --
+  acceptable per the single-page-catalogue exception. Uses the existing
+  generic_woo_configured spider, no new code.

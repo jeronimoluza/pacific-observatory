@@ -1,0 +1,45 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.chmsuriname.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: nl
+currency: SRD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "chmsuriname_sr"
+  base_url: "https://www.chmsuriname.com"
+  currency: "SRD"
+  language: "nl"
+  api_url: "https://www.chmsuriname.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 2
+  DOWNLOAD_DELAY: 1.0
+notes: |
+  CHM Suriname ("Uw speciaalzaak voor beter wonen" -- home/furniture
+  specialty retailer) in Paramaribo. Untried_3 batch candidate,
+  never previously probed -- Will's handover only flagged it as
+  "already tracked upstream" with no matching build. WordPress 7.1 +
+  WooCommerce 9.7.3, public unauthenticated Store API.
+
+  Probed 2026-09-11: /wp-json/wc/store/v1/products?per_page=20&page=1
+  vs page=2 return disjoint product-id sets (page1 ids 33526..33503,
+  page2 ids 33423..33388) -- enumerability confirmed. X-WP-Total header
+  reports 2153 products across 108 pages. Currency read from the
+  payload's prices.currency_code = "SRD" (matches countries.yaml
+  default for Suriname, not inferred from TLD). Prices are non-zero and
+  plausible for furniture/appliances (e.g. id 33526 "TRAMA BOEKENKAST"
+  bookcase SRD 5,395.00 at minor_unit=2; id 4501 "ELEGANCE TV MEUBEL"
+  SRD 7,495.00). Category mix: Wonen/Meubels (furniture),
+  Keukenapparatuur (kitchen appliances), Kantoorbenodigheden (office
+  supplies) -- non-food durables, wide across several COICOP divisions
+  (05 furnishings, 06 appliances) hence classifier-routed, not narrow.
+
+  Test run (`--max-items 20`): 20 rows, 20 distinct urls, currency SRD
+  confirmed end to end.

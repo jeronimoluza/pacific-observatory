@@ -2475,3 +2475,142 @@ the script. Feeding the identical script to `~/venv/bin/python` via a stdin here
 (`~/venv/bin/python << "EOF" ... EOF`) or via `-c` ran clean every time. Not escalated
 further since the workaround is free; flagging so the next agent does not waste time
 suspecting their own script.
+
+### Untried_3 batch: SPA shell and a login-gated social feed (LI, AL)
+
+- **www.migros.ch** (CH, proposed as Liechtenstein food coverage via its
+  physical stores, batch-scored build_tier=D) — Angular SPA shell,
+   returns 200 but only a 31KB
+  pre-hydration shell (, no product data
+  in the raw response) even on a search URL
+  (). Not a WAF block — no challenge markers seen —
+  just needs a full Playwright render + network trace to find the
+  backing API, same class of effort as the coop.ch DataDome build
+  already deferred for this country. Not pursued further this pass;
+  worth a dedicated Playwright probe in a future wave, not a hard
+  reject. Probed 2026-09-11.
+- **www.facebook.com/marketplace** (proposed AL) — returns HTTP 200
+  (no WAF/TLS block) but is a personalized, login-gated social feed
+  with no public catalogue, no product sitemap, and no anonymous API —
+  structurally not a retailer/price source regardless of access.
+  Reject on source class, not on scraping difficulty. Probed
+  2026-09-11.
+
+### Untried_3 batch: SPA shell and a login-gated social feed (LI, AL)
+
+- **www.migros.ch** (CH, proposed as Liechtenstein food coverage via its
+  physical stores, batch-scored build_tier=D) — Angular SPA shell,
+  `curl_cffi impersonate="chrome124"` returns 200 but only a 31KB
+  pre-hydration shell (`window.prerenderReady = false`, no product data
+  in the raw response) even on a search URL
+  (`/en/search?q=milch`). Not a WAF block — no challenge markers seen —
+  just needs a full Playwright render + network trace to find the
+  backing API, same class of effort as the coop.ch DataDome build
+  already deferred for this country. Not pursued further this pass;
+  worth a dedicated Playwright probe in a future wave, not a hard
+  reject. Probed 2026-09-11.
+- **www.facebook.com/marketplace** (proposed AL) — returns HTTP 200
+  (no WAF/TLS block) but is a personalized, login-gated social feed
+  with no public catalogue, no product sitemap, and no anonymous API —
+  structurally not a retailer/price source regardless of access.
+  Reject on source class, not on scraping difficulty. Probed
+  2026-09-11.
+
+### Untried_1 batch: dead legacy domain and a re-confirmed dead-end (MH, BJ)
+
+- **ntamar.net** (MH, "NTA legacy services" — batch row tagged
+  ALREADY-TRACKED-UPSTREAM per Will's handover, referencing the National
+  Telecommunications Authority of the Marshall Islands under a legacy
+  domain) — `curl_cffi impersonate="chrome124"` returns a hard DNS failure
+  (`Could not resolve host: ntamar.net`), confirmed live 2026-09-11. The
+  live NTA domain is `www.nta.mh`, already covered by `nta_4g_mh` and
+  `nta_residential_mh` in this repo. Dead domain, not a duplicate worth
+  re-pointing. Probed 2026-09-11 (untried_1 batch).
+- **martistore.shop** (BJ) — re-checked after the 2026-09-05 finding that
+  the whole site was in Cloudflare-fronted maintenance mode (503). As of
+  2026-09-11 it is now HTTP 522 (Cloudflare origin connection timeout) —
+  worse, not better. Still has a real 543-URL `/sitemap.xml` (200) from the
+  prior probe, so the catalogue and id space are known if the origin ever
+  comes back; still not usable today. Probed 2026-09-11 (untried_1 batch).
+
+### Untried_2 batch: Afghanistan diaspora/currency traps, hcdn on non-Libya hosts, and SPA dead-ends (AF)
+
+- **afzon.af** (AF, "Afzon") — shop-listing "AFN" tokens are UI/filter
+  labels only; the actual product page (e.g. Timuri Saffron) quotes price
+  in USD ($100). Fails local-currency gate. Probed 2026-09-11.
+- **rasteenltd.com** (AF, "Rasteen Bazar") — genuinely enumerable
+  WooCommerce Store API (page1/page2 zero id overlap) but
+  `prices.currency_code` is explicitly USD (e.g. Washing Machine =
+  $480.00). Fails local-currency gate despite otherwise passing every
+  other test. Probed 2026-09-11.
+- **kharid.af** (AF, "Kharid") — diaspora remittance/gifting service
+  ("send groceries and gifts to family in Afghanistan"); `/shop` prices
+  all USD. Fails both local-currency and locality gates. Probed
+  2026-09-11.
+- **yaganchiz.com** (AF, "Yaganchiz") — Shopify, genuinely enumerable,
+  shop currency IS natively AFN (`/cart.js` confirms), so it does NOT fail
+  the currency gate — but the site markets itself explicitly as a
+  diaspora gifting service ("Essential deliveries to loved ones in
+  Afghanistan", sample SKU "Monthly Family Essentials Box"). Rejected on
+  locality alone; same anti-pattern as `ubuy.sl` and other diaspora
+  grocers already in this file. Flagged as a judgment call, not a
+  clean-cut technical fail. Probed 2026-09-11.
+- **choob.af** and **peace1971.com** (AF) — both HTTP 403,
+  `server: hcdn` (Huawei Cloud CDN), identical 6,192-byte "Checking your
+  browser" stub — same signature already documented for Libya under the
+  Huawei Cloud CDN heading, confirming this is not Libya-specific.
+  Fast-rejected, no impersonation-profile cycling attempted. Probed
+  2026-09-11.
+- **afghanchinashoppingcenter.com** (AF, "Afghan China Shopping Center")
+  — real AFN card-level prices, but `/en/catalogue` (with or without a
+  category filter) returns an IDENTICAL product set across page=1/2/3 at
+  every level tried — the whole catalog is fixed at ~12 SKUs, no real
+  pagination exists. Probed 2026-09-11.
+- **fibertech.com.af** (AF, "Fiber Technology Services Co") — `/products`
+  and `/products?page=2` return the identical 7-item set (no real
+  pagination); catalog includes a literal leftover dev/test product
+  (`this-is-the-new-product-for-training`); price display looks
+  unreliable ("AFN18"/"AFN20" for a router). Probed 2026-09-11.
+- **jamshidimart.com** (AF) — SSL cert expired; with `verify=False` the
+  domain serves a generic non-shop 7.6KB page and
+  `/wp-json/wc/store/v1/products` 404s despite a `wp-content` string
+  match — no live shop reachable. **kefayatsupermarket.com** (AF) — `www`
+  subdomain cert mismatches hostname; bare apex serves a default Plesk
+  Obsidian hosting-panel splash page, no site deployed. Both probed
+  2026-09-11.
+- **hamachiz.com** (AF) — HTTP 402 "Store unavailable", a Shopify tenant
+  with a lapsed subscription. **zhmary.com** (AF) — HTTP 500 on repeated
+  probes, site currently broken. **asanbawar.com** (AF) — homepage,
+  `/products`, and `/robots.txt` all time out (20-25s, no TCP response)
+  on 3 independent attempts; server appears down, not WAF-walled. All
+  probed 2026-09-11.
+- **maihandostshop.com** (AF, "Maihandost Shop") — actual site is
+  "Mihandost — Invest in Stores & Apartment Projects", a real-estate
+  INVESTMENT marketing site, not a retail catalogue or rental listing.
+  **lilamlilam.com** (AF) — "Lilam" (auction) brand whose real businesses
+  are separate storefronts (lilamhomes.com/store, lilamauto.com/store)
+  selling via AUCTION bids, not retail SKU pricing. Both probed
+  2026-09-11.
+- **SPA/client-rendered dead-ends not pursued this pass** (AF, needs a
+  real Playwright network trace, not a hard reject): afghanbazar.app
+  (has an explicit "Food & Grocery" marketplace category worth chasing),
+  karwaan.af, leelam.af (OLX-style classifieds, wrong shape more than
+  blocked), htay.liwal.com, nooraziz.net (Wix), smartbazar.af (has an
+  explicit `/en/market?categorySlug=supermarket` route worth chasing —
+  robots.txt confirms a live `/api/` tree whose exact routes weren't
+  found in budget), tizkart.com (possible pre-launch: `<title>` reads
+  "Tixkard"), zarangwal.com, zmadookan.com. All returned 200 with no
+  price/currency data in raw HTML; JS-hydrated catalogs in all cases.
+  Probed 2026-09-11.
+- **old.moci.gov.af** (AF, Ministry of Industry and Commerce market
+  prices) — `curl_cffi` gets an abrupt SSL connection close;
+  `verify=False` gets a 25s timeout instead. Consistent with the
+  derelict-government-server pattern already noted for Libyan gov infra
+  (gecol.ly, cbl.gov.ly). Probed 2026-09-11.
+
+Four sources from this batch shipped: `maiwandbazar_af` (Shopify, AFN,
+fashion), `sale_af` (WooCommerce, AFN, multi-vendor marketplace),
+`thoffragrance_af` (WooCommerce, AFN, small single-vendor fragrance
+catalog), `sawdagar_af` (bespoke REST API, AFN, general marketplace incl.
+food categories, 883 products), `dostonline_af` (sitemap+JSON-LD, AFN,
+Kabul electronics retailer, 193 product urls).

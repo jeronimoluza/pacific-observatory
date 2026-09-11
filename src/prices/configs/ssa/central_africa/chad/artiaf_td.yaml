@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: artiaf_td
+url: https://www.artiaf.com/fr/
+language: fr
+cadence: weekly
+channel: dept-store
+notes: |
+  Probed 2026-09-11: PrestaShop -- one of the four generic paths, but its
+  /api/products webservice route 401s here (no public key), which is
+  presumably why the earlier triage marked this NEEDS-CUSTOM-CRAWLER. Tried
+  the repo's existing _prestashop_base.py (the OTHER PrestaShop route,
+  public category HTML, no API) first, but its generic category-link
+  recursion + name/price selectors mismatched cards on this theme (1 item
+  scraped, with a name from one product and a url from a different one) --
+  wrote a small dedicated spider instead using a direct
+  `[data-id-product]` card selector with itemprop=name/price, which matches
+  cleanly.
+  10 categories, hardcoded from the homepage nav (22-epices-africaines,
+  31-minceur-naturelle, 32-vitalite-naturelle, 38-cosmetiques-naturels,
+  59-pagnes-divers, 63-chiganvy, 65-vlisco, 66-bogolan, 67-bijoux,
+  68-sacs-pagne) -- no subcategory nesting observed. Each category page is
+  small (26 products on 68-sacs-pagne, no further pagination: ?p=2 returns
+  the identical id set, ?page=2 returns zero -- confirms the whole category
+  fits on one page rather than a broken paginator) so the crawl walks each
+  category exactly once.
+  Currency: displayed as "FCFA" on the PDP with itemprop="price"
+  content="16900" (16,900 FCFA on
+  1816-pochette-dame-tissu-pagne-wax-africain...); a same-tenant PDP's
+  JSON-LD (68-sacs-pagne listing) resolved priceCurrency to XAF specifically
+  (not XOF) -- confirmed Central African CFA franc, matching countries.yaml's
+  Chad default. Site sells African-print goods (spices, cosmetics, wax
+  fabric/bags, jewellery) addressed to a Chad/Central-Africa audience, not a
+  diaspora storefront (fr-only, FCFA-only, no EUR/USD checkout option seen).
+  Test run: prices collect --source artiaf_td --max-items 20 -> rows priced
+  in XAF, distinct urls.

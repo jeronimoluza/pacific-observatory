@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://duban.store/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: XAF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "duban_cg"
+  base_url: "https://duban.store"
+  currency: "XAF"
+  language: "fr"
+  api_url: "https://duban.store/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-CUSTOM-CRAWLER,
+  "no standard platform API found"). Live-verified: standard WooCommerce
+  Store API works fine (200, JSON, page1/page2 ids disjoint, currency_minor_
+  unit=2 correctly divides raw minor-unit prices e.g. 1800000 -> 18,000 XAF).
+  "DUBAN | Le Marché En Ligne De Brazzaville" -- Congo-Brazzaville wellness/
+  MLM (Yupi Global) products catalog, priced in XAF. Two of ten sampled items
+  carry price 0 (an event listing and an out-of-stock item); majority priced.
+  Uses the existing generic_woo_configured spider, no new code.

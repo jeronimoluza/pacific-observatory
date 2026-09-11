@@ -55,3 +55,17 @@ notes: |
   auchan_hu=custom sitemap+JSON-LD, now alcampo_es=a DIFFERENT custom
   sitemap+JSON-LD stack with its own URL shape and AWS WAF layer) --
   the Auchan group does not share one storefront platform across banners.
+
+  UPDATE (2026-09-11) -- the "Playwright-mint / cookie-replay" fix this
+  file proposed above was tried and DISPROVEN, not just deferred. A real
+  headless Chromium sent straight to a PDP gets a "Human Verification"
+  page with header `x-amzn-waf-action: captcha` -- an interactive image
+  CAPTCHA, not the passive JS `challenge` action taw9eel_kw/cdiscount_fr
+  face; 20s of wait in that page produced no auto-solve/redirect.
+  Replaying a cookie jar minted from a bare homepage visit made the yield
+  WORSE than doing nothing (0/239 real rows across a live test run vs.
+  the existing no-cookie approach's 5-10). See
+  price_scraping/spiders/alcampo_es.py's own docstring for full evidence.
+  Spider left unchanged (still the no-cookie sitemap walk); reaching
+  "thousands of rows" needs a CAPTCHA-solving service or IP rotation,
+  neither of which is a spider-code fix.

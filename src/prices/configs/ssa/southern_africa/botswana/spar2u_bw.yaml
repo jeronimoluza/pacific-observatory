@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: spar2u_bw
+url: https://www.spar2u.co.bw/en-BW/categories/pantry/spices-and-seasoning
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed 2026-09-11: custom SPAR Group storefront, NOT WooCommerce/Shopify/
+  PrestaShop/OpenCart. No open product-list API found (category pages are
+  client-rendered and identical across ?page=N). The enumerable surface is
+  the product sitemap: https://www.spar2u.co.bw/sitemaps/products/sitemap-products-1.xml
+  lists 8,370 distinct /en-BW/product/<gtin> PDP urls (single shard, no
+  pagination needed). Page family: PDP only -- sitemap-driven crawl, spider
+  never fetches a listing page.
+  Each PDP embeds one JSON-LD Product node with an AggregateOffer. GOTCHA:
+  offers.lowPrice is the literal placeholder "0.00" on every product sampled
+  (6001008840616, 6001299029394, 8720608603237, 8714599201824) -- it is not
+  a real price. offers.highPrice carries the real single-store price
+  (offerCount is always 1), so the spider reads highPrice. priceCurrency
+  read from the payload = BWP, matching countries.yaml's Botswana default
+  but confirmed from the site, not assumed. Store is SPAR Mmopane Highway,
+  Gaborone (areaServed=Botswana in the WebSite JSON-LD) -- local pricing,
+  not diaspora.
+  Enumerability: sitemap itself is the enumeration surface (8,370 distinct
+  ids), so the page1-vs-page2 category-listing check does not apply here --
+  category pagination on this tenant is a dead end (identical products
+  returned regardless of ?page=N), which is exactly why the sitemap route
+  was needed.
+  Test run: prices collect --source spar2u_bw --max-items 20 -> 20/20 rows
+  priced, BWP, distinct urls. Sample: BWP 71.95 "SPAR Muesli, Honey and
+  Almond (750g)"; BWP 7.45 "Clover Krush Mix 50% Fruit Nectar Blend, Orange
+  Fusion (200ml)".

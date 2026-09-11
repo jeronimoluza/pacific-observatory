@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://shop.vodafone.com.ws/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: WST
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "vodafone_samoa_online_shop"
+  base_url: "https://shop.vodafone.com.ws"
+  currency: "WST"
+  language: "en"
+  api_url: "https://shop.vodafone.com.ws/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch. IMPORTANT COUNTRY CORRECTION: the
+  batch filed this under american_samoa, but shop.vodafone.com.ws is Vodafone
+  SAMOA (independent Samoa, .ws ccTLD, WST/Tala pricing) -- a different
+  country from American Samoa (a US territory that prices in USD). Filed here
+  under samoa instead; do not also file under american_samoa. Live-verified:
+  standard WooCommerce Store API works fine (200, JSON, page1/page2 ids
+  disjoint, real distinct electronics SKUs priced in WST). Uses the existing
+  generic_woo_configured spider, no new code.

@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.babyboomshop.online/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "babyboomshop"
+  base_url: "https://www.babyboomshop.online"
+  currency: "USD"
+  language: "en"
+  api_url: "https://www.babyboomshop.online/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-CUSTOM-CRAWLER,
+  "no standard platform API found"). Live-verified: this IS a standard
+  WooCommerce Store API (200, JSON, page1/page2 ids disjoint, real distinct
+  SKUs). "Liberia's Largest Online Store for Baby & Kids Essentials",
+  Monrovia-based, dual-currency judgement call: prices quoted in USD (common
+  in Liberia's dollarized retail segment), not LRD -- noted, not silently
+  accepted. Uses the existing generic_woo_configured spider, no new code.

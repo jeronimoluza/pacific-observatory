@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: busiquip_sz
+url: https://busiquip.com/toners/tnp76
+language: en
+cadence: weekly
+channel: electronics
+notes: |
+  Probed 2026-09-11: NOT Zoho Commerce -- an earlier automated fingerprint
+  pass matched "zoho" against an embedded Zoho SalesIQ chat-widget script,
+  a false positive; the site is a bespoke React/Vite SPA for a printer/
+  toner reseller. It never calls a catalog API at request time: the full
+  67-SKU toner catalog is a plain JS array literal baked into a static
+  asset bundle at build time
+  (https://busiquip.com/assets/tonerProducts-DAO6_AGr.js), so the spider
+  fetches that one file and regex-extracts each product object -- no HTML
+  parsing, no pagination. This is the "mobile/app JSON in a page bundle"
+  route named in the brief, applied to a web SPA bundle rather than a
+  mobile app.
+  Currency SZL confirmed from the PDP JSON-LD at /toners/tnp76
+  (priceCurrency: SZL), matching countries.yaml's Eswatini default. Site is
+  Eswatini-facing (Manzini/Mbabane/Nhlangano/Siteki city landing pages
+  elsewhere on the domain).
+  GOTCHA: individual /toners/<sku> PDP urls return HTTP 200 for a plain
+  fetch but most serve the same client-shell HTML (React Router resolves
+  the product client-side after JS executes) -- a curl/Scrapy fetch of the
+  PDP will NOT show product content. That's fine here because this spider
+  never re-fetches the PDP; url is only used as the row's per-product
+  identifier (distinct per sku, verified for tn618 and tnp76) to satisfy
+  DuplicationPipeline's url-based dedup.
+  GOTCHA for later archive work: the bundle filename hash
+  (tonerProducts-DAO6_AGr.js) changes on every site rebuild, so there is no
+  stable archive path for this source.
+  Enumerability: the bundle is one static, complete data file (not a
+  paginated listing), so the page1-vs-page2 diff doesn't apply; enumerated
+  67 distinct SKUs in one fetch, verified via regex count.
+  Test run: prices collect --source busiquip_sz --max-items 20 -> rows
+  priced in SZL, distinct urls.

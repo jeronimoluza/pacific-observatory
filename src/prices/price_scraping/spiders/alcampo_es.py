@@ -45,6 +45,34 @@ this as a scrapy_html sitemap spider proves the extraction pattern and
 clears the >=5-row acceptance bar; whoever tunes this for full-catalog
 throughput should port the Playwright-bootstrap pattern rather than
 just retrying 202s.
+
+UPDATE (2026-09-11) -- the Playwright-bootstrap/cookie-replay idea above
+was tried and DISPROVEN, not just "not built here". A real headless
+Chromium navigated directly to a PDP: the response is titled
+"Human Verification" with `x-amzn-waf-action: captcha` -- an interactive
+image CAPTCHA, not a passive JS proof-of-work. Waiting up to 20s in the
+same page produced no auto-redirect/auto-solve (unlike the pure JS
+`challenge` action documented for taw9eel_kw/cdiscount_fr, which a real
+browser clears on its own by executing the page's script). Minting
+cookies from a bare homepage visit (not a PDP) and replaying them via
+Scrapy+curl_cffi made things WORSE than doing nothing: a live test run
+carrying that cookie jar got 0/239 real rows (120x202 + 119x405-captcha)
+against distinct PDPs, vs. this file's own no-cookie approach getting
+5-10 real rows per attempt -- presenting a `aws-waf-token` that was
+never actually solved appears to read as a stronger bot signal than
+presenting no token at all. A fresh, cookie-less Playwright browser
+launched per item avoided immediate CAPTCHA escalation (stayed at the
+lighter `challenge` action across 5 distinct fresh-context requests) but
+still never got real content through in that test window. Net: this
+tenant's PDP protection is a genuine AWS WAF Bot Control CAPTCHA tier,
+which by design requires solving an actual image puzzle -- not
+automatable by any TLS-impersonation profile or real-browser JS
+execution tried so far. A real fix needs either a CAPTCHA-solving
+service (cost/ToS tradeoff, not attempted) or IP-rotation infrastructure
+to keep re-arriving as a "fresh" grace-allowance identity; neither is a
+spider-code change. Until then, this file's original no-cookie sitemap
+walk remains the best available approach and should NOT be replaced with
+a cookie-bootstrap variant without new evidence it actually helps.
 """
 
 from __future__ import annotations

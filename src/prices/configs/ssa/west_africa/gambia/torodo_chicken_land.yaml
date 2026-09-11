@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: generic_woo_playwright
+url: "https://torodocl.com/"
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_playwright
+language: en
+currency: GMD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "torodo_chicken_land"
+  base_url: "https://torodocl.com"
+  currency: "GMD"
+  language: "en"
+  api_url: "https://torodocl.com/wp-json/wc/store/v1/products"
+notes: >
+  Gambia poultry producer (live chicken, egg trays, gizzards, dressed and
+  smoked chicken, day-old chicks). Same hcdn JS interstitial as
+  leskanso_gn -- see ~/gapwork/known_blockers_repair_2.md. An earlier
+  manifest attempt against generic_woo_configured (Will's 2026-09-11
+  handover, see ~/gapwork/added_rows.csv) failed with JSONDecodeError
+  because that spider has no Playwright path and 403s here. MEASURED
+  2026-09-11 via generic_woo_playwright: X-WP-Total=9, single page (no
+  page 2 -- catalog genuinely fits on one page), 100% non-zero prices,
+  currency_code=GMD from the API (e.g. id=15738 "Day Old Chicks"
+  price=8,000 GMD). End-to-end tested via
+  `prices collect --source torodo_chicken_land --max-items 20`.

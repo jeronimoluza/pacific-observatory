@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: familylogolr
+url: https://familylogolr.com/
+language: en
+cadence: weekly
+channel: marketplace
+active: true
+max_items: null
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-CUSTOM-CRAWLER,
+  "no standard platform API found"). Correctly so -- this is a bespoke Next.js
+  (App Router/Turbopack) multi-vendor marketplace template, not Shopify/Woo/
+  Presta/OpenCart. Found by probing the obvious /api/products convention
+  (not documented anywhere in the page bundle, which is Turbopack-chunked and
+  names nothing in plain text): GET /api/products?limit=N&page=N returns
+  {success, data:{data:[...], pagination:{page,totalPages,hasNext,...}}}.
+  Verified live 2026-09-11: 8 items total (single page, hasNext=false --
+  small but real catalog, used iPhones/electronics), all 8 priced, no
+  currency field in the payload so the site-wide defaultCurrency (USD, read
+  from the homepage bundle) is used -- dual-currency judgement call for
+  Liberia, noted rather than silently accepted. "storeName": "Family Logo Lr"
+  / vendorId "main-store" suggests a single active vendor on a multi-vendor
+  template rather than a populated marketplace; revisit if the catalog grows.
+  Page family: API.

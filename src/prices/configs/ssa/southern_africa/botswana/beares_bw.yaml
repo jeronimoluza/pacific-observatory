@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: beares_bw
+url: https://www.beares.co.bw/shop-by-product/appliances
+language: en
+cadence: weekly
+channel: dept-store
+notes: |
+  Probed 2026-09-11: Magento 2, NOT the generic four (Shopify/WooCommerce/
+  PrestaShop/OpenCart). One tenant shared across co.za/co.ls/co.bw/co.na/
+  co.sz -- confirmed distinct store_id/currency per TLD from the page
+  payload (store_id=2, currency_code=BWP on .co.bw: product:price:currency
+  meta, itemprop=priceCurrency, klevu_baseCurrencyCode, productCurrent JS
+  blob all read BWP). GOTCHA: the tenant's own /media/sitemap.xml (declared
+  in robots.txt) serves co.za urls even when fetched from the .co.bw host --
+  do not use it for enumeration on this TLD.
+  No open GraphQL/REST catalog found; category grid pages
+  (/shop-by-product/<cat>) are server-rendered with price already inlined
+  (`[data-price-amount]` inside each `li.product-item`), so this is Tier 1A
+  scrapy_html over 8 seed categories (appliances, audio-visual, bed-sets,
+  bedding, computers, cookware, furniture, home-decor), paginating ?p=N,
+  never visiting a PDP. Page family: listing only.
+  Enumerability verified live: /shop-by-product/appliances (?p omitted) vs
+  ?p=2 return DISJOINT id sets ({1664,1696,1697,1698,1721,1734,1740} vs
+  {1545}) -- distinct products, not a repeated page.
+  Test run: prices collect --source beares_bw --max-items 20 -> rows priced
+  in BWP, distinct urls, sample "3-Piece Kitchen Appliance Pack" BWP 2499.99.

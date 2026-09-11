@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://villeton-liberia.com/"
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "villeton_liberia"
+  base_url: "https://villeton-liberia.com"
+  currency: "USD"
+  language: "en"
+  api_url: "https://villeton-liberia.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-CUSTOM-CRAWLER,
+  "no standard platform API found"). Live-verified: standard WooCommerce
+  Store API works fine (200, JSON, page1/page2 ids disjoint). Villeton Ltd,
+  Plaza Building, Carey Street, Monrovia, Liberia -- health/pharmacy resale
+  catalog (Walgreens-branded supplements, OTC meds). Dual-currency judgement
+  call: USD, not LRD -- noted, not silently accepted. Uses the existing
+  generic_woo_configured spider, no new code.

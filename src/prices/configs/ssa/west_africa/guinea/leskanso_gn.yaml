@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_woo_playwright
+url: "https://leskanso.com/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_playwright
+language: fr
+currency: GNF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "leskanso_gn"
+  base_url: "https://leskanso.com"
+  currency: "GNF"
+  language: "fr"
+  api_url: "https://leskanso.com/wp-json/wc/store/v1/products"
+notes: >
+  Guinea electronics/appliances e-boutique. Sits behind an hcdn JS
+  interstitial that 403s curl_cffi impersonation (chrome124/120/safari17_0)
+  on every path -- see ~/gapwork/known_blockers_repair_2.md. MEASURED
+  2026-09-11: plain (non-impersonating) HTTP clears it with zero cookies;
+  generic_woo_playwright's one-time Playwright warm-up plus impersonation-
+  disabled pagination confirmed live: X-WP-Total=17, single page (no
+  page 2 -- catalog genuinely fits on one page), 100% non-zero prices,
+  currency_code=GNF from the API (e.g. id=2753 "HP Intel Core Ultra 7"
+  price=11,200,000 GNF). End-to-end tested via
+  `prices collect --source leskanso_gn --max-items 20`.

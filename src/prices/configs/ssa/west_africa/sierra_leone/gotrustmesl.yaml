@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: generic_woo_playwright
+url: "https://gotrustmesl.com/"
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_playwright
+language: en
+currency: SLL
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "gotrustmesl"
+  base_url: "https://gotrustmesl.com"
+  currency: "SLL"
+  language: "en"
+  api_url: "https://gotrustmesl.com/wp-json/wc/store/v1/products"
+notes: >
+  Sierra Leone multi-vertical marketplace (food, beauty, electronics,
+  clothing, furniture). Same hcdn JS interstitial as leskanso_gn -- see
+  ~/gapwork/known_blockers_repair_2.md. MEASURED 2026-09-11 via
+  generic_woo_playwright: X-WP-Total=10, single page (no page 2 -- catalog
+  genuinely fits on one page), 100% non-zero prices. Currency is SLL
+  (old-leone ISO code), NOT the country default SLE -- this tenant's
+  WooCommerce currency setting still uses the pre-2022 code; e.g. id=4367
+  "Fresh Hass Avocado" price=45,000 SLL. currency: SLL is set explicitly
+  here (countries.yaml default for Sierra Leone is SLE) per the repo's own
+  rule that a site's own currency_code is authoritative over the country
+  default. End-to-end tested via
+  `prices collect --source gotrustmesl --max-items 20`.
