@@ -1,0 +1,57 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: alcampo_es
+url: https://www.compraonline.alcampo.es/
+language: es
+cadence: weekly
+channel: hypermarket
+notes: |
+  Alcampo -- Auchan's Spanish hypermarket banner. compraonline.alcampo.es
+  publishes https://compraonline.alcampo.es/sitemaps/sitemap_index.xml, a
+  <sitemapindex> of 6 shards: sitemap-categories-part1.xml,
+  sitemap-collections-part1.xml, sitemap-products-part1.xml,
+  sitemap-products-part2.xml, sitemap-promotions-part1.xml,
+  sitemap-recipes-part1.xml. Only the two product shards are followed for
+  crawling (PRODUCT_URL_RE matches `/products/<slug>/<id>` only).
+
+  Enumerability: part1 = 50,000 <loc>, part2 = 36,263 <loc> (86,263 total
+  product URLs, verified live 2026-09-10). part1 and part2 carry DISJOINT
+  product sets (spot-checked -- distinct products/ids on each shard, no
+  overlap found in samples). PDPs are plain server-rendered HTML (no
+  impersonation or Playwright needed, plain GET -> HTTP 200) with a
+  schema.org Product JSON-LD block
+  (`<script data-test="product-details-structured-data"
+  type="application/ld+json">`), parsed via the shared
+  WooBaseSpider.parse_html JSON-LD fallback chain (this tenant is not
+  WooCommerce, but the sitemap+JSON-LD pattern matches). Verified 4 PDPs
+  across both shards, all non-zero EUR prices: 'CALVO Atun en aceite de
+  oliva virgen extra 72g X 3' EUR 6.55, plus 3 more (household/beauty/
+  cleaning) all with a populated offers.price/priceCurrency. Currency EUR
+  matches countries.yaml.
+
+  Caution -- REAL, reproduced 2x on 2026-09-10, not a burst artifact: the
+  PDP loads an AWS WAF CAPTCHA SDK (captcha-sdk.awswaf.com), and BOTH a
+  fast test run (2 concurrent/1.0s) and a slow one (1 concurrent/3.0s)
+  showed the identical shape -- the first 5-6 PDP requests return real
+  200 JSON-LD, then every request after that gets HTTP 202 (gokuProps
+  JS-challenge stub, 0 real content) for the rest of the run, and the
+  tenant keeps challenging this IP for ~20-30 min afterward regardless of
+  TLS-impersonation profile. This reads as a short grace-allowance/
+  session-token model, not a simple rate threshold -- slowing down
+  further will NOT fix it. The spider currently ships with
+  CONCURRENT_REQUESTS_PER_DOMAIN=1 / DOWNLOAD_DELAY=3.0 (reduces blast
+  radius, does not solve it) and is expected to yield only ~5-10 rows per
+  crawl attempt until someone ports the "Playwright once to mint an
+  aws-waf-token, then plain-HTTP-replay the cookie for every PDP" pattern
+  already used for taw9eel_kw.py and ica_se.py (same gokuProps stub,
+  byte-for-byte) -- that fix was out of scope for this onboarding pass,
+  which only needed to prove the extraction pattern and clear the
+  >=5-row acceptance bar.
+
+  This is Auchan's 6th distinct platform in this repo (auchan_ro=VTEX,
+  auchan_pt=SFCC, auchan_sn=PrestaShop, auchan_ua=Zakaz white-label,
+  auchan_hu=custom sitemap+JSON-LD, now alcampo_es=a DIFFERENT custom
+  sitemap+JSON-LD stack with its own URL shape and AWS WAF layer) --
+  the Auchan group does not share one storefront platform across banners.
