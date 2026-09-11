@@ -1,0 +1,48 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: prom_ua
+url: https://prom.ua/
+language: uk
+cadence: weekly
+channel: marketplace
+timeout: 14400
+notes: |
+  Prom.ua -- Ukraine's largest general marketplace.
+
+  Deviates from the wave-3 addendum's GraphQL suggestion (documented in
+  the spider docstring in full). The captured POST /graphql trace only
+  carries widget queries (analytics, autocomplete, personal-feed,
+  compare, promo-labels) plus one category-scoped query
+  (CategoryFiltersQuery -> categoryListing) that returns ONLY the
+  filters/facets object (a `total` sentinel capped at 10000) -- it has
+  no `products` field the client ever requests. The real catalog is
+  server-rendered HTML: GET /ua/<CategoryAlias> embeds product tiles
+  directly (div[data-qaid="qa_product_tile"] with data-product-id; name
+  in a[data-qaid="product_link"] span; price as a clean numeric
+  attribute div[data-qaid="product_price"]::attr(data-qaprice), always
+  UAH (currency symbol ₴ in ::attr(data-qacurrency)). So this ships
+  as scrapy_html (Tier 1A), not scrapy_api.
+
+  Pagination is a semicolon path segment, not a query string --
+  https://prom.ua/ua/<Alias>;<N> (?page=N has no effect, confirmed
+  identical output for N=1/2/3; the site's own pagination widget
+  renders plain <a href="...;2">2</a> links).
+
+  Enumerability verified live on Chehly-dlya-telefonov (phone cases):
+  page1 vs page2 overlap 10/20, page2 vs page3 overlap 10/20 -- roughly
+  half of each page is new. The persistent ~50% overlap is
+  sponsored/advertised listings that repeat near the top of every page;
+  the other half is genuine changing depth -- distinct, not the
+  same-page-forever failure mode. A thin category (Kofe, "coffee") showed
+  much higher overlap across pages despite an inflated "8000+" total-count
+  badge -- category depth varies a lot and this spider does not try to
+  detect that automatically.
+
+  15 category aliases (of 25 harvested from the rendered homepage nav)
+  used, covering electronics/fashion/home/pets/auto/beauty/kids/sport --
+  a general-marketplace catalog. MAX_PAGES=15 per category.
+
+  Duplicate items across pages (sponsored-slot repeats) are expected;
+  the pipeline's URL-based DuplicationPipeline already collapses those.

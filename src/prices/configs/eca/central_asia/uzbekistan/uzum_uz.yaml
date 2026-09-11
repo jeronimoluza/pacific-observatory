@@ -1,0 +1,53 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: uzum_uz
+url: https://uzum.uz/
+language: ru
+cadence: weekly
+channel: marketplace
+timeout: 14400
+notes: |
+  Uzum.uz -- Uzbekistan's largest general marketplace. GraphQL SPA.
+
+  Auth is public, not a secret: POST https://id.uzum.uz/api/auth/token
+  with an EMPTY body and empty `Authorization: Bearer` header issues a
+  guest session (204, token delivered via Set-Cookie access_token=<JWT>,
+  20-year expiry, random UUID subject) -- the same anonymous bootstrap
+  the site's own JS performs on every fresh page load, no sign-in
+  involved. Treated like the addendum's Algolia/Supabase anon-key
+  examples. No x-iid device header turned out to be required.
+
+  Enumeration: POST https://graphql.uzum.uz/ operation
+  MakeSearch_ItemsAndFilters, scoped by categoryId (root categories used
+  directly, no leaf-walk needed -- GET
+  https://api.uzum.uz/api/main/root-categories?eco=false returns 23 top-
+  level ids including 1821 "Oziq-ovqat mahsulotlari" / food products),
+  paginated via queryInput.pagination.{offset,limit}. This spider's query
+  is a minimal rewrite of the production one, requesting only id/title/
+  priceBlock.
+
+  Enumerability verified live on categoryId=10020 (Elektronika, total
+  103,895): offset=0/24/48 (limit=24) returned zero id overlap across all
+  three pages -- a clean, real pager.
+
+  Price units resolved: priceBlock.finalPrice.amount is the DIRECT UZS
+  value, NOT minor units -- verified against the live PDP's own <title>
+  tag for the same product id (both API and page in the tens-of-
+  thousands-UZS range, no decimals, matching the asaxiy_uz/lavka_uz
+  convention for this currency). Some items return finalPrice: null
+  (dropped; sellPrice.amount tried as fallback).
+
+  One probing gotcha for future maintainers: the search-gateway subgraph
+  429'd EVERY makeSearch call from a8's IP, reproducible across fresh
+  tokens, delays, and 4 browser impersonation profiles -- root-categories
+  and auth never 429'd, only search. Sending a random UUID as the x-iid
+  (device install id) header fixed it immediately and consistently. This
+  did NOT reproduce the same way from a residential Mac IP (worked after
+  one 429 and a natural pause even without the header) -- the
+  search-gateway appears to gate harder on datacenter-IP traffic and
+  x-iid may be read as a legitimacy signal. Always send it.
+
+  Canonical PDP URL: https://uzum.uz/ru/product/<productId> renders from
+  the bare numeric id, no slug needed (confirmed live).

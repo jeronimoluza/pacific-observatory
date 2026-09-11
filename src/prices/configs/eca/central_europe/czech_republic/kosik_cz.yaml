@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kosik_cz
+url: https://www.kosik.cz/
+language: cs
+cadence: weekly
+channel: supermarket
+timeout: 14400
+notes: |
+  Kosik.cz -- Czech online grocery delivery, Vue SPA. Homepage HTML is a
+  thin shell (no embedded data); both category tree and product listings
+  come from the internal JSON API.
+
+  Category enumeration: GET /api/front/menu/main returns the full nav
+  tree in one call (294KB) -- 15 top-level departments, 1,132 leaf
+  categories after recursing through subCategories/subcategories
+  (inconsistently cased between levels). The spider fetches this once
+  at start and walks every leaf.
+
+  Product listing: GET /api/front/page/products/flexible
+  ?vendor=1&slug=<leaf-slug>&limit=30&search_term= -> products.items
+  (name, price, unit, url, mainCategory, availability), products.totalCount,
+  products.cursor.
+
+  Pagination ceiling (documented, not silently dropped): limit>30 is
+  explicitly rejected ("Using of limit over 30 products is denied -> use
+  cursor to load more products"). The returned cursor decodes (zlib+
+  base64) to a list of shown ids, but round-tripping it as `cursor=`
+  (also tried `after`/`afterCursor`/`nextCursor`/`pageCursor`/`cursorId`,
+  with and without explicit `orderBy`) returns the IDENTICAL 30 items
+  every time -- could not crack it. POST to the same endpoint is 405
+  (GET only). The site's own rendered category page never fires a
+  second network call either, even after clicking "Zobrazit vice" and
+  scrolling repeatedly -- the live frontend does not appear to use this
+  cursor mechanism for normal browsing.
+
+  Enumerability is therefore demonstrated ACROSS leaves rather than
+  within one query string: two different leaf categories
+  (c1051-klobasy "sausages" vs c1483-panske) returned ZERO overlapping
+  product ids live. A random 25-leaf sample showed totalCount>30 (i.e.
+  truncated at the 30-item cap) in 13/25 leaves -- roughly half of leaf
+  categories lose some depth, but with 1,132 leaves the aggregate
+  catalog is still large (low tens of thousands by extrapolation) and
+  non-repeating.
+
+  Prices are plain decimal CZK (e.g. 109.9, 46.9), not minor units --
+  confirmed against several sample rows. No zero-price items observed
+  in sampling.
