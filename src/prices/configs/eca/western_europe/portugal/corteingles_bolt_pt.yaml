@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: corteingles_bolt_pt
+url: https://food.bolt.eu/en/p/151412-el-corte-ingles-supermarket-lisboa/
+language: pt
+cadence: weekly
+archive_prefix: "food.bolt.eu/"
+archive_path_re: '^/en/p/[^/?]+'
+notes: |
+  El Corte Inglés Supermarket - Lisboa (Lisbon, Portugal) read through Bolt Food's public
+  delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --
+  reference implementation and full API writeup: maxmart_bolt_gh.py (Ghana),
+  the first Bolt-sourced spider.
+
+  API (no auth, no cookie, no signature):
+    GET deliveryuser.live.boltsvc.net/deliveryClient/public/getMenuCategories
+        ?provider_id=151412&delivery_lat=&delivery_lng=&<client params>
+    GET .../getMenuDishes?provider_id=151412&category_id=<id>&...
+
+  GOTCHA: client params must include `deviceType=web` or every endpoint
+  answers HTTP 200 with `{"code":702,"message":"INVALID_REQUEST"}`.
+
+  GOTCHA: the catalog served is decided by `delivery_lat`/`delivery_lng`,
+  NOT the URL locale. Lisbon coordinates are hardcoded in the spider.
+
+  Venue discovered via `getScreenContent?screen_id=120001` (Bolt Food app's
+  "Stores" tab), category key `discovery-groceries-all` / "All Grocery
+  Stores". Measured 24 top-level menu categories for
+  provider_id=151412 on 2026-09-11.
+
+  Page family parsed: API. The emitted `url` is the browsable venue
+  permalink plus `#<dish_id>`; the spider never fetches it, so the archive
+  pair cannot be validated against collected URLs and is a best guess at
+  the SPA's route shape (no city-id segment, unlike the Ghana example,
+  since the venue was discovered by coordinates rather than by browsing a
+  city page).

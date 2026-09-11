@@ -10988,3 +10988,191 @@ a session from a live category click).
 
 **heimkaup.is** — confirmed already shipped earlier today as `heimkaup_is`
 (52 rows); this list was a stale snapshot for that entry.
+
+
+## Bolt Food regional sweep 2026-09-11 — venue-listing endpoint found, footprint mapped, 15 spiders shipped
+
+Entered via the "regional sweep" path of `onboard-price-sources` (not per-country
+discovery). Prior session had already confirmed `deliveryuser.live.boltsvc.net`
+is unauthenticated and reverse-engineered the two-call menu API from
+`maxmart_bolt_gh.py` (Ghana, 720 rows). This pass found the missing piece — the
+venue-listing call — and used it to sweep the rest of Bolt Food's live footprint.
+
+### The venue-listing endpoint
+
+```
+GET https://deliveryuser.live.boltsvc.net/deliveryClient/public/getScreenContent
+    ?screen_id=120001&delivery_lat=<lat>&delivery_lng=<lng>&<client params>
+```
+
+`screen_id=120001` is the Bolt Food app's "Stores" tab (its own name in
+`getNavigationBar`'s tab list is literally `"Stores"`, `deeplink_slug: "stores"`).
+Found by a real Playwright network trace against
+`https://food.bolt.eu/en-gh/137-accra/`: `getNavigationBar` lists the tab,
+`getScreenContent?screen_id=120001` returns it. **No `city_id` is required** —
+`delivery_lat`/`delivery_lng` alone resolve the country/city server-side, exactly
+like the menu API. The 11 endpoint names guessed and rejected in the prior
+session (`getVenues`, `searchVenues`, etc.) were all wrong; this is a generic
+"screen content" renderer shared by every tab (Home is `screen_id=360003`,
+Search is `getSearchScreenContent?screen_id=30001`), not a venues-specific route.
+
+Response shape:
+```
+data.provider_categories.data["<category_id>"] = {
+    "key": "discovery-groceries-all",   # or discovery-store-all, discovery-store-alcohol, ...
+    "name": "All Grocery Stores",
+    "provider_ids": [77387, 82423, ...],
+    "item_limit": 1000,                 # already the full shelf, not a page size
+}
+data.providers.data["<provider_id>"] = {
+    "id": ..., "name": ..., "slug": "<id>-<slugified-name>",
+    "contact": {"address": ..., "lat": ..., "lng": ...},
+    "rating": {"value": ..., "count": ...},
+    ...
+}
+```
+Filter categories by `key`/`name` containing `grocer` for the direct hit
+(`discovery-groceries-all` / "All Grocery Stores"). When absent (seen on
+Ukraine), fall back to `discovery-store-all` / "All Stores" and inspect names —
+that shelf mixes alcohol/vape/flower/pharmacy shops with no separate label.
+**One caveat found but not fully resolved:** this "Stores" screen's provider
+lists are noticeably smaller (4-28 grocery venues per capital) than the citywide
+total Bolt itself would show under "Explore all places" on the Home screen
+(`screen_id=360003`, category key `... -popular-places`/"Explore all places",
+298 provider_ids for Accra) — that home-screen category mixes restaurants in
+with stores and was not separated out. If a future run needs an exhaustive
+venue count rather than "enough grocery candidates to pick one," start from the
+Home screen's largest category and cross-reference against the Stores screen's
+category keys per provider, rather than trusting the Stores screen alone as
+complete. This sweep did not need that — one strong grocery/supermarket/
+pharmacy pick per country was the deliverable, and the Stores screen's shelf
+was always enough to find one.
+
+The venue permalink `https://food.bolt.eu/en/p/<id>-<slug>/` (no city segment)
+loads the SPA shell without erroring under both curl and Playwright, so it is
+used as the manifest `url:` — but note it 404s under plain `curl` (no JS
+execution) and was only confirmed non-erroring under Playwright; it is
+documentation, not a fetched page (page family: API, same as `maxmart_bolt_gh`).
+
+### Footprint mapping — grid-probed, not guessed
+
+`getScreenContent?screen_id=120001` returns `{"code":5812,"message":
+"CITY_NOT_FOUND"}` for any point outside a served delivery zone. To rule out
+"my centroid missed the zone" vs "Bolt Food doesn't operate here," every
+candidate country was probed with 2-5 points across its capital (city center +
+2-3 well-known districts/malls) before being marked dead. Confirmed **live**
+(15 new + Ghana already shipped):
+
+Georgia (Tbilisi), Azerbaijan (Baku), Bulgaria (Sofia), Romania (Bucharest),
+Ukraine (Kyiv), Kenya (Nairobi), Poland (Warsaw), Czech Republic (Prague),
+Slovak Republic (Bratislava), Lithuania (Vilnius), Latvia (Riga), Estonia
+(Tallinn), Cyprus (Nicosia), Malta (Valletta), Portugal (Lisbon).
+
+Confirmed **CITY_NOT_FOUND across a multi-point grid** — read this as "Bolt Food
+does not currently deliver here," not as a probing miss, since the same method
+hit immediately on every country above:
+
+Uganda (Kampala), Nigeria (Lagos), Tunisia (Tunis), Morocco (Casablanca),
+Moldova (Chisinau), Serbia (Belgrade), Uzbekistan (Tashkent), Albania (Tirana),
+Bosnia and Herzegovina (Sarajevo), North Macedonia (Skopje), Montenegro
+(Podgorica), Kyrgyz Republic (Bishkek), Croatia (Zagreb), Greece (Athens),
+Senegal (Dakar), Kazakhstan (Almaty), Armenia (Yerevan), Ethiopia (Addis
+Ababa), Rwanda (Kigali), Zambia (Lusaka), Angola (Luanda), Belarus (Minsk),
+Zimbabwe (Harare), DR Congo (Kinshasa), Algeria (Algiers), Sudan (Khartoum),
+South Africa (Johannesburg, Cape Town), Türkiye (Istanbul), Tajikistan
+(Dushanbe), Turkmenistan (Ashgabat), Mongolia (Ulaanbaatar), Côte d'Ivoire
+(Abidjan), Cameroon (Douala), Tanzania (Dar es Salaam), Hungary (Budapest),
+Kosovo (Pristina), Slovenia (Ljubljana), Egypt (Cairo), and every Western-
+Europe/Nordic capital tried (Vienna, Bern, Brussels, Amsterdam, Madrid, Rome,
+Berlin, Dublin, Helsinki, Oslo, Stockholm, Copenhagen, Paris).
+
+Net: Bolt Food's live catalog footprint today is much narrower than the
+"~45 countries across Africa/Eastern Europe/Caucasus/Central Asia" figure this
+sweep started from — it reads as a Central/Eastern-Europe + Baltics core (PL,
+CZ, SK, LT, LV, EE, BG, RO, UA) plus a Western-Europe/Mediterranean tail (PT,
+CY, MT) plus three African/Caucasus anchors (GH, KE, GE, AZ). Most of
+Sub-Saharan Africa, the Balkans outside Bulgaria/Romania, and all of Central
+Asia are NOT currently served — don't re-probe these without a reason to think
+Bolt has re-launched there.
+
+### 15 sources shipped (all pass the ≥5-row gate by a wide margin)
+
+One spider per country, modelled directly on `maxmart_bolt_gh.py`, all using the
+same `getMenuCategories`/`getMenuDishes` two-call pattern with `deviceType=web`
+and country-capital coordinates. Measured row counts from a real
+`prices collect --source <name>` run (not `--max-items`-capped — the flag did
+not actually cap these small per-venue catalogs, so every number below is the
+venue's live full catalog at collection time):
+
+| Spider | Country | Venue | Channel | Rows | archive_path_re rejects |
+|---|---|---|---|---|---|
+| `rkoni_bolt_ge` | Georgia | Supermarket Rkoni + | supermarket | 784 | 0/784 |
+| `bravo_bolt_az` | Azerbaijan | Bravo Ataturk pr | supermarket | 2,964 | 0/2,964 |
+| `silverstreet_bolt_bg` | Bulgaria | Silver Street Shop 24/7 | convenience | 22 | 0/22 |
+| `carrefourunirii_bolt_ro` | Romania | Carrefour Hypermarket Unirii (9166) | hypermarket | 17,763 | 0/17,763 |
+| `anripharm_bolt_ua` | Ukraine | ANRI-PHARM | pharmacy | 1,335 | 0/1,335 |
+| `naivas_bolt_ke` | Kenya | Naivas Supermarket Ojijo | supermarket | 1,523 | 0/1,523 |
+| `boltmarket_bolt_pl` | Poland | Bolt Market Śródmieście | supermarket | 427 | 0/427 |
+| `karolinysvetle_bolt_cz` | Czech Republic | Supermarket - Karolíny Světlé | supermarket | 395 | 0/395 |
+| `billa_bolt_sk` | Slovak Republic | BILLA Karadžičova | supermarket | 171 | 0/171 |
+| `rimi_bolt_lt` | Lithuania | Rimi (Mylia) | supermarket | 2,496 | 0/2,496 |
+| `rimi_bolt_lv` | Latvia | Rimi Super (Galerija Centrs) | supermarket | 659 | 0/659 |
+| `selver_bolt_ee` | Estonia | Selver Torupilli | supermarket | 2,221 | 0/2,221 |
+| `metroexpress_bolt_cy` | Cyprus | METRO Express Aglantzia | supermarket | 132 | 0/132 |
+| `boltmarket_bolt_mt` | Malta | Bolt Market by SPAR - Valletta | supermarket | 279 | 0/279 |
+| `corteingles_bolt_pt` | Portugal | El Corte Inglés Supermarket - Lisboa | supermarket | 1,436 | 0/1,436 |
+
+`prices collect --list` went from 2380 -> 2395 sources after all 15 manifests
+landed; re-verified after every edit including a post-hoc currency fix.
+
+Notes on picks:
+- **"Bolt Market" is Bolt's own in-house dark-store grocery brand**, not a
+  third-party retailer — it recurs across Poland, Malta, Romania (`Bolt Market
+  Vitan`), Kenya (`Bolt Market Kilimani`), Lithuania, Latvia, Estonia, Portugal.
+  Used it for Poland and Malta specifically because the alternative "grocery"
+  candidates there were either too thin (Carrefour Bysławska returned 1 menu
+  node — likely closed/delisted) or smaller kiosks.
+  - **Data-quality flag on "Bolt Market" rows generally**: its assortment skews
+    toward general merchandise (toys, tobacco, home goods) rather than a
+    grocery-first mix in some cities (see `boltmarket_bolt_pl` sample: board
+    games, wooden puzzles) — still passes the row-count gate and the classifier
+    should route correctly per-SKU, but don't expect a food-heavy COICOP-01
+    profile from these two specifically the way Naivas/Carrefour/Rimi/Selver
+    read.
+- **Ukraine has no grocery-labeled category at Kyiv center at all** — the
+  `discovery-store-all` shelf there is alcohol/vape/flower shops plus one
+  pharmacy (`ANRI-PHARM`). Shipped the pharmacy (channel: `pharmacy`,
+  `coicop_classification: classifier`, matches the `watsons`/`boots`
+  precedent) since it was the only grocery-adjacent option and cleared 1,335
+  rows — batteries, home goods, drugstore items, not fresh food. Flagging this
+  as thin COICOP-01 coverage for Ukraine specifically; a second Kyiv district's
+  centroid was not tried and might surface an actual supermarket.
+- **Bulgaria's live currency is EUR, not BGN** — `countries.yaml` still
+  defaults Bulgaria to BGN, but Bolt's own payload returned `"currency": "eur"`
+  on every row (Bulgaria adopted the euro 2026-01-01). The spider already
+  trusts the payload's currency over the class default per the
+  `maxmart_bolt_gh` pattern, so output was correct regardless, but the class
+  constant was fixed to `EUR` post-hoc (`silverstreet_bolt_bg.py`) to stop the
+  fallback from being stale if a future payload ever omits the field. Worth a
+  `countries.yaml` fix in a separate pass — out of scope here.
+- **Cyprus pick uses "METRO Express"** — a genuine Cypriot supermarket chain
+  (unrelated to Metro Cash & Carry), not a small-format store despite the
+  branding; 61 top-level categories at probe time, in line with the other
+  full-supermarket picks.
+- All `channel:` values are `supermarket`/`hypermarket`/`convenience`/
+  `pharmacy` per the discriminating tests in `GLOSSARY.md` (first-party
+  catalog, not third-party sellers) — **not** `marketplace`, which is what the
+  original `maxmart_bolt_gh.yaml` used. That earlier choice reads as a
+  misclassification against the GLOSSARY's own test ("marketplace" =
+  third-party sellers / seller-authored names, which does not describe a
+  single supermarket's own catalog) and is worth a follow-up fix, but was left
+  untouched here per "touch only what you must."
+
+### What was NOT built
+
+- No `official_avg`/`cpi_benchmark`/`tariff` sources — this sweep was scoped to
+  the Bolt Food grocery-venue gap specifically, not a full per-country pass.
+- Countries with confirmed Bolt Food coverage but where this pass didn't push
+  past the first viable pick (e.g. a second, larger chain might exist in a
+  different district) were not iterated further — one source per country was
+  the brief. Ukraine is the one case worth a second look (see above).
