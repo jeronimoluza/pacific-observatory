@@ -946,3 +946,1023 @@ Add this check to the ladder between `curl_cffi` and "genuine block": a bare
 headless 403 is no more evidence of a WAF than a bare-curl 403 is.
 
 - **eshopuganda.com** (UG, "eShop Uganda", Plot 1001 Ggaba Rd, Kampala — fresh food, groceries, wine & spirits) — carried forward as "HTTP 409, unclear cause" from the 2026-09-01 Uganda inventory. **Cause identified and the 409 is trivially bypassable**: the origin serves an 83-byte stub `<script>document.cookie = "humans_21909=1"; document.location.reload(true)</script>`, i.e. the humans.txt-style cookie handshake, not a WAF. Send `Cookie: humans_21909=1` and the 409 clears — but what is behind it is **HTTP 503 "Store closed"**. The site is deliberately shuttered, not blocked. Also note the TLS cert is expired (`verify=False` needed). Re-check in a future wave; the taxonomy on offer (fresh food, groceries, wine & spirits, Kampala delivery) would be a genuinely useful Uganda division-01/02 source if it reopens. Probed 2026-09-05.
+
+## 2026-09-10/11 country x COICOP gap-fill campaign — 287 candidates worked
+
+Campaign context, because it sets how much weight each entry below carries. The
+candidates were the 514 rows marked PENDING in `prices_sources_status.xlsx` —
+the 2026-08-31 sourcing round's never-built leads. Of those, 155 already had a
+live manifest pointing at the same host, 66 were already documented in this very
+file, and 6 resolved elsewhere, leaving 287 genuinely unworked.
+
+**The headline result is that this queue is largely exhausted ground: 22 of 287
+shipped.** The PENDING rows are PENDING because earlier rounds could not build
+them, and most are dead for durable reasons rather than for want of one more
+attempt. Carry that prior into the next "never built" backlog.
+
+A note on how 66 already-documented hosts slipped through the pre-filter, since
+it wasted two agents' time re-probing sites proven dead nine days earlier: the
+filter extracted hostnames only from backticks and URLs, and **this file writes
+most hostnames in bold** (`**nawris.net**`). Extracting bold as well raised the
+host count from 256 to 877. Any tool that reads this file for a do-not-reprobe
+list must handle bold, backticks and bare URLs.
+
+### Evidence standard applied in this section
+
+Every host below went through a fixed mechanical ladder before any judgement was
+applied, so "blocked" here always means more than one client failed:
+
+1. `curl_cffi` homepage fetch on `chrome124`, plus blind probes of
+   `/products.json`, `/wp-json/wc/store/v1/products` and `/api/products`.
+2. For anything not obviously alive, a **five-profile TLS retry** —
+   `chrome150`, `firefox147`, `safari18_4`, `chrome131_android`, `chrome120`,
+   each with and without certificate verification.
+3. For anything still without a surface, a **deep probe** following
+   `robots.txt` into the sitemap index and into its shards, counting product
+   URLs and parsing JSON-LD on a sampled product page.
+4. For anything still without a surface, a **headless Playwright network trace**
+   (Chromium 143, no stealth patch) rendering the homepage plus up to two
+   category pages, capturing every JSON response with price-shaped keys.
+
+Three calibration results from running that ladder at scale:
+
+- **One TLS profile's 403 is not evidence of a block.** 11 of 125 retried hosts
+  returned a full 200 on `chrome150` or `chrome131_android` after 403-ing on
+  `chrome120`/`chrome124` — among them `tesco.com`, `tesco.ie`, `shop.rewe.de`,
+  `mall.cz`, `mall.sk` and `talabat.com`. `rewe_de` shipped only because of that
+  retry, and it specifically needed `chrome133a`.
+- **A real browser cracked only 3 of 100 curl-blocked hosts** (`ocado.com`,
+  `orinabiji.ge`, `esselungaacasa.it`). Playwright is worth running but is not a
+  general answer to a WAF — and against Akamai tenants it scored *worse* than
+  impersonated TLS, drawing hard edge denials where curl_cffi got an
+  interstitial. Unpatched headless Chromium is itself a fingerprint.
+- **Our own request volume became the blocker on one source.** `handla.ica.se`
+  was proven workable in isolated probing (real 200s, real SEK prices) and then
+  failed three acceptance runs against a hardened "Human Verification" 405
+  escalation triggered by this campaign's own traffic from one IP. When a
+  campaign probes hundreds of hosts from a single address, late-campaign
+  failures are not independent of early-campaign success. Pace the waves.
+
+The shape that cost this campaign the most time, and the one worth internalising:
+**the sitemap layer and the product layer are protected separately.** Four hosts
+(`nakup.itesco.cz`, `tesco.ie`, `tesco.com`, `koctas.com.tr`) serve `robots.txt`,
+the sitemap index and every product shard openly — thousands of genuinely
+disjoint product URLs — while every product-detail request is denied. A large,
+clean sitemap count is therefore **not** evidence that a source is scrapable.
+Fetch a product page before believing a sitemap.
+
+### WordPress fingerprint false positives, a flyer-only catalog and app-only backends (BA, IS, CY, LU, EG, MW)
+
+- **djuric.ba** (BA, "Đurić SUPERMARKET") — live, enumerable WooCommerce Store
+  API (`/wp-json/wc/store/v1/products`: 100/100/100/100/21 across 5 pages,
+  421 products total, ids disjoint page1 vs page2). **Every one of the 421
+  products has `prices.price == "0"`, `price_html == ""`,
+  `is_purchasable: false`.** Confirmed on both the listing and a
+  single-product GET (`/wp-json/wc/store/v1/products/17318`):
+  `add_to_cart.text` is *"Pročitaj više"* ("Read more"), not *"Dodaj u
+  korpu"* ("Add to cart"); the product's own category is "Kataloska akcija"
+  (catalog promotion). The live rendered product page also shows no price.
+  This is a browsable weekly-flyer/brand-catalog display site, not a
+  transactional webshop — a structural fact about the business, not an
+  access block. Do not re-onboard expecting prices to appear later; if
+  re-probed, check `is_purchasable` and `add_to_cart.text` first before
+  re-walking the whole catalog. Probed 2026-09-10.
+- **bonus.is** (IS, "Bonus") — re-confirmed dead, matching the existing entry
+  above (probed there 2026-09-05). Store API returns exactly 1 SKU, the
+  "Inneignarkort – Áfylling" gift-card top-up, ISK price "1". No real
+  catalog. Independently reconfirmed 2026-09-10 (same SKU, same price).
+- **papantoniou.com.cy** (CY, "Papantoniou") — `/wp-json/wc/store/v1/
+  products` (and the `?rest_route=` / `/wc/store/products` fallbacks) all
+  return `{"code":"rest_no_route",...}` 404, 485 bytes. `/wp-json/` root
+  namespace list has no `wc/*` entry at all (`wpml/v1`, `elementor/v1`,
+  `oembed/1.0`, `wp/v2`, ... only) — WooCommerce is not registering REST
+  routes despite a WooCommerce-flavored homepage fingerprint (that string
+  match is theme/asset boilerplate). `/sitemap.xml` lists only
+  posts/pages/taxonomies/3d-flip-book sitemaps — no product sitemap, and all
+  `<loc>` entries resolve under `sklavenitiscyprus.com.cy` (an apparent
+  rebrand/redirect target), which has the identical 404 shape and no product
+  sitemap either. Zero cart/shop JS markers (`wc-ajax`, `wcSettings`,
+  `add-to-cart`) anywhere on the homepage. Did not try Playwright — untried,
+  not ruled out, but the classic server-rendered Elementor/WPML markup makes
+  an SPA-behind-JS explanation unlikely. If a genuine Sklavenitis Cyprus
+  webshop exists on a different domain, that would be a new discovery
+  candidate, not a fix for this host. Probed 2026-09-10.
+- **pallcenter.lu** (LU, "Pall Center") — same `rest_no_route` 404 shape on
+  all three Store API routes. `/wp-json/` root lists `yoast/v1`,
+  `elementor/v1`, `divi/v1`, `wp-super-cache/v1`, `complianz/v1`, `wp/v2` —
+  no `wc/*` namespace. Sitemaps list only post/page/3d-flip-book/category/
+  author — no products. Homepage nav is store-locator + loyalty-program
+  content (`nos-magasins`, `pall-pommerloch`, `pallcenter-oberpallen-2`,
+  `carte_avantages_pall`, `liste-cadeaux-au-pall`) with `la-femme`/`lhomme`
+  clothing category pages — reads as a physical clothing-store chain's
+  corporate site (locations + loyalty card + gift registry), not an
+  e-commerce catalog. No cart/shop JS markers found. `shop.pallcenter.lu`
+  does not resolve (SSL hostname mismatch) — a hunch, not a real lead. Did
+  not try Playwright. Probed 2026-09-10.
+- **breadfast.com** (EG, "Breadfast") — as the pre-probe evidence flagged:
+  WordPress site is the company's ops backend, not a public storefront.
+  `/wp-json/wc/store/v1/products` (all 3 routes) 404. `/wp-json/` root DOES
+  list `wc/v1`/`wc/v2` (the **private**, auth-required WooCommerce REST API
+  — unauthenticated GET returns nothing usable), plus a huge internal
+  surface (`breadfast/v3/fleet`, `pos/v1`, `order-fulfillment/v1`,
+  `delivery-capacity/v1`, `card-management/v1`, `odoo/v1`, `sms-portal/v1`,
+  ...). Poked `shopper/v1`, `pricing-tool/v1`, `node-api/v1` (other
+  app-shaped namespaces in the list): each resolves at its namespace root
+  but exposes only route descriptions, no top-level unauthenticated
+  `/products` endpoint. **Did not** run a Playwright network trace against
+  the live breadfast.com browser checkout flow (it has one, separate from
+  the mobile app) — that is the one untried avenue that could plausibly
+  unlock this; flagging it explicitly rather than concluding "impossible."
+  Probed 2026-09-10.
+- **spctrmafrica.com** (MW, "SPCTRM") — WordPress marketing/blog site, no
+  `wc/*` REST namespace at all (`/wp-json/` root lists only Bluehost/Newfold
+  hosting plugins, AIOSEO, Monsterinsights, Site Kit). The candidate page
+  (`/grocery-delivery-lilongwe/`) links out only to a Google Play Store app
+  (`com.spctrm.user`) — an app-first delivery business, same shape as
+  breadfast. A separate subdomain, `care.spctrmafrica.com/create-order`, is
+  referenced from the homepage and is presumably the real order backend —
+  not probed (it's not a WordPress/WooCommerce endpoint; reaching it would
+  need a new fetcher, out of scope for a `WooBaseSpider` subclass).
+  `sitemap.xml`/`wp-sitemap.xml` list zero `<loc>` entries. Did not try
+  Playwright. Probed 2026-09-10.
+
+### Wrong-geography Shopify diaspora stores and a one-product catalog (AG, RW)
+
+- **caribbeaneat.com** (proposed AG, "Caribbean Eat") — live, enumerable
+  Shopify storefront (`/products.json?limit=250&page=N`: 250/250/250/127/0
+  across 5 pages, ~877 products, ids disjoint across pages) — **rejected on
+  geography, not access**. `Shopify.country = "US"`, `Shopify.currency
+  {"active":"USD"}`; 100-row tag sample dominated by `jamaican` (91),
+  `west indian grocery` (83), `colombian food` (63), `Venezolan food` (31),
+  `ARGENTINO` (20) with **zero** Antigua tags or mentions anywhere in the
+  catalog or homepage copy; vendor field is self-branded "Caribbean Eat" for
+  496/500 rows. Same shape as the `caribbeanonlinegrocery.com` (HT) entry
+  above: a US-based pan-Caribbean/pan-Latin diaspora grocer selling
+  import-marked-up prices to the diaspora market, not a domestic retailer for
+  the country in its name. Do not onboard under Antigua and Barbuda. Probed
+  2026-09-10.
+- **mycaribbeangrocer.com** (proposed AG, "My Caribbean Grocer") — live
+  Shopify storefront, `/products.json?limit=250&page=1` returns 86 products,
+  page=2 returns `{"products":[]}` (clean single-page catalog, not a
+  pagination trap). Rejected on geography: `Shopify.country = "US"`,
+  `Shopify.currency {"active":"USD"}`; full 86-SKU catalog inspected —
+  vendor field is 35 distinct brands, essentially all Jamaican (Grace,
+  Walkerswood, Lasco, Betapac, Excelsior, HTB, Jamaica Mountain Peak, Blue
+  Mountain Country), zero occurrences of "Antigua"/"Barbuda" in titles, tags,
+  or homepage HTML; carries USD $100/$250 gift-card SKUs (a diaspora-retailer
+  signature). Same reject class as caribbeaneat.com above. Do not onboard
+  under Antigua and Barbuda. Probed 2026-09-10.
+- **pridefarms.rw** (RW, "Pride Farms") — pre-probe evidence described this
+  as "a Wix site with an Ecwid store embedded"; re-probe found that
+  description wrong. It is **native WixStores**, not Ecwid: the site exposes
+  a Wix-generated `store-products-sitemap.xml`, product URLs are
+  `/product-page/<slug>` (WixStores' own router, not an Ecwid shape), and the
+  rendered product page carries Wix's own native product JSON
+  (`"currency":"RWF","price":5700,"formattedPrice":"R₣5,700"`) with no Ecwid
+  script/iframe/store-id anywhere. The 11 "ecwid" string hits per page are
+  Wix's generic App-Market catalog boilerplate (a JSON blob describing the
+  *available* "Ecwid E-commerce" app), present on every Wix site regardless
+  of whether that tenant actually uses it — not a fingerprint of active use.
+  Independent of the platform question, the source fails the enumerability
+  gate outright: `store-products-sitemap.xml` lists **exactly one product**
+  (`chickpeas-kabuli-whole-g1-1kg`, RWF 5,700/kg), and every storefront page
+  checked (`/shopall`, `/rwanda-products`, `/discover-our-shops`) renders
+  that same single product link and nothing else — there is no page 2 to
+  compare against page 1. The business and RWF pricing look genuine; the
+  online catalog itself just does not exist at any usable scale. Not
+  attempted: a Playwright network trace (the sitemap and every rendered
+  listing page already agree on the 1-product ceiling, so a trace would not
+  raise it). If this business ever builds out a real catalog, re-probe fresh
+  — do not carry forward the "Ecwid" assumption. Probed 2026-09-10.
+
+### Bagisto demo/seed installs and a fully login-walled tenant (LY, CM, UZ)
+
+All three assigned sources are re-confirmations of, or new entries in, the
+"Placeholder / seed demo-data catalog" and "route-gated storefront" families
+already described in the master `known_blockers.md`. Format matches that file.
+
+- **nawris.net** (LY, "Nawris") — RE-CONFIRMED DEAD, no change. Already logged in the
+  master `known_blockers.md` (wave 10, probed 2026-09-01): live, unauthenticated
+  `/api/products`, `/api/global/stores`, `/api/search`, but the entire catalog is 4
+  fabricated seed rows ("هاتف تجريبي" / "test phone", store "متجر النورس التجريبي" /
+  "Nawris demo store"). Re-probed 2026-09-10 with plain curl (Mozilla UA, no
+  impersonate needed — no WAF present) from the Mac: `GET /api/products?limit=50`
+  returns the identical seed rows verbatim (same IDs, same names, same store names).
+  No change in 9 days. Do not re-probe again without a specific signal the operator
+  relaunched (e.g. a changed product count or removal of the "تجريبي"/demo-branded rows).
+
+- **www.quickgo237.com** (CM, "QuickGo 237") — RE-CONFIRMED DEAD, no change. Already
+  logged in the master `known_blockers.md` (wave 13, probed 2026-09-01): real Next.js
+  app, no WAF, but the entire "national marketplace" is 11 products total across all 6
+  listed vendors, with one vendor's own shop page 404ing. Re-probed 2026-09-10 with
+  curl (Mac, plain UA): `GET /api/products` still returns `{"data":[...11 items...],"count":11}`
+  — same total as the wave-13 finding. Note the pre-probe evidence for this batch also
+  claimed a Bagisto fingerprint ("also a Next.js front") — on inspection this tenant is
+  pure Next.js/REST, not Bagisto (no `X-Built-With` header, no `themes/shop/.../build`
+  asset paths, response shape `{data, count}` doesn't match Bagisto's `meta.last_page`
+  contract). The platform misidentification doesn't change the verdict — catalog size
+  is the blocker either way.
+
+- **yanada.uz / www.yanada.uz** (UZ, "Yanada") — NEW ENTRY. Genuine Bagisto storefront —
+  confirmed via `X-Built-With: Bagisto` response header (seen on a bare `HEAD /` from the
+  Mac) and via Bagisto's own Vite build asset paths (`/themes/shop/default/build/assets/app-*.{js,css}`)
+  in the rendered homepage. Unlike the fooddepot.am pattern in `platform_fingerprints.md`
+  (empty CRA shell, real API on a separate `api.<domain>` host), this is a server-rendered
+  Bagisto install with NO anonymous surface at all: with curl_cffi
+  (`impersonate="chrome124"`, `allow_redirects=False`, from a8, probed 2026-09-10) every
+  route tested — `/`, `/shop`, `/api/products`, `/api/products/?limit=5&page=1`,
+  `/api/categories`, `/api/v1/products`, `/api/v1/categories`,
+  `/bagisto-app/api/v1/products` — 302-redirects to `https://yanada.uz/customer/login`
+  ("Mijozlar uchun kirish" / "Login for customers", Uzbek). This is stricter than the
+  bnf_mart-MM route-gated pattern already documented (which at least leaves a homepage
+  carousel reachable) — here even `/` and the REST endpoints themselves are gated. Checked
+  for a separate unauthenticated API host: `api.`, `app.`, `shop.`, `m.`, `admin.` +
+  `.yanada.uz` all fail TLS certificate verification (SNI mismatch — the cert doesn't
+  cover those names), so no alternate host exists to fall back to. `robots.txt` is an
+  empty allow-all (200, no signal). Did NOT run a Playwright network trace or attempt a
+  login flow — this is a customer-login-gated B2C site by design, not a WAF/anti-bot
+  block, so a browser trace would not surface a public catalog that doesn't exist. Do
+  not build without valid customer credentials, which is out of this pipeline's scope.
+
+### VTEX legacy Catalog REST dead account-wide (PK)
+
+- **www.homeshopping.pk** (PK, Home Shopping -- VTEX tenant `homeshoppingpk`) -- storefront renders fine (VTEX IO SSR, 200, real HTML, `homeshoppingpk.vtexassets.com` assets load), but the legacy Catalog REST surface `_vtex_base.py` is built against is dead across the whole account, not just the custom domain: `GET /api/catalog_system/pub/category/tree/{1,2,3,10}` returns HTTP 400 with an EMPTY body, and `GET/POST /api/catalog_system/pub/products/search` (with or without `fq`/`ft`) returns HTTP 400 with body `"This store is temporarily unavailable"`. Reproduced identically on `www.homeshopping.pk`, the bare account domain `homeshoppingpk.myvtex.com`, and `homeshoppingpk.vtexcommercestable.com.br` -- ruling out a CDN/custom-domain routing quirk. Confirming signal from a second angle: the homepage's own Apollo `__STATE__` SSR cache is a literal empty object (`__STATE__ = {}`), so even VTEX's own SSR isn't populating from that surface. The newer Intelligent Search REST endpoint (`/api/io/_v/api/intelligent-search/product_search/`) also fails, with a 500.
+  Real product data is confirmed live (Playwright network trace, stealth launch, mandatory gate satisfied) flowing through VTEX IO's federated GraphQL layer at `/_v/segment/graphql/v1`, `operationName=Products`/`GetCategories`, as **persisted queries** (`extensions.persistedQuery.sha256Hash` tied to a specific registered app version, e.g. `vtex.search-graphql@0.x`) -- 200 responses confirmed. This is not a variant of `_vtex_base.py`'s REST pattern; it is a different protocol (GraphQL, persisted-query IDs that are expected to rotate on the tenant's next VTEX IO app deploy) that no base class in this repo drives. Not attempted: hand-rolling a spider against the captured persisted-query hashes (would silently break on the tenant's next deploy with no local signal, and there appear to be several distinct `Products`-shaped queries keyed by calling component -- home shelf vs. category listing -- so one hash would not cover the catalog); VTEX Intelligent Search's other endpoints beyond `product_search` (e.g. `facets`); a raw category-page HTML scrape (VTEX IO category pages are client-hydrated React with no server-rendered product list once `__STATE__` is empty, so this would not recover anything `curl_cffi` alone could read). Probed 2026-09-10.
+
+(see batch_4_report.md for liki24_ua -- Cloudflare rate-limiting under investigation, not a hard block; airba_kz is a duplicate of the already-onboarded technodom_kz, not a blocker)
+
+### Store-session-gated pricing and a reCAPTCHA-Enterprise SPA (IT)
+
+- **spesaonline.conad.it** (IT, Conad -- one of Italy's largest grocery
+  co-ops, `spesaonline.conad.it` is its national delivery/click&collect
+  storefront) -- NOT a WAF block: bare `curl` (no TLS impersonation) clears
+  the sitemap and every product-detail page at 200, robots.txt allows the
+  full catalog. The blocker is that **anonymous/no-session requests get a
+  hard `0.0`/empty price**, not a missing-field or a flaky field. Evidence:
+  `/sitemap/products.xml` is a flat urlset of 5,438 `/p/<slug>--<id>` URLs
+  (all resolve, some via a 301 to a canonical slug); of 9 sampled product
+  pages, only 1 carried a JSON-LD `offers.price` at all (2.49 EUR, "Olio di
+  Semi di Soia 1 litro Conad") -- the other 8 had an `offers` object with NO
+  `price`/`priceCurrency` key whatsoever. The rendered DOM confirms why: the
+  price element is `<span class="price"></span>` -- literally empty in the
+  server-rendered HTML, populated client-side by JS. Category-listing pages
+  expose the same product objects via a `data-product="{...}"` JSON blob
+  with an explicit `"basePrice":0.0` field. This is Conad's "ordina e
+  ritira" (order & collect) UX gate: the DOM itself contains an
+  `id="ordina-ritira-scelta-pdv"` ("choose your pickup store") component,
+  meaning price is genuinely a function of which physical store (punto
+  vendita) the session has selected, and the site's default/no-selection
+  state has no price to show. Found (via the site's own AEM clientlib JS
+  bundle, `clientlib-site.*.min.js`) a real `/api/ecommerce/it-it.stores.json`
+  endpoint and several delivery-address/cart endpoints, but a bare GET on
+  `/api/ecommerce/it-it.stores.json` 404s -- these are almost certainly
+  POST/session-bound AEM Sling endpoints, not a public read API. NOT tried:
+  Playwright with a real store-selection click-through (would very likely
+  work, since the underlying data clearly exists once a pdv is set); did not
+  attempt cookie/header guessing beyond the one 404'd GET. Recommend a
+  Playwright-network-trace pass specifically to capture the store-selection
+  API call shape before writing this off as unreachable -- the catalog size
+  (5,438 products) and the one confirmed-working price sample make this
+  worth a second look. Probed 2026-09-10.
+
+- **www.coopshop.it** (IT, Coop -- Italy's other major grocery co-op,
+  `coopshop.it` is its national online delivery storefront) -- a pure
+  Vue.js single-page-app shell with **zero server-rendered product data of
+  any kind**. `sitemap.xml` -> `sitemap/product_0.xml` / `product_1.xml`
+  genuinely enumerate (1000/1000 URLs, 0 overlap, confirms the catalog is
+  real and large), but every one of 5 sampled `/product/<slug>` URLs
+  returned the byte-IDENTICAL 15,401-byte HTML shell (`<div id="app">`,
+  webpack chunk `<link>` tags, no product markup at all) -- confirmed with a
+  plain UA'd `curl -L`, no redirect, no WAF signature (no 403, no Akamai/
+  Cloudflare stub). Checked the app's own JS bundles
+  (`js/index.*.js`, `js/chunk-common.*.js`, `js/chunk-vendors.*.js`, ~2.2MB
+  combined) for a same-origin REST/GraphQL API base URL string and found
+  none (`grep`'d for `/api/`, `graphql`, `coopshop.it/api` patterns -- 0
+  hits beyond the bare origin string). The page loads
+  `google.com/recaptcha/enterprise.js` on every request, which strongly
+  suggests the underlying API (wherever it lives) is behind a reCAPTCHA
+  Enterprise token check, not just JS-rendering. NOT tried: an actual
+  Playwright/headless-browser network trace (would reveal the real API
+  host+shape and whether recaptcha genuinely gates it or is decorative) --
+  this is the obvious next step and wasn't run due to no browser-automation
+  tool available in this probe pass. Given the SPA + recaptcha-enterprise
+  combination, this is a materially harder integration than the sitemap+
+  JSON-LD pattern this batch targets; flagging for a dedicated
+  Playwright-equipped pass rather than shipping a non-working scrapy_html
+  spider. Probed 2026-09-10.
+
+### Akamai sensor-JS on Albert Heijn, both countries (NL, BE)
+
+- **ah.nl** (NL, Albert Heijn) and **ah.be** (BE, Albert Heijn) — same Ahold
+  Delhaize platform, same block, verified independently on both hosts
+  2026-09-10. The site itself is not gated: `robots.txt` is fully public
+  (lists 15 sitemaps) and the dedicated product sitemap
+  `https://www.ah.nl/sitemaps/entities/products/detail.xml` (and the `.be`
+  equivalent) returns a clean 200 with the full flat `<urlset>` — 40,923
+  distinct `/producten/product/<id>/<slug>` URLs on `.nl`, 16,999 on `.be`
+  (both corrected counts, re-derived from this sitemap directly per the
+  wave-2 instruction; the brief's `/p/`-pattern counts of 41,067/17,102 were
+  contaminated by store-locator URLs like
+  `/winkels/belgie/turnhout/p-j-brepolsplein-29/` as warned, and turned out
+  to be close to the true numbers only by coincidence).
+
+  The block is on the product-detail PAGE itself, not on access in general.
+  Every PDP request returns HTTP 200 with a ~2.6KB Akamai Bot Manager
+  "sensor data" JS challenge page (`Powered and protected by Akamai`,
+  `sec-if-cpt-container`/`behavioral-content` markup, an
+  `XMLHttpRequest.prototype.send` hook that reloads the page once a sensor
+  payload round-trips) instead of the actual product markup — confirmed
+  identical on both `.nl` and `.be`.
+
+  Tried, in order, all on 2026-09-10:
+  1. `curl_cffi` TLS-impersonation sweep across 10 profiles on the PDP URL
+     directly (`chrome120`, `chrome124`, `chrome131`, `chrome131_android`,
+     `chrome133a`, `chrome136`, `edge101`, `safari17_0`, `safari184`,
+     `chrome99_android`): `chrome120`/`chrome124`/`edge101` hard-403;
+     every other profile gets a 200 but it is the SAME 2,602-byte Akamai
+     sensor-challenge stub, not real content. TLS fingerprint is not the
+     gating factor — the challenge itself requires executing the sensor JS.
+  2. The dynamic-rendering-by-User-Agent trick that shipped `plus_nl` in
+     this same batch: setting `User-Agent: Mozilla/5.0 (compatible;
+     Googlebot/2.1; +http://www.google.com/bot.html)` on the PDP request.
+     This does NOT get treated the same as on plus.nl — Akamai appears to
+     verify Googlebot claims (reverse-DNS/IP-allowlist style) and actively
+     penalizes an unverified one: repeated attempts got `curl: (92) HTTP/2
+     stream 1 reset by server (error 0x2 INTERNAL_ERROR)` and, on retry
+     with a forced HTTP/1.1 downgrade, a hard connection timeout (`curl:
+     (28) Operation timed out after 20002ms with 0 bytes received`) rather
+     than a clean 403. This is a materially worse response than an
+     unmodified UA gets, so it reads as active anti-spoofing rather than
+     coincidence.
+  3. One extra idea beyond the two above (per the wave-2 "worth one more
+     idea" instruction): AH's mobile-app backend at `api.ah.nl`. A POST to
+     the (publicly known/reverse-engineered) anonymous-auth endpoint
+     `https://api.ah.nl/mobile-auth/v1/auth/token/anonymous` with
+     `{"clientId":"appie"}` DOES succeed cleanly (200, returns a real
+     OAuth2 bearer token) — so the API surface exists and is reachable.
+     But the product endpoints behind it
+     (`/mobile-services/product/search/v2`,
+     `/mobile-services/product/detail/v4/fir/<id>`) both reject the bearer
+     token: search returns a 500
+     `ApplicationContextNotFoundException: Can not find application:
+     'null'` and detail returns a 400 Whitelabel error. Both look like a
+     missing app-identifying header (something like `X-Application`,
+     matched to a specific app build/version) that I did not attempt to
+     guess, per the "probe, never guess" rule — reverse-engineering the
+     exact header set the official Appie app sends was out of scope for
+     this session's time budget.
+
+  NOT tried: a real headless browser (Playwright/Puppeteer) that could
+  actually execute Akamai's sensor JS and pass the behavioral challenge, or
+  a paid unblocking proxy/solver service. Given Akamai's demonstrated
+  active countermeasures against UA spoofing (point 2 above), a genuine
+  browser automation attempt is the next reasonable idea if this source is
+  revisited, but it is a materially larger effort (and, per the campaign
+  brief's caution about anti-bot budgets, a real risk of an IP-level
+  response if attempted carelessly) than anything in this batch's scope.
+
+  Recommendation: leave BLOCKED for now rather than escalate further inside
+  this batch. The sitemap-derived catalog counts above (40,923 NL /
+  16,999 BE) are solid and worth keeping on file if a future batch brings
+  Playwright or a commercial unblocker into scope.
+
+### Tesco first-party storefronts — Akamai Bot Manager on the product layer (CZ, IE, UK)
+
+Three of four assigned Tesco first-party storefronts. All probed live
+2026-09-10 from a8 (`~/venv/bin/python` + `curl_cffi 0.16.2`), impersonate
+profiles `chrome120`/`chrome124`/`chrome131`/`chrome150`, plus one headless
+Playwright (Chromium 143, no stealth patch) pass per host. tesco_hu (the
+fourth) shipped — see `batch_7_report.md`.
+
+**Pattern common to all three**: robots.txt and the homepage are reachable
+(homepage 200 on at least one TLS profile, sitemap XML 200 on every profile
+tried, sitemap-index resolves into real product shards with genuine
+disjoint product URLs) — this is what the campaign's original discovery pass
+measured. But the product-detail (`/shop/<locale>/products/<id>`) endpoint
+sits behind a second, stricter Akamai layer that neither TLS impersonation
+nor an actual headless browser clears. This is a harder class than "wrong
+TLS profile" — reproduced on genuinely different network clients (a
+non-JS curl_cffi TLS handshake AND a real Chromium page load), so it is not
+the `curl_cffi`-clears/Scrapy-doesn't client-path-mismatch class documented
+elsewhere in `known_blockers.md` either.
+
+- **nakup.itesco.cz** (CZ, Tesco Czech Republic's own storefront — distinct
+  from the already-onboarded `tesco_wolt_cz`, a single Wolt-listed branch) —
+  homepage: 403 on chrome120/chrome124/chrome131 (70,966-byte Akamai denial
+  page), 200 on chrome150 only (536,401-536,577 bytes, real content, matches
+  the campaign's original measurement). Sitemap chain fully resolves:
+  `/sitemaps/cs-CZ/groceries/products-index.xml` -> 4 shards
+  (products-1..4.xml), shard1/shard2 each 5,000 URLs, 0 overlap. But every
+  `/shop/cs-CZ/products/<id>` request, on **all four** TLS profiles
+  including chrome150, returns HTTP 200 with a 2,715-byte Akamai Bot
+  Manager JS interstitial (`id="sec-if-cpt-container"`, "Powered and
+  protected by Akamai", a `_sec/cp_challenge`-style reload script) — not
+  real content, and not solvable by a non-JS client by definition. A
+  single headless-Playwright load of the same PDP URL (after a homepage
+  visit in the same context, 3-8s waits) did not even reach that
+  interstitial: it drew a **hard "Access Denied"** edge deny (320-byte
+  body, `errors.edgesuite.net` reference `18.9623417.1789083394...`) —
+  worse than the curl_cffi outcome, suggesting Akamai's risk scoring
+  penalizes the real-Chromium fingerprint (no stealth patching applied)
+  more than the impersonated TLS client. Not attempted: a stealth-patched
+  Playwright context, a residential/mobile proxy, or actually solving the
+  Bot Manager sensor challenge (would need reverse-engineering Akamai's
+  obfuscated JS or a paid solver). Probed 2026-09-10.
+
+- **www.tesco.ie** (IE, Tesco's own Irish storefront) — homepage: 200 on
+  **all four** profiles tested (226,929 bytes each, real Next.js page with
+  a live `buildId` and an Akamai sensor pixel `/akam/13/pixel_*` — genuinely
+  live, not a shell). Sitemap chain resolves fully:
+  `/sitemaps/en-IE/groceries/products-index.xml` -> 5 shards, shard1/shard2
+  5,000 URLs each, 0 overlap. But `/shop/en-IE/products/<id>` 403s outright
+  on chrome120/chrome131 (70,900-byte Akamai denial page) and returns the
+  same 200-status-but-fake 2,721-byte `sec-if-cpt-container` JS interstitial
+  on chrome124/chrome150 — the same two-tier pattern as tesco_cz, just with
+  the profiles split differently. Headless Playwright on the same PDP URL:
+  hard "Access Denied" (317 bytes, `errors.edgesuite.net` ref
+  `18.16623417.1789083425...`). The brief's "200 with 455,844 bytes on
+  chrome150" reading was almost certainly the homepage, not the PDP — our
+  homepage byte count differs (226,929 vs 455,844, likely due to
+  personalization/A-B-bucket drift between probes) but the *pattern*
+  (homepage passes, PDP does not) matches. Not attempted: stealth-patched
+  Playwright, residential proxy, or the sensor-challenge solve. Probed
+  2026-09-10.
+
+- **www.tesco.com** (UK, Tesco's own UK storefront) — homepage: 403 on
+  chrome120/chrome124/chrome131 (a bare 527-byte body, not the
+  Akamai-branded denial page seen on the other two — looks like a plain
+  edge reject), 200 on chrome150 (611,079 bytes, real content — same
+  pattern the brief measured, though our byte count is 611,079 vs the
+  brief's 518,401, again likely personalization drift). Sitemap chain
+  resolves fully: `/sitemaps/en-GB/groceries/products-index.xml` -> 8
+  shards, shard1/shard2 5,000 URLs each, 0 overlap. `/shop/en-GB/products/
+  <id>` 403s on chrome120/chrome131/**chrome150** (71,654 bytes each — so
+  chrome150, which clears the homepage, does NOT clear the PDP here,
+  unlike CZ/IE) and returns the 200-status fake `sec-if-cpt-container`
+  interstitial (2,735 bytes) only on chrome124. Headless Playwright on the
+  same PDP URL: hard "Access Denied" (320 bytes, ref
+  `18.506adc17.1789083394...`). Not attempted: stealth-patched Playwright,
+  residential proxy, or the sensor-challenge solve. Probed 2026-09-10.
+
+**What would actually move these**: either (a) a Playwright context with
+real stealth patching (navigator.webdriver removal, consistent
+client-hints, canvas/WebGL noise) run from a residential-looking IP, or
+(b) reverse-engineering/solving Akamai's Bot Manager sensor payload so a
+plain HTTP client can POST a valid `_abck` update — both substantial,
+out-of-scope efforts for this batch's budget. No proxy or CAPTCHA/JS-solver
+service was available or tried.
+
+### Akamai on Koctas, and a rate-limit escalation we triggered ourselves (TR, SE)
+
+auchan_hu and alcampo_es shipped (alcampo_es after real, tenant-side AWS-WAF
+anti-bot throttling during probing — see `batch_8_report.md` for the
+throughput analysis). koctas_tr and ica_se did NOT ship; both are recorded
+below.
+
+- **www.koctas.com.tr** (TR, Koctas — home-improvement/DIY hypermarket
+  chain) — probed live 2026-09-10 from a8 (`~/venv/bin/python` +
+  `curl_cffi 0.16.2`, impersonate profiles chrome99/110/120/124/131/
+  131_android/133a/136/safari17_0/safari18_0/edge101, plus one headless
+  Playwright pass, Chromium via `playwright` 1.57.0, no stealth patch).
+
+  Same two-tier Akamai pattern already documented for tesco_cz/ie/uk in
+  `known_blockers_batch_7.md`: the SITEMAP layer is wide open, the
+  PRODUCT-DETAIL layer is not.
+
+  - `robots.txt` via bare system `curl` (no UA / with a plain browser UA
+    string, no TLS impersonation): HTTP 403, a 387-byte
+    `errors.edgesuite.net` "Access Denied" body — classic Akamai edge
+    reject on a non-browser TLS fingerprint (this file's rule: bare curl's
+    TLS handshake alone is enough to trip Akamai on this tenant).
+  - `robots.txt` / `sitemap.xml` via `curl_cffi` with ANY of 8 tested
+    Chrome/Safari impersonate profiles: **HTTP 200 on every one** (5,622
+    and 13,468 bytes respectively) — the sitemap layer does not
+    discriminate by TLS profile at all.
+  - Sitemap chain fully resolves: `sitemap.xml` -> 131 child sitemaps
+    (117 `product-tr-try-N.xml` shards + category/brand/content/
+    imagecategory/filteredcategory/customlanding/storedetail/
+    brandcategorypageinformation singles). `product-tr-try-0.xml` = 10,000
+    `<loc>` entries (bathroom-fixture SKUs, e.g.
+    `/gpd-banyo-bataryasi-espina-mix-mbb70/p/1000065417`), `product-tr-
+    try-1.xml` = 10,000 `<loc>` entries (garden-tool SKUs, e.g.
+    `/mac-allister-cim-bicme-makinesi-1300-watt-34-cm/p/2000033754`) — 0
+    overlap, genuinely disjoint (117 shards x ~10,000 implies a
+    catalog on the order of 1M+ URLs, well above the brief's 80,000
+    measurement, though some of that is likely size/color variant
+    duplication not counted here).
+  - Every `/<slug>/p/<id>` product-detail fetch, on ALL of
+    chrome99/110/120/124/133a/136 impersonate profiles: HTTP 403
+    (~600-625 byte body, no interstitial, a hard edge deny).
+  - `chrome131_android`, `safari17_0`, `safari18_0` initially looked
+    promising (HTTP 200) in a first pass, but were NOT reproducible: a
+    follow-up loop of 6 consecutive requests to the same PDP URL with
+    `chrome131_android` got 403 on all 6, and a request with
+    browser-realistic headers added (`Accept`, `Accept-Language: tr-TR`,
+    `Referer`) made `safari17_0`/`safari18_0` return HTTP 200 but with
+    only ~2,965 bytes — decoded body is Akamai Bot Manager's own
+    **behavioral-challenge interstitial**
+    (`id="sec-if-cpt-container"`, "Powered and protected by Akamai", a
+    `/mfwJSOM.../DYACTYb?ch=true` sensor-loader script), i.e. HTTP-200-
+    but-fake, the identical class documented for tesco_cz/ie/uk's PDP
+    layer — not real product content, and not solvable by a non-JS
+    client by construction.
+  - A category-listing page (`/banyo/c/1000`) also 403s on chrome120,
+    same as the PDP layer — the block is not PDP-specific, it covers all
+    product/category browsing, only the sitemap XML endpoints and the
+    homepage (`/`, 200, 1,617,612 bytes on chrome120) are exempt.
+  - Cookie-warmup attempt (the pattern that made tesco_hu work in this
+    same repo: fetch a page the WAF allows first, then reuse ITS session
+    cookies for the blocked page): `requests.Session()` GET `/` (chrome120)
+    -> 200, and the session picked up real Akamai Bot Manager cookies
+    (`_abck`, `ak_bmsc`, `bm_s`, `bm_so`, `bm_sz`, plus `JSESSIONID`).
+    Reusing that SAME session (same cookies, same TLS-impersonation
+    profile) for the PDP fetch: still **HTTP 403** (599 bytes). Unlike
+    tesco_hu's sitemap-fetch-carries-cookies-into-PDP trick, merely
+    possessing Bot Manager's tracking cookies does not satisfy this
+    tenant's PDP-layer check -- consistent with Akamai's stricter
+    "sensor data" validation mode, which needs an actual JS-computed
+    payload posted back, not just the cookie names being present.
+  - Headless Playwright (Chromium, no stealth patch, `--disable-blink-
+    features=AutomationControlled`, isolated per-job tmp dir after an
+    earlier `/tmp` file collision with another concurrent batch's script
+    corrupted a first attempt's output — see note below) direct-navigated
+    to the same PDP URL: HTTP **403**, 344-byte body — a harder outcome
+    than curl_cffi's soft interstitial, matching the tesco_cz/ie/uk
+    finding that Akamai's real-Chromium risk score is *worse* than its
+    impersonated-TLS-client score when no stealth patching is applied.
+
+  **Not attempted**: a stealth-patched Playwright context (navigator.
+  webdriver removal, consistent JS-visible fingerprint), a residential/
+  mobile proxy, or reverse-engineering/solving the Bot Manager sensor
+  challenge itself. Given `known_blockers_batch_7.md`'s "what would
+  actually move these" section already concludes the sensor-challenge
+  solve is the only path and treats it as out of onboarding-probe budget
+  for this campaign, the same conclusion applies here — this is the same
+  vendor, same challenge class, same PDP/sitemap split.
+
+  Operational note: a first Playwright probe script written to the
+  shared `/tmp/probe_koctas.py` produced garbled, unrelated output (a
+  different concurrent agent's PPP/CPI-currency script) — confirming the
+  onboarding skill's warning that parallel agents on a8 clobber generic
+  `/tmp/probe_*` filenames. Re-run from a job-local
+  `~/po-gapfill/tmp_batch8/` directory produced clean results. Flagging
+  in case other batch-8-era agents hit the same corruption.
+
+  Probed 2026-09-10 (wave 2, batch 8).
+
+- **handla.ica.se / handlaprivatkund.ica.se** (SE, ICA — Sweden's largest
+  grocery group) — NOT shipped. Deleted after 3 failed
+  `prices collect --source ica_se --max-items 20` runs (00:13, 00:19,
+  00:24 UTC on 2026-09-10), all 0 items / 0-byte output files. The spider
+  (`ica_se.py`) and manifest (`configs/eca/western_europe/sweden/
+  ica_se.yaml`) were removed from the worktree rather than left in place.
+
+  This is worth recording in detail because the underlying extraction
+  design is proven correct earlier in the SAME probing session, and the
+  failure is a live, tenant-side anti-bot escalation, not a design flaw:
+
+  - handla.ica.se itself is store-scoped (every PDP/listing needs a
+    chosen store first — "Valj butik for ratt sortiment, pris och
+    leveransalternativ"); the real per-store storefront lives on a
+    DIFFERENT domain, `handlaprivatkund.ica.se`, behind AWS WAF Bot
+    Control (a `gokuProps`/`awsWafCookieDomainList` HTTP-202
+    JS-challenge stub, same vendor/class as taw9eel_kw.py and
+    alcampo_es above).
+  - Confirmed live, multiple times, that the "Playwright once to mint an
+    `aws-waf-token`, then plain-HTTP-replay the cookie" pattern DOES
+    work here in isolation: a `store-cookie`+`basePath` cookie pair
+    self-constructed (no UI store-picker needed) plus a ~10s Playwright
+    wait for the 202 stub to self-resolve produced a valid
+    `aws-waf-token`, and replaying just 5 cookies
+    (`store-cookie`,`basePath`,`aws-waf-token`,`AWSALB`,`AWSALBCORS`) via
+    plain `curl_cffi` got real HTTP 200 responses with a
+    `window.__INITIAL_STATE__` JSON blob containing
+    `data.products.productEntities` (name/price/currency/category/
+    available per product) across multiple different search queries —
+    e.g. 'Agg Frigaende M 15-p ICA' SEK 42.20, 'Mellanmjolk Lite langre
+    hallbarhet 1,5% 1,5l ICA' SEK 16.70. A store's own live search-term
+    dictionary (`/api/search/v1/suggestions/primary?searchTerm=&limit=
+    20000&regionId=<uuid>`, ~5,400 terms) was confirmed as the
+    enumerable crawl surface (the public `handla.ica.se/sitemap` chain's
+    `/produkt/<id>` URLs are store-agnostic and mostly 404 under any one
+    store's real assortment).
+  - BUT: heavy repeated probing of `handlaprivatkund.ica.se` from this
+    a8 IP during the SAME session (many curl_cffi + Playwright requests
+    across ~90 minutes, needed to reverse-engineer the store-cookie
+    format and the state-blob shape) tripped a HARDER, longer-lived
+    step-up than the ordinary WAF challenge: every request — with or
+    without cookies, via curl_cffi OR a freshly-bootstrapped Playwright
+    context — started returning **HTTP 405** with a page titled "Human
+    Verification" (a full interactive CAPTCHA gate, distinct from the
+    202 gokuProps stub). All 3 actual `prices collect` runs landed
+    squarely inside this escalated window: 113, then 116, then 116
+    requests, **100% HTTP 405, 0 items, every time** — the spider's
+    bootstrap DID successfully fetch the live 5,427-term dictionary
+    each run (confirmed in the stats: `scheduler/enqueued: 5427`), so
+    the failure is entirely at the request layer, not the term-sourcing
+    or parsing logic.
+  - A single manual `curl_cffi` check made BETWEEN run 2 and run 3 (no
+    cookies at all) got a real HTTP 200 with 35 priced products — proof
+    the escalation is not permanent and does self-clear — but the very
+    next full spider run (run 3, started ~1 minute later) hit 405 again
+    on all 116 requests, meaning the clear window is narrow and/or the
+    spider's own request pattern (bootstrap navigation + suggestions
+    fetch + rapid sequential search requests) itself re-triggers the
+    step-up almost immediately.
+
+  **What this means for a re-attempt**: the code pattern is sound and
+  should be reusable close to verbatim; what failed was doing all the
+  discovery AND the verification run against the same live tenant in one
+  session, from one IP, in under two hours. A clean re-attempt should
+  (a) start from a fresh IP/session with zero prior requests to
+  `handlaprivatkund.ica.se`, (b) do the Playwright bootstrap once, wait
+  generously, and confirm a single search request succeeds via curl
+  BEFORE launching the full Scrapy crawl, and (c) keep concurrency at 1
+  with multi-second delays from the very first request rather than
+  ramping into it.
+
+  **Not attempted**: a stealth-patched Playwright context; spacing the
+  bootstrap and the first Scrapy request further apart in time; running
+  from a different network/IP than the one used for discovery; retrying
+  the term-sweep with a much smaller, slower-paced term list (all 3 test
+  runs used the full live ~5,400-term dictionary at 1s DOWNLOAD_DELAY /
+  2 concurrent, which may itself be too aggressive once past the
+  bootstrap); and confirming whether the 405 "Human Verification" gate
+  is IP-scoped, cookie-scoped, or something else — this file's data
+  cannot distinguish those.
+
+  Probed / spider built and removed 2026-09-10 (wave 2, batch 8).
+
+### Shop-scoped pricing with no anonymous shop context (BG)
+
+- **delivme.bg** (BG, "Delivme" -- Sofia grocery-delivery app) -- NOT a WAF or
+  TLS-fingerprint block (chrome120/chrome124 both 200 on every URL tried, no
+  403 anywhere in this probe). A genuinely enumerable catalog exists: robots.txt
+  points at a real multi-shard sitemap index (`/sitemaps.xml` ->
+  `/sitemaps.xml/products/1..34`), 34 product shards, product-detail pages
+  (`/product/<id>-<slug>`) resolve to a documented JSON API
+  (`GET https://api.delivme.bg/api/v1/product/view/<id>-<slug>`, no auth
+  header needed, 200 JSON) that returns real fields -- id, name (Cyrillic),
+  category, category tree, related_products. But `price`/`cost`/`final_price`/
+  `currency` are ALL `null` on every product tried, both a stale 2018-lastmod
+  item and a freshly-modified (2026-08-21) one -- confirmed the same on a
+  brand-new 2026-08 baby-monitor listing, not just old/delisted stock. The raw
+  HTML is an AngularJS shell (`data-ng-app="app"`) with unfilled
+  `{{ pageTitle }}` template bindings and a `<jsonld data-json="schemaJSON">`
+  placeholder tag -- JSON-LD is injected client-side, never present in the
+  fetched response, so there is no SSR price anywhere to scrape even on a
+  category-listing page (checked `/product-categories/1-plodove-i-zelenchutsi`
+  directly -- 200, no "BGN" string anywhere in the body).
+  Root cause: price is entirely shop/session-scoped. The bundled Angular JS
+  (`scripts/app.*.js`) shows every price-bearing API call (add-to-cart,
+  wishlist, category listing, product search) requires a `shop_id` parameter
+  sourced from `localStorage.currentShop`, itself set only after a client-side
+  "select your delivery location" flow. Tried to shortcut this three ways, all
+  failed: (1) `POST /api/v1/shop/deliver {lat,lng}` (the endpoint the frontend
+  calls to check deliverability) returns only
+  `{"locationWithDelivery":true,"guest_checkout":0}` -- no shop_id in the
+  response; (2) guessing `shop_id=1/2/3` as a query param on
+  `/product/view/<id>` left price still null on all three; (3)
+  `GET /api/v1/shop/list` and `GET /api/v1/shop/slug` both return
+  `401 Unauthorized` (13-byte body) rather than a shop object, i.e. they need
+  an authenticated/guest session token this probe did not obtain (a POST to
+  `/api/v1/auth/guest` did not return a token in the shape expected -- got the
+  SPA shell HTML back instead, suggesting that path needs to be hit through
+  delivme.bg's own reverse-proxy setup rather than api.delivme.bg directly, not
+  investigated further).
+  NOT attempted: a full Playwright browser flow that completes the
+  location-selection UI (or extracts the `currentShop` object it writes to
+  localStorage) before hitting the product API with a real shop_id and/or
+  session cookie -- this is the same class of gate documented in the main
+  known_blockers.md for sahel25.com (UAE Kibsons/Talabat-style
+  "resolve-delivery-area-first" pattern) and would need the same kind of
+  investigation. Catalog is real and reasonably large (~9,800 product URLs
+  across 34 sitemap shards per the initial measurement) so this is worth a
+  second pass with Playwright, not a dead source. Probed 2026-09-10.
+
+### Delivery-zone and Queue-it gating on Nemlig (DK)
+
+- **nemlig.com** (DK) — Sitecore/Angular SPA, grocery home-delivery. The
+  wave-3-observed endpoint `GET /webapi/<CombinedProductsAndSitecoreTimestamp>/
+  <TimeslotUtc>/<DeliveryZoneId>/.../Products/GetByProd...` is a client-side
+  route built from three values pulled from `basketStateService` inside the
+  site's own bundle (`scom/dist/main.js`, grep confirmed:
+  `` `/webapi/${e.CombinedProductsAndSitecoreTimestamp}/${n.TimeslotUtc}/${n.DeliveryZoneId}/...` ``).
+  `TimeslotUtc` and `DeliveryZoneId` are populated only after a delivery-address
+  + delivery-timeslot selection flow (real, capacity-limited delivery slots,
+  not a static identifier) — confirmed by reading the Angular service code,
+  not guessed. `CombinedProductsAndSitecoreTimestamp` is a catalog/CMS version
+  stamp, separately sourced.
+  Tried: (1) `curl_cffi impersonate=chrome124` on the homepage — 200, but sets
+  Queue-it virtual-waiting-room cookies (`Queue-it-token`,
+  `QueueITAccepted-SDFrts345E-V3_nemligprod`), meaning the site fronts even
+  normal browsing with a bot-mitigation/capacity gate. (2)
+  `POST /webapi/Delivery/CheckPostCode` with a raw JSON-encoded postcode body
+  (not a `{field: value}` object — the Angular client posts the primitive
+  directly) — this **works anonymously**, `200 {"PostalDistrictCode":2100,
+  "PostalDistrictName":"København Ø","IsFullDeliverable":true,...}` — but the
+  response carries no `DeliveryZoneId`/`TimeslotUtc`, only deliverability +
+  district name. (3) The parallel, apparently-current search stack —
+  `POST/GET https://webapi.prod.knl.nemlig.it/searchgateway/api/search` (host
+  read from `window.scom.nemligGatewayApiUrl` in the page's inline bootstrap
+  script) — returned `401 {"...": "Jwt is missing"}` on every unauthenticated
+  attempt (empty query, real Danish search terms). This is a genuine auth
+  token requirement, not a public/anon key, so per the batch rules it was not
+  pursued further (no attempt to obtain or fabricate a JWT).
+  **Not tried**: a full Playwright session that completes the delivery-address
+  → timeslot selection UI flow while preserving cookies, to see whether the
+  resulting `basketStateService` state (and possibly a JWT for the gateway,
+  if the UI flow issues one client-side) becomes usable for a subsequent
+  plain-HTTP category walk. This is the natural next step for a future agent
+  with more time budget, but it is materially heavier than a normal
+  Playwright-discovery pass — it requires driving a real address/postcode +
+  timeslot booking UI, not just reading a network trace — and even if
+  obtained, `TimeslotUtc` describes a live, capacity-constrained delivery
+  slot rather than a stable catalog identifier, so its suitability for a
+  scheduled/repeatable scrape is itself questionable.
+  Date: 2026-09-10.
+
+### A request-for-quote marketplace with no prices and a non-national catalog (DZ)
+
+- **ampagora.com / africamedicalmarketplace.com** (DZ, "Ampagora" / "Africa Medical Marketplace") — API is real and enumerable (`GET https://ampagora.com/api/v1/products/index/all-subscribed`, Laravel-style pagination via `data.meta` with `current_page`/`last_page`/`total`; `perPage=200` accepted, 207 products total across 2 pages, confirmed distinct pages via `meta.current_page`), but it fails the acceptance bar on two independent grounds, either one alone would be disqualifying: (1) **0 of 207 products carry a non-null price** — every single listing has `"price": null, "is_negotiable": true, "minimum_order": <N>`, i.e. this is a B2B "request for quote" wholesale-sourcing marketplace (Alibaba/TradeKey-style), not a source of observable transaction prices; a null price is not droppable-and-move-on like a zero price, it means the entire catalogue has nothing to observe. (2) **wrong geography even setting price aside** — sampled seller/product `country` field across the full 207-product catalogue: Pakistan (37), China (33), Nigeria (31), India (28), Egypt (22), Turkey (18), UAE (11), US (10), South Africa/Burkina Faso/Russia/Poland/Benin/Ghana/Denmark/Angola (1-2 each) — **zero** Algeria-origin listings observed. The site brand ties to "Africa Medical Marketplace" (a pan-African/global medical-equipment sourcing platform) with no evidence it is an Algerian retailer or even Algeria-headquartered; the `_dz` suggestion in this wave's candidate table appears to be a geography mismatch from the discovery pass, not a property of the site itself. Did not attempt Playwright — not needed, since both failure modes are visible directly in the plain JSON API response and neither would be fixed by rendering the page (the null prices and seller countries are server-side facts, not client-hydration artifacts). Probed 2026-09-10.
+
+### Mechanically exhausted — do not re-probe blind
+
+Recorded so the next campaign does not spend the same requests.
+
+**No priced surface under either `curl_cffi` (5 TLS profiles) or headless
+Playwright** — 114 hosts. Homepage plus up to two category pages
+rendered each; no JSON response carried price-shaped keys, no product
+sitemap resolved, no JSON-LD Product node. Not attempted on these: a
+stealth-patched browser context, a residential proxy, or in-country egress.
+
+- `kaufland.com` — albania (eca)
+- `zalando.com` — albania (eca)
+- `bravosupermarket.az` — azerbaijan (eca)
+- `kaufland.bg` — bulgaria (eca)
+- `lidl.bg` — bulgaria (eca)
+- `metro.bg` — bulgaria (eca)
+- `eurospin.hr` — croatia (eca)
+- `kaufland.hr` — croatia (eca)
+- `lidl.hr` — croatia (eca)
+- `spar.hr` — croatia (eca)
+- `hornbach.cz` — czech_republic (eca)
+- `mall.cz` — czech_republic (eca)
+- `mad.coop.dk` — denmark (eca)
+- `ecoop.ee` — estonia (eca)
+- `hokoh.app` — france (eca)
+- `eurocaucasus.ge` — georgia (eca)
+- `amazon.de` — germany (eca)
+- `picnic.app` — germany (eca)
+- `bazaar.gr` — greece (eca)
+- `chalkiadakis.gr` — greece (eca)
+- `fthna.gr` — greece (eca)
+- `lidl.ie` — ireland (eca)
+- `eurospin.it` — italy (eca)
+- `it.everli.com` — italy (eca)
+- `sezamo.it` — italy (eca)
+- `unes.it` — italy (eca)
+- `almago.kg` — kyrgyz_republic (eca)
+- `toppartika.lv` — latvia (eca)
+- `norfa.lt` — lithuania (eca)
+- `cactus.lu` — luxembourg (eca)
+- `delhaize.lu` — luxembourg (eca)
+- `pegas.md` — moldova (eca)
+- `crisp.nl` — netherlands (eca)
+- `coop.no` — norway (eca)
+- `zabka.pl` — poland (eca)
+- `elcorteingles.pt` — portugal (eca)
+- `intermarche.pt` — portugal (eca)
+- `lidl.pt` — portugal (eca)
+- `mercadona.pt` — portugal (eca)
+- `supersave.pt` — portugal (eca)
+- `mercator.rs` — serbia (eca)
+- `mall.sk` — slovak_republic (eca)
+- `rohlik.sk` — slovak_republic (eca)
+- `ahorrapasta.com` — spain (eca)
+- `cartio.es` — spain (eca)
+- `lidl.es` — spain (eca)
+- `sezamo.es` — spain (eca)
+- `ulabox.com` — spain (eca)
+- `coop.se` — sweden (eca)
+- `lidl.ch` — switzerland (eca)
+- `rappn.ch` — switzerland (eca)
+- `trendyol.com` — turkiye (eca)
+- `boots.com` — united_kingdom (eca)
+- `express24.uz` — uzbekistan (eca)
+- `mercadolibre.com` — antigua_and_barbuda (lac)
+- `mercadolibre.com.ar` — argentina (lac)
+- `olx.com` — argentina (lac)
+- `belizegrocery.com` — belize (lac)
+- `mercadolibre.com.bo` — bolivia (lac)
+- `pedidosya.com.bo` — bolivia (lac)
+- `amazon.com.br` — brazil (lac)
+- `mercadolivre.com.br` — brazil (lac)
+- `mercadolibre.cl` — chile (lac)
+- `agrofy.com.co` — colombia (lac)
+- `mercadolibre.com.co` — colombia (lac)
+- `fischelenlinea.com` — costa_rica (lac)
+- `pedidosya.com` — costa_rica (lac)
+- `mercadolibre.com.ec` — ecuador (lac)
+- `vidri.com.sv` — el_salvador (lac)
+- `caribeeats.com` — guyana (lac)
+- `giftlandmall.com` — guyana (lac)
+- `zip.gy` — guyana (lac)
+- `caribbeansupermarketsa.com` — haiti (lac)
+- `delimarthaiti.com` — haiti (lac)
+- `kielsa.com` — honduras (lac)
+- `mercadolibre.com.mx` — mexico (lac)
+- `mercadolibre.com.py` — paraguay (lac)
+- `makro.com.pe` — peru (lac)
+- `mercadolibre.com.pe` — peru (lac)
+- `pedidosya.com.pe` — peru (lac)
+- `excellentstores.com` — trinidad_and_tobago (lac)
+- `gofuhdeliveries.wixsite.com` — trinidad_and_tobago (lac)
+- `mercadolibre.com.uy` — uruguay (lac)
+- `mercadolibre.com.ve` — venezuela_rb (lac)
+- `halimpharma.com.af` — afghanistan (menaap)
+- `tazapharma.af` — afghanistan (menaap)
+- `batolis.com` — algeria (menaap)
+- `yassir.com` — algeria (menaap)
+- `carrefour.com` — bahrain (menaap)
+- `yallarx.com` — bahrain (menaap)
+- `instashop.com` — egypt (menaap)
+- `rabbitmart.com` — egypt (menaap)
+- `ostorz.com` — lebanon (menaap)
+- `acima.ma` — morocco (menaap)
+- `chari.ma` — morocco (menaap)
+- `done.ma` — morocco (menaap)
+- `amazon.sa` — saudi_arabia (menaap)
+- `founa.com` — tunisia (menaap)
+- `sanaa.bazzarry.com` — yemen (menaap)
+- `celeste.lk` — sri_lanka (sar)
+- `deliiv.cv` — cabo_verde (ssa)
+- `banguimall.net` — central_african_republic (ssa)
+- `dataviz.vam.wfp.org` — central_african_republic (ssa)
+- `kinmarche.com` — congo_dem_rep (ssa)
+- `snmart.co` — congo_dem_rep (ssa)
+- `klik.delivery` — ethiopia (ssa)
+- `chowdeck.com` — ghana (ssa)
+- `khetias.com` — kenya (ssa)
+- `ubereats.com` — kenya (ssa)
+- `easymartmalawi.com` — malawi (ssa)
+- `marsarim.com` — mauritania (ssa)
+- `maurikilchi.com` — mauritania (ssa)
+- `lotieapp.com` — togo (ssa)
+- `online-spar.co.zw` — zimbabwe (ssa)
+
+**Challenge or denial on every TLS profile and on headless Playwright** —
+72 hosts. Distinct from the class above in that these actively
+return a challenge rather than nothing; the per-vendor sections earlier in
+this file carry the signatures.
+
+- `amazon.com` — albania (eca)
+- `ebay.com` — albania (eca)
+- `gjirafa50.com` — albania (eca)
+- `interspar.at` — austria (eca)
+- `bol.com` — belgium (eca)
+- `korpa.ba` — bosnia_and_herzegovina (eca)
+- `bgm.bg` — bulgaria (eca)
+- `supermarketcy.com.cy` — cyprus (eca)
+- `alza.cz` — czech_republic (eca)
+- `drmax.cz` — czech_republic (eca)
+- `selver.ee` — estonia (eca)
+- `k-ruoka.fi` — finland (eca)
+- `casino.fr` — france (eca)
+- `fnac.com` — france (eca)
+- `franprix.fr` — france (eca)
+- `intermarche.com` — france (eca)
+- `leclercdrive.fr` — france (eca)
+- `leroymerlin.fr` — france (eca)
+- `alta.ge` — georgia (eca)
+- `kaufland.de` — germany (eca)
+- `e-food.gr` — greece (eca)
+- `posokanei.gov.gr` — greece (eca)
+- `alza.hu` — hungary (eca)
+- `dunnesstoresgrocery.com` — ireland (eca)
+- `amazon.it` — italy (eca)
+- `leroymerlin.it` — italy (eca)
+- `wildberries.kz` — kazakhstan (eca)
+- `lalafo.kg` — kyrgyz_republic (eca)
+- `wildberries.kg` — kyrgyz_republic (eca)
+- `iki.lt` — lithuania (eca)
+- `auchan.lu` — luxembourg (eca)
+- `supermarket.mt` — malta (eca)
+- `enter.online` — moldova (eca)
+- `goflink.com` — netherlands (eca)
+- `anhoch.com` — north_macedonia (eca)
+- `allegro.pl` — poland (eca)
+- `kaufland.pl` — poland (eca)
+- `drmax.ro` — romania (eca)
+- `profi.ro` — romania (eca)
+- `ozon.ru` — russian_federation (eca)
+- `wildberries.ru` — russian_federation (eca)
+- `pametno.rs` — serbia (eca)
+- `alza.sk` — slovak_republic (eca)
+- `drmax.sk` — slovak_republic (eca)
+- `pametno.si` — slovenia (eca)
+- `amazon.es` — spain (eca)
+- `leroymerlin.es` — spain (eca)
+- `amazon.co.uk` — united_kingdom (eca)
+- `argos.co.uk` — united_kingdom (eca)
+- `shop.coop.co.uk` — united_kingdom (eca)
+- `magazineluiza.com.br` — brazil (lac)
+- `singer.com.jm` — jamaica (lac)
+- `amazon.com.mx` — mexico (lac)
+- `nissei.com` — paraguay (lac)
+- `simple.ripley.com.pe` — peru (lac)
+- `ubuy.com` — afghanistan (menaap)
+- `world-prices.com` — afghanistan (menaap)
+- `amazon.eg` — egypt (menaap)
+- `carrefouregypt.com` — egypt (menaap)
+- `jumia.com.eg` — egypt (menaap)
+- `exporthub.com` — iran (menaap)
+- `ksp.co.il` — israel (menaap)
+- `boutiqaat.com` — kuwait (menaap)
+- `carrefourlebanon.com` — lebanon (menaap)
+- `ubuy.com.ly` — libya (menaap)
+- `marjanemall.ma` — morocco (menaap)
+- `oman.sharafdg.com` — oman (menaap)
+- `mytek.tn` — tunisia (menaap)
+- `amazon.ae` — united_arab_emirates (menaap)
+- `carrefour.ke` — kenya (ssa)
+- `cleanshelf.co.ke` — kenya (ssa)
+- `jumia.sn` — senegal (ssa)
+
+**Domain does not resolve** — 19 hosts, NXDOMAIN on repeat lookups.
+Dead, not blocked.
+
+- `cora.be` — belgium (eca)
+- `fresco.ge` — georgia (eca)
+- `bringmeister.de` — germany (eca)
+- `getnow.de` — germany (eca)
+- `synka-super.gr` — greece (eca)
+- `welbees.com.mt` — malta (eca)
+- `minipreco.pt` — portugal (eca)
+- `mohira.tj` — tajikistan (eca)
+- `brodiesbelize.com` — belize (lac)
+- `eaglemarket.ht` — haiti (lac)
+- `farmaciasmedco.com` — nicaragua (lac)
+- `caluangela.cv` — cabo_verde (ssa)
+- `warani.cf` — central_african_republic (ssa)
+- `peloustore.cd` — congo_dem_rep (ssa)
+- `melcomghana.com` — ghana (ssa)
+- `palacehypermarket.com` — ghana (ssa)
+- `eastmatt.co.ke` — kenya (ssa)
+- `exclusif.sn` — senegal (ssa)
+- `storna-shopping-vercel.app` — sudan (ssa)
+
+**DNS resolves but no usable response** — 14 hosts: expired or
+mismatched TLS certificate, or TCP timeout on every profile including
+`verify=False`.
+
+- `galaxias.gr` — greece (eca)
+- `supermarchesmatch.lu` — luxembourg (eca)
+- `delio.pl` — poland (eca)
+- `monitorulpreturilor.info` — romania (eca)
+- `turkey.tradekey.com` — turkiye (eca)
+- `lebazar.uz` — uzbekistan (eca)
+- `plazalama.com` — dominican_republic (lac)
+- `comphaiti.com` — haiti (lac)
+- `kazyon.com` — egypt (menaap)
+- `dnalifestyle.com` — jordan (menaap)
+- `bbsm.com.np` — nepal (sar)
+- `sastodeal.com` — nepal (sar)
+- `shoashopping.com` — ethiopia (ssa)
+- `koumbimarket.eu` — mauritania (ssa)
+
+### Measured but not yet worked — leads, not blockers
+
+These carry a confirmed priced surface and were simply not reached before the
+campaign paused. Cheapest starting point for the next wave. Do NOT read these
+as blocked.
+
+**JSON endpoint observed live returning prices** (13)
+
+- `aliexpress.com` — albania (eca)
+- `colruyt.be` — belgium (eca), 20 product URLs
+- `mijnspar.be` — belgium (eca), 5 product URLs
+- `njuskalo.hr` — croatia (eca)
+- `cdiscount.com` — france (eca)
+- `orinabiji.ge` — georgia (eca)
+- `roksh.com` — hungary (eca)
+- `groceries.aldi.ie` — ireland (eca)
+- `esselungaacasa.it` — italy (eca)
+- `coop.nl` — netherlands (eca)
+- `auchan.pl` — poland (eca)
+- `ocado.com` — united_kingdom (eca)
+- `mumafrica.com` — algeria (menaap)
+
+**product sitemap enumerated** (11)
+
+- `geramarket.com` — armenia (eca), 72 product URLs
+- `auchan.fr` — france (eca), 72 product URLs
+- `foodora.hu` — hungary (eca), 9259 product URLs
+- `pampanorama.it` — italy (eca), 171 product URLs
+- `beeyor.tj` — tajikistan (eca), 394 product URLs
+- `diy.com` — united_kingdom (eca), 8 product URLs
+- `iceland.co.uk` — united_kingdom (eca), 1 product URLs
+- `noon.com` — bahrain (menaap), 120000 product URLs
+- `iranpharmis.org` — iran (menaap), 209 product URLs
+- `yad2.co.il` — israel (menaap), 75 product URLs
+- `daraz.pk` — pakistan (menaap), 60 product URLs
