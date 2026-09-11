@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: willys_se
+url: https://www.willys.se/
+language: sv
+cadence: daily
+archive_prefix: "willys.se/"
+archive_path_re: "^/sortiment/[^/?]+"
+notes: |
+  Probed 2026-09-10. Willys is an Axfood-group (SAP Commerce Cloud) storefront.
+  Backend is a JSON REST tree at /axfood/rest/v1/c/<category-path>?page=<n>,
+  which returns {"results": [...], "pagination": {...}} -- pageSize query
+  param is ignored server-side, always 10 items/page. Enumerability proof:
+  category "brod-och-kakor/brod" page=0 vs page=1 returned disjoint sets of
+  10 product codes each (0 overlap), pagination.numberOfPages=14,
+  totalNumberOfResults=137. Category paths are discovered from the site's
+  own sitemap.xml -> "Category-*.xml" child sitemap (a few hundred
+  paths under /sortiment/); NOTE the top-level sitemap.xml has a live bug
+  where every <loc> is the domain concatenated with itself twice
+  ("https://www.willys.sehttps://www.willys.se/medias/...") -- the spider
+  strips the duplicate, see _axfood_base.py::_clean_loc.
+  Currency: SEK, priceValue field is already a decimal float (no
+  minor-unit division, unlike WooCommerce). Listing items carry no PDP
+  slug (seoTitle empty on every item sampled), so `url` is set to the
+  category listing page (a real, browsable, server-rendered page), not a
+  per-product permalink.
+  Shares one platform (and one new shared base class, _axfood_base.py)
+  with hemkop_se -- see that manifest's notes for the sibling-tenant
+  cross-check. hemkop_se.py and willys_se.py are the two files this batch
+  touches in addition to their own YAMLs.
+  Page family read: API (JSON), category-scoped. archive_prefix/
+  archive_path_re set to the conservative bare-host + loose default but
+  NOT validated against the Common Crawl index in this session --
+  category HTML pages may or may not carry JSON-LD; unconfirmed.
+  Test run 2026-09-10: `prices collect --source willys_se --max-items 20`
+  -> 20 rows, all priced, e.g. SEK 6.53 "Minibaguette Vete".

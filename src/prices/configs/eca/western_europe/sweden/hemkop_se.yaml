@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: hemkop_se
+url: https://www.hemkop.se/
+language: sv
+cadence: daily
+archive_prefix: "hemkop.se/"
+archive_path_re: "^/sortiment/[^/?]+"
+notes: |
+  Probed 2026-09-10. Hemkop is the sibling Axfood-group (SAP Commerce
+  Cloud) tenant to willys_se -- confirmed to expose the IDENTICAL
+  axfood/rest/v1/c/<category-path>?page=<n> REST tree, not just the
+  wave-3 trace's /_next/data/<buildId>/... Next.js data route. Preferred
+  the REST tree per batch instructions: a buildId-scoped Next.js data path
+  breaks on every deploy, the REST tree needs no buildId and is shared
+  with willys_se via one new base class (_axfood_base.py, owned by this
+  batch, subclassed by both willys_se.py and hemkop_se.py).
+  Enumerability proof: category "kott-fagel-och-chark/fagel-/fryst-fagel"
+  page=0 vs page=1 returned disjoint sets of 10 product codes each (0
+  overlap), pagination.numberOfPages=7, totalNumberOfResults=61. Category
+  paths discovered the same way as willys_se: sitemap.xml -> "Category-
+  *.xml" child sitemap, with the identical domain-doubled <loc> bug
+  stripped by _axfood_base.py::_clean_loc.
+  Currency: SEK, priceValue is already decimal (no minor-unit scaling).
+  No PDP slug on listing items -> `url` set to the category listing page.
+  Page family read: API (JSON), category-scoped. archive_prefix/
+  archive_path_re set to the conservative bare-host + loose default but
+  NOT validated against the Common Crawl index in this session.
+  Test run 2026-09-10: `prices collect --source hemkop_se --max-items 20`
+  -> 20 rows, all priced.
