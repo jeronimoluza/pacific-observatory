@@ -1,0 +1,54 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pampanorama_it
+url: https://www.pampanorama.it/
+language: it
+cadence: weekly
+channel: supermarket
+notes: |
+  Pam Panorama -- large Italian supermarket chain. www.pampanorama.it is a
+  bespoke React SPA (not WooCommerce/SAP-Hybris); /prodotti/<slug>.html pages
+  are a client-rendered shell with NO server-rendered price data (byte-
+  identical ~5.2KB HTML shown on every URL tried, confirmed 2026-09-10).
+
+  Found the real data source via a headless-Chromium network trace of a
+  single PDP: the SPA calls `POST https://coeus.ppapi.it/api/v2_2/post/query`
+  (endpoint string lives in the site's own `main.*.chunk.js` as
+  `api.endpoint`), no auth/cookies required. The PDP's own call uses
+  `fieldQueries[slug]=<slug>` to fetch one post, but the SAME endpoint
+  without that filter -- `typeUuid=product`, `limit`/`offset` -- enumerates
+  the FULL catalog. Confirmed enumerable live: offset=0 vs offset=200
+  (limit=200 each) returned ids 2250-2460 vs 2461-2666, 200/200 rows, ZERO
+  overlap -> DISTINCT.
+
+  Catalog size measured by walking offset until an empty page: exactly 6312
+  `typeUuid=product` posts (2026-09-10). This corrects the pre-probe's
+  "171 product URLs" figure, which came from the Playwright trace's one
+  single-PDP capture, not the enumerable bulk endpoint -- sitemap.xml
+  independently shows 6135-6165 `/prodotti/*.html` URLs, consistent with the
+  6312 API count.
+
+  IMPORTANT, probed not assumed: `metadatas.price` is EMPTY for most posts --
+  this is a brand/nutrition content hub first, e-commerce second. A full
+  scan of all 6312 products found exactly 262 with a non-empty price
+  (~4.2%), concentrated in wine, fresh meat/fish, deli, and produce. Prices
+  are mixed Italian-locale formats -- plain point-decimal ("9.9"),
+  comma-decimal ("4,9"), and per-weight annotations for loose items
+  ("0.99€/HG", "0,99 al kg", "all'etto 3.99" = per 100g). The spider takes
+  the first digit run (comma -> decimal point) and drops anything with no
+  parseable price; it does not attempt to normalize per-kg vs per-item
+  pricing since the site itself displays loose/bulk goods this way at
+  retail. Currency is EUR (Italy; the API itself carries no currency field).
+
+  Test (`prices collect --source pampanorama_it --max-items 20`): 20/20 rows,
+  all priced EUR, e.g. "von Steiner Südtirol-Alto Adige DOC Sauvignon 75 cl"
+  EUR 9.9, "BOSCO AI SALICI Chianti Classico DOCG 750 ml" EUR 5.9,
+  "Carotine julienne Pam" EUR 0.99.
+
+  Italy already has carrefour_it, bennet_it, cortilia_it in the tree --
+  Pam Panorama is a fully independent tenant (bespoke CMS API, not
+  WooCommerce/Hybris/VTEX), so this is additive assortment.
+  Wide catalog spanning food, wine, fresh produce; coicop_codes left unset
+  for the classifier.

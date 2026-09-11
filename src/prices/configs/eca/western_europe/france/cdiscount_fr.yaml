@@ -1,0 +1,86 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cdiscount_fr
+url: https://www.cdiscount.com/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Wave-3 gap-fill batch 17. Briefed endpoint (bffmobilesite.cdiscount.com/
+  carousel/navigation-history) confirmed live 2026-09-10 to be exactly
+  the "widget, not enumeration route" case the addendum warns about: 405
+  on GET, then 400 on POST demanding a `UniqueVisitContext` cookie AND an
+  `X-CDS-Context-UniqueVisitId` header -- a personalization carousel.
+  Probed other bffmobilesite paths blind (search/catalog/product/*) --
+  all either 404 ("no static resource") or (for `/search`, which DOES
+  exist -- 405 on GET, 400 "something is wrong with the request" on a
+  guessed POST body) require reverse-engineering the mobile app's private
+  request schema. Abandoned that host rather than guess further.
+
+  The real enumerable surface is the web site's own keyword-search page:
+  https://www.cdiscount.com/search/<catId>/<keyword>.html?page=<n>.
+  Reaching it needs a real browser first: EVERY plain curl AND curl_cffi
+  request to www.cdiscount.com (5 TLS profiles: chrome120/124/131/133a/
+  safari17_0) returns an identical 14,057-byte `__blnChallengeStore`
+  (Baleen anti-bot vendor) + Cloudflare JS-challenge shell at HTTP 200 --
+  a genuine JS-execution wall, not a TLS-fingerprint gate (byte-identical
+  across every profile tried). A real headless Chromium clears it in ~6s;
+  the resulting cookie jar (visit_baleen_*, VisitContextCookie,
+  UniqueVisitContext, cf_clearance, __cf_bm) replays cleanly on a plain
+  curl_cffi/Scrapy request afterward -- confirmed live 2026-09-10 by
+  re-fetching the same search URL with only the harvested cookies (no
+  further TLS tricks) and getting the identical full listing HTML a real
+  browser saw. This is the SAME "Playwright to discover, plain HTTP to
+  scrape" pattern already shipped in this repo for taw9eel_kw.py (AWS WAF
+  aws-waf-token case) -- different vendor (Baleen/Cloudflare vs AWS WAF),
+  identical shape. Playwright runs exactly ONCE per crawl, in `start()`,
+  to mint the cookie jar; every search-results page after that is a bare
+  scrapy.Request carrying that cookie jar -- no Playwright at the
+  per-item or per-page level, consistent with the addendum's own guiding
+  principle even though this source didn't end up using the widget API
+  it named.
+
+  Listing pages are styled-components React SSR with NO __NEXT_DATA__/
+  JSON blob (checked, absent) -- but the product grid IS present in the
+  raw HTML behind stable `data-e2e` attributes (not the hashed sc-xxxxx
+  classes): each card is `<a href=".../f-<catid>-<sku>.html#..."><article
+  data-e2e="offer-item">...<h2 data-e2e="lplr-title">name</h2>...<div
+  data-e2e="lplr-price">...<span>NN,NN €</span></div>`.
+
+  Enumerability confirmed live 2026-09-10 on keyword "chaussures"
+  (catId=10): page 1 (no query) vs `?page=2` -- 47 distinct product cards
+  extracted per page via regex, ZERO url overlap between the two sets
+  (verified with `comm -12` on the sorted url lists). Site reports
+  "248 406 produits" for this ONE keyword; Cdiscount overall is a
+  many-million-SKU general marketplace. `?p=2` / `?pageNumber=2` are NOT
+  the real pagination param (both silently re-serve page 1, confirmed by
+  page-1 marker product still present) -- only `?page=N` advances.
+
+  category comes from the product's OWN url path segments before the
+  `/f-<catid>-<sku>.html` suffix (e.g. "chaussures/basket/..." ->
+  "chaussures > basket") rather than the search keyword -- more accurate,
+  since keyword search pulls genuinely cross-category hits (a shoe rack
+  under "maison/meubles-mobilier" turned up in "chaussures" results,
+  confirmed live). price is "NN,NN €" (comma decimal + space + euro
+  sign); comma->dot normalized. currency hardcoded EUR (France).
+
+  10 keyword seeds span the marketplace's own top-nav departments
+  (verified live 2026-09-10, each a real, differently-sized result set:
+  chaussures=248,406, informatique=23,750, epicerie=10,268, jouets=32,484,
+  aspirateur=14,162 among those spot-checked) -- a discovery seed list
+  for a general marketplace, not an attempt at exhaustive coverage. Every
+  priced card checked is fulfilled by a named third-party marketplace
+  seller (same pattern as auchan_fr elsewhere in this batch), so channel
+  is `marketplace`; coicop_classification stays `classifier` and
+  coicop_codes is left unset (spans nearly every COICOP division,
+  "epicerie"/groceries included via marketplace sellers).
+
+  CAVEAT: the Baleen challenge's own cookie header advertises a 900s
+  (15 min) maxAge. A crawl across 10 keywords x many pages could in
+  principle outlast that window on a slow run; this spider does not
+  re-bootstrap mid-crawl (same limitation taw9eel_kw accepted).
+  MAX_PAGES_PER_KEYWORD is kept at 15 to stay well inside that budget --
+  a future maintainer wanting deeper pagination should re-bootstrap
+  periodically rather than just raise the cap.

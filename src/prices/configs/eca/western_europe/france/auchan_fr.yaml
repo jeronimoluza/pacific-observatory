@@ -1,0 +1,61 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: auchan_fr
+url: https://www.auchan.fr/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Wave-3 gap-fill batch 17. Briefed as a hypermarket candidate (72
+  product URLs matched the brief's pattern -- an undercount). Probed
+  live 2026-09-10: https://www.auchan.fr/sitemap.xml -> sitemap-
+  products.xml -> a 7-way sharded sitemapindex (sitemap-products1..7.xml,
+  50,000 + 50,000 + 50,000 + 50,000 + 50,000 + 50,000 + 16,601 =
+  316,601 product URLs). Shard1 vs shard2 full URL sets: ZERO overlap
+  (alphabetic partition) -> DISTINCT, same convention as auchan_hu/
+  alcampo_es (both already in this tree -- see those files first if
+  touching Auchan-group spiders again; the group runs a DIFFERENT
+  storefront platform per banner, this is the 7th distinct one).
+
+  IMPORTANT, re-scoped from the briefed channel: every grocery PDP
+  sampled (15/15 across dairy, biscuits, pasta, coffee, water,
+  chocolate, juice, spanning 4 different sitemap shards) came back
+  `"unavailability_reason":"plus dans la gamme"` (discontinued/no
+  longer carried) with NO price meta tag at all -- while every non-food
+  PDP sampled (home goods, DIY, electronics, toys, LED lighting) is live
+  with a real price. This is consistent with Auchan France's real-world
+  2024-2025 retrenchment (most French hypermarkets sold off to other
+  chains) -- auchan.fr's LIVE catalog is not a functioning grocery/
+  hypermarket feed despite the brand and URL. This is a real, currently
+  unfilled gap: France has no live online-grocery source in this tree.
+
+  What IS live is a general-merchandise marketplace: every priced PDP
+  checked carries a named third-party `seller` in an inline
+  `productUpdateDetail` JS blob (e.g. "Paris Prix", "Multishop",
+  "Ropo HX - National", "Nouveaux Marchands") -- never "Auchan" itself.
+  channel is set to `marketplace` on this evidence, not hypermarket.
+  coicop_codes left unset (spans electronics/home/DIY/toys/some
+  surviving grocery listings, no single COICOP class).
+
+  Price/name are schema.org MICRODATA meta tags
+  (`<meta itemprop="price" content="328.99">` /
+  `itemprop="priceCurrency" content="EUR"`), not JSON-LD and not the
+  `product:price:amount` OpenGraph tag the shared WooBaseSpider
+  parse_html fallback chain checks -- that chain does not cover this
+  page's markup, so this ships as a standalone spider (regex-based,
+  mirrors mathaus_ro.py's approach) rather than touching the shared
+  base file. Name read from `og:title` (clean, no site-suffix to
+  strip). Category read from the same `productUpdateDetail` blob's
+  flat `category.level1..level5` keys, joined in order for whichever
+  levels are present.
+
+  Plain GET, no impersonation/Playwright needed (robots.txt disallows
+  only checkout/account/search/sort-param paths, not plain PDPs or
+  sitemaps). Verified live 2026-09-10, 4 non-food PDPs across 2 shards,
+  all real EUR prices: 'Armoire de chambre 2 portes avec penderie pin
+  massif naturel ULLI' EUR 328.99, 'Bandeau led led strip light rgbic'
+  EUR 33.82, 'GP TOYS Figurines articulees Gormiti Scion of the Air
+  Clan 27cm' EUR 29.99, 'GRAF Recuperateur d'eau 250L Arondo gris
+  graphite' EUR 187.94.

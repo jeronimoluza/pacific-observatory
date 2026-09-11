@@ -1,0 +1,88 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: penny_roksh_hu
+url: https://www.roksh.com/
+language: hu
+cadence: weekly
+channel: marketplace
+notes: |
+  Wave-3 gap-fill batch 17, briefed as "roksh_hu". Briefed endpoint
+  (roksh-backend.roksh.com/api/translations/get/0/hu) confirmed live
+  2026-09-10 to be a UI-string dictionary, not catalog data -- but it
+  proved the backend host answers anonymously, worth a full network
+  trace.
+
+  roksh.com is a MULTI-TENANT personal-shopper marketplace, not one
+  retailer: GET https://shopservice.roksh.com/api/Provider/GetAllProviders
+  (wide open, no auth) lists 15 tenants -- ALDI, Toman Diet, Penny
+  (PENNY-HU), Bijó, SZEGA Foods, Alphazoo, Beerselection,
+  Alphazoocampona, Party Point, Szimpatika Alkotás Gyógyszertár
+  (pharmacy), METRO (METRO_HU), REGIO JÁTÉK (toys), chocoMe, Dolce
+  Burata, Mcsemege. ALDI is ALREADY onboarded in this tree as
+  aldi_roksh_hu.yaml/.py, targeting the dedicated shop.aldi.hu storefront
+  -- this source does NOT re-scrape Aldi (see verification below) and
+  targets PENNY-HU instead: Penny Market, a real, large Hungarian
+  discount-supermarket chain, not otherwise present in this tree.
+
+  Named penny_roksh_hu (tenant-first) rather than a bare roksh_hu, to
+  match the aldi_roksh_hu naming convention and avoid implying full-
+  platform coverage -- METRO_HU, SZIMPATIKA5-HU and CHOCOME-HU were
+  spot-checked live on the same productlist endpoint used here and all
+  3 returned HTTP 500 (likely account/session prerequisites not
+  investigated this pass -- Penny needed zero session setup), so this
+  source covers PENNY-HU only; the other 13 tenants are NOT attempted
+  and would each need their own probe pass.
+
+  Platform mechanics (Angular SPA, backend shopservice.roksh.com, no
+  auth needed, confirmed live 2026-09-10):
+  - GET /category/GetFullCategoryList?providerCode=PENNY-HU&isOwnWebshop=false
+    -> the platform's SHARED category taxonomy (confirmed near-identical
+    in size/shape when queried with providerCode=ALDI -- this is the
+    global taxonomy, not per-tenant), 383 leaf ProgIDs.
+  - The additionalCategoryProductList endpoint aldi_roksh_hu.py uses
+    (with isOwnWebshop=true, correctly scoped for Aldi's OWN dedicated
+    shop.aldi.hu domain) does NOT correctly scope to Penny: called with
+    providerCode=PENNY-HU (isOwnWebshop true or false), it returned a
+    product whose productProvider[0].providerID was 66 (METRO_HU), not
+    19 (Penny) -- abandoned for this tenant.
+  - GET /productlist/CategoryProductList?providerCode=PENNY-HU&progId=
+    <leaf>&page=1&numberOfItems=500 IS correctly scoped -- confirmed
+    live: progId=friss-tej (fresh milk) returns 7 products, every one's
+    productProvider[0].providerID == 19 and productDetails
+    .supplierAddress = "Penny Market Kft., 2351 Alsónémedi, Penny utca
+    2., Magyarország" -- Penny's real registered address, confirming
+    genuine Penny catalog data, not Aldi's or METRO's re-served under a
+    different label. This is the endpoint the spider uses.
+
+  Enumerability: leaf catalogs are small (friss-tej=7, kemeny-sajt=4,
+  grill-sajtok=0 -- not every leaf is stocked by Penny), so no in-leaf
+  pagination is needed (same shape as aldi_roksh_hu); distinct leaves
+  return entirely distinct, non-overlapping product-id sets (spot-
+  checked friss-tej vs kemeny-sajt: 0 shared ids) -- that disjointness
+  across leaves is this platform's enumerability proof, same convention
+  used elsewhere in this tree for small-leaf-category sources (parma_am,
+  sas_am, supermarket_am). A 40-of-383-leaf sample returned 33 non-empty
+  leaves and 193 products; extrapolated whole-catalog size on the order
+  of ~1,800 products. numberOfItems=500 sits well above any observed
+  leaf size.
+
+  Price/name/category live on the ProductList row itself (real HUF
+  prices, e.g. "Sissy ESL félzsíros tej 2,8% 1 l" HUF 295.00), not
+  nested under productProvider[0] (that array duplicates name/price per
+  offering provider, but matches the row-level fields exactly since
+  providerCode already scoped the query to one provider).
+
+  url is a best-effort constructed permalink
+  (https://www.roksh.com/termek/{product_id}), matching the SAME
+  unverified-permalink convention aldi_roksh_hu.yaml already uses for
+  shop.aldi.hu -- Penny has no dedicated storefront domain, and
+  roksh.com's own routes are Angular client-side (SPA) with no server-
+  rendered PDP to confirm a 200 against. Stable identifier link, not
+  guaranteed independently crawlable.
+
+  GOTCHA (same as aldi_roksh_hu): personal-shopper platform, so a margin
+  on top of Penny's own shelf price is possible -- channel is
+  marketplace, not supermarket. coicop_classification left as classifier
+  (wide grocery catalog, no single COICOP class).
