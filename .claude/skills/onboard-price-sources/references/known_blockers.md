@@ -2233,3 +2233,245 @@ Two of this batch's four candidates shipped (`beeyor_tj`, `daraz_pk` — see
   for another batch; if a real Armenian retailer named similarly to
   "GeraMarket" exists, it is at a different domain than the one briefed.
   Probed 2026-09-10.
+
+## 2026-09-11 — wave 5, ddgs discovery for the worst-covered countries
+
+Round 2 of the gap-fill campaign. The COICOP coverage grid was measured first,
+and the 23 countries publishing fewest leaf-by-unit cells were swept with
+`ddgs` (443 queries, backends pinned), then probed. 1,957 candidate hosts
+reduced to 69 verified retail candidates, of which 39 shipped.
+
+**The filter that did the work was currency, not relevance scoring.** `ddgs`
+matches the country *word*, not the country: the Chad pack returned a US
+TV-and-appliance store, the Dominica pack a US grocery chain, the Gibraltar
+pack a US drum-hardware brand. Checking that a storefront actually prices in
+its country's own currency killed **331 of 410** otherwise-plausible
+candidates. Do this before spending an agent on anything.
+
+**The recurring dead end of this wave, six times over:** a live, well-formed
+platform API sitting over a catalog that has no prices in it. A 200 from
+`/wp-json/wc/store/v1/products` proves the site is reachable and paginates; it
+proves nothing about whether the catalog sells anything at a price. Read a
+product before ranking a candidate.
+
+Four countries — Gibraltar, Central African Republic, Guinea-Bissau and Palau
+— produced zero verified candidates from the sweep at all. For Gibraltar that
+is likely real rather than a search failure: a GBP micro-economy served by UK
+retailers rather than by domestic storefronts.
+
+### Botswana — an enquiry-only catalog priced entirely at zero
+
+- **cyberstore.co.bw** (BW). WooCommerce Store API at /wp-json/wc/store/v1/products
+  returns HTTP 200 and paginates cleanly (679 products across 7 pages, page1 vs
+  page2 disjoint id sets — enumerability is fine). The blocker is that every
+  single product carries price=0 / regular_price=0 / sale_price=0 AND an empty
+  price_html string. Verified this is real, not a Store-API-only omission, by
+  fetching a live PDP directly (https://cyberstore.co.bw/the-13-inch-macbook-air-m4/,
+  2026-09-11): the rendered price block reads literally 'Contact Us' — the site
+  is an enquiry/quote-request electronics catalog, not a priced storefront. No
+  price is recoverable from any surface (API, price_html, rendered DOM) because
+  none exists; this is not a JS-hydration or auth problem, so Playwright would
+  not help and was not tried (no reason to expect JS to materialize a price the
+  server-side WooCommerce product object never had). Structurally the same
+  failure mode already on record for pnpbotswana.co.bw
+  (src/prices/configs/ssa/southern_africa/botswana/notwanepharmacy_bw.yaml
+  notes: 'WhatsApp-order only, not a real catalog scrape target'). Not scaffolded.
+  Checked 2026-09-11.
+
+### Namibia — a B2B distributor behind a login wall
+
+- **newmed.com.na** (NA, NewMed Holdings — pharmaceuticals/medical-consumables/
+  devices/equipment/veterinary distributor) — WordPress site, HTTP 200
+  throughout, but no e-commerce surface anywhere. `/wp-json/wc/store/v1/products`
+  returns `rest_no_route`; the full `/wp-json/` route dump (435 routes) has
+  nothing matching `wc`, `product`, or `shop` — WooCommerce is not installed at
+  all despite `wp-content`/`woocommerce` strings fingerprinting in the raw
+  HTML (a Divi theme + plugin reference, not a live Store API). `/products/`
+  lists product *categories* only (Pharmaceuticals, Disposables, Devices,
+  Equipment, Consumer Healthcare, Veterinary) with zero SKUs, zero prices, and
+  zero add-to-cart affordances anywhere in the rendered text. `/buy-online/`
+  — the site's only other candidate route — is a bare "Sign In / Create
+  Account" B2B ordering-portal wall with no visible catalog behind it. This
+  matches the assignment brief's flag ("platform fingerprint only, no working
+  API") — probed properly (curl_cffi fingerprint, full wp-json route
+  enumeration, manual read of `/products/` and `/buy-online/` page text
+  stripped of script/style) rather than assumed; confirmed dead, not merely
+  unproven. No Playwright network trace run — a login-walled B2B portal with
+  no visible product listing behind the wall isn't expected to reveal a
+  richer catalog via JS network capture, and there is no public price surface
+  to trace. Probed 2026-09-11.
+
+### Eswatini and Botswana — Spar Eswatini is a marketing site, and two empty WooCommerce installs
+
+- **spareswatini.co.sz** (SZ, "Spar Eswatini") — WordPress + Divi theme with
+  the WooCommerce plugin installed, but no populated shop: the Store API
+  route is registered (`/wp-json` lists `/wc/store/v1/products` in its
+  routes) yet `GET /wp-json/wc/store/v1/products` returns `[]` for every
+  query, `wp-sitemap.xml` has only posts/pages/categories/users sitemaps (no
+  product sitemap), and the raw homepage HTML contains zero `/shop`-like
+  hrefs. Ran the mandatory Playwright network-trace (this was pre-flagged
+  "endpoint unproven, no working API"): the rendered page's only
+  shop/product/store link is `/store-locator/` (a physical-branch finder),
+  and zero JSON responses fire from the domain during load + scroll. No
+  sibling domain either — `shop.`/`order.`/`store.`/`app.spareswatini.co.sz`,
+  `spar.co.sz`, `spar2u.co.sz`, `onlinespar.co.sz` all fail to resolve. This
+  is a marketing/social-media site for the physical Spar chain (homepage
+  banner is a "WIN E1,000,000" Instagram competition promo), not an online
+  store. Probed 2026-09-11 (Eswatini batch 20).
+
+#### Brochure-only WordPress / no online store
+
+- **haskinshardware.co.bw** (BW, Haskins Hardware) — WordPress with a
+  WooCommerce-flavoured theme (CSS classes present), but the WooCommerce
+  Store API route is not even registered in `/wp-json`'s route list (unlike
+  spareswatini.co.sz above, where the route exists but is empty — this
+  install doesn't have WooCommerce Blocks/Store API active at all). Only one
+  shop-like link exists on the entire site (`/power-products/`). Ran the
+  mandatory Playwright network-trace and a full render+scroll of
+  `/power-products/` specifically (this was pre-flagged "endpoint unproven,
+  fingerprint only"): 0 product-DOM elements after full JS hydration, 0 JSON
+  responses captured anywhere on the domain during either pass. Checked
+  sibling domains (`shop.`/`store.haskinshardware.co.bw`, `haskins.co.bw`) —
+  none resolve or respond (the last times out). Genuine brochure site for an
+  offline hardware retailer. Probed 2026-09-11 (Botswana batch 20).
+
+### Guinea — a brochure catalog with 208 zero-priced products
+
+- **abc-guinea.com** (GN) -- not access-blocked, but has no prices to scrape.
+  WooCommerce Store API at /wp-json/wc/store/v1/products is open, no auth,
+  200 OK, paginates fine (208 products walked across 3 pages of 100). Every
+  single product returns `"price": "0", "regular_price": "0",
+  "sale_price": "0", "price_html": ""`. Spot-checked a live PDP
+  (/fr/product/tcl-ac-avec-unite-interieure-exterieure/, 200 OK, TCL air
+  conditioner) -- no "prix"/currency text anywhere in the rendered HTML.
+  This reads as a brochure/lead-gen electronics catalog (call-for-quote
+  pricing model), not a broken scraper or a WAF block. Did not attempt a
+  Playwright network trace -- the Store API itself is open and returning
+  well-formed zero-price data, so a browser trace would not surface a
+  different, priced endpoint. Marked DEAD. 2026-09-11.
+
+### Liechtenstein — a gift-voucher platform and a motorsport ticket shop, both mistaken for retailers
+
+Two of seven assigned hosts did not ship. Neither is an access/WAF
+blocker in the usual sense — both are catalog-content mismatches found
+only after reading the actual product data, not from a status code.
+
+- **einkaufland.li** (LI). Fingerprinted WooCommerce Store API, confirmed
+  reachable with `curl_cffi impersonate=chrome124` — 200 JSON, CHF,
+  currency_minor_unit=2. But `/wp-json/wc/store/v1/products` returns
+  `x-wp-total: 1` on every page, and the live `/shop/` HTML confirms it:
+  the entire "catalog" is one SKU, `einkaufland-gutschein` (a gift
+  voucher). The site's own nav ("Mitglieder-Verzeichnis",
+  "Gutscheine bestellen", "Unsere Partnergeschäfte") reveals the real
+  business model: it is a regional gift-card/loyalty platform for
+  Liechtenstein's local shops, not a retailer with its own product
+  catalog — despite the domain name and the "highest value here" note
+  in the pre-probe, it fails the enumerability gate outright (one
+  product, one page, nothing to paginate). Checked 2026-09-11.
+- **shop.tgi.li** (LI). WooCommerce Store API confirmed live and correct
+  (26 products, x-wp-total=26, one page) — EUR is the genuine reported
+  currency, not a regex/detection artifact as the wave-5 addendum
+  flagged for other hosts this wave. Read the catalog: all 26 items are
+  motorsport event admission tickets and circuit parking passes for
+  DTM race weekends at German/Austrian tracks (Hockenheimring,
+  Sachsenring, Nürburgring, Oschersleben, Norisring, Lausitzring,
+  RedBull Ring) plus a "24h of Spa" parking ticket (Spa-Francorchamps,
+  Belgium). TGI AG is genuinely headquartered in Vaduz, Liechtenstein
+  (Städtle 33, FL-9490 Vaduz, confirmed from the site's own footer), but
+  the catalog itself has no CHF pricing and no connection to Liechtenstein
+  consumer price levels — it is pan-European motorsport-tourism ticketing
+  priced for a EUR-denominated cross-border audience. Not scaffolded:
+  even though it is technically enumerable and paginates-trivially (one
+  page of 26), it does not represent a Liechtenstein retail price
+  observation in any COICOP-relevant sense. Checked 2026-09-11.
+
+No Playwright network trace was needed for either — both were resolved
+from the WooCommerce Store API response alone, which was sufficient to
+read the whole catalog content.
+
+### Syria — an app-only storefront with no web catalog
+
+- **paloma.sy** (SY, بالوما) — not a blocker in the access sense; this
+  is an APP-ONLY source with no web catalogue. Fetched 2026-09-11 via
+  curl_cffi impersonate=chrome124: https://paloma.sy/ and
+  https://www.paloma.sy/ both return HTTP 200 (22.5KB), but the page is
+  a mobile-app landing page — hero copy "عن التطبيق" (about the app),
+  "لقطات الشاشة" (screenshots), 3x play.google.com links, 3x
+  apps.apple.com links, zero occurrences of shop/product/cart/catalog
+  anywhere in the HTML. No wp-json, woocommerce, or shopify marker
+  either. No WooCommerce Store API, no /shop, no listing page of any
+  kind was found — the entire site is marketing copy for a mobile app
+  plus app-store badges. Did not attempt: reverse-engineering the
+  mobile app's own backend API (out of scope for this batch; would
+  require APK/IPA teardown, not a web probe). Verdict: DEAD (app-only,
+  no web catalogue) — matches the Phase 3 SKIP taxonomy's "App-only (no
+  web catalogue)" bucket, not a WAF/anti-bot block.
+
+### South Sudan, Kiribati, Chad and American Samoa — four countries that yielded nothing
+
+#### Placeholder / seed demo-data catalog (real API, no real prices)
+
+- **globicare-pharma.com** (SS, GlobiCare Pharmaceuticals) — WooCommerce Store API open
+  and unauthenticated, pagination genuinely distinct (page1/page2 zero overlap), but
+  every one of the 39 total SKUs returns `prices.price == "0"`, `is_purchasable: false`,
+  `add_to_cart.text: "Read more"`. Confirmed on the live PDP HTML too — no price text
+  anywhere on the page, no cart button. A phone/WhatsApp-order pharmacy catalog with
+  no checkout pricing, same pattern as cmsxm.net above. Probed 2026-09-11.
+- **mpharmaco.com** (SS, M-Pharma Company) — identical failure mode and identical
+  publisher pattern to globicare-pharma.com: 63 total SKUs across 7 pages, every one
+  `prices.price == "0"`. South Sudan has no shippable pharmacy candidate from either
+  of this pass's two verified leads. Probed 2026-09-11.
+- **nicaretrust.store** (KI, NI-CARE TRUST) — real, in-country business (About/Contact
+  pages name Tarawa, Kiribati explicitly; not a vanity-domain trap), WooCommerce Store
+  API open, AUD currency matches Kiribati's own currency. But `X-WP-Total: 2` — the
+  entire catalog is 2 SKUs ("Oceanlink $10 Topup", "Vodafone $10 Topup" prepaid mobile
+  recharge for overseas family remittance), so it fails the Phase-6 >=5-row gate by
+  construction, not from a probe or access failure. Also largely redundant with
+  Kiribati's already-shipped `vodafone_ki_mobile.yaml` (08.1.0) and
+  `vodafone_ki_flashnet.yaml` (08.3.0) tariff coverage. Do not build; re-check only if
+  the catalog visibly grows. Probed 2026-09-11.
+
+#### No products on the site (corporate marketing portal)
+
+- **lesportif.td** (TD, "Le Sportif") — candidate was characterized as a sports-retail
+  storefront; the live site is a Chadian SPORTS NEWS/journalism portal (athletics,
+  basketball, football, handball, boxing, rugby, taekwondo, horse racing — results and
+  match reports), not a store. `woocommerce`/`wp-content` fingerprint hits were theme
+  CSS leftovers (`woocommerce-page` nav classes render on every WP page regardless of
+  whether the plugin is active for commerce), not evidence of an actual shop. Verified
+  with the full ladder before concluding, per the wave-5 caution that this host had
+  fingerprint-only, no proven API: (1) `/wp-json/wc/store/v1/products` -> HTTP 404;
+  (2) the site's own `/wp-json/` route index lists 351 registered REST routes, zero
+  containing `wc`/`product`/`shop`/`store`/`cocart`; (3) `/shop/`, `/boutique/`,
+  `/produit/`, `/produits/`, `/product/`, `/products/` all 404; (4) `sitemap_index.xml`
+  has only post/page/category/tag/author sitemaps, no product sitemap; (5) a full
+  Playwright network-trace of the homepage (headless chromium, 6s settle + scroll)
+  captured 452 anchors — zero contain shop/boutique/cart/checkout/product/panier/
+  magasin — and only 3 non-static network responses fired, all Google Maps/ad
+  telemetry, no commerce API of any kind. Chad has no shippable candidate from this
+  batch. Probed 2026-09-11.
+
+#### Vanity ccTLD, not a domestic retailer (currency/geo mismatch after verification)
+
+- **fitjeans.as** (AS, listed as "FITJEANS") — 301-redirects straight to
+  `www.fitjeans.com`, a global DTC apparel Shopify tenant with locale storefronts for
+  en-us/en-au/en-ca/en-ch/en-de/en-eu/en-fi/en-gb/en-nl/en-no/en-se (no en-as market).
+  Its own refund-policy page's shipping-zone table ends: "*Excludes American Samoa,
+  Micronesia, Guam, Marshall Islands, Northern Mariana Islands, Palau, Puerto Rico,
+  U.S. Virgin Islands." The `.as` registration is a vanity-branding play ("fit" + ccTLD
+  reads as "fitjeans"), not a business serving American Samoa — confirms exactly the
+  wave-5 caution's hypothesis for this host. American Samoa has no shippable candidate
+  from this batch. Probed 2026-09-11.
+
+#### Environment note (not a site blocker, recorded for the next agent on a8)
+
+Running a Playwright script as `~/venv/bin/python /path/to/script.py` (file-argument
+invocation) on `a8:~/po-worktrees/fill-gap-sources` reproducibly failed with
+`AttributeError: module 'inspect' has no attribute 'FrameInfo'` inside
+`playwright/_impl/_connection.py`, preceded by unrelated stray stdout (a PPP/CPI
+currency-index dashboard dump) that did not originate from the script being run —
+this looks like output leakage from something else on the shared box, not a bug in
+the script. Feeding the identical script to `~/venv/bin/python` via a stdin heredoc
+(`~/venv/bin/python << "EOF" ... EOF`) or via `-c` ran clean every time. Not escalated
+further since the workaround is free; flagging so the next agent does not waste time
+suspecting their own script.
