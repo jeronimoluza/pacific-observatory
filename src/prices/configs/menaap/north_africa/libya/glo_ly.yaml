@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://glo.ly/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "glo_ly"
+  base_url: "https://glo.ly/store"
+  currency: "LYD"
+  language: "ar"
+  api_url: "https://glo.ly/store/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Queue custom HTML crawler or 
+  find sitemap/API before building | No Store API found; scrape sitemap/category/PDP HTML and parse vi
+  sible price plus model/category attributes | Product pages are public with LYD prices and Add to car
+  t, but /wp-json/wc/store/v1/products returned 404 on 2026-09-10 | origin=libya_candidate_price_sourc
+  es_2026-09-10.csv
