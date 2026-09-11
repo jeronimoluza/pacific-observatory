@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bmart_bw
+url: https://bmart.co.bw/
+language: en
+cadence: weekly
+channel: dept-store
+notes: |
+  Probed 2026-09-11: WooCommerce Store API,
+  /wp-json/wc/store/v1/products?per_page=100&page=N, no auth, HTTP 200.
+  Catalog size 79 products, one page (per_page=100 returns 79 then stops).
+  General-merchandise mix: printer toners/parts/filters (22+8+8),
+  books & stationery incl. Setswana-language Bibles (35), baby toys (3),
+  beauty & personal care (2), electronic devices (7). Pagination proof at
+  per_page=5: page1 ids {9375,9378,9381,9384,9399} vs page2 ids
+  {9360,9363,9365,9369,9372}, zero overlap -> DISTINCT. currency_code=BWP
+  from the API, minor_unit=2 (thebe), matches countries.yaml -- confirmed
+  from the API response, not assumed, per the wave-5 ZAR-contamination
+  warning for Southern Africa. Test run: prices collect --source bmart_bw
+  --max-items 20 -> 20 rows, all priced. Sample: BWP 799.00 'HP 207A
+  (W2210A) Black Toner Cartridge - Generic', BWP 620.00 'The KJV Study
+  Bible: Atlas Edition.'.

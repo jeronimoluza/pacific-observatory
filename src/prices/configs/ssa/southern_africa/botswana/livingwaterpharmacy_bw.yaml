@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: livingwaterpharmacy_bw
+url: https://livingwaterpharmacy.com/
+language: en
+cadence: weekly
+channel: pharmacy
+notes: |
+  Probed 2026-09-11: WooCommerce Store API,
+  /wp-json/wc/store/v1/products?per_page=100&page=N, no auth, HTTP 200.
+  Catalog size 33 products, one page. Pharmacy catalog (syrups,
+  supplements -- Emex Syrup, Osteocare, etc). Pagination proof at
+  per_page=5: page1 ids {328,329,330,331,332} vs page2 ids
+  {323,324,325,326,327}, zero overlap -> DISTINCT. currency_code=BWP
+  from the API, minor_unit=2, matches countries.yaml -- confirmed from
+  the API despite the .com TLD (site is a Gaborone pharmacy, not a
+  US-priced storefront). Test run: prices collect --source
+  livingwaterpharmacy_bw --max-items 20 -> 20 rows, all priced. Sample:
+  BWP 60.00 'Emex Syrup', BWP 67.00 'Osteocare'.

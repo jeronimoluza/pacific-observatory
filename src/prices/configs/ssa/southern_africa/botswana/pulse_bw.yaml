@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pulse_bw
+url: https://pulse.co.bw/
+language: en
+cadence: weekly
+channel: pharmacy
+notes: |
+  Probed 2026-09-11: WooCommerce Store API,
+  /wp-json/wc/store/v1/products?per_page=100&page=1, no auth, HTTP 200.
+  Catalog is genuinely tiny: the Store API returns exactly 4 products on
+  a single page, independently confirmed against the site's own Yoast
+  product-sitemap.xml (4 <loc> entries, same 4 slugs). One item
+  ('Mpumelelo Products') carries price=0 and is dropped by the shared
+  WooBase zero-price guard, leaving 3 real priced rows: African Dawn
+  Teas Assorted 40s (BWP 21.95), Berocca Boost Eff 20s (BWP 154.95),
+  Easywaves Coconut Hair food (BWP 7.95). currency_code=BWP,
+  minor_unit=2, matches countries.yaml. Enumerability: single page,
+  terminates cleanly (page2 returns empty, not a repeat of page1) --
+  not the 'same page forever' failure signature the gate exists to
+  catch, just a small real catalog. Kept per the wave-5
+  breadth-over-depth guidance for Botswana's review_uv_thin gate, but
+  flagged explicitly in batch_18_report.md: the max-items 20 test run
+  emits only 3 rows, short of the usual 5-row acceptance bar, because
+  that is the entire usable catalog, not a spider defect.

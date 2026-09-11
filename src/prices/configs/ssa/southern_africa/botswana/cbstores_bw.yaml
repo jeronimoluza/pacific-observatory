@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cbstores_bw
+url: https://cbstores.co.bw/
+language: en
+cadence: weekly
+channel: fashion
+notes: |
+  Probed 2026-09-11: Shopify /products.json?limit=250&page=N, no auth,
+  HTTP 200. Catalog size ~2,347 products (2,250 across 9 full pages of
+  250 + 97 on page 10) -- clothing/footwear retailer (kids/adult sandals,
+  shirts, etc). Pagination proof at limit=5: page1 ids
+  {8474947780653,15174330089517,15174353780781,15174356009005,
+  15174362300461} vs page2 ids {15174328877101,15174349717549,
+  15174384123949,15316960313389,15317091975213}, zero overlap ->
+  DISTINCT. /products.json itself has no currency field -- confirmed
+  BWP (not ZAR, despite this being exactly the cross-border storefront
+  shape the wave-5 addendum warns about) from a live PDP: inline JSON
+  "currency":"BWP", JSON-LD priceCurrency=BWP, and Shopify
+  analytics-meta Currency=BWP all agree. Test run: prices collect
+  --source cbstores_bw --max-items 20 -> 20 rows, all priced. Sample:
+  BWP 179.99 'Boys Double Velcro Open Toe Adventure Sandal', BWP 79.99
+  'Short Sleeve White Tie Detail Shirt'.

@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: masterfashion_bw
+url: https://masterfashion.co.bw/
+language: en
+cadence: weekly
+channel: fashion
+notes: |
+  Probed 2026-09-11: WooCommerce Store API,
+  /wp-json/wc/store/v1/products?per_page=100&page=N, no auth, HTTP 200.
+  Catalog size 607 products (600 across 6 full pages of 100 + 7 on
+  page 7). Fashion/perfumery catalog (Lattafa perfumes, caps, belts,
+  shirts). Carries 3 leftover 'ZZTEST' placeholder SKUs (ZZTEST
+  Cap/Belt/Shirt) out of 607 -- negligible noise (0.5%), left as-is
+  since they still carry real non-zero prices. Pagination proof at
+  per_page=5: page1 ids {43568,43569,44795,44796,44797} vs page2 ids
+  {43563,43564,43565,43566,43567}, zero overlap -> DISTINCT.
+  currency_code=BWP from the API, minor_unit=2, matches countries.yaml.
+  Test run: prices collect --source masterfashion_bw --max-items 20 ->
+  20 rows, all priced. Sample: BWP 75.50 'ZZTEST Cap', BWP 50.00
+  'ZZTEST Belt' (first two rows in the max-items-20 slice happen to be
+  the test SKUs; real product rows follow, see report for a fashion
+  sample).

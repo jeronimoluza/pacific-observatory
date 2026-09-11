@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopbw_bw
+url: https://shopbw.co.bw/
+language: en
+cadence: weekly
+channel: electronics
+notes: |
+  Probed 2026-09-11: WooCommerce Store API,
+  /wp-json/wc/store/v1/products?per_page=100&page=N, no auth, HTTP 200.
+  Catalog size 240 products (100+100+40 across 3 pages). Appliances/
+  electronics retailer: bar fridges, water dispensers/coolers, camping
+  fridges (Snomaster), kitchen appliances (Goldair), soundbars/
+  headphones (Philips, Sony), gas ovens (AEG). Pagination proof at
+  per_page=5: page1 ids {8717,8720,8725,8727,8729} vs page2 ids
+  {8697,8700,8707,8710,8713}, zero overlap -> DISTINCT. currency_code=BWP
+  from the API, minor_unit=0 for this tenant (no thebe subunit reported --
+  prices like 9495/4999 used directly, no division), matches
+  countries.yaml -- confirmed from the API response per the wave-5
+  ZAR-contamination warning. Test run: prices collect --source shopbw_bw
+  --max-items 20 -> 20 rows, all priced. Sample: BWP 9495.00 'Snomaster
+  SMBC-50 120L Under-Counter Beverage Cooler', BWP 4999.00 'SnoMaster
+  SMWD-RC Water Dispenser with Ice-Maker - White'.
