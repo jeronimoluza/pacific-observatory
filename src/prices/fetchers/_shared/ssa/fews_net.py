@@ -11,20 +11,31 @@ live 2026-08-07 against ``/api/marketpricefacts/``.
 One shared module, one public ``fetch_fews_<iso3>`` per country (Bucket-2).
 The API supports server-side date filtering via ``start_date=YYYY-MM-DD``
 (confirmed: narrows the result count, unlike the undocumented
-``period_date__gte`` which is silently ignored) plus ``ordering=-period_date``
-for newest-first pagination — used together so a fetch only walks the pages
-newer than the cutoff instead of the country's full history.
+``period_date__gte`` which is silently ignored), so a fetch only walks the
+pages newer than the cutoff instead of the country's full history. The
+``ordering`` param (formerly ``-period_date`` for newest-first) regressed
+sometime after 2026-08-07: as of 2026-09-11, ANY ``ordering`` value
+(``-period_date``, ``period_date``, ``-id``) makes the API return
+HTTP 202 with an empty body instead of the JSON page, which silently broke
+every country using this module (all raised "0 raw facts" without erroring).
+Fixed by dropping ``ordering`` entirely — without it, results paginate in
+the API's default order, which combined with ``start_date`` is ascending by
+``period_date`` (verified: SS offset=0 returns 2020-01, offset=900 returns
+2024-Q1), so pagination now walks forward chronologically from the cutoff
+instead of backward from "now". This is actually a better fit for the
+offset<1000 cap below: each run's cutoff advances to the max date fetched,
+so a capped first run still resumes forward next time with no gap, whereas
+newest-first-then-capped would have permanently stranded older history.
 
-Known constraint, verified live 2026-08-07: the API hard-caps pagination
-depth at ``offset=1000`` — any request past that returns HTTP 403 regardless
-of ``page_size`` (confirmed with single-shot ``page_size=1000&offset=0``
-too, so it is not a rate limit; ``offset=999`` succeeds, ``offset=1000``
-never does). On a large first-run backfill this silently truncates to the
-newest ~1000 raw facts for that country (still the most valuable slice,
-since results are newest-first) and ``_fetch_pages`` logs a warning and
-returns what it has rather than raising. Every subsequent run's delta is
-bounded by monthly cadence, so this only bites the very first collect per
-country. Per-market rows
+Known constraint, verified live 2026-08-07 and re-verified 2026-09-11: the
+API hard-caps pagination depth at ``offset=1000`` — any request past that
+offset returns HTTP 403 regardless of ``page_size`` (confirmed with
+single-shot ``page_size=1000&offset=0`` too, so it is not a rate limit;
+``offset=999`` succeeds, ``offset=1000`` never does). On a large first-run
+backfill this truncates to the oldest ~1000 raw facts after the cutoff (see
+the ordering note above); ``_fetch_pages`` catches the resulting exception
+and returns what it has rather than raising. Every subsequent run resumes
+from the new cutoff, so full history is recovered over several runs. Per-market rows
 are collapsed to a national monthly average per (commodity, unit, currency,
 price_type), mirroring the WFP fetcher's aggregation; market count and the
 USD common-currency value are kept in ``notes``, retail vs wholesale is kept
@@ -77,7 +88,6 @@ def _fetch_pages(session, country_code: str, cutoff: date) -> list[dict]:
     url = _API
     params = {
         "country_code": country_code,
-        "ordering": "-period_date",
         "page_size": _PAGE_SIZE,
         "start_date": cutoff.isoformat(),
     }

@@ -114,4 +114,13 @@ UNIT_MAP: Mapping[str, UnitEmit] = {
     "ml": UnitEmit(basis="volume", su="lt", mul=0.001),
     "l": UnitEmit(basis="volume", su="lt", mul=1.0),
     "cl": UnitEmit(basis="volume", su="lt", mul=0.01),
+    # Non-metric / bulk volumes reachable ONLY from a fetcher-declared `unit`
+    # column (declared_unit.py::_EXTRA_UNIT_WORDS). No surface for them exists
+    # in vocab/units.yaml, so the product-name grammar can never emit these
+    # keys and retail SKU parsing is unaffected. US vs imperial gallon is not
+    # guessed: bare "gallon" is the US gallon (every source that writes it is a
+    # US-gallon jurisdiction) and the one imperial source spells it out.
+    "gal": UnitEmit(basis="volume", su="lt", mul=3.785411784),
+    "gal_imp": UnitEmit(basis="volume", su="lt", mul=4.54609),
+    "m3": UnitEmit(basis="volume", su="lt", mul=1000.0),
 }

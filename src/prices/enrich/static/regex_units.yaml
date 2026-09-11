@@ -22,6 +22,10 @@ unit_map:
   ml: {basis: volume, su: lt, mul: 0.001}
   l:  {basis: volume, su: lt, mul: 1.0}
   cl: {basis: volume, su: lt, mul: 0.01}
+  # Declared-unit-only volumes (no pack_patterns surface reaches them).
+  gal:     {basis: volume, su: lt, mul: 3.785411784}
+  gal_imp: {basis: volume, su: lt, mul: 4.54609}
+  m3:      {basis: volume, su: lt, mul: 1000.0}
 
 # --- Extra unit patterns (NOT covered by pack_patterns) ---------------------
 # pack_patterns excludes length (cm/mm/m) by design (cutlery fits dimensions[]).

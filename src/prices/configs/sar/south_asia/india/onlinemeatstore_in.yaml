@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.onlinemeatstore.com"
+channel: fresh-market
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: INR
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "onlinemeatstore_in"
+  base_url: "https://www.onlinemeatstore.com"
+  api_url: "https://www.onlinemeatstore.com/wp-json/wc/store/v1/products"
+  currency: "INR"
+  language: "en"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 from the still_untried SAR queue (Phase 3 entry, discovery already done).
+  Delhi halal meat: buffalo, chicken, lamb, mutton, veal, seafood. Page family: API (wc/store/v1/products, no HTML page ever fetched). Verified live
+  2026-09-11: Store API returns distinct product ids on page=1 vs page=2, and prices.currency_code
+  in the payload matches the declared currency.

@@ -77,6 +77,7 @@ _PANELS: dict[str, tuple[str, str]] = {
     "cmr": ("Cameroon", "wfp-food-prices-for-cameroon"),
     "ben": ("Benin", "wfp-food-prices-for-benin"),
     "tgo": ("Togo", "wfp-food-prices-for-togo"),
+    "gab": ("Gabon", "wfp-food-prices-for-gabon"),
 }
 
 
@@ -323,3 +324,7 @@ def fetch_wfp_ben(cutoff: date) -> pd.DataFrame | None:
 
 def fetch_wfp_tgo(cutoff: date) -> pd.DataFrame | None:
     return _fetch(cutoff, iso3="tgo")
+
+
+def fetch_wfp_gab(cutoff: date) -> pd.DataFrame | None:
+    return _fetch(cutoff, iso3="gab")

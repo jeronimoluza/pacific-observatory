@@ -35,7 +35,38 @@ _EXTRA_UNIT_WORDS: dict[str, str] = {
     "ליטר": "l",  # Hebrew "liter"
     "מיליליטר": "ml",  # Hebrew "milliliter"
     'מ"ל': "ml",  # Hebrew "ml" abbreviation
+    # Full-word sale units observed in the WFP VAM feed's `unit` column
+    # (src/prices/fetchers/_shared/*/wfp_food_prices.py, 68 countries). The
+    # pound family also covers wb_rtdi_hti's "6 lbs" and gy_moa's "lb".
+    "pound": "lb",  # wfp_nic/wfp_bol/wfp_hti/wfp_gtm; as_aspa_utility_rates
+    "pounds": "lb",  # "100 Pounds" (wfp_gtm/wfp_ecu/wb_rtdi_gtm), "36 Pounds"
+    "lbs": "lb",  # "6 lbs" (wb_rtdi_hti), "20 lbs" (as_doc_cpi_avg_prices)
+    # es-LatAm spelling: wfp_bol writes "Libra" and "Pound" on the SAME
+    # country+item+date at the SAME price, which is what fixes it to the
+    # avoirdupois pound rather than the 460 g colonial libra.
+    "libra": "lb",
+    "gallon": "gal",  # wfp_gtm/lbr/hti/col, wb_rtdi_lbr/hti, pr_daco_fuel
+    "gal": "gal",  # as_aspa_utility_rates, as_doc_cpi_avg_prices, fews_lbr
+    "imperial_gallon": "gal_imp",  # ky_ofreg_fuel spells the imperial one out
+    "cubic meter": "m3",  # wfp_pse / pcbs_avg_prices_ps drinking water
+    "m3": "m3",  # stp_emae / th_pwa / sr_swm water tariffs
 }
+
+# Deliberately NOT mapped, though they are frequent in the same columns:
+#   * countable sale units ("Unit", "Head", "10 pcs", "Dozen", "Loaf", "Bar",
+#     "Bunch", "Pair") -- this function has no `count` return slot, and
+#     merge.compute_unit_value divides a count/item row by `count`, never by
+#     `amount_value`. A "Dozen" folded in here would be priced per piece at
+#     the price of twelve. Unconverted is recoverable; that is not.
+#   * non-goods sale units ("USD/LCU" is an FX rate, "Day"/"Month" are wages,
+#     "Course" is a transport fare, "1 GB" is a data bundle, "LCU/3.5kg" is a
+#     milling tariff). They already fall through the whitelist; they must keep
+#     falling through.
+#   * container units whose size is commodity-dependent ("Marmite", "Sack",
+#     "Box", "Packet", "Heap", "Pile", "Cuartilla", "Godet", "Tin (20 L)").
+#   * "1,000 gals" (as_aspa_utility_rates): "gals" is absent on purpose --
+#     _NUM_UNIT_RE reads "1,000" as the decimal 1.0, so a plural surface here
+#     would under-report the volume by 1000x.
 
 _UNIT_WORD_CI: dict[str, str] = {k.lower(): v for k, v in UNIT_NORM.items()}
 for _tok, _canon in _EXTRA_UNIT_WORDS.items():

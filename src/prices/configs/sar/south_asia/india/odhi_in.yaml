@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: generic_opencart_configured
+url: "https://odhi.in"
+channel: hypermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: INR
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "odhi_in"
+  nav_url: "https://odhi.in/"
+  currency: "INR"
+  language: "en"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 from the still_untried SAR queue (Phase 3 entry, discovery already done).
+  Coimbatore online supermarket/hypermarket: groceries, meat/seafood, cosmetics. Page family: listing (classic OpenCart index.php?path=<id>&route=product/category
+  category pages; nav auto-discovered from the homepage, 36 leaf paths found). Verified live
+  2026-09-11: category page at path=81 returns rendered product cards with rupee prices.
