@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: choob_af
+url: https://choob.af/
+language: en
+cadence: weekly
+channel: other
+coicop_codes: ["05.1.1"]
+archive_prefix: "www.choob.af/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  API. Was filed dead in known_blockers (HCDN_JA3 cluster, "fast-rejected,
+  no impersonation-profile cycling attempted", probed 2026-09-11) alongside
+  peace1971.com under the generic Huawei Cloud CDN 403 heading. Re-probed
+  2026-09-11: same lever already proven on somalistores.com/nilemart-ss.com/
+  bacolaa.com in this cluster — hcdn 403s curl_cffi TLS impersonation but
+  clears at 200 with a PLAIN non-impersonating request (WooBaseSpider's
+  default custom_settings never sets meta['impersonate'], so no override
+  needed). WooCommerce Store API confirmed enumerable: X-WP-Total=196,
+  page1/page2 fully disjoint ids. All 196 SKUs are furniture (tables, sofas,
+  chairs) -- narrow catalog, single COICOP class -- coicop_codes: ["05.1.1"].
+  currency_code=USD from the API payload itself (not countries.yaml's AFN
+  default): furniture/big-ticket sellers in Afghanistan commonly price in
+  USD given AFN volatility; sample verified prices ($100 table, $110.39
+  sofa, $50 chair) are plausible retail furniture prices in USD, not a
+  misread AFN/USD mixup. peace1971.com (bundled with choob.af in the
+  original blocker entry) does NOT open the same way: it also clears hcdn
+  with a plain request, but has no WooCommerce Store API (404) and is a
+  Themesflat eCommerce *template* ("Peace Stationery") with no real prices
+  found on /shop -- left unshipped, recorded as a placeholder-template dead
+  end, not a technical block.

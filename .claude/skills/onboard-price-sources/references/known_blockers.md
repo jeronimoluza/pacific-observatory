@@ -10865,3 +10865,126 @@ re-probe:
   site-wide `LocalBusiness` node carries `"priceRange": "IRR"` — a
   currency label, not a price. Zero IRR/Rial/Toman figures anywhere in the
   221 KB document.
+
+## 2026-09-11 breadth retry — SITEMAP_ENUM + JSONLD_NO_PRICE (blocker_retry_breadth.md)
+
+Breadth pass over 29 SITEMAP_ENUM + 14(bundled)/16(unbundled) JSONLD_NO_PRICE
+hosts from `/home/jeronimoluza/gapwork/blocker_retry_breadth.md`. Two hosts
+shipped; the rest re-confirm or sharpen existing verdicts. Full per-host
+table and shipped-source detail live in the session report; this section
+records only the two new levers and the notable re-probe deltas.
+
+**Opened: magnit.ru (RU) — shipped as `magnit_ru`, 4,929 rows measured
+(240s-capped test run; real catalog is larger, crawl was still enqueuing
+categories at the cap).** Prior verdict (probed 2026-08-07) checked the
+sitemap index's `__sitemap__/products.xml` child (~19,900 `/product/<slug>`
+URLs, all soft-404). The index has FIVE children; a sibling,
+`__sitemap__/catalog.xml`, lists real live category pages
+(`/catalog/<id>-<slug>`), each embedding a genuine
+`<script id="offer-catalog-jsonld" type="application/ld+json">` OfferCatalog
+block with ~30-33 real Offer entries (name/url/price/priceCurrency=RUB)
+directly in server-rendered HTML. No WAF, no impersonation needed. Lesson:
+when a sitemap index has multiple children, checking one and finding it
+stale does not clear the others — walk every child.
+
+**Opened: choob.af (AF) — shipped as `choob_af`, 196 rows measured (full
+catalog).** Filed dead under HCDN_JA3 (Huawei Cloud CDN) alongside
+peace1971.com, "fast-rejected, no impersonation-profile cycling attempted".
+Same lever already proven elsewhere in this cluster today
+(somalistores.com/nilemart-ss.com/bacolaa.com): hcdn 403s curl_cffi TLS
+impersonation but clears at 200 with a PLAIN non-impersonating request.
+Genuine WooCommerce Store API, 196 furniture SKUs, currency_code=USD from
+the payload itself. Narrow catalog -> `coicop_codes: ["05.1.1"]`,
+`coicop_classification: source_curated`. **peace1971.com does NOT open the
+same way**: clears the same hcdn wall with a plain request, but has no
+WooCommerce Store API (404) and is a Themesflat eCommerce *template* demo
+("Peace Stationery") with no real prices anywhere on `/shop` — recorded as
+a placeholder/template dead end, not a technical block.
+
+**hcdn plain-request lever re-confirmed / extended (2026-09-11):**
+- `choob.af` — OPENS (see above).
+- `peace1971.com` — clears the wall, but no catalog (template demo).
+- `albakreehonye.com` — clears the wall, genuine WooCommerce Store API, but
+  **REJECT — currency** (SAR, not YER): same pattern as every other
+  honey/coffee Yemen candidate probed in this campaign.
+- `alassaal.com` — clears the wall, genuine WooCommerce Store API with real
+  Arabic product names, but **REJECT — currency/locality** (USD, round
+  numbers like $90/$70/$180 — a diaspora-export storefront, not local YER
+  retail).
+
+**faithful-to-nature.co.za (ZA) — re-investigated, STILL BLOCKED, but the
+mechanism is now understood and it's a genuinely different class than the
+prior "tooling mismatch" theory.** A plain, standalone Python `requests`
+call with a UA string claiming "Chrome/124" clears at 200 consistently
+(10/10) — the SAME call with a UA claiming "Chrome/120" 403s with a real
+Cloudflare Turnstile challenge page every time. This looked like a
+UA-substring rule (the repo's global `IMPERSONATE_BROWSERS=["chrome120"]`
+and 3 of 5 `CustomUserAgentMiddleware` strings literally say
+"Chrome/120.0.0.0"). But it does NOT transfer into the pipeline: a spider
+built to disable both rotating-UA middlewares and pin an explicit
+Chrome/124 UA header (no `meta['impersonate']` at all, falling through
+composite_handler.py to the standard Twisted HTTP11 path) still 403'd with
+the same challenge page through `prices collect`. A standalone headless
+Playwright probe (outside Scrapy entirely) ALSO 403'd with the Turnstile
+challenge. Per the skill's mandatory-stop rule (curl_cffi impersonation
+AND Playwright both 403 -> stop), this is now a confirmed real block, not
+a UA-string trick or an event-loop quirk as previously hypothesized —
+whatever clears it in bare, cold, standalone `requests` does not reproduce
+in any tool this pipeline can actually run at collection time. Do not
+re-attempt with UA-string tricks; a residential-proxy + captcha-solving
+approach is out of scope per the skill's own rules on genuine challenges.
+
+**carrefour.ma (MA) — domain now resolves (2026-09-11), it did not on the
+original probe date.** `curl: (6) Could not resolve host` was apparently
+transient/resolver-specific, not permanent. The live site is a real Next.js
+"Carrefour Maroc" storefront, but `/produits/`, `/promotions/`, `/catalogues/`
+are thin marketing pages: no further nav links, no `__NEXT_DATA__`, zero
+MAD/Dh price strings. `carrefourmarket.ma` (same platform) is identical.
+**REJECT — marketing-only shell, no e-commerce checkout found** (different
+reason than the original DNS verdict, same outcome — no scaffolding).
+
+**2nabiji.ge (GE) — new finding, still rejected.** Unlike the original
+verdict's blanket "no sitemap check attempted", `2nabiji.ge` DOES have a
+real `sitemap.xml` (560KB) with genuine category URLs (coffee, capsules,
+school supplies, puddings, liqueurs). But category pages are still fully
+client-rendered React/Next.js — the only `₾` (lari) occurrence in raw HTML
+is an empty "0.00" cart-popup total, zero real per-product prices server-
+rendered. Worth a dedicated Playwright network-trace pass given the real
+sitemap and real category taxonomy; not pursued further this timebox.
+
+**doyoom.com (SS) — re-probed 2026-09-11, no longer Vercel-blocked.** Prior
+verdict recorded `<title>Vercel Security Checkpoint</title>`; a fresh probe
+gets a clean 200 with no `X-Vercel-Mitigated` header at all — a real
+Next.js site, "South Sudan's #1 Online Food Delivery Platform – Order from
+Top Restaurants". **REJECT — wrong COICOP class** (restaurant/prepared-food
+delivery, division 11, not retail grocery) **and no public browse route**:
+homepage nav is `/about-us`, `/auth/login`, `/checkout`, `/how-it-works`,
+`/partner`, `/support/*` only — restaurant/menu listing appears to be
+login-gated. Not pursued further given time budget.
+
+**No change, verdicts re-confirmed or already closed by other agents
+today:** elephanthouse.lk, www.arpico.com, shop.dilmahtea.com,
+www.bujumbura-marketing.com, hulumarket.com.et, seregelagebeya.com,
+www.maxi.co.ao, www.rigla.ru (policy decision, not a block),
+www.okmarket.ru, libyashop.ly, shop.com.mm, faddoulsupermarket.com,
+kgalagadibreweries.co.bw, somalistores.com, nilemart-ss.com, bacolaa.com,
+alruknalyemeni.com, thegambiamarket.com, buyonwasapp.ng, alfagift.id
+(app-only thin shell, no JS bundle to inspect via plain HTTP),
+api.bonplancaillou.nc, cubamax.com (per-request HMAC, not a static key),
+shop.realvalueiga.com, online.imartstores.com, grocerjy.com, hktvmall.com,
+lotuss.com.my, bigmarket.ge, goodwill.ge, spar.ge.
+
+**Not re-attempted this pass, flagged worth a dedicated session (each
+needs a real Playwright network-trace/interaction capture, out of this
+timebox's per-host budget):** detmir.ru (recommendation-widget arrays are
+real but the true listing endpoint wasn't caught in a short capture
+window), marjane.ma (large real food catalog, API key leaks but needs an
+additional session/reCAPTCHA token), sahel25.com (1,835-product JOD
+catalog behind a non-deterministic delivery-area gate — bind cookies from
+a first navigation to a `/product/` or `/category/` URL, not the
+homepage), market.extra.ge (Moitane platform shared with `lavka_uz`/
+`globus_online_kg` — Categories endpoint is open, Products endpoint needs
+a session from a live category click).
+
+**heimkaup.is** — confirmed already shipped earlier today as `heimkaup_is`
+(52 rows); this list was a stale snapshot for that entry.

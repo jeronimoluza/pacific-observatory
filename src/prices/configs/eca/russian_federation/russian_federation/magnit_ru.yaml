@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: magnit_ru
+url: https://magnit.ru/
+language: ru
+cadence: weekly
+channel: supermarket
+archive_prefix: "magnit.ru/product/"
+archive_path_re: '^/product/\d+-[^/?]+$'
+notes: |
+  Page family parsed: listing (category pages). The spider crawls
+  /catalog/<id>-<slug> category pages and never fetches individual PDPs,
+  but each Offer's own url field (recorded as the row's canonical URL, and
+  what archive_path_re is written against) is a /product/<id>-<slug> PDP
+  link -- confirmed one such PDP independently 200s with its own matching
+  JSON-LD price. Was filed dead (known_blockers, probed 2026-08-07): the
+  sitemap index's __sitemap__/products.xml child lists ~19,900
+  /product/<slug> URLs that ALL 404 (soft-404 homepage shell) -- read as
+  a stale/mismatched sitemap, not a WAF block.
+  Re-probed 2026-09-11 per the onboarding brief's sitemap-index lever: the
+  sitemap index (pages.xml, catalog.xml, promo-catalog.xml,
+  content-pages.xml, products.xml) has FIVE children, and the wrong one
+  had already been checked. __sitemap__/catalog.xml (~130KB, a sibling of
+  products.xml) lists real, live CATEGORY pages (/catalog/<id>-<slug>),
+  and every category page embeds a real
+  <script id="offer-catalog-jsonld" type="application/ld+json"> OfferCatalog
+  block with ~30-33 Offer entries per category (name/url/price/
+  priceCurrency=RUB) directly in server-rendered HTML -- no need to hit
+  individual PDPs at all. Verified live: category "Рыба, морепродукты"
+  (fish/seafood) returned 33 real offers incl. "Крабовые палочки Vici с
+  мясом натурального краба 170г" 139.99 RUB; the same product's own PDP
+  (/product/1000483001-...) independently 200s with the same price in its
+  own JSON-LD, confirming the earlier "products.xml PDPs 404" finding was
+  specific to THAT stale sitemap's slugs, not to PDPs in general.
+  No WAF/impersonation needed -- plain HTTP, no meta['impersonate'] set.
+  Prices reflect one specific store/delivery-address (page copy names a
+  Krasnodar branch); no location parameter was found to vary this from a
+  single default GET, same caveat as any single-location retailer scrape.
+  Mixed grocery catalog spans multiple COICOP leaves (seafood, dairy,
+  packaged goods sampled so far), so coicop_codes is omitted (classifier
+  assigns per-SKU).
