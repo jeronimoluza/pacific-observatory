@@ -1,0 +1,63 @@
+scaffolding: spider
+spider: sheshasd_sz
+url: https://sheshasd.com/product-grids
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: SZL
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Discovered 2026-09-11 (untried-territories food-source campaign,
+  foodish==True filter). Shesha is a combined liquor store + butchery/
+  fresh-meat shop trading online at sheshasd.com (the queue's own
+  "why"/"notes" columns mislabeled it as a food-delivery platform; it is a
+  plain server-rendered HTML storefront, no delivery-app backend). No WAF:
+  plain `requests` with a default UA returns 200 on every page tried.
+
+  Page family: listing only (product-grids?page=N) -- the spider never
+  fetches a PDP because both card templates on the listing page already
+  carry product name, price, and the product-detail url inline.
+
+  Two DIFFERENT card templates coexist on the same listing page: a
+  "single-post" block (h5 name + <p class="price">, used for ~3
+  pinned/featured items that repeat on every page) and the real
+  "single-product" grid (h3 name + <span>price</span>, ~9 new items per
+  page). Missing either template silently drops most of the catalog --
+  confirmed by an early single-pattern version that only matched 3 rows/
+  page. Spider extracts both and dedups by url.
+
+  Enumerability MEASURED 2026-09-11: walked page=1..9 explicitly. Page 1
+  seeds 12 distinct slugs (3 pinned + 9 new), pages 2-7 each contribute 9
+  NEW slugs beyond the 3 pinned, page 8 contributes 3 new (total 69
+  distinct), page 9 returns only the 3 pinned (0 new) -- confirms genuine
+  pagination, not a re-served flat page. Spider stops on the first page
+  contributing zero new urls (MAX_PAGES=60 safety cap).
+
+  Catalog mix (measured from the 69-slug walk): South African wine/spirits/
+  beer brands (Du Toitskloof, KWV, Ballantine's, Hennessy, Jameson,
+  Glenfiddich, Jack Daniels, Bell's, Amstel Lager, Savanna Dry, Russian
+  Bear, Red Heart rum) -- COICOP 02.1 -- plus raw meat cuts (beef chuck/
+  t-bone/stew, pork chops/slices/sausage, chicken slices) -- COICOP 01 --
+  and a couple of prepared meal-for-N items (umgcwembe, a traditional
+  Swati dish). Wide mix across 01 and 02.1, so coicop_codes is left unset
+  for the classifier.
+
+  Currency: "E" price prefix = Emalangeni (SZL), matching countries.yaml's
+  Eswatini default; PDP size selector shows "750ml" for the wine SKU
+  sampled, consistent with bottled liquor. Price cells show a struck-
+  through "was" price followed by the current price in both templates;
+  observed values are identical (no live discount at scrape time) so the
+  spider takes the price as displayed (last/only number in the cell).
+
+  Locality: no explicit "Eswatini"/"Swaziland" string was found on the
+  homepage, but this candidate arrived pre-filtered to Eswatini in the
+  queue AND the SZL "E" price prefix is Eswatini-specific (not Lesotho,
+  which prefixes Maloti as "M" or "L"); treated as sufficiently localized.
+
+  Test run 2026-09-11: `prices collect --source sheshasd_sz --max-items
+  100` -> measured rows and distinct urls recorded in the onboarding
+  session's Phase 8 report.

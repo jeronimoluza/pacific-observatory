@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: kazemarket_bi
+url: https://www.kazemarket.com/
+language: fr
+cadence: monthly
+archive_prefix: "kazemarket.com/"
+archive_path_re: '^/product/[^/?]+/'
+notes: |
+  Onboarded 2026-09-11 francophone sweep for Burundi (kilakitu_bi was the
+  only prior retail manifest). Kaze Market is a Bujumbura grocery store
+  (Burundi phone +257 68 076 049 in the page footer); standard
+  WordPress/WooCommerce shop-loop theme, plain curl 200s, no anti-bot.
+  The Store API (/wp-json/wc/store/v1/products) 404s, so the spider
+  scrapes /boutique/page/N/ HTML directly (li.product cards). Every
+  product_cat observed on the shop pages (alimentaire, biere,
+  les-farines, les-produits-frais, les-boissons, les-epiceries-sucrees,
+  les-huiles, riz-pates-et-graines, sucre, graines, riz) is food/
+  beverage/alcohol -- the whole catalogue is COICOP 01/02, no scoping
+  needed.
+
+  CURRENCY CAVEAT: prices are in EUR, not BIF (Burundi's currency per
+  countries.yaml) -- read from the payload (woocommerce-Price-amount
+  span), not assumed from the TLD. Same population as tchitunga_cg /
+  market242_cg (Congo Republic diaspora-style grocery sites priced in
+  EUR for a buyer paying from abroad while goods are delivered locally);
+  may carry a remittance-service markup rather than a 1:1 organic local
+  retail price. Emitted as EUR (the site's own stated currency) per the
+  "site's stated currency wins over the country default" convention.
+
+  Enumerability verified 2026-09-11: /boutique/page/1/ vs
+  /boutique/page/2/ returned 9 distinct product URLs each, 0 overlap
+  -> DISTINCT. 8 total pages via a.next.page-numbers pagination.
+  Sample PDP: "Farine de mais - 10kg" EUR 13.27.
+
+  Discovery note: found via a French-language ddgs sweep ("riz huile
+  farine en ligne Bujumbura" / "Bujumbura supermarché en ligne"); the
+  English pack alone did not surface it.
+
+  Test: prices collect --source kazemarket_bi --max-items 100.

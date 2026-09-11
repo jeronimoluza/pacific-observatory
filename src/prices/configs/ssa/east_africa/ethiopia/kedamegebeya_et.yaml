@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://kedamegebeya.com/"
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: ETB
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "kedamegebeya_et"
+  api_url: "https://kedamegebeya.com/wp-json/wc/store/v1/products"
+  currency: "ETB"
+  language: "en"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 (ddgs discovery pass for Ethiopia, English + Amharic
+  sweep). Small general WooCommerce store in Addis Ababa selling household
+  cleaning products alongside real food SKUs (sunflower oil, pasta/macaroni,
+  tea, coffee). Store API at /wp-json/wc/store/v1/products verified live
+  2026-09-11: X-WP-Total=66, single page (per_page=100 returns all 66,
+  page=2 empty) -- small but real, enumerable, ETB minor-unit prices
+  (currency_minor_unit=2, e.g. raw "22200" -> Br 222.00) handled by the
+  WooBaseSpider divide-by-10**minor logic. Page family: API (spider reads
+  the Store API JSON directly, never fetches an HTML page).

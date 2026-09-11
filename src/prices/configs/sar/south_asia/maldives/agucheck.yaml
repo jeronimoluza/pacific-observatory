@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: mv_agucheck
+module: sar.south_asia.maldives.agucheck
+function: fetch_mv_agucheck
+url: https://agucheck.com/
+language: en
+currency: MVR
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  AguCheck, a small crowdsourced Maldives grocery price-comparison app
+  ("Compare grocery and general goods prices across the Maldives").
+  React SPA (Vite), no data in initial HTML; Playwright network trace
+  found a PocketBase backend at pb.agucheck.com exposing public REST
+  collections (shops/items/prices), no auth.
+
+  Genuinely tiny dataset: 5 shops, 48 items, 56 price records total as
+  of 2026-09-11 -- OCR-submitted receipts (`added_by: "OCR Scan"` on
+  price rows). Real MVR prices, mixed categories (Dairy, Bread &
+  Bakery, etc.) -> coicop_classification: classifier. channel: null
+  per the official_avg convention.
+
+  Verified live 2026-09-11: direct fetch with cutoff=2020-01-01
+  returned rows from all 56 price records (paginated via PocketBase
+  page/perPage). Sample: "Lacnor Milk 1l (full Cream)" MVR 35,
+  "Alcyon Bakery Yellow Buns" MVR 1 (10 pcs, total_price 10).

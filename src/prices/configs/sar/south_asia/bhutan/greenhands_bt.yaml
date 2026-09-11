@@ -1,0 +1,25 @@
+scaffolding: spider
+spider: greenhands_bt
+url: "https://greenhands.bt/"
+channel: fresh-market
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: BTN
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 2
+  DOWNLOAD_DELAY: 1.5
+notes: >
+  Thimphu online farm shop. Custom Laravel/Botble storefront, no JSON API.
+  3 fixed categories (vegetables-fruits, eggs-cereals-and-dairy-products,
+  fresh-cut-dehydrated-veges), ~91 products total, all food, no pagination
+  (page=2 repeats page=1 verbatim, verified 2026-09-11). requests+certifi
+  SSL-errors on this host; Scrapy's default TLS stack clears it fine, no
+  impersonation needed. Verified live 2026-09-11 (SAR gap-fill sweep,
+  still_untried_20260911.csv). Page family: listing.

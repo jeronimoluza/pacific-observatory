@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: mustore_mv
+url: https://mustore.mv/shop
+language: en
+currency: MVR
+cadence: daily
+archive_prefix: "mustore.mv/"
+archive_path_re: '^/shop(?:/[^/?]+)?/?$'
+notes: |
+  MU Store, general grocery/household online store, Maldives. Standard
+  Odoo webshop, same platform family as muexpress_mv and zettamart_mv.
+  Uses the same re.finditer-over-full-page card extraction as
+  zettamart_mv (this theme also nests oe_product*-prefixed classes that
+  break a naive per-card string split).
+
+  Pagination is /shop?page=N, 20 cards/page. Confirmed pages 1-3 are
+  disjoint (20 unique product-template ids each).
+
+  Page family: listing only (/shop and /shop?page=N) -- never visits a
+  PDP.
+
+  Some prices read implausibly high for the SKU (e.g. "Lacnor Milk 1
+  Ltr" at MVR 380.00) -- verified this is what the site itself displays
+  (not a minor-unit extraction bug; the same "380.00" appears in the
+  human-rendered oe_price span), so it is recorded as-is.
+
+  Verified live 2026-09-11: --max-items 5 run against page 1 produced
+  rows. Sample: "Lacnor Juice 180ml" MVR 250.00, "Parle Black Bourbon
+  Choc 100g" MVR 300.00.

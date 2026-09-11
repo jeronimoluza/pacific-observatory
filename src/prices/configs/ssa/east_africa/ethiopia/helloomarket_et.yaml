@@ -1,0 +1,35 @@
+scaffolding: spider
+spider: generic_opencart_configured
+url: "https://helloomarket.com/"
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: ETB
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "helloomarket_et"
+  category_urls:
+    - "https://helloomarket.com/index.php?route=product/category&path=82&limit=100"
+  currency: "ETB"
+  language: "en"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Onboarded 2026-09-11 (ddgs discovery pass for Ethiopia). Classic OpenCart
+  storefront (route=product/category&path=<id>), full catalog spans
+  Grocery/Fashion/Electronics but path=82 ("Grocery & Gourmet Food", with
+  Drinks/Water/Beer/Wine/Malt/Milk/Honey/Chocolate/Snacks/vegetables-and-fruits
+  subcats) is scoped explicitly via category_urls to stay in COICOP 01/02 --
+  the nav-based NAV_URL auto-discovery was deliberately NOT used because it
+  would also pull in Men's/Women's Fashion (paths 99, 148). Verified live
+  2026-09-11: page=1 returns 100 product cards with ETB prices in the
+  currency-toggle form; page=2 returns 53 DIFFERENT product ids (enumerability
+  gate passed, not a re-served last page) -- 153 distinct grocery products.
+  Page family: listing (category pages only, spider never visits a PDP).

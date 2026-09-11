@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: oneclick_mv
+url: https://oneclick.com.mv/wp-json/wc/store/v1/products
+language: en
+currency: MVR
+cadence: daily
+archive_prefix: "oneclick.com.mv/"
+archive_path_re: '^/wp-json/wc/store/v1/products'
+notes: |
+  Oneclick Maldives, self-described "Maldives' Trusted Food & Beverage
+  Distributor" running a consumer-facing WooCommerce storefront.
+  WooCommerce Store API, no auth: /wp-json/wc/store/v1/products.
+  Confirmed 234 products total (X-WP-Total header). currency_minor_unit=2
+  read from the payload (not assumed) -- e.g. "500" -> MVR 5.00 for
+  "Normal Sugar 1Kg".
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 5 run against page 1 produced
+  rows. Sample: "Milk Short Cake 12x45g" MVR 47.00, "Normal Sugar 1Kg"
+  MVR 5.00, "Normal Flour 1Kg" MVR 5.00.

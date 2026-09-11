@@ -2829,3 +2829,123 @@ three WooCommerce/Wix delivery-for-guests sites now cover the tourist-grocery ni
 Namibia's national statistics office (nsa.org.na) shipped instead as a
 fetcher pair (`na_nsa_cpi` cpi_benchmark, `na_nsa_zonal_food_prices`
 official_avg) — see `src/prices/configs/ssa/southern_africa/namibia/`.
+
+## 2026-09-11 SAR (India/Pakistan) still_untried sweep
+
+93 food-plausible candidates probed from  (India + Pakistan,
+), after dropping 55 outright non-food rows (pharmacy, electronics, furniture,
+books/stationery, toys, eyewear, auto parts, cosmetics-dominant, price-comparison aggregators
+with no first-party catalog, dead news-article leads). 25 shipped (24 via generic Shopify/
+WooCommerce/OpenCart spiders + 1 custom BigBasket spider); findings for the rest below.
+
+**Genuine WAF / access block (curl_cffi chrome124 403, re-probed live 2026-09-11):**
+- **carrefour.pk** (PK, Carrefour Pakistan / Majid Al Futtaim) — 403 on curl_cffi chrome124.
+  High-value hypermarket target; worth a dedicated Playwright network-capture pass in a future
+  session (Majid Al Futtaim commerce API is a known open backend on other MAF storefronts).
+- **magnikart.com** (IN, Bhubaneswar grocery, 5,290-product WooCommerce-style store) — 403.
+- **golbazar.pk** (PK, Ramadan/donation grocery packages) — 403.
+- **fairo.pk** (PK, Faisalabad grocery) — 403.
+- **kolkatafish.com** (IN, Kolkata fish/meat/seafood) — 403.
+- **naturesbasket.co.in** (IN) — already documented above (2026-09-01); re-confirmed 403 on
+  chrome124/chrome120/safari17_0 2026-09-11, unchanged.
+- **bombayfisher.com** (IN, Mumbai fresh fish, Shopify) — HTTP 402 (store suspended /
+  subscription lapsed), not a WAF. Re-check later; not a permanent dead end.
+- **continentalfresh.in** (IN, Vizag seafood, Shopify) — HTTP 401 on 
+  (password-protected coming soon gate, store not yet publicly launched).
+- **chiltanpure.pk** (PK, ChiltanPure Dairy) — technically open (Shopify, /products.json
+  works), but sampled 1,250 products are 85%+ perfume/aroma-chemicals/cosmetic-ingredients;
+  the dairy collection the candidate list pointed at is a tiny drop-shipped sideline of an
+  essential-oils/fragrance manufacturer. Dropped as non-food on the hard constraint, not as a
+  technical block.
+
+**Explicit anti-scrape block (not a WAF challenge, a stated policy):**
+- **amazon.in** (IN, Amazon Fresh / Amazon Grocery) —  returns HTTP 503 Service
+
+## 2026-09-11 SAR (India/Pakistan) still_untried sweep
+
+93 food-plausible candidates probed from `still_untried_20260911.csv` (India + Pakistan,
+`foodish==True`), after dropping 55 outright non-food rows (pharmacy, electronics, furniture,
+books/stationery, toys, eyewear, auto parts, cosmetics-dominant, price-comparison aggregators
+with no first-party catalog, dead news-article leads). 25 shipped (24 via generic Shopify/
+WooCommerce/OpenCart spiders + 1 custom BigBasket spider); findings for the rest below.
+
+**Genuine WAF / access block (curl_cffi chrome124 403, re-probed live 2026-09-11):**
+- **carrefour.pk** (PK, Carrefour Pakistan / Majid Al Futtaim) — 403 on curl_cffi chrome124.
+  High-value hypermarket target; worth a dedicated Playwright network-capture pass in a future
+  session (Majid Al Futtaim commerce API is a known open backend on other MAF storefronts).
+- **magnikart.com** (IN, Bhubaneswar grocery, 5,290-product WooCommerce-style store) — 403.
+- **golbazar.pk** (PK, Ramadan/donation grocery packages) — 403.
+- **fairo.pk** (PK, Faisalabad grocery) — 403.
+- **kolkatafish.com** (IN, Kolkata fish/meat/seafood) — 403.
+- **naturesbasket.co.in** (IN) — already documented above (2026-09-01); re-confirmed 403 on
+  chrome124/chrome120/safari17_0 2026-09-11, unchanged.
+- **bombayfisher.com** (IN, Mumbai fresh fish, Shopify) — HTTP 402 (store suspended /
+  subscription lapsed), not a WAF. Re-check later; not a permanent dead end.
+- **continentalfresh.in** (IN, Vizag seafood, Shopify) — HTTP 401 on /products.json
+  (password-protected "coming soon" gate, store not yet publicly launched).
+- **chiltanpure.pk** (PK, "ChiltanPure Dairy") — technically open (Shopify, /products.json
+  works), but sampled 1,250 products are 85%+ perfume/aroma-chemicals/cosmetic-ingredients;
+  the "dairy" collection the candidate list pointed at is a tiny drop-shipped sideline of an
+  essential-oils/fragrance manufacturer. Dropped as non-food on the hard constraint, not as a
+  technical block.
+
+**Explicit anti-scrape block (not a WAF challenge, a stated policy):**
+- **amazon.in** (IN, Amazon Fresh / Amazon Grocery) — /s?k=... search returns HTTP 503
+  "Service Unavailable" with an explicit body directing automated-access requests to
+  api-services-support@amazon.com and to Amazon's Marketplace/Product Advertising APIs. This
+  is Amazon's standing anti-scraping stance, not a transient block. SKIP — not worth
+  iterating against; out of scope for this pipeline.
+
+**Quick-commerce SPA needing a pincode/geo session (not a WAF):**
+- **zepto.com** (IN, Zepto) — homepage returns HTTP 202 with a ~2KB shell; matches the
+  skill's documented Blinkit/Zepto/Instamart shape exactly (client-fetch app requiring a
+  lat/lon or pincode header before any catalog call fires). Needs a Playwright network-capture
+  session against the app flow (set delivery location, then capture the category/search API
+  call) — not attempted this round due to time budget; flagged as the highest-value follow-up
+  given explicit priority on quick-commerce in the brief.
+- **countrydelight.in** (IN) — already documented above (2026-09-01): Angular Universal SPA,
+  websiteapi.countrydelight.in 403s on unauthenticated guesses. Unchanged 2026-09-11; same
+  pincode-flow reverse-engineering needed as Zepto.
+
+**Reachable (200), but not extractable without more work:**
+- **jiomart.com** (IN, JioMart) — category/section pages return 200 with a 6-7MB payload, but
+  the body is Contentstack/Fynd page-builder CMS schema (field definitions for a "Products
+  Card Carousel" widget), not rendered product data. A 6s Playwright network capture against
+  a guessed category URL surfaced only Fynd Platform logistics/cart/config/session endpoints
+  (api/service/application/{cart,logistics,configuration,content}/v1.0/...), no catalog/search
+  endpoint — the guessed URL was likely wrong (JioMart's real category paths were not
+  independently re-derived this round). Needs a longer capture against a URL confirmed live in
+  a real browser, not the CMS section-preview URL from the candidate list.
+- **krishidhara.com** (IN, Lucknow dal/rice) — homepage 200, but wp-json/wc/store/v1/products
+  403s (Store API disabled at the server level, distinct from a WAF — same endpoint pattern
+  works on 7 other WooCommerce sites probed this round).
+- **storepanda.pk** (PK, Faisalabad grocery) — same signature: homepage 200, Store API 403.
+- **akshayakalpa.org** (IN, organic dairy) — Store API 404 (endpoint not registered on this
+  WooCommerce install). All three would need an HTML-pagination-based custom spider instead
+  of the generic Woo template.
+- **snapcart.pk** (PK) — shipped (see manifest), but flagged here too: 1,250-product sample is
+  dominated by perfume/skincare with food (chips/tea-coffee/chocolates/biscuits) as a ~9%
+  minority. Kept because the food SKUs are real, but expect a low food-fraction yield relative
+  to effort.
+
+**Dead / unreachable (DNS, TLS, timeout — re-probed live 2026-09-11, not just bare curl):**
+- **angaadionline.com** (IN) — DNS resolution failure on both plain requests and curl_cffi.
+- **graceonline.in** (IN) — DNS resolution failure.
+- **rcmymall.in** (IN) — DNS resolution failure.
+- **serveu.pk** (PK) — DNS resolution failure.
+- **chitki.com** (IN) — connection timeout on both arms.
+- **uttampk.com** (PK) — TLS certificate verification failure on both arms.
+- **asanbazar.pk** (PK) — TLS certificate verification failure on both arms.
+- **bazaarapp.com** (PK) — HTTP 503 on every probe.
+
+**Not a real source (dropped without a network probe — dead-end leads, not retailers):**
+Aaram Bazar (telegraphindia.com news article, 2012), Freshdo (yourstory.com news article),
+Just Cart / Bit VR (exportersindia.com B2B directory), BigBasket city coverage via gift-card
+evidence (sbicard.com, not a catalog), Gavyam (price-comparison, not a first-party retailer),
+Dhundo Auto Parts Guide (auto-parts price-comparison summary), chotu.com (WhatsApp/local-shop
+lead with no captured prices), MartEzee (martezee.wordpress.com — abandoned marketing blog,
+operational status unconfirmed), PriceBasket / BudgetBasket / FantasticFood / Smartprix
+Grocery / Comparify Grocery / Groka / PriceKart / Qemat (grocery price-COMPARISON apps that
+re-scrape Blinkit/Zepto/BigBasket/JioMart themselves — not first-party sources; onboarding
+the underlying retailers directly is the correct fix, which is what this round did for
+BigBasket).

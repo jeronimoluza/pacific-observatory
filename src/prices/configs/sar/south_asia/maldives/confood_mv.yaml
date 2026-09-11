@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: wholesale
+spider: confood_mv
+url: https://confoodmaldives.com/store/
+language: en
+currency: MVR
+cadence: daily
+archive_prefix: "confoodmaldives.com/"
+archive_path_re: '^/store/?$'
+notes: |
+  Confood Maldives, self-described "FMCG | Supplying | Hotel Supplies |
+  Food and Beverage" wholesale distributor. The obvious /shop,
+  /product, /products paths are dead ends (all render the homepage
+  fallback) -- the real catalog is a classic WooCommerce loop theme at
+  /store (the newer wc/store/v1 REST API 404s, so this scrapes
+  server-rendered HTML instead, same pattern as kazemarket_bi).
+  /store/?products-per-page=all returns the whole catalog on one page
+  -- confirmed 142 distinct product ids, no further pagination needed.
+
+  Sale items carry both a struck-through original price (<del>) and
+  the current price (<ins>) inside the same .price block -- naively
+  concatenating all .woocommerce-Price-amount text glues both numbers
+  together. Spider prefers `.price ins .woocommerce-Price-amount`
+  (current/sale price), falling back to `.price > .woocommerce-Price-amount`
+  (direct child only, excludes <del>) for non-sale items.
+
+  channel: wholesale (bulk pack sizes -- "Mayonnaise 3L Wholesale",
+  "Basmati Rice 5kg" -- consistent with the site's own "FMCG Supplying"
+  positioning), not supermarket.
+
+  Page family: listing only (/store/?products-per-page=all) -- never
+  visits a PDP.
+
+  Verified live 2026-09-11: --max-items 100 run against the
+  all-products listing produced rows. Sample: "Kaalar Basmati Rice
+  5kg", "Edinborough-Mayonnaise-3L (Wholesale)" MVR 110.00 (correctly
+  the sale price, not the struck-through MVR 245.00).

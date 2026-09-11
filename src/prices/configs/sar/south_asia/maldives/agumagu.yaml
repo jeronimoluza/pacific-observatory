@@ -1,0 +1,41 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: mv_agumagu
+module: sar.south_asia.maldives.agumagu
+function: fetch_mv_agumagu
+url: https://agumagu.trade.gov.mv/
+language: en
+currency: MVR
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  AguMagu, Maldives Ministry of Economic Development national commodity
+  price-monitoring platform. Next.js SPA, no data in initial HTML;
+  Playwright network trace found the real payload at a single JSON
+  endpoint, /api/bootstrap (~7MB, no pagination/auth) -- "Playwright to
+  discover, plain HTTP to scrape" pattern. Fetcher hits this endpoint
+  directly.
+
+  Dataset: 118 monitored items (mostly food staples, fresh produce,
+  fish, plus some household consumables like diapers), 510 outlets
+  across all 21 Maldivian atolls, ~29k (item, outlet, day) price
+  observations. `cheapest_window_days` in the payload is a UI concept
+  (the site's own "recent cheapest" view) -- the raw `prices` array
+  itself carries real history back to 2025-03-05, not just a rolling
+  window; confirmed by the live pull below. Wide/mixed basket ->
+  coicop_classification: classifier, no _COICOP_MAP. channel: null per
+  the official_avg convention (not a single retail outlet).
+
+  Each `prices` record is a single snapshot observation, not an
+  average -- period_kind="snapshot". availability="OUT_OF_STOCK" rows
+  carry price=0.0 and are dropped.
+
+  Verified live 2026-09-11: `prices collect --source agumagu` (cutoff
+  fallback_date=2020-01-01) wrote 13,860 rows to
+  price_observations.csv, dates 2025-03-05 to 2026-09-08, 118 distinct
+  item_names, spanning all monitored atolls (Male' 6,446 rows down to
+  smaller-atoll counts). Sample: "Beans" MVR 90.00/kg (Male'),
+  "Cabbage" MVR 25.00/kg (Male').

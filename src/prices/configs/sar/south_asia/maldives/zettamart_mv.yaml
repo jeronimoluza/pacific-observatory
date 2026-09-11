@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: zettamart_mv
+url: https://zettamart.com/shop
+language: en
+currency: MVR
+cadence: daily
+archive_prefix: "zettamart.com/"
+archive_path_re: '^/shop(?:/[^/?]+)?/?$'
+notes: |
+  Zettamart, "Online Grocery Delivery in Male' & Hulhumale'". Standard
+  Odoo webshop (/web/assets/... builder paths), plain server-rendered
+  HTML, itemprop="price"/"priceCurrency"/"name" microdata per card
+  (MVR). Newer Odoo theme than muexpress_mv: many CSS classes are
+  prefixed oe_product* (oe_product_cart, oe_product_image, ...), which
+  breaks the muexpress_mv card-splitting approach — this spider instead
+  runs the anchored card regex directly over the full page with
+  re.finditer.
+
+  Pagination is /shop?page=N, 24 cards/page. Confirmed pages 1-3 are
+  disjoint (24 unique product-template ids each) -- genuine pagination.
+
+  Page family: listing only (/shop and /shop?page=N) -- never visits a
+  PDP, all fields come off the listing card.
+
+  Verified live 2026-09-11: --max-items 5 run against page 1 produced
+  rows. Sample: "Fresh Red Apple" MVR 9.00, "Felivaru Tuna Chunks in Oil
+  with Githeyomirus (Hot Chilli) 180g" MVR 25.00, "Reeses Peanut Butter
+  Cup Trio - 63g" MVR 69.99.

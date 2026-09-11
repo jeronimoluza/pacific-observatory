@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: diwakstore_bt
+url: "https://diwakstore.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: BTN
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 2
+  DOWNLOAD_DELAY: 1.5
+notes: >
+  Odoo-based department store (electronics, clothing, homewares, groceries).
+  Spider is scoped to the groceries vertical only via
+  /shop/category/groceries-5, which Odoo aggregates across all grocery
+  sub-categories (bakery, beverages, dairy/eggs, fruits/vegetables, grains,
+  meat/fish, oils, snacks, staples, sweets). ~27 grocery items total, paginated
+  2 pages then re-serves the last page verbatim (stop-on-repeat, not
+  stop-on-empty). "Cloudflare blocked" in the original candidate notes was a
+  curl-TLS-fingerprint false positive; plain requests + verify=False clears
+  it. Verified live 2026-09-11 (SAR gap-fill sweep, still_untried_20260911.csv).
+  Page family: listing.

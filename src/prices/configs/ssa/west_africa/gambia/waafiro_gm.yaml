@@ -1,0 +1,56 @@
+scaffolding: spider
+spider: waafiro_gm
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: "https://waafiro.com/"
+channel: marketplace
+language: en
+currency: GMD
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Onboarded from ~/gapwork/untried_unassigned.csv (2026-09-11 west-africa
+  food gap-fill pass). Waafiro is a broad multi-vendor Gambian marketplace
+  (fashion/phones/electronics/appliances/furniture/eyewear/food/cosmetics/
+  services). Per the COICOP 01/02-only mandate for this pass, the spider is
+  SCOPED to a hand-picked whitelist of 28 food/drink category ids only --
+  it never touches the non-food catalog.
+
+  Fingerprinted 2026-09-11: React SPA, no product data in raw server HTML.
+  Playwright network-capture found a plain, unauthenticated JSON API:
+  GET https://waafiro.com/api/categories (250 flat categories) and
+  GET https://waafiro.com/api/products?categoryId=<id>&limit=<n>&page=<n>.
+
+  HARD GATES verified live 2026-09-11:
+  - Enumerability: page 1 vs page 2 of the flat /api/products feed return
+    disjoint product ids; each whitelisted category is fetched at
+    limit=100 (comfortably above any category's true size) so pagination
+    within a category is a safety net, not load-bearing.
+  - Food-category total: summed product count across the 28 whitelisted
+    ids = 68 SKUs (Local Drinks & Juice 16, Agriculture & Livestock 13,
+    Fresh Juices 11, Groceries 11, Fresh Produce 5, Other Groceries 5,
+    Bottled & Packaged Drinks 3, Fish/Meat/Poultry 2, African Cuisine 1,
+    Rice/Grains/Flour 1). Passes the >=5-row gate comfortably.
+  - Currency: no explicit currency field in the payload; GMD is the only
+    currency in use on this Gambia-only storefront (matches
+    countries.yaml).
+  - PDP permalink pattern confirmed live (200): /product/<uuid>. Page body
+    is the SPA shell for every route (client-rendered), but the URL is a
+    stable per-product canonical used only for the `url` column.
+
+  Test run 2026-09-11 (--max-items 100): 68 rows written, 68 distinct
+  product ids / urls (some cross-listed under 2 categories e.g. "Peanut
+  butter" in both Groceries and Other Groceries -- both rows kept, they
+  are distinct listings with distinct ids/prices).
+
+  Excluded on purpose (COICOP 11 restaurants/services, not 01/02): Fast
+  Food & Burgers, Grills & BBQ, Catering & Cooking, Juice Bars &
+  Smoothies, Smoothies & Blended Drinks, Restaurants/Food & Dining
+  umbrella, Agricultural Services, Pesticides & Fertilisers, Seeds &
+  Seedlings.
+
+  Spider parses: API only (waafiro.com/api/products JSON); the collected
+  `url` values are PDP permalinks the spider never fetches.
+  origin=gapwork/untried_unassigned.csv

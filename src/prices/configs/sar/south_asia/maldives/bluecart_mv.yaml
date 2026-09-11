@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: bluecart_mv
+url: https://bluecart.mv/
+language: en
+currency: MVR
+cadence: daily
+archive_prefix: "bluecart.mv/"
+archive_path_re: '^/[a-z0-9-]+/?$'
+notes: |
+  BlueCart, "Online supermarket — Maldives". Custom bespoke platform
+  (not Odoo/Shopify/Woo -- "bc-pc" product-card markup, AjaxCart.*
+  cart calls). No JSON API found; category pages are plain
+  server-rendered HTML, no JS needed.
+
+  Small catalog: sitemap.xml lists exactly 21 category pages and 30
+  individual product pages -- confirmed exhaustive (no pagination
+  markup on any category page, and pagenumber= query params return an
+  empty result), not a spider bug. Category slugs are hardcoded in the
+  spider as the crawl seed since cards carry name/price/category/id
+  inline and PDPs are never needed.
+
+  Page family: listing only (category pages) -- PDPs never fetched.
+
+  Verified live 2026-09-11: --max-items 5 run against the fruits-vegetables
+  category produced rows. Sample: "Banana (1kg)" MVR 25.00, "Chicken
+  Breast (1kg)" MVR 120.00, "Fresh Tuna Steak (500g)" MVR 150.00.
