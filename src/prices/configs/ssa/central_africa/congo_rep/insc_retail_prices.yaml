@@ -1,0 +1,49 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: cg_insc_retail_prices
+module: ssa.central_africa.congo_rep.insc_retail_prices
+function: fetch_cg_insc_retail_prices
+url: https://ins-congo.cg/stat-prix.html
+language: fr
+cadence: monthly
+fallback_date: 2019-01-01
+notes: |
+  INS-Congo "Prix moyens mensuels de quelques varietes" retail price
+  tables -- the official_avg companion to insc_inhpc_cpi.yaml (index-
+  only), published INSIDE the same monthly INHPC bulletin Excel workbook
+  (see insc_inhpc_cpi.yaml notes for the shared discovery path: the
+  sous_secteur=stat-prix vs secteur=stat-prix query-param gotcha, and the
+  content-sniffed sheet lookup rather than fixed sheet index).
+
+  5 surveyed cities each get their own sheet: Brazzaville, Pointe-Noire,
+  Dolisie, Owando, Ouesso -- located by scanning every sheet's A1 cell
+  for "Prix" + "varietes" and extracting the city name from the title
+  text via regex, since sheet numbering is not stable across releases
+  (July 2026 release: positions 6/9/11/13/16, no fixed spacing).
+
+  ~30 named food/beverage items per city (rice, flour, bread, beef, pork,
+  chicken, fresh/frozen fish, palm oil, tomato, pepper, beans, plantain,
+  potato, cassava flour, sugar, salt) PLUS 3 non-food fuel items (Petrole
+  lampant/kerosene, Charbon de bois/charcoal, Bois de chauffage/firewood)
+  in the SAME table -- those 3 are hard-excluded by item name, out of
+  scope for this food/beverage-only onboarding pass (same pattern as
+  Namibia's nsa_zonal_prices.yaml excluding Petrol/Diesel from its zonal
+  food table).
+
+  coicop_classification: classifier, not source_curated -- ~30 named
+  grocery items span several COICOP-2018 4-digit classes (cereals, meat,
+  fish, oils, vegetables, sugar), the same shape that routes Namibia's
+  zonal food-price table to the classifier rather than a hand-curated
+  map.
+
+  Only the most recent bulletin is fetched (5 months of history per
+  release: 1 year-ago anchor + 4 recent months, per the source table's
+  own column layout -- e.g. juil-25, avr-26, mai-26, juin-26, juil-26).
+
+  Verified live 2026-09-11: July 2026 release, 648 rows across 5 cities
+  (Owando has 3 fewer priced items than the other 4 cities in this
+  release -- an availability gap in the source, not a parsing bug), every
+  spot-checked value exact against the source workbook.

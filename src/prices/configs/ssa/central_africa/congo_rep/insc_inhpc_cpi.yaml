@@ -1,0 +1,60 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: cg_insc_inhpc_cpi
+module: ssa.central_africa.congo_rep.insc_inhpc_cpi
+function: fetch_cg_insc_inhpc_cpi
+url: https://ins-congo.cg/stat-prix.html
+language: fr
+cadence: monthly
+fallback_date: 2019-01-01
+notes: |
+  INS-Congo (Institut National de la Statistique, Republic of Congo /
+  Congo-Brazzaville) monthly "Bulletin INHPC" (Indice National Harmonise
+  des Prix a la Consommation des menages -- the CEMAC-harmonized CPI).
+
+  INS-Congo's price-statistics page (ins-congo.cg/stat-prix.html) is
+  client-rendered via an undocumented JSON API at ins-congo.cg/backend/
+  api/, reverse-engineered from assets/js/ins-data-secteur.js. Two
+  gotchas found live: (1) statistiques/index.php?secteur=stat-prix (the
+  page's "Indicateurs cles" widget) returns an empty data:[] -- not
+  populated. (2) publications/list.php?secteur=stat-prix ALSO returns
+  empty -- `secteur` is the WRONG query param; publications are tagged
+  under `sous_secteur`, confirmed by fetching the endpoint unfiltered and
+  reading a real record's field names. `sous_secteur=stat-prix` returns
+  the full 25-bulletin history.
+
+  Each bulletin ships both PDF and Excel (`download.php?id=<id>&
+  format=excel`); Excel is used here to avoid PDF-table fragility. The
+  workbook has ~21 openpyxl-numbered sheets ("Table 1".."Table N") whose
+  numbering is NOT stable across releases (content-dependent), so the
+  national table is located by content-sniffing every sheet's first 10
+  rows for one containing both "FONCTION" and "RUBRIQUE" headers, rather
+  than by fixed sheet index.
+
+  13-month-wide time series per release (12 COICOP-2018-style divisions;
+  the "INDICE GLOBAL" all-items row is dropped, no sanctioned sentinel).
+  Month-column headers carry typos in the SOURCE workbook itself (e.g.
+  "juiletl-25" for "juillet-25") -- matched by month-name PREFIX only
+  (survives the typo) plus a 2-digit year. Division 3 ("Articles
+  d'habillement et chaussures") ships with a BLANK FONCTION number cell
+  in the source workbook (every other division has one) -- the fetcher
+  falls back to matching the RUBRIQUE label text directly when the
+  FONCTION cell is empty.
+
+  Only the most recent bulletin is fetched (13 months of history per
+  release; the 24 older bulletins would mean parsing 24 more workbooks
+  for heavily overlapping months).
+
+  Verified live 2026-09-11: July 2026 release, 156 rows (12 divisions x
+  13 months, Jul 2025 - Jul 2026), values eyeballed against the annex
+  table in the same workbook and confirmed exact.
+
+  Companion retail-price-level table: FOUND -- see
+  insc_retail_prices.yaml (same country dir), a genuine official_avg
+  "Prix moyens mensuels de quelques varietes" table published in the
+  SAME workbook for 5 cities (Brazzaville, Pointe-Noire, Dolisie,
+  Owando, Ouesso).

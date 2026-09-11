@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: bringmaalu_lk
+url: https://bringmaalu.lk/products.json
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "bringmaalu.lk/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  Bring Maalu, "Buy Seafood Online Sri Lanka" ("maalu" = fish in
+  Sinhala). Vanilla Shopify storefront -- /products.json?limit=250&page=N,
+  confirmed 145 products, single page (page 2 empty). Shopify.currency
+  active=LKR confirmed inline.
+
+  Premium/specialty seafood catalog: caviar, live lobster,
+  sashimi-grade salmon, mud crab, prawns -- channel: specialty-food.
+
+  Page family: API only -- /products.json, never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 100 run against page 1
+  produced rows. Sample: "Kaspian Royal Malossol Caviar (30G)" LKR
+  44,000.00, "U10 Lagoon Prawns Box (1KG)" LKR 3,600.00.

@@ -24,6 +24,7 @@ produce types later), so coicop_codes is left unset.
 
 from __future__ import annotations
 
+import io
 import logging
 import re
 from datetime import date, datetime
@@ -58,7 +59,7 @@ def fetch_tarkari_com_np(cutoff: date) -> pd.DataFrame | None:
         return None
 
     try:
-        tables = pd.read_html(resp.text)
+        tables = pd.read_html(io.StringIO(resp.text))
     except ValueError:
         logger.warning("[%s] No HTML table found at %s", _SOURCE_KEY, _URL)
         return None

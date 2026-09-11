@@ -1,0 +1,55 @@
+scaffolding: spider
+spider: igrocerbusket_sz
+url: https://igrocerbusket.store.link/
+channel: convenience
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: ZAR
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Discovered 2026-09-11 (untried-territories food-source campaign,
+  foodish==True filter). iGrocer Busket is an online grocery-delivery
+  service for Mbabane/Ezulwini (Eswatini), built on the "store.link"
+  storefront SaaS -- a server-rendered Tailwind/Radix React app. No WAF;
+  plain `requests` returns 200.
+
+  Enumerability MEASURED 2026-09-11: the entire catalog is embedded in
+  the single homepage response -- 128 `product-card` blocks, 128 distinct
+  product-card-title-text values, all 128 carrying a product-price-
+  regular value. No "load more" text or client-side fetch endpoint found
+  in the markup -- treated as total-count-confirmed for this one fetch
+  (same reasoning as busiquip_sz.py: a static, complete data source, not
+  a paginated listing that could be under-counted).
+
+  Catalog: FMCG groceries visible in the sampled carousels -- cereals
+  (Kellogg's Rice Krispies/Corn Flakes/All-Bran, Bokomo Corn Flakes/Weet-
+  Bix/All-Bran/Rusks), oats (Jungle Oats), pasta (Fattis n Monis, Sunny
+  Spaghetti/Macaroni). Wide catalog, coicop_codes left unset for the
+  classifier.
+
+  CURRENCY FLAG, per the onboarding brief's instruction to flag rather
+  than silently normalize: prices render with the "R" (Rand) symbol, NOT
+  the "E" (Emalangeni/SZL) symbol used by sheshasd_sz/busiquip_sz
+  elsewhere in this Eswatini set. SZL is pegged 1:1 to ZAR and both
+  circulate as legal tender in Eswatini, so this reads as a South-
+  African-sourced pricing template rather than a wrong-country error --
+  recorded as ZAR exactly as displayed on the page (not inferred from the
+  .shop TLD or countries.yaml's SZL default). Downstream analysis should
+  treat this distinctly from the SZL-denominated Eswatini sources unless
+  the SZL/ZAR at-par assumption is separately confirmed.
+
+  Locality: banner text confirms delivery is local (Mbabane/Ezulwini,
+  "Free delivery within 5KM radius of Mbabane and Zulwini") -- a genuine
+  Eswatini-domestic delivery service, not a foreign storefront.
+
+  Synthetic per-product url (`https://igrocerbusket.store.link/#product-
+  <idx>-<name-prefix>`) satisfies DuplicationPipeline's url-based dedup;
+  no real per-product PDP route exists on this single-page catalog.
+
+  Test run 2026-09-11: `prices collect --source igrocerbusket_sz
+  --max-items 100` -> measured rows and distinct urls recorded in the
+  onboarding session's Phase 8 report.

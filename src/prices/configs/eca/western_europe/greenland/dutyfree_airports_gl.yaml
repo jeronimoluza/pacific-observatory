@@ -1,0 +1,79 @@
+scaffolding: spider
+spider: dutyfree_airports_gl
+url: https://dutyfree.airports.gl/webshop/
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: da
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Discovered 2026-09-11, chasing a lead recorded the same day by a prior
+  pass in this campaign: "a webshop with a real /webshop/tobacco/ category
+  was seen in a Greenland/Gibraltar probe -- chase that." Traced via
+  https://www.airports.gl/duty-free/'s "Se Webshop" link, which resolves
+  to https://dutyfree.airports.gl/ -- Air Greenland / KNI's airport
+  duty-free operation, built on Microsoft Dynamics 365 Commerce.
+
+  TRAVEL-RETAIL FLAG, per the onboarding brief's instruction to flag
+  rather than silently accept a non-standard price source: this is
+  boarding-pass duty-free (Kangerlussuaq/Nuuk pickup), not domestic retail
+  -- prices are tax-free and reflect the duty-free allowance regime, NOT
+  Greenland's general price level. Ships anyway because Greenland
+  currently has ZERO food/beverage/tobacco sources of any kind (confirmed
+  across three prior onboarding passes on 2026-09-11) -- a flagged,
+  atypical observation beats none, and downstream analysis can weight or
+  exclude this source distinctly using the channel/notes.
+
+  SCOPE restricted to COICOP 01/02 per the hard constraint: only
+  confectionary, tobacco, beverage (beer/soft-drinks/spirits/wine), and
+  the two "other-products/food" leaves (spices, tea-coffee) are crawled.
+  Cosmetics, fragrances, skincare, electronics ("technic"), sealskin/
+  souvenir, toys, and travel accessories exist on the same site and are
+  explicitly OUT OF SCOPE -- never fetched.
+
+  Platform: server-rendered category pages embed the initial product
+  listing directly in the HTML as a `LISTPAGESTATE` hydration payload
+  (`activeProducts`: ItemId/Name/Price) -- Tier 1A, no WAF, plain
+  `requests` returns 200. Category ids read from the embedded category-
+  tree JSON on the beverage page (verified live 2026-09-11): beverage
+  5637146827, confectionary 5637146829, tobacco 5637146839, food/spices
+  5637147042, food/tea-coffee 5637147041, travel-exclusives/candy-and-
+  chocolate 5637169331, travel-exclusives/liqour-wine 5637169333.
+
+  Enumerability MEASURED 2026-09-11: `?skip=N` pagination, step 40.
+  beverage: page1 (skip=0) 40 items, page2 (skip=40) 39 items, ZERO id
+  overlap -- 7 total pages per the page-link widget (~280 products).
+  confectionary: 80 items on page1, 5 page links. candy-and-chocolate: 80
+  items page1, 2 page links. tobacco/spices/tea-coffee/liqour-wine: single
+  page each (24/6/4/46 items respectively, no page-link widget rendered).
+  Spider walks skip=0,40,80,... per category independently and stops on
+  the first page contributing zero NEW item ids for that category
+  (safety cap 12 pages/category).
+
+  Sample items (page1, 2026-09-11): tobacco "Prince Original Taste 200s"
+  DKK 299; beverage "Finlandia Lime Vodka 37.5% 1L" DKK 109, "Dom
+  Perignon 0.75L, Giftbox" DKK 1599; confectionary "Simply Chocolate Dark
+  Marci bar 40g" DKK 19; food/spices "Arktisk Kvan 10g" DKK 55 (a
+  Greenlandic angelica-root product); food/tea-coffee "Te 40g med
+  arktiske urter" DKK 95 (Greenlandic herbal tea).
+
+  No stable per-product PDP URL was found in the payload (React SPA
+  category view; ItemId is not resolvable to a bare product path from
+  the listing payload alone) -- the spider constructs a synthetic
+  identifier url `<category_url>?itemId=<id>` to satisfy
+  DuplicationPipeline's url-based dedup, matching the pattern already
+  used by jubasquare_ss.py and busiquip_sz.py in this repo.
+
+  channel: dept-store -- the parent site sells across many non-food
+  divisions (cosmetics, fragrances, electronics) even though this
+  spider's own crawl is scoped to 01/02 only; dept-store is the closest
+  enum fit for a duty-free operator, and unlike marketplace it is not
+  excluded from the corpus census.
+
+  Test run 2026-09-11: `prices collect --source dutyfree_airports_gl
+  --max-items 100` -> measured rows and distinct urls recorded in the
+  onboarding session's Phase 8 report.

@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: convenience
+spider: umaimart_lk
+url: https://umaimart.lk/wp-json/wc/store/v1/products
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "umaimart.lk/"
+archive_path_re: '^/wp-json/wc/store/v1/products'
+notes: |
+  Umaimart, small Sri Lankan neighborhood convenience store.
+  WooCommerce Store API, no auth: /wp-json/wc/store/v1/products.
+  Confirmed 60 products total (X-WP-Total header).
+  currency_minor_unit=2 read from the payload (not assumed) -- e.g.
+  "10000" -> LKR 100.00 for "Link Paspanguwa 23g".
+
+  Category audit (full 60-product pull, 2026-09-11): Bread & Bakery
+  11, Biscuits & Snacks 14, Baby Food & Products 10, Body Care 9,
+  Household Needs 8, Breakfast & Dairy 3, Health & Medical 3, Grocery
+  & Staples 2, Beverages 1 -- roughly half food, half general
+  convenience-store merchandise. channel: convenience, not a pure
+  grocery. Non-food rows are still emitted; COICOP routing (which will
+  correctly send them to 12.x/13.x) happens downstream in the
+  classifier, not the spider.
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 5 run produced rows.

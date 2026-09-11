@@ -1,0 +1,56 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: salonebly_sl
+url: https://salonebly.com/categories/food-beverages/products
+language: en
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+notes: |
+  Probed 2026-09-11 (SSA gap-fill pass, still_untried_20260911 queue,
+  originally candidate "salonebly" from the sierra_leone queue).
+
+  Salonebly ("Yu Don Bay - VLN Solutions") is a general online store on
+  FleetCart (open-source Laravel/Vue commerce platform) selling
+  electronics, cars, building material, clothing -- AND a large
+  "food-beverages" category of genuinely retail/packaged goods: bottled
+  spirits and wine (Ciroc Vodka 1ltr, Hennessy 700ml, Zonin/Barefoot
+  wines), and carton/bag staples (Spaghetti, Frozen Chicken Legs Carton
+  10Kg, Garlic Carton, Flour 25Kg Bag, Bulger 25Kg Bag).
+
+  SCOPING DECISION, made deliberately: the site ALSO has "food",
+  "drinks", "hot-beverages", "rice", "pasta", "biryani", "naan", "pizza"
+  etc categories -- sampled 2026-09-11 and found dominated by PREPARED
+  RESTAURANT ITEMS (Grilled Prawns, Deep Fried Chicken Wings,
+  Cappuccino, Tomato Pulao, Veg Pulao), COICOP division 11
+  (restaurants), out of scope for the 01/02 coverage grid this pass
+  targets. Only "food-beverages" is crawled here; the restaurant-menu
+  categories are deliberately left uncrawled. channel: marketplace
+  reflects the cross-division catalogue of the storefront as a whole
+  (electronics/cars/building-material alongside food), not a claim that
+  this is a multi-vendor seller platform.
+
+  DISCOVERY: the category listing page is a Vue SPA shell -- plain
+  `requests` returns 0 products in server HTML. Playwright network trace
+  found the SAME url self-requested with header `X-Requested-With:
+  XMLHttpRequest`, returning clean JSON -- confirmed working via plain
+  `requests`, no impersonation or Playwright needed at collection time.
+
+  ENUMERABILITY: MEASURED 2026-09-11, category=food-beverages,
+  perPage=30 -> total=157, page1 vs page2 item ids fully disjoint.
+
+  PRICE: uses `selling_price.amount` (post-special-price, what a buyer
+  actually pays), not the pre-discount `price.amount`.
+
+  CURRENCY: SLE, read directly from `selling_price.currency` in the
+  payload -- matches countries.yaml's Sierra Leone default (post-2022
+  redenomination code).
+
+  coicop_codes left unset -- the food-beverages category spans staple
+  cereals, meat, alcohol/spirits and condiments, wide by the narrowness
+  rule.
+
+  MEASURED test run 2026-09-11: `prices collect --source salonebly_sl
+  --max-items 100` -> see row/url counts recorded in the campaign report.
