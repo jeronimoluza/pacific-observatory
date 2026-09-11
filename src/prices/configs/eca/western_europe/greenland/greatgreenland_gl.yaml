@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: fashion
+spider: greatgreenland_gl
+url: https://www.greatgreenland.com/
+language: da
+cadence: weekly
+notes: |
+  Batch 22, wave 5. Great Greenland A/S -- the country's national
+  sealskin/fur tannery and fashion house: coats, footwear, jewelry and
+  decorative skins (e.g. "Grønlandsk Moskusokse Skind", "AKA, Sælskinds
+  Støvle"). Site's own <html lang="da-DK">. Standard WooCommerce Store
+  API at /wp-json/wc/store/v1/products, no auth, no anti-bot -- curl_cffi
+  impersonate=chrome124 returns 200 JSON directly.
+
+  Prices are integer minor units, currency_minor_unit=2, currency_code
+  DKK -- handled by the shared _woo_base.WooBaseSpider.
+
+  Enumerability confirmed live 2026-09-11: x-wp-total=788,
+  x-wp-totalpages=53 (per_page=15 in the probe) -- the largest catalog
+  of the three Greenland candidates in this batch. page1 ids
+  distinct from page2 ids -- catalog paginates cleanly.
+
+  Wide catalog (clothing, footwear, jewelry, decor skins span several
+  COICOP classes), coicop_codes left unset for the classifier.
+
+  DUPLICATE CHECK (per wave-5 addendum): compared against pisiffik_gl,
+  Greenland's only other onboarded source -- a department-store/
+  electronics/furniture/auto franchise operator. Different company,
+  different platform (PrestaShop vs WooCommerce), different product
+  category (fur/leather fashion goods vs electronics/furniture) -- no
+  catalog overlap.

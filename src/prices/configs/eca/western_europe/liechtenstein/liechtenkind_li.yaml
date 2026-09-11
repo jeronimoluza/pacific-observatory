@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: cosmetics
+spider: liechtenkind_li
+url: https://www.liechtenkind.com/
+language: de
+cadence: weekly
+notes: |
+  Batch 22, wave 5. Small Liechtenstein/Werdenberg-region handmade
+  cosmetics brand: natural soaps, shower butter and candles (e.g.
+  "Naturseife Arve/Zirbe Herz", "Naturwachs-Kerze ... Ich brenne fuer
+  Werdenberg"). Standard WooCommerce Store API at
+  /wp-json/wc/store/v1/products, no auth, no anti-bot -- curl_cffi
+  impersonate=chrome124 returns 200 JSON directly.
+
+  Prices are integer minor units, currency_minor_unit=2, currency_code
+  CHF -- handled by the shared _woo_base.WooBaseSpider ("1240" -> CHF
+  12.40).
+
+  Enumerability confirmed live 2026-09-11: x-wp-total=75, x-wp-totalpages=4
+  (per_page=20). page1 ids [12952,12695,11926,11773,11725] vs page2
+  [10963,10960,10953,10922,10832] -- fully disjoint, catalog paginates.
+
+  Test run --max-items 20: 20 rows, 20 priced, 0 blank names, 100% CHF.
+  Sample: CHF 8.80 "Naturseife Arve/Zirbe Herz", CHF 12.40 "Naturseife
+  Wildmandli", CHF 21.90 "Badespass Blumentraum allergenarm".
+
+  Wide catalog spanning soaps/body-care/candles -- multiple COICOP
+  leaves within personal care and household goods, so coicop_codes left
+  unset for the classifier.
+
+  No overlap risk with the country's other three onboarded sources
+  (ospelt_li meat/deli, hofkellerei_li wine, brauhaus_li beer) --
+  different company, different product category entirely (cosmetics).

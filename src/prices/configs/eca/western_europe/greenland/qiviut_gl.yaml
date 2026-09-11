@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: fashion
+spider: qiviut_gl
+url: https://www.qiviut.gl/
+language: en
+cadence: weekly
+notes: |
+  Batch 22, wave 5. Musk-ox-wool knitwear and sealskin accessories,
+  Greenland. Product names mixed English/Danish ("Hair clip with bow in
+  musk ox wool" / "Hårspænde med sløjfe i moskusuld") -- site's own
+  <html lang="en-GB">, so language set to en. Standard WooCommerce Store
+  API at /wp-json/wc/store/v1/products, no auth, no anti-bot -- curl_cffi
+  impersonate=chrome124 returns 200 JSON directly.
+
+  Prices are integer minor units, currency_minor_unit=2, currency_code
+  DKK -- handled by the shared _woo_base.WooBaseSpider.
+
+  Enumerability confirmed live 2026-09-11: x-wp-total=211,
+  x-wp-totalpages=15 (per_page=15 in the probe). page1 ids
+  [9901,9898,9839,9838,9701] vs page2 [8210,8197,8196,8195,8182] --
+  fully disjoint, catalog paginates cleanly. Largest of the two
+  Liechtenstein/Greenland candidate sets probed at 211 SKUs.
+
+  Wide catalog (knitwear, accessories, some "Uncategorized"/empty
+  category items), coicop_codes left unset for the classifier.
+
+  DUPLICATE CHECK (per wave-5 addendum): compared against pisiffik_gl,
+  Greenland's only other onboarded source -- a department-store/
+  electronics/furniture/auto franchise operator. Different company,
+  different platform (PrestaShop vs WooCommerce), different product
+  category (musk-ox wool/sealskin craft goods vs electronics/furniture)
+  -- no catalog overlap.

@@ -1,0 +1,58 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: neufeldhof_li
+url: https://www.neufeldhof.li/
+language: de
+cadence: weekly
+notes: |
+  Batch 22, wave 5. Farm shop (Hofladen) in Vaduz, Liechtenstein --
+  Family Konrad, per the homepage title "Hofladen, Vaduz, Familie
+  Konrad, Fleisch, Milchprodukte". Genuinely domestic small producer,
+  same category as ospelt_li/hofkellerei_li/brauhaus_li already in this
+  tree.
+
+  PLATFORM CORRECTION: pre-probing flagged this host with an "ecwid"
+  fingerprint and no working API. Re-probed 2026-09-11: the "ecwid"
+  hits on the homepage are references to Wix's own storefront widget
+  ("wix.ecwid.com/wix/app/store"), not a standalone Ecwid store -- this
+  is a WIX STORES site, not Ecwid. No open commerce REST API was found
+  on this tenant (Wix's storefront data API needs a site-scoped token
+  not exposed here). Ran a Playwright network trace
+  (~/po-gapfill/nettrace.py, single page) before concluding this --
+  it visited the homepage and the cart page and captured no JSON
+  endpoint carrying price data.
+
+  WORKING ROUTE: Wix auto-generates /store-products-sitemap.xml. Fetched
+  live 2026-09-11: exactly 4 <loc> product URLs (two egg listings, one
+  alpine cheese "Alpkäse Pradamée", one peppermint syrup). Each product
+  page is server-rendered with a schema.org Product JSON-LD block
+  (name/offers.price/offers.priceCurrency/offers.availability) -- Tier
+  1A, confirmed via curl_cffi impersonate=chrome124 with no JS
+  execution needed:
+    {"@type":"Product","name":"Alpkäse Pradamée 2024 ca. 200 g",
+     "offers":{"price":"5.6","priceCurrency":"CHF",
+     "availability":".../InStock"}}
+
+  ENUMERABILITY: this is a genuinely tiny catalog -- 4 SKUs total, all
+  of them distinct, real, current products (confirmed the sitemap's
+  stale <lastmod>/slug text, e.g. "...2020..." in the slug vs "2024" in
+  the live JSON-LD name, does NOT mean the page itself is stale -- price
+  and stock status are current). There is only one "page" (the whole
+  sitemap fits in one response), so page1-vs-page2 pagination cannot be
+  demonstrated -- the enumerability proof here is instead "every listed
+  URL resolves to a distinct real product", which it does. Per campaign
+  guidance, a small genuine catalog is acceptable and should not be
+  rejected for size; a catalog that never changes across repeated
+  fetches of the SAME page would not be, and that is not what this is.
+
+  No existing WooCommerce/Ecwid/Wix base class fits this platform
+  (checked src/prices/price_scraping/spiders/_*.py -- no _wix_base.py
+  exists), so this is a small bespoke scrapy.Spider: fetch the sitemap,
+  request each product URL, parse the JSON-LD Product node. ~25 lines,
+  no new paginator (there is nothing to paginate).
+
+  Wide catalog (eggs, cheese, syrup span multiple COICOP food leaves),
+  coicop_codes left unset for the classifier.

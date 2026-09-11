@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: fashion
+spider: meqqusaalik_gl
+url: https://www.meqqusaalik.gl/
+language: kl
+cadence: weekly
+notes: |
+  Batch 22, wave 5. Greenlandic clothing brand -- anoraks (annoraat),
+  trousers (qarliit), t-shirts -- sold in Kalaallisut (site's own
+  <html lang="kl-gl">, product names like "Aputsiaq Annoraaq"). Standard
+  WooCommerce Store API at /wp-json/wc/store/v1/products, no auth, no
+  anti-bot -- curl_cffi impersonate=chrome124 returns 200 JSON directly.
+
+  Prices are integer minor units, currency_minor_unit=2, currency_code
+  DKK -- handled by the shared _woo_base.WooBaseSpider.
+
+  Enumerability confirmed live 2026-09-11: x-wp-total=73,
+  x-wp-totalpages=5 (per_page=15 in the probe; base spider uses
+  per_page=100 which will collapse this to ~1 page since total < 100 --
+  fine, still the whole catalog). Sampled page1 ids
+  [23638,23336,23084,23052,22988]-equivalent set vs page2 ids fully
+  disjoint from page1 in the probe.
+
+  Wide catalog (multiple clothing categories + accessories), coicop_codes
+  left unset for the classifier.
+
+  DUPLICATE CHECK (per wave-5 addendum): compared against pisiffik_gl,
+  Greenland's only other onboarded source -- a department-store/
+  electronics/furniture/auto franchise operator (Elgiganten/Jysk/
+  Thansen brands). Different company, different platform (PrestaShop vs
+  WooCommerce), different product category (apparel vs electronics/
+  furniture) -- no catalog overlap.
