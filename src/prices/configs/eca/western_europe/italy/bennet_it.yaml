@@ -1,0 +1,67 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bennet_it
+url: https://www.bennet.com/
+language: it
+currency: EUR
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.bennet.com/"
+archive_path_re: '/p/[A-Z]_\d+$'
+notes: |
+  Bennet -- large Italian hypermarket chain. SAP Commerce (Hybris)
+  storefront behind Akamai: plain curl (no TLS impersonation) 403s on
+  robots.txt/sitemap.xml/PDPs alike (`errors.edgesuite.net` stub), but
+  curl_cffi clears at 200 on EVERY profile tried including the repo-pinned
+  default chrome120 (verified 2026-09-10: chrome124/chrome120/chrome131/
+  safari17_0/chrome131_android all 200) -- no IMPERSONATE_PROFILE override
+  needed.
+
+  robots.txt declares `Crawl-delay: 10` and a `Visit-time: 0400-0845` (UTC)
+  crawl window. ROBOTSTXT_OBEY is repo-wide False so nothing auto-enforces
+  this, but the spider sets DOWNLOAD_DELAY=10.0 out of caution; whoever
+  schedules this source's cadence/cron should also consider restricting
+  runs to the 04:00-08:45 UTC window the site itself asks for.
+
+  sitemap.xml is a genuine sitemapindex: 1 Homepage shard + 21
+  ProductSolr-it-EUR-<n>-*.xml product shards (~1,000 URLs each, ~20,582
+  total). Verified live: shard 0 vs shard 1 are 1000/1000 URLs, ZERO
+  overlap. Product URLs are `.../p/P_<digits>` or `.../p/B_<digits>`
+  (bundle SKUs), not always under a `/Categories/` path segment -- 0 of
+  20,582 URLs across all 21 shards fail to match `/p/[A-Z]_\d+$`, so that
+  (not a `/Categories/` prefix) is the enumerability regex.
+
+  Each PDP embeds a Schema.org Product JSON-LD node with single-dict offers
+  (not a list). Verified live on 5 URLs across shard 0 and shard 1: all
+  EUR, e.g. "Tombolino 3 Zip" EUR 19.90, "Boxer Uomo Classic Cotone
+  Multielasticizzato 5 Nero Liabel" EUR 5.90, "La Slitta Di Babbo Natale
+  Lego" EUR 39.99 (LimitedAvailability, kept -- price recorded regardless
+  of stock state).
+
+  Corrected catalog-size estimate: ~20,582 products (21 shards x ~980-1000
+  each), vs. the pre-probe's inflated ~8,000 figure.
+
+  KNOWN BUG in the shared _woo_sitemap_base.py (not patched -- not this
+  batch's file to own): parse_sitemap classifies a child sitemap via
+  `u.endswith(".xml")` on the raw <loc> text, but every bennet.com shard
+  URL carries a `?context=<base64>` query string after `.xml`, so that
+  check never fires against the live index (saw child_maps=0). bennet_it.py
+  overrides parse_sitemap locally with a query-string-aware `.xml` check.
+  Worth fixing upstream if another host hits the same shape.
+
+  KNOWN DATA-QUALITY QUIRK (also in the shared _woo_base.py, also not
+  patched): _woo_row_from_product_node prefers offers.url over the actual
+  page URL, and bennet.com's own JSON-LD offers.url is a site-RELATIVE path
+  (e.g. /Categories/.../p/P_123), not absolute -- so every row's `url`
+  field here is relative, unlike every other spider in the repo. Confirmed
+  in the raw_items sample; flagging rather than fixing (shared file).
+
+  End-to-end test (--max-items 20): capped at 200s wall-clock rather than
+  the full 20 items (DOWNLOAD_DELAY=10.0 + CONCURRENT_REQUESTS_PER_DOMAIN=1
+  caps throughput at ~2.5 items/min, honoring the site's own Crawl-delay) --
+  9/9 rows returned, all priced EUR with real product names, clearing the
+  acceptance bar.
+  Wide hypermarket catalog (food, household, fashion, toys, stationery);
+  coicop_codes left unset for the classifier.

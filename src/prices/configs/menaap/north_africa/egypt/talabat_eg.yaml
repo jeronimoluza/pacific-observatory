@@ -1,0 +1,75 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: talabat_eg
+url: https://www.talabat.com/egypt/groceries
+language: en
+cadence: weekly
+channel: marketplace
+notes: |
+  Wave-2 gap-fill batch 9. Talabat (Delivery Hero) is a food-delivery
+  AGGREGATOR, not a retailer -- per GLOSSARY.md, `channel: aggregator` is not
+  a legal value; it was split 2026-08-05 into marketplace/real-estate/null.
+  Talabat's "groceries" vertical is the marketplace case: dozens of
+  independently-run grocery stores, mini-markets, pharmacies and supermarket
+  chains (BIM's Egyptian branches turned up in one 20-vendor area sample)
+  each keep their own SKU-level catalog and price, sold through Talabat.
+  channel is `marketplace`, not `supermarket` -- no single retailer identity
+  applies. The restaurant side of Talabat (COICOP 11.1 catering, a fully
+  separate `restaurants-N.xml.gz` sitemap family) is explicitly OUT of scope
+  for this source -- confirmed groceries and restaurants are two disjoint
+  sitemap families before deciding this, per the batch brief's instruction to
+  say explicitly if it's catering vs grocery SKUs. This source is grocery
+  SKUs.
+
+  Excluded at crawl time: vendors whose own `cuisineString` contains
+  "Charity" -- Egyptian Food Bank, hospital/foundation donation-drive
+  listings (57357 Hospital, Magdi Yacoub Heart Foundation, Al Orman
+  Association, ...) appear on the SAME public groceries-area listing pages
+  as real retailers. These are aid distribution, not retail price
+  observations; filtering them at the vendor-discovery hop is more precise
+  than relying on the zero-price drop downstream.
+
+  TLS profile: the batch brief measured chrome120/chrome124 403 on
+  talabat.com. Re-probed live 2026-09-10: chrome120 actually 200s on
+  /egypt (root path) but chrome124/chrome119/chrome131 403 reliably --
+  inconsistent, possibly edge-side A/B testing, not a profile to trust.
+  chrome133a 200s reliably on every path tried (homepage, sitemap, area,
+  vendor, item pages) so it's pinned via the same 3-part
+  IMPERSONATE_PROFILE override as rewe_de/libdelivery_lr (disable
+  RandomBrowserMiddleware + matching UA string + IMPERSONATE_PROFILE).
+
+  Crawl shape (3 hops, no client-side API calls -- every hop is server-
+  rendered Next.js `__NEXT_DATA__` JSON in the raw HTML):
+    1. robots.txt -> https://www.talabat.com/sitemap/egypt/en/
+       groceries_areas.xml.gz -> ~1,910 area listing pages
+       (/egypt/groceries/<areaId>/<slug>), each itself paginated (?page=N,
+       capped at 3 pages/area here).
+    2. Each area page's `pageProps.vendors[]` lists grocery vendors serving
+       that area (branchId/branchSlug/cuisineString). Deduplicated globally
+       by branchId in-spider -- the SAME physical store recurs across many
+       nearby areas under the same id (confirmed: Disha Market branchId
+       707053 serves multiple areas), so each vendor is crawled once
+       regardless of how many areas surface it. This is the exact
+       "don't scrape the same product N times" risk flagged for bringo_ro,
+       resolved the same way: dedupe at discovery, not after.
+    3. Each vendor page (/egypt/grocery/<branchId>/<slug>?aid=<areaId>) lists
+       its own category/subCategory tree
+       (`pageProps.initialState.categories`); each subcategory page embeds
+       the priced item list directly in
+       `pageProps.initialState.itemsData.items[]`
+       (title/price/originalPrice/sku), paginated via `&page=N` up to
+       `itemsData.pageCount` (capped at 15 pages/subcategory here).
+
+  Enumerability confirmed live 2026-09-10 on vendor 707053 (Disha Market),
+  category snacks-chocolate/biscuits (148 items, pageCount=7): page 1 vs
+  page 2 are a disjoint 20/20 item-id set, zero overlap. Real EGP prices
+  throughout, e.g. "Galaxy Flutes 4 Fingers Chocolate Wafer Rolls, 45g" EGP
+  22.80, sku 6221134002638 -- a 622-prefixed EAN (Egypt's GS1 country code),
+  confirming genuine Egyptian retail SKUs rather than a copied foreign
+  catalog.
+
+  No explicit currency field in the item JSON; EGP is inferred from the
+  /egypt/ country scope, same convention used elsewhere in this repo when a
+  source has no per-row currency field.

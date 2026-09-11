@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supervalu_ie
+url: https://shop.supervalu.ie/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "shop.supervalu.ie/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Verified live 2026-09-10. SuperValu's own storefront (Mi9 Retail Cloud
+  platform), distinct from the existing `quidu_ie` config: quidu.ie is a
+  third-party price-comparison aggregator running a keyword-seeded PARTIAL
+  walk (~80 search terms) over Aldi/Dunnes/SuperValu/Tesco, not a direct
+  crawl of any one retailer's own catalog. This is additive, not a
+  duplicate -- read quidu_ie.yaml before assuming overlap.
+
+  robots.txt: `User-agent: * / Allow: /`, Sitemap: /sitemap.xml.
+  /sitemap.xml is a single flat <urlset> (not a <sitemapindex>) with
+  13,670 <loc> entries total (product/categories/promotion/recipes mixed);
+  11,807 match `/product/<slug>-id-<digits>` (corrected count from the
+  brief's inflated 41,067-style pattern -- supervalu.ie's own inflation was
+  minor since its /product/ path doesn't collide with a locator route, but
+  re-derived from the sitemap directly per the wave-2 instruction rather
+  than trusted).
+
+  Product pages are server-rendered, no JS/Googlebot UA needed. Price data
+  ships as schema.org microdata meta tags (`<meta itemprop="price"
+  content="€3.00">`, itemprop="name"/"currency"/"sku") plus a duplicate
+  OpenGraph og:title/og:url pair -- parsed with the pipeline's existing
+  `row_from_meta` helper (built for exactly this itemprop+OG shape), with
+  one extra line to pull `itemprop="sku"` since row_from_meta doesn't read
+  it. All confirmed EUR.
+
+  Sampled 7 product URLs spread across the full sitemap range: 5 returned
+  real name+price (Nestle Kit Kat Cereal EUR 3.00, SuperValu Toasted
+  Pumpkin Seeds EUR 1.89, Club Orange Bottle EUR 2.25, Wilton Mint Crisp
+  Bar EUR 1.90, Gaviscon Extra Mint Oral Suspension EUR 10.00); 2 were
+  zero-price/no-name stubs for apparently discontinued SKUs -- dropped
+  cleanly since row_from_meta returns None when price or name is missing.
+  coicop_divisions: 01, 02, 06, 12
+  divisions_basis: sampled_rows (cereal, snacks, soft drinks, chocolate,
+  OTC pharmacy)

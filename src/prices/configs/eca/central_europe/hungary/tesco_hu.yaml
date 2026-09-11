@@ -1,0 +1,58 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tesco_hu
+url: https://bevasarlas.tesco.hu/
+language: hu
+cadence: weekly
+channel: supermarket
+notes: |
+  Tesco's own Hungarian storefront (bevasarlas.tesco.hu) -- NOT
+  tesco_wolt_sk/tesco_wolt_cz (a single physical branch each, listed on
+  the Wolt delivery marketplace, already onboarded). This is the
+  first-party e-commerce catalog.
+
+  Onboarded as part of a 4-country Tesco batch (CZ/HU/IE/UK, all measured
+  with 19k-25k product-sitemap URLs). Only HU shipped. CZ (nakup.itesco.cz),
+  IE (www.tesco.ie) and UK (www.tesco.com) all hard-block their
+  product-detail endpoint -- Akamai "Access Denied" edge deny on headless
+  Playwright AND every curl_cffi TLS profile tried (chrome120/124/131/150),
+  even though their homepage and sitemap XML return 200. See
+  known_blockers_batch_7.md. HU's product endpoint has no such wall.
+
+  Enumerability, verified live 2026-09-10:
+  robots.txt -> https://bevasarlas.tesco.hu/sitemaps/hu-HU/groceries/products-index.xml
+  -> <sitemapindex> of 4 shards (products-1.xml..products-4.xml).
+  Shard 1 and shard 2 each list 5,000 product <loc> entries
+  (/shop/hu-HU/products/<id>), 0 overlap -> DISTINCT. Catalog size
+  ~19,376 products across the 4 shards (campaign's sitemap count).
+
+  No TLS-profile override needed -- the repo-pinned chrome120 profile
+  works throughout. The PDP endpoint IS behind Akamai Bot Manager
+  (_abck/bm_sz/ak_bmsc cookies), but the sitemap-index fetch that
+  naturally starts every crawl already receives those cookies via plain
+  Set-Cookie, and Scrapy's default cookie jar (COOKIES_ENABLED=True
+  repo-wide) carries them into the product-page requests that follow --
+  confirmed live with an isolated curl_cffi session (sitemap shard fetch,
+  then a product fetch with no separate warm-up and no referer: 200 with
+  real JSON-LD). A product URL requested as the FIRST request of a cold
+  session 403s instead.
+
+  Currency bug, confirmed on 8/8 sampled PDPs across both shards: the
+  JSON-LD Product node always reports priceCurrency="GBP" no matter the
+  real HUF price (e.g. an apple-cider vinegar at price=2599, a plausible
+  HUF price and an absurd GBP one). FORCE_CURRENCY="HUF" is set in the
+  spider; HUF matches countries.yaml for Hungary.
+
+  Sample rows (live 2026-09-10): "Andrea Milano Deto bio szuretlen
+  almaecet 500 ml" HUF 2599; "Parmalat Smoothie almas, oszibarackos,
+  lime-os zsirszegeny savanyu tejkeszitmeny spirulinaval 330 g" HUF 629;
+  "PICK Snack csemege 100 g" HUF (see spider docstring for more). Products
+  span groceries, household, toys, DIY -- a full Tesco hypermarket catalog,
+  not food-only, so coicop_codes is left unset for the classifier.
+
+  Kept CONCURRENT_REQUESTS_PER_DOMAIN=1 / DOWNLOAD_DELAY=1.5s in the
+  spider's custom_settings (tighter than the shared _woo_sitemap_base
+  defaults) -- Tesco runs a real anti-bot stack and getting banned here
+  risks the sibling CZ/IE/UK probes too.

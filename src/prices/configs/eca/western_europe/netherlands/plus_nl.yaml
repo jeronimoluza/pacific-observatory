@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: plus_nl
+url: https://www.plus.nl/
+language: nl
+cadence: weekly
+channel: supermarket
+archive_prefix: "plus.nl/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Verified live 2026-09-10. PLUS Supermarkten (NL), OutSystems SPA
+  storefront. A plain browser UA gets only a ~12KB client-rendering shell
+  with no product data. The site does SEO dynamic rendering: the SAME
+  /product/<slug> URL requested with a Googlebot user agent
+  ("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+  returns a fully server-rendered ~240KB page with a clean schema.org
+  Product JSON-LD block (name, sku, brand, category,
+  offers.priceSpecification[0].price/priceCurrency). robots.txt is
+  `User-agent: * / Allow: /` with only backoffice paths disallowed -- no
+  restriction on /product/*.
+
+  Enumerability: /ECP_Sitemap_Engine/rest/Sitemap/index is a real
+  <sitemapindex> with 4 children (recipe, content-pages, category,
+  product); the product child itself
+  (/ECP_Sitemap_Engine/rest/Sitemap/product) is one flat <urlset> of
+  17,451 distinct /product/<slug>-<id> URLs (corrected count -- the
+  earlier `/p/`-style pattern count of the same rough size was coincidence,
+  not the same regex; re-derived here directly from this sitemap).
+
+  Priced JSON-LD confirmed on 5 products spread across the full sitemap
+  range (positions 0, 100, 5000, 9000, 17000), all EUR, all non-zero:
+  Bokma Graanjenever EUR 17.49, PLUS Boerentrots Varkenslappen EUR 3.26,
+  Varta Alkaline longlife AAA EUR 6.99, Lavazza Qualita Rossa koffiebonen
+  EUR 20.99, Consenza Glutenvrij Kipnuggets EUR 6.79.
+
+  Known downstream note (not this source's problem): Dutch product names
+  score poorly in the current classifier -- onboard normally, coverage is
+  a separate fix.
+  coicop_divisions: 01, 02, 05, 06, 09, 12
+  divisions_basis: sampled_rows (sitemap-wide sample: spirits, meat,
+  batteries, coffee, chilled meals, personal care)

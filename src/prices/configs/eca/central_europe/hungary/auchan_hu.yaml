@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: auchan_hu
+url: https://auchan.hu/
+language: hu
+cadence: weekly
+channel: hypermarket
+notes: |
+  Auchan Hungary hypermarket. online.auchan.hu (the storefront app) is a
+  heavy client-rendered shell, but its own robots.txt points at a fully
+  server-rendered sitemap chain on the marketing domain instead:
+  https://auchan.hu/sitemap.xml -> <sitemapindex> of product-sitemap-0/1/2.xml
+  (20,000 + 20,000 + 10,258 = 50,258 product <loc> entries, verified live
+  2026-09-10) plus category-sitemap-0.xml / cms-sitemap-0.xml /
+  content-sitemap-0.xml, which this base class also walks but which carry
+  zero URLs matching PRODUCT_URL_RE (categories use `.c-<id>`, products use
+  `.p-<id>` -- confirmed 0 `.p-` matches in category-sitemap-0.xml).
+
+  Enumerability: shard 0 and shard 1 are DISJOINT -- alphabetically
+  partitioned by product-name slug (shard 0 starts "1-1-vitamin-...",
+  shard 1 starts "sam-mills-..."). Product URL shape:
+  https://auchan.hu/shop/<slug>.p-<id>, plain HTML, no impersonation or
+  Playwright needed (plain GET -> HTTP 200).
+
+  Each PDP carries a schema.org Product JSON-LD block with a single Offer
+  (price/priceCurrency/availability) -- parsed via the shared
+  WooBaseSpider.parse_html JSON-LD->meta->DOM fallback chain (this
+  tenant is not WooCommerce, but the sitemap+JSON-LD extraction pattern
+  is identical). Verified 4 PDPs across 2 shards, all non-zero HUF
+  prices: '1x1 Vitamin Kalcium + Magnezium ...' HUF 2079, '1x1 Vitaday
+  Magnezium ...' HUF 1919, 'Sam Mills Pasta d'Oro Fusilli ...' HUF 955,
+  'Samia barbecue szosz ...' HUF 1699. Currency HUF matches
+  countries.yaml.
+
+  Other Auchan banners in this repo (auchan_ro=VTEX, auchan_pt=SFCC,
+  auchan_sn=PrestaShop, auchan_ua=Zakaz white-label) run 4 DIFFERENT
+  platforms -- auchan_hu is a 5th, distinct stack. Do not assume any
+  future Auchan banner shares a platform with another without probing.

@@ -1,0 +1,68 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mathaus_ro
+url: https://www.bringo.ro/ro/stores/mathaus/
+language: ro
+cadence: weekly
+channel: home-improvement
+notes: |
+  Wave-2 gap-fill batch 9. Candidate as briefed was "bringo_ro" (bringo.ro,
+  claimed 150,005 product URLs). Probed live 2026-09-10: bringo.ro is a
+  multi-tenant delivery marketplace, not one retailer -- the sitemap covers
+  ~65 unrelated tenants (Carrefour formats, pharmacies, florists, bookstores,
+  butchers, wine shops, restaurants...) all nested under
+  /ro/stores/<tenant>/<category-or-branch>/products/<slug>/<id>. The 150,005
+  figure is real distinct URLs (verified zero collisions on the trailing
+  numeric id within any one tenant, across all 5 sitemap-generic-product-N.xml
+  shards) but spans every tenant, so it cannot be onboarded as a single
+  "bringo_ro" source with one channel value.
+
+  Rejected tenants:
+  - carrefour_hipermarket/carrefour-market/carrefour-express (39,469 +
+    12,946 + 4,007 urls) -- Carrefour Romania is ALREADY onboarded directly
+    at carrefour_ro.py (carrefour.ro, ~38,630 PDP urls). Scraping the same
+    chain again via Bringo's delivery storefront would duplicate the chain
+    under a delivery markup rather than adding basket coverage.
+  - farmacia-sensiblu (4,157), farmacia-dr-max (2,221), help-net (2,265) --
+    all three pharmacy tenants render a PDP with no price, no add-to-cart
+    form and no `data-afanalytics` block at all (5 pages checked live
+    2026-09-10, 2 tenants). Looks like the same "resolve delivery area /
+    session first" gate documented elsewhere in known_blockers.md for
+    Talabat/Kibsons-style platforms. Not pursued further this pass -- would
+    need a Playwright session-bootstrap investigation, out of scope for this
+    batch. Real gap: Romania has NO pharmacy source in the tree yet.
+
+  Picked MatHaus (DIY/hardware -- lighting, tools, cabling, hardware): a
+  distinct Bringo tenant, not covered elsewhere in the Romania tree, no
+  gating, largest non-duplicate catalog on the platform.
+
+  Enumerability: sitemap index (sitemap-generic-index.xml) resolves to 5
+  product shards + 1 category + 1 store sitemap. MatHaus urls appear only in
+  shards 3/4/5 (9,398 / 10,088 / 678 urls respectively as of 2026-09-10,
+  zero in shards 1-2) -- the spider still walks all 5 shards dynamically so a
+  future re-shard doesn't silently drop coverage. Confirmed disjoint: shard 3
+  vs shard 4 MatHaus urls share 0 overlap. Total unique MatHaus urls across
+  all shards: 20,164.
+
+  Currency/price: PDP JSON-LD Product node carries name/image/description/
+  brand but NO `offers` block at all (no price in JSON-LD -- this is NOT the
+  wave-2 sitemap+JSON-LD pattern despite bringo.ro looking like a fit at
+  first probe). Real price lives in a `data-afanalytics='{...}'` JSON
+  attribute on the add-to-cart form, e.g.
+  {"price":"101,68","currency":"RON","productName":"Aplica rotunda cu senzor
+  Hepol, 1 x LED, max 12 W, IP40, alb","vendorName":"MatHaus"} -- cross-
+  verified against the human-visible `<div class="product-price">101,68
+  RON</div>` on the same page. Spider falls back to that DOM div (regex) and
+  to the page's own <h1> for name if the JS attribute is ever missing.
+  Confirmed non-zero RON price + matching currency on 5 products across 3
+  different categories/shards.
+
+  No special impersonate profile needed -- chrome120 (repo default) and
+  chrome124 both return 200 on both the sitemap and PDP endpoints.
+
+  A meaningful minority of sitemap urls are already stale (404) at crawl
+  time (2 of 4 casa_victoria and 2 of 4 farmacia-sensiblu sample urls were
+  404 on this pass) -- normal for an unbounded sitemap on a fast-turnover
+  delivery catalog; the spider just skips those.

@@ -1,0 +1,55 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rewe_de
+url: https://shop.rewe.de/
+language: de
+cadence: weekly
+channel: supermarket
+notes: |
+  Wave-2 gap-fill batch 9. Germany's first first-party grocery source in the
+  tree (existing DE configs are edeka24_de -- a small Edeka spinoff, not the
+  main chain -- flaschenpost_de/knuspr_de -- delivery startups -- obi_de/
+  mytime_de -- DIY -- none are a Big-4 supermarket).
+
+  TLS profile: repo-pinned chrome120 403s on shop.rewe.de's edge, as do
+  chrome124/chrome131/chrome99/chrome110/chrome116/chrome131_android. Only
+  chrome133a and chrome119 returned 200 (probed live 2026-09-10, matches the
+  chrome150-class profile flagged in the batch brief -- curl_cffi 0.16.2 on
+  this box doesn't have a literal "chrome150" identifier, chrome133a is the
+  newest available and is the one that clears the edge). No prior
+  session/cookie warm-up needed -- a cold request straight to the sitemap or
+  a PDP with impersonate=chrome133a returns 200 on the first try. Pinned via
+  the 3-part IMPERSONATE_PROFILE override (disable RandomBrowserMiddleware +
+  matching UA string + IMPERSONATE_PROFILE), same pattern as libdelivery_lr.
+
+  URL-path gotcha: shop.rewe.de itself 404s on `/shop/...` paths -- its own
+  nav hrefs are relative to an implicit `/shop` base already baked into the
+  shop.rewe.de host, so appending another `/shop` 404s. The real fetchable
+  PDP/sitemap host is www.rewe.de (shop.rewe.de redirects there for content
+  paths). robots.txt on www.rewe.de -> Sitemap: /sitemaps/sitemap.xml, which
+  lists sitemap-shop-produkte.xml (50,000 urls) and
+  sitemap-shop-produkte_1.xml (45,950 urls) -- 95,950 PDP urls total, two
+  disjoint shards (spot-checked, no overlap), all under /shop/p/<slug>/<id>.
+
+  Currency/price: the PDP's own JSON-LD Product node has NO `offers` block at
+  all (name/image/description/gtin/brand/sku only) -- NOT the standard
+  wave-2 JSON-LD price pattern despite rewe.de looking like a fit at first
+  probe. Real price lives in a `<script id="pdpr-propstore<N>-<articleId>-
+  <uuid>">` SSR JSON blob:
+  {"productData":{"productName":...,"pricing":{"price":99,"regularPrice":99},
+  ...}}` -- price is EUR cents (99 -> EUR 0.99), no explicit currency field
+  but cross-verified against the same blob's own computed per-unit price
+  (e.g. "1 l = 11,87 €" on a 0.75l product priced 890 -> 0.75 x 11.87 = 8.90,
+  matches). Confirmed non-zero EUR price on 5 products spanning both shards
+  and multiple categories (cosmetics, wine, candied ginger, mineral water,
+  baking). This is the anonymous/no-postcode reference price REWE serves any
+  visitor -- REWE's per-postcode dark-store fulfillment may vary price at the
+  margin, but this is the same price any bot or logged-out shopper sees, and
+  it's what the sitemap-driven crawl can reach without a delivery-address
+  session flow.
+
+  Category taken from the propstore blob's own `categorySlug` (a raw
+  category-tree ID, not a human label) -- left as-is rather than resolving it
+  since the classifier assigns COICOP leaves from product_name regardless.

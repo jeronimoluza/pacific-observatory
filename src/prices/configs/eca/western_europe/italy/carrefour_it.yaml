@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carrefour_it
+url: https://www.carrefour.it/
+language: it
+currency: EUR
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.carrefour.it/p/"
+archive_path_re: '^/p/[^/]+/\d+\.html$'
+notes: |
+  Carrefour Italia -- a DIFFERENT platform from carrefour_fr.py (Salesforce
+  rayon HTML): no WAF at all here, bare curl (no TLS impersonation) clears
+  the sitemap and every product page at 200. sitemap_index.xml lists 6
+  shards (product/category/content/sitemap_3/stores/volantini);
+  sitemap_0-product.xml is a flat urlset (not further nested) of 26,430
+  `/p/<slug>/<ean>.html` URLs -- ALL 26,430 match that exact shape (0
+  non-matching sampled). Each PDP embeds a clean Schema.org Product JSON-LD
+  node (single-dict offers, not a list). Verified live 2026-09-10 on 5 URLs
+  spread across the file: all EUR, e.g. "Sant'Anna Pet Lt 2,0X6 Naturale"
+  EUR 3.96, "Terre d'Italia Salamini Italiani alla Cacciatora DOP 100 g" EUR
+  3.85, "Lines e Assorbenti con ali 54+12 pz" EUR 23.90. Some rows carry
+  availability=OutOfStock but still a real price -- kept (price recorded
+  regardless of stock state; only price<=0 is dropped).
+  Enumerability: single flat product-sitemap shard, 26,430 distinct URLs
+  (no page1-vs-page2 pagination to compare since it's one file, not a
+  paginated index -- disjointness is trivial/guaranteed by unique URLs).
+  End-to-end test (--max-items 20): 20/20 rows, all priced EUR.
+  Wide supermarket/hypermarket catalog (food, cosmetics, household);
+  coicop_codes left unset for the classifier.

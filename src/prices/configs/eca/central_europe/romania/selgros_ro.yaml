@@ -1,0 +1,53 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: selgros_ro
+url: https://www.selgros.ro/
+language: ro
+currency: RON
+cadence: weekly
+channel: wholesale
+archive_prefix: "www.selgros.ro/exploreaza-sortimentul-selgros/product/"
+archive_path_re: '^/exploreaza-sortimentul-selgros/product/[^/?]+$'
+notes: |
+  Selgros Romania -- a cash & carry wholesaler (Transgourmet group),
+  members-only bulk-buying chain for restaurants/small retailers, not a
+  consumer supermarket. channel=wholesale deliberately, per the batch brief
+  ("still onboard it but set channel: wholesale ... a legitimate and
+  under-covered channel, not a reject").
+
+  www.selgros.ro's own /sitemap.xml (845 URLs, Drupal Simple XML Sitemap)
+  and shop.selgros.ro/sitemap.xml (12 URLs) are BOTH decoys -- content/
+  landing/store-locator pages only, no products, despite shop.selgros.ro
+  looking like the obvious webshop domain. The real catalog sitemap is
+  named directly in www.selgros.ro's robots.txt: `Sitemap: https://
+  www.selgros.ro/sites/default/files/sitemaps/products-index.xml` -- a
+  genuine sitemapindex of 2 shards, products-1.xml (10,000 URLs) and
+  products-2.xml (6,129 URLs), 16,129 total, ZERO overlap between shards
+  (verified live 2026-09-10). URLs sit under
+  /exploreaza-sortimentul-selgros/product/<slug>-<id>.
+
+  Each PDP embeds a Schema.org Product JSON-LD node whose `offers` is a
+  LIST (not a single dict, unlike the other 4 sources in this batch): one
+  Offer per (store x quantity-tier) -- one sampled product carried 72
+  offers across 24 stores x 3 tiers (base price + 2 bulk-discount tiers
+  keyed by offers[].eligibleQuantity.minValue). The spider (custom
+  scrapy.Spider, NOT _woo_sitemap_base -- that base's generic
+  _woo_row_from_product_node blindly takes offers[0], which is wrong here
+  since tier order isn't guaranteed) picks the single-unit ("walk-in", no
+  eligibleQuantity) price from the FIRST such offer in document order,
+  falling back to the cheapest tiered offer if every offer on a page
+  requires a minimum quantity. This means the recorded price represents
+  ONE of 24 stores nationally (a deterministic but somewhat arbitrary
+  choice) and discards both store-level and bulk-tier granularity --
+  documented here rather than solved, since a full national/per-store
+  price series is a bigger design question than this batch's scope.
+
+  Verified live on 5 URLs (both shards): all RON, e.g. "IGIENOL
+  DEZINFECTANT MARIN 750ML" RON 15.29 (base tier), "GASTRO TUNICA BUCATAR
+  ALB-NEGRU 48/50" RON 139, "BIC TEXTMARKER SET 5 CULORI" RON 7.01,
+  "IZVORUL ASCUNS APA DE MASA CARBO 2,5PET SGR" RON 3.89.
+  End-to-end test (--max-items 20): 20/20 rows, all priced RON.
+  Wide wholesale catalog (food, cleaning, catering supplies, stationery,
+  workwear); coicop_codes left unset for the classifier.
