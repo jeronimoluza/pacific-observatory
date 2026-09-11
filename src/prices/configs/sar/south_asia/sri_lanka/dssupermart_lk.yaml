@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: convenience
+spider: dssupermart_lk
+url: https://dssupermart.com/grocery/api/products.php
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "dssupermart.com/"
+archive_path_re: '^/grocery/api/products\.php'
+notes: |
+  DS Super Mart, "Fresh Grocery Store - Sri Lanka". Not
+  WooCommerce/Shopify -- homepage is a thin static shell; Playwright
+  network trace found the real catalog at a plain in-house PHP
+  endpoint (/grocery/api/products.php?limit=N), no auth, whole catalog
+  in one call -- confirmed 666 products, no pagination needed at
+  limit=1000.
+
+  Reads as a raw POS-system export: informal/abbreviated
+  Sinhala-English POS entries ("Kiri The 400g" = Kothmale-brand milk
+  tea, "Kothmale Yorget 5in1" = yogurt) mixed with non-food POS items
+  (mobile reload cards, stationery, batteries). Still real LKR retail
+  prices for a real Sri Lankan convenience store. channel: convenience.
+
+  No stable per-product URL in the payload (id + name only) --
+  DuplicationPipeline dedups on item["url"], so the spider synthesizes
+  `?id=<id>` on the API endpoint as a unique per-row URL.
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 100 run produced rows. Sample:
+  "Manchi Wafer Chocolate 400g" LKR 550.00, "Salsa Biscuits" LKR 50.00.

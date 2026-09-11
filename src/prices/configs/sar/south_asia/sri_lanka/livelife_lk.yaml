@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: livelife_lk
+url: https://livelife.lk/wp-json/wc/store/v1/products
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "livelife.lk/"
+archive_path_re: '^/wp-json/wc/store/v1/products'
+notes: |
+  LiveLife.lk, "Organic Food in Sri Lanka - Fresh, Healthy, and
+  Sustainably Sourced". WooCommerce Store API, no auth:
+  /wp-json/wc/store/v1/products. Confirmed 181 products total (X-WP-Total
+  header). currency_minor_unit=2 read from the payload (not assumed)
+  -- e.g. "85000" -> LKR 850.00 for "Pat's Organic Pumpkin Crackers –
+  100 g". channel: specialty-food (organic/health-food retailer).
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 5 run produced rows. Sample:
+  "Sanmik Farms Sri Lankan Traditional Rice – Suwandel – 1Kg" LKR
+  890.00, "Pat's Kitchen Organic Pumpkin Soup – 400g" LKR 550.00.

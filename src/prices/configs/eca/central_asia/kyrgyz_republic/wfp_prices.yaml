@@ -1,7 +1,7 @@
 scaffolding: fetcher
 extraction_pattern: tabular_download
 analytical_role: official_avg
-coicop_classification: classifier
+coicop_classification: source_curated
 channel: null
 source_key: wfp_kgz
 module: _shared.eca.wfp_food_prices
@@ -29,3 +29,16 @@ notes: |
   CSV's max observation date is 2022-05-15 (currency still shown as the
   pre-2016-redenomination BYR code) -- a dead/stale panel per the brief's
   explicit staleness caveat, not a live source.
+  2026-09-11: coicop_classification changed classifier -> source_curated.
+  The sentence above about deferring COICOP to the classifier is superseded.
+  WFP publishes clean, stable English commodity labels ("Millet", "Rice
+  (imported)"), not retail SKU strings, so the shared fetcher now stamps a
+  division-01/02 leaf per row from the hand-written map in
+  src/prices/fetchers/_shared/wfp_coicop.py (603 commodity labels covering
+  89.6% of the 116,815 rows collected across the 68 panels). A commodity the
+  map does not cover -- the panels' fuel, wage, exchange-rate, transport and
+  household-goods block, plus a short list of genuinely ambiguous food
+  labels -- is DROPPED with a logged warning, never emitted with a null
+  coicop_code. coicop_codes is deliberately unset: measured across the
+  collected panels these rows span 132 leaves in 12 different 3-digit
+  classes, so the source is wide, not narrow.

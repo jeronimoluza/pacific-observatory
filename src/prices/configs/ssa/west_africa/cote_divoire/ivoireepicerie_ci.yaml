@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ivoireepicerie_ci
+url: "https://ivoireepicerie.com/"
+channel: specialty-food
+language: fr
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Onboarded from a 2026-09-11 ddgs sweep (query "épicerie en ligne Côte
+  d'Ivoire") during the west-africa food gap-fill pass. Standard Shopify
+  storefront, open unauthenticated catalog at /products.json, zero auth.
+
+  HARD GATES verified live 2026-09-11:
+  - Enumerability: limit=50 page=1 returns 21 products, page=2 returns 0
+    -- whole catalog is 21 SKUs (small specialty shop, not a supermarket).
+  - Food-only: every product is a spice/powder blend (moringa powder,
+    garlic powder, etc.); vendor field is "Ivoire epicerie" on every item.
+  - Currency: Shopify.currency.active = "XOF" on the storefront, matches
+    countries.yaml.
+
+  channel=specialty-food (not supermarket) given the narrow spice/powder
+  catalog. Passes the >=5-row gate (21 rows) comfortably despite the small
+  size.
+  origin=ddgs sweep, west-africa food gap-fill pass 2026-09-11

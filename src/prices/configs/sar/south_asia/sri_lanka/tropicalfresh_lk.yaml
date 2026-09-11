@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: fresh-market
+spider: tropicalfresh_lk
+url: https://tropicalfresh.lk/wp-json/wc/store/v1/products
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "tropicalfresh.lk/"
+archive_path_re: '^/wp-json/wc/store/v1/products'
+notes: |
+  Tropical Fresh, pre-cut/ready-to-cook fresh produce, Sri Lanka.
+  WooCommerce Store API, no auth: /wp-json/wc/store/v1/products.
+  Confirmed 220 products total (X-WP-Total header).
+  currency_minor_unit=2 read from the payload (not assumed) -- e.g.
+  "15000" -> LKR 150.00 for "Shredded Mukunuwenna salad – 100g".
+  channel: fresh-market (shredded greens, cut vegetables,
+  ready-to-fry/cook potato products).
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 5 run produced rows. Sample:
+  "Shredded Gotukola -100g" LKR 150.00, "Potato French fries – 250g"
+  LKR 150.00.

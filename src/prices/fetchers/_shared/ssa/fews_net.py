@@ -39,8 +39,12 @@ from the new cutoff, so full history is recovered over several runs. Per-market 
 are collapsed to a national monthly average per (commodity, unit, currency,
 price_type), mirroring the WFP fetcher's aggregation; market count and the
 USD common-currency value are kept in ``notes``, retail vs wholesale is kept
-in the dedup hash. COICOP is deferred to the downstream classifier —
-``item_name`` is FEWS NET's English product label.
+in the dedup hash.
+
+COICOP is source-curated: every emitted row carries a division-01/02 leaf
+from ``_COICOP_MAP`` below, and a product the map does not cover -- the
+feed's fuel, wage, soap and bulk-water series included -- is DROPPED with a
+logged warning rather than emitted with a null ``coicop_code``.
 """
 
 from __future__ import annotations
@@ -82,6 +86,92 @@ _COUNTRIES: dict[str, tuple[str, str]] = {
     "som": ("Somalia", "SO"),
 }
 
+
+# FEWS NET product label -> COICOP-2018 leaf. `coicop_classification:
+# source_curated` on every fews_net manifest: FEWS NET publishes a small,
+# stable English commodity vocabulary ("Millet", "Rice (Milled)"), not retail
+# SKU strings, so the downstream classifier -- trained on messy supermarket
+# names -- is the wrong tool. Scope is COICOP divisions 01 and 02 ONLY: the
+# feed also carries fuel (Diesel, Gasoline, LPG), wage series (Agricultural
+# Labor, Casual Labor), soap and bulk water, and those labels are
+# deliberately absent so the fetcher drops them with a logged warning rather
+# than forcing them into a food leaf. Also absent, and why:
+#   * "Tea leaves (Mixed)" -- 01.2.3.0.1 (green) and 01.2.3.0.2 (black) are
+#     different leaves and "Mixed" does not say which.
+#   * "Water (potable, drinking)" -- priced per 200 L drum, i.e. vended water
+#     supply (COICOP 04.4), not bottled water (01.2.5.0.0).
+#   * "Enriched corn/bean flour" -- a blended cereal/pulse food-aid flour,
+#     between 01.1.1.2.6 and 01.1.7.9.1 with no way to choose.
+# "Camel's Milk (Raw)" maps to 01.1.4.1.4, a real taxonomy leaf that sits
+# outside the 257-leaf division-01/02 measurement grid.
+_COICOP_MAP: dict[str, str] = {
+    "Wheat Grain": "01.1.1.1.1",
+    "Rice (100% Broken)": "01.1.1.1.2",
+    "Rice (5% Broken)": "01.1.1.1.2",
+    "Rice (Long Grain)": "01.1.1.1.2",
+    "Rice (Long Grain, Basmati)": "01.1.1.1.2",
+    "Rice (Medium Grain)": "01.1.1.1.2",
+    "Rice (Medium Grain, Emata)": "01.1.1.1.2",
+    "Rice (Milled)": "01.1.1.1.2",
+    "Rice (Parboiled)": "01.1.1.1.2",
+    "Rice (Short Grain)": "01.1.1.1.2",
+    "Sorghum": "01.1.1.1.3",
+    "Sorghum (Red)": "01.1.1.1.3",
+    "Millet": "01.1.1.1.5",
+    "Millet (Pearl)": "01.1.1.1.5",
+    "Maize (Corn)": "01.1.1.1.6",
+    "Maize Grain (White)": "01.1.1.1.6",
+    "Maize Grain (Yellow)": "01.1.1.1.6",
+    "Fonio": "01.1.1.1.9",
+    "Wheat Flour": "01.1.1.2.1",
+    "Sorghum Flour": "01.1.1.2.3",
+    "Maize Flour": "01.1.1.2.6",
+    "Maize Meal": "01.1.1.2.6",
+    "Roller Maize Meal": "01.1.1.2.6",
+    "Bread": "01.1.1.3.1",
+    "Bread (Traditional)": "01.1.1.3.1",
+    "Bread (brown loaf)": "01.1.1.3.1",
+    "Bread (small loaf)": "01.1.1.3.1",
+    "Bread (white loaf)": "01.1.1.3.1",
+    "Bread (fried)": "01.1.1.3.9",  # fried dough cake, not a loaf
+    "Goats (Local Quality)": "01.1.2.1.3",
+    "Broiler chicken (live)": "01.1.2.1.4",
+    "Chicken (live, indigenous breed)": "01.1.2.1.4",
+    "Beef (Fresh bovine meat)": "01.1.2.2.1",
+    "Goat Meat (Fresh or Chilled)": "01.1.2.2.3",
+    "Chicken meat": "01.1.2.2.4",
+    "Fish (Dried, Salted, or In Brine)": "01.1.3.2.9",  # preserved, not fresh
+    "Cow's Milk (Fresh, Pasteurized)": "01.1.4.1.1",
+    "Camel's Milk (Raw)": "01.1.4.1.4",  # off-grid leaf, see note above
+    "Sunflower-seed Oil (Refined)": "01.1.5.1.1",
+    "Palm Oil (Refined)": "01.1.5.1.2",
+    "Refined Vegetable Oil": "01.1.5.1.9",
+    "Banana (unspecified)": "01.1.6.1.2",  # dessert banana; cf. Cooking Banana
+    "Groundnuts (In Shell)": "01.1.6.8.8",
+    "Groundnuts (Shelled)": "01.1.6.8.8",
+    "Cabbage (Unspecified)": "01.1.7.1.2",
+    "Chomolia": "01.1.7.1.9",  # collard-type leafy green
+    "Onions": "01.1.7.4.3",
+    "Potato (Irish)": "01.1.7.5.1",
+    "Sweet Potatoes": "01.1.7.5.2",
+    "Cassava": "01.1.7.5.3",
+    "Yams": "01.1.7.5.4",
+    "Cooking Banana (unspecified)": "01.1.7.5.7",
+    "Beans (Brown)": "01.1.7.6.1",
+    "Beans (Sugar)": "01.1.7.6.1",
+    "Beans (White)": "01.1.7.6.1",
+    "Beans (Yellow)": "01.1.7.6.1",
+    "Beans (mixed)": "01.1.7.6.1",
+    "Broad Beans": "01.1.7.6.2",
+    "Fava bean": "01.1.7.6.2",
+    "Cowpeas (Mixed)": "01.1.7.6.6",
+    "Cowpeas (Red)": "01.1.7.6.6",
+    "Cassava Flour": "01.1.7.9.1",
+    "Gari": "01.1.7.9.1",
+    "Attiéké": "01.1.7.9.9",  # fermented steamed cassava
+    "Refined sugar": "01.1.8.1.1",
+    "Salt": "01.1.9.3.1",
+}
 
 def _fetch_pages(session, country_code: str, cutoff: date) -> list[dict]:
     rows: list[dict] = []
@@ -128,6 +218,7 @@ def _national_rows(
         return []
 
     ts = get_scrape_ts()
+    unmapped: set[str] = set()
     keys = ["obs", "product", "unit", "currency", "price_type"]
     for k in keys:
         if k not in df.columns:
@@ -137,6 +228,10 @@ def _national_rows(
     for (obs, product, unit, currency, price_type), g in grp:
         product = str(product).strip()
         if not product:
+            continue
+        coicop = _COICOP_MAP.get(product)
+        if not coicop:
+            unmapped.add(product)
             continue
         price = float(g["value"].mean())
         if not 0 < price < 1e13:
@@ -149,6 +244,7 @@ def _national_rows(
             "period_kind": "monthly",
             "country": country,
             "source_key": source_key,
+            "coicop_code": coicop,
             "item_name": product,
             "price_local": round(price, 4),
             "currency": str(currency).strip() or None,
@@ -165,6 +261,13 @@ def _national_rows(
         row["observation_hash"] = make_hash(row, _IDENT)
         row.pop("price_type_key")
         out.append(row)
+    if unmapped:
+        logger.warning(
+            "[%s] no COICOP mapping for %d product(s) -- rows dropped: %s",
+            source_key,
+            len(unmapped),
+            ", ".join(sorted(unmapped)),
+        )
     return out
 
 

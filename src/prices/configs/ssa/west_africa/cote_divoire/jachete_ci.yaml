@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jachete_ci
+url: "https://jachete.ci/"
+channel: marketplace
+language: fr
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Onboarded from a 2026-09-11 ddgs sweep (query "supermarché en ligne
+  Abidjan livraison courses") during the west-africa food gap-fill pass.
+  Standard WooCommerce Store API on the versioned route
+  (/wp-json/wc/store/v1/products), zero auth. Broad general marketplace
+  (2231 SKUs total: electronics, appliances, auto parts, beauty, toys --
+  home/office alone is 1054 items).
+
+  Per the COICOP 01/02-only mandate for this pass, the spider is SCOPED to
+  a whitelist of 13 food/drink category ids only -- it never touches the
+  non-food catalog. Categories confirmed live 2026-09-11 via
+  /wp-json/wc/store/v1/products/categories: Alimentaire (id 90, 161
+  items), Alimentation (209, 34), Boisson (99, 114), Biere (101, 3),
+  Grains et Riz (91, 11), Huiles - Conserve (94, 22), Lait (103, 36),
+  Condiment et vinaigre (331, 61), Epicerie (330, 15), Cafe/The/Expresso
+  (157, 45), Alimentation bebe (96, 2), Biberon Alimentation (211, 3),
+  Buvable (415, 1). Sums to ~508 category-tagged rows before de-dup
+  (products can carry more than one category; DuplicationPipeline
+  dedups on url/product id).
+
+  currency_minor_unit=0 (integer XOF prices), matches countries.yaml.
+  Reuses WooBaseSpider._item() for price/minor-unit handling but overrides
+  start_requests/parse to iterate the food category whitelist directly
+  (the shared base only supports a single CATEGORY_ID).
+  origin=ddgs sweep, west-africa food gap-fill pass 2026-09-11

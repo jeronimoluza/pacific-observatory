@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: oumbemarket_cm
+url: "https://oumbemarket.com/"
+channel: supermarket
+language: fr
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Onboarded from a 2026-09-11 ddgs sweep (query "supermarché en ligne
+  Douala Yaoundé livraison courses") during the west-africa food gap-fill
+  pass. Standard WooCommerce Store API on the versioned route
+  (/wp-json/wc/store/v1/products), zero auth.
+
+  HARD GATES verified live 2026-09-11:
+  - Enumerability: per_page=20 page=1 vs page=2 return disjoint product
+    ids; x-wp-total=180, x-wp-totalpages=9.
+  - Food-relevant catalog: mineral water (Supermont), cooking oil (Huile
+    Mayor), diapers, cleaning/toiletries -- a genuine grocery/household
+    catalog, not a demo.
+  - Locality: "Cameroun" appears repeatedly in site copy, Douala/Yaounde
+    named as coverage cities.
+  - CURRENCY GOTCHA: Store API reports currency_code=USD and the rendered
+    PDP genuinely shows a "$" symbol at USD scale (e.g. water 1.5L =
+    $0.49) -- checked the rendered woocommerce-Price-amount span directly,
+    not just the API field. Unusual for Cameroon (XAF is the
+    countries.yaml default) but internally consistent throughout the
+    site, so taken at face value rather than overridden. Flagging per the
+    diaspora/foreign-currency-pricing caution -- if this later proves to
+    be a diaspora-facing storefront rather than a domestic price level,
+    it should be re-flagged or dropped.
+
+  Test run 2026-09-11 (--max-items 100): see collect log for row/url
+  counts. Uses the shared WooBaseSpider (src/prices/price_scraping/
+  spiders/_woo_base.py); no per-tenant currency scaling needed
+  (currency_minor_unit=2, standard decimal division).
+  origin=ddgs sweep, west-africa food gap-fill pass 2026-09-11

@@ -1,7 +1,7 @@
 scaffolding: fetcher
 extraction_pattern: tabular_download
 analytical_role: official_avg
-coicop_classification: classifier
+coicop_classification: source_curated
 channel: null
 source_key: wfp_khm
 module: _shared.eap.wfp_food_prices
@@ -19,3 +19,16 @@ notes: |
   currency/price-type; market count + USD value kept in notes; retail vs
   wholesale kept in the dedup hash. CSV URL resolved at run time from the HDX
   slug via CKAN. COICOP deferred to the classifier (item_name = WFP commodity).
+  2026-09-11: coicop_classification changed classifier -> source_curated.
+  The sentence above about deferring COICOP to the classifier is superseded.
+  WFP publishes clean, stable English commodity labels ("Millet", "Rice
+  (imported)"), not retail SKU strings, so the shared fetcher now stamps a
+  division-01/02 leaf per row from the hand-written map in
+  src/prices/fetchers/_shared/wfp_coicop.py (603 commodity labels covering
+  89.6% of the 116,815 rows collected across the 68 panels). A commodity the
+  map does not cover -- the panels' fuel, wage, exchange-rate, transport and
+  household-goods block, plus a short list of genuinely ambiguous food
+  labels -- is DROPPED with a logged warning, never emitted with a null
+  coicop_code. coicop_codes is deliberately unset: measured across the
+  collected panels these rows span 132 leaves in 12 different 3-digit
+  classes, so the source is wide, not narrow.

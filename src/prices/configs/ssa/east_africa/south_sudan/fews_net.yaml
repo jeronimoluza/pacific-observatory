@@ -1,7 +1,7 @@
 scaffolding: fetcher
 extraction_pattern: rest_api
 analytical_role: official_avg
-coicop_classification: classifier
+coicop_classification: source_curated
 channel: null
 source_key: fews_ssd
 module: _shared.ssa.fews_net
@@ -32,3 +32,14 @@ notes: |
   coicop_divisions: 01
   divisions_basis: walked_categories (whole-catalog API walk, no commodity
   filter applied; food staples only per FEWS NET's own product scope)
+  2026-09-11: coicop_classification changed classifier -> source_curated.
+  The sentence above about deferring COICOP to the classifier is superseded.
+  FEWS NET publishes a small, stable English product vocabulary, so the
+  shared fetcher now stamps a division-01/02 leaf per row from _COICOP_MAP
+  in src/prices/fetchers/_shared/ssa/fews_net.py (66 product labels covering
+  94.2% of the 7,709 rows collected across the 16 panels). A product the map
+  does not cover -- Diesel, Gasoline, LPG, the two wage series, Soap, bulk
+  potable water, and two genuinely ambiguous food labels -- is DROPPED with
+  a logged warning, never emitted with a null coicop_code. coicop_codes is
+  deliberately unset: measured across the collected panels these rows span
+  39 leaves in 8 different 3-digit classes, so the source is wide.

@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mescoursesbj_bj
+url: "https://mescoursesbj.com/"
+channel: supermarket
+language: fr
+currency: EUR
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Onboarded from a 2026-09-11 ddgs sweep (query "supermarché en ligne
+  Cotonou livraison courses") during the west-africa food gap-fill pass.
+  Standard Shopify storefront, open unauthenticated catalog at
+  /products.json, zero auth.
+
+  HARD GATES verified live 2026-09-11:
+  - Enumerability: 3 pages of limit=50, 139 distinct product ids total
+    (page 1/2 full at 50, page 3 partial, page 4 empty).
+  - Food-dominant catalog: Riz GINO 25kg, Riz Sista Grace 25kg, Pringles,
+    frozen peas, Poudre de Moringa, and more -- a genuine grocery
+    catalog, not a demo.
+  - Locality: site copy names Cotonou/Benin repeatedly as the delivery
+    area.
+
+  CURRENCY GOTCHA / DIASPORA FLAG: Shopify.currency.active = "EUR", not
+  XOF (the countries.yaml default for Benin). Prices are EUR-denominated
+  (e.g. 25kg rice at ~66 EUR) -- this reads as a diaspora- or
+  import-facing storefront rather than a domestic Beninese price level.
+  Shipped per the "take whatever verifies" rule for a low-coverage
+  country, but flagged here per the "diaspora pricing is not a domestic
+  price level" method note -- downstream PPP analysis should treat this
+  series with that caveat rather than as a local retail benchmark.
+  origin=ddgs sweep, west-africa food gap-fill pass 2026-09-11

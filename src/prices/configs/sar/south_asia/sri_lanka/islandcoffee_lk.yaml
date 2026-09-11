@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: islandcoffee_lk
+url: https://islandcoffee.lk/wp-json/wc/store/v1/products
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "islandcoffee.lk/"
+archive_path_re: '^/wp-json/wc/store/v1/products'
+notes: |
+  Island Coffee, "Perfecting the art of coffee since 1964". curl_cffi
+  TLS impersonation (chrome124/chrome120/safari17_0) 403s; plain
+  requests with no impersonation clears to 200 -- same
+  impersonation-is-the-cause pattern as ksuper_lk.
+
+  WooCommerce Store API, no auth: /wp-json/wc/store/v1/products.
+  Confirmed 13 products total (X-WP-Total header) -- thin but real.
+  currency_minor_unit=2 read from the payload (not assumed) -- e.g.
+  "23000" -> LKR 230.00 for "Island Coffee Powder".
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 100 run returned all 13 rows.
+  Sample: "Jaffna Coffee" LKR 300.00, "Cinnamon Coffee" LKR 250.00.
