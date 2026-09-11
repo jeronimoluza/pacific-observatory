@@ -1,0 +1,59 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: pharmacy
+spider: liki24_ua
+url: https://liki24.com/
+language: ru
+cadence: weekly
+notes: |
+  Page family: listing (category pages, /category/<id>/). OpenCart-derived
+  backend (PHPSESSID cookies) behind a bespoke Angular Universal SSR
+  frontend, not a classic Journal theme -- confirmed live 2026-09-10 that
+  `_opencart_base.py`'s module-level NAME_SELECTORS/PRICE_SELECTORS match
+  nothing here (card is `<lk-product-card-md>`, name anchor is `a.name`
+  directly, price is `.price .final-price`), so the spider subclasses
+  OpencartBaseSpider and overrides only `_product_cards`/`_item` for this
+  theme; the shared base file itself is untouched and its pagination loop
+  (`parse_category`, MAX_PAGES, the "fresh empty-set" trap-avoidance) is
+  inherited as-is.
+
+  Access: bare Playwright (no stealth) trips a genuine Cloudflare block
+  ("Sorry, you have been blocked") that curl_cffi impersonate=chrome124
+  clears straight through (200, real content) -- the inverse of the usual
+  pattern. Even a stealth-launched Playwright (disable-blink-features=
+  AutomationControlled) gets 403 on several of the site's own same-origin
+  `/vnext/api/*` XHR calls -- including the true product-list API,
+  `/vnext/api/catalogue/<id>/products` -- while the server-rendered page
+  itself loads fine, so this spider reads the SSR HTML directly and never
+  calls `/api/`.
+
+  Enumerability confirmed live 2026-09-10: /category/8000051/ (Лекарства
+  для сердца и сосудов) page=1 vs ?page=2 -> 20 distinct product slugs
+  each, 0 overlap -> DISTINCT.
+
+  Catalog size: sitemap_ru_categories_1.xml lists 1005 base
+  /category/<id>/ pages -- a large catalog. Low ids (~8000001-8000030) are
+  department hubs with no direct products (subcategory tiles only); 5
+  confirmed product-bearing leaf categories in the 8000040-8000068 range
+  are seeded in CATEGORY_URLS (not exhaustive -- the backend returns HTTP
+  429 after ~5-6 rapid unthrottled requests from one IP, so the inherited
+  DOWNLOAD_DELAY=2.0 / CONCURRENT_REQUESTS_PER_DOMAIN=1 settings are
+  load-bearing, not just courtesy; widening CATEGORY_URLS further should
+  be done slowly, one probe at a time).
+
+  Currency UAH confirmed via the response's own Set-Cookie: currency=UAH
+  and the "грн" (hryvnia) suffix on every displayed price.
+
+  Pharmacy marketplace: catalog spans Rx/OTC medicines, supplements,
+  cosmetics and baby care, i.e. many COICOP classes -- channel: pharmacy,
+  coicop_codes left unset so the classifier assigns a leaf per product.
+
+  Cloudflare rate-limiting was intermittent during onboarding: a first
+  --max-items 20 run returned 0 rows (all 5 seeded categories 429d);
+  after a ~16 minute cooldown with no interim probing, a second run
+  passed cleanly -- 20/20 rows, 20 priced, all from category 8000054
+  (angina medicines), finish_reason=closespider_itemcount. A future
+  full-catalog run should budget for a non-trivial 429/retry rate
+  rather than assume every category clears on the first try.
