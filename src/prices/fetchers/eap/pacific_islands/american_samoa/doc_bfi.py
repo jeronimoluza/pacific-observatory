@@ -39,16 +39,32 @@ from the link label, not by trying to infer table-header order) is kept,
 so re-published overlap across consecutive releases doesn't double-count.
 
 PDF text extractability is inconsistent release-to-release (digitally
-authored vs. scanned/signed-then-scanned) -- roughly 1 in 7 releases in the
-2021-2026 archive extract cleanly via pdfplumber; the rest are image-only
-scans. No OCR fallback is wired here (would need pytesseract + pdf2image,
-not currently a project dependency) -- image-only releases are skipped with
-a logged warning rather than silently dropped. This recovers the extractable
-subset now; OCR is the natural follow-up to backfill the rest.
+authored vs. scanned/signed-then-scanned): measured live 2026-09-11, 9 of the
+67 linked releases carry a text layer and 58 are image-only scans -- the whole
+back-archive was bulk-scanned on a ScanSnap iX1600. Image-only releases are now
+re-read through ``prices.fetchers.ocr`` (pdftoppm + tesseract, already on the
+collection host; no new dependency).
 
-Emits PriceObservation rows (analytical_role: official_avg).
-coicop_classification: source_curated (small, stable ~20-item basket,
-static _COICOP_MAP below, all COICOP division 01).
+What makes OCR safe here is ``_ITEM_ROW_RE``: it matches only a label followed
+by THREE two-decimal figures, so a cell OCR dropped fails the match outright
+instead of shifting last month's price into the current month's column.
+``_match_item`` then requires the label to name one of the 20 basket items,
+which discards the axis labels of the bar chart printed above the table on the
+same page. Every OCR'd figure is additionally bounded to a plausible USD range.
+
+Measured on a full 2021-01-01 rebuild (2026-09-11): 762 rows, up from 137, of
+which 625 come from 57 OCR'd releases at a 0.2% reject rate (1 of 626 matched
+rows). Newest vintage moves from 2026-04-01 to 2026-08-01.
+
+21 releases still yield nothing, and that is not an OCR failure: the 2021 and
+early-2022 releases are narrative-only -- the per-item price table was not
+introduced until later in 2022, so there is no table on the page to read.
+
+NOTE for a backfill: ``cutoff`` comes from the existing CSV, so on a tree that
+already holds rows the OCR'd history before the cutoff is skipped. An
+incremental run on the 137-row baseline adds only the 67 rows newer than
+2026-04-01; recovering the 2022-2026 back-archive needs the shard reset so the
+manifest's ``fallback_date`` applies.
 """
 
 from __future__ import annotations
@@ -59,6 +75,7 @@ from datetime import date
 
 import pandas as pd
 
+from prices.fetchers import ocr
 from prices.fetchers.eap.pacific_islands.american_samoa import _wix_faq
 from prices.fetchers.utils import get_scrape_ts, get_session, make_hash
 
@@ -141,26 +158,57 @@ def _clean_price(raw: str) -> float | None:
         return None
 
 
+# Plausible USD price for one line of the BFI basket -- the cheapest is a
+# packet of ramen, the dearest a 10 kg case of chicken. Applied only to OCR'd
+# releases: a text-layer release is the publisher's own number, but a misread
+# glyph on a scan has to be caught by something.
+_OCR_PRICE_LO = 0.10
+_OCR_PRICE_HI = 200.0
+
+
 def _parse_pdf_current_month(
     pdf_bytes: bytes, obs_date: date, pdf_url: str
-) -> list[dict]:
+) -> tuple[list[dict], bool, int]:
+    """Rows for the release's own month, plus (used_ocr, rows_rejected).
+
+    Roughly 6 in 7 releases in the 2021-2026 archive are image-only scans
+    (the whole back-archive was bulk-scanned on a ScanSnap), so when the text
+    layer is empty the pages are re-read through ``prices.fetchers.ocr``.
+
+    The line regex is what makes that safe: it matches only a label followed
+    by THREE two-decimal figures, so a cell OCR dropped fails the match
+    outright instead of shifting the next month's price into the current
+    month's column. ``_match_item`` then requires the label to name one of the
+    20 basket items, which discards the axis labels of the chart printed above
+    the table on the same page.
+    """
     import io
 
     import pdfplumber
 
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
         text = "\n".join(p.extract_text() or "" for p in pdf.pages)
+    used_ocr = False
     if not text.strip():
-        return []
+        if not ocr.ocr_available():
+            return [], False, 0
+        used_ocr = True
+        text = "\n".join(ocr.page_texts(pdf_bytes))
+    if not text.strip():
+        return [], used_ocr, 0
 
     ts = get_scrape_ts()
     rows: list[dict] = []
+    rejected = 0
     for line in text.splitlines():
         m = _ITEM_ROW_RE.match(line.strip())
         if not m:
             continue
         match = _match_item(m.group("label"))
         if not match:
+            if used_ocr:
+                rejected += 1
+                continue
             logger.warning(
                 "[%s] no item mapping for %r — dropping row",
                 _SOURCE_KEY,
@@ -168,8 +216,14 @@ def _parse_pdf_current_month(
             )
             continue
         canonical_name, coicop, unit = match
-        price = _clean_price(m.group("v3"))  # rightmost column = current month
+        if used_ocr:
+            price = ocr.money(
+                m.group("v3"), lo=_OCR_PRICE_LO, hi=_OCR_PRICE_HI
+            )
+        else:
+            price = _clean_price(m.group("v3"))  # rightmost column = current month
         if price is None:
+            rejected += 1
             continue
         row = {
             "observation_date": obs_date.isoformat(),
@@ -182,13 +236,20 @@ def _parse_pdf_current_month(
             "currency": _CURRENCY,
             "unit": unit,
             "source_url": pdf_url,
-            "notes": "American Samoa Basic Food Index monthly release",
+            "notes": (
+                "American Samoa Basic Food Index monthly release"
+                + (
+                    " (recovered by OCR from an image-only scan)"
+                    if used_ocr
+                    else ""
+                )
+            ),
             "scrape_ts": ts,
             "observation_hash": None,
         }
         row["observation_hash"] = make_hash(row, _IDENT)
         rows.append(row)
-    return rows
+    return rows, used_ocr, rejected
 
 
 def fetch_as_doc_bfi(cutoff: date) -> pd.DataFrame | None:
@@ -212,6 +273,9 @@ def fetch_as_doc_bfi(cutoff: date) -> pd.DataFrame | None:
 
     rows: list[dict] = []
     skipped_image_only = 0
+    ocr_releases = 0
+    ocr_rows = 0
+    ocr_rejected = 0
     for entry in year_entries:
         links = _wix_faq.extract_links(entry.get("draftjs", ""))
         for label, url in links:
@@ -234,22 +298,38 @@ def fetch_as_doc_bfi(cutoff: date) -> pd.DataFrame | None:
                     "[%s] PDF fetch failed for %s: %s", _SOURCE_KEY, pdf_url, exc
                 )
                 continue
-            month_rows = _parse_pdf_current_month(resp.content, obs_date, pdf_url)
+            month_rows, used_ocr, rejected = _parse_pdf_current_month(
+                resp.content, obs_date, pdf_url
+            )
+            if used_ocr:
+                ocr_releases += 1
+                ocr_rows += len(month_rows)
+                ocr_rejected += rejected
             if not month_rows:
                 skipped_image_only += 1
                 logger.info(
-                    "[%s] %s: no extractable text (image-only scan?) — skipped",
+                    "[%s] %s: no rows even after OCR — skipped",
                     _SOURCE_KEY,
                     label,
                 )
                 continue
             rows.extend(month_rows)
 
+    if ocr_releases:
+        total = ocr_rows + ocr_rejected
+        logger.info(
+            "[%s] OCR recovered %d row(s) from %d image-only release(s); "
+            "reject rate %.1f%% (%d of %d matched rows)",
+            _SOURCE_KEY,
+            ocr_rows,
+            ocr_releases,
+            100.0 * ocr_rejected / total if total else 0.0,
+            ocr_rejected,
+            total,
+        )
     if skipped_image_only:
         logger.info(
-            "[%s] %d release(s) skipped as image-only (no OCR fallback wired)",
-            _SOURCE_KEY,
-            skipped_image_only,
+            "[%s] %d release(s) still yielded no rows", _SOURCE_KEY, skipped_image_only
         )
     logger.info("[%s] %d rows (cutoff=%s)", _SOURCE_KEY, len(rows), cutoff)
     return pd.DataFrame(rows) if rows else None

@@ -15,24 +15,63 @@ published as PDFs listed at ``mtcic.gov.ki/price-order/``; the fetcher
 resolves whatever is currently linked there rather than hardcoding
 filenames, so a newly gazetted Order is picked up without a code change.
 
-IMPORTANT CAVEATS (both flagged in the YAML as well):
+IMPORTANT CAVEATS (all flagged in the YAML as well):
 
 1. This is an ADMINISTERED CEILING price, not an observed transaction price.
    ``analytical_role: official_avg`` and ``channel: null`` follow from that.
    Rows are the legal maximum a Kiribati retailer may charge for the pack
    named in ``item_name``; realized shelf prices sit at or below them.
 
-2. Only a minority of the archive is machine-readable. Of the 21 PDFs linked
-   at /price-order/ (measured 2026-09-05): 6 carry no date in the filename
-   and are skipped, and 12 of the remaining 15 yield no extractable table --
-   11 are scanned images with zero text layer (including the newest,
-   ``price-regulation-order-no-1-of-2024-2.pdf``), and
-   ``price-control-22nd-june-2018.pdf`` has a text layer but no ruled table,
-   so pdfplumber's table extractor returns nothing for it. This environment
-   has no OCR installed. All three skip populations are logged explicitly,
-   never silently dropped. Only 3 Orders parse, so the newest usable vintage
-   is 2022-06-14; ``cutoff`` will pin there until either a new Order ships
-   with a text layer or an OCR path is added.
+2. Most of the archive is a scan, and is read by OCR. Of the 21 PDFs linked
+   at /price-order/ (measured 2026-09-11) only 3 carry a text layer with a
+   ruled table pdfplumber can see. The rest are image-only, so when
+   ``_parse_pdf`` comes back empty the page is re-read through
+   ``prices.fetchers.ocr`` -- see that module for why the scan is parsed off
+   its own ruled lines rather than off OCR line text, and how strictly the
+   values are filtered. OCR rows are additionally checked here against the
+   Order's own internal arithmetic before they are emitted:
+
+     * the retail figure must read as ``<digits>.<2 digits>`` and land in a
+       plausible AUD ceiling range;
+     * the matching wholesale figure, when it was read, must not exceed it;
+     * the per-kg and per-lb restatements of the same price, when both were
+       read, must sit near the 2.2046 kg/lb ratio -- a block whose columns
+       have shifted will not, and that is the check that catches a shift the
+       naked value cannot.
+
+   Measured on a full 2015-01-01 rebuild (2026-09-11): 935 rows, of which
+   689 come from the 3 text-layer Orders and 246 from 2 OCR'd scans, at an
+   OCR reject rate of 17.0% (68 of 401 candidate cells). The newest usable
+   vintage moves from 2022-06-14 to 2024-02-22 -- the Prices (Regulation)
+   Order No.1 of 2024, which is a scan.
+
+   16 of the 21 PDFs still yield nothing. They are not a single population:
+   some are amendment notices with no ruled table at all, and some (notably
+   ``price-control-23th-august-2021.pdf``) are scans whose rules are too
+   faint to detect at any threshold. All are logged by name every run.
+
+3. OCR rows carry NO ``<section> - `` prefix on ``item_name``, unlike
+   text-layer rows. The commodity headings ("2) Rice") are drawn in the same
+   column as the products and a scan drops them often enough -- "2) Rice"
+   came back as "ce" on the 2024 Order -- that carrying the last heading
+   forward files every rice line under Flour. The product names already
+   carry the commodity ("Jasmine 5kg Rice"), so the prefix is dropped rather
+   than guessed. The consequence is that an OCR'd vintage does NOT join to a
+   text-layer vintage on ``item_name`` alone.
+
+4. ``subnational_area`` is part of the observation identity, so an OCR'd
+   region banner is resolved back to one of Kiribati's four gazetted island
+   groups (``_canonical_region``) and a block whose banner does not resolve
+   is dropped. On the 2020 Order that costs 2 of 3 blocks: the banner came
+   back as "Region 2"/"Region 3" (empty cells), which is not a series key.
+
+5. Six PDFs carry only a year in the filename ("...-no-1-of-2024-2.pdf",
+   "signed-price-order-pao-16-2022.pdf"). Their date comes from the
+   listing's own "Date added: DD-MM-YYYY" field instead, which is the
+   publisher's upload date rather than the Order's gazetted commencement
+   date -- the 2024 Order's own commencement line is left blank in the PDF.
+   Before this fallback those six, including the 2024 Order, were skipped
+   outright.
 
 Layout is NOT stable across vintages. 2022 Orders publish either one region
 (Gilbert Group, or Line & Phoenix Group) in 5 columns, or three regions
@@ -56,6 +95,7 @@ does not read as a positive number is dropped rather than guessed at.
 
 from __future__ import annotations
 
+import difflib
 import io
 import logging
 import re
@@ -268,6 +308,43 @@ def _ocr_pdf(content: bytes) -> tuple[list[str], list[list[str | None]]]:
     return _region_labels(rows), rows
 
 
+# The island groups the Orders price separately. `subnational_area` is part of
+# the observation identity, so an OCR'd banner has to be resolved back to one of
+# these -- "Ibert Group" (a clipped "Gilbert Group") and the "Region 2"
+# placeholder are not usable series keys, and a block whose banner does not
+# resolve is dropped rather than published under a made-up area.
+_CANON_REGIONS = (
+    "Gilbert Group",
+    "Christmas Island",
+    "Tabuaeran & Teraina",
+    "Line & Phoenix Group",
+)
+_REGION_ALIASES = {
+    "linnix and line group": "Line & Phoenix Group",
+    "line and phoenix group": "Line & Phoenix Group",
+    "line & phoenix groups": "Line & Phoenix Group",
+    "tabuaeran and teraina": "Tabuaeran & Teraina",
+}
+
+
+def _canonical_region(label: str) -> str | None:
+    key = re.sub(r"[^a-z& ]+", " ", str(label).lower())
+    key = re.sub(r"\s+", " ", key).strip()
+    if not key:
+        return None
+    if key in _REGION_ALIASES:
+        return _REGION_ALIASES[key]
+    for canon in _CANON_REGIONS:
+        if key == canon.lower():
+            return canon
+    hit = difflib.get_close_matches(
+        key, [c.lower() for c in _CANON_REGIONS], n=1, cutoff=0.78
+    )
+    if hit:
+        return next(c for c in _CANON_REGIONS if c.lower() == hit[0])
+    return None
+
+
 # Plausible AUD ceiling prices in a Kiribati Price Order: the cheapest
 # controlled line is a single battery / bar of soap, the dearest an adult
 # bicycle or a drum of engine oil.
@@ -304,7 +381,17 @@ def _rows_from_doc(
     out: list[dict] = []
     rej = _Rejects()
     section: str | None = None
-    last_n: int | None = None
+    resolved = [_canonical_region(r) for r in regions]
+    unresolved = [r for r, c in zip(regions, resolved) if c is None]
+    if unresolved:
+        logger.warning(
+            "[%s] %s: %d region block(s) dropped -- banner %s does not resolve "
+            "to a Kiribati island group",
+            _SOURCE_KEY,
+            url.rsplit("/", 1)[-1],
+            len(unresolved),
+            unresolved,
+        )
     for row in rows:
         if not row:
             continue
@@ -316,21 +403,13 @@ def _rows_from_doc(
         if not first:
             continue
         heading = _clean_section(first)
-        if heading:
-            n, label = heading
-            if from_ocr and last_n is not None and n != last_n + 1:
-                # A heading between last_n and n was not read off the scan, so
-                # every row since then belongs to an unknown commodity group.
-                # Carrying the stale label forward would file rice under flour.
-                section = None
-            else:
-                section = label
-            last_n = n
-            # A text-layer heading occupies its own row. An OCR'd one is glued
-            # to the first item of its group ("15) Bicycle Adult Bike"), so the
-            # row still has to be parsed for prices below.
-            if not from_ocr or not any(_num(c) for c in row[1:]):
-                continue
+        if heading and not from_ocr:
+            section = heading[1]
+            continue
+        if heading and from_ocr and not any(_num(c) for c in row[1:]):
+            # A heading row on a scan carries no prices; nothing else to do
+            # with it, because OCR rows are not given a section prefix (below).
+            continue
         if section is None and not from_ocr:
             # Still in the preamble (repeal notice, order number, banner).
             continue
@@ -340,7 +419,17 @@ def _rows_from_doc(
             if not ocr.looks_like_item_name(item):
                 rej.item += 1
                 continue
-        for block, region in enumerate(regions):
+        # An OCR'd row is NOT given the "<section> - " prefix a text-layer row
+        # gets. The commodity headings on these scans are numbered section
+        # markers ("2) Rice") drawn in the same column as the products, and a
+        # scan drops them often enough -- "2) Rice" came back as "ce" on the
+        # 2024 Order -- that carrying the last heading forward files every rice
+        # line under Flour. The product names on their own already carry the
+        # commodity ("Jasmine 5kg Rice"), so the prefix is dropped rather than
+        # guessed.
+        for block, region in enumerate(resolved):
+            if region is None:
+                continue
             w_col, r_col = 1 + 4 * block, 2 + 4 * block
             kg_col, lb_col = 3 + 4 * block, 4 + 4 * block
             if r_col >= len(row):
@@ -375,7 +464,7 @@ def _rows_from_doc(
                 if retail is None:
                     continue
                 wholesale = _num(row[w_col])
-            name = f"{section} - {item}" if section else item
+            name = f"{section} - {item}" if section and not from_ocr else item
             note = (
                 "Statutory maximum retail price under the Prices Ordinance "
                 "(Cap 75); administered ceiling, not an observed shelf price."

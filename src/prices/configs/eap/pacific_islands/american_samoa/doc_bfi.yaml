@@ -26,3 +26,14 @@ notes: |
   pytesseract + pdf2image, not currently a project dependency). Only the
   release's own (current) month is kept from each PDF's 3-month rolling
   table, to avoid double-counting overlap across consecutive releases.
+
+  OCR (2026-09-11): 58 of the 67 linked releases are image-only scans and
+  are now read through prices.fetchers.ocr (pdftoppm + tesseract, already on
+  the collection host). A full 2021-01-01 rebuild goes from 137 rows to 762,
+  newest vintage 2026-04-01 -> 2026-08-01, OCR reject rate 0.2% (1 of 626
+  matched rows). The line regex requires a label plus THREE two-decimal
+  figures, so a cell OCR dropped fails the match instead of shifting last
+  month's price into the current column, and _match_item then requires the
+  label to name one of the 20 basket items. 21 releases still yield nothing
+  and that is NOT an OCR failure -- the 2021/early-2022 releases are
+  narrative-only, the per-item price table was introduced later in 2022.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: butchershop_tz
+url: https://butchershop.co.tz/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "butchershop.co.tz"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 212 products (probed 2026-09-11).
+  prices.currency_code=TZS, currency_minor_unit=2 -- base spider divides. Despite the
+  name the catalogue is a full deli/grocer (sampled row 'Baby Carrots'), so the
+  classifier is left to assign leaves rather than pinning a coicop_codes list.
+  Page family parsed: API (/wp-json/wc/store/v1/products).

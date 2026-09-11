@@ -1,0 +1,21 @@
+"""Apicoltura Giannini (San Marino) — https://www.apicolturagiannini.com. WooCommerce Store API.
+
+WooCommerce Store API v1, unauthenticated. 88 products, 86 priced (probed 2026-09-11).
+prices.currency_code=EUR, currency_minor_unit=2.
+San Marino beekeeper/shop: honey, mead, honey sweets, energy products, bee cosmetics and
+beekeeping equipment. Narrow-ish but spans 01.1.8 (honey/sugar confectionery), 02.1
+(mead), 12.1 (cosmetics) and 09 (equipment), so left on the classifier rather than pinned.
+San Marino had exactly ONE manifest before this (coal_sm) -- this is its first
+retailer_sku source.
+Page family parsed: API (/wp-json/wc/store/v1/products).
+"""
+
+from price_scraping.spiders._woo_base import WooBaseSpider
+
+
+class ApicolturagianniniSmSpider(WooBaseSpider):
+    name = "apicolturagiannini_sm"
+    allowed_domains = ["apicolturagiannini.com"]
+    currency = "EUR"
+    language = "it"
+    BASE_URL = "https://www.apicolturagiannini.com/wp-json/wc/store/v1/products"

@@ -29,6 +29,9 @@ Two failure modes to watch for, both found here:
 
 ### Recovered and now shipped (verdict was wrong)
 
+- **heimkaup.is** (IS, Heimkaup) — was: "sitemap stale, every PDP 404s" (2026-09-05) and then "Deferred — Jiffy Grocery API needs a bearer token" (2026-09-10) → now: **built and shipped as `heimkaup_is`, 52 rows measured 2026-09-11.** Both earlier verdicts were measured off the wrong surface. The sitemap really is stale (3,227 URLs from the old general-merchandise catalogue, all 404) and the Jiffy API really does need a token (`api2.jiffygrocery.co.uk` answers `COMPANY_ID_IS_MISSING` / `WAREHOUSE_NOT_FOUND` without one) — but **neither is needed**: every page is server-side rendered and carries a complete `window.__INITIAL_STATE__` blob. `GET /` gives `shopCategories` (10 roots, 136 nodes); `GET /c/<slug>` gives `catalogCategory.data.products` with id, SKU, name, slug and price; PDPs additionally carry `schema.org/Product` JSON-LD. 676 unique priced products over the 136 categories, plain HTTP, no Playwright, no token. Prices are integer hundredths — divide by 100 (state `449000` = rendered `4.490 kr.` = JSON-LD `4490.00` ISK). **Lesson: do not derive a verdict from a sitemap or an API when the HTML is server-rendered — read the HTML first.**
+- **nemlig.com** (DK, Nemlig) — was: "Queue-it + delivery-zone gating; `/webapi/<stamp>/<TimeslotUtc>/<DeliveryZoneId>/...` needs a booking flow, `searchgateway/api/search` 401s `Jwt is missing`" (2026-09-10) → now: **built and shipped as `nemlig_dk`, 54 rows measured 2026-09-11.** Both walled routes are real and both are avoidable. `robots.txt` advertises `https://www.nemlig.com/googleproductsitemap`, a flat urlset of **13,306** product URLs, and each PDP is server-rendered with a `schema.org/Product` JSON-LD block carrying `offers.price` + `offers.priceCurrency`. The Queue-it wall is real but is **one cookie deep**: a cold PDP request 302s to `nemlig.queue-it.net` (12 of 12 measured; a first spider version took 219 such redirects and scraped 0), while fetching `/` once sets `QueueITAccepted-SDFrts345E-V3_nemligprod` and every subsequent PDP then returns 200 (12/12 at 0.5 s/request, 12/12 at 1.0 s/request). **Lesson: a Queue-it/virtual-waiting-room 302 is a warm-up problem, not a block — fetch the home page first and keep cookies. And `robots.txt` is worth reading for the Google product feed before reverse-engineering an API.**
+
 - **dadosabertos.aneel.gov.br** — was: package_search endpoint does not respond at all (curl exit 000, >120s), suspected CKAN out → now: 200 on all profiles, plain requests too -- CKAN portal fully live with real data
 - **khmer24.com** — was: HTTP 403 + Cloudflare Turnstile challenge on curl with realistic Chrome UA (probed 2026-06 → now: 200 on all 5 curl_cffi profiles; public site is a Nuxt SPA shell (no listing HTML) but its data API at api.khm
 - **luluhypermarket.com** — was: Cloudflare strict 403 all 4 Gulf storefronts, Akinon CSP, dated 2026-08-06 → now: 200 on all 5 profiles, both www.luluhypermarket.com and the gcc.luluhypermarket.com storefront
@@ -210,7 +213,17 @@ Coles AU (2026-06-08) is the worked case: plain Playwright fails too. A stealth-
 - **rt-mart.com.tw** (TW, 大潤發) — HTTP 503 Incapsula challenge page (`Request unsuccessful. Incapsula incident ID`). Shopee alt storefront also blocked (Akamai). Probed 2026-07-27.
 - **coles.com.au** (AU) — Incapsula JS challenge; 212-byte stub on bare `scrapy-impersonate`.
 - **comfy.ua** (UA) — `_Incapsula_Resource` script stub (~1KB body, HTTP 200 with `<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">` + an iframe to `/_Incapsula_Resource?SWUDNSAI=...`).
+- **ifpri.org** (IFPRI — publisher of the PNG / FPDA fresh-food price database behind the CGSpace "Papua New Guinea food price bulletin") — 841-byte `_Incapsula_Resource` stub with `<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">` on `curl_cffi` `chrome124`, `chrome120` and `safari17_0`, and on plain `curl`. The bulletin itself points here for the machine-readable time series ("Download time series food price data ... for over 20 different food crops"), so this wall is what stands between PNG and a real `official_avg` produce series. Worth one `firefox133` / Playwright attempt on a future pass — `comfy.ua`, same stub shape, fell to `firefox133` alone. Probed 2026-09-11.
 - **lifecell.ua** (UA) — same Incapsula tenant signature as comfy.ua; ~960-byte stub. Likely same protection profile across the AS Watson-style cohort.
+
+## Radware Bot Manager (`<title>Radware Bot Manager Block</title>`, `cdn.perfdrive.com/aperture/aperture.js`)
+
+HTTP **200** with a full-size HTML body that is entirely the block page — so a status-code check
+or a body-length check both pass. The tells are the title above, the `perfdrive.com` aperture
+script, and `__uzdbm_*` JS variables. TLS impersonation does not touch it and neither does a real
+headless browser, because the challenge is a client-side device-fingerprint script.
+
+- **yad2.co.il** (IL, Yad2 — Israel's dominant classifieds / real-estate portal) — `Radware Bot Manager Block` on `curl_cffi` `chrome124`, `chrome120`, `chrome131`, `safari17_0` AND `firefox133` (all 200, ~118 KB, same title) **and** on headless Playwright (`/realestate/rent`, 200, 14 KB, same title, `cdn.perfdrive.com/aperture/aperture.js` in the body). Mandatory gate satisfied — this is a genuine block, not a curl-TLS false negative. Israel still has no `real-estate` channel source as a result (04.1.1 uncovered), but the country already carries 19 manifests from the 2014 Food Price Transparency Law feeds, so this is a division gap rather than a country gap. Probed 2026-09-11.
 
 ## PerimeterX (per-session token, collector beacons only)
 
@@ -254,6 +267,13 @@ Distinct from the Internet Archive's intermittent L4 blackhole, which produces t
 - **bigw.com.au** (AU, dept-store — COICOP 03/05/09/13 candidate, Woolworths group) — `curl` exits `000` (0 bytes, connection-level drop) on both plain and `-L` requests. Same Akamai/Woolworths-adjacent posture noted elsewhere in this file for the group. Probed 2026-08-07 (round-3 non-food shard); not investigated further.
 - **decathlon.com.my** (MY, sport/recreation — COICOP 03/09 candidate) — `curl` exits `000`/`28` (connection reset/timeout) on the front page; every other Decathlon country TLD probed the same session (TH/PH/ID/HK/TW/AU/VN) returned clean 200s on the same Next.js+Algolia platform, so this looks like a Malaysia-specific gap (site not launched, or a narrower block) rather than a platform-wide issue. Probed 2026-08-07.
 - **decathlon.com.cn** (CN, sport/recreation — COICOP 03/09 candidate) — HTTP 406 on the front page (the `decathlon.cn` apex 301-redirects here). Not investigated further — worth a browser-UA retry (406 usually means content-negotiation rejection, not a bot block) before writing this off. Probed 2026-08-07.
+
+## Anti-bot that inverts the usual UA test (browser UA blocked, bare `curl` allowed)
+
+The reflex probe — a realistic Chrome UA — is exactly what fails here, so the source reads as
+hard-blocked when it is wide open. Test a *bare* UA before writing a verdict.
+
+- **cgspace.cgiar.org** (CGIAR / IFPRI institutional repository, DSpace 7) — every path including `/`, `/server/api/...` and `/server/oai/request` returns `429 {"status": 429, "message": "Too Many Requests"}` for a Chrome UA and for `python-requests`, from two independent IPs and with 25-second backoff — but returns **200 with the full 356 KB page** for `curl/8.4.0`, for `Googlebot/2.1`, and for no `User-Agent` header at all. `robots.txt` answers 200 under every UA, which is what makes the 429 look like a rate limit rather than a UA policy. Not a blocker once you know the trick; recorded so the next run does not spend a backoff loop on it. Probed 2026-09-11.
 
 ## API requires dynamic security key / JWT
 
@@ -501,6 +521,8 @@ Site has products but each one is a modal within a shop page, not a canonical `/
 
 ## No products on the site (corporate marketing portal)
 
+- **fsmgov.org/nfc/** (FM, FSM National Fisheries Corporation - surfaced by a codex discovery run as a Micronesia price feed) - DEAD, not blocked. 200 / 8 KB static page describing the corporation, its EEZ, and a table of commercial fish species (scientific / marketing / Japanese name). Zero numbers that are prices, zero currency symbols, zero links to any document. NFC publishes no price series here. Probed 2026-09-11 (official-feeds shard).
+
 - **priyoshop.com / priyoshopretail.com** (BD, "PriyoShop") — priyoshop.com is a B2B MSME-supplychain marketing portal ("B2B Marketplace in Bangladesh with embedded finance", nopCommerce generator tag) that JS-redirects every visitor to priyoshopretail.com; that domain is in turn a WordPress corporate site ("MSMEs Supplychain Simplified") — news/blog/feed paths only, no consumer cart, no per-product price. The actual retail-distribution business (corner-shop/HoReCa supply) operates through an app/WhatsApp channel, not a public web catalogue. Probed 2026-09-01 (SAR sweep).
 - **bazariko.mg** (MG, "Bazariko.mg" — wave 10 workbook ACCEPT candidate, `AI_NOTES`: "STRONG: Ar prices with strike-through promotions, full supermarket taxonomy, 24/7") — the workbook claim does not match the live site. 200 OK, but the whole domain is a static Bootstrap e-commerce *template* (unmodified `single.html`/`offer.html`/`hold.html`/`kitchen.html` demo-page filenames, jQuery 1.11 + jstarbox assets) with zero product cards, zero prices, and zero `Ar`/`MGA` text anywhere across the homepage or every linked page. Footer credits `amfanoela@gmail.com` / links to `fanoela.mg`, which resolves to a freelance web developer's portfolio site (Fanoela Manohisoa) listing dozens of near-identical demo storefronts (`freshfood1.netlify.app`, `shopping-flower.netlify.app`, etc.) — Bazariko.mg is one of that developer's unlaunched template builds, not an operating grocery store. Do not build. Probed 2026-09-01 (wave 10).
 - **caveshepherd.com** (BB, Cave Shepherd & Co Ltd — historic Bridgetown department store) — the department-store retail business no longer operates from this domain. WordPress/Avada corporate holding-company site: nav is Company/Retail & Services/Financial Services/Investors/Contact only, `/retail/` page shows the group has pivoted to self-storage (Store All Inc.), souvenir shops (Ganzee, Caribbean Kidz, Spice It Up), a taxi app (pickUP Barbados), and financial-services subsidiaries (SigniaGlobe, Fortress Fund Managers, DGM). Zero e-commerce, zero prices anywhere on the domain, zero `/shop` or catalog path. Not a probe failure — the retail format itself has been discontinued. Probed 2026-09-01.
@@ -653,10 +675,23 @@ verdict from `curl_cffi` does not transfer to the Scrapy path here.
 
 ## Reachable, HTTP 200, but not extractable without more work (not a hard block — don't re-probe blind, but don't write off either)
 
+_The block below is the residue of the 2026-09-11 official-feeds shard (21 national statistics offices, agriculture ministries and consumer councils). Six of the 21 were built and shipped; these are the ones that were not, each with the specific reason so the next run does not re-derive it._
+
+- **caid.cd/mkengela_*.pdf** and **economie.gouv.cd/web/content/8304** (CD, DR Congo m-Kengela food-price bulletin / Ministry of Economy mercuriale) - both fetch 200 and both contain real national average prices, but the m-Kengela bulletin has **no price table at all**: it is 10 pages of choropleth maps plus French prose, with every figure embedded in a sentence ("le prix du kilogramme de haricot est passe de 4283 CDF a 4567 CDF"). Extractable only with a sentence-level regex over French narrative, which is a different and much more fragile job than a table parse. The economie.gouv.cd file is 9 MB and was not opened past the header. Worth a real pass if DR Congo coverage matters - the commodity list (farine de mais, farine de manioc, riz local, riz importe, haricot, viande de chevre, huile vegetale, huile de palme, sel, sucre) is a clean closed vocabulary and territory-level detail is quoted in the prose. Probed 2026-09-11.
+- **fsts-aden.org** (YE, Yemen Food Security Technical Secretariat monthly report) - 200 / 4 MB / 56 pages, real monthly food-security report with price content, but entirely Arabic and right-to-left: `pdfplumber.extract_text()` returns the glyphs in visual (reversed) order, so neither the item labels nor the table structure survive a plain text parse. Needs either a bidi-aware reshaper or `extract_tables()` with RTL column handling. Not attempted. Probed 2026-09-11.
+- **peches.gov.mr** annual OESP report (MR) - 200 but **83 MB** for one annual fisheries report; **admin.ansade.mr/wp-json/ansade/v1/publications/** (MR, ANSADE NSO) - a genuinely useful WordPress JSON API: 531 publications, each with a `pdf_content` field carrying the full extracted text of the document. It is a publications index, not a price feed; a price series would have to be mined out of the quarterly *Note de conjoncture* / IPC bulletins inside `pdf_content`. Real potential, real work. Probed 2026-09-11.
+- **usviber.org** "2023 Selected Food Imports" (VI) and **sigsahel.info** ACF pastoral-surveillance bulletin (Mauritania) - both 200, both narrative/annex documents rather than a recurring price table with a discoverable index. Probed 2026-09-11.
+- **stat.gov.az/source/price_tarif/** and **atm.gov.az/az/activity/10/...** (AZ) - both 200. The stat.gov.az page is the price-indexes *menu*, not a table; its only data links are methodology PDFs and a statistical-yearbook chapter. The ATM (Agrarian Research Centre) "qiymet bazasi" page renders navigation only, with the price base itself behind an application the raw HTML does not reveal. Neither was taken to a Playwright network trace - that is the missing step, not a verdict. Probed 2026-09-11.
+- **admarc.co.mw** (MW, ADMARC - Malawi's grain marketing board) - 200 / 306 KB corporate WordPress site with a "Commercial Markets / Buy and sell farm products at competitive prices" section, but no price list, no PDF and no document links anywhere on the homepage or the commercial-markets page. Probed 2026-09-11.
+- **proviande.ch** (CH, Swiss meat-industry interprofession, weekly slaughter-cattle prices) - trivially extractable, and deliberately NOT built. The weekly tables are rendered inline in the page HTML ("Taureaux MT T3 11.30", "Veaux KV T3 17.30") with a per-category PDF and a 2016-2025 producer-price XLSX alongside, so the extraction side is a 20-line job. The problem is COICOP: every series is a **producer price per kg dead weight** at public livestock markets, which is not a consumption-stage price, and stamping it into 01.1.2.2.x would put a carcass price in the same leaf as retail beef roughly 3-4x higher. Left uncoded it would carry no COICOP at all, which is not what an official-feed onboarding is for. Build it only alongside a decision about how producer-stage prices should be represented. Probed 2026-09-11.
+- **agriculture.gov.zm** (ZM, Ministry of Agriculture monthly market bulletin) - works end to end and was not built only because the archive is tiny: `/wp-json/wp/v2/media?search=bulletin` returns **6 media items, 4 distinct bulletins** (April 2024, Jan 2025, Feb 2025, one undated), against 43 for the sibling Ministry of Fisheries and Livestock bulletin that WAS built (`zm_mfl_market_bulletin`). Its "NATIONAL COMMODITY AVERAGE PRICES" table on page 5 carries maize, sorghum, rice, millet, groundnuts, mixed beans, cassava chips, potatoes, tomato, onion, breakfast/roller meal and bread flour with both ZMK/MT and ZMK/kg columns. Note `extract_tables()` does NOT work on it (returns single merged cells); the page text parses cleanly instead, but watch the stray spaces inside numbers ("8 .26"). Probed 2026-09-11.
+- **instat.gov.al** average-consumer-prices PDF (AL) - the URL that surfaced (`instat-cmimet-e-konsumit-qershor-2026.pdf`) is a scanned **one-off reply letter** ("I nderuar perdorues, po ju vem ne dispozicion listen e cmimeve mesatare..."), not an issue of a series: it appears on no INSTAT index page, `/sq/temat/cmimet/cmimet-mesatare/` is a 404, and the site search endpoint does not exist. Its 45-item table is genuinely valuable (it reaches divisions 01, 02, 04 and 07 - wine, beer, cigarettes, diesel, petrol, LPG) but its text layer is OCR-damaged ("Mish viyi" for "Mish vici") and there is no second document to generalise the parser against. What IS discoverable at INSTAT is the monthly CPI archive (`/sq/temat/cmimet/indeksi-i-cmimeve-te-konsumit/` lists `ick_<month>_<year>.pdf` continuously from 2022 to 2026) - that is a `cpi_benchmark` / IndexObservation source, a different analytical_role, and the right next target for Albania. Probed 2026-09-11.
+- **onagri.nat.tn** Marche de gros Bir El Kassaa (TN) - live and worth building, just not this round. The landing page (`/Marche-de-gros-bir-el-kasaa/fr/62`, NOT `/fr/128`) renders an HTML table of monthly issues, each linking to an Excel-exported `.html` file under `/uploads/<hash>.html` (ISO-8859-1, ~88 KB, 9 nested tables) carrying the wholesale mercuriale. Seven 2026 issues plus a 2014 tail. The sibling `/Marches-regionaux/fr/63` links per-regional-market PDFs but its newest is from **2022**. Probed 2026-09-11.
+
 - **gladen.bg** (BG, Gladen.bg -- Sofia full-assortment online supermarket, 48,822 products, COICOP 01 candidate) -- **not a WAF, not a TLS problem, and the extraction side is perfect**: every PDP server-renders schema.org Product + BreadcrumbList JSON-LD and the sitemap index is clean. The blocker is a **self-hosted, rate-triggered anti-automation interstitial**: past a request-rate threshold the site 302s every product URL to `/challenge?return_to=<url>`, a Laravel page reading "Трябва да потвърдим, че не сте автоматизирана система" with a single POST button (CSRF `_token` + `return_to`, no captcha, no JS). Measured: run 1 at 2 concurrent / 1.0 s delay served **66 pages cleanly and then challenged the next 106**; run 2, after an 8-minute cooldown and re-paced to 1 concurrent / **6.0 s**, was challenged on **every** request. The penalty is IP-sticky and ratchets, so there is no throughput below the threshold worth having. The challenge form is trivially POSTable and that was deliberately **not** done -- it is an explicit "confirm you are not an automated system" gate, which is a different thing from a rate limit to pace under. Spider + manifest were written, tested (13 valid EUR rows before the wall) and then **deleted rather than shipped**. Category comes from the BreadcrumbList, NOT from the Product node (which has no `category` key at all) and `sku` is empty on every product, if anyone rebuilds it. Probed 2026-09-05 (ECA Balkans+Nordic 01/02 sweep).
 - **billa.bg** (BG, BILLA Bulgaria -- major grocery chain, COICOP 01/02 candidate) -- 200 / 675 KB, no WAF, Nuxt SPA with an **Algolia** client in its JS bundle (`X-Algolia-Application-Id` / `X-Algolia-API-Key` header handling present in `/_nuxt/*.js`). The app id and search-only key were not in the chunk fetched and no Playwright network trace was run. Not blocked -- unfinished. One trace should recover the credentials and land it on Tier 1B. The highest-value unclaimed Bulgarian grocer. Probed 2026-09-05.
 - **lightsmarket.bg** (BG, alcohol delivery) -- answers **200 with the same 81 KB body to every path**, including `/wp-json/wc/store/v1/products`, `/products.json` and `/index.php?route=product/category`. Those 200s are an SPA catch-all, not platform hits; do not read them as a WooCommerce/Shopify/OpenCart fingerprint. Needs a real network trace before any verdict. **partydrinks.bg** (BG) -- 237 KB OpenCart-shaped storefront whose robots.txt points at `http://partydrinks.local/sitemap.xml` (an un-rewritten dev hostname); `/sitemap.xml` and the OpenCart route params both 404, so no URL-discovery surface was found -- a category crawl would be needed. **nokovandson.com** (BG) -- `/sitemap.xml` returns 200 with a **zero-length body**. All probed 2026-09-05.
-- **heimkaup.is** (IS, Heimkaup -- large Icelandic online store) -- `products-sitemap.xml` lists 3,169 URLs but the assortment is consumer electronics, watches and phones (no groceries), and the first sampled PDPs **404** -- the sitemap is stale. Not a division 01/02 source. If a non-food division ever wants Iceland, re-measure what fraction of the sitemap still resolves before scaffolding. Probed 2026-09-05.
+- **[SUPERSEDED 2026-09-11 — see "Recovered and now shipped" at the top of this file; `heimkaup_is` now ships]** **heimkaup.is** (IS, Heimkaup -- large Icelandic online store) -- `products-sitemap.xml` lists 3,169 URLs but the assortment is consumer electronics, watches and phones (no groceries), and the first sampled PDPs **404** -- the sitemap is stale. Not a division 01/02 source. If a non-food division ever wants Iceland, re-measure what fraction of the sitemap still resolves before scaffolding. Probed 2026-09-05.
 - **bioshop.mk** (MK, organic food, Next.js) -- `/wp-json/wc/store/v1/products` returns **403**. Only one profile tried (chrome124) and no network trace run; small catalogue, low expected value, so not pursued. Probed 2026-09-05.
 - **countrydelight.in** (IN, Country Delight — farm-fresh milk/dairy subscription delivery, Delhi-NCR/Bangalore/Mumbai/Pune) — 200 on curl_cffi, no WAF, but an Angular Universal SPA with an empty `<title>`. The site's own API host (`websiteapi.countrydelight.in`) returns 403/404 on unauthenticated probes of guessed paths (`/api/v1/products`, `/products`, `/`) — no pincode/session cookie was established. Not confirmed blocked, just needs a proper pincode-selection flow reverse-engineered (likely via a Playwright network capture after simulating the city-picker) before a real API sniff can happen. Worth a real pass, not attempted further this round. Probed 2026-09-01 (SAR sweep).
 - **online.metro-cc.ru** (RU, Metro Cash & Carry — hypermarket, COICOP 01/02/05/09 candidate) — genuinely reachable: homepage sets a `metroStoreId` cookie, `/sitemap-3.xml` lists real `/products/<slug>` URLs, and product pages return 200 with a JSON-LD `Product` block. But the JSON-LD `offers` object carries `priceCurrency`/`availability` and **no `price` field** — the actual price lives only inside a heavily minified `window.__NUXT__=(function(a,b,c,...){...})(...)` positional-argument call, not parseable as JSON without executing the JS (a regex/string search finds no plain `"price":<number>` near the product). A rendered-DOM read (Playwright, `[class*=price]`) is the likely path but wasn't completed this round — the product page itself also 404s/hangs on cold Playwright navigation without first visiting `/` in the same context to pick up `metroStoreId`. Worth a real pass: sitemap + cookie + platform are otherwise clean. Probed 2026-08-07. **RESOLVED 2026-09-05 — built as `metro_cc_ru`.** No Nuxt-blob parsing was needed: the *leaf* category listing pages (`/category/bakaleya/konservy`, not the department page `/category/bakaleya`) server-render a real grid of `catalog-2-level-product-card` divs carrying `data-sku`, an `a.product-card-photo__link[title]` product name and a price split across `.product-price__sum-rubles` + `.product-price__sum-penny`. Department pages carry only `catalog-1-level-product-card` carousel cards — reading those is the homepage-carousel false positive. Pagination is `?page=N` with explicit links up to the last page, verified non-overlapping.
@@ -762,6 +797,8 @@ The FCCC WordPress site (fccc.gov.fj) returns 403 Forbidden on many individual p
 - **fccc.gov.fj/basic-food-items-2/** — page loads via curl (browser UA) but no price tables in server-rendered HTML; content appears JS-rendered (WordPress shortcode). Price data may be in linked PDFs not indexed on /petroleum/ or /gas/ pages.
 
 ## Image-only tariff/price sources (PDF or CMS article with no machine-readable price text)
+
+- **PNG Food Price Bulletin** (PG, FPDA / IFPRI, published on CGSpace — e.g. item `7c5311fd-a091-4e36-95a2-736ec43bcbc3`, "Papua New Guinea food price bulletin: February 2026") — the PDF *text* layer extracts fine with `pdfplumber` (7 pages, 2-3 KB of text per page), but it is **narrative plus vector charts and contains no price table at all**: `extract_tables()` returns 0 tables on every page, and the only numbers in the text are percentage changes ("sweet potato was higher in 2025 by an average of 14 percent"), not levels. The per-market, per-month PGK/kg series exist only as chart geometry (Figures 1-14, 6 FPDA markets: Banz, Goroka, Kokopo, Lae, Mt Hagen, Port Moresby). The bulletin points to `ifpri.org/project/fresh-food-price-analysis-papua-new-guinea` for the downloadable series, and that page is Imperva Incapsula-walled (see the Incapsula section). So the bulletin is **not** a usable `official_avg` source as published — do not scaffold a `pdf` fetcher against it. Probed 2026-09-11.
 
 These sources publish prices exclusively as embedded images or image-only PDFs. HTML article bodies contain narrative text but no table elements. Structure-extraction tools (pdfplumber, pandas.read_html) return nothing useful. Fetchers must either hardcode known values or use OCR.
 
@@ -1715,7 +1752,7 @@ below.
 
 ### Delivery-zone and Queue-it gating on Nemlig (DK)
 
-- **nemlig.com** (DK) — Sitecore/Angular SPA, grocery home-delivery. The
+- **[SUPERSEDED 2026-09-11 — the Google product sitemap + a home-page Queue-it warm-up avoid both walled routes; `nemlig_dk` now ships]** **nemlig.com** (DK) — Sitecore/Angular SPA, grocery home-delivery. The
   wave-3-observed endpoint `GET /webapi/<CombinedProductsAndSitecoreTimestamp>/
   <TimeslotUtc>/<DeliveryZoneId>/.../Products/GetByProd...` is a client-side
   route built from three values pulled from `basketStateService` inside the
@@ -9209,7 +9246,7 @@ columns, which were all `not scored`/`nan` for this batch.
 
 ## Deferred — technically feasible, needs more engineering than this pass budgeted
 
-- **heimkaup.is** (Heimkaup, Iceland) — the site's own `products-
+- **[SUPERSEDED 2026-09-11 — the SSR `__INITIAL_STATE__` needs no Jiffy token; `heimkaup_is` now ships]** **heimkaup.is** (Heimkaup, Iceland) — the site's own `products-
   sitemap.xml` and `product-categories-sitemap.xml` are STALE: every
   sitemap PDP and category URL tested 404s live. Playwright network
   capture reveals the real, currently-live backend is a third-party quick-
@@ -10629,3 +10666,202 @@ surfaced by the sweep but NOT individually probed beyond the keyword/
 currency scan this pass — they are live candidates for the next session,
 roughly ranked by the food-keyword-density scan already run and saved in
 `~/gapwork/probe_ddgs_results.json` / the scan output above.
+
+---
+
+## known_blockers_onboard2 - as of 2026-09-11
+
+Shard: 16 hand-curated backlog URLs across 11 countries, ranked by empty
+COICOP leaves. All 16 had been pre-probed to HTTP 200 with a real body; 10
+of them already carried a verdict in this file, and every one of those 10
+re-confirmed. The wins came from the 6 that did not.
+
+### Shipped (4)
+
+- **abidjanmarket_ci** (CI) — abidjan-market.ci. Bespoke Symfony marketplace
+  (`Server: Portail`), fully server-rendered, no WAF, no robots.txt (404).
+  `/produits?page=N` paginates 24 cards over 7 pages (~170 products);
+  page >= 8 renders an empty 27 KB grid rather than erroring, so a fixed
+  page 1-8 start_urls list is self-terminating. PDP: name in
+  `h1.h2.fw-bold`, price in `span.display-6.fw-bold.text-success`
+  ("625 FCFA", non-breaking thousands space), category badge links
+  `/produits/categorie/<slug>`, product id from `form#cart-form-<n>`.
+  99+ rows on the test run. NOT the same domain as `abidjanmarket.com`,
+  which this file already records as parked.
+  CAVEAT for the archive side: this source has NO structured data of any
+  kind — zero JSON-LD, zero og: product meta, zero schema.org itemprop, no
+  data-price. All four generic parser tiers return nothing; it needs a
+  per-source extractor or it resolves and parses to zero.
+
+- **bravo_wolt_az** (AZ) — Bravo, Azerbaijan's largest supermarket chain,
+  via `wolt.com/en/aze/baku/venue/bravo-supermarket-azure`. Reuses the
+  existing `_wolt_base.py` (22nd Wolt venue spider). 177 leaf categories,
+  293+ rows on the test run, AZN prices in minor units (89 -> 0.89,
+  eyeballed against the rendered venue). Two other Baku Bravo venues exist
+  and are smaller: `bravo-tahir-97` (157 categories),
+  `bravo-ekspress-torqovaya` (137).
+
+- **maxmart_bolt_gh** (GH) — MaxMart (Accra supermarket chain) via Bolt
+  Food's public API. 24 top-level categories, 720 rows on the test run.
+  Ghana's first working full-grocery catalog: `maxmartonline_gh` has a
+  manifest and ZERO rows, and of Ghana's seven configs only
+  `palacesuperstores_gh` carries data.
+
+- **ro_monitorul_preturilor** (RO) — see the correction below. 29,553 rows
+  on the first run, 10 named chains, 0 duplicate hashes.
+
+### CORRECTION — an entry in this file is wrong
+
+- **monitorulpreturilor.info** (RO, Competition Council price monitor) is
+  listed under "**DNS resolves but no usable response** — 14 hosts: expired
+  or mismatched TLS certificate, or TCP timeout on every profile including
+  `verify=False`". The cert half is right; the `verify=False` half is not.
+  Re-probed 2026-09-11 on both plain `requests` and `curl_cffi`:
+  `verify=False` returns a clean 200 on every path, and behind the Kendo UI
+  SPA sits a wide-open ASP.NET Web API with the daily shelf price of
+  ~23,000 grocery SKUs at every store of all 10 major Romanian chains.
+  SHIPPED as `ro_monitorul_preturilor`. Recipe, so nobody re-derives it:
+  - the API base is a global declared inline in the page HTML,
+    `var wsURL = '/pmonsvc/Retail'` — which is why every endpoint name
+    visible in `/index.min.js` 404s when requested at the site root;
+  - `/GetStoresForProductsByUat?uatId=<id>` alone returns an HTTP 200
+    JSON-404 ("No action was found on the controller"). ASP.NET Web API
+    selects actions by parameter signature, so it only answers once
+    `csvprodids=<id,id,...>` is also present. That is THE priced endpoint:
+    it returns every store in the unit, each with a `Products[]` array
+    carrying `name`, `price`, `unit`, `brand`, `retailcategname`,
+    `pricedate`;
+  - `/GetProductsFromStore?categid=&storeid=` reads like the priced route,
+    returns 200, and returns a literal empty list for every pair tried;
+  - `/GetCatalogProductsByNameNetwork?CSVcategids=<id>` is the product
+    dictionary and carries no prices;
+  - half the chain ids are GLN barcodes (5940475006709 = CARREFOUR,
+    4055329000008 = LIDL), so `/GetRetailNetworks` is needed for labels.
+
+### Playwright-to-discover, plain-HTTP-to-scrape — Bolt Food
+
+- **bolt.eu/en-gh/food/market/** (GH, "Bolt Market") is a marketing page:
+  461 KB of copy, zero products, zero GHS text, confirmed under headless
+  Playwright as well as `curl_cffi`. The consumer app at `food.bolt.eu` is
+  an Expo/React SPA with a ~7 KB HTML shell. The real surface is its
+  backend, which is completely open:
+
+      GET deliveryuser.live.boltsvc.net/deliveryClient/public/getMenuCategories
+          ?provider_id=<id>&delivery_lat=&delivery_lng=&<client params>
+      GET .../getMenuDishes?provider_id=<id>&category_id=<cat>&...
+
+  No auth, no cookie, no signature. Two gotchas, both silent:
+  1. the client params MUST include `deviceType=web`. Without it every
+     endpoint answers HTTP **200** with
+     `{"code":702,"message":"INVALID_REQUEST","validation_errors":
+     [{"error":"Is required","property":"deviceType"}]}` — it does not read
+     as an error at the transport layer.
+  2. the catalog served is chosen by `delivery_lat`/`delivery_lng`, NOT by
+     the URL locale. Called without coordinates it falls back to IP
+     geolocation; from this network that returned **Vilnius** while the URL
+     said `/en-gh/`. Accra coordinates are what make it a Ghanaian source.
+
+  Prices are MAJOR units (`price.value: 52` next to
+  `price.price_str: "GH₵52.00"`) — the opposite of the Wolt convention, so
+  do not copy a /100 from a Wolt spider.
+
+  This generalises: Bolt Food operates in ~45 countries and the same two
+  endpoints serve all of them. Accra alone exposed 338 venue slugs
+  including real grocery and pharmacy chains (`146859-maxmart-east-legon`,
+  `146862-maxmart-dzorwulu`, `200970-palace-mall-superstore-spintex`,
+  `77387-kwikmart-dzorwulu`, `82423-fair-way-minimarket-labone`,
+  `1042785-fairfax-pharmacy`, `907...`). Worth a dedicated regional sweep.
+
+### Brochure-only WordPress / no online store
+
+- **www.adeg.at** (AT, ADEG — REWE's Austrian village-grocery banner) —
+  TYPO3 corporate site, HTTP 200, no WAF. No webshop of any kind: the only
+  price-adjacent route is `/flugblatt-aktionen/adeg-flugblatt`, a JS flyer
+  viewer whose rendered HTML contains zero EUR price text and no PDF or
+  image asset for the flyer itself. `sitemap.xml` is a 4-entry index over
+  `pages`/`news`/`recipe`/`wlp`, and the `?sitemap=<name>` parameter is
+  IGNORED — every variant returns the same index, so there is no product
+  URL list to harvest. Probed 2026-09-11.
+
+### Login-walled catalog
+
+- **shop.unimarkt.at** (AT, "UNIONLINE", the online shop of Unimarkt /
+  UNIGRUPPE) — ColdFusion storefront on IIS, HTTP 200, no WAF, but the
+  entire catalog is behind `Kundenlogin`: `/`, `/onlineshop` and
+  `/onlineshop/` all render the same 31-40 KB login page (email/password,
+  Google and Facebook OAuth, "NEU HIER?" registration) with zero products
+  and zero EUR text. `/produkte` and `/sortiment` 404. Its sitemap
+  (`/google.cfm`, declared in robots.txt) lists only 6 CMS pages —
+  `/onlineshop`, `/ueber-unimarkt`, `/flugblatt`, `/agb`, `/impressum`,
+  `/kontakt` — and `/flugblatt` itself 404s. The parent `www.unimarkt.at`
+  is a WordPress brochure site with no `wc/` REST namespace and an AIOSEO
+  sitemap containing only posts and recipes. Probed 2026-09-11.
+
+### CAPTCHA-gated report generator
+
+- **fcainfoweb.nic.in** (IN, Department of Consumer Affairs "PMS" daily
+  retail/wholesale price monitoring — 22 essential commodities across ~550
+  reporting centres) — the report menu at
+  `/reports/report_menu_web.aspx` is an ASP.NET WebForms page whose POST
+  requires `__VIEWSTATE` + `__EVENTVALIDATION` **and a
+  `ctl00$MainContent$Captcha` field**. A captcha on the report generator is
+  a hard stop for a fetcher with this stack; not a TLS or WAF issue, and
+  re-probing will not change it. If this feed is ever wanted, the route is
+  a data-sharing request to DoCA, not scraping. Probed 2026-09-11.
+
+### Client-hydrated price — JSON-LD present, offers empty
+
+- **www.jiomart.com** (IN) — supplements the existing entry. PDPs ARE
+  enumerable: `/sitemap.xml` is a live index over six child sitemaps and
+  `electronics-2.sitemap.xml` alone holds 2,420 `/product/<slug>-<id>`
+  URLs, each returning a ~6.9 MB HTTP 200. But the price is NOT in that
+  payload: both `schema.org/Product` JSON-LD blocks carry
+  `"offers": {"price": "", "priceCurrency": ""}` (empty strings, not
+  missing) or `"offers": null`, and the embedded hydration state carries
+  `"effective":{"min":0,"max":0}`. The ₹ figures in the raw HTML are
+  banner copy ("₹200 off"), not the product price. Separately, the sitemap
+  set covers electronics, home-and-kitchen, collections and sections
+  ONLY — there is no grocery sitemap, so even a working extractor would
+  not reach division 01. Probed 2026-09-11.
+
+### Re-confirmed, verdicts in this file stand (no change)
+
+Probed 2026-09-11, all consistent with what is already recorded — do not
+re-probe:
+
+- **playce.ci** (CI) — WordPress/Elementor corporate site, no `wc/` route.
+- **roda.rs** (RS) — flyer pages, no browsable SKU catalog.
+- **caribbeansupermarketsa.com** (HT) — 27 KB single-page brochure; the
+  only links on the whole document are `#about`, `#contact`, a Google Maps
+  pin and a `mailto:`. No catalog route exists.
+- **delimarthaiti.com** (HT) — real chain, real site (138 KB, JSON-LD
+  `GroceryStore`), but the priced surface is IMAGES: `/promotions` renders
+  three pages of `pri-at-plat-*.png` flyer scans with zero HTG text in the
+  DOM, and `/produits` lists seven own-brand product names (Sucre Roux,
+  Mais, Farine, Avoine, Pois Noirs, ...) with no prices at all. Its
+  14-entry sitemap has no product routes.
+- **bravosupermarket.az** (AZ) — confirmed: Cloudflare-fronted WordPress
+  marketing site, `sitemap.xml` contains nothing but `/special-offers/`
+  pages, and those carry flyer images with zero AZN text. Its own nav
+  points "Online store" at Wolt. **The fix is the Wolt route** — shipped
+  this pass as `bravo_wolt_az`.
+- **kaufland.hr** (HR) — confirmed no catalog. Worth recording WHAT the
+  interesting page turned out to be: `/akcije-novosti/popis-mpc.html`
+  ("popis maloprodajnih cijena") is Kaufland HR's compliance page for the
+  Croatian mandated daily retail-price publication (NN 117/2022, NN
+  75/2025). It is PROSE ONLY — rendered under headless Playwright at
+  303 KB it contains not one `.csv`, `.zip`, `.xml` or `.xlsx` link. The
+  mandated Croatian price lists are already covered by the onboarded
+  aggregators `cijene_hr` and `cjenoteka_hr`.
+- **mercator.rs** (RS) — serves the IDEA corporate portal (title "IDEA
+  marketi"); same shape as `idea.rs`, already recorded here. No catalog.
+- **picnic.app** (DE) — WordPress marketing site; ordering is app-only.
+  `/de/online-supermarkt/sortiment/` renders 52 KB with exactly one
+  internal link (`/de/kontakt/`) and zero EUR text.
+- **iranpharmis.org** (IR) — confirmed DEAD, and the existing note is
+  right about why. Adding the machine-readable tell: PDPs at
+  `/en/products/<id>` DO emit a `schema.org/Product` JSON-LD node with
+  name, sku and description, but it has no `offers` member at all, and the
+  site-wide `LocalBusiness` node carries `"priceRange": "IRR"` — a
+  currency label, not a price. Zero IRR/Rial/Toman figures anywhere in the
+  221 KB document.

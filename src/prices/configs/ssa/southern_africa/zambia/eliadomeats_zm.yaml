@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: eliadomeats_zm
+url: https://eliadomeats.com/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "eliadomeats.com"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 112 products (probed 2026-09-11).
+  prices.currency_code=ZMW, currency_minor_unit=2. Butcher / processed-meat
+  specialist -- COICOP 01.1.2 dominant.
+  Page family parsed: API (/wp-json/wc/store/v1/products).

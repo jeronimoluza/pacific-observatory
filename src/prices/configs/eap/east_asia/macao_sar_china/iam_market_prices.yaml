@@ -1,0 +1,78 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: mo_iam_market_prices
+module: eap.east_asia.macao_sar_china.iam_market_prices
+function: fetch_mo_iam_market_prices
+url: https://consumer.dsedt.gov.mo/api02/MarketCategory.aspx?lan=cn
+language: zh
+cadence: daily
+fallback_date: 2026-01-01
+notes: |
+  Macao municipal-market (街市) daily fresh-food prices, per market, published
+  by the Consumer Council (消費者委員會) on behalf of the Municipal Affairs
+  Bureau (市政署 / IAM) -- every page footer carries "街市價格資訊由澳門特別
+  行政區政府市政署提供".
+
+  DISTINCT from the sibling consumer_price_station.yaml. That one reads the
+  Council's SUPERMARKET comparison (api03.consumer.gov.mo Next.js backend,
+  ~598 packaged grocery lines, min/max range, COICOP deferred). This one reads
+  the Council's MUNICIPAL MARKET feed on a completely separate ASP.NET
+  WebForms app at consumer.dsedt.gov.mo/api02/, and carries exactly the fresh
+  categories the supermarket feed lacks: 魚類-淡水魚 / 魚類-鹹水魚 / 海產品類 /
+  豬肉類 / 牛肉類 / 新鮮食用蔬菜類 -- 60 items priced separately at each of
+  Macao's nine public markets (subnational_area = market name).
+
+  The other URL surfaced for this data, IAM's own 街市通 SPA at
+  app.iam.gov.mo/marketinfo/, is a front end over the same numbers. Its
+  POST-only Spring API (/goods/getGoodsCategory, /goodsPrice/
+  getGoodsPriceByMarket) answers {} to a plain {"body": {...}} post -- the
+  request envelope is assembled inside the webpack bundle. The WebForms pages
+  need no envelope, so they are what the fetcher reads.
+
+  Three plain GETs, no cookie or VIEWSTATE round-trip: MarketCategory.aspx
+  (categories, read live rather than hardcoded), MarketItemLowestPrice.aspx
+  (items per category), MarketPrice (per-market prices for one item).
+  `lan=en` is not English -- it serves Portuguese labels, same as `lan=pt`; the
+  fetcher uses `lan=cn` so item_name matches `language: zh` and carries the
+  Portuguese name in notes.
+
+  UNIT TRAP, handled: the per-market block renders two figures. `lp lpa` is a
+  Chinese customary unit that is NOT constant across categories -- 元/司馬斤
+  (catty, 604.8 g) for vegetables/meat/seafood but 元/兩 (tael, 37.8 g) for
+  saltwater fish, a silent 16x error if read as one unit. `lp lpb` is 元/公斤
+  everywhere, so only lpb is read and unit is always "kg". The item-list
+  page's own lpa/lpb query values are ignored for the same reason: on
+  saltwater fish they are mutually inconsistent (石斑 lpa=4.5 vs lpb=2.7).
+
+  TODAY ONLY. Each market renders twice, `detaila` (today) and `detailb`
+  (week average). period_kind is not part of PRICE_COLUMNS identity, so
+  ingesting both would emit two prices under one identical (item_name,
+  observation_date, subnational_area) key and collide on observation_hash --
+  the same venue-collision trap documented in stat_uz_avg_prices. Today's
+  snapshot is the commensurate observation; the weekly average is the obvious
+  follow-up if a period dimension is ever added. observation_date comes from
+  the page's own 更新日期 stamp, not the request date. Markets not stocking an
+  item render "$---" and are skipped.
+
+  COICOP: the fetcher module carries a `_COICOP_MAP` covering all 60 item
+  labels (fish 01.1.3.1.x, cephalopods/crustaceans/bivalves 01.1.3.4.x, pork
+  01.1.2.2.2, beef 01.1.2.2.1, bone/trotter/tendon 01.1.2.4.0, vegetables
+  01.1.7.x). `coicop_classification` is deliberately LEFT as `classifier` --
+  `concatenate._build_classifier_csv_map` ingests a fetcher CSV only for
+  `classifier` sources, so `source_curated` would delete this source's rows
+  from the build; the per-row code rides through as declared_coicop_codes and
+  short-circuits classify at confidence 1.0. channel: null (non-retail
+  official survey, analytical_role official_avg), consistent with the sibling
+  consumer_price_station.yaml.
+
+  MEASURED first run 2026-09-11: 383 rows, 57 items x 8 markets, zero null
+  coicop_code. Three of the 60 items are deliberately absent -- 豬扒 (its
+  per-market page 404s: the page keys on the item's Portuguese name and this
+  one is published as "Lombada {Lombo / Costeletas}", whose raw "/" IIS
+  refuses in any encoding, and a blank `s` returns the generic site page),
+  帶子 scallop (priced 元/頭, per piece not per weight, rejected by the unit
+  guard rather than mislabelled as kg) and 九吐 (no market listed it that
+  day). Onboarded 2026-09-11.

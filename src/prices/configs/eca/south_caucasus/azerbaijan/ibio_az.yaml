@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ibio_az
+url: https://ibio.az/
+language: az
+cadence: weekly
+channel: specialty-food
+archive_prefix: "ibio.az"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify. /products.json?limit=250 open, 152 products across 1 page (probed 2026-09-11).
+  Shopify.currency active=AZN confirmed in page source. Organic / gluten-free grocery;
+  sampled rows food (flour mixes, oils). Catalogue is single-page: no pagination risk.
+  Page family parsed: API (/products.json) - collected urls are /products/<handle> permalinks.

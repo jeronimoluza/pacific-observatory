@@ -1,0 +1,64 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: gu_wpacfin_landings
+module: eap.pacific_islands.guam.wpacfin_landings
+function: fetch_gu_wpacfin_landings
+url: https://apps-pifsc.fisheries.noaa.gov/wpacfin/DAL/DAL-WEB_PIR_SUM_TIMESERIES.php?isAsync=1&displayField=PIR_COMMON_NAME&yearStart=1980&yearEnd=2026&orderby=year&islands%5B%5D=Guam&datasets%5B%5D=PR
+language: en
+cadence: annual
+fallback_date: 1979-01-01
+notes: |
+  NOAA PIFSC Western Pacific Fisheries Information Network (WPacFIN), "PR"
+  dataset -- annual commercial-landings price per pound by taxon for
+  Guam. Shared module at _shared/eap/wpacfin_landings.py, thin
+  per-country wrapper here; the same endpoint also serves Guam, CNMI and
+  Hawaii (Hawaii is outside this project's topology). Series runs 1980-2025 for Guam.
+
+  These are FIRST-SALE (ex-vessel / dealer-receipt) prices, not retail shelf
+  prices -- recorded in `notes` on every row as "ex-vessel". It is the only
+  island-wide multi-decade seafood price series these territories publish.
+
+  Plain GET, no auth, not paginated: one request returns the whole series.
+  Two parameter traps, both of which come back as HTTP 200 with a JSON error
+  body rather than an HTTP error. `islands[]` takes the island's DISPLAY name
+  and is CASE-SENSITIVE -- "American Samoa" / "Guam" / "CNMI" work, while
+  "AS", "GUAM", "AMERICAN SAMOA", "AmericanSamoa" and "Saipan" all return
+  {"outcome": false, "message": "Invalid parameter value for ISLAND."}.
+  `datasets[]` accepts only "PR" of the codes tried (CR/EX/LD/CM all
+  rejected). The fetcher raises when the payload is an object rather than a
+  list, so a silently-rejected request cannot pass as "no new data".
+
+  PERIOD is "YY" on every row, so period_kind is annual_avg and
+  observation_date is 1 January of YEAR. unit is "lb" (the publisher's own
+  RPT_PRICE_LB); no conversion is applied.
+
+  COICOP: the shared module carries `_COICOP_BY_FAMILY` over the publisher's
+  own FAMILY column (37 of the 39 values mapped) plus `_COICOP_BY_TAXON`
+  overrides where one FAMILY value spans two leaves -- wahoo is Scombridae
+  but not a tuna, and the catch-all rows carry a taxonomic RANK in FAMILY so
+  "Animalia (kingdom)" and "Perciformes (order)" each cover two different
+  things. All landings are whole and unprocessed, so the fresh leaves
+  (01.1.3.1.x fish, 01.1.3.4.x crustaceans/molluscs) apply and none of the
+  prepared/preserved leaves do. "Unknown/Unclassified" and "Miscellaneous
+  Seafood" are left UNCODED rather than guessed -- neither says whether it is
+  a fish or an invertebrate -- and are emitted, not dropped, because a null
+  coicop_code is legitimate under `classifier`.
+
+  `coicop_classification` is deliberately LEFT as `classifier`:
+  concatenate._build_classifier_csv_map ingests a fetcher CSV only for
+  `classifier` sources, so `source_curated` would delete this source's rows
+  from the build; the per-row code instead rides through as
+  declared_coicop_codes and short-circuits classify at confidence 1.0.
+  channel: null (non-retail official statistics programme, analytical_role
+  official_avg).
+
+  item_name is the publisher's leading common name plus the scientific name
+  in parentheses ("Aku (Katsuwonus pelamis)"). The taxon is part of the name
+  because the lead common name is NOT unique -- "Shrimp" leads both Caridea
+  and Penaeidae rows and "Parrotfishes" both Scaridae and Scarus spp. -- and
+  _IDENT keys on item_name, so two taxa in one year would otherwise hash
+  identically and the writer would drop one price as a duplicate.
+  MEASURED first run 2026-09-11: 374 rows, 1980-2025, 47 taxa, 47 rows uncoded (the two catch-all taxa). Onboarded 2026-09-11.

@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: arete_py
+url: https://arete.com.py/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "arete.com.py/"
+archive_path_re: '^/(?:catalogo/[^/?]+|[^/?]+-p\d+)$'
+notes: |
+  Asuncion full-line supermarket. Same ecommercepro (WooCommerce-derived)
+  storefront as casarica_py; /wp-json/wc/store/v1/products 404s so this is
+  an HTML/parsel spider, not the Woo Store-API base.
+
+  Probed live 2026-09-11: GET /catalogo/almacen-c273 -> HTTP 200, 185KB, 20
+  product cards. Sample 'ACEITUNA NUCETE DESC/PREMIUM 180*24' PYG 28.500
+  (digits-only parse -> 28500; Guarani has no minor unit). Page 2 at
+  /catalogo/almacen-c273.2 returns a disjoint set of 20 ids, so the
+  dot-notation pagination genuinely paginates.
+
+  162 leaf categories in _arete_py_categories.txt, harvested from the
+  homepage nav.
+
+  Page family parsed: listing (category pages). archive_path_re admits BOTH
+  the listing family the spider reads and the /<slug>-p<id> PDP family,
+  since category captures carry 20 name/price pairs each. Structured data:
+  the storefront emits NO JSON-LD and no schema.org microdata -- price lives
+  in span.price span.amount text only, so the archive side needs a
+  per-source rule, not a generic tier.
+
+  coicop_divisions: 01, 02, 03, 05, 06, 09, 12
+  divisions_basis: category_names (162 slugs cover almacen/carnes/lacteos/
+  frutas-verduras, bebidas con y sin alcohol, farmacia, cuidado personal,
+  limpieza del hogar, bazar/electrodomesticos, jugueteria/libreria, mascotas)

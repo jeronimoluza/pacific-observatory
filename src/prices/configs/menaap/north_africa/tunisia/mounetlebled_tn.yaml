@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mounetlebled_tn
+url: https://mounetlebled.com/
+language: fr
+cadence: weekly
+channel: specialty-food
+archive_prefix: "mounetlebled.com"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 292 products (probed 2026-09-11).
+  prices.currency_code=TND, currency_minor_unit=3 -- dinar has 3 decimals, the base
+  spider reads minor_unit from the payload so 65000 -> 65.000 TND. Confirmed against
+  the rendered page.
+  NOTE: the homepage itself returns only ~5KB and looked dead on the discovery probe;
+  the Store API is the real surface.
+  Page family parsed: API (/wp-json/wc/store/v1/products).

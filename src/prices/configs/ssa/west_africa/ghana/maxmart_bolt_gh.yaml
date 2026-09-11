@@ -1,0 +1,53 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: maxmart_bolt_gh
+url: https://food.bolt.eu/en/137-accra/p/146859-maxmart-east-legon/
+language: en
+cadence: weekly
+archive_prefix: "food.bolt.eu/"
+archive_path_re: '^/[a-zA-Z\-]+/\d+-[^/?]+/p/[^/?]+'
+notes: |
+  MaxMart East Legon (Accra supermarket chain) read through Bolt Food's
+  public delivery API. Probed 2026-09-11.
+
+  WHY BOLT AND NOT THE ASSIGNED bolt.eu/en-gh/food/market/ PAGE: that URL
+  is a marketing page -- 461 KB of copy, zero products, zero GHS text,
+  confirmed under headless Playwright as well as curl_cffi. The consumer
+  app at food.bolt.eu is an Expo SPA with a ~7 KB HTML shell. The real
+  surface is the backend it calls.
+
+  API (no auth, no cookie, no signature):
+    GET deliveryuser.live.boltsvc.net/deliveryClient/public/getMenuCategories
+        ?provider_id=146859&delivery_lat=&delivery_lng=&<client params>
+    GET .../getMenuDishes?provider_id=146859&category_id=<id>&...
+
+  GOTCHA: the client params must include `deviceType=web`. Every endpoint
+  answers `{"code":702,"message":"INVALID_REQUEST","validation_errors":
+  [{"error":"Is required","property":"deviceType"}]}` without it, with an
+  HTTP 200, so it does not read as an error at the transport layer.
+
+  GOTCHA: the catalog served is decided by `delivery_lat`/`delivery_lng`,
+  NOT by the URL locale. Called without coordinates the API falls back to
+  IP geolocation and returns Vilnius. Accra coordinates are hardcoded in
+  the spider; that is what makes this a Ghanaian source from any IP.
+
+  Measured 2026-09-11: 24 top-level categories (Fresh & Ready, Fruits &
+  Vegetables, Bakery, Dairy & Eggs, Cheese, Meat & Fish, Beverages, ...);
+  Fruits & Vegetables alone holds 227 dishes. Prices are MAJOR units, not
+  minor -- `price.value: 52` alongside `price.price_str: "GH₵52.00"` --
+  and the payload's own `price.currency` ("ghs") is preferred over the
+  class default. Eyeballed against price_str on first extraction.
+
+  Ghana context: `maxmartonline_gh` (MaxMart's own storefront) has a
+  manifest but ZERO rows in the corpus; of Ghana's seven configs only
+  palacesuperstores_gh carries data. This is the country's first working
+  full-grocery catalog.
+
+  Page family parsed: API. The emitted `url` is the browsable venue
+  permalink plus `#<dish_id>`; the spider never fetches it, so the archive
+  pair below cannot be validated against collected URLs and is a best
+  guess at the SPA's route shape. Bolt venue pages are client-rendered,
+  so archived captures are unlikely to parse on any generic tier.

@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: bravo_wolt_az
+url: https://wolt.com/en/aze/baku/venue/bravo-supermarket-azure
+language: az
+cadence: weekly
+archive_prefix: "wolt.com/en/aze/baku/venue/"
+archive_path_re: '^/en/aze/baku/venue/[^/?]+'
+notes: |
+  Bravo (Azerbaijan's largest supermarket chain) "Bravo Supermarket Azure"
+  branch on the Wolt delivery marketplace. Shares `_wolt_base.py` with the
+  21 other Wolt venue spiders (maxi_wolt_rs, tesco_wolt_cz, ...): venue page
+  -> category-listing -> per-category `/items/<slug>` page 1, reading the
+  server-rendered `<script class="query-state">` React-Query blob. No JS
+  execution, no Playwright.
+
+  WHY NOT bravosupermarket.az: the chain's own domain was probed
+  2026-09-11 and is corporate/brochure only -- WordPress marketing site
+  behind Cloudflare (200, no WAF), sitemap.xml contains nothing but
+  /special-offers/ pages, and those pages carry their offers as flyer
+  IMAGES with zero AZN price text in the HTML. Its own nav points the
+  "Online store" at Wolt. Wolt is therefore the only machine-readable
+  surface for Bravo's assortment.
+
+  Measured 2026-09-11: the Azure venue exposes 177 leaf categories
+  (stationery, produce, dairy, drinks, ...) -- the widest of the three
+  Baku Bravo venues (bravo-tahir-97: 157, bravo-ekspress-torqovaya: 137).
+  Prices arrive as integer minor units and `_wolt_base` divides by 100;
+  first rows eyeballed against the rendered venue page (89 -> 0.89 AZN).
+  Items carry unit_info and barcode_gtin where Wolt has them.
+
+  Known base-class limitation (not a bug): SSR renders only page 1 of each
+  category, capped at 50 items, so single categories larger than 50 SKUs
+  are undercounted.

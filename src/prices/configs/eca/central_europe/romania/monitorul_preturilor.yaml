@@ -1,0 +1,70 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: ro_monitorul_preturilor
+module: eca.central_europe.romania.monitorul_preturilor
+function: fetch_ro_monitorul_preturilor
+url: https://monitorulpreturilor.info/
+language: ro
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Consiliul Concurentei (Romanian Competition Council) "Monitorul
+  Preturilor" -- the official retail price-comparison platform. ~23,000
+  catalogued grocery SKUs priced at every participating store of every
+  major chain (Auchan, Carrefour, Cora, Kaufland, Lidl, Mega Image, Penny,
+  Profi, Selgros), refreshed daily. Price LEVELS, not an index.
+
+  RECOVERED FROM A STALE BLOCKER VERDICT (re-probed 2026-09-11).
+  known_blockers.md filed monitorulpreturilor.info under "DNS resolves but
+  no usable response -- expired or mismatched TLS certificate, or TCP
+  timeout on every profile including verify=False". Half right: the cert
+  IS mismatched, but verify=False returns a clean 200 on every path, on
+  both plain `requests` and curl_cffi. Please correct that entry rather
+  than re-deriving this.
+
+  API: Kendo UI SPA over a wide-open ASP.NET Web API. The base path is a
+  global declared inline in the page HTML -- `var wsURL = '/pmonsvc/Retail'`
+  -- which is why the endpoint names visible in /index.min.js all 404 when
+  requested at the site root. No auth, no cookie, no token.
+
+  GOTCHA 1 -- parameter-signature routing. /GetStoresForProductsByUat
+  answers HTTP 200 JSON-404 ("No action was found on the controller") when
+  given only `uatId`; it needs `csvprodids` too. Route selection is by
+  parameter signature, so a missing optional-looking param reads as a
+  missing route.
+
+  GOTCHA 2 -- the obvious endpoint is the wrong one.
+  /GetProductsFromStore?categid=&storeid= is real, returns 200, and returns
+  a literal empty list for every (category, store) pair tried. The priced
+  route is /GetStoresForProductsByUat, which hands back stores each
+  carrying a Products[] array for the requested catalog ids.
+
+  GOTCHA 3 -- /GetCatalogProductsByNameNetwork carries NO prices. It is the
+  product dictionary; ids from it are the input to the priced call.
+
+  SCOPE: Bucharest only (uatId 179132, 50 stores, all chains incl. Cash &
+  Carry). The UAT axis is a full cross product and Romanian chains price
+  nationally, so more UATs multiply rows without adding information; add
+  them via _UAT_IDS if ever wanted (/GetUATByName?uatname=<city>).
+
+  SCOPE: the store axis is deliberately collapsed to one store per chain.
+  PRICE_COLUMNS has no outlet slot (the same constraint that made
+  ua_minfin_fuel fold oblast into item_name), so the 50 Bucharest stores
+  would produce rows differing only in a dimension the schema cannot carry
+  and would then collide on observation_hash and be silently deduplicated.
+  The chain therefore rides in `subnational_area` as "Bucuresti / <CHAIN>"
+  to keep the identity tuple unique, and item_name stays the retailer's own
+  product string because coicop_classification is `classifier` and the head
+  reads that field. Store name, brand and the retailer's own category ride
+  in `notes`.
+
+  observation_date is the API's `pricedate` (DD.MM.YYYY HH:MM), not the
+  fetch date, so the idempotence cutoff does real work: run 1 emits the
+  panel, later runs emit only SKUs whose observed price date has advanced.
+
+  channel: null -- this is a competition-authority publication, not an
+  outlet. coicop_codes unset because coicop_classification is `classifier`:
+  item_name is 23k free-text Romanian retailer product strings.

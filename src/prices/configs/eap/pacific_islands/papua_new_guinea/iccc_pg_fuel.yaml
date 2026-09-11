@@ -32,3 +32,15 @@ notes: |
   (liquid fuels). effective_from date read from the notice's "take
   effect from ... <date>" sentence, falling back to the post URL's date.
   Administered ceiling price, not an observed shelf price.
+
+  OCR (2026-09-11): IRP notices with no text layer are now read through
+  prices.fetchers.ocr, recovering the April/May/June/July 2026 notices that
+  were previously skipped; a full 2025-01-01 rebuild goes from 150 rows to
+  408. OCR'd rows must match three figures of exactly two decimals, and each
+  centre is then checked against the notice's own median product spreads
+  (diesel-petrol and petrol-kerosene are near-constant down the table --
+  only freight varies by centre). That catches a misread digit that reads as
+  a plausible price on its own: OCR read Pogera petrol as 521.15 where the
+  notice says 511.15. Reject rate 9 of 95 OCR'd centre-rows (9.5%); the
+  check is conservative and also drops Maprik and Ramu, at least one of
+  which may be a genuine local difference.

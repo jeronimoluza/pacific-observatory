@@ -1,0 +1,96 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: zm_mfl_market_bulletin
+module: ssa.southern_africa.zambia.mfl_market_bulletin
+function: fetch_zm_mfl_market_bulletin
+url: https://www.mfl.gov.zm/?page_id=543
+language: en
+cadence: monthly
+fallback_date: 2022-06-01
+notes: |
+  Zambia Ministry of Fisheries and Livestock -- National MFL Market Bulletin.
+  Monthly indicative prices for dairy, fish, poultry, eggs and meat, compiled
+  by the Fisheries and Livestock Marketing Department from returns sent in by
+  all ten provincial centres and published BOTH per province and as a
+  national average. The bulletin's own wording is "MONTHLY PROVINCIAL
+  INDICATIVE PRICE" / "NATIONAL AVERAGE INDICATIVE PRICE". subnational_area
+  carries the province; the AVERAGE row is emitted with subnational_area
+  null.
+
+  DISCOVERY: this host does not expose the usual WordPress routes --
+  /wp-json/wp/v2/media returns HTTP 500, /wp-sitemap.xml returns 500, and the
+  home page carries no PDF links at all. The archive lives on one ordinary
+  Resource Library page, "Market Bulletin" at ?page_id=543, and the fetcher
+  reads every *.pdf href there. Measured 2026-09-11: 43 bulletins, July 2022
+  to 2026. Those hrefs are published as http:// (not https) and are used as
+  given.
+
+  Filenames are inconsistent (NATIONAL-MARKET-BULLETIN-APRIL-2023.pdf,
+  NATIONAL-MFL-MARKET-BULLETIN-MAY-2026.pdf, ...-APRIL-2026-TRADE-DATA.pdf,
+  and one ...-MARCH-final-copy.pdf with no year at all), so the month is read
+  from the DOCUMENT text first -- its table captions end "... - MAY-2026" --
+  and only falls back to the filename. A bulletin whose month cannot be
+  established either way is skipped rather than dated by guesswork.
+
+  TLS: www.mfl.gov.zm serves ONE certificate and no intermediate -- openssl
+  s_client returns a single leaf CN=grz.gov.zm whose subject does not even
+  name this host (verify error 20 then 21). That is a server
+  misconfiguration, not a transient block, so the fetcher sets
+  session.verify = False; it is load-bearing, the same treatment cie_tariff
+  and stattj_cpi already carry. The pages carry no credentials and no user
+  input, only published bulletins.
+
+  PARSING: pdfplumber.extract_tables() reads these cleanly (ruled tables, no
+  OCR needed). Two structural facts drive the parser. (1) A table's header row
+  and its body are frequently split across a PAGE BOUNDARY -- in May-2026 the
+  fish header is the whole of one table on page 4 and the province rows are a
+  separate table on page 5 -- so tables are walked in document order and the
+  last row starting "PROVINCE" is carried forward as the active header.
+  (2) Every price table is shadowed by a second table keyed on "MONTH" (this
+  month / last month / % change); those are skipped, since they restate the
+  national average already read from the AVERAGE row and the % change row is
+  not a price.
+
+  Header cells carry embedded newlines from the wrapped layout
+  ("Fresh\nKapent\na per\nKg") and are whitespace-normalised before lookup.
+  Only headers present in the module's `_COLUMNS` are emitted; an
+  unrecognised header is logged and SKIPPED rather than emitted with a
+  guessed unit, because the unit lives in the header text and varies column
+  to column inside one table (per litre / per kg / each / per tray). Cells a
+  province did not report render "-" and are skipped.
+
+  COICOP: `_COLUMNS` maps each header to (item_name, unit, COICOP-2018 leaf).
+  Live animals go to 01.1.2.1.x and carcass cuts to 01.1.2.2.x, which is the
+  distinction the bulletin itself draws ("LIVE PIGS"/"LIVE GOAT"/"VILLAGE
+  CHICKEN EACH" vs "DRESSED CHICKEN/kg"/"PORK/KG"); offal and hooves go to
+  01.1.2.4.0; sour milk to 01.1.4.6.0 following this project's existing
+  yoghurt convention (fermented -> 01.1.4.6.0); long-life milk to the
+  preserved-milk leaf 01.1.4.3.9 rather than the whole-milk leaf used for
+  fresh. The day-old-chick and point-of-lay columns are deliberately NOT
+  mapped: they are livestock inputs, not household consumption -- the same
+  call made for the animal-feed tail in stat_uz_avg_prices.
+
+  `coicop_classification` is deliberately LEFT as `classifier`:
+  concatenate._build_classifier_csv_map ingests a fetcher CSV only for
+  `classifier` sources, so `source_curated` would delete this source's rows
+  from the build; the per-row code instead rides through as
+  declared_coicop_codes and short-circuits classify at confidence 1.0.
+  channel: null (non-retail official publisher, analytical_role official_avg),
+  consistent with the sibling zamstats_avg_prices.yaml.
+
+  MEASURED first run 2026-09-11: 8,899 rows over 42 months (2022-07 to
+  2026-05), 24 items, 10 provinces plus the national average, ZERO null
+  coicop_code and zero duplicate (date, province, item) keys. One bulletin
+  (NOVEMBER-2022) could not be downloaded -- the origin closed the connection
+  on all three retries -- and is logged and skipped. 12 header variants
+  remain unmatched and are all FRAGMENTS ("FRESH", "MIXE", "LONG-LIFE",
+  "HORSEMACKER", ...) produced by issues whose header wraps into TWO table
+  rows; those columns are skipped rather than guessed at, and re-joining a
+  split header row is the obvious next improvement. Two implausible
+  single-cell figures survive (Lusaka live goat 51.85 in 2022-10, Northern
+  live pig 100.0 in 2023-09) -- one row each out of ~400, so they are the
+  publisher's own cells rather than a systematic column shift.
+  Onboarded 2026-09-11.

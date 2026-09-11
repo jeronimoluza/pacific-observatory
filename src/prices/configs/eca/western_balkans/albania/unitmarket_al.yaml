@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: unitmarket_al
+url: https://unitmarket.al/
+language: sq
+cadence: weekly
+channel: supermarket
+archive_prefix: "unitmarket.al"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 674 products (probed 2026-09-11).
+  prices.currency_code=ALL, currency_minor_unit=0 -- integer lek, no division.
+  Full-range grocer (food + household + personal care).
+  Page family parsed: API (/wp-json/wc/store/v1/products).

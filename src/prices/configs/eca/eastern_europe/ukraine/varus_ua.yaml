@@ -1,0 +1,59 @@
+scaffolding: spider
+spider: varus_ua
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://varus.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  VARUS -- Dnipro-based Ukrainian supermarket/hypermarket chain, 60+ stores
+  nationwide. `varus.ua` is a client-hydrated Vue Storefront SPA with no
+  server-rendered product markup -- earlier passes wrote this off
+  (known_blockers.md line 8383: "real open API, category parameterization
+  not yet isolated").
+
+  Unlocked 2026-09-11 via a Playwright network trace of a live category
+  click: an open, unauthenticated Elasticsearch proxy at
+  `varus.ua/api/catalog/vue_storefront_catalog_2/product_v2/_search`. Works
+  from a cold curl_cffi session with only Origin/Referer headers, no
+  cookies, no TLS-impersonation profile required beyond a normal browser UA.
+
+  Key non-obvious finding: the top-level `price` field on each hit is a
+  stale/global list price and is 0 on a large share of rows (~65% of a
+  30-row sample). The real, region-scoped quote lives at
+  `sqpp_data_region_default.price` and is only reliably populated when the
+  query ALSO applies the filter `sqpp_data_region_default.in_stock: {"eq":
+  true}` -- with that filter, 30/30 and 30/30 sampled rows across two
+  categories carried real non-zero UAH prices (range ~140-500 UAH sampled).
+
+  Category-tree walk was not resolved (the `/category/_search` endpoint's
+  `level`/`is_not_product_category`/`product_count` fields did not cleanly
+  separate real grocery categories from promo/collection nodes in the time
+  available). Bypassed the need for one: the `category_ids` filter matches
+  ANY category in a product's category_ids array, so querying the ROOT
+  category (id=2, "Головна"/Home) with the in_stock filter returns the
+  entire live, in-stock catalog in one paginated sweep -- no per-category
+  crawl needed. Pagination is `from`/`size` against a plain Elasticsearch
+  index, verified disjoint across pages (0 id overlap, from=0 vs from=20).
+  The index enforces the standard ES `max_result_window`: `from>=10000`
+  hard-500s (verified from=9980 OK, from=10000 fails) -- this caps a single
+  query at 10,000 rows, which the spider treats as the crawl ceiling
+  (paginates from=0..9900, size=100).
+
+  PDP permalink is `https://varus.ua/<url_key>` (verified 200, full
+  rendered page matching the hit's `url_key` field).
+
+  No Playwright at collection time -- pure scrapy_api spider hitting the
+  JSON endpoint directly.
+
+  Test run 2026-09-11 (--max-items 50, closespider-itemcount): 400 rows
+  written (4 pages x 100, engine drains in-flight requests past the cap),
+  400 distinct product_id, 400 distinct url, 0 zero/negative prices, 0 blank
+  names, 100% UAH, price range 5.9-10,499 UAH. Sample names eyeballed: real
+  Ukrainian grocery/beverage/household SKUs (Barilla pasta, Ahmad tea,
+  herring fillets, sausage, wine, dish soap), not boilerplate.

@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: djiboutifresh_dj
+url: https://www.djiboutifresh.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.djiboutifresh.com"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 84 priced rows in the first 100
+  products (probed and collected live 2026-09-11). prices.currency_code=DJF,
+  currency_minor_unit=0 -- the franc has no subunit, so no division is applied.
+
+  Full-range online grocer: Epicerie, Lait, Boucherie, Fruits, Legumes, Traiteur,
+  plus Sante/Beaute and Articles Bebe.
+
+  GOTCHA -- humans_21909 cookie handshake. The origin intermittently answers ANY
+  path, the Store API included, with an 83-byte HTTP 409 whose entire body is
+  `<script>document.cookie = "humans_21909=1"; document.location.reload(true)</script>`.
+  Same humans.txt-style handshake recorded for eshopuganda.com in the skill's
+  known_blockers. It is NOT a WAF and NOT rate limiting, and it is intermittent:
+  the first run returned 84 rows and the next one five minutes later got a single
+  409 and zero rows. The spider now sends the cookie on every request and sets
+  COOKIES_ENABLED=False (Scrapy's CookiesMiddleware otherwise drops a hand-set
+  Cookie header -- that was tried first and still 409'd). Verified: 84 rows after
+  the fix. If this source ever reports zero rows again, read the 409 stub for a
+  NEW cookie name before assuming the site is down.
+
+  Page family parsed: API (/wp-json/wc/store/v1/products).

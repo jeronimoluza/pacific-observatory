@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: heimkaup_is
+url: https://www.heimkaup.is/
+language: is
+cadence: weekly
+archive_prefix: "heimkaup.is/"
+archive_path_re: '^/(?:p|c)/[^/?]+'
+notes: |
+  Icelandic online store on the Jiffy Grocery white-label platform
+  (REACT_APP_API_ROOT=https://api2.jiffygrocery.co.uk, company=heimkaup,
+  warehouse H495). Today's assortment is drinks-led: Beer, Wine, Spirits,
+  Ready-to-Drink Cocktails, Alcohol-Free, Nicotine, Soft drinks, Food,
+  Gifts, Accessories.
+
+  Page family parsed: LISTING. Every page is server-rendered and carries a
+  complete window.__INITIAL_STATE__ blob, so the spider walks the category
+  tree from the home page (shopCategories -> 136 nodes) and reads
+  catalogCategory.data.products off each /c/<slug> page. No Playwright, no
+  API call. PDPs (/p/<slug>) additionally carry a schema.org/Product
+  JSON-LD block with price+priceCurrency, so BOTH page families are
+  price-bearing in the archive and archive_path_re admits both.
+
+  MINOR UNITS: the state stores integer hundredths -- divide by 100.
+  Verified against the rendered page: /p/gull-12x330ml-42708 state price
+  449000, rendered '4.490 kr.', JSON-LD price '4490.00' ISK.
+
+  Stale-sitemap trap: products-sitemap.xml still lists 3,227 URLs from
+  Heimkaup's former general-merchandise catalogue (watches, phones,
+  Russian-slug /c/ paths) and every sampled PDP from it 404s. This is why
+  references/known_blockers.md previously recorded the source as dead --
+  that verdict was measured off the sitemap, not off the live home page.
+  Do not seed from the sitemap; walk the category tree.
+
+  Measured live 2026-09-11: 136 categories, 676 unique priced products.
+  The SSR listing renders only page 1 (48 items) and no ?page= parameter is
+  honoured server-side, so 8 of 136 categories truncate at 48; most of their
+  products are still reached via their own leaf categories. Currency ISK
+  (matches countries.yaml), confirmed from the site's own JSON-LD.

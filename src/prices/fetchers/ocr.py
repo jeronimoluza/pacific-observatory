@@ -94,8 +94,10 @@ _CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "_ocr_cache"
 
 # A CONTIGUOUS run of ink this fraction of the page long is a rule, not a glyph.
 _RULE_SPAN = 0.30
-# At 300 dpi a drawn rule is ~5-9 px thick; 1-4 px runs are stacked text.
-_RULE_MIN_THICKNESS = 5
+# Merge the two edges of a thick rule into one line. Kept low deliberately:
+# the contiguous-run test above already excludes stacked glyphs, and some of
+# these scans render a hairline rule only 2-3 px wide.
+_RULE_MIN_THICKNESS = 2
 _RULE_MERGE_GAP = 4
 
 _MONEY_RE = re.compile(r"^(\d{1,6})\.(\d{2})$")
@@ -109,26 +111,6 @@ _STRIP = " \t|[]{}()_'\"`$"
 def ocr_available() -> bool:
     """True when both binaries this module shells out to are on PATH."""
     return bool(shutil.which("pdftoppm") and shutil.which("tesseract"))
-
-
-def pdf_text_chars(content: bytes) -> int:
-    """Non-whitespace characters in the PDF's text layer, across all pages."""
-    import pdfplumber
-
-    total = 0
-    try:
-        with pdfplumber.open(io.BytesIO(content)) as pdf:
-            for page in pdf.pages:
-                total += len(re.sub(r"\s+", "", page.extract_text() or ""))
-    except Exception:
-        logger.debug("pdf_text_chars failed", exc_info=True)
-        return 0
-    return total
-
-
-def is_scanned(content: bytes, min_chars: int = 100) -> bool:
-    """True when the PDF carries no usable text layer, i.e. it is an image."""
-    return pdf_text_chars(content) < min_chars
 
 
 def money(
@@ -499,6 +481,52 @@ def group_lines(words: list[OcrWord], *, tol_ratio: float = 0.55):
     for _, grp in out:
         grp.sort(key=lambda w: w.x)
     return [(yc, grp) for yc, grp in out]
+
+
+def page_texts(
+    content: bytes,
+    *,
+    dpi: int = DEFAULT_DPI,
+    min_conf: float = DEFAULT_MIN_CONF,
+    cache: bool = True,
+    cache_dir: Path | None = None,
+) -> list[str]:
+    """One block of recognised text per page, cached on the PDF's own bytes.
+
+    For a scan whose table the caller already parses with a line regex that
+    requires every column to be present (so a dropped cell fails the match
+    rather than shifting the row), plain text is enough and ``page_grids`` is
+    overkill. Lines are rebuilt from the word boxes rather than taken from
+    tesseract's own text output so that the ``min_conf`` floor applies here
+    too.
+
+    Returns ``[]`` when OCR is unavailable.
+    """
+    if not ocr_available():
+        logger.warning("OCR unavailable (need pdftoppm + tesseract on PATH)")
+        return []
+    root = cache_dir or _CACHE_DIR
+    key = hashlib.sha1(content).hexdigest()
+    path = root / f"{key}-{dpi}-{int(min_conf)}-text.json"
+    if cache and path.exists():
+        try:
+            return json.loads(path.read_text())
+        except (OSError, ValueError):
+            logger.debug("discarding unreadable OCR cache %s", path)
+    out: list[str] = []
+    for page in ocr_pages(content, dpi=dpi):
+        keep = [w for w in page.words if w.conf >= min_conf]
+        lines = [
+            " ".join(w.text for w in grp) for _, grp in group_lines(keep)
+        ]
+        out.append("\n".join(lines))
+    if cache:
+        try:
+            root.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(out))
+        except OSError:
+            logger.debug("could not write OCR cache %s", path, exc_info=True)
+    return out
 
 
 def page_grids(

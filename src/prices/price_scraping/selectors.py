@@ -8,6 +8,23 @@ from typing import Optional, List
 from bs4 import BeautifulSoup
 
 SPIDER_SELECTORS = {
+    "abidjanmarket_ci": {
+        "product_name": [
+            "h1.fw-bold::text",
+            "meta[property='og:title']::attr(content)",
+            "h1::text",
+        ],
+        "price": [
+            "span.display-6.fw-bold.text-success::text",
+            "span.fw-bold.text-success.fs-5::text",
+        ],
+        "category": [
+            "a[href*='/produits/categorie/']::text",
+        ],
+        "product_id": [
+            "form[id^='cart-form-']::attr(id)",
+        ],
+    },
     "rbpatel": {
         "product_name": [
             "main#main div.product-main h1::text",

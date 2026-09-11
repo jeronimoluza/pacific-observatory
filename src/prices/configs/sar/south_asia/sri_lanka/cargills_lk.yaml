@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: cargills_lk
+url: https://cargillsonline.com/
+language: en
+cadence: weekly
+archive_prefix: "cargillsonline.com/"
+archive_path_re: '^/(?:Product|ProductDetails)/[^?]+'
+notes: |
+  OVERTURNS a prior SKIP verdict. known_blockers.md carried
+  cargillsonline.com as "Angular SPA ... /ProductDetails/<sku> URLs never
+  hydrate" -- a verdict reached without the mandatory network trace. A
+  Playwright trace on 2026-09-11 found a wide-open ASP.NET MVC JSON API
+  behind the AngularJS 1.x front-end, and the spider reads it over plain
+  HTTP with no Playwright at collection time.
+
+  Mandatory bootstrap (a cold POST returns one synthetic row
+  {"ItemName":"No Products Found"}):
+    GET  /                          -> ASP.NET_SessionId
+    POST /Web/CheckDeliveryOptionV1  form PinCode=Colombo
+                                    -> ASP.NET_Pincode / Asp.Net_WebStoreId
+                                       (store 1031, Colombo dark store)
+    POST /Web/GetCategoriesV1       -> 23 categories, EnId = base64(id)
+    POST /Web/GetMenuCategoryItemsPagingV3/  JSON {"CategoryId": EnId, ...}
+
+  Enumerability measured live 2026-09-11 by walking all 23 categories:
+  3,967 SKUs total (Health & Beauty 897, Food Cupboard 428, Snacks &
+  Confectionery 394, Household 359, Dairy 275, Cooking Essentials 182,
+  Baby Products 187, Beverages 174, Desserts 159, Seeds & Spices 142,
+  Frozen 138, Stationery 124, Vegetables 95, Tea & Coffee 95, Meats 89,
+  Rice 66, Fruits 44, Pet 35, Bakery 26, Seafood 24, Party 19, Auto 14,
+  Fashion 1). Each row's own TotalCount matched the returned row count on
+  every category, so the endpoint is not paginating under us.
+
+  Prices arrive as display strings with thousands separators ("2,070.00")
+  and are stripped to a plain decimal. `Mrp` is the pre-discount list
+  price and is ignored; `Price` is the shelf price. Currency LKR matches
+  countries.yaml. Sample: "Big Onion" SKUCODE VGE0201 205.00 LKR.
+
+  Page family read: API (JSON). Items carry no PDP slug, so `url` is the
+  SPA's browsable category route, not a per-product permalink -- the
+  archive values below therefore could NOT be validated against collected
+  URLs locally.
+  Structured data: NONE. The SSR HTML is an AngularJS shell with no
+  JSON-LD, no OpenGraph product tags and no schema.org microdata, so all
+  four generic archive parser tiers will resolve captures and parse to
+  zero. The archive side should treat this source as CC-hostile.

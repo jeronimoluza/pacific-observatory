@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lidl_ch
+url: https://www.lidl.ch/
+language: de
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.lidl.ch/"
+archive_path_re: '^/p/[^/?]+/[^/?]+/p\d+$'
+notes: |
+  NOT the ODS/Vue storefront family used by lidl_gr / lidl_si / lidl_rs.
+  The Swiss site is Nuxt-rendered and its /c/<locale>/<slug>/s<id> category
+  pages carry no data-grid-data blob: all 500 de-CH category URLs listed in
+  https://www.lidl.ch/explore/assets/s/pages_de-CH_ch.xml.gz were fetched on
+  2026-09-11 and zero contained one. The PDPs DO carry schema.org JSON-LD,
+  and Lidl publishes a gzipped product sitemap, so the spider walks that.
+
+  Probed live 2026-09-11:
+    /p/export/CH/de/product_sitemap.xml.gz -> 538 PDP urls
+    /p/de-CH/acentino-olivenoel-extra-nativ/p10058651 -> JSON-LD Product
+    "Olivenoel extra nativ", price 9.99, priceCurrency CHF
+  Currency is taken from the site's own priceCurrency, not countries.yaml.
+  Out-of-stock items publish an Offer with a null price and are dropped.
+
+  Known noise, deliberately NOT filtered: roughly 20 of the 538 sitemap
+  entries are stored-value products -- prepaid telco top-ups (Swisscom,
+  Sunrise, Salt, yallo, Lycamobile, Lebara) and gift cards (Paysafecard,
+  one4all, Steam, Roblox, cryptonow, H&M) -- whose JSON-LD price is the
+  card's FACE VALUE, not a consumer price (e.g. product_name "H&M",
+  CHF 20.00). There is no flag to key on: the Nuxt payload's chunk-key map
+  contains an `isLidlGiftCard` key but the PDP never renders it as a value,
+  and `tradeType` is "retail" on gift cards and olive oil alike. Left in
+  rather than hard-coding a brand denylist; the classifier sees them as
+  bare brand names.
+
+  Page family parsed: PDP (JSON-LD Product + offers). The de-CH export is
+  the only one walked; fr-CH and it-CH mirrors exist at the same path with
+  the locale swapped and would duplicate the same SKUs under translated
+  names.
+
+  coicop_divisions: 01, 03, 05, 08, 09, 12
+  divisions_basis: observed_items (sitemap sample spans pasta/olive oil/
+  crackers/bread, clothing, homeware and LED lighting, mobile-telco
+  prepaid cards, power tools, sun care)

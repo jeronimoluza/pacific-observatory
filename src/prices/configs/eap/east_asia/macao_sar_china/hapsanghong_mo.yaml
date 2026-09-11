@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hapsanghong_mo
+url: https://hapsanghong.com/
+language: zh
+cadence: weekly
+channel: wholesale
+archive_prefix: "hapsanghong.com"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 77 products (probed 2026-09-11).
+  prices.currency_code=MOP, currency_minor_unit=2. Bilingual zh-Hant/en product names.
+  Catalogue is case/carton quantities (e.g. '500g x 20 packs') -- wholesale channel,
+  not retail unit pricing. Some rows price 0.
+  Page family parsed: API (/wp-json/wc/store/v1/products).

@@ -1,0 +1,77 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: wholesale
+source_key: cn_moa_farm_daily
+module: eap.east_asia.china.moa_farm_daily
+function: fetch_cn_moa_farm_daily
+url: https://data.moa.gov.cn/nyb/pc/index.jsp
+language: zh
+cadence: daily
+fallback_date: 2021-01-01
+notes: |
+  MOA (农业农村部) national daily wholesale-price bulletin — the price content
+  behind the "农产品批发价格200指数" portal at data.moa.gov.cn.
+
+  Verified live 2026-09-11. The portal page itself is a JSP shell whose only
+  data call is GET /nyb/200zs, a TWO-DAY rolling window of nine *index* values
+  (200指数, 菜篮子, 蔬菜, 水果, 畜产品, 水产品, 粮食, 粮油, 食用油) with no
+  history and no prices — not worth a fetcher on its own. A Playwright network
+  trace of the ministry's own price system at pfsc.agri.cn found the bulletin
+  the index summarises, served in full and unauthenticated:
+
+      POST https://pfsc.agri.cn/api/FarmDaily/list  {"pageNum":N,"pageSize":M}
+
+  1,346 daily bulletins on 2026-09-11 (oldest ~2021-06), each with `daylyDate`
+  and a plain-text `countentstr` (older records: `animalConclusion` +
+  `aquaticConclusion`, with `countentstr` null) carrying the national average
+  wholesale price per commodity in 元/公斤.
+
+  Complements `cn_xinfadi_wholesale` rather than duplicating it: Xinfadi is one
+  Beijing market with ~500 SKUs/day and no API history; this is a NATIONAL
+  average over a small closed panel with ~5.5 years of daily back-series. COICOP
+  leaves are assigned in the fetcher's `_COICOP_MAP` from
+  data/prices/enrich/coicop_categories.xlsx and cross-checked against xinfadi's
+  audited map, so the same commodity lands on the same leaf in both sources.
+  Panel: 猪肉 01.1.2.2.2, 牛肉 01.1.2.2.1, 羊肉 01.1.2.2.3, 白条鸡 01.1.2.2.4,
+  鸡蛋 01.1.4.8.1, 鲫鱼/鲤鱼/白鲢鱼/花鲢鱼/草鱼 01.1.3.1.1,
+  大带鱼/大黄花鱼 01.1.3.1.9.
+
+  Deliberately NOT emitted: the two basket averages in the same bulletin
+  ("重点监测的28种蔬菜平均价格", "重点监测的6种水果平均价格") span many COICOP
+  leaves and map to no single leaf, so they are dropped rather than given a
+  guessed code; and the index sentences, which are index points and belong in
+  an IndexObservation fetcher if ever wanted.
+
+  Two era hazards, both handled and both worth knowing before editing:
+  (a) the aquatic panel was renamed around 2022 — pre-2022 text says
+  活草鱼/活鲫鱼/活鲤鱼/花鲢活鱼/白鲢活鱼 where current text says 鲫鱼/鲤鱼/白鲢鱼.
+  Both spellings are matched and folded onto one canonical item_name via
+  `_ALIASES` so a fish does not split into two series at the rename.
+  (b) missing values are rendered as a literal "-" ("猪肉平均价格为-元/公斤");
+  `\d+` cannot match those, so outage days drop out instead of banking a zero.
+  Measured on 60 bulletins sampled across pages 1/5/20/50/100/134: 50 yielded
+  9 quotes, 7 yielded 10 (the wider pre-2022 fish panel), 3 yielded 0 (a real
+  three-day source outage in June 2021, all values "-").
+
+  First run 2026-09-11 with fallback_date 2021-01-01: 11,709 rows over 1,319
+  distinct days, 2021-06-01..2026-09-11, 12 item/leaf pairs, ZERO null
+  coicop_code. Re-run immediately after returned 0 new rows in 2 pages, so the
+  cutoff short-circuit works. Medians are plausible CNY/kg wholesale: 猪肉
+  20.70, 牛肉 70.54, 羊肉 64.30, 白条鸡 17.63, 鸡蛋 9.88, 鲫鱼 19.77,
+  鲤鱼 14.51, 白鲢鱼 10.09, 大带鱼 40.32.
+
+  Two 白鲢鱼 rows (2021-07-15 41.25, 2021-10-12 26.50, against a 10.09 median)
+  are bad data IN THE SOURCE, not a parse error — the bulletin itself says
+  "白鲢活鱼平均价格为41.25元/公斤，比昨天上升184.48%". Left in rather than
+  filtered; a hand-set outlier rule here would be invented, not measured.
+
+  Do NOT reach for pfsc.agri.cn's other price endpoints from outside China:
+  the static metadata calls (region/selectList, getVarietiesTree,
+  getMarketByProvinceCode, portal-product/getProductClass) all return full
+  payloads, but every per-variety PRICE call — index/getMarketReportPriceChart
+  for six different varietyIDs, index/growthRanking — returns HTTP 200 with
+  `data: null` or all-empty arrays from this network, while
+  data-user-behavior-logs/getIp reports the caller as 美国. Silently empty, not
+  an error. FarmDaily/list is the one price route that answers in full.

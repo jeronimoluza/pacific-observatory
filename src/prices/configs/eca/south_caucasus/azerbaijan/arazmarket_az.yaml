@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: arazmarket_az
+url: https://arazmarket.az/
+language: az
+cadence: weekly
+channel: supermarket
+archive_prefix: "arazmarket.az"
+archive_path_re: '^/[a-z]{2}/products/[^/?]+'
+notes: |
+  Araz Market, one of Azerbaijan's largest supermarket chains. SPA front end;
+  the catalog comes from an unauthenticated Laravel backend on a separate host,
+  https://b7x9kq.arazmarket.az/api (probed live 2026-09-11).
+
+  ENUMERATION: there is NO category-products route and NO search route on that
+  backend -- /api/categories returns the tree with no products in it, and every
+  other plausible route name returns a Laravel "route could not be found" 404.
+  The only enumerable surface is /api/products/<numeric id>, so the spider does a
+  numeric-id walk over 1..13000. Ids are sparse: 27 of 62 sampled ids in 1..6000
+  were live (~44%), with hits as high as 5918. Each response also carries a
+  `recommended` array of full sibling payloads, which the spider harvests and
+  dedupes -- that is where a large share of the yield comes from.
+
+  PRICE: `discount_price` when `is_discount` is true, else `sales_price`. The API
+  states no currency code; AZN taken from countries.yaml and sanity-checked
+  against the rendered page (300g honey, sales 12.25 / discounted 9.99 AZN).
+
+  Page family parsed: API. Collected urls are /az/products/<slug> storefront
+  permalinks the spider never fetches, so the archive pair above is derived from
+  the URL scheme the site publishes, not from a locally-validated sample.

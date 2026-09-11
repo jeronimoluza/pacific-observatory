@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rappn_ch
+url: https://rappn.ch/de/angebote
+language: de
+cadence: weekly
+channel: other
+archive_prefix: "rappn.ch/"
+archive_path_re: '^/[a-z]{2}/angebote(?:-vergleichen)?(?:/[^?]*)?$'
+notes: |
+  Independent Swiss grocery price-comparison platform that normalises the
+  weekly flyers of seven chains (Migros, Coop, Aldi Suisse, Lidl Schweiz,
+  Denner, Aligro, Otto's) into one database. NOT an outlet, hence
+  channel: other -- but unlike the cost-of-living survey publishers it
+  emits real per-SKU retailer prices, so analytical_role is retailer_sku,
+  not aggregate_proxy. `category` carries the retailer slug so the chain
+  can be recovered downstream.
+
+  The app backend api.rappn.ch returns 403 without app credentials
+  (/health is the only open route), so this reads the public
+  server-rendered Next.js HTML instead.
+
+  Probed live 2026-09-11: GET /de/angebote/denner -> HTTP 200, 903KB, 25
+  offer rows. Name and price live in separate table cells that both link to
+  /de/angebote-vergleichen/offer/<uuid>, so the UUID is the join key. The
+  line-through span is the reference ("was") price and is deliberately not
+  collected; only the current offer price is emitted.
+
+  Page family parsed: listing (per-retailer offer tables). Rows are
+  PROMOTIONAL prices only. Site launched 2026, so Common Crawl holds very
+  little -- the archive pair is set for completeness, not yield.
+
+  coicop_divisions: 01, 02, 05, 12
+  divisions_basis: observed_items (groceries, wine/beer, detergents and
+  household cleaning, personal care in one /de/angebote/denner capture)

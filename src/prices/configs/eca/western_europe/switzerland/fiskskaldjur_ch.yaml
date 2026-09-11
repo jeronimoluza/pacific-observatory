@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fiskskaldjur_ch
+url: https://www.fiskskaldjur.ch/
+language: de
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.fiskskaldjur.ch"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify. /products.json open, 60 products. Shopify.currency active=CHF.
+  Narrow fishmonger -- COICOP 01.1.3 territory. Left on the classifier because the
+  catalogue also carries prepared/frozen lines.
+  Page family parsed: API (/products.json).

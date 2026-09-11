@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: abidjanmarket_ci
+url: https://abidjan-market.ci/
+language: fr
+cadence: weekly
+archive_prefix: "abidjan-market.ci/"
+archive_path_re: '^/produits/[^/?]+$'
+notes: |
+  Probed live 2026-09-11: HTTP 200 on chrome124/chrome120/safari17_0, no
+  WAF, no robots.txt (404). Bespoke Symfony storefront (Server: Portail),
+  fully server-rendered -- Tier 1A, no Playwright.
+
+  Marketplace of small Abidjan first-party sellers listed at /boutiques
+  (epices-et-savanes, my-cajou, matista-saveur, ...). The seller directory
+  is reachable but the sellers have no independent storefronts of their
+  own, so the marketplace catalog IS the source. channel: marketplace.
+
+  Catalog is small: /produits paginates 24 cards over 7 pages (~170
+  products) as of 2026-09-11; page >= 8 renders an empty grid (27 KB
+  shell) rather than erroring, so the fixed page 1-8 start_urls list is
+  self-terminating. Assortment is local food and artisanal goods
+  (spices, cashew, dried fish, jewellery) -- useful COICOP-01 breadth for
+  a country with almost no retail coverage.
+
+  Page family parsed: PDP. Listing/category/boutique pages carry the same
+  name + price markup, hence the archive regex is PDP-shaped while the
+  spider also crawls the listings as a URL source.
+
+  NO structured data of any kind: zero JSON-LD, zero og: product meta,
+  zero schema.org itemprop, no data-price attribute. All four generic
+  archive parser tiers (JSON-LD / OpenGraph / Next.js / microdata) will
+  return nothing -- the archive side needs a per-source extractor keyed on
+  `span.display-6.fw-bold.text-success` (PDP) or
+  `span.fw-bold.text-success.fs-5` (card) if this source is ever resolved
+  from Common Crawl.
+
+  Prices render as "625 FCFA" with a non-breaking thousands space
+  ("5 500 FCFA"); emitted raw for tier-a to parse. Currency XOF is set at
+  the class level, never read off the "FCFA" string.

@@ -1,0 +1,53 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: nemlig_dk
+url: https://www.nemlig.com/
+language: da
+cadence: weekly
+archive_prefix: "nemlig.com/"
+archive_path_re: '^/[^/?]+-[0-9]+$'
+notes: |
+  Denmark's largest pure-play online supermarket. The storefront is a
+  client-rendered SPA -- the home page and every /dagligvarer/... category
+  page return a ~14KB shell with zero product markup -- but robots.txt
+  advertises https://www.nemlig.com/googleproductsitemap, a flat urlset of
+  13,306 product URLs (measured 2026-09-11), and each of those PDPs IS
+  server-rendered with a schema.org/Product JSON-LD block carrying name,
+  brand, category, description (pack size / producer / best-before) and
+  offers.price + offers.priceCurrency.
+
+  This deliberately sidesteps the two routes an earlier pass found walled
+  (known_blockers.md, 2026-09-10): the /webapi/<stamp>/<TimeslotUtc>/
+  <DeliveryZoneId>/... product route, whose parameters only exist after a
+  delivery-address + timeslot booking flow, and
+  webapi.prod.knl.nemlig.it/searchgateway/api/search, which 401s with
+  "Jwt is missing". The Google product sitemap needs neither.
+
+  QUEUE-IT WARM-UP IS MANDATORY. The whole site is fronted by a Queue-it
+  virtual waiting room running as a Cloudflare worker
+  (kupver=cloudflare-4.2.2). A cold request to any PDP 302s to
+  nemlig.queue-it.net: measured 12 of 12 cold, and the first version of
+  this spider took 219 such redirects and scraped 0 items. Fetching the
+  home page once sets QueueITAccepted-SDFrts345E-V3_nemligprod and with
+  that cookie in the jar every subsequent PDP returns 200 (12/12 at
+  0.5s/request, 12/12 at 1.0s/request). start() therefore fetches / first
+  and only then the sitemap; COOKIES_ENABLED must stay on. Verified end to
+  end 2026-09-11: 54 items, 56x HTTP 200 vs 3x 302 (the 302s land in the
+  window before the cookie is set).
+
+  Page family parsed: PDP. Category pages carry no products server-side, so
+  the archive holds nothing price-bearing outside the PDP family and
+  archive_path_re is PDP-only. PDP paths are uniformly /<slug>-<numeric id>
+  (13,306 of 13,306 sitemap paths match; 54 of 54 collected URLs match).
+
+  Structured data: JSON-LD Product on every sampled PDP, so the archive
+  fetcher's JSON-LD tier will parse these captures.
+
+  Currency DKK read from the page's own priceCurrency, not assumed; plain
+  decimals, no minor-unit division. Sample rows: 'Coca-Cola Zero
+  Koffeinfri' DKK 18 (Drikke), 'Parmaskinke oko.' DKK 59.95 (Kol), 'Vand m.
+  hyldeblomstsmag' DKK 12.50 (Drikke). Wide supermarket assortment, left to
+  the classifier.

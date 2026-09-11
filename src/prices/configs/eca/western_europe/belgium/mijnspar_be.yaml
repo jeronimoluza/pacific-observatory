@@ -1,0 +1,69 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: mijnspar_be
+url: https://www.mijnspar.be/
+language: nl
+currency: EUR
+cadence: weekly
+notes: |
+  page family: API (a single AEM component model.json; no listing page and
+  no PDP is ever fetched).
+
+  SPAR Belgium (Colruyt Group). mijnspar.be is an Adobe AEM CONTENT site,
+  not a webshop -- no cart, no PDP, no catalogue. Its sitemap.xml (7,632
+  urls, verified live 2026-09-11) is recipes / news / jobs / store pages
+  with zero product urls, and guessed /shop, /product, /producten paths
+  404. The only price-bearing surface on the whole domain is the weekly
+  national promo list at /promoties.
+
+  That list is hydrated client-side from a component model.json, found via
+  Playwright network-trace and corroborated by robots.txt's
+  `Allow: /content/spar/*.*.json$`:
+
+    /content/spar/nl/promoties/jcr:content/root/responsivegrid/
+    responsivegrid/responsivegrid/filter_list_store_sp.model.json
+
+  Verified live 2026-09-11: 43 results, 39 with a non-empty promoPrice.
+  The other 4 are mechanics-only promos with no money amount (e.g.
+  "conference peren Belgie", label "500 g + 500 g gratis") and are dropped.
+  So this source is INTENTIONALLY SMALL -- roughly 40 rows a week, the
+  national promo set, not a catalogue. It is the whole of what the domain
+  publishes.
+
+  PRICE SEMANTICS -- the 2x trap. `promoPrice` is the price of the whole
+  multi-buy BUNDLE and `pricePrefix` carries the bundle size as free text
+  ("voor 2", "2 voor ", "4 voor ", "voor 3", or null). `normalPrice` is the
+  matching pre-discount bundle price. Confirmed on three records that
+  normalPrice == 2 x the single-unit shelf price ("Spar loempia's" 5,36 /
+  10,72 "voor 2"; "verse vijgen Turkije" 0,99 / 1,98 "2 voor "; "Spar
+  hotdogs 2 stuks" 2,49 / 4,98 "2 voor "), so the spider divides both by
+  the parsed bundle size and emits a PER-ITEM price. `price` is therefore
+  the effective promo price per item; `regular_price` is the per-item
+  pre-discount price; `unit_price` / `unit_of_unit_price` (per kg / L / st
+  / fl) are passed through exactly as published.
+
+  All 43 records carry a 2-digit `afterDecimal`, so the amount is assembled
+  as "<beforeDecimal>.<afterDecimal>"; any other shape is dropped with a
+  warning rather than guessed.
+
+  The /fr/ tree serves the SAME promos translated (fr model.json 398,665
+  bytes vs nl 398,607), so only nl is walked -- same reasoning as
+  colruyt_be walking only the nl_BE sitemap shards.
+
+  DATA-QUALITY CAVEAT: a promo row is often a GROUP of SKUs rather than one
+  SKU ("gevulde pasta 400 g of gevulde gnocchi 280 g naar keuze" = "... or
+  ..., your choice"). Names are emitted verbatim (the classifier consumes
+  the raw name), so those rows carry an ambiguous quantity by construction.
+
+  No archive_prefix / archive_path_re: this source has no browsable
+  per-product url at all. `url` is keyed on the promo's AEM uuid
+  (/promoties#<uuid>) solely so DuplicationPipeline's url-based dedup does
+  not collapse the run into a single row -- the trap already documented on
+  instashop_kz. Historical recovery from Common Crawl is not possible for
+  this shape and should not be attempted from these values.
+
+  Wide promo set (food, drink, household), so coicop_codes is left unset
+  for the classifier.

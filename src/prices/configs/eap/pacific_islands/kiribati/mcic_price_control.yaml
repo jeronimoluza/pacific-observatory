@@ -39,20 +39,34 @@ notes: |
   schema rule); this source adds real div-01/02 coverage but does NOT move
   the food-channel count.
 
-  CAVEAT 2 -- only a minority of the archive is machine-readable. 21 Order
-  PDFs are linked from /price-order/ (measured 2026-09-05); 6 carry no
-  parseable date in the filename, and 12 of the remaining 15 yield no
-  extractable table -- 11 are scanned images with zero text layer, and
-  price-control-22nd-june-2018.pdf has a text layer but no ruled table so
-  pdfplumber's table extractor returns nothing. This environment has no OCR
-  installed. Every skip population is logged explicitly, never silently.
-  The scanned set includes the newest Order,
-  price-regulation-order-no-1-of-2024-2.pdf, so only 3 Orders parse, the
-  newest usable vintage is 2022-06-14, and `cutoff` will pin there until
-  either a future Order ships with a text layer or an OCR path is added. The
-  fetcher resolves whatever is linked on /price-order/ at run time rather
-  than hardcoding filenames, so a new machine-readable Order is picked up
-  without a code change -- that live re-resolution is the staleness guard.
+  CAVEAT 2 -- most of the archive is a scan and is read by OCR. 21 Order
+  PDFs are linked from /price-order/ (re-measured live 2026-09-11); only 3
+  carry a text layer with a ruled table pdfplumber can see. The rest are
+  image-only, and are now re-read through `prices.fetchers.ocr` (pdftoppm +
+  tesseract, both already on the collection host; no new dependency). The
+  scan is parsed off the table's own ruled lines rather than off OCR line
+  text, so a cell OCR could not read stays empty instead of pulling its
+  neighbour's value one column across. Every OCR'd value is then checked
+  against the Order's own arithmetic -- two-decimal shape, plausible AUD
+  ceiling range, wholesale <= retail, and per-kg/per-lb near the 2.2046
+  kg/lb ratio -- and dropped if it fails. Measured on a full 2015-01-01
+  rebuild: 935 rows (689 from the 3 text-layer Orders, 246 from 2 OCR'd
+  scans), OCR reject rate 17.0% (68 of 401 candidate cells). The newest
+  usable vintage moves from 2022-06-14 to 2024-02-22 (Prices (Regulation)
+  Order No.1 of 2024, a scan). 16 PDFs still yield nothing -- amendment
+  notices with no ruled table, plus scans (price-control-23th-august-2021)
+  whose rules are too faint to detect. All are logged by name every run.
+
+  CAVEAT 2b -- six PDFs carry only a year in the filename. Their date now
+  comes from the listing's own "Date added" field, which is the publisher's
+  upload date, not the gazetted commencement date (the 2024 Order leaves its
+  own commencement line blank). Before this they were skipped outright.
+
+  CAVEAT 2c -- OCR rows carry NO "<section> - " prefix on item_name, unlike
+  text-layer rows, because the numbered commodity headings are drawn in the
+  product column and a scan drops them often enough that carrying the last
+  one forward files rice under flour. An OCR'd vintage therefore does not
+  join to a text-layer vintage on item_name alone.
 
   CAVEAT 3 -- layout is not stable across vintages. 2022 Orders publish
   either one island group in 5 columns or three in 13; the parser reads the

@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: originalfish_ch
+url: https://original-fish.ch/
+language: de
+cadence: weekly
+channel: specialty-food
+archive_prefix: "original-fish.ch"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 70 products (probed 2026-09-11).
+  prices.currency_code=CHF, currency_minor_unit=2. Fishmonger.
+  Page family parsed: API (/wp-json/wc/store/v1/products).

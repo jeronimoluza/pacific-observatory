@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: norfa_lt
+url: https://www.norfa.lt/akcijos/
+language: lt
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.norfa.lt/"
+archive_path_re: '^/(?:akcijos|akciju-puslapiai)(?:/[^?]*)?$'
+notes: |
+  Lithuanian discount supermarket chain. Norfa runs NO online store -- the
+  whole public catalogue is the weekly promotions site, which is plain
+  server-rendered HTML (jQuery; no JS execution needed).
+
+  Probed live 2026-09-11: GET /akcijos/ -> HTTP 200, 1.13MB, 377
+  div.c-product cards of which 314 carry a price. Card markup is
+  div.c-product__name for the name and div.c-product__price for the price
+  ("0.99 EUR", plain decimal, dot separator).
+
+  Route map measured 2026-09-11: /akcijos/ 301s to /akciju-puslapiai/,
+  which 302s to /akciju-puslapiai/praktiski-pasiulymai/ -- so all three
+  start urls collapse onto ONE page, and a full run returns 314 rows, not
+  3x314. The sibling /akciju-puslapiai/akcijos/ renders 0 cards today
+  (that promo programme is empty between leaflet cycles); it is kept as a
+  start url so it picks up again on its own when the cycle turns. If a run
+  ever reports 0 rows total, check that redirect chain first.
+
+  Page family parsed: listing. Cards carry no permalink and no SKU id, so
+  `url` is the listing page and product_id is null -- (name, price) is the
+  dedup key inside a run. Rows are PROMOTIONAL prices only; there is no
+  regular-price surface on this site at all.
+
+  Structured data: no JSON-LD, no microdata, no OpenGraph product tags --
+  the archive side needs a per-source c-product rule.
+
+  coicop_divisions: 01, 02, 05, 09, 12
+  divisions_basis: observed_items (fresh produce, dairy, meat, bakery,
+  alcohol, household and personal-care items seen in one /akcijos/ capture)

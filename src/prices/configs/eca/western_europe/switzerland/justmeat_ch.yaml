@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: justmeat_ch
+url: https://justmeat.ch/
+language: de
+cadence: weekly
+channel: specialty-food
+archive_prefix: "justmeat.ch"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify. /products.json open, 97 products. Shopify.currency active=CHF.
+  Butcher: beef/wagyu/poultry cuts -- COICOP 01.1.2.
+  Page family parsed: API (/products.json).

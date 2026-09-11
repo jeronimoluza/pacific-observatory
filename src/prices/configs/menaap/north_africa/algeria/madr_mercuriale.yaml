@@ -1,0 +1,73 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: dz_madr_mercuriale
+module: menaap.north_africa.algeria.madr_mercuriale
+function: fetch_dz_madr_mercuriale
+url: https://madr.gov.dz/mercuriale-des-prix/
+language: fr
+cadence: daily
+fallback_date: 2026-05-01
+notes: |
+  Algeria "Mercuriale des prix des produits agricoles de large consommation"
+  -- the daily national RETAIL price bulletin published jointly by the
+  Ministry of Agriculture (MADRP) and the Ministry of Internal Trade
+  (MCIRMN). One single-page bilingual FR/AR PDF per publication day carrying
+  a national average plus observed minimum and maximum for ~20-24 staple
+  foods. The page's own footnote fixes the basis: "Moyenne nationale
+  observée dans les marchés de détail".
+
+  DISCOVERY: the landing page renders its PDF list through an Elementor JS
+  template ({{{data.link}}}), so the links are absent from the served HTML.
+  The site is WordPress and its REST media endpoint serves the same files
+  with dates: /wp-json/wp/v2/media?search=prix&per_page=100. Filenames use
+  inconsistent separators (prix_10_Sept_2026 vs prix_09_Sept2026), so the
+  filename is never parsed for a date -- the WordPress upload date only
+  skips pre-cutoff files without downloading them, and the authoritative
+  observation_date is read from the document's own "date: 01 Juin 2026"
+  line. Measured 2026-09-11: 47 mercuriale PDFs, 2026-06-01 to 2026-09-10;
+  page 2 of the endpoint is rejected, so that is the whole searchable set
+  and no older archive is reachable this way.
+
+  PARSING: pdfplumber reads the text layer on every issue sampled; no OCR.
+  The group label is NOT reliably on its own line -- across issues the
+  extractor emits "Légumes frais" alone but also "Fruits frais Banane 575
+  601 549", "animale Œufs (Unité) 16 17 15" and even the footnote fragment
+  "marchés de détail. Lait de vache (Litre) 96 102 90" inline with a
+  product. So the parser locates the longest _COICOP_MAP key present in the
+  line and reads the three integers immediately after it, rather than
+  splitting on position. Lines carrying three integers but matching no key
+  are logged, so a newly added product cannot pass unnoticed.
+
+  COLUMN ORDER is Moyenne, Maximum, Minimum -- the AVERAGE is first, not a
+  min/max pair. price_local is the Moyenne; min and max ride in notes. A row
+  whose figures are not ordered min <= moy <= max is DROPPED with a warning:
+  the 2026-09-10 issue ships "Datte 507 375 384", which is internally
+  impossible, and a publisher mis-key is indistinguishable here from the
+  extractor having read the columns out of order. Units come from the label,
+  not the "DA / Kg" header, because "Œufs (Unité)" is per egg and "Lait de
+  vache (Litre)" per litre.
+
+  COICOP: the fetcher module carries a _COICOP_MAP over the French product
+  labels (24 observed + a further 11 seasonal labels pre-mapped against the
+  taxonomy for when they appear). `coicop_classification` is deliberately
+  LEFT as `classifier` -- concatenate._build_classifier_csv_map ingests a
+  fetcher CSV only for `classifier` sources, so `source_curated` would
+  delete this source's rows from the build; the per-row code instead rides
+  through as declared_coicop_codes and short-circuits classify at confidence
+  1.0. Unmapped products are emitted uncoded rather than dropped, which is
+  legitimate under `classifier`. channel: null (non-retail publisher,
+  analytical_role official_avg).
+
+  MEASURED first run 2026-09-11: 943 rows over 46 publication days
+  (2026-06-01 to 2026-09-10) and 25 item labels, ZERO null coicop_code and
+  zero duplicate (date, item) pairs. 21 rows were dropped as a re-upload
+  (the 22 June bulletin is published twice, as ...MCIRMN.pdf and
+  ...MCIRMN-1.pdf, byte-identical figures) -- the writer only de-duplicates
+  the incoming frame against what is on disk, not within the frame, so the
+  fetcher collapses identical observation_hash values itself. A further ~25
+  rows were dropped by the min<=moy<=max guard, almost all of them "Datte",
+  which the publisher has shipped internally inconsistent every day since
+  late August. Onboarded 2026-09-11.

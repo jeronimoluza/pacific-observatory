@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: thebountyshop_zm
+url: https://www.thebountyshop.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.thebountyshop.com"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 312 products (probed 2026-09-11).
+  prices.currency_code=ZMW, currency_minor_unit=2. Imported-goods grocer (Kirkland
+  Signature etc), spans food + household.
+  Page family parsed: API (/wp-json/wc/store/v1/products).

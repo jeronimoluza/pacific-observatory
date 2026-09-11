@@ -1,0 +1,55 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: id_bi_pihps
+module: eap.southeast_asia.indonesia.bi_pihps
+function: fetch_id_bi_pihps
+url: https://www.bi.go.id/hargapangan/TabelHarga/PasarTradisionalDaerah
+language: id
+cadence: daily
+fallback_date: 2017-01-01
+notes: |
+  Probed 2026-09-11. Bank Indonesia's PIHPS Nasional (Pusat Informasi Harga
+  Pangan Strategis) daily strategic-food price survey. The page is a
+  DevExtreme (DevExpress ASP.NET MVC) grid whose backing routes are
+  unauthenticated JSON, answering cold to plain `requests` with a browser
+  UA -- no session bootstrap, no APIM key, no WAF, no Playwright.
+
+  Routes (all under /hargapangan/WebSite/TabelHarga/):
+    GetRefPriceType             1 Pasar Tradisional / 2 Pasar Modern /
+                                3 Pedagang Besar / 4 Produsen
+    GetRefCommodityAndCategory  10 categories + 21 commodities, each with a
+                                `denomination` (all "kg") and parent cat_id
+    GetRefProvince / GetRefRegency / GetRefMarket   geography filters
+    GetGridDataDaerah           the price grid
+    GetChartDaerah              same series as chart points (not used)
+
+  The sibling view PasarTradisionalKomoditas / GetGridDataKomoditas was
+  tested and returns an empty `data` array for every report-type and date
+  range tried -- GetGridDataDaerah with the geography filters left blank is
+  the route that actually yields the national series.
+
+  Grid shape: WIDE. One row per commodity, one column per survey date keyed
+  "DD/MM/YYYY", values being display strings with thousands separators
+  ("16,350"). `level` 1 rows are the 10 category aggregates, `level` 2 the
+  21 individual commodities; only level 2 is emitted, since level 1 is an
+  average OF level 2 and would double-count.
+
+  Coverage: the 21 commodities are Indonesia's strategic-food basket --
+  6 rice grades, chicken, 2 beef grades, eggs, shallot, garlic, 2 red-chilli
+  types, 2 bird's-eye-chilli types, 3 cooking-oil grades, 2 sugar grades.
+  All division 01. COICOP is left to the classifier rather than hand-mapped:
+  several items ("Minyak Goreng Kemasan Bermerk 1/2", the rice quality
+  grades) do not map to a single leaf without guessing, and per the batch
+  rule an unmapped item costs nothing.
+
+  History starts 2017-03-27 (a 2017-01 window returns zero rows, 2017-06
+  returns 22 date columns), hence fallback_date 2017-01-01. Requests are
+  chunked at 365 days; a Jan-2025..Sep-2026 window returned 443 date
+  columns in one 305 KB response, so the endpoint has no narrow range cap.
+
+  Prices are IDR per kg, national average, traditional markets. Spot check
+  2026-09-10: Beras Kualitas Bawah I 14,750 IDR/kg (category aggregate
+  Beras 16,350) -- no minor-unit or 10x scaling.

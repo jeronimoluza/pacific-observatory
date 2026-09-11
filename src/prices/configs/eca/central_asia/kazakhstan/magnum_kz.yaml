@@ -1,0 +1,65 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: magnum_kz
+url: https://magnum.kz/catalog
+language: ru
+cadence: weekly
+archive_prefix: "magnum.kz/"
+archive_path_re: '^/(catalog|product)'
+notes: |
+  Page family: API (the spider never fetches a browsable page).
+  Kazakhstan's largest supermarket chain. Retail arm of the group whose
+  cash-and-carry side is already onboarded as `magnumopt_kz`
+  (channel: wholesale) -- different storefront, different price level, not a
+  duplicate.
+
+  Verified live 2026-09-11. magnum.kz is a Nuxt SPA: /catalog server-renders
+  an empty `window.__NUXT__` state (catalog.data: []) and a plain curl_cffi
+  fetch of it yields zero products. A Playwright network trace found the
+  Strapi v4 backend wide open on port 1337 with no auth, no cookie and no
+  token: GET https://magnum.kz:1337/api/products?pagination[pageSize]=100
+  &pagination[page]=N returns {data:[{id,attributes:{name,start_price,
+  final_price,discount,action_start,action_end,discount_type,...}}],
+  meta.pagination} -- 1,392 records / 14 pages on 2026-09-11.
+
+  Enumerability proven: page 1 and page 2 return disjoint id sets and
+  meta.pagination.pageCount is read from the payload rather than guessed.
+  Full run 2026-09-11 walked all 14 pages to finish_reason=finished (NOT a
+  MAX_PAGES truncation) and emitted 1,333 rows with 1,333 distinct ids; the
+  59-row gap to 1,392 is records whose name or price is empty and which the
+  spider skips.
+  Cross-checked against the per-city feed /api/new-product?cunt=N&city=<slug>
+  (10 cities from /api/cities): Almaty returns 152 rows and Astana 135 with
+  ZERO overlapping ids -- each city carries its own record for the same SKU --
+  and the 10 city feeds sum to the same 1,392, i.e. /api/products is exactly
+  their union. Collecting /api/products once is therefore equivalent to, and
+  cheaper than, walking all ten cities.
+
+  SCOPE CAVEAT (deliberate, not a defect): this is the chain's *promotional*
+  catalog for the current one-week action window (action_start/action_end),
+  not the full assortment -- magnum.kz publishes no full-assortment catalog on
+  the web. Prices are therefore promo prices: `final_price` is the shelf price
+  during the action, `start_price` the struck-through regular price. The
+  spider emits `final_price`. Treat the level as a promotional-price series.
+
+  The endpoint exposes no product category (the /api/new-product-catalog list
+  does not join back to products), so `category` carries the discount-programme
+  label via &populate=discount_type instead of a breadcrumb. Measured mix on
+  the 2026-09-11 full run: "Скидки каждый день" 810, "Magnum пайда" 475,
+  "Скидки выходного дня" 30, "Скидка на мясо" 18.
+
+  Currency KZT, matching countries.yaml; the API returns bare integers with no
+  currency field and no minor-unit encoding (899 == KZT 899, eyeballed against
+  the rendered catalog card).
+
+  Archive note: the site has NO per-product page -- products are only reachable
+  through the SPA's client-side catalog -- so the emitted `url` is a synthetic
+  /catalog?product=<id> permalink the spider never fetches and which cannot be
+  used to validate archive_path_re locally. The pair below is a bare-host
+  prefix plus a loose route regex; expect little or nothing from Common Crawl
+  for this source, and measure against the cdx index rather than against
+  collected URLs. (The regex does accept 1,333 of 1,333 collected paths, but
+  that is only evidence about the synthetic URLs, not about the archive.)

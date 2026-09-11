@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: boucheriebuffat_ch
+url: https://boucherie-buffat.ch/
+language: fr
+cadence: weekly
+channel: specialty-food
+archive_prefix: "boucherie-buffat.ch"
+archive_path_re: '^/[^/?]+/[^/?]+'
+notes: |
+  WooCommerce Store API v1, unauthenticated. 211 products (probed 2026-09-11).
+  prices.currency_code=CHF, currency_minor_unit=2. Romandy butcher/traiteur.
+  A sizeable share of rows carry price 0 (counter items priced per kg at the till);
+  the base spider drops zero-price rows, so the shipped row count is below 211.
+  Page family parsed: API (/wp-json/wc/store/v1/products).

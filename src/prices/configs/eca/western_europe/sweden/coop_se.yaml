@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: coop_se
+url: https://www.coop.se/handla/
+language: sv
+cadence: weekly
+archive_prefix: "www.coop.se/"
+archive_path_re: '^/handla/varor/[^?]+'
+notes: |
+  Probed 2026-09-11. Coop Sverige is the co-operative grocery chain and
+  the third major Swedish grocer alongside the already-onboarded Axfood
+  tenants willys_se / hemkop_se -- a different group, not a sibling of
+  those two, so its assortment and pricing are independent.
+
+  EPiServer front-end over hybris, fronted by Azure API Management at
+  external.api.coop.se. Category pages render NO prices in SSR HTML (77 KB
+  shell, zero `kr` matches). A Playwright network trace recovered the two
+  calls the SPA makes; both work over plain HTTP with the public APIM
+  subscription key that the storefront's own JS bundle ships to every
+  anonymous visitor (without it the API answers 401 "missing subscription
+  key"). Playwright is NOT used at collection time.
+
+    GET  /ecommerce/coop/users/anonymous/categories/tree/251300?api-version=v1
+         -> 906 nodes {code,name,url,children}
+    POST /personalization/search/entities/by-attribute?...&store=251300
+         body {"attribute":{"name":"categoryIds","value":"<code>"},
+               "resultsOptions":{"skip":N,"take":48}}
+         -> {"results":{"count":<total>,"items":[...]}}
+
+  NOTE the endpoint choice: the sibling /personalization/search/products
+  route also answers 200 but silently caps at ~16 items and IGNORES `skip`
+  (skip=100 returned page 1 again), so it cannot enumerate. Only the
+  by-attribute route paginates.
+
+  Enumerability proof (category 6264 "Mjolk", count=106): skip=0/48/96
+  returned 48/48/10 items with ZERO ean overlap between pages.
+
+  Currency SEK. salesPriceData.b2cPrice is already a decimal (16.27), NOT
+  a minor-unit integer -- eyeballed against the rendered Mjolk page.
+  comparativePriceData is the per-litre unit price and is not emitted.
+
+  Page family read: API (JSON), category-scoped. Every item's `url`,
+  `code` and `productUrl` are null, so no PDP permalink is derivable and
+  `url` is set to the category listing page (same handling as hemkop_se).
+  archive_prefix/archive_path_re are the conservative bare-host + product
+  -section shape taken from https://www.coop.se/handla/sitemap_productsection.xml;
+  NOT validated against the Common Crawl index in this session.
