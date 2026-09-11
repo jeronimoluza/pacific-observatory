@@ -1,0 +1,39 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://farmproducts-ex.co.bw/"
+channel: fresh-market
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "farmproducts_ex_bw"
+  base_url: "https://farmproducts-ex.co.bw"
+  currency: "BWP"
+  language: "en"
+  api_url: "https://farmproducts-ex.co.bw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Probed 2026-09-11 (SSA anglophone-Africa food gap-fill pass). WooCommerce
+  Store API, /wp-json/wc/store/v1/products?per_page=50&page=1, no auth,
+  plain non-impersonating HTTP (no WAF). X-WP-Total=7, X-WP-TotalPages=1 --
+  a genuine small single-page catalogue (page 2 returns empty, confirming
+  7 is the real total, not a truncation). 100% food, greengrocer-only:
+  White Onions (x2 sizes), Fresh Naartjie, Butternut, Fresh Green Peppers,
+  Fresh Tomatoes, Fresh Oranges. All 7 non-zero priced (e.g. id=4283 "White
+  Onions" price=9000 minor units / currency_minor_unit=2 -> BWP 90.00).
+  currency_code=BWP confirmed from the API payload, matching countries.yaml
+  default. channel: fresh-market (greengrocer range, not a general
+  supermarket). coicop_codes left unset -- catalogue spans fruit (01.1.6)
+  and vegetables (01.1.7), which is wide by the narrowness rule.
+  End-to-end tested: `prices collect --source farmproducts_ex_bw
+  --max-items 20` -> 7 rows (whole catalog, smaller than max-items), 7
+  distinct urls, all BWP-priced.

@@ -169,3 +169,30 @@ online store".
 
 Next pass: unchanged — re-check in ~6 months. A single new entrant would flip
 this market, but nothing is close today.
+
+---
+
+## UPDATE 2026-09-11 (food-sourcing pass, third independent check) — verdict UNCHANGED
+
+Ran a further Faroese-language + English round specifically targeting fish
+sellers and small domestic food producers (the axis that worked for
+Liechtenstein: brewery/winery/farm-shop direct-to-consumer sites rather than
+supermarket chains). **Result: still 0 food sources. No new candidate cleared
+both the platform and locality gates.**
+
+| Candidate | What | Why not shipped |
+|---|---|---|
+| `bjor.fo` (Föroya Bjór) | The Faroese national brewery | WooCommerce theme present (`wp-json` responds) but the Store API 404s (`rest_no_route`) and `/vorur/` ("products") renders zero prices / zero add-to-cart / zero `woocommerce-loop-product` markup. Shop plugin not active — brochure-only, same pattern as SMS/Bónus/Miklagarður. (Note: `foroyabjor.is` is a separate Icelandic *importer's* site, not this brewery's own storefront — different country, not evaluated.) |
+| `local.fo/webshop/` | "Faroe Islands Webshop" | Turned out to be a travel/tourism magazine's souvenir-merch shop (sheep-branded goods), not food. Zero price tokens anyway. |
+| `faroelandia.com` | "Purveyors of the best Faroese..." seafood | No platform fingerprint, zero price tokens on `/products/` — reads as a B2B/export marketing site, not consumer e-commerce. |
+| `origin.fo` | Generic "Faroe Origin" branding site | Zero price tokens, no platform fingerprint. |
+| `bakkafrostshop.com` | Bakkafrost's own-brand salmon shop | Real Shopify store with real per-item prices, BUT `Shopify.country="US"`, `Shopify.currency active=USD`, a "military-discount-usa-only" page, and Scottish ("Native Hebridean") SKUs mixed into the same catalog. This is Bakkafrost's US consumer storefront, not a Faroese domestic retailer — fails the locality gate, not a platform failure. |
+| `hiddenfjord.com` | Faroese salmon farmer | Not probed in depth (time-boxed); public profile is aquaculture/export, consistent with the Bakkafrost/Polar Seafood pattern of no direct-to-Faroese-consumer storefront. Flagged for a future pass to confirm rather than asserted here. |
+
+**This is now three independent passes (2026-09-01 x2, 2026-09-11) reaching
+the same conclusion via different search strategies** (English domain
+guesses, Faroese-language chain search, and this pass's fish/producer-
+specific search). Treat "no online grocery / food retail sector in the Faroe
+Islands" as settled for routine onboarding purposes; only a genuinely new
+market entrant would change it. Re-check per the standard ~6-month staleness
+window, not sooner.

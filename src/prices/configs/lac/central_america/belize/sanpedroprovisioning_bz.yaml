@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sanpedroprovisioning_bz
+url: https://sanpedroprovisioningcompany.com/
+language: en
+currency: USD
+cadence: weekly
+channel: specialty-food
+notes: |
+  San Pedro Provisioning Company, a physical grocery-provisioning business
+  in San Pedro, Ambergris Caye, Belize. Standard WooCommerce Store API, no
+  auth. Verified live 2026-09-11: X-WP-Total 521 products across 70+
+  categories spanning Produce (45), Meat & Seafood (31), Dairy & Eggs (39),
+  Bakery & Bread (24), Pantry (159), Beverages (63), Beer/Spirits/Wine,
+  Snacks/Cookies/Candy. This is a genuine full grocery catalog (fresh
+  produce, meat, seafood, dairy, bakery, pantry staples), not a curated
+  tourist hamper -- channel set to specialty-food rather than supermarket
+  because the business is a delivery/provisioning service (orders +
+  home/rental delivery) rather than a walk-in shopfront, matching the same
+  distinction already used for lagniappe_bz and doorstep_bz.
+
+  Currency: Store API's own currency_code field reports USD on every
+  sampled product, not Belize's official BZD. Belize's dollar is pegged
+  2:1 to USD and San Pedro's tourist-economy retailers commonly quote and
+  transact in USD directly -- there is no BZD figure anywhere in the
+  payload. MEASURED from the payload, not inferred from a dollar symbol.
+  currency_minor_unit=2 confirmed (price 5000 minor units = $50.00).
+
+  Enumerability verified live: per_page=20 page 1 vs page 2 gave 20/20
+  product ids with zero overlap -> DISTINCT. 19/20 sampled products on
+  page 1 carry a non-zero price (only one variant priced 0, a stray
+  price-on-request listing).
+
+  Locality confirmed: physical San Pedro, Belize business (delivers to
+  homes and vacation rentals within San Pedro/Ambergris Caye), not a
+  US/UK site shipping to the Caribbean from abroad -- product copy
+  references Belize Chocolate Company and other Belizean-made goods.
+
+  --max-items 20 collect test 2026-09-11: verified rows returned, all
+  distinct product ids/urls, USD, non-zero prices (see collect log).

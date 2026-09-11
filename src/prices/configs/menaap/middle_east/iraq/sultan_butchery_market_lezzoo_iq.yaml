@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/sultan-butchery-and-market-9145
+language: en
+currency: IQD
+cadence: weekly
+channel: fresh-market
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "sultan_butchery_market_lezzoo_iq"
+  venue_url: "https://www.lezzoo.com/erbil/m/sultan-butchery-and-market-9145"
+  currency: "IQD"
+  language: "en"
+notes: >
+  "Sultan Butchery and Market" -- a named Erbil grocer on Lezzoo, found via
+  the same butcheries-228/food-88 category-tree sweep that surfaced
+  lezzoo_mart_erbil_iq (see that manifest's notes for background). Despite
+  the "butchery" name the menu is a small fresh-produce and condiments
+  grocery (fresh vegetables + packaged condiments), not meat-only --
+  channel=fresh-market rather than specialty-food.
+
+  MEASURED 2026-09-11 via curl_cffi impersonate=chrome124: single GET,
+  hasMenu.hasMenuSection, 60 total items, 100% non-zero price, currency
+  IQD throughout. Sample: cucumbers 1,250 IQD, eggplant 1,250 IQD, garlic
+  1,500 IQD, Heinz tomato ketchup 5,750 IQD. Uses `generic_lezzoo_venue`
+  (see lezzoo_mart_erbil_iq.yaml for why this replaces the bespoke
+  per-vendor spider pattern). End-to-end tested via `prices collect
+  --source sultan_butchery_market_lezzoo_iq --max-items 20`.

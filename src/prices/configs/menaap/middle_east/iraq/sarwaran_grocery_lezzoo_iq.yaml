@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/sarwaran-grocery-1178
+language: en
+currency: IQD
+cadence: weekly
+channel: fresh-market
+source_key: sarwaran_grocery_lezzoo_iq
+spider_kwargs:
+  source_label: sarwaran_grocery_lezzoo_iq
+  venue_url: https://www.lezzoo.com/erbil/m/sarwaran-grocery-1178
+  currency: IQD
+  language: en
+archive_prefix: "www.lezzoo.com/erbil/m/sarwaran-grocery-1178/"
+archive_path_re: '^/erbil/m/sarwaran-grocery-1178/[^/?]+/?$'
+notes: |
+  Sarwaran Grocery -- a named first-party fresh-produce grocer in Erbil,
+  Iraq, storefront hosted on Lezzoo. Uses the shared `generic_lezzoo_venue`
+  spider. Same discovery method as varya_grocery_lezzoo_iq. Distinct venue
+  from Sarwaran's own separately-listed "sarwaran-butchery" and
+  "sarwaran-market" pages on the same platform -- only this one (grocery)
+  was probed and shipped this pass; the sibling venues are legitimate
+  future candidates, not onboarded here to avoid over-fitting one brand.
+
+  MEASURED 2026-09-11: single GET embeds a JSON-LD "hasMenu" node, 60 items
+  across repeated "1 Kilo" / "Box" / "Date" sections -- includes a
+  dedicated "Date" section (a regional-staple leaf this campaign flags).
+  Sample: Long White Grape 3,250 IQD, Black Grape 3,250 IQD, Kiwi 5,000
+  IQD, Banana 3,000 IQD, African Lemon 3,750 IQD, Sweet Syrian Orange
+  3,250 IQD. 100% non-zero IQD prices read from Offer.priceCurrency.
+  End-to-end tested via
+  `python run.py prices collect --source sarwaran_grocery_lezzoo_iq --max-items 20`.
+
+  Same single-GET-no-pagination limitation as other Lezzoo venue manifests.

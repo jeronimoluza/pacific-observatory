@@ -1,0 +1,78 @@
+scaffolding: spider
+spider: jubasquare_ss
+url: https://www.jubasquare.com/marketplace
+channel: wholesale
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Discovered 2026-09-11 (SSA anglophone-Africa food-source gap-fill
+  campaign). "JubaSquare" is a React SPA marketplace/wholesale platform for
+  Juba, South Sudan, built by L.T.G Enterprise ("Juba's trusted marketplace
+  -- shop retail, wholesale and food, all in one place", per its own
+  /manifest.json). The homepage renders nothing server-side, but its JS
+  bundle references a same-origin, unauthenticated JSON endpoint:
+  GET /api/products?limit=1000 (Accept: application/json) -- no auth, no
+  WAF encountered.
+
+  MEASURED 2026-09-11: 94 distinct product ids, confirmed stable (limit=200
+  and limit=1000 both return exactly 94 -- this is the whole catalog, not a
+  truncated page; explicit pagination params ?page=/?offset=/?skip= are all
+  ignored by the API and just re-return the default first 40). 100% of the
+  94 rows carry a non-zero price_usd.
+
+  Catalog mix (measured from the payload's `category` and `name` fields):
+  roughly 64/94 (68%) are food/beverage/household FMCG SKUs -- rice, beans,
+  wheat flour, sugar, tea, milk powder, tomato paste, cooking oil/margarine
+  (Blue Band), peanut butter, canned sardines, chocolate/confectionery,
+  bottled water, sodas (Coca-Cola, 7Up), fruit juice, beer/wine/spirits
+  (Absolut Vodka, Amarula, Blue Label, 4th Street wine) -- directly touching
+  South Sudan's gap categories: cereals & bread, fish & seafood (canned),
+  dairy & eggs (milk powder), oils & fats, sugar/chocolate/confectionery,
+  tea, alcohol, juices, soft drinks, water. Most of these food rows carry
+  `category: null` in the site's own (incomplete) taxonomy despite being
+  unambiguously food by name -- left to this repo's classifier rather than
+  trusted from the site. The remaining ~29 rows (30%) are non-food B2B
+  goods (electronics/machinery import-distribution, commercial kitchen
+  equipment, one shampoo SKU) -- these will simply classify to other COICOP
+  divisions or fall out; `coicop_codes` is left unset (wide catalog) so the
+  classifier assigns per product rather than tagging the whole source as
+  food.
+
+  channel: wholesale (not marketplace/supermarket) -- most rows carry
+  `mode: "wholesale"`, `min_order_qty` and bulk `pricing_tiers`, and many
+  product names are explicit case/carton/box packs ("Aqua Prima Water
+  Bottle 600ml 24p Box (10Box Min)"); a handful of `shop_kind: "retail"`
+  singular-unit listings coexist for the same underlying SKUs. `wholesale`
+  is the closest fit in the Channel enum and, unlike `marketplace`, is not
+  excluded from the corpus census.
+
+  CURRENCY: the API's native field is `price_usd` -- the platform is
+  USD-denominated. Each row also carries an `exchange_rate_ssp` field
+  (measured 7800.0 SSP/USD on every sampled row) supplied by the site
+  itself; this manifest emits the native USD price as-is and does NOT
+  convert via the embedded FX rate. Per the onboarding brief's explicit
+  instruction to flag rather than silently accept/reject a genuine
+  non-local-currency South Sudan retailer: this is a real Juba-facing
+  wholesale/retail marketplace pricing natively in USD, consistent with
+  South Sudan's severe SSP volatility and hyperinflation -- not a diaspora
+  or foreign storefront.
+
+  No stable per-product URL exists in the payload (client-side React route
+  only) -- the spider constructs a synthetic identifier URL from the
+  product's uuid id (`/marketplace/product/<id>`), matching the pattern
+  already used by busiquip_sz.py in this repo: the url exists to satisfy
+  DuplicationPipeline's url-based dedup, not to be a fetchable PDP.
+
+  Page family: API (reads the JSON endpoint directly, never fetches a
+  rendered page).
+
+  Test run: `prices collect --source jubasquare_ss --max-items 20` ->
+  20/20 rows priced, 20 distinct urls (synthetic per-id urls), currency
+  USD. Sample: USD 15.38 "Basmatic Rice 10kg sack"; USD 5.13 "Bean 5kg";
+  USD 0.38 "Al Salah Black Tea 50g"; USD 19.23 "Absolut Vodka".

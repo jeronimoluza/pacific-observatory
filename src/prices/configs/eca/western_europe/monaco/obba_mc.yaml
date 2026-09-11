@@ -1,0 +1,83 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: obba_mc
+url: https://www.obba.mc/boutique/page/1/
+channel: specialty-food
+language: fr
+currency: EUR
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+notes: |
+  Monaco's FIRST genuine food-and-beverage source (previously 0 -- the
+  country's only prior manifest, boutiqueacm_mc, is Automobile Club de
+  Monaco merchandise, non-food).
+
+  OBBA ("Obba Connected Trattoria") -- fine-grocery / butcher / fishmonger,
+  self-described "Wagyu & Produits d'exception". Domicile confirmed from
+  the site's own /contact/ page: "La Panorama, 57 rue Grimaldi 98000 Monaco"
+  -- 98000 is Monaco's own postal code, so this is genuinely Monaco-based,
+  not a French shop delivering across the border (the trap this brief
+  flagged for Monaco/San Marino/Andorra/Liechtenstein).
+
+  Standard WooCommerce install, but the Store API
+  (/wp-json/wc/store/v1/products) returns a WordPress 500 (verified: plain
+  GET, GET with per_page=10, and the legacy /wp-json/wc/store/products all
+  500 identically -- a broken plugin/endpoint, not a transient error).
+  Scrapes the server-rendered shop-loop HTML instead: standard
+  `li.product` cards with `.woocommerce-loop-product__title`,
+  `a.woocommerce-LoopProduct-link`, `.woocommerce-Price-amount bdi` --
+  the same theme shape as the_good_meat_ph.py, just `<li>` not `<article>`.
+
+  Enumerability measured live 2026-09-11: /boutique/page/1/ and
+  /boutique/page/2/ both returned 16 product cards each, ZERO overlap
+  (page 1: allume-feux/aurea-grappa/bavette-black-angus/...; page 2:
+  box-decouverte/box-gourmande/box-prestige/...).
+
+  Currency EUR confirmed live on PDP (woocommerce-Price-amount, e.g.
+  "3,50&nbsp;€" -> 3.50 EUR), matching countries.yaml for Monaco.
+
+  Category nav: Viandes, Charcuterie (tranché/désossé/entier), Wagyu,
+  Poissons & Crustacés, Boissons (softs/champagne/prosecco/spiritueux),
+  Vins & Huiles (blanc/rosé/rouge/dessert), Glaces, Big Green Egg
+  (grills/accessories -- non-food, left for the classifier). Directly
+  covers meat, fish/seafood, dairy(glaces), alcohol and non-alcoholic
+  drink gap categories from the brief.
+
+  Wide catalog (meat, fish, wine, spirits, ice cream span multiple COICOP
+  classes) -- coicop_codes left unset for the classifier.
+
+  Other Monaco candidates checked this pass:
+    - vinalia_mc (shipped separately, see vinalia_mc.yaml)
+    - mrroomservice.mc -- curated multi-shop concierge delivery app
+      (foie-gras-comtesse-du-barry, caviar, wine-champagne-spirits,
+      coffee-nespresso-illy, dean-and-deluca-shop). No platform fingerprint
+      matched (not Shopify/Woo/Prestashop/Wix); shop pages render zero
+      price tokens in raw HTML -- client-side rendered, needs a Playwright
+      network trace to find the real data endpoint. Not pursued this pass;
+      worth a follow-up given the food-heavy curation.
+    - mitronbakery-monaco.com -- Wix site, "ecwid" string hits on the
+      homepage are Wix's own storefront widget reference (same false
+      fingerprint pattern documented on neufeldhof_li), not a standalone
+      Ecwid store. /commander/EPICERIE-FINE-.../ category page renders
+      zero price tokens server-side. Not pursued (would need a Wix
+      network trace).
+    - marche-u.mc -- genuinely Monaco-domiciled (.mc) Système U storefront,
+      resolves the France/Monaco duplication policy question raised by the
+      2026-09-01 pass since it is its own domain, not the shared
+      coursesu.com national platform. But it is a brochure/showcase site:
+      /nos-rayons/la-boucherie (and the other department pages) carry
+      ZERO price tokens and zero "panier" (cart) mentions -- department
+      photos and marketing copy only, no online ordering. Not a source.
+    - delovery.mc -- re-probed per this brief's standing instruction to
+      retry Cloudflare blocks. Still 403 on chrome124, chrome120 AND
+      safari17_0 (all three TLS profiles). Verdict unchanged from the
+      2026-09-01 pass: blocked, not absent.
+    - The France/Monaco shared-platform policy question (courses.monoprix.fr,
+      Carrefour Market Monaco's drive page, coursesu.com/drive-marcheu-monaco)
+      remains OPEN and was deliberately not resolved here -- OBBA and
+      Vinalia both being genuinely Monaco-domiciled sidesteps the need to
+      answer it this pass, same reasoning as boutiqueacm_mc.

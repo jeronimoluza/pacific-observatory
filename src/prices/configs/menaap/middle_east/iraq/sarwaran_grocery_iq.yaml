@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/sarwaran-grocery-1178
+language: en
+currency: IQD
+cadence: weekly
+channel: fresh-market
+spider_kwargs:
+  source_label: "sarwaran_grocery_iq"
+  venue_url: "https://www.lezzoo.com/erbil/m/sarwaran-grocery-1178"
+  currency: "IQD"
+  language: "en"
+notes: >
+  Sarwaran Grocery -- a named, first-party fresh-produce grocer in Erbil,
+  Iraq, on Lezzoo. Same platform/discovery/spider as varya_grocery_iq
+  (generic_lezzoo_venue) -- see that manifest for the directory-mining
+  method (~/gapwork/known_blockers_disco_mena_iraq.md).
+
+  MEASURED 2026-09-11 via curl_cffi (chrome124) against the venue's
+  schema.org Restaurant JSON-LD: 60 items, 60 distinct product ids/urls,
+  0 zero/blank prices, currency IQD throughout. Categories: "1 Kilo" (54),
+  Box (4), Date (2) -- includes 2 date SKUs, a regional-staple leaf this
+  campaign was explicitly asked to target. Sample: "Long White Grape" 3250
+  IQD, "Black Grape" 3250 IQD, "Kiwi" 5000 IQD, "Banana" 3000 IQD. Single
+  plain GET returns the full menu; no further pagination reachable (same
+  documented limitation as the existing Lezzoo Iraq sources) --
+  enumerability evidenced by 60/60 distinct ids within the one page.
+  End-to-end tested via `prices collect --source sarwaran_grocery_iq
+  --max-items 20`.

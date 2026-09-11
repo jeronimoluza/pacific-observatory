@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/nan-house-6939
+language: en
+currency: IQD
+cadence: weekly
+channel: specialty-food
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "nan_house_bakery_lezzoo_iq"
+  venue_url: "https://www.lezzoo.com/erbil/m/nan-house-6939"
+  currency: "IQD"
+  language: "en"
+notes: >
+  "Nan House" -- a named bakery/cafe venue on Lezzoo Erbil (bakeries-229
+  category page). Section mix (Bun, Breakfast, Cake, Sweets, Cold Drinks,
+  Pastries) spans COICOP 01.1.1 bread/bakery, 01.1.8 confectionery, and
+  02.2 non-alcoholic drinks -- broader than a pure cake shop.
+  channel=specialty-food.
+
+  MEASURED 2026-09-11 via curl_cffi impersonate=chrome124: single GET,
+  hasMenu.hasMenuSection (7 sections), 60 total items, 100% non-zero
+  price, currency IQD throughout (range 250-35,000 IQD; higher end is
+  decorated celebration cakes). Uses `generic_lezzoo_venue`. End-to-end
+  tested via `prices collect --source nan_house_bakery_lezzoo_iq
+  --max-items 20`.

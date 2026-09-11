@@ -101,3 +101,30 @@ rejected, drop the manifest.
 45 categories. The site has more behind nested navigation, so this is a partial
 catalogue, not the full one. Deepening category discovery is the obvious next
 improvement.
+
+---
+
+## UPDATE 2026-09-11 (food-sourcing pass, fish-specific re-check) — verdict UNCHANGED
+
+Ran a supplementary Danish/English search targeting fish and meat sellers
+specifically (Greenland's largest gap category — 29 of ~250 missing leaves
+are fish & seafood), on the theory that a specialty producer might exist
+even though the general grocery chains (Pisiffik/Brugseni/Pilersuisoq) are
+confirmed non-food or brochure-only. **Result: no Greenland-domiciled
+consumer food storefront found. Structural absence stands.**
+
+| Candidate | What | Why not shipped |
+|---|---|---|
+| `groenlandskehus.dk` ("Det Grønlandske Hus") | Danish specialty retailer selling Greenlandic-themed products (`/vare/fisk-og-koed/`) | Denmark-domiciled, not Greenland — same shape as the Monaco/Andorra/Liechtenstein neighbouring-market trap this brief warns about (about Greenland, not from or priced for Greenland). Not probed further; would fail the locality gate even if it enumerated. |
+| `polarseafood.com` | Greenland-linked premium seafood exporter | Confirmed B2B/export only — no `shop`, `webshop`, or `add to cart` anywhere on the site. Nothing to evaluate for locality. |
+
+No new candidate reached even the platform-probing stage. This is now the
+fourth confirmation (three prior 2026-09-01 passes plus this one) that
+Greenland has no online food retail to onboard — see the manifest notes on
+`pisiffik_gl` (already shipped, non-food) for the fullest write-up of why
+(Pisiffik's e-commerce is its department-store franchise side; Brugseni and
+Pilersuisoq are brochure-only with 0 price tokens each).
+
+Note: `inuitquality` and `tingo_gl` were being actively edited by another
+agent during this pass and were deliberately not touched or re-verified
+here.

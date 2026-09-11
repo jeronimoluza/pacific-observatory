@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ngindustry_cg
+url: https://ngindustry.insight.cg/en/shop
+language: fr
+cadence: monthly
+channel: home-improvement
+archive_prefix: "ngindustry.insight.cg/"
+archive_path_re: '^/en/shop/product/[^/?]+'
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-CUSTOM-
+  CRAWLER, "no standard platform API found"). Correctly so -- this is Odoo
+  eCommerce (Website Sale module), not Shopify/Woo/Presta/OpenCart. NEW
+  EXTRACTION ROUTE: Odoo's default theme has no JSON-LD, but server-renders
+  standard RDFa/microdata directly on the /shop listing page -- each card is
+  itemscope itemtype="http://schema.org/Product" with a hidden
+  itemprop="price"/"priceCurrency" pair inside an Offer block, so the spider
+  reads name+price+url straight off the listing HTML (no PDP fetch needed)
+  and paginates /shop/page/N. Verified live: page1 vs page2 product ids
+  disjoint (20 each), priced in XAF (Congo-Brazzaville's own currency, read
+  from the microdata itemprop, not the locale-formatted "15,000 FCFA" display
+  text), industrial hardware/tools catalog (wrenches, hammers), at least 7
+  pages / ~140 SKUs. Page family: listing.

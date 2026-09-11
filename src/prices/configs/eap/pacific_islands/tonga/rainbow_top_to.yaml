@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: o4a2_to
+spider_kwargs:
+  vendor_filter: "Rainbow Top - Market"
+url: https://o4a2.com/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 600
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[a-z0-9-]+$'
+notes: |
+  Discovered 2026-09-11 (Pacific food-source pass). Rainbow Top - Market
+  (Fanga, Tongatapu) is a named, real Tongan supermarket, one of the
+  distinct named retailers on the O4A2 (https://o4a2.com) Shopify-based
+  grocery-delivery marketplace serving Tonga (Shopify.country="TO",
+  Shopify.currency active="NZD"). Already flagged as a named vendor in
+  golden_star_to.yaml's 2026-09-01 catalogue audit (337 SKUs at that date)
+  but never scaffolded as its own source until now. Per the
+  onboard-price-sources marketplace-as-directory doctrine, this manifest
+  scopes the shared o4a2_to spider to
+  vendor="Rainbow Top - Market" only, so the emitted rows are one real
+  supermarket's catalog, not the blended marketplace tail (see
+  golden_star_to.yaml / hihifo_supermarket_to.yaml for the full doctrine
+  writeup; tongamarket.yaml documents why the blended-marketplace approach
+  is not used for the food count).
+  Tier 1B: /products.json?limit=250&page=N, no auth, pagination via `page`
+  cursor to exhaustion (confirmed via _shopify_base).
+  Measured live 2026-09-11 (full unbounded /products.json walk, filtered to
+  this vendor): 359 rows, all priced, currency 100% NZD (Shopify-declared).
+  Sample items: icing sugar, vegetable oil, slippers (non-food tail is
+  filtered out downstream by the classifier, not by this spider). Second
+  largest O4A2 vendor by SKU count after Golden Star Supermarket &
+  Wholesale.
+  ANALYTICAL CAVEAT (same as every other O4A2 vendor manifest): O4A2 is a
+  diaspora gifting platform — buyer pays in NZD, recipient collects
+  in-store in Tonga. Retailer, goods and collection point are genuinely
+  Tongan (locality holds), but prices are NZD gifting-platform prices, not
+  domestic pa'anga (TOP) shelf prices, and may carry a platform margin/FX
+  spread. Treat as a Tongan retail signal, not a CPI-grade domestic price.

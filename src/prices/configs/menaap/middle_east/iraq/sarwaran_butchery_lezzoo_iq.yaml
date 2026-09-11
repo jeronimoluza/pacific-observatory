@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/sarwaran-butchery-1471
+language: en
+currency: IQD
+cadence: weekly
+channel: specialty-food
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "sarwaran_butchery_lezzoo_iq"
+  venue_url: "https://www.lezzoo.com/erbil/m/sarwaran-butchery-1471"
+  currency: "IQD"
+  language: "en"
+notes: >
+  "Sarwaran Butchery" -- a second, independent named butcher venue on
+  Lezzoo Erbil (butcheries-228 category page), same platform/technique as
+  chawshin_lezzoo_iq. channel=specialty-food (single merchant's own
+  butcher-counter inventory, not Lezzoo's cross-merchant directory).
+
+  MEASURED 2026-09-11 via curl_cffi impersonate=chrome124: single GET,
+  hasMenu.hasMenuSection, 60 total items, 100% non-zero price, currency
+  IQD throughout (range ~9,250-14,500 IQD/kg). Sample: "Veal Soft Meat"
+  12,500 IQD, "Veal Ribs" 9,250 IQD, "Veal and Lamb Minced Meat" 9,375
+  IQD. Category composition is veal/lamb meat cuts -- effectively 100%
+  COICOP 01.1.2 meat. Uses `generic_lezzoo_venue`. End-to-end tested via
+  `prices collect --source sarwaran_butchery_lezzoo_iq --max-items 20`.

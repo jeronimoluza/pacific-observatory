@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: o4a2_to
+spider_kwargs:
+  vendor_filter: "Bako Store - Hihifo Ha’apai"
+url: https://o4a2.com/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 600
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[a-z0-9-]+$'
+notes: |
+  Discovered 2026-09-11 (Pacific food-source pass). Bako Store - Hihifo
+  Ha'apai (Pangai / Hihifo, Ha'apai group) is a named, real Tongan general
+  store, one of the distinct named retailers on the O4A2
+  (https://o4a2.com) Shopify-based grocery-delivery marketplace serving
+  Tonga (Shopify.country="TO", Shopify.currency active="NZD"). Not
+  previously onboarded. Per the onboard-price-sources marketplace-as-
+  directory doctrine, this manifest scopes the shared o4a2_to spider to
+  vendor="Bako Store - Hihifo Ha’apai" only (curly apostrophe U+2019).
+  Tier 1B: /products.json?limit=250&page=N, no auth, pagination via `page`
+  cursor to exhaustion.
+  Measured live 2026-09-11 (full unbounded /products.json walk, filtered to
+  this vendor): 160 rows, all priced, currency 100% NZD (Shopify-declared).
+  Sample items: canned tomato, Palm corned beef (3lb tin and 210g tin) --
+  corned beef/pisupo is one of the Pacific staple leaves called out as a
+  regionally distinctive gap. Second Ha'apai-group retailer onboarded
+  alongside pingi_store_to.
+  ANALYTICAL CAVEAT (same as every other O4A2 vendor manifest): O4A2 is a
+  diaspora gifting platform -- buyer pays in NZD, recipient collects
+  in-store in Tonga. Retailer, goods and collection point are genuinely
+  Tongan (locality holds), but prices are NZD gifting-platform prices, not
+  domestic pa'anga (TOP) shelf prices, and may carry a platform margin/FX
+  spread. Treat as a Tongan retail signal, not a CPI-grade domestic price.

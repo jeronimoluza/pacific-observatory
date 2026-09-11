@@ -1,0 +1,57 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopsefalana_bw
+url: https://shopsefalana.com/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed 2026-09-11 (SSA anglophone-Africa food gap-fill pass). Sefalana is
+  Botswana's largest domestic food-retail group. Custom nopCommerce
+  storefront (NopStation.Theme.Arch theme; `/Plugins/NopStation.*` and
+  `/Themes/Arch/` asset paths), server-rendered, no WAF -- plain
+  non-impersonating `requests` gets HTTP 200 on every path tested.
+
+  Category discovery: homepage nav is a flat list of single-segment hrefs
+  (nopCommerce auto-suffixes duplicate slugs, e.g. `/dairy-4`); a denylist
+  strips cart/customer/login/etc chrome and homepage brand/single-product
+  carousel links (per the winners_mu.py precedent, this theme mixes in
+  hrefs like `/gordons-gin-london-dry-1-x-750ml` and `/nivea`). Remaining
+  ~130 slugs span the FULL supermarket range: staple foods, rice, maize,
+  wheat, sugar, oil, canned goods, dairy, bakery, snacks, confectionery,
+  tea/coffee, juices, carbonated/energy drinks, AND a full liquor/tobacco
+  range (beers, brandy, ciders, gin, liqueurs, rum, tequila, vodka,
+  whiskey, wines, cigarettes, tobacco) -- plausible coverage across most
+  of COICOP divisions 01 and 02 from one source.
+
+  Listing: `<slug>?pagesize=75&pagenumber=N`, products in
+  `div.product-item[data-productid]` blocks (same shape as winners_mu.py,
+  a known-good nopCommerce spider already in this repo). Price is split
+  across two spans -- `span.price.actual-price` ("P52", Pula prefix) and
+  `span.price.actual-price-cents` ("99") -- concatenated by the spider into
+  "52.99". BWP fixed at spider level (no separate machine-readable currency
+  code found; matches countries.yaml and the site's own "P" display).
+
+  Enumerability: `/dairy-4` page1 vs page2 (`?pagenumber=2`) returned fully
+  disjoint data-productid sets (20 vs 20, zero overlap) -- genuinely
+  paginates, not a re-served page. `/beers` sampled 20/20 items priced.
+
+  Page family: listing only (spider never fetches a PDP -- name/price/id
+  all come from the category listing card).
+
+  Test run: `prices collect --source shopsefalana_bw --max-items 60` ->
+  see result recorded at scaffolding time. coicop_codes left unset -- the
+  catalogue spans essentially every COICOP-01/02 3-digit class, wide by the
+  narrowness rule.
+
+  MEASURED test run 2026-09-11: `prices collect --source shopsefalana_bw
+  --max-items 60` -> 97 rows, 97 distinct urls, 97 distinct product_ids,
+  ZERO zero-priced rows. Categories captured in this partial run (Scrapy's
+  default LIFO request scheduling processed the alphabetically-last slugs
+  first): Rice, Rum, Water, Wheat, Whiskey, Wines, Wrapping Packaging --
+  spans both food (rice/water/wheat) and alcohol (rum/whiskey/wines)
+  correctly in one run. The full ~130-category sweep (INFERRED coverage
+  from the homepage nav list, not yet measured end-to-end) is left to a
+  production run with max_items: null.

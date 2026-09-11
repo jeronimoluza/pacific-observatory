@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mossosouk_td
+url: https://www.mossosouk.com/
+language: fr
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+active: true
+max_items: null
+currency: XAF
+notes: |
+  Probed 2026-09-11: custom multi-vendor marketplace (no wp-json, no
+  /products.json, no /rest/V1 -- not Woo/Shopify/Presta/OpenCart). Genuinely
+  N'Djamena-based, confirmed from the site's own footer: "Rue 2038, Route de
+  la Corniche, N'Djamena-Tchad", phone +235 65 60 25 69 (+235 = Chad country
+  code) -- not a diaspora storefront.
+  No listing API; PDPs carry clean RDFa/schema.org microdata instead:
+  `<h1 property="schema:name" content="...">`,
+  `<... property="schema:price" content="3000">`,
+  `<div property="schema:priceCurrency" content="XAF">` -- XAF confirmed
+  machine-readable (not inferred from displayed "FCFA" text) on
+  huile-de-palme-rouge (3,000 FCFA).
+  Enumerated via /sitemap.xml: a single flat file (no sitemap index), 288
+  <loc> entries, ~288 distinct /product/ URLs -- covers the whole catalog.
+  Category listing pages (e.g. /category/placard-alimentaire) do NOT carry
+  the schema microdata and were confirmed NOT to paginate (page 1 and an
+  explicit ?page=2 returned the identical 15-product set) -- the
+  sitemap-driven PDP crawl sidesteps that limitation entirely and is the
+  only enumerable surface found.
+  Food coverage is thin: of 288 total products, ~24 sit under "Placard
+  Alimentaire" (15: cooking/palm/groundnut oil, flours incl. farine de
+  berbere, chili/spice powder, dried mango, kinkeliba coffee) and "Boisson"
+  (9: herbal teas/infusions, ginger-lemon syrup) -- the remaining catalog is
+  cosmetics, electronics, fashion, baby gear and agricultural tools. Scraped
+  wide (coicop_codes left unset for the classifier) rather than narrowed to
+  those two categories, matching the tchadcommerce_td precedent already
+  onboarded for this country.
+  Test run: prices collect --source mossosouk_td --max-items 20 -> rows
+  priced in XAF via schema:priceCurrency, distinct urls.
+  Page family: PDP only (sitemap gives the URL list; category pages never
+  fetched).

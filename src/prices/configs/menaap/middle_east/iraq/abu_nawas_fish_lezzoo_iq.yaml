@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/abu-nawas-fish-9644
+language: en
+currency: IQD
+cadence: weekly
+channel: specialty-food
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "abu_nawas_fish_lezzoo_iq"
+  venue_url: "https://www.lezzoo.com/erbil/m/abu-nawas-fish-9644"
+  currency: "IQD"
+  language: "en"
+notes: >
+  "Abu Nawas Fish" -- a named fishmonger venue on Lezzoo Erbil (fish-389
+  category page), found via the same follow-up sweep. Sells whole fresh
+  fish priced per weight tier (masgouf-style river fish, the traditional
+  Iraqi whole-fish preparation) plus a couple of fried-fish items --
+  channel=specialty-food, fills the fish/seafood gap category the task
+  brief calls out.
+
+  MEASURED 2026-09-11 via curl_cffi impersonate=chrome124: single GET,
+  hasMenu.hasMenuSection, 11 total items, 100% non-zero price, currency
+  IQD throughout. Sample: "Masgouf Fish 2 Kg" 36,000 IQD, "Masgouf Fish
+  2.5 Kg" 45,000 IQD (linear ~18,000 IQD/kg), "3 Pieces of Fried Fish"
+  18,000 IQD. Small catalog (11 SKUs, above the 5-row minimum but a thin
+  source -- read as a single-vendor price point, not a basket). Uses
+  `generic_lezzoo_venue`. End-to-end tested via `prices collect --source
+  abu_nawas_fish_lezzoo_iq --max-items 20`.

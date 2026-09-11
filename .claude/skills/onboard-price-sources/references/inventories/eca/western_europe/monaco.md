@@ -70,3 +70,37 @@ at zero) but does not answer it — Monaco still has no food source.
 **Confirmed absences (do not re-search):** `carrefour.mc`, `monoprix.mc` and
 `spar.mc` all fail DNS resolution. `casino.mc` resolves but is the Société des
 Bains de Mer casino, not the French Casino supermarket chain.
+
+---
+
+## UPDATE 2026-09-11 (food-sourcing pass) — TWO FOOD SOURCES SHIPPED
+
+Monaco is no longer a food-source-zero country. **Result: 2 shipped
+(obba_mc, vinalia_mc), both genuinely Monaco-domiciled specialty-food
+retailers found via French-language search for épicerie fine / cave à vin
+rather than supermarkets.**
+
+| Source | URL | Channel | Status | Notes |
+|---|---|---|---|---|
+| `obba_mc` | https://www.obba.mc/ | specialty-food | **SHIPPED — 37 rows in a --max-items 20 test, all distinct urls/ids, 0 zero-price, 100% EUR** | Fine grocery / butcher / fishmonger ("Wagyu & Produits d'exception"). Domicile confirmed: /contact/ gives "La Panorama, 57 rue Grimaldi 98000 Monaco". WooCommerce; Store API 500s (broken plugin, confirmed 3 request variants), so scrapes the server-rendered shop-loop HTML instead (standard `li.product` / `woocommerce-loop-product__title` / `woocommerce-Price-amount` markup). Covers meat, fish/seafood, wine/spirits, ice cream. |
+| `vinalia_mc` | https://www.vinalia.mc/ | specialty-food | **SHIPPED — 95 rows in a --max-items 20 test, all distinct urls/ids, 0 zero-price, 100% EUR** | Wine/champagne/spirits/épicerie fine, 718 products across 65 categories. Domicile confirmed via +377 (Monaco country code) phone number. Odoo 17 website_sale; `/shop`'s own pager is broken and hidden by custom CSS, so the spider seeds all 65 category URLs and follows each category's own (CSS-hidden but HTML-present) `/page/N` links. Covers charcuterie, tinned fish, sauces/oils, chocolate, honey alongside wine. |
+
+Both sidestep the France/Monaco shared-platform duplication question below
+by being their own standalone platform instances (Odoo / WooCommerce on a
+`.mc` domain with Monaco-specific evidence), not a shared national chain
+deployment.
+
+## Candidates checked and rejected this pass
+
+| Candidate | What | Why not shipped |
+|---|---|---|
+| `marche-u.mc` | Système U's own `.mc` storefront, genuinely Monaco-domiciled (7 bd d'Italie) | Brochure/showcase only — `/nos-rayons/*` department pages carry zero price tokens and zero cart mentions. Resolves the France/Monaco domain-ownership question for THIS domain (it's not the shared coursesu.com platform) but there is no online ordering to onboard. |
+| `delovery.mc` | Genuine `.mc` food-delivery platform | Re-probed per standing instruction to retry Cloudflare blocks — still 403 on chrome124/chrome120/safari17_0. Verdict unchanged. |
+| `mrroomservice.mc` | Curated multi-shop concierge delivery (foie gras, caviar, wine, Dean & DeLuca) | No platform fingerprint matched; shop pages render zero price tokens server-side (client-rendered). Needs a Playwright network trace, not attempted — OBBA/Vinalia already filled the slot. |
+| `mitronbakery-monaco.com` | Bakery with an "EPICERIE-FINE & BOUTIQUE" order page | Wix site; "ecwid" homepage hits are Wix's own storefront-widget self-reference (same false-fingerprint pattern as neufeldhof_li), not a real Ecwid store. Category page renders zero prices server-side. |
+
+**The France/Monaco shared-platform policy question remains OPEN and
+deliberately unanswered** (courses.monoprix.fr, Carrefour Market Monaco's
+drive page, coursesu.com/drive-marcheu-monaco) — moot for this pass since
+two genuinely Monaco-domiciled sources now exist, but still unresolved for
+a future pass that might want the bigger French-chain catalogs.

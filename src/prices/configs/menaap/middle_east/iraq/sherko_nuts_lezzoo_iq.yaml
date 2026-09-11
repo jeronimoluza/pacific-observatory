@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/sherko-nuts-1594
+language: en
+currency: IQD
+cadence: weekly
+channel: specialty-food
+source_key: sherko_nuts_lezzoo_iq
+spider_kwargs:
+  source_label: sherko_nuts_lezzoo_iq
+  venue_url: https://www.lezzoo.com/erbil/m/sherko-nuts-1594
+  currency: IQD
+  language: en
+archive_prefix: "www.lezzoo.com/erbil/m/sherko-nuts-1594/"
+archive_path_re: '^/erbil/m/sherko-nuts-1594/[^/?]+/?$'
+notes: |
+  Sherko Nuts -- a named first-party nuts/dried-goods specialist in Erbil,
+  Iraq, storefront hosted on Lezzoo. Uses the shared `generic_lezzoo_venue`
+  spider (venue_url kwarg only). Same platform/discovery method as
+  varya_grocery_lezzoo_iq (see that manifest for background); found by
+  filtering Lezzoo's ~1000-venue Erbil directory for nuts/grocery/butcher/
+  fish/dates vendor names rather than restaurants.
+
+  Directly addresses the "nuts, in shell or shelled" COICOP-01 leaf family
+  (almonds/pistachios/hazelnuts/etc.) that this campaign's brief flags as
+  a regional-staple target -- a pure specialist, not a supermarket aisle.
+
+  MEASURED 2026-09-11: single GET embeds a JSON-LD "hasMenu" node, single
+  "Nuts" section, 60 items, 100% non-zero IQD prices read from
+  Offer.priceCurrency. Sample: Local Chickpeas 3,000 IQD, Turkish Obaid
+  Pistachio 4,000 IQD, Almond With Peel 7,000 IQD, Hazelnut 15,000 IQD.
+  End-to-end tested via
+  `python run.py prices collect --source sherko_nuts_lezzoo_iq --max-items 20`.
+
+  Same single-GET-no-pagination limitation as other Lezzoo venue manifests.

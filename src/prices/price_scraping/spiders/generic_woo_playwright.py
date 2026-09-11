@@ -21,31 +21,41 @@ MEASURED 2026-09-11 against the 9 hcdn-flagged tenants named in
   NO Playwright involved at all: leskanso.com, lexmakyty.com,
   gotrustmesl.com, torodocl.com, albasatinaldhabia.com, almatjar.ly,
   greenapplespharmacy.com, souristore.com. The block hcdn presents to
-  curl_cffi is a TLS/JA3 fingerprint denylist against that specific
-  impersonation signature, not a real content-level proof-of-work for
-  these 8 -- so for them, disabling impersonation alone is already
-  sufficient and Playwright never needs to run at collection time.
-- One tenant, nesraf.com, stayed 403 even to a plain (non-impersonating)
-  request. There, and presumably on harder hcdn deployments generally, a
-  real headless Chromium homepage visit is required: the browser's own
-  `page.goto()` still comes back 403, but the challenge page's embedded
-  JS solves the proof-of-work in the background and sets an `hcdn`
-  cookie regardless -- carrying that cookie forward on a plain HTTP
-  request then returns 200.
+  curl_cffi on these 8 is a TLS/JA3 fingerprint denylist against that
+  specific impersonation signature, not a real content-level proof-of-
+  work -- so for them, disabling impersonation alone is already
+  sufficient and Playwright never needs to touch a Store API request.
+- One tenant, nesraf.com, stayed 403 to BOTH curl_cffi AND plain
+  (non-impersonating) HTTP, even carrying cookies harvested from a real
+  Playwright homepage visit -- Scrapy's Twisted HTTP11 handler's own TLS
+  fingerprint is apparently also denylisted there, a stricter posture
+  than the other 8. Proven live: keeping ONE Playwright browser page open
+  and navigating IT directly to each Store API page (homepage first, then
+  the API URLs, all inside the same context/session -- no hand-off to a
+  plain-HTTP client at all) returns 200 every time. Handing the harvested
+  cookies to a *second*, independent browser context/process (which is
+  what scrapy-playwright's own download handler does per request) does
+  NOT reproduce this -- it 403s exactly like plain HTTP, confirmed live:
+  the cookie-plus-different-client combination is what's rejected, not
+  merely the absence of a cookie. So nesraf needs the actual browser
+  session kept alive across every page, while the other 8 do not.
 
-Design ("Playwright to clear the challenge once, plain HTTP to scrape",
-matching the pattern already used for JSON-API discovery elsewhere in this
-repo): run a single Chromium homepage visit per crawl via Playwright's
-ASYNC api (Scrapy already runs under TWISTED_REACTOR = AsyncioSelector-
-Reactor, so the sync Playwright api cannot be used here -- it refuses to
-run inside an existing event loop), harvest whatever cookies that visit
-produced, and hand them to WooBaseSpider's ordinary Store API pagination
-over plain Twisted HTTP11. Every page of every subsequent crawl run still
-starts with a fresh warm-up (spider start-up cost only, not per-request):
-cheap relative to a full page load per product page, and robust to a
-tenant whose block is content-level rather than a fingerprint denylist.
-If a page still comes back 403 mid-crawl (challenge re-armed), the
-warm-up is re-run once and that page is retried before giving up on it.
+Design ("Playwright to clear the challenge once, plain HTTP to scrape" as
+the default; escalate to full in-browser rendering only for a tenant that
+proves the cheap path does not work): run one Chromium homepage visit per
+crawl via Playwright's ASYNC api (Scrapy already runs under
+TWISTED_REACTOR = AsyncioSelectorReactor, so the sync Playwright api
+cannot be used here -- it refuses to run inside an existing event loop),
+harvest whatever cookies that visit produced, and hand them to
+WooBaseSpider's ordinary Store API pagination over plain Twisted HTTP11
+(curl_cffi impersonation explicitly disabled for this spider -- see
+custom_settings -- since it is the thing hcdn blocks). If the very first
+page still comes back 403 despite the warm-up cookies, the whole crawl
+falls back to a single long-lived Playwright page that never hands off to
+plain HTTP: it stays on the homepage-warmed session and navigates that
+same page to every Store API URL in turn, extracting each page's JSON
+from the rendered body text (Chromium wraps a direct navigation to a JSON
+response in a generated HTML/`<pre>` viewer, not the raw bytes).
 
 Uses the cached Chromium at ~/.cache/ms-playwright/chromium-1200 on the
 box this was built on -- `playwright install` itself fails there (OS is
@@ -53,13 +63,14 @@ unsupported by Playwright's installer) but the cached browser launches
 fine; nothing here re-invokes the installer.
 """
 
+import json
 import logging
 from urllib.parse import urlsplit
 
 import scrapy
 from playwright.async_api import async_playwright
 
-from ._woo_base import WooBaseSpider
+from ._woo_base import MAX_PAGES, PER_PAGE, WooBaseSpider
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +98,11 @@ class GenericWooPlaywrightSpider(WooBaseSpider):
             "price_scraping.middlewares.CustomUserAgentMiddleware": None,
         },
         "USER_AGENT": _UA,
+        # Let a 403 (hcdn still unhappy despite the warm-up cookies) reach
+        # parse_page instead of being silently dropped by HttpErrorMiddle-
+        # ware -- applies to every page, including the base class's own
+        # follow-up pagination requests, not just the first one.
+        "HTTPERROR_ALLOWED_CODES": [403],
     }
 
     def __init__(
@@ -125,12 +141,67 @@ class GenericWooPlaywrightSpider(WooBaseSpider):
                     logger.warning(f"{self.name}: warm-up navigation error: {exc}")
                 # The challenge's own JS may still be solving the PoW in the
                 # background even when the initial navigation itself was a
-                # 403 (nesraf.com) -- wait it out before reading cookies.
+                # 403 -- wait it out before reading cookies.
                 await page.wait_for_timeout(_WARMUP_WAIT_MS)
                 cookies = await ctx.cookies()
             finally:
                 await browser.close()
         return {c["name"]: c["value"] for c in cookies}
+
+    async def _fallback_playwright_crawl(self):
+        """Full in-browser crawl for a tenant where the harvested cookie
+        does not survive a hand-off to a different HTTP client. Keeps one
+        Playwright page alive from the homepage warm-up through every
+        Store API page -- never leaves the browser.
+        """
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            try:
+                ctx = await browser.new_context(user_agent=_UA)
+                page = await ctx.new_page()
+                try:
+                    await page.goto(
+                        self._home_url, wait_until="domcontentloaded", timeout=30000
+                    )
+                except Exception as exc:
+                    logger.warning(f"{self.name}: fallback warm-up error: {exc}")
+                await page.wait_for_timeout(_WARMUP_WAIT_MS)
+
+                pg = 1
+                while pg <= MAX_PAGES:
+                    url = self._page_url(pg)
+                    try:
+                        await page.goto(
+                            url, wait_until="domcontentloaded", timeout=30000
+                        )
+                    except Exception as exc:
+                        logger.warning(
+                            f"{self.name}: fallback nav error at page={pg}: {exc}"
+                        )
+                        break
+                    raw = await page.evaluate("() => document.body.innerText")
+                    try:
+                        products = json.loads(raw)
+                    except (ValueError, TypeError):
+                        logger.warning(
+                            f"{self.name}: fallback non-JSON body at page={pg} "
+                            f"({url})"
+                        )
+                        break
+                    if not isinstance(products, list) or not products:
+                        break
+                    logger.info(
+                        f"{self.name} page={pg} count={len(products)} (fallback)"
+                    )
+                    for p_ in products:
+                        item = self._item(p_)
+                        if item:
+                            yield item
+                    if len(products) < PER_PAGE:
+                        break
+                    pg += 1
+            finally:
+                await browser.close()
 
     async def start(self):
         cookies = await self._warm_up()
@@ -141,35 +212,22 @@ class GenericWooPlaywrightSpider(WooBaseSpider):
         yield scrapy.Request(
             self._page_url(1),
             callback=self.parse_page,
-            # A JS-challenge tenant (nesraf.com) can still 403 the very
-            # first page even after a successful cookie warm-up on a later
-            # visit; without handle_httpstatus_list, Scrapy's HttpError-
-            # Middleware silently drops 403 responses before parse_page
-            # ever sees them, and the 403-retry branch below never fires.
-            meta={**self._meta(1), "handle_httpstatus_list": [403]},
+            meta=self._meta(1),
             cookies=cookies,
             headers={"User-Agent": _UA},
         )
 
     async def parse_page(self, response):
-        if response.status == 403 and not response.meta.get("rewarmed"):
-            page = response.meta["page"]
+        if response.status == 403:
             logger.warning(
-                f"{self.name}: page={page} still 403 -- re-running warm-up once"
+                f"{self.name}: page=1 still 403 over plain HTTP even with "
+                "warm-up cookies -- the cheap cookie-then-HTTP shortcut doesn't "
+                "work for this tenant; falling back to a single long-lived "
+                "Playwright session for the whole crawl"
             )
-            cookies = await self._warm_up()
-            yield scrapy.Request(
-                self._page_url(page),
-                callback=self.parse_page,
-                meta={
-                    **self._meta(page),
-                    "rewarmed": True,
-                    "handle_httpstatus_list": [403],
-                },
-                cookies=cookies,
-                headers={"User-Agent": _UA},
-                dont_filter=True,
-            )
+            async for item in self._fallback_playwright_crawl():
+                yield item
             return
+
         for result in super().parse_page(response):
             yield result

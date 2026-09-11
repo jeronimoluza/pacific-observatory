@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: o4a2_to
+spider_kwargs:
+  vendor_filter: "Pepe & Pusiaki"
+url: https://o4a2.com/
+language: en
+cadence: weekly
+channel: wholesale
+timeout: 600
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[a-z0-9-]+$'
+notes: |
+  Discovered 2026-09-11 (Pacific food-source pass). Pepe & Pusiaki
+  ('Ohonui, 'Eua) is a named, real Tongan bulk food retailer, one of the
+  distinct named retailers on the O4A2 (https://o4a2.com) Shopify-based
+  grocery-delivery marketplace serving Tonga (Shopify.country="TO",
+  Shopify.currency active="NZD"). Not previously onboarded. Per the
+  onboard-price-sources marketplace-as-directory doctrine, this manifest
+  scopes the shared o4a2_to spider to vendor="Pepe & Pusiaki" only.
+  Tier 1B: /products.json?limit=250&page=N, no auth, pagination via `page`
+  cursor to exhaustion.
+  Measured live 2026-09-11 (full unbounded /products.json walk, filtered to
+  this vendor): 87 rows, all priced, currency 100% NZD (Shopify-declared).
+  Sample items: "Box of Chicken (Puha Moa) 15kg", "Chicken Wings 15kg",
+  fish fingers -- bulk poultry/frozen-food packs (15kg cartons), a
+  wholesale unit size distinct from the small-pack retail SKUs the other
+  O4A2 vendors carry. channel: wholesale (not supermarket) to reflect the
+  bulk-pack unit sizes. 'Eua is otherwise unrepresented among Tonga's
+  onboarded sources (Golden Star/Hihifo/Rainbow Top = Tongatapu, Pingi/Bako
+  = Ha'apai).
+  ANALYTICAL CAVEAT (same as every other O4A2 vendor manifest): O4A2 is a
+  diaspora gifting platform -- buyer pays in NZD, recipient collects
+  in-store in Tonga. Retailer, goods and collection point are genuinely
+  Tongan (locality holds), but prices are NZD gifting-platform prices, not
+  domestic pa'anga (TOP) shelf prices, and may carry a platform margin/FX
+  spread. Treat as a Tongan retail signal, not a CPI-grade domestic price.

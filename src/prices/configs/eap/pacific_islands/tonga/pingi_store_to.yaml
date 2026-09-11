@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: o4a2_to
+spider_kwargs:
+  vendor_filter: "Pingi Store, Ha’apai"
+url: https://o4a2.com/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 600
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[a-z0-9-]+$'
+notes: |
+  Discovered 2026-09-11 (Pacific food-source pass). Pingi Store, Ha'apai
+  (Pangai, Ha'apai group) is a named, real Tongan general store, one of the
+  distinct named retailers on the O4A2 (https://o4a2.com) Shopify-based
+  grocery-delivery marketplace serving Tonga (Shopify.country="TO",
+  Shopify.currency active="NZD"). Already flagged as a named vendor in
+  golden_star_to.yaml's 2026-09-01 catalogue audit (180 SKUs at that date)
+  but never scaffolded as its own source until now. Per the
+  onboard-price-sources marketplace-as-directory doctrine, this manifest
+  scopes the shared o4a2_to spider to
+  vendor="Pingi Store, Ha’apai" only (note the Shopify vendor field uses a
+  curly apostrophe U+2019, not a straight quote).
+  Tier 1B: /products.json?limit=250&page=N, no auth, pagination via `page`
+  cursor to exhaustion.
+  Measured live 2026-09-11 (full unbounded /products.json walk, filtered to
+  this vendor): 181 rows, all priced, currency 100% NZD (Shopify-declared).
+  Sample items: canned tomato, cooking oil -- this is Ha'apai's only
+  onboarded retail source in the whole repo, filling a distinct outer-island
+  gap that Tongatapu-based vendors (Golden Star, Hihifo, Rainbow Top) do not
+  represent.
+  ANALYTICAL CAVEAT (same as every other O4A2 vendor manifest): O4A2 is a
+  diaspora gifting platform -- buyer pays in NZD, recipient collects
+  in-store in Tonga. Retailer, goods and collection point are genuinely
+  Tongan (locality holds), but prices are NZD gifting-platform prices, not
+  domestic pa'anga (TOP) shelf prices, and may carry a platform margin/FX
+  spread. Treat as a Tongan retail signal, not a CPI-grade domestic price.

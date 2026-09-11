@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: trellisbaymarket_vg
+url: https://trellisbaymarket.com/
+language: en
+currency: USD
+cadence: weekly
+channel: convenience
+notes: |
+  Trellis Bay Market, a small physical mini-market and yacht-provisioning
+  business at Trellis Bay, Beef Island, Tortola, BVI. Standard WooCommerce
+  Store API, no auth. Verified live 2026-09-11: X-WP-Total is only 7 --
+  genuinely a mini-market's small online order catalog (Grocery, Fresh
+  Produce, Snacks, Cigarette categories), not a full supermarket. Channel
+  set to convenience rather than supermarket given the catalog size and
+  the business's own description of itself as a mini-market.
+
+  Enumerability: page 1 (per_page=20) returns all 7 products; page 2
+  returns 0 -- the entire catalog fits on one page (small but real, not a
+  homepage carousel -- these are the site's own Grocery/Fresh Produce/
+  Snacks/Cigarette category listings via the Store API, and 7/7 sampled
+  products carry a non-zero price).
+
+  Currency: Store API's own currency_code field reports USD on every
+  product -- MEASURED from the payload. Matches BVI's official currency
+  (the BVI uses the US dollar; no local currency of its own), so no
+  discrepancy flag needed here (unlike jollys_dm/sanpedroprovisioning_bz
+  where USD diverged from the country's nominal ECCU/BZD currency).
+
+  Second BVI source alongside riteway_vg (the territory's large 9-store
+  chain) -- adds tobacco (COICOP 02.4) and dairy/milk SKUs as an
+  independent cross-check, at genuinely small scale. Below the usual
+  "worth a spider" catalog size but clears the Phase 6 >=5-row gate
+  (--max-items 20 collect test 2026-09-11: 7 rows, 7 distinct urls, all
+  USD, all non-zero prices).

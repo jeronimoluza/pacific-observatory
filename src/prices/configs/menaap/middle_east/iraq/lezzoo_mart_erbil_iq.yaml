@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/lezzoo-mart-10077
+language: en
+currency: IQD
+cadence: weekly
+channel: convenience
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "lezzoo_mart_erbil_iq"
+  venue_url: "https://www.lezzoo.com/ar/erbil/m/lezzoo-mart-10077"
+  currency: "IQD"
+  language: "en"
+notes: >
+  "Lezzoo Mart" -- a general convenience-store venue on Lezzoo (Erbil,
+  Iraq), same platform and JSON-LD-menu technique as the earlier
+  bakhtiyari_lezzoo_iq / chawshin_lezzoo_iq sources but discovered via a
+  follow-up sweep of Lezzoo's Erbil category tree, per the FOLLOW-UP note
+  in chawshin_lezzoo_iq.yaml ("lezzoo.com exposes a full category tree for
+  Erbil ... A larger Lezzoo supermarket venue would be a materially better
+  Iraq source"). Uses the new `generic_lezzoo_venue` spider (generalizes
+  the two bespoke vendor spiders to any Lezzoo venue URL) because this
+  venue's JSON-LD node is `@type: LocalBusiness` with `hasMenu`, not
+  `@type: Restaurant` like the butcher precedent -- the generic spider
+  matches on the presence of `hasMenu` regardless of @type.
+
+  MEASURED 2026-09-11 via curl_cffi impersonate=chrome124: single GET
+  embeds hasMenu.hasMenuSection (33 sections) with 60 total menu items,
+  100% non-zero price, currency IQD throughout (min 250, max 35,000 IQD).
+  Catalog is packaged snacks/biscuits/crackers/mini-cakes (mostly Eti-brand
+  Turkish confectionery) -- division 01.1.8 sugar/confectionery skew, not
+  a full grocery basket. Single-page menu, no further pagination reachable
+  via plain GET (same limitation as the two existing Lezzoo vendors).
+  End-to-end tested via `prices collect --source lezzoo_mart_erbil_iq
+  --max-items 20`.

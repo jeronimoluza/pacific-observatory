@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/varya-grocery-7543
+language: en
+currency: IQD
+cadence: weekly
+channel: fresh-market
+source_key: varya_grocery_lezzoo_iq
+spider_kwargs:
+  source_label: varya_grocery_lezzoo_iq
+  venue_url: https://www.lezzoo.com/erbil/m/varya-grocery-7543
+  currency: IQD
+  language: en
+archive_prefix: "www.lezzoo.com/erbil/m/varya-grocery-7543/"
+archive_path_re: '^/erbil/m/varya-grocery-7543/[^/?]+/?$'
+notes: |
+  Varya Grocery -- a named first-party fresh-produce grocer in Erbil, Iraq,
+  storefront hosted on Lezzoo (same platform/pattern as the earlier
+  bakhtiyari_lezzoo_iq / chawshin_lezzoo_iq manifests -- see those for the
+  original Lezzoo/JSON-LD discovery background). Uses the shared
+  `generic_lezzoo_venue` spider (venue_url kwarg only, no new spider code).
+
+  Found via a direct crawl of Lezzoo's Erbil merchant directory
+  (www.lezzoo.com/erbil) looking specifically for grocery/butcher/fish/nuts
+  vendors rather than restaurants -- most of the ~1000 Erbil venues are
+  restaurants (out of COICOP 01/02 scope) so vendor-name filtering
+  (grocery/market/qasab/fish/nuts/dates) was required before probing.
+
+  MEASURED 2026-09-11: single GET of the venue page embeds a schema.org
+  JSON-LD "hasMenu" node with 60 items across "Fruits - Half a kilo",
+  "1 Kilo", "Vegetables - 1 Kilo", "Herbs" sections -- entirely produce, no
+  restaurant categories. Sample: Avocado 5,000 IQD, Pineapple 6,000 IQD,
+  Kiwi 1,750 IQD, Banana 990 IQD. 100% non-zero prices, currency IQD read
+  directly from the JSON-LD Offer.priceCurrency (not inferred).
+  End-to-end tested via
+  `python run.py prices collect --source varya_grocery_lezzoo_iq --max-items 20`.
+
+  Same single-GET-no-pagination limitation as the other Lezzoo venue
+  manifests: catalog size here (60) may be undercounted vs the live app,
+  but it's the full page-1 menu the platform serves server-side.

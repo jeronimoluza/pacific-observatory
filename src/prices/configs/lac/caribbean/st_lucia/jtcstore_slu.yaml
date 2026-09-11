@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jtcstore_slu
+url: https://www.jtcstore.com/
+language: en
+cadence: weekly
+channel: supermarket
+currency: XCD
+notes: |
+  Onboarded 2026-09-11. St Lucia's second independent food/grocery source
+  (first: massy_stores_slu). Genuine local online grocery retailer with a
+  physical distribution/retail point at Best Buy, Bridge Street, Castries
+  (opposite the General Post Office) -- not a diaspora/US shipping site.
+  Sells Caribbean, Indian, Chinese, Middle Eastern and Italian grocery
+  items alongside common supermarket staples.
+
+  Despite the domain name this is a Wix site, not WordPress -- the
+  WooCommerce Store API paths (/wp-json/wc/store/v1/products and the
+  ?rest_route= form) both no-op (404 / silently ignored, homepage HTML
+  echoed back). Uses the shared JsonLdSitemapBaseSpider pattern (same as
+  atuagkat_gl, nayelis_closet_gn): sitemap.xml -> store-products-sitemap.xml
+  (665 PDP urls under /product-page/<slug>) -> each PDP server-renders a
+  schema.org Product JSON-LD block for SEO even though the page itself is
+  a client-rendered Wix SPA shell that never exposes product data to a
+  plain HTTP GET otherwise.
+
+  Currency XCD read directly from the JSON-LD offers.priceCurrency field
+  (matches countries.yaml st_lucia) -- not inferred from a "$" glyph.
+  Page family parsed: PDP only (via sitemap enumeration, no listing pages
+  crawled).
+
+  Test run 2026-09-11 (--max-items 20, closed on closespider_itemcount so
+  ran slightly over the 20 in-flight): 22 rows, 22 distinct url, 21 distinct
+  product_name (one clearance duplicate), 100% XCD, all non-zero prices,
+  price range 1.00-128.80. Sample: "AMMA'S KITCHEN MADRAS MURUKKU 200 GM"
+  XCD 13.00 (sku 13411442401). curl_cffi impersonate="chrome124" clears
+  every path -- no WAF encountered. 665 PDP urls total in the sitemap
+  (unbounded run not yet performed).

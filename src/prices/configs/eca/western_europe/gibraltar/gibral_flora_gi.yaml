@@ -1,12 +1,12 @@
 scaffolding: spider
 spider: generic_woo_configured
 url: "https://www.gibral-flora.gi/"
-channel: supermarket
+channel: dept-store
 coicop_classification: classifier
 analytical_role: retailer_sku
 extraction_pattern: scrapy_api
 language: en
-currency: GIP
+currency: GBP
 cadence: weekly
 coicop_codes: null
 active: true
@@ -15,7 +15,7 @@ start_urls: null
 spider_kwargs:
   source_label: "gibral_flora_gi"
   base_url: "https://www.gibral-flora.gi"
-  currency: "GIP"
+  currency: "GBP"
   language: "en"
   api_url: "https://www.gibral-flora.gi/wp-json/wc/store/v1/products"
 scrapy_settings:
@@ -26,3 +26,29 @@ notes: >
   ANDIDATE | KEEP / WOOCOMMERCE-HTML/API-CANDIDATE | Likely WooCommerce; probe Store API or scrape ser
   ver-rendered shop cards. Adds flowers/plants and pet goods. | origin=gibraltar_prices_source_rows.cs
   v
+
+
+  CORRECTED 2026-09-11 (food-sourcing pass). Two fields fixed against a live
+  measurement of the WooCommerce Store API, not the original consolidation's
+  assumption:
+
+  1. channel was "supermarket"; this is NOT a food retailer. Live category
+     breakdown of a 100-item Store API page: Plants 25, Christmas Ideas 14,
+     Pet Corner 19, Mother's Day 9, Weddings 7, Valentines 6, This Month's
+     Specials 4, Garden Sundries 1, and Chocolate & Sweety Hampers 2. It is a
+     florist / gift / garden-and-pet shop -- "Gibral-Flora" literally names
+     the flora business. Only 2 of 100 sampled items (chocolate hampers)
+     touch COICOP division 01/02 at all. Recorded here so a food-coverage
+     report doesn't double-count this as a supermarket win: it fills
+     approximately zero food-and-beverage cells despite the tag it shipped
+     with. Changed to "dept-store" (cross-division general retail; no
+     "florist" value exists in the Channel enum).
+  2. currency was "GIP"; the Store API's own `prices.currency_code` field
+     returns "GBP" machine-readably (confirmed live: "regular_price":"145",
+     "currency_code":"GBP", "currency_symbol":"£"). Per the skill's rule the
+     site's own declared code wins over the countries.yaml default, and per
+     this campaign's brief GBP is an accepted Gibraltar currency (at par with
+     GIP). Corrected in both `currency:` and `spider_kwargs.currency`.
+
+  End-to-end re-verified 2026-09-11: --max-items 20 returned 93 rows, 93
+  distinct urls, 93 distinct product_id, 100% GBP, 0 zero/negative prices.

@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: choppies_ebasket_bw
+url: https://chptst205.echoppies.com/popular.php
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed 2026-09-11 (SSA anglophone-Africa food gap-fill pass). Choppies
+  is a major regional (Botswana-headquartered) supermarket chain; this is
+  its online "eBasket" storefront. Hostname looks like a staging alias
+  (chptst205.echoppies.com) but serves a real, live, publicly-reachable
+  catalogue with a Botswana Pula currency icon (botswana-currency.png) and
+  genuine food SKUs (TOMATO PP, CARROTS 1 KG PP, WHITE BREAD, CHICKEN TWIN
+  PACK, CHOPPIES 2L FRESH MILK) -- treated as live on that evidence.
+
+  Custom/legacy PHP platform (jQuery 1.7/1.8, Rackspace CDN assets), NOT a
+  known framework. No WAF: plain non-impersonating requests get HTTP 200.
+
+  Categories (from popular.php nav): b_cfc, m_beverages, "m_edible
+  groceries", "m_ethnic products", m_fresh, "m_general merchandise",
+  "m_house hold", m_perishable, "m_personal care", m_pets -- food-dominant
+  taxonomy with a few non-food categories mixed in (left in scope, the
+  classifier routes those SKUs by product name).
+
+  Listing: index.php?cat=<slug>&page=N, 20 products/page in div.itemBox
+  blocks (product id, name, price, PDP url all present in the listing
+  card -- no PDP fetch needed). Price already in whole Pula units (e.g.
+  "25.95"), no minor-unit division.
+
+  Enumerability: CONFIRMED live -- cat="m_edible groceries" pages 1-7 each
+  returned a genuinely distinct 20-id set (verified pairwise, zero repeats
+  across 7 pages sampled). No published total/"N of M" text in the HTML;
+  spider walks until an empty page or MAX_PAGES=30 safety cap.
+
+  Currency: BWP confirmed from the site's own Pula currency icon and plain
+  decimal price display; matches countries.yaml default.
+
+  coicop_codes left unset -- catalogue spans multiple COICOP-01 classes
+  (fresh produce, dairy, bakery, groceries) plus some non-food categories,
+  wide by the narrowness rule.

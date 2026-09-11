@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: atuagkat_gl
+url: https://sinemalu.wixsite.com/my-site-1
+language: kl
+cadence: monthly
+channel: other
+archive_prefix: "sinemalu.wixsite.com/"
+archive_path_re: '^/my-site-1/product-page/[^/?]+'
+notes: >
+  Onboarded 2026-09-11 from custom_2 batch (prior triage: NEEDS-REVIEW,
+  ambiguous). Wix storefront (free wixsite.com subdomain, not a custom
+  domain -- "Atuagkat" is a real Nuuk bookshop) -- same route as
+  nayelis_closet_gn: sitemap.xml -> store-products-sitemap.xml (419 PDP
+  urls) -> schema.org JSON-LD per PDP via the shared JsonLdSitemapBaseSpider.
+  Live-verified priceCurrency "DKK" -- the CORRECT call on this batch's
+  explicit Greenland currency-judgement warning (a EUR-quoting Greenland
+  site would need diaspora scrutiny; this one prices in Greenland's actual
+  currency, read from the payload). Books/media catalog. Channel left as
+  "other" (books have no dedicated enum value). Page family: PDP.

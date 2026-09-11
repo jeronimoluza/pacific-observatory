@@ -1,0 +1,69 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vinalia_mc
+url: https://www.vinalia.mc/shop
+channel: specialty-food
+language: fr
+currency: EUR
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+notes: |
+  Monaco's SECOND food-and-beverage source (shipped alongside obba_mc in
+  the same pass; previously 0 food sources of any kind for Monaco --
+  boutiqueacm_mc is Automobile Club merchandise, non-food).
+
+  Vinalia -- wine, champagne, spirits and fine-grocery ("épicerie fine")
+  merchant. Genuinely Monaco-domiciled: the storefront's own tel: link is
+  +377 97701775, +377 being Monaco's country calling code (not a shared
+  French national platform -- this is its own standalone Odoo instance,
+  so the France/Monaco duplication policy question flagged for
+  marche-u.mc / courses.monoprix.fr does not apply here).
+
+  Platform is Odoo 17 website_sale (/shop, /shop/category/<slug>,
+  /web/image/product.template/... asset paths). /shop itself reports
+  "718 produits" but its own pager is broken (an unrendered template
+  expression "as.ppg(5,)" leaks into the DOM, a sign of a misconfigured
+  snippet) and visually hidden by custom CSS besides -- an inline Italian
+  dev comment translates as "removed the previous/home/next pager...
+  navigation between products happens by scrolling, not buttons". The
+  pager <a href="/shop/category/<slug>/page/N"> links are still present
+  in the raw HTML even though CSS hides them, so Scrapy follows them
+  fine; a real browser user would not see a clickable button.
+
+  Because /shop's own pagination is broken, this spider seeds all 65
+  named categories (from the site's own category menu) as start_urls and
+  paginates each independently via its own /page/N links.
+
+  Enumerability measured live 2026-09-11 on category champagne-41 (77
+  produits): page 1 yielded 47 distinct product URLs, page 2 yielded 44,
+  overlap 7 (a "you might also like" carousel present on both pages) --
+  40 and 37 respectively are page-unique, so this is real pagination, not
+  a repeated page. A smaller category (epicerie-fine-sale-legumes-conserves-113,
+  9 produits) correctly has no /page/2 link at all -- single page, no
+  pagination bug.
+
+  Price and currency read from clean schema.org microdata inside each
+  product card -- <span itemprop="price">72.0</span> and
+  <span itemprop="priceCurrency">EUR</span> -- sidestepping the
+  French-formatted display span ("72,00&nbsp;€") entirely. Spot-checked
+  live: /shop/aubert-mathieu-vin-de-france-fugue-blanc-2025-21461 PDP
+  price 6,50 matches the category-grid price for the same product.
+
+  Category coverage is food-heavy beyond wine: épicerie fine sale
+  (charcuterie/apéritif, légumes/conserves, mer & rivière -- tinned
+  fish, pâtes/riz, sauces/huiles/condiments, truffes/champignons) and
+  épicerie fine sucrée (chocolat, confitures/miels, douceurs/pâtisserie,
+  panettoni). Directly covers alcohol, oils & fats, sugar/confectionery,
+  fish (tinned), cereals and condiments gap categories from the brief,
+  alongside the wine range.
+
+  Wide catalog (wine, spirits, charcuterie, honey, chocolate span
+  multiple COICOP classes) -- coicop_codes left unset for the classifier.
+
+  See obba_mc.yaml for the other Monaco candidates checked and rejected
+  this pass (mrroomservice.mc, mitronbakery-monaco.com, marche-u.mc,
+  delovery.mc, and the still-open France/Monaco shared-platform question).

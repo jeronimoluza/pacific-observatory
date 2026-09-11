@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: generic_lezzoo_venue
+url: https://www.lezzoo.com/erbil/m/sultan-butchery-and-market-9145
+language: en
+currency: IQD
+cadence: weekly
+channel: specialty-food
+source_key: sultan_butchery_lezzoo_iq
+spider_kwargs:
+  source_label: sultan_butchery_lezzoo_iq
+  venue_url: https://www.lezzoo.com/erbil/m/sultan-butchery-and-market-9145
+  currency: IQD
+  language: en
+archive_prefix: "www.lezzoo.com/erbil/m/sultan-butchery-and-market-9145/"
+archive_path_re: '^/erbil/m/sultan-butchery-and-market-9145/[^/?]+/?$'
+notes: |
+  Sultan Butchery and Market -- a named first-party butcher/mini-mart in
+  Erbil, Iraq, storefront hosted on Lezzoo. Uses the shared
+  `generic_lezzoo_venue` spider. Same discovery method as
+  varya_grocery_lezzoo_iq (Lezzoo Erbil-directory filtering for grocery/
+  butcher/fish/nuts vendor names, not restaurants).
+
+  MEASURED 2026-09-11: single GET embeds a JSON-LD "hasMenu" node, 60 items
+  across "Ketchup & Mayonnaise", "Fruits and vegetables", "Meat", "Discount"
+  sections -- a genuine mixed butcher+grocery, not a restaurant. Sample:
+  Heinz Tomato Ketchup 5,750 IQD, Cucumbers 1,250 IQD, Eggplant 1,250 IQD,
+  Garlic 1,500 IQD, Green Pepper 1,250 IQD. 100% non-zero IQD prices read
+  from Offer.priceCurrency. channel=specialty-food reflects the
+  butcher-plus-produce mix rather than a full supermarket aisle range.
+  End-to-end tested via
+  `python run.py prices collect --source sultan_butchery_lezzoo_iq --max-items 20`.
+
+  Same single-GET-no-pagination limitation as other Lezzoo venue manifests.

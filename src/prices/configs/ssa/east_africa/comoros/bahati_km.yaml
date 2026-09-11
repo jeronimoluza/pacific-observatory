@@ -1,0 +1,58 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bahati_km
+url: https://bahati-marketplace.tech/
+language: fr
+cadence: weekly
+channel: marketplace
+archive_prefix: "bahati-marketplace.tech/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  Page family: API (spider reads /store/products, a Medusa v2 JSON endpoint;
+  the emitted /products/<id> URLs are the storefront's customer-facing
+  permalinks but the spider never fetches them).
+
+  Comoros' fourth manifest. Found 2026-09-11 via French-language search
+  ("Anjouan Mohéli boutique en ligne alimentation courses livraison") --
+  the first Comoros candidate found that advertises delivery to all three
+  islands (Grande Comore, Anjouan, Mohéli) rather than Moroni alone.
+
+  PLATFORM: Next.js storefront over a same-origin Medusa v2 backend
+  (/store/* is proxied through the Next.js host itself, not a separate API
+  domain). No public discovery needed beyond finding the storefront's
+  publishable API key, which is embedded in a Next.js JS chunk and required
+  on every /store/* call (400 "Publishable API key required" without it).
+  This is a standard Medusa storefront key shipped to every browser that
+  loads the page, not a secret.
+
+  CURRENCY / LOCALITY: the backend defines two Medusa regions -- "Europe"
+  (EUR; DK/FR/DE/IT/ES/SE/GB) and "Comores" (KMF; KM only,
+  region_id=reg_01KKZ4732Y447ZQF7FRHXFYPK3). Fetching the same product by
+  region_id confirmed a KMF-only price on the sampled product (no EUR price
+  set) -- this is a genuinely KMF-native price list, not a currency-
+  converted mirror. `region_id` must be passed on every /store/products
+  call or `calculated_price` does not resolve. Verified 2026-09-11: KMF
+  amounts are plain integers in MAJOR units (25,000 basketball shoes,
+  12,500 body lotion, 3,000 soap/gel) -- no minor-unit division needed.
+
+  SCOPE: the whole catalogue, deliberately unscoped, same call as
+  comoresenligne_km / kuuza_km. 198 products site-wide (measured
+  2026-09-11). Fashion/beauty-led (sneakers, skincare, boubous, jewellery)
+  with a THIN food tail -- spot check found ~8 genuine food/drink items
+  (Thé marron, Thé rose, Sardine, Sel, Boisson Orange, Huile, Oignon)
+  against ~190 non-food rows. Non-food rows are wanted anyway; the
+  classifier assigns a leaf per product. `categories` is empty on every
+  product sampled -- left null rather than invented.
+
+  MULTI-VENDOR: the storefront nav includes a "/boutiques" (shops) link,
+  implying multiple distinct seller storefronts under one platform -- the
+  GLOSSARY marketplace test. channel: marketplace, not supermarket.
+
+  Enumerability confirmed: offsets 0/50/100/150 each returned a disjoint
+  50-product slice (198 distinct product ids total across the full walk,
+  zero repeats).
+
+  Test run 2026-09-11 (--max-items 20): 20 rows, 20 distinct URLs, 100%
+  KMF, 0 blank names, 0 non-positive prices.

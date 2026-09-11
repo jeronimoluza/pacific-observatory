@@ -1,0 +1,73 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: prices_sy
+module: menaap.middle_east.syria.prices_sy
+function: fetch_prices_sy
+url: https://prices.sy/
+language: ar
+currency: SYP
+cadence: irregular
+fallback_date: 2025-01-01
+notes: |
+  "أسعار سوريا" (Syria Prices) — a live PHP site (`index.php?cat=<id>`)
+  tracking branded grocery-item prices by Syrian governorate. MEASURED
+  2026-09-11: this is CROWD-SOURCED (the site has a "report a price" /
+  "أبلغ عن سعر" feature), not a government or WFP publication -- Syria's
+  own currently has ZERO food-price sources of any analytical_role, so
+  this fills a total gap even though the publisher is a citizen board
+  rather than an official one.
+
+  CATEGORIES: the site's own nav exposes 12 category ids; only the
+  COICOP-01/02-relevant six are walked by the fetcher (1=مواد غذائية
+  general groceries, 2=لحومات, 3=لحوم meat, 8=فواكه fruit, 9=مشاريب
+  drinks, 10=خضار vegetables). Deliberately excluded: 4=منظفات cleaning,
+  5=محروقات fuel, 6=مواصلات transport, 7=طبية medical, 11=خدمات services,
+  12=unlabeled.
+
+  ACCESS: plain HTTP GET `index.php?cat=N&gov=&search=`, no WAF, no auth.
+  Each category's LISTING page already embeds name, brand, unit, city,
+  price and last-update date per item (`<div class="price-card">...`) --
+  no need to hit the per-item `product.php?id=N` detail page. MEASURED
+  sample (cat=1, id=1): "سكر أبيض" (white sugar), brand "الأسرة", unit
+  "1 كغ", price 15,800 ل.س (SYP), city دمشق, updated 2026/03/09.
+
+  ENUMERABILITY (MEASURED): the 6 food categories returned 45 / 1 / 12 / 6
+  / 5 / 8 = 77 total DISTINCT product ids on 2026-09-11 (verified by id,
+  not just count) -- the site does not use classic page-1-vs-page-2
+  pagination (each category IS its own full listing), so enumerability is
+  demonstrated by disjoint category membership rather than a page
+  parameter.
+
+  CURRENCY: SYP, read directly from the payload's own "ل.س" (Syrian Pound)
+  unit label next to every price -- not inferred from TLD.
+
+  STALENESS -- flagged honestly, not silently shipped: every one of the 77
+  items sampled 2026-09-11 carries a "last updated" date of 2026/03,
+  6 months old, despite the site's own "دليلك الأول لأسعار السلع
+  والمواد اليومي" (your #1 DAILY price guide) framing. This may be a
+  low-traffic or abandoned crowd board. Shipped anyway because every hard
+  gate (real SYP prices, real Syrian cities, real branded items, disjoint
+  ids across categories) passes on today's live payload -- but do not
+  assume future runs will find fresh rows; `fetch_prices_sy` returning
+  `None` for a long stretch is expected given this staleness, not a bug.
+  `fallback_date` set to 2025-01-01 (well before the observed 2026-03 rows)
+  so the first run actually ingests the existing snapshot instead of
+  filtering it all out.
+
+  coicop_classification: classifier -- free-text branded Arabic grocery
+  names ("سمن بقري" cow ghee/samn, "برغل خشن" coarse bulgur, "عدس أحمر" red
+  lentils, "مكدوس" eggplant preserve, "زيت زيتون" olive oil, ...) are
+  exactly the long free-text list the ML classifier exists for.
+  coicop_codes deliberately left UNSET (wide catalog across cereals,
+  dairy, oils, sugar/confectionery, meat, fruit, veg, drinks).
+
+  UNIT: parsed from the site's own weight/volume span ("1كغ" -> kg, "500غ"
+  -> g, "1ل" -> L) via `_UNIT_RE`; left null when it doesn't parse rather
+  than guessing.
+
+  End-to-end tested 2026-09-11 via
+  `python run.py prices collect --source prices_sy --max-items 20` (see
+  test-run row/url counts recorded in the campaign report).

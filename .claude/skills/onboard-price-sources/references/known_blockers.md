@@ -2614,3 +2614,51 @@ fashion), `sale_af` (WooCommerce, AFN, multi-vendor marketplace),
 catalog), `sawdagar_af` (bespoke REST API, AFN, general marketplace incl.
 food categories, 883 products), `dostonline_af` (sitemap+JSON-LD, AFN,
 Kabul electronics retailer, 193 product urls).
+
+## EU/Atlantic micro-territory food-sourcing pass (gibraltar, greenland,
+liechtenstein, monaco, st_martin_french_part, sint_maarten_dutch_part,
+suriname, san_marino, andorra, faroe_islands) — 2026-09-11
+
+Two Monaco sources shipped this pass (`obba_mc`, `vinalia_mc` — see
+`references/inventories/eca/western_europe/monaco.md` for the full
+write-up). Gibraltar, Liechtenstein, St Martin, Sint Maarten, Suriname,
+San Marino and Andorra already had food-and-beverage sources from earlier
+same-day passes; this pass verified several end-to-end and fixed one
+mis-tagged manifest (`gibral_flora_gi`, a florist/gift shop wrongly tagged
+`channel: supermarket` and `currency: GIP` when the Store API declares
+GBP — corrected in-place). Faroe Islands and Greenland remain confirmed
+structural absences (third and fourth independent confirmation
+respectively) after a further Faroese/Danish-language, fish- and
+small-producer-focused search round.
+
+- **delovery.mc** (MC, Cloudflare) — re-probed per standing retry
+  instruction, still 403 on chrome124/chrome120/safari17_0. Unchanged.
+- **marche-u.mc** (MC) — genuinely Monaco-domiciled Système U storefront,
+  but brochure-only: department pages carry zero price tokens, zero cart
+  mentions.
+- **mrroomservice.mc** (MC) — curated multi-shop food-delivery concierge
+  app; no platform fingerprint matched, shop pages render zero price
+  tokens server-side (client-rendered). Needs a Playwright trace, not
+  attempted.
+- **mitronbakery-monaco.com** (MC) — Wix site; "ecwid" homepage hits are
+  Wix's own storefront-widget self-reference (same false-fingerprint
+  pattern as `neufeldhof_li`), not a real Ecwid store. Zero prices
+  server-side.
+- **bjor.fo** (FO, Föroya Bjór brewery) — WooCommerce theme present but
+  Store API 404s (`rest_no_route`) and `/vorur/` renders zero prices —
+  shop plugin inactive, brochure-only.
+- **local.fo/webshop/** (FO) — travel-magazine souvenir merch shop, not
+  food.
+- **faroelandia.com**, **origin.fo** (FO) — no platform fingerprint, zero
+  price tokens; B2B/marketing sites.
+- **bakkafrostshop.com** (FO-linked salmon brand) — real Shopify store
+  with real prices, but `Shopify.country="US"` / `currency=USD` and
+  Scottish SKUs mixed in — this is the brand's US consumer storefront,
+  not a Faroese domestic retailer. Locality-gate rejection, not a
+  platform failure.
+- **groenlandskehus.dk** (GL-linked) — Danish (Denmark)-domiciled retailer
+  selling Greenlandic-themed products to a Danish/EU market — same
+  neighbouring-market trap as Monaco/Andorra/Liechtenstein, just for
+  Greenland. Not probed further.
+- **polarseafood.com** (GL-linked seafood) — confirmed B2B/export only, no
+  consumer storefront to evaluate.
