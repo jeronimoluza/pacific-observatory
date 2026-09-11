@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: twpsz_sz
+url: https://shop.twpsz.com/
+language: en
+cadence: weekly
+channel: electronics
+notes: |
+  Probed 2026-09-11. WooCommerce Store API,
+  /wp-json/wc/store/v1/products?per_page=100&page=N, no auth. Page1 ids
+  (20) vs page2 ids (18) -> DISTINCT, paginates. Walked to an empty page:
+  38 products total (fits in 2 pages of per_page=20 / 1 page of
+  per_page=100). currency_code=SZL from the API, currency_minor_unit=2.
+  Small catalog but genuinely diverse for its size: smartphones (Samsung,
+  Redmi, Honor), home & kitchen appliances, TV & home appliances, audio,
+  books & audible, garden, health & beauty, sports & travel. Per the
+  wave-5 addendum, a small but paginating, breadth-spanning catalog is a
+  useful source here -- not rejected for size.
+  Page family: API (reads the JSON Store API directly, never fetches a
+  rendered page).
+  Test: prices collect --source twpsz_sz --max-items 20 -> 38 rows (whole
+  catalog, smaller than max-items), 38 priced. Sample: SZL 6874.00
+  "Samsung A56 5G - Base Model", SZL 1319.00 "Redmi A5 - Base Model",
+  SZL 1869.00 "Honor X5C - Base Model".

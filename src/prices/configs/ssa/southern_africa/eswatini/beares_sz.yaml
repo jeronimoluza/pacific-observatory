@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: beares_sz
+url: https://www.beares.co.sz/
+language: en
+cadence: weekly
+channel: dept-store
+notes: |
+  Probed 2026-09-11. Magento 2 storefront. /graphql is Cloudflare
+  Turnstile-protected on every curl_cffi profile tried (chrome124,
+  chrome120, safari17_0, chrome131, chrome133a all 403 "Just a moment...")
+  -- confirmed a real challenge, not a TLS-fingerprint false positive, so
+  this ships as scrapy_html against the server-rendered Luma-theme
+  category HTML (MagentoSSRBaseSpider) instead of GraphQL.
+  Gotcha: the apex domain (beares.co.sz) silently drops the ?p=2
+  pagination query param -- page 2 re-serves page 1 verbatim. The www.
+  subdomain paginates correctly: 0 overlap between page 1 (Liam 3-piece
+  Black Lounge Suite, ...) and page 2 (Veronique Queen 152cm Euro Top Bed
+  Set, ...) of the "shop-by-product" hub (total_count 195 for that one
+  hub alone). allowed_domains and DISCOVERY_URL both pin www.
+  Discovery: the homepage's linked categories rotate per visit
+  (banner-driven) so it is not a stable crawl seed. /media/sitemap.xml on
+  this domain IS stable but its <loc> entries are hardcoded to the
+  beares.co.za (South Africa) tenant -- a shared static sitemap asset
+  across the group's country storefronts, not evidence of the wrong site.
+  The spider's CATEGORY_URL_RE captures only the path after the .co.za
+  host and lets response.urljoin (against the .sz sitemap URL) rebuild it
+  on this domain; confirmed those .sz paths resolve with real
+  product-item-link/data-price-amount markup (e.g.
+  /shop-by-room/kitchen/fridge-freezers). 61 category paths found this
+  way, spanning furniture, appliances (fridges, microwaves, TVs, audio)
+  and mattresses.
+  SZL confirmed via <meta property="product:price:currency" content="SZL">
+  on the product-detail page and store=en_sz in image URLs.
+  Page family: both (crawls category listing pages for name+price+url;
+  no separate PDP fetch needed since the listing card already carries the
+  final price).
+  product_id fix: the base class's default (last URL path segment) picks
+  up the *category* id for this tenant's long-form PDP URLs
+  (.../id/1744/s/<slug>/category/173/ -> "173", identical for every
+  product in that category), so the spider overrides _item to pull the
+  real id out of the /id/<N>/ segment when present, falling back to the
+  base behaviour for this tenant's short-form SEO URLs (whose slug is
+  already a real per-product identifier).
+  Test: prices collect --source beares_sz --max-items 20 -> 22 rows, 22
+  priced, all with correct per-product ids after the fix (e.g. 1704
+  "Royal TV Stand with Storage" SZL 6999.99; 1712 "Sinta TV Stand with
+  Storage" SZL 4999.99).

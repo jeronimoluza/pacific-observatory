@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: thewineboutique_sz
+url: https://thewineboutique.net/
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Probed 2026-09-11. WooCommerce Store API,
+  /wp-json/wc/store/v1/products?per_page=100&page=N, no auth. Page1 ids
+  [2338,2225,...] vs page2 ids [1216,1213,...] -> DISTINCT, paginates.
+  Walked to an empty page: ~187 products across 2 pages (last page 87).
+  currency_code=SZL from the API, currency_minor_unit=2. Catalog is mostly
+  wine/sparkling wine/spirits/gift hampers plus a handful of unrelated
+  merchandise (a "Bucket hat" turned up in the sample) -- not purely one
+  COICOP class, so coicop_codes is left unset for the classifier rather
+  than forcing 02.1.x.
+  Page family: API (reads the JSON Store API directly, never fetches a
+  rendered page).
+  Test: prices collect --source thewineboutique_sz --max-items 20 -> 100
+  rows, 100 priced (per_page=100 overshoots the max-items fence, as
+  expected). Sample: SZL 160.00 "Bucket hat", SZL 260.00 "Cape Fox
+  Chardonnay 2023", SZL 320.00 "Tokara Cabernet Sauvignon".

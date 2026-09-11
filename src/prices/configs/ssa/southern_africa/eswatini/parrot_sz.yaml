@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: parrot_sz
+url: https://parrot.co.sz/
+language: en
+cadence: weekly
+channel: electronics
+notes: |
+  Probed 2026-09-11. WooCommerce Store API,
+  /wp-json/wc/store/v1/products?per_page=100&page=N, no auth. Page1 ids
+  [5892,5890,...] vs page2 ids [5869,5868,...] -> DISTINCT, paginates.
+  Walked to an empty page: ~233 products across 3 pages (last page 33).
+  currency_code=SZL from the API, currency_minor_unit=2. Catalog is
+  office/education electronics and stationery: projector screens,
+  whiteboards, flipcharts, laser pointers, planners, tripods, storage
+  media -- wide enough that coicop_codes is left unset for the classifier.
+  Page family: API (reads the JSON Store API directly, never fetches a
+  rendered page).
+  Test: prices collect --source parrot_sz --max-items 20 -> 100 rows, 100
+  priced (per_page=100 overshoots the max-items fence, as expected).
+  Sample: SZL 6284.90 "Parrot Electric Screen 2730*1580mm", SZL 6417.00
+  "Electric Projector Screen 3050*2310mm", SZL 6091.00 "Electric
+  Projector Screen 2440*1830mm".

@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ctm_bw
+url: https://ctm.co.bw/
+language: en
+cadence: weekly
+channel: home-improvement
+notes: |
+  Probed 2026-09-11. Magento 2 (Adobe Commerce) GraphQL at /graphql,
+  shared across CTM's country storefronts on the same Magento instance.
+  CRITICAL GOTCHA: without a Store header, https://ctm.co.bw/graphql
+  resolves to the KE (Kenya) store view -- storeConfig{store_code} on a
+  bare request returns "KE"/"CTM Kenya"/base_currency_code "KES", and a
+  bare products() query returned prices tagged currency "KES" even though
+  the request hit the .co.bw domain. Querying availableStores on this
+  domain returns only [{"code":"KE"}], but passing header Store: BW (or
+  Store: default) correctly resolves storeConfig to store_code "BW",
+  store_name "CTM Botswana", base_currency_code "BWP". Every request the
+  spider makes carries Store: BW -- confirmed this is what the addendum
+  warned about (ZAR/cross-border-chain currency bleed), except here it
+  was a Magento store-view misconfiguration serving Kenya, not South
+  Africa.
+  Overrides MagentoGraphQLBaseSpider's category-tree walk with a single
+  unfiltered products(filter:{}) paginated query (pageSize=100) plus the
+  Store: BW header, since the unfiltered query alone already returns the
+  full catalog (total_count 1097) without needing correct category ids
+  first.
+  Enumerability: page1 (pageSize 20) vs page2, with Store: BW, returned
+  20 distinct SKUs each (GR1CAT20R10KA... vs TVPTCA25A/SS...) -> DISTINCT.
+  Catalog: 1097 products, tiles + bathroom fixtures (basins, toilets,
+  shower heads, paper holders) -- home-improvement.
+  Prices come back as plain BWP decimal values (e.g. 287.86), no
+  minor-unit scaling needed on this GraphQL surface (unlike WooCommerce's
+  Store API elsewhere in this batch).
+  Page family: API (reads the JSON GraphQL endpoint directly, never
+  fetches a rendered page).
+  Test: prices collect --source ctm_bw --max-items 20 -> 100 rows, 100
+  priced (per_page=100 overshoots the max-items fence, as expected), all
+  currency=BWP after the Store: BW header fix. Sample: BWP 287.86
+  "Atrium Grey EcoTec Matt Porcelain Floor Tile - 600 x 600mm", BWP
+  388.58 "Idaho Grey Matt Ceramic Floor Tile - 600 x 600mm", BWP 349.90
+  "Lebo White Ceramic Basin - 450mm".
