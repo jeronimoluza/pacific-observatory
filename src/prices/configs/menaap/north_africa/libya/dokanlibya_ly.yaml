@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://dokanlibya.ly/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "dokanlibya_ly"
+  base_url: "https://dokanlibya.ly"
+  currency: "LYD"
+  language: "ar"
+  api_url: "https://dokanlibya.ly/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Add WooCommerce source row; l
+  ow priority due small SKU count | WooCommerce Store API: /wp-json/wc/store/v1/products?per_page=100&
+  page=N; price minor_unit=2, currency LYD | Live API 200; X-WP-Total 5 on 2026-09-10; narrow category
+   coverage | origin=libya_candidate_price_sources_2026-09-10.csv

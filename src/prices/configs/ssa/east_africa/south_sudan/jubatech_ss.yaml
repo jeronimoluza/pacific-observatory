@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://jubatech.net/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SSP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "jubatech_ss"
+  base_url: "https://jubatech.net"
+  currency: "SSP"
+  language: "en"
+  api_url: "https://jubatech.net/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPE-READY / WOOCOMMERCE ST
+  ORE API | Use WooCommerce Store API /wp-json/wc/store/v1/products?per_page=100&page=N. Extract price
+  s.price/regular_price/sale_price and currency_code USD. | Mostly electronics and accessories; refurb
+  ished/new status needs product metadata capture. | origin=south_sudan_candidate_price_sources_2026-0
+  9-10.xlsx

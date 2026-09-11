@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://montas.sr/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SRD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "montas"
+  base_url: "https://montas.sr"
+  currency: "SRD"
+  language: "en"
+  api_url: "https://montas.sr/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Use with caution in price bui
+  ld if only local-currency shelf prices are accepted; still a real Suriname order/delivery business. 
+  | WooCommerce Store API: https://montas.sr/wp-json/wc/store/v1/products ; products are EUR-priced bu
+  t site displays SRD conversion notes; collect original currency and, if project allows, normalized S
+  RD using published rate text | API returned 200; x-wp-total=262; price currency_code=EUR despite hom
+  epage showing local SRD conversion banner. | origin=suriname_price_source_candidates_2026_09_10.csv

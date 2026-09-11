@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://9yuu8d-tu.myshopify.com/"
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: GNF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "dhightzone_shopify_gn"
+  base_url: "https://9yuu8d-tu.myshopify.com"
+  currency: "GNF"
+  language: "fr"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Shopify storefront. Probe /pr
+  oducts.json and collections; parse product/list prices and compare-at prices. | Search cache describ
+  es 'DHightZone' as 100% Guinean with GNF product price, but myshopify subdomain and thin provenance 
+  mean review before integration. | origin=guinea_price_source_candidates_2026-09-10.csv

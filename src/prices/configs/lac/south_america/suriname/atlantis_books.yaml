@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://atlantis.sr/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SRD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "atlantis_books"
+  base_url: "https://atlantis.sr"
+  currency: "SRD"
+  language: "en"
+  api_url: "https://atlantis.sr/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Good COICOP books/printed mat
+  ter coverage; first-party local webshop. | WooCommerce Store API: https://atlantis.sr/wp-json/wc/sto
+  re/v1/products ; page through products and categories; prices are SRD minor-unit values | None found
+  . API returned 200; x-wp-total=2137; sample product had SRD 50.00. | origin=suriname_price_source_ca
+  ndidates_2026_09_10.csv

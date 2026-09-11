@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://www.oneallsports.com/collections/gevga-1"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GIP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "oneallsports_com_esports_gibraltar"
+  base_url: "https://www.oneallsports.com"
+  currency: "GIP"
+  language: "en"
+  products_path: "/collections/gevga-1/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: KEEP / SHOPIFY-HTML/API-CANDI
+  DATE | KEEP / SHOPIFY-HTML/API-CANDIDATE | Likely Shopify; use collection HTML or products.json scop
+  ed checks. | origin=gibraltar_prices_source_rows.csv

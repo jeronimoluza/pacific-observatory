@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://tsengisa.africa/shop/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SZL
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "tsengisa_africa"
+  base_url: "https://tsengisa.africa"
+  currency: "SZL"
+  language: "en"
+  api_url: "https://tsengisa.africa/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPABLE / WOOCOMMERCE MARKE
+  TPLACE | SCRAPABLE / WOOCOMMERCE MARKETPLACE | origin=eswatini_price_sources_added_2026-09-10.md

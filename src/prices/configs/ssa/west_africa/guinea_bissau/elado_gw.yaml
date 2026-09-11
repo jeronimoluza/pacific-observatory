@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.elado.gw/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: pt
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "elado_gw"
+  base_url: "https://www.elado.gw"
+  currency: "XOF"
+  language: "pt"
+  api_url: "https://www.elado.gw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: P1 - build now / ACCEPT | P1 
+  - build now / ACCEPT | Probed via live search 2026-09-10. Homepage exposes cart, shop navigation, pr
+  oduct cards, sale prices, Add to Cart buttons, ratings, and currency CFA/XOF. Examples include A4 pa
+  per 14,500 CFA, Canon toner 14,000 CFA, Canon printer 190,000 CFA, wireless headphones 4,500 CFA, wi
+  reless microphone 12,000 CFA, and blender 25,000 CFA. Scope is retailer_sku; likely parse category/a
+  rchive pages plus PDPs. High value for electronics, computer/peripheral, small appliance, office/pap
+  er goods coverage; not food-heavy. | origin=guinea_bissau_expanded_added_source_rows.csv

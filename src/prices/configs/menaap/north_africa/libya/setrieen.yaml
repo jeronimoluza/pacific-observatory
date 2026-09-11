@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://setrieen.com/"
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "setrieen"
+  base_url: "https://setrieen.com"
+  currency: "LYD"
+  language: "ar"
+  api_url: "https://setrieen.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Add WooCommerce source row fo
+  r health/beauty equipment | WooCommerce Store API: /wp-json/wc/store/v1/products?per_page=100&page=N
+   | Live API 200; X-WP-Total 41 on 2026-09-10 | origin=libya_candidate_price_sources_2026-09-10.csv

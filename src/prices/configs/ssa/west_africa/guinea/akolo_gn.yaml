@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://akolo.org/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: GNF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "akolo_gn"
+  base_url: "https://akolo.org"
+  currency: "GNF"
+  language: "fr"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Shopify storefront. Use /prod
+  ucts.json or product pages; parse product title, current/list FG prices, inventory urgency text, rev
+  iews, delivery text. | Concrete product page price found. Need catalog size check; may be one-produc
+  t/landing-page commerce rather than a broad catalog. | origin=guinea_price_source_candidates_2026-09
+  -10.csv

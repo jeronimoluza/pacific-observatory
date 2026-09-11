@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://smarttechnology.sb/shop/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SBD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "smarttechnology_sb"
+  base_url: "https://smarttechnology.sb"
+  currency: "SBD"
+  language: "en"
+  api_url: "https://smarttechnology.sb/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: WooCommerce Store API. Enumer
+  ate https://smarttechnology.sb/wp-json/wc/store/products?per_page=100&page=N until empty; parse name
+  , permalink, sku, categories, prices.price, prices.currency_code=SBD, stock status, and sale flags. 
+  Server-rendered shop/category HTML is a fallback. | None found. Verify page count during integration
+  ; search results showed shop pagination through at least page 9. | origin=solomon_islands_candidate_
+  price_sources_2026-09-10.csv

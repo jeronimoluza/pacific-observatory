@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://www.goodsy.co.bw/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "goodsy_bw"
+  base_url: "https://www.goodsy.co.bw"
+  currency: "BWP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Scrape-ready (Shopify collect
+  ions + BWP prices) | Scrape-ready (Shopify collections + BWP prices) | Strong appliances/electronics
+   source; appliances collection has refrigerators microwaves freezers washers dryers dishwashers kett
+  les blenders air fryers and related durable goods | origin=botswana_sources_candidates_2026-09-10.cs
+  v

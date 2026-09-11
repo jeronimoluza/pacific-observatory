@@ -1,0 +1,35 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://www.hadimi.td/"
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: XAF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "hadimi_td"
+  base_url: "https://www.hadimi.td"
+  currency: "XAF"
+  language: "fr"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: READY - build Shopify/catalog
+   crawler | READY - build Shopify/catalog crawler | Hadimi.td states delivery throughout Chad, paymen
+  t after delivery, XAF CFA country/currency selector, +235 contact, and category navigation for beaut
+  y/health, clothing/shoes, kitchen/home, electronics/accessories, automobile, school/office, watches/
+  accessories. Homepage/category/PDP pages expose prices. Examples: iPhone 16 128GB 704,000 FCFA; POCO
+   X7 Pro 215,000 FCFA; Xiaomi Redmi 13C 85,500 FCFA; Lenovo laptops 747,000 FCFA+; water dispenser 48
+  ,500 FCFA; air fryer 161,500 FCFA; ice maker 295,000 FCFA; furniture/accessories category has 33 pro
+  ducts including sofa 308,000 FCFA, coffee table 94,000 FCFA; car tire inflator 25,900 FCFA; hydrauli
+  c car jack kit 124,500 FCFA; school backpack 27,000 FCFA. First crawler probe should try Shopify `/p
+  roducts.json` and collections, then fall back to server-rendered cards. | origin=chad_price_source_s
+  tatus_rows_20260910_v2_expanded.csv

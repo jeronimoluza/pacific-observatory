@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://honeybw.com/product-category/jewellery/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "honey_fashion_bw"
+  base_url: "https://honeybw.com"
+  currency: "BWP"
+  language: "en"
+  api_url: "https://honeybw.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Scrape-ready (fashion jewelry
+   catalog) | Scrape-ready (fashion jewelry catalog) | Good jewelry/accessories source; likely WooComm
+  erce category pagination and filters | origin=botswana_sources_candidates_2026-09-10.csv

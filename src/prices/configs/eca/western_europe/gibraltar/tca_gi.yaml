@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.tca.gi/wp-json/wc/store/v1/products?per_page=100"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GIP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "tca_gi"
+  base_url: "https://www.tca.gi"
+  currency: "GIP"
+  language: "en"
+  api_url: "https://www.tca.gi/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: KEEP / WOOCOMMERCE-STORE-API 
+  | KEEP / WOOCOMMERCE-STORE-API | WooCommerce Store API confirmed; sample returned Bosch washing mach
+  ine current/regular GBP price. | origin=gibraltar_prices_source_rows.csv

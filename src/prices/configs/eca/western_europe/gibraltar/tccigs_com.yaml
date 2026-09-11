@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://www.tccigs.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GIP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "tccigs_com"
+  base_url: "https://www.tccigs.com"
+  currency: "GIP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: KEEP / SHOPIFY-HTML/API-CANDI
+  DATE | KEEP / SHOPIFY-HTML/API-CANDIDATE | Likely Shopify; use products.json or collection HTML. Tob
+  acco-adjacent/e-cigarette category. | origin=gibraltar_prices_source_rows.csv

@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://tesae-trading.myshopify.com/products.json?limit=250"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: AUD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "tesae_trading_shopify"
+  base_url: "https://tesae-trading.myshopify.com"
+  currency: "AUD"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPE-READY / SHOPIFY JSON |
+   SCRAPE-READY / SHOPIFY JSON | Primary coverage: computer equipment, laptops/desktops/tablets, elect
+  ronics, office equipment/stationery, and imported consumer durables. Treat analytical role as retail
+  /import-procurement; include available flag and product_type/vendor. Needs dedupe and sanity review 
+  because many products appear older but were updated in 2026. | origin=tuvalu_candidate_price_sources
+  .csv

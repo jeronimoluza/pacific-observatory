@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://lejumbo.com/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GMD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "le_jumbo"
+  base_url: "https://lejumbo.com"
+  currency: "GMD"
+  language: "en"
+  api_url: "https://lejumbo.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: HAVE / SCRAPE-READY | HAVE / 
+  SCRAPE-READY | Crawler approach: likely WooCommerce; paginate shop/category pages and parse product 
+  cards plus product detail JSON-LD if present. Machine-readable: yes, search-visible HTML price text.
+   | origin=gmb_prices_candidate_sources.csv

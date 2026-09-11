@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://360v2sarl.gw/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: pt
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "s_360v2sarl_gw"
+  base_url: "https://360v2sarl.gw"
+  currency: "XOF"
+  language: "pt"
+  api_url: "https://360v2sarl.gw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: P1 - build now / ACCEPT | P1 
+  - build now / ACCEPT | Probed via live search 2026-09-10. Site exposes cart, product categories, bes
+  tseller/new-product cards, variable product price ranges, Add buttons, and CFA currency. Examples in
+  clude child polo 4,000-5,000 CFA, men polo 5,000 CFA, adult T-shirt 4,000 CFA, Hikvision 2MP bullet 
+  camera 20,000 CFA, Hikvision fisheye camera 825,000 CFA, Hikvision 4MP network camera 210,000 CFA. U
+  seful for clothing/textiles, promotional goods, cameras/security electronics, office-adjacent suppli
+  es. Build as retailer_sku; parse variant price ranges carefully. | origin=guinea_bissau_expanded_add
+  ed_source_rows.csv

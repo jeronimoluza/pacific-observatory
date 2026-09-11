@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://fatsoumcosmetics.com/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: GNF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "fatsoum_cosmetics_gn"
+  base_url: "https://fatsoumcosmetics.com"
+  currency: "GNF"
+  language: "fr"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Shopify-like storefront. Prob
+  e /products.json and collection JSON; otherwise parse rendered product cards for title, price FG/GNF
+  , add-to-cart, product links and variants. | Search cache shows multiple current product cards with 
+  posted FG/GNF prices and Conakry delivery terms. Strong personal-care coverage. | origin=guinea_pric
+  e_source_candidates_2026-09-10.csv

@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://yakarrequipments.com/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GMD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "yakarr_equipments_photography_and_videographer"
+  base_url: "https://yakarrequipments.com"
+  currency: "GMD"
+  language: "en"
+  api_url: "https://yakarrequipments.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: HAVE / SCRAPE-READY | HAVE / 
+  SCRAPE-READY | Crawler approach: WooCommerce/static product-card parser over shop/category pages; pa
+  rse product title, category, price and stock/add-to-cart status. Machine-readable: yes. Useful for c
+  amera and audiovisual equipment. | origin=gmb_prices_candidate_sources.csv

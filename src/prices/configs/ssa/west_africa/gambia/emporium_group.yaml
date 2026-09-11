@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://theemporiumgambia.com/shop/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GMD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "emporium_group"
+  base_url: "https://theemporiumgambia.com"
+  currency: "GMD"
+  language: "en"
+  api_url: "https://theemporiumgambia.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: HAVE / SCRAPE-READY WITH PRIC
+  E-QA | HAVE / SCRAPE-READY WITH PRICE-QA | Crawler approach: WooCommerce pagination/category pages; 
+  parse title, brand/category, price and add-to-cart state. Machine-readable: yes. Caveat: many produc
+  ts show placeholder prices such as D 1.00 or D 0.00 cart values, so require price-validity filtering
+   before publishing. | origin=gmb_prices_candidate_sources.csv

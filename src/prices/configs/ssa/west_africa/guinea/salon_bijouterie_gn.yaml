@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://salondelabijouterie.com/boutique-sbg/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: GNF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "salon_bijouterie_gn"
+  base_url: "https://salondelabijouterie.com"
+  currency: "GNF"
+  language: "fr"
+  api_url: "https://salondelabijouterie.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: WordPress/WooCommerce storefr
+  ont. API root advertised in headers; test Store API /wp-json/wc/store/v1/products?per_page=100. Othe
+  rwise scrape boutique pages and pagination for product, seller, sale/current price. | HTTP 200 verif
+  ied 2026-09-10. Posted GNF prices and filters from 400,000 to 135,500,000 GNF. Useful COICOP persona
+  l effects/jewelry coverage. | origin=guinea_price_source_candidates_2026-09-10.csv

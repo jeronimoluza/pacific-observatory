@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.hierbeimir.ch/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: CHF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "hierbeimir_marketplace"
+  base_url: "https://www.hierbeimir.ch"
+  currency: "CHF"
+  language: "en"
+  api_url: "https://www.hierbeimir.ch/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: PENDING / legal-review before
+   scraping | PENDING / legal-review before scraping | Coverage seen in search/live snippets: clothing
+  , shoes, sports/mobility, health/body care, home/garden, toys, electronics, books, culinary, pets; m
+  erchants include Uhren Ospelt, HoerBeratung Fabiano, Little Bijou, Vaduzer Medienhaus, Metallbau Goo
+  p. Prices are visible in CHF and pages appear server-rendered/WooCommerce-like, but AGB section 2.9 
+  prohibits copying/auslesen/scraping with contractual penalty. Needs permission/API/legal approval be
+  fore crawler. | origin=liechtenstein_candidate_price_sources_2026_09_10.csv

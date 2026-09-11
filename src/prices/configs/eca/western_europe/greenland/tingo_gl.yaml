@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://tingo.gl/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: da
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "tingo_gl"
+  base_url: "https://tingo.gl"
+  currency: "DKK"
+  language: "da"
+  api_url: "https://tingo.gl/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: needs review | Visible websho
+  p with DKK prices and local Nuuk address. Likely WooCommerce/WordPress. Confirm API or crawlable cat
+  egory structure with browser/curl_cffi. | Homepage proves catalogue; one Store API probe failed with
+   HTTP 455 in stdlib. | origin=greenland_price_sources_2026-09-10.csv

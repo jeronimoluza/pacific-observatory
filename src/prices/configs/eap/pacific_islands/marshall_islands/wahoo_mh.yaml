@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://wahoo.mh/"
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "wahoo_mh"
+  base_url: "https://wahoo.mh"
+  currency: "USD"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Shopify storefront. Use /prod
+  ucts.json?limit=250 and paginate by page parameter if product count exceeds 250; alternatively use /
+  collections/<handle>/products.json for departments. Product variants expose price, compare_at_price,
+   availability, SKU, title, handle, product_type/tags, and images. HTML pages also render price and s
+  tock text. | None observed. Shell DNS fetch was transient after an earlier successful JSON response;
+   web snapshot on 2026-09-10 shows server-rendered category links and product prices. | origin=marsha
+  ll_islands_candidate_price_sources_2026-09-10.csv

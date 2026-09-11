@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://ramuskin.com/shop/"
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SSP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "ramuskin_ss"
+  base_url: "https://ramuskin.com"
+  currency: "SSP"
+  language: "en"
+  api_url: "https://ramuskin.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPE-READY / WOOCOMMERCE ST
+  ORE API | WooCommerce Store API /wp-json/wc/store/v1/products?per_page=100&page=N returned product J
+  SON with prices. Extract prices, brands/categories, stock status and currency. | Narrow category but
+   strong for personal care. Site includes USD and SSP currency options; capture native API currency a
+  nd do not infer conversion without evidence. | origin=south_sudan_candidate_price_sources_2026-09-10
+  .xlsx

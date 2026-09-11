@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://greenlandsupport.com/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: da
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "support_greenland"
+  base_url: "https://greenlandsupport.com"
+  currency: "DKK"
+  language: "da"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: needs review | Shopify. Searc
+  h-visible catalogue exposes DKK prices, product pages, CVR and Shopify footer. Use /products.json if
+   accepted. | May be print-on-demand/charity merchandise rather than ordinary Greenland retail. Inclu
+  de only if project accepts local CVR/Greenland-themed POD goods. | origin=greenland_price_sources_20
+  26-09-10.csv

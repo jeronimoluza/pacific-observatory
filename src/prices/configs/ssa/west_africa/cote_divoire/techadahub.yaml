@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://techadahub.com/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "techadahub"
+  base_url: "https://techadahub.com"
+  currency: "XOF"
+  language: "fr"
+  api_url: "https://techadahub.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: New lead | WooCommerce Store 
+  API verified: /wp-json/wc/store/v1/products?per_page=5 returns JSON with XOF/CFA price fields and pr
+  oduct permalinks. | Small catalogue; distinguish new vs used/refurbished where text says so. | origi
+  n=cote_divoire_price_sources_research_2026-09-10.csv

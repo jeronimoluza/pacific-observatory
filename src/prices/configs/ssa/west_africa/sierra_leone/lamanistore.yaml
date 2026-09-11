@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://lamanistore.com/collections/all-spirits"
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SLE
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "lamanistore"
+  base_url: "https://lamanistore.com"
+  currency: "SLE"
+  language: "en"
+  products_path: "/collections/all-spirits/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Shopify storefront. Use `/pro
+  ducts.json` or collection pages; parse product variants, Le prices, compare-at prices, collection/ca
+  tegory and availability. | none observed from indexed HTML | origin=sierra_leone_candidate_sources.c
+  sv

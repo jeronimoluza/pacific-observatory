@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://lianoriginal.com/shop/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: CHF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "lianoriginal_li"
+  base_url: "https://lianoriginal.com"
+  currency: "CHF"
+  language: "en"
+  api_url: "https://lianoriginal.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPE-READY / WooCommerce St
+  ore API | SCRAPE-READY / WooCommerce Store API | Coverage: footwear/clothing-adjacent COICOP. Verifi
+  ed 2026-09-10: /wp-json/wc/store/v1/products?per_page=100 returned 45 products; sample Lian Cammino 
+  id 4049 price 130000 minor units = CHF 1300.00. Currency_code CHF; product permalink included. Likel
+  y small but useful non-food domestic source. | origin=liechtenstein_candidate_price_sources_2026_09_
+  10.csv

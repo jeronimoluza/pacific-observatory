@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://gambia.enytinplus.com/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GMD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "enytinplus_gambia"
+  base_url: "https://gambia.enytinplus.com"
+  currency: "GMD"
+  language: "en"
+  api_url: "https://gambia.enytinplus.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: PENDING / CLASSIFIEDS-MARKETP
+  LACE | PENDING / CLASSIFIEDS-MARKETPLACE | Crawler approach: WooCommerce/classified category parser 
+  with strict filters for consumer goods; exclude property, services and vehicles unless vehicle-price
+   collection is explicitly in scope. Machine-readable: yes for many listings. | origin=gmb_prices_can
+  didate_sources.csv

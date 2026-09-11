@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://toycorner.gi/products.json?limit=250"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GIP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "toycorner_gi"
+  base_url: "https://toycorner.gi"
+  currency: "GIP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: KEEP / SHOPIFY-JSON | KEEP / 
+  SHOPIFY-JSON | Shopify API; sample endpoint returns variants, GBP price and availability. | origin=g
+  ibraltar_prices_source_rows.csv

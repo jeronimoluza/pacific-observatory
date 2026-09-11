@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://www.ordermindubai.com/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SSP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "ordermindubai_ss"
+  base_url: "https://www.ordermindubai.com"
+  currency: "SSP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPE-READY / SHOPIFY PRODUC
+  TS JSON | Use Shopify /products.json?limit=250 pagination plus collection URLs for category labels. 
+  Prices include delivery to Juba per collection pages. | Import/delivery channel from Dubai; valid if
+   delivered-to-Juba retail import prices are accepted. Capture USD and condition variants such as NEW
+  /USED. | origin=south_sudan_candidate_price_sources_2026-09-10.xlsx

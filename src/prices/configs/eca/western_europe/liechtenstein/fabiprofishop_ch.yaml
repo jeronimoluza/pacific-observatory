@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://fabiprofishop.ch/"
+channel: home-improvement
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: CHF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "fabiprofishop_ch"
+  base_url: "https://fabiprofishop.ch"
+  currency: "CHF"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPE-READY / Shopify produc
+  ts.json | SCRAPE-READY / Shopify products.json | Coverage: tools, machines, protective equipment, co
+  nstruction supplies. Verified 2026-09-10: /products.json?limit=250 returned 166 products; sample Geh
+  oerschutzstoepsel 3M 1271 id 11112623604050 price CHF 67.20. Shopify JSON provides product ids, vari
+  ants, prices, tags. Treat as CH/LI-serving source, not domestic LI. | origin=liechtenstein_candidate
+  _price_sources_2026_09_10.csv

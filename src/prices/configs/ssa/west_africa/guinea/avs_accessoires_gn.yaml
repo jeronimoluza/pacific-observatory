@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://avs-accessoires.com/"
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: GNF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "avs_accessoires_gn"
+  base_url: "https://avs-accessoires.com"
+  currency: "GNF"
+  language: "fr"
+  api_url: "https://avs-accessoires.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Rendered WooCommerce-like cat
+  alog HTML with product cards exposing category, name, regular/sale GNF price, unit text, add-to-cart
+   controls. Probe /wp-json/ and category links; if no Store API, HTML crawl homepage plus category ar
+  chive pages. | HTTP 200 verified 2026-09-10. Broad high-value catalog with many non-food categories 
+  and visible prices. | origin=guinea_price_source_candidates_2026-09-10.csv

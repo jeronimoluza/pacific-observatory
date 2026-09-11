@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://eyesmart.co.bw/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "eyesmart_bw"
+  base_url: "https://eyesmart.co.bw"
+  currency: "BWP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Scrape-ready (Shopify eyewear
+   catalog) | Scrape-ready (Shopify eyewear catalog) | Best prescription eyewear lead: eyeglasses sung
+  lasses kids glasses and lens builder; current eyeglasses collection is small but machine-readable | 
+  origin=botswana_sources_candidates_2026-09-10.csv

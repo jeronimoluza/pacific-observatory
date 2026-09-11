@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.novatechbf.com/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "novatechbf"
+  base_url: "https://www.novatechbf.com"
+  currency: "XOF"
+  language: "fr"
+  api_url: "https://www.novatechbf.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Add as high-priority retail c
+  rawler for non-food durable goods. | WooCommerce/WordPress. Crawl /shop/ and category archives; pars
+  e product cards and product detail pages for name, category breadcrumb, price, SKU when available, a
+  vailability and canonical URL. WordPress product feed exists at /shop/feed/ and may help discovery. 
+  | No obvious anti-bot in browser/curl sample. Search index and page HTML show prices such as 125,000
+   CFA camera kit and 4,300,000 CFA air conditioner. Verify pagination and discounted prices before sh
+  ipping. | origin=burkina_faso_candidate_price_sources.csv

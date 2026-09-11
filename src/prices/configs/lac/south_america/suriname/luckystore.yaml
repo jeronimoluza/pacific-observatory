@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.luckystore.com/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SRD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "luckystore"
+  base_url: "https://www.luckystore.com"
+  currency: "SRD"
+  language: "en"
+  api_url: "https://www.luckystore.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Strong broad-goods addition. 
+  Avoid overlap only with Kirpalani where product names duplicate; otherwise distinct retailer. | WooC
+  ommerce Store API: https://www.luckystore.com/wp-json/wc/store/v1/products ; page through per_page/p
+  age, map prices.price with currency_code=SRD, preserve sku/permalink/categories/images | None found.
+   API returned 200; x-wp-total=5335; sample SKU had SRD minor-unit price. | origin=suriname_price_sou
+  rce_candidates_2026_09_10.csv

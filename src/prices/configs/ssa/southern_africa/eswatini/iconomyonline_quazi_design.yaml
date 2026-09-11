@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://iconomyonline.com/products/ngonini-vase-charcoal"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SZL
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "iconomyonline_quazi_design"
+  base_url: "https://iconomyonline.com"
+  currency: "SZL"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPABLE / SHOPIFY HOMEWARE 
+  | SCRAPABLE / SHOPIFY HOMEWARE | origin=eswatini_price_sources_added_2026-09-10.md

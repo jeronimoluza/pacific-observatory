@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://ecommerceinformatique.com/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "ecommerceinformatique"
+  base_url: "https://ecommerceinformatique.com"
+  currency: "XOF"
+  language: "fr"
+  api_url: "https://ecommerceinformatique.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: New lead | WordPress/WooComme
+  rce-looking storefront; listing pages expose product cards, stock and CFA prices. Try Store API firs
+  t, fall back to HTML parser. | Need verify API and pagination; likely narrow IT-only. | origin=cote_
+  divoire_price_sources_research_2026-09-10.csv

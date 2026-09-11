@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://elikiashop242.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: XAF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "elikiashop242_cg"
+  base_url: "https://elikiashop242.com"
+  currency: "XAF"
+  language: "fr"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: PENDING - small Shopify-style
+   catalogue | PENDING - small Shopify-style catalogue | Search result current shows FCFA prices for h
+  ousehold cleaning paste and novelty products plus Congo-wide delivery. Needs route/API discovery and
+   catalogue-size check before integration; likely few SKUs. | origin=congo_rep_candidate_sources_2026
+  -09-10.csv

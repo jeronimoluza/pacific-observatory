@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://mbcenter.co/shop/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: LRD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "mbcenter_shop"
+  base_url: "https://mbcenter.co"
+  currency: "LRD"
+  language: "en"
+  api_url: "https://mbcenter.co/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Scrape-ready | Scrape-ready |
+   Useful for clothing/accessories and sunglasses; small catalog | origin=liberia_sources_candidates_2
+  026-09-10.csv

@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://ielsi.com.sb/collections/all-products"
+channel: home-improvement
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: SBD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "island_enterprises_sb"
+  base_url: "https://ielsi.com.sb"
+  currency: "SBD"
+  language: "en"
+  products_path: "/collections/all-products/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Generated from child-task consolidation on 2026-09-11. Child evidence: Shopify storefront. Preferred
+   crawler path: enumerate https://ielsi.com.sb/products.json?limit=250&page=N until an empty page or 
+  duplicate page; parse product title, handle, vendor, product_type, variants[].price, variants[].sku,
+   availability, and product tags. HTML collection pages also expose prices and stock text as a fallba
+  ck. | None found. Some items are sold out but still carry posted prices; preserve availability separ
+  ately rather than dropping all sold-out rows. | origin=solomon_islands_candidate_price_sources_2026-
+  09-10.csv
