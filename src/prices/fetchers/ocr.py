@@ -347,6 +347,31 @@ def _rules(profile, span_limit: int) -> list[int]:
     return out
 
 
+def _otsu(arr) -> int:
+    """Otsu's threshold for the ink/paper split.
+
+    A fixed cut-off does not survive this corpus: the Kiribati Orders alone
+    run from a clean black-on-white export to a grey photocopy whose rules sit
+    around level 190, and at a fixed 160 the faint ones vanish entirely (their
+    table then looks unruled and the whole page is discarded). Otsu picks the
+    split per page from the page's own histogram.
+    """
+    import numpy as np
+
+    hist = np.bincount(arr.ravel(), minlength=256).astype(np.float64)
+    total = hist.sum()
+    if total == 0:
+        return 160
+    omega = np.cumsum(hist) / total
+    mu = np.cumsum(hist * np.arange(256)) / total
+    mu_t = mu[-1]
+    denom = omega * (1.0 - omega)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        sigma_b = np.where(denom > 0, (mu_t * omega - mu) ** 2 / denom, 0.0)
+    # Clamp: a page that is almost entirely paper drives Otsu into the noise.
+    return int(np.clip(int(np.argmax(sigma_b)), 100, 215))
+
+
 def _page_from_png(png: str, number: int) -> OcrPage:
     import numpy as np
     from PIL import Image
@@ -358,7 +383,7 @@ def _page_from_png(png: str, number: int) -> OcrPage:
     img = raw.rotate(-rot, expand=True) if rot else raw
     arr = np.asarray(img)
     height, width = arr.shape
-    ink = arr < 160
+    ink = arr < _otsu(arr)
     col_rules = _rules(_longest_run(ink, 0), int(_RULE_SPAN * height))
     row_rules = _rules(_longest_run(ink, 1), int(_RULE_SPAN * width))
     words = [_upright(d, rot, src_w, src_h) for d in tsv]
