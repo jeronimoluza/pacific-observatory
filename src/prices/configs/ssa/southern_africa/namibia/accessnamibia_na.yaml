@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: accessnamibia_na
+url: https://accessnamibia.com/
+language: en
+cadence: weekly
+channel: electronics
+archive_prefix: "accessnamibia.com/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  Access Namibia -- consumer electronics and accessories retailer.
+  Probed live 2026-09-11. Shopify storefront, open unauthenticated
+  catalog at /products.json?limit=250&page=N, no auth needed.
+  Enumerability: page=1 vs page=2 (limit=5) returned fully disjoint id
+  sets. Walked to exhaustion: page1=250, page2=250, page3=250, page4=156,
+  page5=0 -> ~906 products total.
+  Currency confirmed NAD (not ZAR) via the storefront's own
+  Shopify.currency.active="NAD", /cart.json currency="NAD", and checkout
+  country="NA".
+  Page family: API (spider reads the /products.json catalog endpoint
+  directly; permalinks under /products/<handle> are real PDPs but the
+  spider never fetches them).
+  Handled by the shared _shopify_base pagination logic (one row per
+  variant).
+  Test run 2026-09-11: prices collect --source accessnamibia_na
+  --max-items 20 -> 20 rows, all priced, all NAD.

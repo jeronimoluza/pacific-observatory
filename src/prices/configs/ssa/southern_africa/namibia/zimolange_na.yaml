@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zimolange_na
+url: https://zimolange.com/
+language: en
+cadence: weekly
+channel: cosmetics
+archive_prefix: "zimolange.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Zimolange -- Korean skincare/beauty retailer, Namibia. Probed live
+  2026-09-11. WordPress/WooCommerce storefront, standard public Store API
+  at /wp-json/wc/store/v1/products, no auth needed. Cloudflare-fronted
+  (cf-ray present); the repo-wide default `chrome120` impersonate profile
+  403s the Store API (confirmed running the campaign's own test batch of
+  4 spiders in parallel on a8 -- NOT a self-inflicted rate-limit, isolated
+  curl_cffi checks per-profile immediately after showed chrome120 and
+  chrome131 both 403, chrome124 and safari17_0 both 200). Spider sets
+  IMPERSONATE_PROFILE="chrome124" to clear it.
+  Enumerability: per_page=1 page=1 -> id 13966, page=2 -> id 21380
+  (distinct), X-WP-Total header = 530 products / 530 pages at per_page=1.
+  Currency confirmed via API's own currency_code=NAD, currency_minor_unit=2
+  (e.g. raw "48500" -> N$485.00, matches rendered price_html) -- not ZAR.
+  Page family: API (spider reads the JSON Store API directly; permalinks
+  under /product/<slug>/ are real PDPs but the spider never fetches them).
+  Handled by the shared _woo_base pagination/scaling logic.
+  Test run 2026-09-11: prices collect --source zimolange_na --max-items 20
+  -> 20 rows, all priced, all NAD.

@@ -1,0 +1,54 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: doorstep_na
+url: https://shop.com.na/
+language: en
+cadence: weekly
+channel: convenience
+notes: |
+  Doorstep Deliveries -- Windhoek, Namibia alcohol/tobacco/soft-drink/
+  snack delivery app ("general goods delivery"). Probed live 2026-09-11.
+  Custom Next.js storefront (App Router), not one of the known
+  off-the-shelf platforms. Network-traced the app's own compiled JS
+  chunks (no Playwright needed -- the route is referenced directly in
+  app/layout-*.js): a plain, unauthenticated JSON API at
+  https://shop.com.na/api/products returns the catalogue directly.
+
+  Enumerability caveat: there is NO real pagination. `page=`/`offset=`
+  params are accepted but ignored (identical first row regardless of
+  page number or offset), and raising `limit=` past 96 does not return
+  more rows. Confirmed this 96-row response IS the full catalogue (not a
+  capped page) by cross-checking /api/categories -- all 22 declared
+  categories are represented in the 96 products, and limit=200 still
+  returns exactly 96. This is a small, single-response-holds-everything
+  catalogue, not a paginator stuck on page 1 -- the "same page forever"
+  failure mode the enumerability gate targets does not apply here because
+  there is only ever one page of data to begin with.
+
+  Currency: no explicit currency field in the API payload. Confirmed NAD
+  (not ZAR) via "N$"/"NAD" appearing on the storefront itself; this is a
+  Windhoek-only delivery app with no ZAR presence anywhere on the site.
+  Prices are plain decimal NAD in the payload (e.g. "65" -> N$65.00), no
+  minor-unit scaling. Each product carries exactly one variant (0 of 96
+  products had >1); a "nightPrice" field also exists per variant but the
+  spider uses the base "price" (day price) as the reference retail price.
+
+  High priority per the campaign brief -- one of two Namibia sources that
+  reaches food-adjacent leaves (snacks, braai/BBQ sides, soft drinks),
+  alongside kws_na (fresh meat). Catalog skews toward alcohol/tobacco
+  (smokables, beer/wine/spirits/cider/liqueurs) rather than groceries, so
+  it is more a liquor/convenience delivery store than a general grocer --
+  channel: convenience, matching the doorstep_bz precedent (small-format
+  delivery app, not a chain).
+
+  Page family: API (spider reads the JSON endpoint directly). Did not set
+  archive_prefix/archive_path_re -- product pages exist at
+  /products/<slug> and returned 200 with real content when spot-checked,
+  but this is a custom Next.js app and the archive-side markup was not
+  characterised, so left unset rather than guessed (per doorstep_bz
+  precedent for the same reason).
+
+  Test run 2026-09-11: prices collect --source doorstep_na --max-items 20
+  -> 20 rows, all priced, all NAD.
