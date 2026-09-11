@@ -1,0 +1,42 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.gambiapetshop.com/shop/"
+channel: pet
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: EUR
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "gambia_petshop"
+  base_url: "https://www.gambiapetshop.com"
+  currency: "EUR"
+  language: "en"
+  api_url: "https://www.gambiapetshop.com/wp-json/wc/store/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  Repaired 2026-09-11 (fill-gap-sources). The v1 Store API
+  (/wp-json/wc/store/v1/products) 404s on this tenant; the legacy
+  unversioned endpoint /wp-json/wc/store/products works and is what
+  api_url now points at. Verified live 2026-09-11 with curl_cffi
+  impersonate=chrome124: 64 unique products across page=1 (50) and
+  page=2 (14), zero id overlap between pages, all nonzero prices.
+  CURRENCY FLAG: despite Gambia domicile (phone +220 711 8117 in
+  footer, GMD is the official currency), every product is priced in
+  EUR both in the Store API (currency_code=EUR, minor_unit=0) and on
+  the rendered shop page (&euro; symbol) -- not a diaspora/foreign
+  storefront by other signals (local phone, "same day delivery"
+  language), just an EUR-denominated domestic shop. Currency set to
+  EUR here per the "declared wins" rule; flagged for the team to
+  decide whether EUR-priced Gambia rows are acceptable input to the
+  GMD price-level basket. Channel changed supermarket -> pet (pet
+  supplies retailer, not a supermarket). Original child-task notes
+  below.
+  Generated from child-task consolidation on 2026-09-11. Child evidence: HAVE / SCRAPE-READY | HAVE / SCRAPE-READY | Crawler approach: WooCommerce category pagination across dog/cat/small-pet branches; parse product title, category and D price. Machine-readable: yes. COICOP relevance: pet products and cleaning/care supplies. | origin=gmb_prices_candidate_sources.csv
