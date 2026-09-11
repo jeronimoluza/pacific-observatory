@@ -219,7 +219,7 @@ def fetch_one(rec, state):
     if headers is None:
         return None, body
     html = decode(headers, body)
-    rows, tier = parse_rows(html, rec["url"], rec.get("source"))
+    rows, tier = parse_rows(html, rec["url"], rec.get("spider") or rec.get("source"))
     if not rows:
         return None, "no_extract"
 
