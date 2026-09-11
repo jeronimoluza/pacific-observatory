@@ -1,0 +1,53 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: woermannfresh_na
+url: https://shop.woermannfresh.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "shop.woermannfresh.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Woermann Fresh -- Windhoek, Namibia supermarket (Woermann Brock group).
+  Discovered and probed live 2026-09-11 (not covered by the earlier same-day
+  known_blockers pass, which only tried the guessed chain domains
+  shoprite/metro/spar/picknpay/woolworths/choppies/okfoods/model/freshmark
+  .com.na). Custom e-commerce platform exposing a Shopify-shaped URL
+  (/products.json) but a bespoke response shape -- NOT Shopify, WooCommerce,
+  or Magento.
+
+  Endpoint: GET /products.json?page=N (no auth). Response:
+  searchResult.results[].result holds the product object;
+  searchResult.pagination.total_hits.value / total_pages give the catalog
+  size. Enumerability confirmed: page=1 vs page=2 returned fully disjoint
+  product ID sets (0 of 100 overlap). Catalog size at probe time: 2857
+  products across 29 pages of 100. store.title = "Windhoek".
+
+  Currency: no explicit currency code in the payload (same gap as kws_na
+  and doorstep_na). NAD assumed -- Woermann Brock is a Namibia-only retail
+  group with no ZAR storefront, and a product's AI-generated description
+  field explicitly reads "...Woermann Fresh, a retailer in Namibia".
+  Prices are plain decimals (e.g. 19.99 -> N$19.99), no minor-unit scaling;
+  each product also carries vat_amount/price_excluding_vat/was_price for
+  promo tracking, but the spider takes product_pricing[0].price as the
+  reference retail price (matches the site's displayed price).
+
+  category = deepest_category.path (e.g. "drinks/energy-drinks/"), a real
+  breadcrumb from the site's own category tree, not invented.
+
+  Page family: API for collection (spider reads /products.json and never
+  fetches a page). Real PDPs also exist at /product/<slug> -- verified 200,
+  contains the same title/price in a data attribute -- used only to build
+  the per-item `url` field and to set archive_prefix/archive_path_re for
+  Common Crawl recovery.
+
+  High-value addition for Namibia: by far the largest verified catalog in
+  the country so far (2857 products vs. 144 for kws_na and ~99 for
+  doorstep_na), spanning full supermarket departments (food, drinks,
+  bakery, alcohol per category `is_alcohol` flags seen in the category
+  tree) rather than a single niche (meat, or alcohol/convenience).
+
+  Test run 2026-09-11: prices collect --source woermannfresh_na
+  --max-items 100 -> see run log for measured row/URL counts.

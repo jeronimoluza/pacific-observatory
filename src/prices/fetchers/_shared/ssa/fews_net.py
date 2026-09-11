@@ -66,6 +66,9 @@ _COUNTRIES: dict[str, tuple[str, str]] = {
     "gin": ("Guinea", "GN"),
     "lbr": ("Liberia", "LR"),
     "sle": ("Sierra Leone", "SL"),
+    "ssd": ("South Sudan", "SS"),
+    "bdi": ("Burundi", "BI"),
+    "som": ("Somalia", "SO"),
 }
 
 
@@ -221,3 +224,15 @@ def fetch_fews_lbr(cutoff: date) -> pd.DataFrame | None:
 
 def fetch_fews_sle(cutoff: date) -> pd.DataFrame | None:
     return _fetch(cutoff, iso3="sle")
+
+
+def fetch_fews_ssd(cutoff: date) -> pd.DataFrame | None:
+    return _fetch(cutoff, iso3="ssd")
+
+
+def fetch_fews_bdi(cutoff: date) -> pd.DataFrame | None:
+    return _fetch(cutoff, iso3="bdi")
+
+
+def fetch_fews_som(cutoff: date) -> pd.DataFrame | None:
+    return _fetch(cutoff, iso3="som")

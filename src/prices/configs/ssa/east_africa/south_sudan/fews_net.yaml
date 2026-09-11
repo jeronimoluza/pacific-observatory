@@ -1,0 +1,34 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: fews_ssd
+module: _shared.ssa.fews_net
+function: fetch_fews_ssd
+url: https://fdw.fews.net/api/marketpricefacts/?country_code=SS
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (2026-09-11): USAID FEWS NET market price facts REST API
+  (fdw.fews.net/api/marketpricefacts/), shared SSA fetcher _shared.ssa.fews_net,
+  same pattern as fews_caf. South Sudan's prior manifests (wfp_prices,
+  wb_rtdi_prices) were both official_avg already, and jubasquare_ss is the
+  only retailer_sku food source (wholesale channel) -- this is a third,
+  independent official_avg feed (FEWS NET/USAID, distinct upstream from WFP),
+  not a duplicate. Verified live 2026-09-11: 97,735 total facts for
+  country_code=SS via a plain GET with a browser-realistic User-Agent
+  (get_session() in fetchers/utils.py already sets one; a bare
+  requests.get with no UA returns a non-JSON body, which is why this needs
+  the shared session helper, not raw requests). API hard-caps pagination at
+  offset=1000, so the first-run backfill is bounded to roughly the newest
+  ~1000 raw facts (still newest-first, so the most valuable slice); every
+  later run's delta is bounded by monthly cadence. Per-market rows collapsed
+  to a national monthly average per commodity/unit/currency/price-type;
+  market count + USD value kept in notes; retail vs wholesale kept in the
+  dedup hash. COICOP deferred to the classifier (item_name = FEWS NET
+  product label, English).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (whole-catalog API walk, no commodity
+  filter applied; food staples only per FEWS NET's own product scope)

@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tcgrocerydelivery_tc
+url: https://turksandcaicosgrocerydelivery.com/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+notes: |
+  Probed 2026-09-11 (3-arm: plain requests / plain requests+Chrome UA /
+  curl_cffi impersonate=chrome124). Plain requests -> 200 clean; curl_cffi
+  impersonation -> 403 from server: hcdn (JA3 denylist on impersonated
+  clients, not a real block -- matches the documented hcdn pattern in
+  known_blockers.md). Scrapy's CompositeDownloadHandler already defaults to
+  plain Twisted HTTP unless meta['impersonate'] is set, so no
+  IMPERSONATE_PROFILE override needed.
+
+  WooCommerce Store API, /wp-json/wc/store/v1/products?per_page=N&page=N,
+  no auth. X-WP-Total: 946. Page1 ids [3201,3204,2180,...] vs page2 ids
+  [2114,2116,2118,...] -> disjoint, paginates cleanly (48 pages).
+  currency_code=USD from the API, currency_minor_unit=2.
+
+  Real grocery SKUs confirmed: BEVERAGES (Lemon Polar Seltzer $6.35,
+  Barritts Ginger Beer $29.97), Fruit Cup (Dole Apple & Cream Parfait
+  $7.95), Candy Bars, Granola Bars (Nature Valley $9.95), Fruit Snacks
+  (Jell-O Cherry Box $3.99).
+
+  Sibling domain turksandcaicosgrocerydeliveryservice.com serves the
+  IDENTICAL catalog (same product ids/names, e.g. id 3322 "Oikos Greek
+  Yogurt 0%" on both) -- same backend behind two marketing domains.
+  Deliberately NOT onboarded as a second source (same-shelf rule).
+
+  Page family: API (reads the JSON Store API directly, never fetches a
+  rendered page).
+
+  Test: prices collect --source tcgrocerydelivery_tc --max-items 100 ->
+  100 rows collected, 100 distinct product URLs, all USD-priced.

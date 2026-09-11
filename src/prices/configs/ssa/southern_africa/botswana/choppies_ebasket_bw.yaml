@@ -33,7 +33,12 @@ notes: |
   Enumerability: CONFIRMED live -- cat="m_edible groceries" pages 1-7 each
   returned a genuinely distinct 20-id set (verified pairwise, zero repeats
   across 7 pages sampled). No published total/"N of M" text in the HTML;
-  spider walks until an empty page or MAX_PAGES=30 safety cap.
+  spider walks until a page adds zero new product ids (see per-category id
+  tracking in the spider -- some categories, e.g. m_pets, loop back and
+  re-serve an already-seen tail page forever instead of ever returning an
+  empty page, MEASURED 2026-09-11) or MAX_PAGES=150 safety cap is hit (not
+  hit by any category in the 2026-09-11 full run; largest was m_edible
+  groceries at page 51).
 
   Currency: BWP confirmed from the site's own Pula currency icon and plain
   decimal price display; matches countries.yaml default.
@@ -42,11 +47,31 @@ notes: |
   (fresh produce, dairy, bakery, groceries) plus some non-food categories,
   wide by the narrowness rule.
 
-  MEASURED test run 2026-09-11 (after a regex whitespace fix -- the
-  category-listing markup breaks '<a title=' across a newline, unlike the
-  popular.php landing page sampled during scaffolding, so the pattern
-  needs \s+ between the <a> tag and its attributes): `prices collect
-  --source choppies_ebasket_bw --max-items 60` -> 92 rows, 92 distinct
-  urls, ZERO zero-priced rows, currency BWP throughout. Categories
-  captured in this partial run: Beverages, Cfc (fried-chicken ready
-  meals, e.g. CFC 2PIECE AND CHIPS, BWP 39.95) and Edible Groceries (e.g. E/T 1KG RED KIDNEY BEANS, BWP 32.95).
+  Root cause of the original 0-row failure: the category-listing markup
+  breaks '<a title=' across a newline, unlike the popular.php landing page
+  sampled during scaffolding, so the original regex (no \s+ between the
+  <a> tag and its attributes) never matched -- fixed 2026-09-11.
+
+  A second, previously-masked cap was found once that fix was in place:
+  MAX_PAGES was 30 (600 SKUs/category), and two categories
+  (m_edible groceries, m_ethnic products) were MEASURED still returning a
+  full, all-new 20-id page at page 30 with zero duplicates -- i.e. the
+  safety cap was truncating real catalogue, not guarding a loop. Separately,
+  m_pets was MEASURED to loop back and re-serve the same ~10-item tail page
+  forever once its real ~30-item catalogue was exhausted, which the old
+  "stop on empty page" condition never caught (only MAX_PAGES eventually
+  killed it). Fixed by (a) raising MAX_PAGES to 150 and (b) tracking
+  product ids seen per category so the spider stops on the first page that
+  adds zero *new* ids, not just a literally empty one.
+
+  MEASURED full run 2026-09-11 (no --max-items, post both fixes):
+  `prices collect --source choppies_ebasket_bw` -> 3,153 rows, 3,153
+  distinct urls, 3,153 distinct product ids (zero duplicates -- the
+  spider's own per-category id-tracking now prevents them upstream of the
+  shared DuplicationPipeline), ZERO zero-priced rows, currency BWP
+  throughout. No category hit the new MAX_PAGES=150 cap (largest was
+  m_edible groceries at page 51 of 150). Per-category counts: Edible
+  Groceries 995, Ethnic Products 655, Personal Care 363, Fresh 327,
+  House Hold 309, Perishable 198, Beverages 192, General Merchandise 72,
+  Pets 30, Cfc 12. Sample: CFC 2PIECE AND CHIPS BWP 39.95, E/T 1KG RED
+  KIDNEY BEANS BWP 32.95.

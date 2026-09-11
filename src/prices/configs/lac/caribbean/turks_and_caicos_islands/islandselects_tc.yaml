@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: islandselects_tc
+url: https://islandselectstci.com/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+notes: |
+  Probed 2026-09-11 (3-arm). All three arms clear clean (200, server:
+  LiteSpeed) -- no WAF/impersonation issue on this tenant.
+
+  WooCommerce Store API, /wp-json/wc/store/v1/products?per_page=N&page=N,
+  no auth. X-WP-Total: 1400. Page1 ids vs page2 ids disjoint (70 pages).
+  currency_code=USD from the API, currency_minor_unit=2.
+
+  Real grocery SKUs confirmed: Canned Fruits & Vegetables (IGA Lite Fruit
+  Cocktail $3.64, Motts Apple Sauce $8.65), Meats & Seafood (Oscar Mayer
+  Turkey Bacon $15.85), Snacks (Act 2 popcorn line, Orville Kettle Corn
+  $12.79). IGA-branded private-label items present but this is a distinct
+  WooCommerce catalog/platform from the (brochure-only, no active
+  e-commerce) gracewaysupermarkets.com IGA franchise site and from the
+  existing goods2door_tc (Wix) source -- different backend, different
+  product ids, not a duplicate shelf.
+
+  Page family: API (reads the JSON Store API directly, never fetches a
+  rendered page).
+
+  Test: prices collect --source islandselects_tc --max-items 100 -> 100
+  rows collected, 100 distinct product URLs, all USD-priced.

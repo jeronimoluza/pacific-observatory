@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: fews_som
+module: _shared.ssa.fews_net
+function: fetch_fews_som
+url: https://fdw.fews.net/api/marketpricefacts/?country_code=SO
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (2026-09-11): USAID FEWS NET market price facts REST API
+  (fdw.fews.net/api/marketpricefacts/), shared SSA fetcher _shared.ssa.fews_net,
+  same pattern as fews_caf. Somalia's only prior food-eligible source was
+  adeeg_so (hypermarket, retailer_sku, mixed food/general-merchandise) plus
+  wfp_prices (official_avg) -- this is a second, independent official_avg
+  feed (FEWS NET/USAID, distinct upstream from WFP), not a duplicate.
+  Verified live 2026-09-11: 93,756 total facts for country_code=SO via
+  get_session()'s browser-realistic User-Agent (a bare requests.get with no
+  UA returns a non-JSON body). API hard-caps pagination at offset=1000, so
+  the first-run backfill is bounded to roughly the newest ~1000 raw facts;
+  every later run's delta is bounded by monthly cadence. Per-market rows
+  collapsed to a national monthly average per commodity/unit/currency/
+  price-type; market count + USD value kept in notes; retail vs wholesale
+  kept in the dedup hash. COICOP deferred to the classifier (item_name =
+  FEWS NET product label, English).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (whole-catalog API walk, no commodity
+  filter applied; food staples only per FEWS NET's own product scope)

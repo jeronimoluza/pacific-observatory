@@ -20,3 +20,14 @@ notes: |
   juice, bottled water not linked from the homepage). Verified 2026-08-11,
   test run (--max-items 5) returned 5/5 valid rows spanning drinks-beverages
   and other categories.
+
+  REGRESSED 2026-09-11: 0 rows on two independent full runs. Root cause is
+  deeper than "homepage lost its /product/ links" -- EVERY path on the site
+  (homepage, /shop, /sitemap.xml, /robots.txt) now returns HTTP 403 with a
+  Vercel bot-management challenge page (title "Vercel Security Checkpoint",
+  `X-Vercel-Mitigated: challenge` header). MEASURED with both plain
+  `requests` (real Chrome UA) and `curl_cffi impersonate=chrome124` --
+  identical 403/checkpoint either way, so this is not a UA/TLS-fingerprint
+  gate impersonation can solve; it's server-side JS/device fingerprinting.
+  Not fixed this pass -- would need a headless browser (Playwright) to pass
+  the challenge. True current catalogue size unknown.

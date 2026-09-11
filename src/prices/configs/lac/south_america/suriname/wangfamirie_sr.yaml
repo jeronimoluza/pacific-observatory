@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: wangfamirie_sr
+url: https://wangfamirie.com/
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: nl
+currency: EUR
+cadence: weekly
+coicop_codes: null
+notes: |
+  "Boodschappen en Paketten voor Suriname" -- Netherlands-run grocery/parcel
+  webshop for delivery to Suriname ("ontvang binnen 4 dagen"). WooCommerce
+  Store API confirmed live 2026-09-11
+  (https://wangfamirie.com/wp-json/wc/store/v1/products), 3,601 SKUs across
+  34 categories. Real grocery departments dominant by count: DRANKEN 211,
+  ONTBIJT 203, SAUS EN MARINADE 195, ZOET & SNACKS 156, VLEES 154 (Kip 46,
+  Varken 42, Rund 22, Zoutvlees 10), ZUIVEL 95, GROENTEN 75, THEE & KOFFIE
+  49, VIS 32, KRUIDEN 30, FRUIT 22, DIEPVRIES 21, BROOD 14 -- alongside
+  TOILETARTIKELEN/HYGIENE/BABY/PHARMA/SCHOOL non-food lines. currency_code=
+  EUR, minor_unit=2 (verified: raw price "2630" for a school backpack
+  renders as EUR 26.30 on the live product page).
+
+  Independent of avoda_sr / now2su.com (HEM Suriname N.V. group) and
+  surishop.nl -- different operator, different brands (Pacifico, Chitra,
+  Mar-Jac -- Caribbean diaspora grocery brands), different WooCommerce
+  backend. Not a double-count of the avoda_sr shelf. Channel tagged
+  `supermarket` on the same basis as avoda_sr: first-party general grocery
+  webshop with a real full-depth food department.
+
+  Page family: API (WooCommerce Store API JSON; spider never fetches an
+  HTML page).

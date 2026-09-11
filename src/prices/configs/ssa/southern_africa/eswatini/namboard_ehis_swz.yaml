@@ -1,0 +1,44 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: namboard_ehis_swz
+module: ssa.southern_africa.eswatini.namboard_ehis
+function: fetch_namboard_ehis_swz
+url: https://www.ehis.co.sz/Portal/Info/buyingprice
+language: en
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  New source (2026-09-11). Eswatini's National Agricultural Marketing Board
+  (NAMBoard, namboard.co.sz) links its "Weekly Buying Prices" menu item to a
+  separate portal, www.ehis.co.sz (Eswatini Horticulture Information
+  System), which publishes a fixed nomenclature of ~67 fresh fruit/vegetable
+  commodities as a server-rendered HTML table (no WAF, plain HTTP, no
+  impersonation needed). Four pages share the identical commodity list with
+  different prices: /Portal/Info/buyingprice (national NAMBoard buying
+  price), /Portal/Info/Siteki, /Portal/Info/Nhlangano, /Portal/Info/PiggsPeak
+  (named fresh-produce market boards). Verified live 2026-09-11: all four
+  pages returned 67 rows each (268 total) with genuinely different prices
+  per item across pages (e.g. Lettuce: Siteki E4.50, Nhlangano E6.00, Piggs
+  Peak E4.50) -- confirms this is a real fixed published nomenclature, not a
+  flat-count fetch artifact. Test run (--max-items 100, though this fetcher
+  ignores max-items since it is not a spider) produced 268 rows, 4 distinct
+  source_url values (one per market page), covering fruits, vegetables and
+  herbs (avocado, banana, mango, litchi, dragon fruit, cabbage, lettuce,
+  butternut, carrot, potato, sweet potato, madumbe, chillies, herbs, etc).
+  No date-parameter or history endpoint found -- the site always shows the
+  CURRENT week only, so the fetcher takes a single weekly snapshot
+  (period_kind: weekly_avg, observation_date = period END date parsed from
+  the page's "<start> TO <end>" text) rather than walking a day range.
+  Currency SZL confirmed (site displays "E" for Emalangeni on market pages,
+  plain numeric on the national buying-price page; both parse to the same
+  SZL value). This is a genuine sourcing-gap fill for Eswatini division 01 --
+  the country previously had zero retail/market-level food price coverage
+  beyond wfp_swz and fews_swz (both national commodity averages) and
+  thewineboutique_sz (alcohol only). coicop_classification: classifier, same
+  reasoning as ocpv_infoprix_civ (Cote d'Ivoire) and the existing
+  Eswatini official_avg sources -- free-text produce names including grade
+  suffixes ("Grade A"/"Grade B") are exactly what the downstream classifier
+  is for.
