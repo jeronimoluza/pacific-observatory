@@ -480,6 +480,7 @@ WordPress site for an offline retailer — pages exist, products do not. No /sho
 - **nassaugrocer.com** (BS) -- default "My WordPress" install, no Store API route. **nassaugrocery.com** (BS) -- 85KB, neither Shopify `/products.json` nor a WooCommerce Store API. Both probed 2026-09-05.
 
 - **brugseni.gl** (GL, Brugseni/KNI) and **pilersuisoq.gl** (GL, Pilersuisoq) -- Greenland's two non-Pisiffik retail chains. Both WordPress, both HTTP 200 (152 KB / 60 KB), both with **zero** `kr` price tokens anywhere in the served HTML; brugseni's only shop-shaped link is a store-locator route. Re-confirmed 2026-09-05, agreeing with independent probes on 2026-09-01. Greenland's food e-commerce absence is structural -- do not re-probe more than once a year, and a `kr`-token count is the whole test.
+- **"Spar Greenland"** (GL, a named lead with no confirmed domain) -- `spar.gl`, `www.spar.gl`, `spargreenland.gl`, `spargreenland.com` all **NXDOMAIN** on all three probe arms (plain `requests` default UA, plain `requests` + Chrome UA, `curl_cffi impersonate=chrome124`). No SPAR-branded retail entity appears to operate in Greenland under any of the obvious domain guesses; brugseni.gl (above) is the closest analogue (Greenlandic co-op grocery banner) and is independently confirmed brochure-only. WebSearch was unavailable this session (session-wide budget exhausted) to try name variants -- treat as unconfirmed-leaning-absent, not exhaustive. Probed 2026-09-11.
 - **fantastico.bg** (BG, Fantastico -- major Sofia grocery chain, COICOP 01 candidate) -- 200 / 94 KB, but the entire 1,230-URL sitemap is 633 news posts, 233 blog posts, 145 recipes, 88 careers pages and 52 store pages. `/assortment` is **11** pages with no per-product price. Store locator + content marketing, no webshop. Probed 2026-09-05.
 - **tinex.mk** (MK, Tinex -- major North Macedonian supermarket chain, COICOP 01 candidate) -- 200 with a 1 MB homepage, which reads like a real storefront. It is a **Wix** site: `sitemap.xml` is `generatedBy="WIX"` and contains only blog-posts, blog-categories and static pages. No products, no PDPs. Probed 2026-09-05.
 - **fjardarkaup.is** (IS, Fjardarkaup supermarket, Hafnarfjordur) -- 200 / 140 KB; sitemap has 174 URLs, all campaign/marketing pages (`/pizzadagar`, `/jol`, `/50-ara-afmaeli`). No webshop. **samkaup.is** (IS) is the parent group of Netto/Kjorbudin/Krambud, a corporate site with no catalogue -- not a storefront at all. Both probed 2026-09-05.
@@ -553,6 +554,8 @@ Domain exists and renders but has no e-commerce — corporate/brand portal.
 - **www.shoprite.co.mz** (MZ, Shoprite Mozambique) — AEM (`shopriteafrica` clientlibs) regional corporate portal shared with shoprite.co.zm/.zw etc. Sitemap is entirely recipes/offers/store-locator content pages (`/receitas/...`, `/ofertas.html`); `/ofertas.html` renders but carries no per-product prices, only promo copy. All guessed product/catalog paths (`/lojas.html`, `/promocoes.html`, `/catalogo.html`, `/products.html`) 404. No online shop for Mozambique. Probed 2026-09-01.
 - **www.shoprite.co.ls** (LS, Shoprite Lesotho) — same `shopriteafrica` AEM corporate portal as shoprite.co.mz (identical clientlibs, identical `/content/shopriteafrica/ls/en/...` path shape). `curl_cffi impersonate=chrome124` clears the WAF fine (200, no block) but the site is corporate-only: nav is `explore-shoprite.html` (category *description* pages, no prices), `specials.html` (promo blurb pointing at a PDF privacy/cookie policy, no catalog PDF, no per-product prices), `store-locator.html`. No `/shop`, `/products`, `/catalogo` path exists. Not a redirect to the SA parent (resolves natively, `/ls/en/` path is genuine) but there is no e-commerce catalogue to scrape regardless — same failure mode as the MZ sibling, not a locality problem. Probed 2026-09-01.
 - **www.pnp.co.ls / pnp.co.ls** (LS, Pick n Pay Lesotho) — dead DNS (`curl: (6) Could not resolve host`) on both apex and www, from `curl_cffi impersonate=chrome124` (not a bare-curl false negative — this is NXDOMAIN, no TLS handshake ever starts). Not a redirect to the SA parent — the domain simply does not resolve. Probed 2026-09-01.
+- **www.checkers.co.ls** (LS, Checkers Lesotho) — same `checkers-africa` AEM corporate-portal tenant as the `shoprite.co.ls`/`.co.mz`/`.co.zm` siblings above (identical clientlib naming, same regional-group pattern). 200, store-locator + `specials.checkers.co.ls` flyer-subdomain links only, zero `/shop`/`/products` paths, zero WooCommerce/Shopify/Magento fingerprint, zero cart/price/add-to-cart tokens in raw HTML. Probed 2026-09-11.
+- **pricemate.info / api.pricemate.info** (multi-country SSA shop-price-comparison app, LS/BW/ZA) — the storefront and API are genuinely live (Nuxt SSR + open `api.pricemate.info` JSON backend, no auth), but a direct sweep of `GET /api/products?shop_id=1..29` returns `total_published_products: 0` for **every single shop on the platform**, not just the one Lesotho shop previously found (Econofoods Maseru). Downgrade from any prior "parked, worth a re-check" verdict to DEAD — this reads as an abandoned/never-populated platform rather than a per-country gap. Probed 2026-09-11.
 - **DCH Foods / 大昌食品 (HK)** — eShop is **down/decommissioned**: `dchfood.com` → 302 corporate `dch.com.hk` (no shop); the real eShop host `foodmart.dchliving.com` is **NXDOMAIN**, `www.dchfoodmartdeluxe.com` has no A record. No live storefront to probe. If `foodmart.dchliving.com` returns, likely Shopline (Cloudflare-fronted) → try `/products.json` + JSON-LD. Probed 2026-07-27.
 - **zadfresh.com** (SD) — bare default "Welcome to nginx!" install page (612 bytes) — server exists but nothing is deployed on it. Probed 2026-09-01.
 - **sudansoug.com** (SD, "Sudansoug — Sudanese products online") — diaspora e-commerce (USD/AED prices alongside SDG, "Sudanese products online" tagline, no in-Sudan delivery-zone text found). Reject for the *same* reason as the deleted Antigua diaspora-grocer sources unless a genuine Sudan delivery zone can be confirmed — do not build without re-verifying locality. **alafnanfoods.com** (search snippet lists a +971 UAE contact number) is the same diaspora pattern. Probed 2026-09-01 (WebSearch + curl only, not deep-probed further once the locality flag was raised).
@@ -834,6 +837,7 @@ CDN-fronted document servers (Magnolia, Adobe AEM, similar) sometimes serve a 20
 - **myfoodness.co.bw** (BW, MyFoodness — food-ordering app for Gaborone, surfaced by search with a live-looking title) — domain does not resolve at all (`gaierror`, `curl: (6) Could not resolve host`). The app may still exist on the app stores; the web domain is dead. Probed 2026-09-10 (Botswana `ddgs` sweep).
 - **bestmart.sr / www.bestmart.sr** (SR, Bestmart Paramaribo) -- resolves and returns HTTP 200 with a **zero-byte body** on both hosts. Named as a live Suriname chain by a 2026-09-05 Dutch-language search; there is nothing behind the domain.
 - **Suriname supermarket domains, all NXDOMAIN** (probed 2026-09-05, recorded so the guessing is not repeated): `combemarkt.sr`, `superkoop.sr`, `gwm.sr`, `sumis.sr`, `tulipsupermarket.sr`.
+- **www.foodbasket.sr** (SR, "Foodbasket" — "affordable daily groceries across Suriname", surfaced fresh in a 2026-09-11 Dutch/English search, not present in the wave-13 2026-09-01 inventory) — the storefront itself is live (Next.js/Mantine SPA, 200 OK, no WAF) but structurally non-functional: the app is a warehouse/delivery-area-gated grocery app (`__NEXT_DATA__` carries `warehouseSelected: false`, an "Select Warehouse" map-picker gates the whole catalog), and its own tRPC backend call (`/api/trpc/warehouses.getAll`) returns HTTP 500 with `{"message":"getaddrinfo ENOTFOUND synergy-core-api-x7ui4.ondigitalocean.app"}` — the Next.js frontend cannot even resolve DNS for its own DigitalOcean-hosted API backend. Not a WAF, not a hydration timing issue: the backend service the frontend depends on does not exist at the DNS layer. 0 rows reachable by any means (no warehouse list, no product list, no fallback data). Probed 2026-09-11.
 - **St Martin / Sint Maarten domains, all NXDOMAIN** (probed 2026-09-05): `simplymarket-sxm.com`, `leaderprice-sxm.com`, `match-sxm.com`, `superusaintmartin.com`, `hyperu-sxm.com`, `westindiesmall.com`, `sunnyfoods.sx`, `carrefoursxm.com`, `goldenrocksxm.com`, `sxmsupermarket.com`, `superusxm.com`. The French-side chains present physically (Monoprix, Leader Price, Saint Pierre, Super U) have no island-specific web presence.
 - **Bahamas supermarket domains, all NXDOMAIN** (probed 2026-09-05): `supervalue.com.bs`, `supervalue.bs`, `supervaluefoodstores.com` (Super Value Food Stores, the largest domestic chain by store count -- worth a targeted search rather than more domain guessing), `citymarkets.bs`, `qualitysupermarketbahamas.com`, `thefreshmarketbahamas.com`, `bristolwines.com`, `jimmyswines.com`, `youngsfinewines.com`, `bristolgroup.bs`, `freshmartbahamas.com`, `bahamargrocery.com`. `butlerandsands.com` times out at TCP.
 - **primesxm.com** (SX, Prime Distributors) -- HugeDomains parking page, "domain is for sale".
@@ -849,6 +853,7 @@ CDN-fronted document servers (Magnolia, Adobe AEM, similar) sometimes serve a 20
 - **bissaushop.com / guineshop.com / nkassa.gw / sabuka.gw / supermercadobissau.com / bolamasupermercados.com** (GW) — a name/domain-guess sweep for Guinea-Bissau storefronts; all six NXDOMAIN. Recorded so the next pass does not repeat the guess. Probed 2026-09-05.
 - **candando.com** (AO, Candando — Angolan supermarket chain) — connection times out at 25s. Probed 2026-09-05.
 - **tupuca.co.ao / nossosuper.co.ao / alimenta.co.ao / deskontao.co.ao** (AO), **zmall.et / sheba.et (a law firm) / enatmart.com / beu.et** (ET), **kikuubo.online / shopyetu.co.ug / jumiafood.ug / minute5.ug / farmiketug.com** (UG) — domain-guess sweep, all NXDOMAIN except `sheba.et` (an unrelated legal practice) and `zmall.et` (expired cert; behind it a 1,668-byte SPA shell with no catalogue). Probed 2026-09-05.
+- **Suriname — 4th-pass named-chain sweep, zero hits** (SR; Mr. Bing, Bas Supermarkt, Superbaas, Vreedzaam, Prijsklopper, Amazing supermarket, Foodcity, Chinese/Javanese tokos): none of these resolve to a real Suriname webshop. "Amazing supermarket" and "Foodcity" are out-of-country brands (Netherlands and Spain/US respectively); "Vreedzaam" and "Prijsklopper" are misnamed/non-existent; "Mr. Bing", "Bas Supermarkt" and "Superbaas" have no findable web footprint at all. Cross-checked two independent Suriname business directories (`surinamyp.com/category/Supermarkets`, `dfave.com/sr/paramaribo/supermarkets-hypermarkets/`, ~38 listed toko/supermarket businesses combined) listing-by-listing for an outbound website link — **zero of ~38 have one**, all phone/WhatsApp/Facebook only. `surinamemarktplaats.com` (SR general classifieds) checked and ruled out — no food category in site copy or bundled JS. `statistics-suriname.org` re-confirmed reachable (2026-09-05 timeout resolved) but carries only the already-onboarded CPI, no separate average-retail-price table. Fourth independent same-day confirmation that Suriname food retail has no further online footprint beyond the already-onboarded `avoda_sr`. Probed 2026-09-11.
 
 ## Official feeds that geographically exclude a country despite valid geography data (check the count, not just the domain)
 
@@ -2662,3 +2667,165 @@ small-producer-focused search round.
   Greenland. Not probed further.
 - **polarseafood.com** (GL-linked seafood) — confirmed B2B/export only, no
   consumer storefront to evaluate.
+
+## Turks and Caicos Islands food-sourcing pass — 2026-09-11
+
+Country already had exactly one source (`goods2door_tc`, Wix grocery-delivery-for-guests spider,
+~4,438 rows). Two more shipped this pass: `islandselects_tc` and `tcgrocerydelivery_tc`, both
+WooCommerce Store API grocery-delivery storefronts (100/100 rows, 100 distinct PDP URLs each,
+verified end-to-end 2026-09-11) -- see the country's manifests for full detail. Everything below
+is the discovery trail on top of those two: TCI's dominant supermarket chain and every other
+guessed competitor/concierge domain has no online catalog or does not exist.
+
+- **gracewaysupermarkets.com** (TC, Graceway Supermarkets/Graceway IGA — the dominant chain,
+  multiple locations across Provo/Grand Turk/North&Middle Caicos) — live Squarespace brochure
+  site, 200 OK, real content. Sitemap (`/sitemap.xml`, 380KB) enumerated: no `/shop`, `/cart`, or
+  `/order-online` path exists; `/store`, `/iga`, `/smart`, `/graceway-gourmet` are all static
+  brand-info pages with zero price tokens. The one live "ordering" surface (`/order-test`) is a
+  single Squarespace form for pre-ordering a whole Christmas turkey/ham ($6.99/lb, $5.75/lb) —
+  a seasonal one-off form, not a catalog (fails the enumerability gate outright: one static page,
+  ~10 fixed line items, no pagination). FAQ page confirms explicitly: "We don't currently provide
+  a delivery service" — the only shopping-adjacent offering is a manual PDF-grocery-list +
+  in-store-payment service from one physical location (Graceway Gourmet, Grace Bay), not online.
+  Brochure-only, confirmed 2026-09-11.
+- **CaribeEats** (`backend.caribeeats.com`, the LAC delivery-aggregator platform already onboarded
+  for Grenada/Dominica/St Kitts/Antigua) — live `/api/init` enumerates 21 regions; Turks and
+  Caicos is not among them (nearest Caribbean coverage: Bahamas, BVI, Barbados, Trinidad, Jamaica,
+  Guyana). Platform genuinely does not reach TCI. Confirmed 2026-09-11.
+- **shopiga.com**, **myigastore.com**, **iga.com** store-locator — none serve a TCI/Providenciales
+  IGA storefront (`shopiga.com` turned out to be an unrelated "Shopiggo" AI-shopping SaaS;
+  `iga.com/store-locator` 404s on a TCI query; `myigastore.com` doesn't resolve). No
+  LocalExpress-style online-ordering subdomain exists for the Graceway IGA franchise, unlike the
+  Grenada (`shop.realvalueiga.com`) / Barbados (`online.imartstores.com`) / Puerto Rico
+  (`econotogo.com`) IGA-adjacent sibling entries already in this file.
+- **stockmyvilla.com** — live 981KB Wix site with a real `/shop?Category=GROCERY` catalog, but
+  it's "Time Saver VI", a St Thomas (US Virgin Islands) villa-provisioning service — wrong
+  island, not TCI.
+- **turksandcaicosconcierge.com** — domain-for-sale parking page (DaaZ marketplace).
+- **tcprovisions.com** — parked domain, redirects to a generic lander.
+- **provoconcierge.com** — Cloudflare-proxied but origin returns 526 (invalid SSL / origin dead);
+  domain not actively serving anything.
+- ~25 further guessed domains for a TCI grocery-delivery/concierge/provisioning competitor to
+  `goods2door_tc` (`provogrocerydelivery.com`, `tcigroceries.com`, `tcigrocer.com`,
+  `provofresh.com`, `provomarket.com`, `tcimarket.com`, `islandprovisionstci.com`,
+  `villaprovisionstc.com`, `graceybayconcierge.com`, etc.) — all NXDOMAIN. No second Wix/Squarespace
+  tourist-grocery-delivery competitor found.
+- **Turks and Caicos Tourism Board business directory** (`turksandcaicostourism.com`,
+  Shopping category, 31 listings) — the only grocery/convenience entries are Kathleen's 7-11,
+  Middle Caicos Co-op, Jai's, and Greensleeves, all phone-number-only with **no website URL** for
+  any of them. Confirms the small-population (~46k) territory's local grocers simply have no web
+  presence to scrape.
+
+Remaining gap: the dominant real-world chain (Graceway) is still unscrapeable (brochure-only).
+Re-check in ~6-12 months for a Graceway e-commerce launch or a new delivery-app entrant; the
+three WooCommerce/Wix delivery-for-guests sites now cover the tourist-grocery niche well.
+- **choisupermarkt.com** (SR, note Dutch spelling — no "e" — distinct from
+  the already-recorded `choisupermarket.com` English spelling/expired-cert
+  entry above) — resolves 200 via Cloudflare, 475KB page, real Shopify
+  fingerprint, but the domain has been **squatted**: content served is an
+  Indonesian togel (illegal-lottery/gambling) spam site (`<title>TOTO TOGEL
+  158`, canonical link to `youknowwesew.com`). The lapsed domain of a real
+  defunct Suriname butcher/grocer picked up by a spam operator — a new
+  failure signature distinct from cert-expiry or zero-byte-body. Probed
+  2026-09-11.
+- **Suriname named-chain guesses, all NXDOMAIN or dead, probed 2026-09-11**
+  (recorded so the guessing is not repeated): `vshfoodmart.{com,sr}`,
+  `vsh.sr`, `baassupermarket.{sr,com}`, `baas.sr`, `c1000.sr`,
+  `c1000suriname.com`, `continent.sr`, `continentsupermarkt.sr`,
+  `continentsuriname.com`, `kortom.sr`, `kortomsupermarkt.sr`,
+  `kortomonline.com`, `wongsupermarket.{sr,com,online}`, `wong.sr`,
+  `wongssupermarket.com`, `hermitagemall.sr`, `hermitagemallsupermarkt.com`,
+  `sparsuriname.com`, `spar.sr`, `shopritesuriname.com`,
+  `picknpaysuriname.com` (confirms no SA regional chain in Suriname),
+  `surimarket.com` (parked lander page), `transamerica.sr` (resolves, bare
+  404.html, no site), `soengngie.{com,sr}` (redirects to soengco.com, a
+  brand/recipe content site with zero shop/cart — not a retail source),
+  `vshfoods.com` (live but manufacturer/export brand site, zero shop/cart),
+  `kersten.sr` (live, but Toyota dealership — automotive, not food).
+- **OpenStreetMap Overpass as a discovery substitute for Suriname** —
+  when WebSearch/WebFetch search-engine access is unavailable or
+  unreliable (measured 2026-09-11: DDG CAPTCHA, Bing decoy results,
+  Ecosia/Mojeek 403, r.jina.ai needs a key), querying Overpass for
+  `shop~supermarket|convenience|grocery|greengrocer|butcher` within a
+  country's admin boundary and checking which nodes carry a `website` tag
+  is a working substitute — for Suriname it returned 506 shop nodes, of
+  which only 6 carried a website, 2 of which were live and got onboarded
+  (`rossignolslagerij_sr`, `vcm_sr`). Cheap (one API call) and gives ground
+  truth on how much of a country's retail-food sector has any web presence
+  at all.
+- **choisupermarkt.com** (SR, note Dutch spelling — no "e" — distinct from
+  the already-recorded `choisupermarket.com` English spelling/expired-cert
+  entry above) — resolves 200 via Cloudflare, 475KB page, real Shopify
+  fingerprint, but the domain has been **squatted**: content served is an
+  Indonesian togel (illegal-lottery/gambling) spam site (`<title>TOTO TOGEL
+  158`, canonical link to `youknowwesew.com`). The lapsed domain of a real
+  defunct Suriname butcher/grocer picked up by a spam operator — a new
+  failure signature distinct from cert-expiry or zero-byte-body. Probed
+  2026-09-11.
+- **Suriname named-chain guesses, all NXDOMAIN or dead, probed 2026-09-11**
+  (recorded so the guessing is not repeated): `vshfoodmart.{com,sr}`,
+  `vsh.sr`, `baassupermarket.{sr,com}`, `baas.sr`, `c1000.sr`,
+  `c1000suriname.com`, `continent.sr`, `continentsupermarkt.sr`,
+  `continentsuriname.com`, `kortom.sr`, `kortomsupermarkt.sr`,
+  `kortomonline.com`, `wongsupermarket.{sr,com,online}`, `wong.sr`,
+  `wongssupermarket.com`, `hermitagemall.sr`, `hermitagemallsupermarkt.com`,
+  `sparsuriname.com`, `spar.sr`, `shopritesuriname.com`,
+  `picknpaysuriname.com` (confirms no SA regional chain in Suriname),
+  `surimarket.com` (parked lander page), `transamerica.sr` (resolves, bare
+  404.html, no site), `soengngie.{com,sr}` (redirects to soengco.com, a
+  brand/recipe content site with zero shop/cart — not a retail source),
+  `vshfoods.com` (live but manufacturer/export brand site, zero shop/cart),
+  `kersten.sr` (live, but Toyota dealership — automotive, not food).
+- **OpenStreetMap Overpass as a discovery substitute for Suriname** —
+  when WebSearch/WebFetch search-engine access is unavailable or
+  unreliable (measured 2026-09-11: DDG CAPTCHA, Bing decoy results,
+  Ecosia/Mojeek 403, r.jina.ai needs a key), querying Overpass for
+  `shop~supermarket|convenience|grocery|greengrocer|butcher` within a
+  country's admin boundary and checking which nodes carry a `website` tag
+  is a working substitute — for Suriname it returned 506 shop nodes, of
+  which only 6 carried a website, 2 of which were live and got onboarded
+  (`rossignolslagerij_sr`, `vcm_sr`). Cheap (one API call) and gives ground
+  truth on how much of a country's retail-food sector has any web presence
+  at all.
+
+### Namibia — Shoprite Group AEM brand family, Choppies, and two unreachable chains
+
+- **shoprite.com.na / checkers.com.na / okfoods.co.za (`/na/en_NA/` locale)** —
+  all three are the SAME Shoprite Group Adobe AEM brand template ("OK Foods
+  Namibia" is a Shoprite Group banner, NOT an independently Namibian-founded
+  chain as sometimes assumed from the name). 403 on plain default-UA
+  `requests`, 200 on plain Chrome-UA `requests` (no TLS impersonation needed —
+  UA alone clears it). Brochure/store-locator only: sitemap.xml on shoprite is
+  100% `/recipes/` marketing pages, zero product URLs; okfoods.co.za's Namibia
+  specials page has 0 cart/price markup (image/flyer-style weekly specials).
+  Re-probed 2026-09-11, confirms and extends the 2026-09-01 finding.
+- **choppies.co.na** — WordPress + Elementor, 200 on all UAs, no WAF. `/wp-json/`
+  route dump has no `wc/store` namespace at all (WooCommerce not installed).
+  Nav explicitly links "Shop online"/"eChoppies" to **echoppies.com**, but that
+  platform is Botswana-only (currency asset named `botswana-currency.png`,
+  zero Namibia references on the page) — a brochure site whose only shop link
+  routes to a sibling country's store. Probed 2026-09-11.
+- **spar.co.na / www.spar.co.na** and **pupkewitz.com.na / www.pupkewitz.com.na**
+  — DNS resolves for both, but ALL of plain `requests` (2 UAs) and `curl_cffi`
+  impersonate=`chrome124`/`chrome120`/`safari17_0` (3 profiles) time out after
+  25s with no TCP-level response, identically across profiles. This rules out
+  a JA3/TLS-fingerprint block (an impersonating client would get a different
+  response, not an identical hang) — reads as the origin not accepting
+  connections from this egress, or genuinely down. Now confirmed across 2
+  independent sessions (2026-09-01 single-attempt timeout, 2026-09-11 5-profile
+  re-probe) — not classified as a WAF; worth retrying from a different egress
+  if revisited. Re-probed 2026-09-11.
+- **metro.com.na** — now returns 200 (previously also dead at 2026-09-01).
+  `/new-products/` and `/product-news/` exist but render via a "3d-flip-book"
+  WordPress plugin (image/PDF-style weekly circular), 0 price/cart text in raw
+  HTML. Not machine-readable without an image/PDF OCR pipeline; not pursued —
+  no per-product structure even after OCR. Probed 2026-09-11.
+- **zulzi.com** — looked promising (SvelteKit SPA, `ProductList` +
+  `AddToCartButton` components — a real grocery-delivery-app shape) but all
+  social links point to `zulzi_sa` / `facebook.com/zulzi.co.za`: this is a
+  South African delivery platform with no Namibia presence found on the page.
+  Not probed further. Probed 2026-09-11.
+
+Namibia's national statistics office (nsa.org.na) shipped instead as a
+fetcher pair (`na_nsa_cpi` cpi_benchmark, `na_nsa_zonal_food_prices`
+official_avg) — see `src/prices/configs/ssa/southern_africa/namibia/`.

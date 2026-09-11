@@ -1,30 +1,39 @@
 """
-Wang Famirie (Suriname diaspora grocery/parcel shipping) -- https://wangfamirie.com/.
+Wangfamirie (Suriname) -- https://wangfamirie.com/
 
-"Boodschappen en Paketten voor Suriname" -- a Netherlands-run webshop where
-customers order groceries and parcels online for delivery to family in
-Suriname ("ontvang binnen 4 dagen" -- receive within 4 days). WooCommerce
-Store API confirmed live 2026-09-11
-(https://wangfamirie.com/wp-json/wc/store/v1/products), 3,601 SKUs.
-Real grocery categories present and dominant by SKU count: DRANKEN
-(beverages, 211), ONTBIJT (breakfast, 203), SAUS EN MARINADE (195),
-ZOET & SNACKS (156), VLEES/meat (154, incl. Kip/chicken 46, Varken/pork 42,
-Rund/beef 22, Zoutvlees/salted meat 10), ZUIVEL/dairy (95), GROENTEN/
-vegetables (75), THEE & KOFFIE (49), VIS/fish (32), KRUIDEN/herbs (30),
-FRUIT (22), DIEPVRIES/frozen (21), BROOD/bread (14) -- alongside household/
-personal-care (TOILETARTIKELEN, HYGIENE), BABY, PHARMA and SCHOOL lines.
-currency_code=EUR, minor_unit=2 (prices are minor-unit integers, e.g. raw
-"2630" -> EUR 26.30 for a school backpack; WooBaseSpider divides by
-10**currency_minor_unit).
+"Boodschappen en Paketten voor Suriname" -- a Dutch-language diaspora
+grocery/parcel service: order online (EUR-priced) and have it delivered to
+family in Suriname. Found via a Dutch-language ddgs search ("supermarkt
+online bestellen Paramaribo Suriname boodschappen"), probed 2026-09-11.
+WooCommerce Store API confirmed live, open, no auth
+(/wp-json/wc/store/v1/products). X-WP-Total: 3,601 across 181 pages.
+Enumerability confirmed: page1 vs page2 ids disjoint.
 
-NOT the same catalog as avoda_sr / now2su.com (HEM Suriname N.V.'s SRD/EUR
-storefronts) or surishop.nl -- independent operator ("Vincent Fanny",
-per the site's author byline), distinct product names/brands (Caribbean
-diaspora brands: Pacifico, Chitra, Mar-Jac) and a different backend. Channel
-tagged `supermarket` on the same basis as avoda_sr: first-party general
-grocery webshop with a real full-depth food department, mixed with
-household/personal-care lines (an online-delivery basket skewing away from
-fresh is expected and not evidence against the tag).
+Distinct business/catalog from the existing avoda_sr (and its now2su.com
+sibling shelf): a page-5 name-overlap check against avoda_sr's page 5
+found 0/30 matching product names, and the category taxonomy is a
+completely different naming convention (Dutch grocery-department names
+rather than avoda's English department names) -- not a duplicate shelf.
+
+Rich, food-heavy category structure (product counts as of 2026-09-11):
+DRANKEN (drinks) 211, Family packs 572, FRUIT 22, GROENTEN (vegetables)
+75, Kip (chicken) 46, ONTBIJT (breakfast) 203, Rund (beef) 22, SAUS EN
+MARINADE 195, THEE & KOFFIE 49, VIS (fish) 32, VLEES (meat) 154, Varken
+(pork) 42, ZOET & SNACKS 156, ZUIVEL (dairy) 95, Zoutvlees (salted meat)
+10, BROOD (bread) 14, Beleg (spreads) 21, DIEPVRIES (frozen) 21, KRUIDEN
+(spices) 30 -- alongside non-food departments (BABY, PHARMA, SCHOOL,
+HYGIENE, TOILETARTIKELEN, ELEKTRO, DAMES).
+
+currency_code=EUR from the API (this is a diaspora order-and-deliver
+model, not domestically SRD-priced retail, same pattern already
+documented for now2su.com) -- kept as reported by the API rather than
+force-overridden, consistent with the "site's own currency code wins"
+rule. Analysts should be aware this reflects diaspora-order pricing, not
+Suriname's domestic SRD retail price level, when interpreting PPP output
+for this source.
+
+Page family: API (reads the JSON Store API directly, never fetches a
+rendered page).
 """
 
 from price_scraping.spiders._woo_base import WooBaseSpider

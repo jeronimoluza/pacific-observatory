@@ -20,7 +20,6 @@ import scrapy
 logger = logging.getLogger(__name__)
 
 PER_PAGE_URL = "https://palacesuperstores.com/api/products?page={page}"
-MAX_PAGES = 200  # safety cap; catalog has ~1,457 pages total
 
 
 class PalacesuperstoresGhSpider(scrapy.Spider):
@@ -36,6 +35,10 @@ class PalacesuperstoresGhSpider(scrapy.Spider):
         "RETRY_TIMES": 3,
         "AUTOTHROTTLE_ENABLED": True,
     }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.seen_ids = set()
 
     async def start(self):
         yield scrapy.Request(
@@ -55,12 +58,17 @@ class PalacesuperstoresGhSpider(scrapy.Spider):
             return
         page = response.meta["page"]
         logger.info(f"{self.name} page={page} count={len(items)}")
-        for p in items:
+        new_products = [p for p in items if str(p.get("id")) not in self.seen_ids]
+        if not new_products:
+            logger.info("%s: stopping repeated page %s (zero new product ids)", self.name, page)
+            return
+        for p in new_products:
+            self.seen_ids.add(str(p.get("id")))
             item = self._item(p)
             if item:
                 yield item
         last_page = (payload.get("meta") or {}).get("last_page")
-        if page < MAX_PAGES and (last_page is None or page < last_page):
+        if last_page is None or page < int(last_page):
             nxt = page + 1
             yield scrapy.Request(
                 PER_PAGE_URL.format(page=nxt),

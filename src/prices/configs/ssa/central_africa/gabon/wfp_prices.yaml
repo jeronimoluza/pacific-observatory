@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_gab
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_gab
+url: https://data.humdata.org/dataset/wfp-food-prices-for-gabon
+language: fr
+cadence: monthly
+fallback_date: 2006-01-01
+notes: |
+  WFP food prices for Gabon via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Live-checked 2026-09-11: CKAN package_show
+  resolves wfp_food_prices_gab.csv (200, 504 data rows), currency XAF
+  throughout (matches countries.yaml). WFP DISCONTINUED monitoring here —
+  observation window is fixed at 2007-01-15 to 2017-06-15, single market
+  (Libreville/Estuaire only), ~10 commodities (cassava, rice, wheat flour,
+  plantains, etc, category cereals-and-tubers / vegetables-and-fruits).
+  fallback_date set to 2006-01-01 (before the earliest row) so the first
+  run ingests the full historical window; this source will NEVER produce
+  new rows on a re-run once the initial backfill lands — it is a one-time
+  historical panel, not a live feed. Sample row at 2017-06-15: Plantains,
+  KG, XAF 646. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; COICOP deferred to the classifier
+  (item_name = WFP commodity, English label despite fr language default).

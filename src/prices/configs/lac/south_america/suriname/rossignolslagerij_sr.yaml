@@ -1,0 +1,39 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://rossignolslagerij.com/"
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: nl
+currency: SRD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "rossignolslagerij_sr"
+  base_url: "https://rossignolslagerij.com"
+  currency: "SRD"
+  language: "nl"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Suriname food-sourcing pass 2026-09-11. Rossignol Slagerij -- Paramaribo
+  butcher/meat retailer, multiple physical branches (OSM tags: Rossignol,
+  Rossignol Slagerij, Rossignol 2 GO). Shopify storefront confirmed live
+  2026-09-11: /products.json?limit=250 returns 94 products across 7
+  collections (Beleg/cold cuts, Kip/chicken, Rund/beef, Varken/pork,
+  Vlug Klaar/ready meals, Zoutvlees/salted meat); page 2 empty, so 94 is
+  the full catalog, not a truncation artifact. Sample: Varkenkerstham
+  SRD 500.00, Kipkerstham SRD 605.00, Gekookte zoutvlees vet SRD 56.82.
+  coicop_codes left unset (wide): Vlug Klaar (ready meals) and Beleg
+  may span 01.1.9 alongside the dominant 01.1.2 meat lines, so the
+  classifier assigns per-product leaves rather than a blanket narrow code.
+  Discovered via OSM Overpass cross-check (website tag on the
+  "Rossignol 2 GO" node), not general web search (search engines
+  returned decoy/irrelevant results for Suriname supermarket queries on
+  this pass -- see known_blockers_disco_safrica2_suriname.md).

@@ -1,0 +1,44 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02"]
+channel: null
+source_key: na_nsa_cpi
+module: ssa.southern_africa.namibia.nsa_cpi
+function: fetch_na_nsa_cpi
+url: https://nsa.org.na/
+language: en
+cadence: monthly
+fallback_date: 2002-01-01
+notes: |
+  Namibia Statistics Agency (NSA) monthly CPI Excel Tables workbook.
+  Sheet "Tab 6" ("Namibia CPI by divisions (Dec.2012=100)") carries the
+  full monthly index series back to 2002 for all COICOP divisions in a
+  single file -- one download backfills the whole history, no need to
+  iterate past releases. This onboarding pass is food-only, so only the
+  "FOOD AND NON-ALCOHOLIC BEVERAGES" (01) and "ALCOHOLIC BEVERAGES AND
+  TOBACCO" (02) columns are parsed; the other 10 published divisions are
+  intentionally not extracted here.
+
+  Latest release discovered live via the site's
+  dlp_document-sitemap.xml (Yoast sitemap for the "Document Library Pro"
+  custom post type), not a hardcoded URL -- release slugs are irregular
+  across years ("namibia-cpi-2026-excel-tables-august" vs
+  "namibia-cpi-august-2025-excel-tables"), both shapes handled. The
+  landing page for the matched document embeds the actual .xlsx link.
+
+  Sheet is located by scanning for the header text "CPI by divisions",
+  not by trusting the sheet name "Tab 6" -- confirmed live that NSA's
+  sheet-name-to-content mapping drifts across eras (the March-2023
+  release's sheet literally named "Table 14" holds an unrelated
+  Transport table, not the food-price table seen under that name in
+  2026 releases).
+
+  Verified live 2026-09-11 against the August 2026 release (Namibia-CPI-
+  August_2026-Excel-Tables.xlsx, 1.78MB): "Tab 6" header row names 12
+  divisions incl. both food divisions above (matched via a whitespace-
+  normalised substring, since NSA's own headers carry inconsistent
+  internal double-spacing). Test run with a backdated cutoff
+  (2002-01-01) returned index rows for both divisions spanning
+  2002-01 through 2026-08.

@@ -1,0 +1,51 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rakhaz_td
+url: https://www.rakhaz.com/
+language: fr
+currency: XAF
+cadence: weekly
+channel: fresh-market
+coicop_codes: null
+notes: |
+  Probed 2026-09-11. French-language ddgs search ("supermarche en ligne
+  livraison courses N'Djamena Tchad") surfaced this candidate. Next.js
+  frontend renders the catalogue client-side (no server-rendered product
+  data, no __NEXT_DATA__ payload) -- a Playwright network trace of
+  /accueil found the real backend on a separate Hostinger domain:
+  https://aliceblue-seal-957651.hostingersite.com/api/products?page=N.
+  Plain `requests` reads it with no auth, no impersonation, no CORS issue
+  (CORS is a browser-only restriction; server-side fetch is unaffected).
+
+  Laravel-style paginator: {"data":[...],"meta":{"current_page","last_page",
+  "total":27,"per_page":20}}. Enumerability confirmed: page1 (20 ids) vs
+  page2 (7 ids) fully disjoint, meta.total=27 matches 20+7 exactly -- not a
+  broken/flat spider signature, this genuinely is the whole (small) catalog.
+
+  Whole-catalog walk, 27 SKUs, 100% fresh produce: Ananas 3000/piece,
+  Avocat bio du Cameroun 300/piece, Bananes 800/kg, Carottes 600/kg,
+  Grenades 2600/kg, Mangue du Cameroun 400/piece, "Pasteque frais du
+  Tchad" 1000/piece (explicitly domestic), Pomme de Terre 1500/kg, etc.
+  Integer XAF prices (no minor unit). Bilingual French/Arabic product
+  names (name_ar field) present in the API, matching Chad's
+  French+Arabic-speaking population -- not surfaced in the scraped row
+  (product_name uses the French name) but confirms the source's
+  Chad-market fit.
+
+  Channel: fresh-market. Chad's other food sources (hadimi_td,
+  tchadcommerce_td, mossosouk_td) are general/electronics-leaning
+  marketplaces with almost no fresh produce -- this fills a genuine
+  COICOP 01.1 gap that supermarket-style catalogs structurally miss.
+  Chad has only 31 distinct product names in the entire 43M-row corpus;
+  this adds meaningfully to that.
+
+  Page family: API (reads the JSON REST API directly, never fetches a
+  rendered page). PDP url is synthesized (https://www.rakhaz.com/products/
+  <slug>) since the API response carries no canonical page-URL field.
+
+  Test: prices collect --source rakhaz_td --max-items 100 -> 27 rows
+  (whole catalog, hits the natural end of pagination well under the
+  max-items fence), 27 distinct product URLs, all XAF-priced fresh
+  produce.

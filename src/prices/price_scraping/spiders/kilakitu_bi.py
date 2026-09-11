@@ -12,6 +12,19 @@ food-price averages only, `analytical_role: official_avg`).
 
 Category listing pages are server-rendered Tier 1A HTML (confirmed live
 2026-09-01, curl_cffi impersonate=chrome124, no Playwright needed).
+
+Depth audit 2026-09-11: re-crawled the full homepage nav for any
+food/beverage/alcohol category slug missed by the original 14-slug scope.
+Found one: "chips-380" (Chips), a distinct listing from
+"quick-bites-379" and "canned-jarred-packaged-foods-378" -- 14 products
+across 2 pages (12 + 2, confirmed distinct product sets), all snack
+chips (Pringles, Doritos, tortilla chips, cheese flips). No other food
+category was missed -- checked homepage links for dairy/meat/fish/
+vegetable/fruit/bread/egg/coffee/tea/cereal/seafood/bakery/condiment/
+sauce/spice/syrup/juice/champagne/white-wine/liqueur/rhum/cognac/cidre
+keywords; every hit besides "chips-380" was either an individual product
+already reachable through an existing category or a false positive
+(e.g. "tea" matching "team-sports-250").
 Pagination is JS-triggered (`goToProductListingSearchPage(N)`) but the
 underlying URL is a plain GET:
   https://kilakitu.bi/<slug>?sort-popularity-desc&pagesize-12&page-<N>
@@ -59,6 +72,7 @@ CATEGORY_SLUGS = [
     "nutrition-252",
     "quick-bites-379",
     "water-soft-drinks-juices-200",
+    "chips-380",
     "beers-193",
     "gin-206",
     "red-wine-208",

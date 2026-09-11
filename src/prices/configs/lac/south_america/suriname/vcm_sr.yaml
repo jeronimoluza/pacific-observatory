@@ -1,0 +1,44 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://winkel.vcm.sr/"
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: nl
+currency: SRD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "vcm_sr"
+  base_url: "https://winkel.vcm.sr"
+  currency: "SRD"
+  language: "nl"
+  api_url: "https://winkel.vcm.sr/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Suriname food-sourcing pass 2026-09-11. VCM Slagerijen -- the retail
+  butcher/webshop arm of N.V. Verenigde Cultuur Maatschappijen (parent
+  site vcm.sr explicitly routes "webshop, catering services" to
+  winkel.vcm.sr; a separate arm, boerderij.vcm.sr, covers wholesale
+  agriculture/livestock and was NOT onboarded here to avoid a
+  retail/wholesale double-count of the same producer group).
+  WooCommerce Store API confirmed live 2026-09-11:
+  /wp-json/wc/store/v1/products?per_page=100 paginates to 170 total
+  products (page1=100, page2=70, zero id overlap -- real pagination, not
+  a repeat-page artifact). currency_code=SRD, currency_minor_unit=2.
+  Categories: Vers vlees 120, Rund 40, Varken 33, Kip 44, Beleg 23,
+  VCM Fresh/diversen 23, Salades 9, Kant en klaar 7, Schaap 4. Sample:
+  Kip sate (6 stuks) SRD 185.00, Schapenvlees met beenblokjes lokaal
+  SRD 1135.00. coicop_codes left unset (wide): Salades/Kant en klaar
+  are a small (~16/313) non-meat tail alongside the dominant meat lines,
+  so the classifier assigns per-product leaves. Discovered via OSM
+  Overpass cross-check (website tag on the butcher "'t Hoekhuis" node
+  pointing at the vcm.sr parent domain), not general web search (search
+  engines returned decoy/irrelevant results for Suriname supermarket
+  queries on this pass -- see known_blockers_disco_safrica2_suriname.md).

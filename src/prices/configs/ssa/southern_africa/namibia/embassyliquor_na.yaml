@@ -1,0 +1,52 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: embassyliquor_na
+url: https://www.embassyliquorstore.com/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.embassyliquorstore.com/product-page/"
+archive_path_re: '^/product-page/[^/?]+/?$'
+notes: |
+  Embassy Liquor Store -- Windhoek, Namibia wines/beers/spirits/cigars
+  retailer. Discovered and probed live 2026-09-11 (search hit). Wix
+  Stores site -- confirmed via the standard Wix-generated /sitemap.xml
+  sitemap-index chain -> store-products-sitemap.xml (448 product URLs
+  under /product-page/<slug> at probe time). Ignore the page's own
+  marketing copy mentioning "Ecwid" elsewhere on the homepage -- that is
+  unrelated third-party-app-directory content bundled into the Wix theme,
+  not evidence of an Ecwid storefront; the sitemap and PDP markup are
+  unambiguously Wix Stores.
+
+  Tier 1A: each PDP is server-rendered and carries a standard schema.org
+  JSON-LD Product block with an explicit `offers.priceCurrency: "NAD"`
+  and `offers.price` -- no Playwright needed, no currency inference
+  required (verified sample: "Coral Cerveja 200ml", price 22.7 NAD).
+
+  Enumeration mechanism: the sitemap IS the listing -- there is no
+  category-page crawl; every sitemap <loc> is fetched directly for its
+  JSON-LD. `category` and `product_id` (sku) are frequently null in the
+  JSON-LD on this tenant (left null rather than invented, per the
+  breadcrumb rule).
+
+  Division 02 (alcohol) value: Namibia had no dedicated liquor-retailer
+  source before this -- doorstep_na is a mixed convenience/alcohol
+  delivery app (channel: convenience), not a liquor specialist. This is
+  the first `specialty-food` alcohol source for the country.
+
+  Page family: PDP (spider fetches each /product-page/<slug> page
+  directly; the sitemap XML itself is not a price-bearing page).
+
+  Test run 2026-09-11: prices collect --source embassyliquor_na
+  --max-items 100 -> see run log for measured row/URL counts.
+
+  Caveat: `available` reads False on every sampled row (24/24 in the
+  --max-items 20 test run) despite these being live, purchasable listings
+  -- the site carries a storefront disclaimer that "final price... is
+  determined in-store at time of purchase", suggesting online checkout
+  may be soft-disabled / click-and-collect rather than true e-commerce,
+  or the Wix inventory flag is simply not maintained. Price/currency are
+  still real and machine-readable regardless; treat `available` from this
+  source as low-signal.

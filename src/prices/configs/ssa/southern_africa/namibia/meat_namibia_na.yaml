@@ -1,0 +1,48 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: meat_namibia_na
+url: https://meat-namibia.com/
+language: en
+cadence: weekly
+channel: fresh-market
+archive_prefix: "meat-namibia.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Buschmann Meat Packers -- Windhoek, Namibia butcher / meat-box delivery.
+  Discovered and probed live 2026-09-11 (search hit, not one of the
+  chain-domain guesses from the earlier same-day pass). WooCommerce, but a
+  non-standard Store API path: /wp-json/wc/store/products (no /v1/
+  segment) -- confirmed by walking /wp-json/ and reading the route index
+  (routes list includes "/wc/store/products" verbatim, not
+  "/wc/store/v1/products"). Uses the shared _woo_base.py, whose docstring
+  already anticipates this exact non-standard-namespace variant.
+
+  Currency: explicit prices.currency_code = "NAD" in the API payload --
+  no inference needed (unlike kws_na/doorstep_na, both of which lack a
+  currency field). No currency_minor_unit field either; _woo_base defaults
+  minor=0 and the resulting values match price_range.min_amount exactly
+  (e.g. flat "price": 20 == price_range.min_amount "20.00"), so no scaling
+  bug.
+
+  Small, genuinely-complete catalog: X-WP-Total=5, X-WP-TotalPages=1 (5
+  parent products, each a variable product with weight-based variants --
+  Store API exposes only the collapsed price_range per parent since the
+  per-variation endpoint (wc/blocks/products/<id>/variations) requires
+  auth and 401s unauthenticated). Confirmed not a truncated first page:
+  5 < per_page=100, so the base spider's own continuation check
+  (`len(products) >= PER_PAGE`) correctly stops after page 1.
+
+  This is a thin source (5 rows, at the Phase-6 minimum-viable floor) but
+  a genuine, verified, food-division (fresh/processed meat) addition for
+  a market with only 18 distinct product names in the whole corpus --
+  shipped per the "take whatever verifies" rule for near-empty markets.
+
+  Page family: API (spider reads the Store API; permalinks under
+  /product/<slug>/ are real PDPs, confirmed 200, but the spider never
+  fetches them).
+
+  Test run 2026-09-11: prices collect --source meat_namibia_na
+  --max-items 100 -> see run log for measured row/URL counts (catalog
+  ceiling is 5).

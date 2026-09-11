@@ -19,6 +19,24 @@ This pass needed 2 more sources, at least 1 food, to reach the >=5 sources /
 | Mpeoa Supermarket, Furong Supermarket | Facebook pages only | — | **NOT REACHABLE — no website** | Real Maseru supermarkets per WebSearch, but no scrapable web presence (Facebook-only). |
 | Spar Lesotho, OK Foods Lesotho, Metro Lesotho, Food Lovers Lesotho | `.co.ls` guesses | — | **NOT REACHABLE** | All guessed domains (`spar.co.ls`, `okfoods.co.ls`, `metro.co.ls`, `foodlovers.co.ls`/`food-lovers.co.ls`) are NXDOMAIN. Not pursued via WebSearch given budget — worth a named search in a future pass if Lesotho needs more food-channel depth. |
 
+## Follow-up pass — 2026-09-11
+
+Re-probed every dead/parked row above live (all verdicts UNCHANGED except
+Pricemate, downgraded PARKED→DEAD) plus new candidates. Full detail in
+`~/gapwork/known_blockers_disco_safrica2_lesotho.md` on a8. Summary:
+
+| Source name | URL | Channel | Status | Notes |
+|---|---|---|---|---|
+| Lesotho Bureau of Statistics CPI | https://www.bos.gov.ls/ | null (cpi_benchmark) | **SHIPPED** as `bos_lso_cpi` | Monthly CPI PDF at a predictable `CPI_<Month>_<Year>.zip` URL; no listing page but the filename pattern itself backfills (2025-01 .. 2026-07 minus a genuine April 2026 publication gap). 216 rows verified live (18 months x 12 COICOP divisions, 0 nulls, 18 distinct source PDFs). First fetcher onboarded for Lesotho — country previously had only retailer_sku/marketplace + one official_avg source. |
+| Checkers Lesotho | https://www.checkers.co.ls/ | — | **DEAD — no online store** | Same `checkers-africa` AEM corporate-portal tenant as the already-documented shoprite.co.ls: store-locator + weekly-flyer subdomain links, zero product/cart/price tokens, zero WooCommerce/Shopify/Magento fingerprint. Not previously checked in the wave-8 pass (only Shoprite/PnP were). Probed 2026-09-11. |
+| Shoprite Lesotho | https://www.shoprite.co.ls/ | — | **DEAD — confirmed again** | Re-probed 2026-09-11 with all 3 arms; identical brochure shape to the 2026-09-01 finding. No change. |
+| Pick n Pay / Spar / USave / OK Foods / Boxer (Superstores) / Fruit & Veg City / Choppies, all `.co.ls` | — | — | **DEAD — no DNS, confirmed again** | Re-probed 2026-09-11; all still NXDOMAIN. No change. |
+| Game Lesotho | https://www.game.co.ls/ | — | **OUT OF SCOPE** | Resolves (200) but Game is general-merchandise/electronics (Massmart), not COICOP 01/02 — dropped on sight per the food-only constraint, not probed further. |
+| wizashopping_ls seller directory | https://wizashopping.co.ls/wp-json/dokan/v1/stores | — | **NO NEW SOURCE — already fully covered** | Confirmed Dokan multi-vendor plugin, 4 sellers: Jumbo Cash (food, 17 SKUs), Drip Fits (clothing, skip), DIY store (hardware, skip), wizaadmin (platform admin). All 17 of Jumbo Cash's SKUs already appear in wizashopping_ls's existing whole-catalog scrape (same WooCommerce Store API, no vendor filter) — carving it out would just re-collect the same 17 URLs. |
+| localbites_ls seller directory / groceries category | https://api.localbites.co.ls/api/stores | — | **NO CHANGE** | Still 14 restaurant/QSR merchants + BiteLiqour (already onboarded separately); groceries category still "No Products found". Re-confirmed 2026-09-11. |
+| Pricemate (pricemate.info) | https://pricemate.info/ | — | **DEAD (downgraded from PARKED)** | Swept `api.pricemate.info/api/products?shop_id=1..29` directly — every shop across the whole platform (not just the one Lesotho shop known) returns `total_published_products: 0`. This reads as a dead/abandoned platform, not a Lesotho-specific gap. Do not re-check without new evidence the platform relaunched. |
+| Frasers, Metcash, Spar Lesotho (alt TLD), Maseru Mall, generic "Lesotho online shop/food world" domain guesses | various `.co.ls`/`.com` guesses | — | **NOT REACHABLE** | All NXDOMAIN. Blind guessing is exhausted; a *named* search (not attempted this pass — WebSearch budget was exhausted session-wide before reaching this group) is the logical next step, not more guessing. |
+
 ## COICOP / channel gap after this pass
 
 Lesotho ends at 5 sources / 2 food (`virtualmall_ls` supermarket +
@@ -34,3 +52,17 @@ groceries category periodically (workbook already flagged it as pending
 once), (2) re-check whether Pricemate populates products for a second
 Lesotho shop, (3) try a named search for Spar/OK Foods/Food Lovers Lesotho
 franchise sites rather than guessed domains.
+
+**Update 2026-09-11:** Lesotho now ends at 6 sources / 2 food-retail
+(unchanged) + 1 cpi_benchmark (`bos_lso_cpi`, new). The retail-side gap is
+now believed genuinely exhausted for the "guess a `.co.ls` domain" method —
+every regional-chain candidate on the priority list (Shoprite, Checkers,
+PnP, Spar, USave, OK Foods, Boxer, Fruit & Veg City, Choppies) is either
+NXDOMAIN or a brochure/store-locator AEM portal with zero catalogue, and
+both onboarded marketplaces' seller directories were checked and hold no
+food vendor not already scraped. Pricemate is now DEAD, not parked — drop
+it from future re-checks. The one lever not exercised this pass is a
+**named** web search for Frasers/Metcash/independent Lesotho grocery
+e-commerce (WebSearch budget was exhausted session-wide before reaching
+it) — that remains the best next step for retail-side depth, not more
+domain guessing.

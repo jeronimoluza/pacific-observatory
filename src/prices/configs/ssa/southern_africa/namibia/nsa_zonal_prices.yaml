@@ -1,0 +1,56 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: na_nsa_zonal_food_prices
+module: ssa.southern_africa.namibia.nsa_zonal_prices
+function: fetch_na_nsa_zonal_food_prices
+url: https://nsa.org.na/
+language: en
+cadence: monthly
+fallback_date: 2025-06-01
+notes: |
+  Namibia Statistics Agency (NSA) monthly CPI Excel Tables workbook --
+  same file as nsa_cpi.yaml, different sheet: "Zonal average prices for
+  selected food items" (~17 items x 3 zones, NAD). A genuine official
+  average-RETAIL-price series, not a re-derived index. 2 of the ~18
+  published rows (Petrol, Diesel) are fuel, not food -- out of scope for
+  this food-only onboarding pass and hard-excluded by item name in the
+  fetcher regardless of what the classifier would route them to.
+
+  coicop_classification: classifier, not source_curated -- the surviving
+  15 items span several COICOP-2018 4-digit classes (cereals, meat,
+  fish, oils, fruit, veg, non-alcoholic beverages, wine, spirits), too
+  wide for one narrow code, and the classifier already handles exactly
+  this shape of short free-text grocery item name.
+
+  Sheet is located by scanning for the header text "Zonal average
+  prices", not the sheet name "Table 14" -- confirmed that name is NOT
+  stable across eras (see nsa_cpi.yaml notes: the March-2023 release's
+  "Table 14" sheet holds an unrelated Transport table). This table
+  appears to be a relatively recent addition to the workbook -- not
+  present under this name as of March 2023 -- so `fallback_date` is set
+  conservatively to mid-2025 rather than assumed further back; a wider
+  backfill would need to probe individual older releases one at a time
+  (each release is a snapshot of ONE month for this table, unlike Tab 6
+  which self-backfills).
+
+  DATA-QUALITY GUARD: spot-checked 3 non-adjacent releases (Jan-2026
+  clean, May-2026 corrupted, Aug-2026 clean) and found the May-2026
+  release had Zone-1/Zone-3 values swapped between two adjacent item
+  rows (Tinned pilchards <-> Biltong) -- a transcription defect in NSA's
+  own workbook (Zone 2 stayed internally consistent in both rows, ruling
+  out a parsing artifact). The fetcher drops any item-month whose 3 zone
+  values span a max/min ratio > 4.0, logged as a warning, rather than
+  risk shipping a corrupted price; this cannot catch a same-magnitude
+  swap, only the gross-magnitude kind actually observed. Also note: the
+  "UoM" unit label has independently been observed to differ between
+  releases for the same item even when values are self-consistent
+  (e.g. Sunflower Oil "per kg" vs "750ml") -- emitted as published,
+  per-row, not reconciled across releases.
+
+  Verified live 2026-09-11 against the August 2026 release: 15 food/bev
+  items (Petrol/Diesel excluded) x 3 zones = 45 rows, 0 failed the
+  plausibility guard in this release, price range ~25-517 NAD, 16
+  distinct item_name.

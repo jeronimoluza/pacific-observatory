@@ -25,3 +25,42 @@ Shoprite AEM template, same "Home" title). No delivery marketplace
 **structural absence of online grocery** for the market rather than a
 search gap, though `spar.co.na` and `pupkewitz.com.na` timing out (not
 confirmed dead) are loose threads worth a fast re-check.
+
+## Update — 2026-09-11
+
+Re-probed the priority-chain list from the onboarding brief (Shoprite,
+Checkers, USave, SPAR, Pick n Pay, Woolworths, Choppies, OK Foods Namibia).
+**All re-confirmed dead/unreachable or not found** — see
+`references/known_blockers.md` (Namibia section) for the per-domain evidence.
+Net new finding: "OK Foods Namibia" is the Shoprite Group's own AEM brand
+template (`okfoods.co.za/na/en_NA/`), not an independently Namibian-founded
+chain. spar.co.na and pupkewitz.com.na are now confirmed unreachable across
+2 independent sessions (connection timeout on 5 different client profiles
+total, not a TLS/WAF signature).
+
+**This pass shipped sources anyway — via two paths the chain-domain-guessing
+search never reaches:**
+
+1. Live web search past the chain-name-guessing pattern surfaced three real,
+   independent Namibian retailers with no predictable domain pattern:
+   - `shop.woermannfresh.com` — Woermann Brock supermarket, ~22,700-SKU
+     whole-catalog sitemap walk. **By far the largest single addition
+     possible for this country** (prior corpus: 18 distinct product names
+     total). Channel: supermarket. Shipped as `woermannfresh_na`.
+   - `meat-namibia.com` — Buschmann Meat Packers butcher/meat-box delivery,
+     WooCommerce Store API (non-standard `/wc/store/products`, no `/v1/`).
+     5-SKU genuinely-complete catalog. Channel: fresh-market. Shipped as
+     `meat_namibia_na`.
+   - `embassyliquorstore.com` — Windhoek liquor store, Wix Stores, JSON-LD
+     PDPs. First division-02 (alcohol) source for Namibia. Channel:
+     specialty-food. Shipped as `embassyliquor_na`.
+2. The national statistics office, nsa.org.na — not a retailer at all, but
+   its monthly CPI Excel workbook carries both a COICOP-labelled division
+   index series (Tab 6, full 2002-present history in one file) and a genuine
+   zonal average-RETAIL-price table for ~15 food items (Table 14, current
+   month only, NAD). Shipped as `na_nsa_cpi` (cpi_benchmark) and
+   `na_nsa_zonal_food_prices` (official_avg).
+
+Namibia is no longer "0 sources shipped" as of the 2026-09-01 write above —
+5 new sources shipped this pass (3 retailer spiders + 2 NSA fetchers),
+verified via `prices collect --source <key>` test runs.

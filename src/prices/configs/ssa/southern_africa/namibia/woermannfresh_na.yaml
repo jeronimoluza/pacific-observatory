@@ -1,5 +1,5 @@
 scaffolding: spider
-extraction_pattern: scrapy_api
+extraction_pattern: scrapy_html
 analytical_role: retailer_sku
 coicop_classification: classifier
 spider: woermannfresh_na
@@ -7,47 +7,56 @@ url: https://shop.woermannfresh.com/
 language: en
 cadence: weekly
 channel: supermarket
-archive_prefix: "shop.woermannfresh.com/product/"
-archive_path_re: '^/product/[^/?]+/?$'
+coicop_codes: null
 notes: |
-  Woermann Fresh -- Windhoek, Namibia supermarket (Woermann Brock group).
-  Discovered and probed live 2026-09-11 (not covered by the earlier same-day
-  known_blockers pass, which only tried the guessed chain domains
-  shoprite/metro/spar/picknpay/woolworths/choppies/okfoods/model/freshmark
-  .com.na). Custom e-commerce platform exposing a Shopify-shaped URL
-  (/products.json) but a bespoke response shape -- NOT Shopify, WooCommerce,
-  or Magento.
+  Probed 2026-09-11. Discovered via OpenStreetMap shop=supermarket nodes
+  with a `website` tag (Windhoek bbox) after the session's WebSearch
+  budget was exhausted -- the brochure-only corporate site
+  `woermann.com.na`/`woermannfresh.com` (Squarespace marketing page) links
+  out to a separate, genuinely transactional storefront at
+  shop.woermannfresh.com (Woermann & Brock's "wbsupers" chain). No TLS
+  impersonation needed -- plain `requests` default UA clears it (200,
+  identical byte length to curl_cffi chrome124).
 
-  Endpoint: GET /products.json?page=N (no auth). Response:
-  searchResult.results[].result holds the product object;
-  searchResult.pagination.total_hits.value / total_pages give the catalog
-  size. Enumerability confirmed: page=1 vs page=2 returned fully disjoint
-  product ID sets (0 of 100 overlap). Catalog size at probe time: 2857
-  products across 29 pages of 100. store.title = "Windhoek".
+  Bespoke Vue/Laravel storefront (not Woo/Shopify/Magento) backed by
+  Elasticsearch. No API call needed for scraping: each
+  `/category/<slug>?page=N` page embeds the full Elasticsearch response
+  as an HTML-entity-encoded JSON string inside the
+  `<elasticsearch-listing :default-search-result='...'>` custom-element
+  attribute. `results[i].result` carries title/slug/code (barcode) plus
+  `price`/`was_price` (VAT-inclusive).
 
-  Currency: no explicit currency code in the payload (same gap as kws_na
-  and doorstep_na). NAD assumed -- Woermann Brock is a Namibia-only retail
-  group with no ZAR storefront, and a product's AI-generated description
-  field explicitly reads "...Woermann Fresh, a retailer in Namibia".
-  Prices are plain decimals (e.g. 19.99 -> N$19.99), no minor-unit scaling;
-  each product also carries vat_amount/price_excluding_vat/was_price for
-  promo tracking, but the spider takes product_pricing[0].price as the
-  reference retail price (matches the site's displayed price).
+  Enumerability gate: verified on the `deodorant` leaf category (163
+  items, page size 100, 2 pages) -- page 1 returned 100 product ids, page
+  2 returned 63 DIFFERENT ids, zero overlap. Paginates for real.
 
-  category = deepest_category.path (e.g. "drinks/energy-drinks/"), a real
-  breadcrumb from the site's own category tree, not invented.
+  Catalog size: walked all 70 leaf categories (from the site's own
+  category tree, embedded on the homepage as `:parent-categories`) at
+  page 1 and summed `pagination.total_hits.value` -> ~2,604 products
+  (some may sit in >1 leaf category, so this slightly over-counts, but
+  confirms order-of-magnitude -- not a flat/broken-spider count). Leaves
+  span 10 top-level groups: baby-care, bakery, butchery, drinks,
+  food-cupboard, fresh-food, frozen-foods, household, outdoor,
+  toiletries -- food/drink groups are the large majority by leaf count
+  and item count, household/outdoor/toiletries are left in as a wide
+  supermarket source (coicop_codes unset for the classifier).
 
-  Page family: API for collection (spider reads /products.json and never
-  fetches a page). Real PDPs also exist at /product/<slug> -- verified 200,
-  contains the same title/price in a data attribute -- used only to build
-  the per-item `url` field and to set archive_prefix/archive_path_re for
-  Common Crawl recovery.
+  Currency: no currency field in the API payload. Set NAD at the class
+  level (not derived from a displayed symbol) -- unambiguously Namibian
+  (site chrome: "My Store: Windhoek"; parent brand Woermann & Brock;
+  sampled rows' VAT arithmetic is exactly 15%, Namibia's VAT rate, e.g.
+  price_excluding_vat 29.56 * 0.15 = 4.434 ~= vat_amount 4.43).
 
-  High-value addition for Namibia: by far the largest verified catalog in
-  the country so far (2857 products vs. 144 for kws_na and ~99 for
-  doorstep_na), spanning full supermarket departments (food, drinks,
-  bakery, alcohol per category `is_alcohol` flags seen in the category
-  tree) rather than a single niche (meat, or alcohol/convenience).
+  Page family: listing only (category pages carry product data inline;
+  PDP pages at /product/<slug> exist but are never fetched by this
+  spider).
 
-  Test run 2026-09-11: prices collect --source woermannfresh_na
-  --max-items 100 -> see run log for measured row/URL counts.
+  Namibia had only 18 distinct product names in the 43M-row corpus before
+  this source; this alone adds ~2,600 SKUs across a real 10-category food
+  supermarket tree.
+
+  Test: prices collect --source woermannfresh_na --max-items 100 -> 182
+  rows (max-items fence overshoots per-batch, as expected), 182 distinct
+  urls, 182 distinct product_ids (no DuplicationPipeline collapse).
+  Sample: NAD 39.99 "Dove 150ml M Aero Cool Fresh" (Toiletries >
+  Deodorant), NAD 33.99 "Mello Roti's 90g Baked" (Bakery).

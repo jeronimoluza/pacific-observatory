@@ -1,0 +1,48 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+source_key: bos_lso_cpi
+module: ssa.southern_africa.lesotho.bos_lso_cpi
+function: fetch_bos_lso_cpi
+channel: null
+url: https://www.bos.gov.ls/
+language: en
+cadence: monthly
+fallback_date: 2024-12-01
+notes: |
+  Lesotho Bureau of Statistics (BoS) monthly CPI statistical report,
+  published as a ZIP-wrapped PDF at a predictable filename URL
+  (BoS_reports/Copy%20of%20Economics/CPI_<Month>_<Year>.zip). Confirmed live
+  2026-09-11: homepage links only the current release (July 2026, published
+  with the usual ~6-week NSO lag; August 2026 not yet out); no archive/
+  listing page exists (directory listing 403s, publications.htm carries no
+  CPI links) but the filename pattern itself is stable and past months stay
+  live at their predictable URL. Verified by direct URL probe: every 2025
+  month (Jan-Dec) 200s, 2026 Jan-Jul 200 except April which 404s (a genuine
+  gap in BoS's own publication cadence, not a fetcher bug) -- 18 of 19
+  months in range resolve. No UA/WAF gate found: bare `requests` with no
+  headers at all returns 200.
+
+  Table 1 ("Monthly Consumer Price Indices by COICOP Divisions") carries 12
+  COICOP divisions (01-12, no division 13) with weight + 3 index-value
+  columns (13-months-ago, last-month, this report's own current month) +
+  2 percent-change columns. Only the current-month column is genuinely new
+  per release (the other two duplicate prior releases' current-month
+  values), so the fetcher WALKS the filename pattern month-by-month from
+  fallback_date to today rather than relying on any one release's lookback
+  columns -- this gives real backfill (verified: 2025-01 through 2026-07
+  minus the missing April) instead of one data point per month going
+  forward. Base period: 2022=100 (yearly average), stated identically on
+  every checked release from Jan 2025 to Jul 2026.
+
+  Verified live 2026-09-11 (fetch_bos_lso_cpi with cutoff=2024-12-01,
+  full backfill run): 18 monthly releases x 12 divisions = 216 rows,
+  216 distinct observation_hash, 0 nulls in coicop_code/index_value,
+  index values in the 95-205 range consistent with 2022=100 base (e.g.
+  01. Food & Non-alcoholic beverages: 122.17 in Jan 2025 rising to 126.97
+  in Jul 2026). Division 01 (Food) and 02 (Alcohol/Tobacco) both present
+  every month -- this is the food-relevant complement to the country's
+  existing retailer_sku/official_avg sources, not a substitute for them
+  (cpi_benchmark is an index series, not a price level).

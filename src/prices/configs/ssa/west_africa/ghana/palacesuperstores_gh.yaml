@@ -42,3 +42,8 @@ notes: |
   End-to-end test (--max-items 20): see run log. product_id = sku (falls
   back to numeric id when sku absent), url built from the item slug
   (/products/<slug>), verified live to resolve to a real, matching PDP.
+
+  Depth repair 2026-09-11: removed the 200-page limit. Live API pages 200 and
+  201 each returned 12 mutually disjoint product ids; meta.total=17483 and
+  meta.last_page=1457 are publisher-reported values, not collected row counts.
+  Pagination now uses the API last_page and stops on zero new product ids.
