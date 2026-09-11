@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hawkers_cash_carry_bw
+url: https://www.hawkersbw.com/
+language: en
+cadence: weekly
+channel: wholesale
+coicop_codes: null
+notes: |
+  Probed 2026-09-11 (SSA gap-fill pass, still_untried_20260911 queue).
+  Hawkers Cash & Carry is a Botswana wholesale/cash-and-carry FMCG
+  retailer running on Wix Stores. Genuinely food-dominant catalogue:
+  washing powder, Panado painkillers, Liquifruit juice boxes, Clover
+  yoghurt, Nestle Barone/Milo, biscuits, All Gold tomato sauce, Peter
+  Stuyvesant cigarettes, Freddy Hirsch seasoning, KOO beans, sweets.
+
+  Platform: Wix Stores -- same shape as the existing ezeemarket_lr.py
+  spider (no open commerce REST API; Wix auto-generates
+  /store-products-sitemap.xml listing every live PDP, and each PDP is
+  server-rendered with a schema.org Product JSON-LD block carrying
+  name/price/currency/availability). No WAF: plain non-impersonating
+  requests get HTTP 200.
+
+  ENUMERABILITY: sitemap MEASURED 2026-09-11 -- 339 distinct
+  /product-page/<slug> URLs. The sitemap itself is the enumeration
+  surface (same pattern as spar2u_bw's product sitemap) -- no
+  page-1-vs-page-2 category check applies since there is no category
+  listing page, only the sitemap.
+
+  CURRENCY: BWP, confirmed live from the JSON-LD offers.priceCurrency
+  field (sample: "Mowana 2KG Washing Powder", BWP 44.30) -- matches
+  countries.yaml's Botswana default, not assumed from the "P" symbol.
+
+  DISTINCT FROM EXISTING BW SOURCES: checked against shopsefalana_bw,
+  spar2u_bw, choppies_ebasket_bw, farmproducts_ex_bw -- different
+  domain, different retailer chain (a standalone cash-and-carry operator,
+  not a Sefalana/SPAR/Choppies storefront), no catalogue overlap
+  expected.
+
+  Page family: PDP only -- sitemap-driven crawl, spider never fetches a
+  listing page.
+
+  coicop_codes left unset -- catalogue spans food, household cleaning
+  and tobacco, wide by the narrowness rule.
+
+  MEASURED test run 2026-09-11: `prices collect --source
+  hawkers_cash_carry_bw --max-items 100` -> see row/url counts recorded
+  in the campaign report.

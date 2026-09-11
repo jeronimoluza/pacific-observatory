@@ -1,0 +1,57 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bawabatdayaatna_sy
+url: https://bawabatdayaatna.com/
+language: ar
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+notes: |
+  Probed 2026-09-11 (MENAAP gap-fill pass, still_untried_20260911 queue).
+  Bawabat Dayaatna ("بوابة ضيعتنا" -- "Our Village's Gateway") is a
+  genuine Syrian online grocery store, custom Laravel storefront -- NOT
+  one of the sooqnaa.com/dex.sy hosted multi-vendor stores also sampled
+  in this queue, which turned out to sell books/pants/handmade crafts,
+  not food (a14km.sooqnaa.com's "ZAD" branding suggested provisions but
+  its catalogue is novels; alnabaalkaber_sooqnaa and barllina_sy sell
+  pants; amanibook_sooqnaa sells books; sidrahandmade_sooqnaa sells
+  crafts -- all dropped as non-food).
+
+  Real international/regional grocery brands confirmed via the site's own
+  /brands/<name> pages: Maggi, Nutella, Oreo, Mars, Snickers, Pringles,
+  Mentos, Rani, Almarai.
+
+  CATEGORIES (site nav, 2026-09-11): 18 total, 17 food/beverage crawled
+  here (Biscuits, canned-dry-goods, cheese, cold-drinks, dairy-eggs,
+  energy-drinks, foodstuffs, fresh-fruits-vegetables, herbs, hot-drinks,
+  meat-poultry, milk-dairy, nuts-and-savory-snacks, spices-seasonings x2,
+  tea-coffee, water-juices). One category, cleaning-household, is
+  deliberately excluded (non-food, COICOP 05.6).
+
+  LISTING MARKUP: `<article class="product-card">` blocks with
+  `a.product-name` (name + PDP href) and `div.product-price` ("185.90
+  ل.س") -- no PDP fetch needed, listing-only extraction (same shape as
+  shopsefalana_bw).
+
+  PAGINATION (MEASURED 2026-09-11): `?page=N`; foodstuffs category pages
+  1/2/3 each returned a disjoint 20-product-slug set. Spider walks each
+  category until a page contributes zero NEW product slugs (per-category
+  id tracking, same defensive pattern as choppies_ebasket_bw) rather than
+  trusting an empty page or the nav's visible max page number.
+
+  CURRENCY: SYP, read directly from the page's own "ل.س" suffix on every
+  price.
+
+  Page family: listing only.
+
+  coicop_codes left unset -- catalogue spans nearly all of COICOP
+  division 01 plus non-alcoholic beverages, wide by the narrowness rule.
+
+  This is Syria's SECOND food-price source (after prices_sy, a
+  crowd-sourced board) and its FIRST retailer_sku source.
+
+  MEASURED test run 2026-09-11: `prices collect --source
+  bawabatdayaatna_sy --max-items 100` -> see row/url counts recorded in
+  the campaign report.

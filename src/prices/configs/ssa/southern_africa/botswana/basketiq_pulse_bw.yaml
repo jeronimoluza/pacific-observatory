@@ -1,0 +1,61 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: basketiq_pulse_bw
+module: ssa.southern_africa.botswana.basketiq_pulse_bw
+function: fetch_basketiq_pulse_bw
+url: https://basketiq.co.bw/pulse/
+language: en
+currency: BWP
+cadence: weekly
+fallback_date: 2025-01-01
+notes: |
+  BasketIQ Market Pulse -- a private Botswana company publishing "typical"
+  retail prices per product category, aggregated from till-verified
+  receipts ("Live prices from till-verified receipts. Free. No sign-up.").
+  Crowd/company-aggregated, not a government series -- Botswana already
+  has four retailer_sku sources (shopsefalana_bw, spar2u_bw,
+  choppies_ebasket_bw, farmproducts_ex_bw) but no cross-retailer
+  official_avg, which this fills.
+
+  ACCESS (probed live 2026-09-11, plain HTTP, no WAF, no auth): a single
+  page, https://basketiq.co.bw/pulse/, is server-rendered HTML containing
+  EVERY category at once -- no pagination, no per-category endpoint.
+  Each row is `<a href="/pulse/<slug>-leaf-volume" data-label="...">`
+  wrapping a category-name `<span>` and a "P <price> typical" `<span>`.
+
+  MEASURED 2026-09-11: 70 category rows in the one page -- Maize Meal &
+  Sorghum, Fresh Vegetables, Fresh Fruits, Frozen Chicken, Rice, Bread &
+  Rusks, Eggs, Cooking Oil & Fats, Sugar & Sweeteners, Coffee, Tea,
+  Yoghurt & Dairy, Fresh & UHT Milk, Cold Meats & Deli, Canned Goods,
+  Biscuits & Crackers, Pastas & Noodles, Condiments & Sauces, Soups,
+  Spices & Seasoning, Chocolate, Sweets & Candy, Chips & Crisps, Dried
+  Nuts & Fruits, Baking Aids, Soft/Energy/Carbonated Drinks, Juices &
+  Nectars, Cordials & Squashes, Water -- plus a handful of non-food
+  household/personal-care categories (Bath Soap, Laundry, Oral Care,
+  Deodorants, Tissue & Paper, Feminine Care) left for the classifier to
+  route to their own leaves rather than force-mapped here.
+
+  ENUMERABILITY CAVEAT, recorded honestly: this source does NOT paginate
+  -- there is no page-1-vs-page-2 check to run because the whole board is
+  one page. `?page=2` and similar query params were tried and returned
+  byte-identical content -- unlike prices_sy's cat=N case, there is no
+  hidden pagination to defeat here. Re-running finds a NEW `current` row
+  per category on every run (dated to that run's day) regardless of
+  whether BasketIQ's own "typical" figure moved -- expected for a
+  snapshot/current-style source, not a duplicate-detection bug.
+
+  CURRENCY: BWP, read directly from the page's own "P " (Pula) price
+  prefix -- matches countries.yaml's Botswana default.
+
+  coicop_classification: classifier -- category labels ("Maize Meal &
+  Sorghum (per kg)", "Cold Meats & Deli (per kg)") are short but
+  descriptive enough for the ensemble classifier; the source spans far
+  too many COICOP classes to hand-map. coicop_codes deliberately unset.
+
+  Test run 2026-09-11: `prices collect --source basketiq_pulse_bw` ->
+  see MEASURED row count recorded in the campaign report. Sample: BWP
+  8.60 "Maize Meal & Sorghum (per kg)"; BWP 22.99 "Fresh & UHT Milk
+  (per L)".

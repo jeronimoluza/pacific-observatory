@@ -1,0 +1,65 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.1", "01.1.2", "01.1.3", "01.1.5", "01.1.6", "01.1.7"]
+channel: null
+source_key: lr_moci_commodities
+module: ssa.west_africa.liberia.moci_commodities
+function: fetch_lr_moci_commodities
+url: https://moci.gov.lr/index.php/publications/document-type/commerce-today-monthly-critical-commodities-bulletin
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Liberia Ministry of Commerce and Industry (MOCI) "Commerce Today:
+  Monthly Critical Commodities Bulletin" -- a PDF listing wholesale and
+  retail prices for a small set of "critical commodities" (rice,
+  vegetable oil, fish, flour, onion, eggs, sausage, chicken feet, plus
+  cement/steel/zinc/plywood and petroleum, both out of scope for this
+  food/beverage-only onboarding pass). This is the retail-price-level
+  companion to lisgis_cpi.yaml (index-only) requested by the hard
+  constraint that a cpi_benchmark source should have a companion
+  official_avg table checked for.
+
+  No stable archive URL exists. Two discovery paths, combined:
+  1. https://moci.gov.lr/index.php/publications/document-type/
+     commerce-today-monthly-critical-commodities-bulletin -- lists
+     whatever historical editions happen to be attached there (currently
+     2: Sept 2024, Oct 2024).
+  2. The MOCI homepage (moci.gov.lr) links the CURRENT edition's
+     press-release node in its "latest" section (URL slug carries
+     volume/edition, e.g. ".../commerce-today-monthly-critical-
+     commodities-bulletin-volume-3-edition-8"); that node embeds the PDF
+     link. Verified live 2026-09-11: this surfaced the August 2026
+     edition, which the document-type listing does NOT carry -- there is
+     a large undiscoverable gap between Oct 2024 and Aug 2026 (no
+     archive index covers it; MOCI's site does not expose a search or
+     sitemap that lists all editions).
+
+  The bulletin's table LAYOUT IS NOT STABLE across editions -- 3 editions
+  probed used 3 different column arrangements (a 2-column newsletter
+  layout with a "Retail Price Range Low/High" table in Sept/Oct 2024; a
+  cleaner 3-column "Commodities/Wholesale Price/Retail Price" table in
+  Aug 2026). Rather than a per-template parser, every table row
+  extracted by pdfplumber is scanned for a known food-item keyword
+  (word-boundary matched -- naive substring matching on "rice" false-
+  positived on the substring inside "Price"/"Wholesale Price" column
+  headers during development, fixed with \b matching) and the row's LAST
+  parseable currency number is taken as the observed price (consistently
+  the Retail-side figure in every layout seen). This is a deliberately
+  loose heuristic that will silently skip rows if a future template
+  changes beyond recognition -- there is no guarantee of continuity
+  across MOCI's ad hoc PDF templates, flagged here for the next
+  operator rather than hidden.
+
+  Bulletin date is parsed from the in-PDF headline text, not the
+  filename (older filenames carry no date). Headline text itself has PDF
+  kerning artifacts that insert stray spaces mid-word ("Septe mber",
+  "Augus t") -- the parser strips all whitespace before matching the
+  month name.
+
+  Verified live 2026-09-11: 3 real editions (Sept 2024, Oct 2024, Aug
+  2026) parsed for 16 total food-item rows; every extracted price
+  eyeballed against the source PDF text and confirmed correct after the
+  \b-boundary fix.

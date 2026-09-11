@@ -1,0 +1,50 @@
+scaffolding: spider
+spider: bonfood_gi
+url: https://www.bonfood.gi/shop-3
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: GIP
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Discovered 2026-09-11 (untried-territories food-source campaign,
+  foodish==True filter). Bonfood is a fresh-produce/deli/pantry shop
+  trading online at bonfood.gi, built on Wix Stores -- same platform and
+  code pattern already used by embassyliquor_na.py in this repo.
+
+  Enumeration: /sitemap.xml -> store-products-sitemap.xml lists 287
+  product-page URLs (verified 2026-09-11). Each PDP is server-rendered
+  HTML carrying a standard schema.org JSON-LD Product block with an
+  explicit GIP price -- no WAF, no impersonation needed (plain `requests`
+  returns 200 on both the sitemap and PDPs).
+
+  Catalog mix (sampled from the shop-3 Wix warmupData, which separately
+  reports totalCount: 287 for the "All Products" category, matching the
+  sitemap count): fresh produce (peppers, tomatoes, avocado, lettuce,
+  courgettes, basil, asparagus -- many Spanish-language names reflecting
+  cross-border La Linea/Gibraltar sourcing), meat packs (burger, stew
+  meat), cheese (mozzarella di bufala, brie), tinned/pantry goods (Mutti
+  tomato products, basmati rice, honey), smoked/fresh salmon. Wide mix of
+  COICOP 01, coicop_codes left unset for the classifier.
+
+  Locality: .gi ccTLD, GIP currency confirmed in both the JSON-LD offer
+  and the Wix onlineStoresClientConfig ("storeCurrency":"GIP") -- a
+  genuine Gibraltar-priced, Gibraltar-shipping storefront, not a
+  diaspora/foreign site.
+
+  Genuine sourcing-gap fill: per the 2026-09-11 corpus audit, Gibraltar
+  carries only 272 distinct product names total across the whole 43M-row
+  corpus -- this single source (287 products) is a large proportional
+  gain. sosisvege_gi.yaml already covers Gibraltar fruit/veg/nuts/spices
+  (~190 products, Gibraltar-domiciled greengrocer); bonfood carries a
+  DIFFERENT assortment -- meat packs, cheese, tinned/pantry goods,
+  salmon -- so this is a complement, not a duplicate, of the existing
+  source.
+
+  Test run 2026-09-11: `prices collect --source bonfood_gi --max-items
+  100` -> measured rows and distinct urls recorded in the onboarding
+  session's Phase 8 report.

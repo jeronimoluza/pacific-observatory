@@ -1,0 +1,55 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://yaganchiz.com/"
+channel: convenience
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: AFN
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "yaganchiz_af"
+  base_url: "https://yaganchiz.com"
+  currency: "AFN"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-11 (MENAAP gap-fill pass, still_untried_20260911 queue).
+  Yaganchiz is an Afghan online grocery-delivery storefront on Shopify:
+  "Monthly Family Essentials Box", "Fresh Fruit & Vegetable Box",
+  "Ramazan Essentials Bundle", plus Alokozay baby diapers and household
+  essentials -- a curated small-catalogue online grocer, not a
+  full-aisle supermarket, hence channel: convenience rather than
+  supermarket.
+
+  Platform: Shopify -- reused the existing generic_shopify_configured
+  spider (no custom code needed).
+
+  ENUMERABILITY: /products.json?limit=250&page=1 returns 63 products;
+  page=2 returns 0 -- confirmed full catalogue is 63, not artificially
+  paginated/truncated.
+
+  CURRENCY: AFN confirmed live from the storefront's own Apple Pay
+  capabilities blob (`"currencyCode":"AFN"`) AND from rendered PDP price
+  text ("113.53؋ AFN") -- matches countries.yaml's Afghanistan default.
+  NOTE: the same capabilities blob reports `"countryCode":"CA"` (Shopify
+  merchant account registered in Canada) -- likely an Afghan-diaspora-run
+  delivery operation, but prices are denominated and charged in AFN for
+  delivery within Afghanistan, so this is treated as a domestic Afghan
+  price level, not a diaspora/overseas price (flagging the CA
+  registration explicitly rather than silently ignoring it, per the
+  onboarding skill's diaspora-storefront caution).
+
+  coicop_codes left unset -- catalogue mixes fresh produce/grocery boxes
+  with baby-care items, wide by the narrowness rule.
+
+  MEASURED test run 2026-09-11: `prices collect --source yaganchiz_af
+  --max-items 100` -> see row/url counts recorded in the campaign report.

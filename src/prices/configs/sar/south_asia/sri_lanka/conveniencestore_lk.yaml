@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: convenience
+spider: conveniencestore_lk
+url: https://conveniencestore.lk/wp-json/wc/store/v1/products
+language: en
+currency: LKR
+cadence: daily
+archive_prefix: "conveniencestore.lk/"
+archive_path_re: '^/wp-json/wc/store/v1/products'
+notes: |
+  The Convenience Store, "Specialty Grocery Store in Sri Lanka".
+  WooCommerce Store API, no auth: /wp-json/wc/store/v1/products.
+  Confirmed 801 products total (X-WP-Total header).
+  currency_minor_unit=2 read from the payload (not assumed) -- e.g.
+  "120000" -> LKR 1,200.00 for "The Fishmonger Anchovy Fillets In Olive
+  Oil 50g". Some SKUs are bulk cartons (e.g. "Oreo Stick Ice Cream 60ml
+  (Carton of 24)"), consistent with a specialty/convenience store that
+  also serves small resellers.
+
+  Page family: API only -- the spider never fetches an HTML page.
+
+  Verified live 2026-09-11: --max-items 5 run produced rows. Sample:
+  "Movie Night Snack pack" LKR 5,000.00, "Oreo Stick Ice Cream 60ml
+  (Carton of 24)" LKR 15,000.00.

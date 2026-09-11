@@ -1,0 +1,70 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: smartbazar_af
+url: https://smartbazar.af/en/market?categorySlug=supermarket
+language: en
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+notes: |
+  Probed 2026-09-11 (MENAAP gap-fill pass, still_untried_20260911 queue,
+  flagged as an open-lead worth a Playwright trace per the task brief --
+  "A 200 with no price tokens is NOT a rejection ... Open it in
+  Playwright, capture the network requests").
+
+  SmartBazar.af is a multi-vendor Afghan online marketplace (publicShops
+  query returns many independent shops across Electronics, Home &
+  Kitchen, Foodstuffs, Fashion, Children & Infants, etc). Per the
+  marketplace doctrine a seller directory would normally be the target,
+  but the directory is reachable only via the same GraphQL API used
+  here, and per-seller onboarding was out of scope for this pass --
+  scraped as `channel: marketplace`, scoped to the "Foodstuffs" category
+  so only food-relevant listings are pulled from this source.
+
+  DISCOVERY: front end is a client-rendered Next.js SPA -- plain
+  `requests` gets HTTP 200 but no product data in the HTML. Playwright
+  network trace of
+  https://smartbazar.af/en/market?categorySlug=supermarket found every
+  listing call going to a single open GraphQL endpoint,
+  https://api.smartbazar.af/graphql, no auth required for the public*
+  queries. The "supermarket" URL slug used during discovery mapped to a
+  small, non-food-dominant category (laundry powder/soap were its top
+  two items) -- `publiCategoriesList` surfaced a much better match, a
+  real "Foodstuffs" category (id 665ab3c06a10c23394bd2408, 12
+  subcategories), which this spider queries directly instead.
+
+  ACCESS: plain HTTP POST to the GraphQL endpoint with a `publicProducts`
+  query + `Origin: https://smartbazar.af` header -- confirmed working
+  from plain `requests` with NO impersonation, cookies or auth needed.
+
+  ENUMERABILITY: MEASURED 2026-09-11 -- total=85 items in the Foodstuffs
+  category, page1 vs page2 (pageSize=20) item ids fully disjoint.
+
+  CURRENCY: AFN, read directly from each item's own `currency` field in
+  the GraphQL payload (not inferred from TLD or symbol).
+
+  Page family: API -- spider never fetches a browsable page; product
+  urls are constructed from the item slug
+  (smartbazar.af/en/products/<slug>) and were not independently verified
+  as live PDP routes (may 404 without the marketplace's own client-side
+  routing) -- flagged for whoever builds the Common Crawl/Wayback side
+  later.
+
+  coicop_codes left unset -- Foodstuffs subcategories span multiple
+  COICOP-01 classes (garlic, coffee, dates, biscuits, olive oil, jam,
+  pickles).
+
+  MEASURED test run 2026-09-11: `prices collect --source smartbazar_af
+  --max-items 100` -> see row/url counts recorded in the campaign report.
+
+  DATA QUALITY CAVEAT: this is seller-labeled category data on a
+  multi-vendor marketplace -- a handful of the 85 Foodstuffs-tagged
+  items in the 2026-09-11 test run were clearly mis-categorized by their
+  sellers (e.g. "Wrench", "you can", "hug you" alongside genuine
+  items like "chutney", "pickled cucumber", "Black garlic",
+  "Coffee"). Left as-is rather than filtered -- the classifier assigns
+  COICOP from product_name, not the source's own category label, so a
+  mislabeled row just gets classified correctly (or excluded) downstream
+  rather than corrupting the food coverage count.

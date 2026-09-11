@@ -73,7 +73,6 @@ _IDENT = ["source_key", "observation_date", "item_name"]
 _COICOP_MAP: dict[str, tuple[str, str, str]] = {
     "rice": ("Rice, 25kg bag", "25kg bag", "01.1.1"),
     "flour": ("Wheat flour, 50lb bag", "50lb bag", "01.1.1"),
-    "vegetable\noil": ("Vegetable oil", "L", "01.1.6"),
     "vegetable oil": ("Vegetable oil", "L", "01.1.6"),
     "sardine": ("Sardine, tinned", "carton", "01.1.3"),
     "mackerel": ("Mackerel fish, frozen", "20kg carton", "01.1.3"),
@@ -167,10 +166,17 @@ def _extract_rows(pdf_bytes: bytes, pdf_url: str) -> list[dict]:
             cells = [c for c in raw_row if c]
             if not cells:
                 continue
-            joined = " ".join(cells).lower()
+            # Normalize newlines/multi-space to single spaces before matching
+            # so multi-word keys ("vegetable oil") match regardless of PDF
+            # line-wrapping, and word-boundary the match so e.g. "rice" does
+            # not fire on the substring inside "Price" (a real false
+            # positive hit during development on the "Retail Price" /
+            # "Wholesale Price" column headers).
+            joined = re.sub(r"\s+", " ", " ".join(cells).lower())
             match = None
             for kw, (item_name, unit, coicop) in _COICOP_MAP.items():
-                if kw in joined:
+                kw_norm = re.sub(r"\s+", " ", kw.lower())
+                if re.search(r"\b" + re.escape(kw_norm) + r"\b", joined):
                     match = (item_name, unit, coicop)
                     break
             if match is None:

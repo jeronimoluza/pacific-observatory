@@ -1,0 +1,21 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: tarkari_com_np
+module: sar.south_asia.nepal.tarkari_com_np
+function: fetch_tarkari_com_np
+url: https://www.tarkari.com.np/oracle/marketprice_list/
+language: en
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  Nepal vegetable/fruit market-price list. Single static HTML table parsed
+  with pandas.read_html: Product, Unit, Min (Rs), Avg (Rs), Max (Rs), Date.
+  Verified live 2026-09-11: 101 rows, 97 distinct product/variety names,
+  spanning only 3 release dates (2026-05-01, 2026-05-22, 2026-07-07) -- reads
+  as an occasionally-updated snapshot page rather than a live daily feed (no
+  pagination or date picker). Avg (Rs) is emitted as price_local; Min/Max
+  dropped as derived. Verified live 2026-09-11 (SAR gap-fill sweep,
+  still_untried_20260911.csv).

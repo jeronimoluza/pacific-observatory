@@ -1,0 +1,63 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: bi_insbu_cpi
+module: ssa.east_africa.burundi.insbu_cpi
+function: fetch_bi_insbu_cpi
+url: https://www.insbu.bi/
+language: fr
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  INSBU (Institut National de la Statistique du Burundi) monthly national
+  CPI ("Indice des Prix a la Consommation des menages au Burundi")
+  bulletin PDF.
+
+  The country's old acronym ISTEEBU, named in the onboarding brief,
+  redirects to a squatted domain (isteebu.bi is now an unrelated SEO
+  reseller's parked page, "Nova Network" -- confirmed live, zero INSBU
+  content). The live institute goes by INSBU today and is at insbu.bi;
+  discovered via the Knoema-hosted Burundi Data Portal
+  (burundi.opendataforafrica.org)'s "consumer-price-index-national"
+  dataset metadata, whose `ref` field pointed at https://www.insbu.bi/.
+  insbu.bi is a React SPA; its JS bundle names the backing API at
+  api.insbu.bi/api/publications (undocumented, discovered by grepping
+  the bundle for URLs).
+
+  GET https://api.insbu.bi/api/publications?per_page=200&page=1 returns
+  a mixed feed of ALL INSBU publication types (CPI, construction-cost
+  index ICCLB, etc), most-recent-first, capped at ~50/page despite the
+  per_page value (site-side pagination cap; meta.last_page=10,
+  meta.total=499 across the full site). Only `type_publication ==
+  "ipc_fr"` (French-language monthly CPI; "ipc_ki" is the same content
+  in Kirundi) rows are used; only the first page is fetched -- deeper
+  backfill would require walking all 10 pages and downloading/parsing a
+  PDF per historical release for diminishing new months (see below).
+
+  Each monthly PDF already carries a 3-column national COICOP table
+  (page with header "Rubriques" / "TOUS LES PRODUITS"): same month one
+  year prior, prior month, and current month (e.g. Aug 2026 release:
+  aout-25, juil.-26, aout-26) -- so one release backfills 3 months per
+  run, most of which overlap the previous month's release. Column dates
+  are derived by month-arithmetic off the bulletin's own title ("Mois
+  d'aout 2026"), not by parsing the table's own line-wrapped/abbreviated
+  column headers.
+
+  12 COICOP-2018-style divisions via bare 1-2-digit row codes (excludes
+  the "0" all-items headline row -- no sanctioned sentinel yet -- and
+  excludes the same table's "01.1", "01.1.1" sub-group/class rows, which
+  share leading digits but carry a decimal point). Same 12-division gap
+  (no separate division 13) as Sierra Leone's Stats SL series and
+  Liberia's LISGIS series in this region.
+
+  Verified live 2026-09-11: August 2026 release (published 2026-09-11),
+  36 rows (12 divisions x 3 months), every value eyeballed against the
+  source PDF's "Rubriques" table and confirmed exact.
+
+  Companion retail-price-level table: none found on insbu.bi/the
+  publications API (types seen: ipc_fr/ipc_ki [this source], icclb
+  [construction cost index, non-food], plus recensement/demographic
+  publications) -- INSBU appears to be index-only for consumer prices.

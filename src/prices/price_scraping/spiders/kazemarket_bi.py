@@ -54,17 +54,13 @@ class KazemarketBiSpider(scrapy.Spider):
 
     def parse(self, response):
         scraped_at = datetime.now(timezone.utc).isoformat()
-        self.logger.info("CARDS=%d" % len(response.css("li.product")))
         for card in response.css("li.product"):
             post_id = card.attrib.get("id", "").replace("post-", "")
             name = card.css(".woocommerce-loop-product__title::text").get()
             url = card.css("a::attr(href)").get()
-            price_text = "".join(
-                card.css(".price .woocommerce-Price-amount ::text").getall()
-            )
+            price_text = card.css(".price .woocommerce-Price-amount::text").get()
             category = self._category(card)
             price = self._price(price_text)
-            self.logger.info("NAME=%r PRICE_TEXT=%r PRICE=%r" % (name, price_text, price))
             if not (name and price):
                 continue
             yield {
