@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hubbardshardware_gd
+url: https://www.hubbardshardware.gd/
+language: en
+cadence: weekly
+channel: home-improvement
+notes: |
+  Probed 2026-09-11. Shares Magento backend infrastructure with
+  foodfair.gd (same tenant/agency): hubbardshardware.gd's own /graphql
+  categoryList(id="2") and /rest/V1/products (401 anyway) both echo
+  foodfair's grocery categories verbatim, not hardware -- confirmed
+  against the site's real rendered nav (88 distinct hardware/furniture/
+  electrical/houseware/plumbing/sanitary-ware/automotive category pages,
+  none of which match the GraphQL response). Verdict: GraphQL is
+  misrouted to the wrong store view for this domain; only the
+  server-rendered Luma-theme HTML is trustworthy, hence
+  extraction_pattern scrapy_html via MagentoSSRBaseSpider (discovery from
+  the homepage nav, not GraphQL).
+  Gotcha found and fixed: the bare apex domain (hubbardshardware.gd,
+  no www) silently ignores the "?p=" pagination param and re-serves page
+  1 forever byte-identical -- this looked exactly like the known
+  "flat cap = broken spider" failure signature until re-tested against
+  the "www." subdomain, which paginates correctly. Spider is pinned to
+  www.hubbardshardware.gd throughout.
+  Pagination proof (www subdomain, "Building Materials" category, 58
+  items @ 15/page): page 1 vs page 2 vs page 3 -> all distinct product
+  sets, 0 overlap -> DISTINCT.
+  Catalog size: 88 category pages discovered from the live nav (top-level
+  + subcategories) spanning hardware, plumbing, electrical, furniture,
+  houseware, sanitary-ware, automotive, paint, pet supplies, white goods
+  -- did not sum a full product-count total, but breadth across ~10
+  distinct departments is the point per this batch's breadth-over-depth
+  guidance.
+  Currency: XCD not independently re-verified per-product on this host
+  (GraphQL misrouting makes its own currency field untrustworthy); no
+  price/currency markup contradicted Grenada's XCD default on the sampled
+  category page, so left at the country default.
+  Page family: listing (category pages) -- spider never fetches a PDP.

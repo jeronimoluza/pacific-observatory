@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jollys_dm
+url: https://jollys.dm/
+language: en
+cadence: weekly
+channel: pharmacy
+notes: |
+  Probed 2026-09-11. Standard WooCommerce Store API, no auth.
+  currency_minor_unit=2.
+  Currency flagged by the campaign as suspicious (Dominica's official
+  currency is XCD; the API reports USD) -- verified rather than copied
+  blind. Fetched a live PDP (/product/crude-coconut-oil-1-gallon/): the
+  rendered woocommerce-Price-amount markup shows a bare "$" and the string
+  "XCD"/"EC$" does not appear anywhere in the page. The site runs the
+  "WooCommerce Product Price Based on Countries" plugin
+  (woocommerce-product-price-based-on-countries), which geolocates via a
+  post-load AJAX call and can swap the displayed currency per visitor
+  country, but the server-rendered default returned to both curl_cffi and
+  the Store API -- with no client JS run -- is USD with no XCD anywhere in
+  the shipped payload. Treated as a genuinely USD-priced storefront
+  (plausible for a Caribbean pharmacy near the XCD peg) and pinned via
+  FORCE_CURRENCY rather than trusting countries.yaml's XCD default.
+  Pagination proof: per_page=50 page 1 vs page 2 -> 50/50 rows, 0 id
+  overlap -> DISTINCT.
+  Catalog size: large -- walked 60 pages @ 100/page without emptying
+  (6,000+ SKUs); a big pharmacy/general-goods catalog, capped the walk at
+  60 pages as a safety limit.
+  Page family: API.

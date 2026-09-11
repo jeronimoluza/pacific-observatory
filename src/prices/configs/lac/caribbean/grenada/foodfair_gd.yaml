@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: foodfair_gd
+url: https://foodfair.gd/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed 2026-09-11. Magento 2 storefront, GraphQL open at
+  https://foodfair.gd/graphql (no auth). categoryList(id="2") returns 16
+  real grocery child categories (Baby Food & Products, Beverages,
+  Breakfast Products, Candy & Snacks, Condiments, ...) summing to ~2,188
+  products. Currency confirmed XCD from price_range.minimum_price
+  .final_price.currency on live product rows (e.g. "GLENELG SPRING WATER
+  1.5L" = 3.90 XCD).
+  Pagination proof: products(category_id=296 "Beverages", pageSize=10)
+  page 1 vs page 2 -> 10/10 SKUs, 0 overlap -> DISTINCT.
+  Catalog size: ~2,188 products across 16 top-level categories (root
+  category id "2").
+  Page family: API (GraphQL products query) -- never fetches an HTML PDP
+  or listing page.
+  Highest-value source in this batch: full grocer spanning most COICOP
+  divisions 01-13, per the campaign's breadth-over-depth guidance.

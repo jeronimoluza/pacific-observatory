@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vibeislanddrinks_gd
+url: https://vibeislanddrinks.com/
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Probed 2026-09-11. Standard WooCommerce Store API, no auth.
+  currency_code="XCD", currency_minor_unit=2 (e.g. "Mixed Pack Vibe Hard
+  Seltzer (24-pack)" = 18000 -> 180.00 XCD).
+  Catalog is genuinely tiny: per_page=50 page 1 returns exactly 5 SKUs,
+  page 2 returns 0 -- this is the whole catalog, not a broken paginator
+  (a beverage-brand storefront, not a grocer). Per the campaign's explicit
+  guidance, a small catalog that is honestly the full site is not a
+  rejection reason; only a catalog that fails to paginate is, and this
+  one legitimately has nothing left to paginate to.
+  Page family: API.

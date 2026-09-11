@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kalico_gd
+url: https://kalico.gd/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed 2026-09-11. Standard WooCommerce Store API at
+  /wp-json/wc/store/v1/products, no auth. currency_code="XCD",
+  currency_minor_unit=2 (e.g. "Arizona Orangeade 23z" = 508 -> 5.08 XCD).
+  Pagination proof: per_page=50 page 1 vs page 2 -> 50/50 rows, 0 id
+  overlap -> DISTINCT.
+  Catalog size: not fully walked to exhaustion (large -- 50+ per page
+  continuing past page 2); treated as a general grocer.
+  Page family: API -- never fetches an HTML page.

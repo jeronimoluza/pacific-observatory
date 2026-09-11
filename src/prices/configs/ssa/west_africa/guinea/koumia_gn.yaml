@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: koumia_gn
+url: https://koumia.com/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Probed 2026-09-11. Shopify storefront, /products.json open and
+  unauthenticated. /products.json itself carries no currency field;
+  currency confirmed as GNF from the storefront's own embedded
+  shop-capabilities JSON (`"currencyCode":"GNF"`, shopId 98117255510,
+  countryCode "BE" -- Shopify tenant is registered in Belgium but prices
+  the Guinea-facing catalog in GNF).
+  Pagination proof: limit=50 page 1 vs page 2 -> 0 id overlap ->
+  DISTINCT.
+  Catalog size: 114 products total (limit=250 page 1 returns all 114,
+  page 2 empty). Small-appliance/houseware marketplace (water
+  dispensers, pressure washers, coffee machines, meat grinders, bill
+  counters, ...).
+  channel: marketplace per the skill's rule for directory/seller
+  storefronts rather than a single retailer's own catalog.
+  Page family: API.

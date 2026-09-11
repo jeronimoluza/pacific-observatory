@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: daymarket_ne
+url: https://daymarket.net/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed 2026-09-11. Standard WooCommerce Store API, no auth.
+  currency_code="XOF", currency_minor_unit=0 (XOF has no decimal subunit,
+  e.g. "DINOR BOUTEILLE 500 ML" = 500 -> 500 XOF, no division).
+  Pagination proof: per_page=50 page 1 -> 50, page 2 -> 31, page 3 -> 0;
+  0 id overlap between page 1 and page 2 -> DISTINCT.
+  Catalog size: 81 SKUs total (small but genuinely paginating, not
+  capped). Breadth check: sampled across the 81 rows shows beverages,
+  bottled cooking gas, powdered milk, juice, fresh oranges, bread, oral
+  care, biscuits, coffee, soap -- spans several COICOP divisions in one
+  small "votre supermarche" catalog, which is the highest-value source in
+  this batch per the campaign's breadth-over-depth guidance for
+  thin-coverage countries.
+  Page family: API.
