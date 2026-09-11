@@ -1,0 +1,74 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lidl_pl
+url: https://www.lidl.pl/
+language: pl
+currency: PLN
+cadence: weekly
+channel: supermarket
+notes: |
+  Same custom Vue SSR storefront platform family as lidl_si/lidl_rs/lidl_gr
+  (identical numeric category-hub IDs across markets, e.g. h10071012 = fresh
+  produce, h10071049 = frozen food, h10095761 = dairy) -- but unlike those
+  three markets, Poland's /h/<slug>/h<id> category hub pages under-render in
+  plain SSR HTML (e.g. /h/owoce-i-warzywa/h10071012 only server-renders 1 of
+  what turns out to be exactly 1 total item). Each hub page's Nuxt config
+  instead points at the site's own JSON category/search API, which the
+  spider hits directly:
+
+    GET https://www.lidl.pl/q/api/category/h/<slug>/h<id>
+        ?assortment=PL&locale=pl_PL&version=v2.0.0&pageId=<id>
+        &offset=<n>&fetchsize=100
+
+  This is the real enumeration route behind the batch brief's observed
+  `/p/api/gridboxes/PL/pl?erpNumbers=...` endpoint -- gridboxes takes an
+  explicit SKU list and is not itself enumerable, but it returns the same
+  gridbox.data product blob this category API returns natively with
+  offset/fetchsize paging, so no separate SKU-list source (sitemap etc.)
+  was needed. Confirmed identical erpNumbers: 100404480 and 100400316 from
+  the brief's own gridboxes example both appear live under
+  odziez-damska/h10067567.
+
+  Enumerability verified live 2026-09-10: odziez-damska/h10067567
+  (numFound=1298) at offset=0/100/200 with fetchsize=100 -> 100/100/100
+  items, ZERO pairwise erpNumber overlap -> DISTINCT. offset must be
+  requested in fixed fetchsize-aligned steps (0, 100, 200, ...) -- a
+  non-aligned offset (e.g. 999) or a large explicit fetchsize combined with
+  a large offset (e.g. fetchsize=1000 at offset=1000) triggered a
+  server-side clamp that silently truncated the page (returned only 80 of
+  the expected ~298 remaining items); the spider always pages in fixed
+  _FETCH_SIZE=100 steps to stay clear of that.
+
+  63 /h/ category hub slugs harvested from the homepage top nav (same
+  convention as lidl_si/rs/gr -- lidl_si used 46, lidl_rs 64). Sum of
+  numFound across all 63 hubs is ~10,224 (upper bound on distinct products;
+  a handful of items may be cross-listed under more than one hub). Catalog
+  skews non-food/home-goods (odziez-damska=1298, zabawki-i-gry=590,
+  odziez-meska=585, sypialnia=513) vs. thin grocery aisles (mrozonki=4,
+  piekarnia=5, sery-nabial-i-jaja=3, dania-gotowe=3, owoce-i-warzywa=1,
+  slodycze-i-przekaski=1, spizarnia=2, wina-piwa-i-alkohole-mocne=23) --
+  same "promo-led catalog" model (rotating weekly-offer leaflet, not a
+  full grocery assortment) already documented for lidl_si/rs/gr.
+
+  Price lives at flat top-level price.price / price.currencyCode (PLN),
+  matching lidl_rs's shape; falls back to regionsPrices.1.currentPrice
+  .price (or .currentLidlPlusPrice.price.price) for Lidl-Plus-loyalty-only
+  items, same fallback lidl_si/rs/gr already use.
+
+  robots.txt disallows `*?offset=*` and `*pageId=*` on this host, but this
+  project runs with ROBOTSTXT_OBEY=False repo-wide
+  (price_scraping/settings.py:14), same footing as every other API-pattern
+  spider already in this repo.
+
+  coicop_divisions: 01, 03, 05, 06, 09, 13
+  divisions_basis: walked_categories (63 top-level hub slugs from homepage
+  nav; food aisles [mrozonki/piekarnia/sery-nabial-i-jaja/dania-gotowe/
+  owoce-i-warzywa/slodycze-i-przekaski/spizarnia/wina-piwa-i-alkohole-mocne
+  -> 01/02] are thin but present; apparel [odziez-damska/odziez-meska/
+  odziez-dziecieca/buty-i-akcesoria -> 03], household/kitchenware
+  [sprzety-i-akcesoria-kuchenne/nakrycie-stolu-i-naczynia/sprzatanie-domu
+  -> 05], health/beauty [uroda-i-pielegnacja-ciala/zdrowie-i-dobre-
+  samopoczucie -> 06/13], sport/hobby [fitness/rowery-i-akcesoria/
+  kemping-i-trekking -> 09] make up the bulk of the catalog by volume)

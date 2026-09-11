@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kittnational_ht
+url: https://kittnational.com/
+language: ht
+cadence: weekly
+channel: marketplace
+notes: |
+  Verified live 2026-09-10. General marketplace (Haiti), React SPA with
+  no server-rendered catalogue and no first-party REST API -- the
+  catalogue lives in a public Supabase Postgres instance reached via a
+  "helloreaddy.com" function-URL proxy in front of Supabase project
+  2kug72le92fjtj5suphu, standard PostgREST at
+  /rest/v1/product_items?select=...&limit=&offset=.
+
+  Auth: `sb_publishable_aI5EmGRPfPO04glpzr6TmlDrvcFSjPcY`, found in the
+  Vite bundle (/assets/index-D4P3LgCh.js). This is Supabase's newer
+  "publishable key" format (successor to the legacy JWT anon key) --
+  confirmed NOT a service_role/secret key (no `sb_secret_` or
+  `service_role` string anywhere in the bundle). Public-read by design,
+  same category as the anon JWT already used in trinicart_tt.py.
+
+  Enumerability: `Prefer: count=exact` on `product_items?status=eq.active`
+  reports 1,673 active rows (1,676 total, 3 inactive) -- a real catalogue,
+  not a small widget query. `?limit=100&offset=0` vs
+  `?limit=100&offset=100` (order=id) returned ZERO id overlap -> DISTINCT.
+  `product_categories` (34 rows: Elektronik, Rad & Soulye, Kay & Kizin...)
+  is the real category table product_items.category_id foreign-keys into
+  -- NOT `menu_categories` (a UUID-keyed table for an unrelated
+  restaurant-menu feature that happens to share the "categories" name).
+
+  Currency: every row carries `currency: "HTG"` directly (Haitian Gourde)
+  -- correct geography, no USD-quoting anomaly. Effective price is
+  discount_price when discount_enabled is true, else price.
+
+  Sample real rows: "Nutella -- Bokal Pate Chokola 26.5 oz" HTG 1427.15;
+  "Ponp Lwil Toyota Corolla 4A-FE 1.6L -- Aisin OPT-012" HTG 6900.00
+  (HTG 5865.00 after its active discount); "Vagisil Odor Block Cleansing
+  Wipes - 20ct" HTG 902.98.
+
+  PDP url pattern confirmed live: https://kittnational.com/market/product/<id>
+  (HTTP 200; found in the bundle's client-side route table as
+  `path:\`/market/product/:id\``).
+
+  No archive_prefix/archive_path_re set: client-side-routed SPA, no
+  server-rendered PDP content for Common Crawl/Wayback to have captured.
+
+  test: prices collect --source kittnational_ht --max-items 20 -> 20 rows, 20 priced.

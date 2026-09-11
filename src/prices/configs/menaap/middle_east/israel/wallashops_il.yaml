@@ -1,0 +1,70 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: wallashops_il
+url: https://www.wallashops.co.il/
+language: he
+cadence: weekly
+channel: dept-store
+notes: |
+  Verified live 2026-09-10. WallaShops -- "the biggest online shopping
+  site in Israel" per its own og:description (electronics, TVs, computers,
+  mobile phones, cameras, furniture...) -- the shopping arm of the Walla
+  portal. Each row is Walla's own fixed selling price (post-discount
+  price_to_pay), NOT a cross-merchant comparison like zap_il (see
+  zap_il.yaml for the contrast) -- there is a single "collected"
+  supplier/dropship id per item, no per-competitor price list.
+
+  The observed `POST /ajax` is a session-scoped RPC dispatcher
+  (act=<action>&id=...&token=<session_token>), not a fixed catalogue
+  route. `act=search` (the widget the trace captured) always returns
+  exactly 8 hits regardless of query term ('', 'a', nonsense strings, and
+  real Hebrew terms all -> 8 items, though WHICH 8 does vary by term) --
+  a real but severely capped quick-search dropdown, not usable for
+  enumeration, exactly the widget-vs-enumeration trap called out in
+  WAVE3_ADDENDUM.
+
+  Real enumeration route: `act=category_items&id=<leaf_id>`, read out of
+  the page's own jQuery. Fails with {"error":"invalid request - id"} for
+  the 8 TOP-level category ids (512, 1152, 1808, 2126, 2163, 2434, 2938,
+  2983 -- lobby/landing pages, no directly attached products) but succeeds
+  for their LEAF subcategory ids (150-279 items per call, no id truncation
+  observed within one subcategory). Leaf ids are discovered by crawling
+  each top-level /category/<id> page and pairing each
+  ".loby_section.subcat_section .loby_title_wrapper .title" text with the
+  following ".cubes_module" element's data-id.
+
+  Enumerability verified live 2026-09-10: 8 top categories -> 79 distinct
+  leaf subcategory ids -> 7,277 total items with ZERO id overlap across
+  subcategories (sum of per-category counts == count of distinct product
+  ids) -> DISTINCT partition. One of the 79 ids errored (itself a further-
+  nested lobby id) and is skipped harmlessly by the spider.
+
+  Selling price is NOT a top-level field on category_items rows (unlike
+  the flat `search` shape) -- it is base64-encoded JSON in the row's
+  `data` field; decoded to read `price_to_pay` (post-discount price,
+  cross-checked against `price_before_discount` on sampled rows). A small
+  number of rows decode price_to_pay as a non-numeric value (observed:
+  `false`) and are dropped.
+
+  Currency ILS (all Israeli retail; no other currency evidence). PDP url
+  pattern /item/<id> confirmed from the page's own JS
+  (`item.attr("href", "/item/" + item_data.id)`).
+
+  channel: dept-store -- catalogue spans electronics, furniture, kitchen
+  appliances, AC/heating, tools & gardening, not a single narrower enum
+  value; coicop_classification: classifier since it is a wide catalogue.
+
+  Site requires a real browser TLS fingerprint (plain requests/curl -> 403);
+  cleared by the repo-wide scrapy_impersonate chrome120 profile in
+  settings.py, no per-spider IMPERSONATE_PROFILE override needed (verified
+  chrome120 clears it live 2026-09-10). CONCURRENT_REQUESTS_PER_DOMAIN=1
+  and DOWNLOAD_DELAY=1.5 set in the spider per WAVE3_ADDENDUM (large
+  retailer).
+
+  No archive_prefix/archive_path_re set: /item/<id> PDP content is
+  populated by the same session-token AJAX call, not present in the
+  static HTML a Common Crawl/Wayback capture would hold.
+
+  test: prices collect --source wallashops_il --max-items 20 -> 20 rows, 20 priced.

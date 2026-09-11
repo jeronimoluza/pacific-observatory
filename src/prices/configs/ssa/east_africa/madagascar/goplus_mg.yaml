@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: goplus_mg
+url: https://goplus.arato.mg/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Verified live 2026-09-10. General marketplace (Madagascar) whose backend
+  at api-go-plus.arato.mg exposes an unauthenticated JSON API. GET
+  /api/products returns the ENTIRE catalogue in one response -- ?page=2 and
+  ?page=2&limit=50 both return the exact same 178 products as page 1
+  (byte-identical), so this is a single complete catalogue dump, not a
+  paginated feed. GET /api/categories mirrors the same 178 products nested
+  under 13 categories; not used (redundant).
+
+  Catalog size: 178 products, all isAvailable=true, zero zero-price rows.
+  Categories span Electronics (incl. used MacBooks), school supplies,
+  crafts, baby items, sports, food/wellness -- a genuine wide catalogue,
+  not a single-COICOP niche, hence coicop_classification: classifier.
+
+  Currency MGA (Malagasy Ariary) per brief; the API itself carries no
+  explicit currency field but price magnitudes (400 - 2,800,000) are
+  consistent with MGA, not EUR/USD.
+
+  Sample real rows: "MacBook Pro 2016 A1707 -- Touch Bar Core i7 RAM 16 Go
+  SSD 256 Go" MGA 2,800,000; "Surligneur schneider Job" MGA 4,500.
+
+  PDP url pattern confirmed live: https://goplus.arato.mg/products/<uuid>
+  (HTTP 200; the frontend's /products?category=<slug> nav links are
+  marketing placeholders that 500 server-side when queried directly --
+  the only working data route is the unfiltered /api/products dump).
+
+  No archive_prefix/archive_path_re set: the live site is a client-rendered
+  Next.js app with no server-rendered PDP content, so a Common Crawl/Wayback
+  capture of a /products/<uuid> page would not carry usable price/name text.
+
+  test: prices collect --source goplus_mg --max-items 20 -> 20 rows, 20 priced.

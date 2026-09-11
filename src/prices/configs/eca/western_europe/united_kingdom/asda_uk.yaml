@@ -1,0 +1,70 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: asda_uk
+url: https://groceries.asda.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: supermarket
+notes: |
+  Next.js storefront whose full catalog search runs on a public Algolia
+  index (app id 8I6WSKCCNV, index ASDA_PRODUCTS). The search-only API key
+  is embedded in the homepage's Next.js config JSON
+  (config.algolia.searchAPIKey), harvested live 2026-09-10 via curl_cffi
+  impersonate=chrome124 (the plain HTML site 403s a bare curl/UA request --
+  Akamai/whatever WAF fronts groceries.asda.com does not front the Algolia
+  CDN, so once the key is known no impersonation is needed to query it
+  directly). Confirmed this is a search-ONLY key, not the write key (the
+  page also exposes a literal placeholder string "ALGOLIA_WRITE_API_KEY"
+  for writeAPIKey, not a real secret).
+
+  Algolia enforces a hard "page * hitsPerPage < 20000" reachable-hits cap
+  per query (confirmed live: page=19 at hitsPerPage=1000 -> 200 with 1000
+  hits; page=20 -> "you can only fetch the 20000 hits for this query").
+  The catalog is ~122,972 products (nbHits on an unfiltered query), so no
+  single query can reach it all -- per the batch brief's own guidance, the
+  spider partitions by facet rather than paging one unfiltered query.
+
+  PRIMARY_TAXONOMY.CAT_NAME is a faceted, single-valued attribute whose 49
+  values partition the whole index exactly: facet counts sum to nbHits
+  (122,972) with zero double-counting. Every category is under the 20k cap
+  except "Home & Entertainment" (52,778 products), which is further split
+  by the also-faceted PRIMARY_TAXONOMY.DEPT_NAME (24 values, all
+  individually under 20k, counts again sum exactly to the category total
+  with zero overlap). Every other category is queried directly by
+  CAT_NAME; "Home & Entertainment" is queried once per department instead.
+
+  Enumerability verified live 2026-09-10: "Food Cupboard" (nbHits=14,803)
+  page=0 vs page=1 at hitsPerPage=1000 -> 1000/1000 hits, ZERO objectID
+  overlap -> DISTINCT.
+
+  Price: PRICES.EN.PRICE (England list price, GBP). ASDA carries separate
+  PRICES.NI/SC/WA blocks for the other three UK home nations (some items
+  differ, e.g. deposit-return-scheme items) -- EN is used as the single
+  national reference price. Rows are dropped when PRICES.EN.PRICE is
+  missing/zero, or STATUS is set and not "A", or DISPLAY_ONLINE is false.
+
+  The record's own "ID" field is not a usable URL slug (format is
+  inconsistent: raw digits, 13-digit ids, or "SKU<digits>", and does not
+  match ASDA's PDP routing for the SKU-prefixed case). The "CIN" field
+  (populated on every sampled hit, 1000/1000 in one page) is usable:
+  https://groceries.asda.com/product/<CIN> was confirmed live 2026-09-10
+  via curl_cffi impersonate=chrome124 to resolve (following the redirect
+  to www.asda.com/groceries/product/<CIN>) to the CORRECT product's own
+  og:title -- e.g. CIN 9373511 -> og:title "ASDA Rice Snaps Marshmallow
+  Bars 176g (8 x 22g)", exactly matching the Algolia record's NAME. Items
+  without CIN are dropped rather than emitted with a null/placeholder url
+  -- the project's DuplicationPipeline hashes item["url"] to dedupe within
+  a run, and a constant fallback would silently collapse every such item
+  down to one surviving row (hit this live during testing: url=None
+  crashed hashlib.md5 in pipelines.py, and url="" would have instead
+  silently dropped all but the first item as a "duplicate").
+
+  End-to-end smoke test (--max-items 20) returned real GBP-priced rows
+  with working product_id/url pairs, e.g. "&More Biscoff Chocolate Bar
+  195 g" GBP 2.97, https://groceries.asda.com/product/9379835.
+
+  coicop_classification: classifier (wide catalog spanning grocery,
+  health/beauty, pet, and general merchandise -- coicop_codes left unset).
