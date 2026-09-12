@@ -1,0 +1,34 @@
+scaffolding: spider
+spider: electroworld_lr
+url: "https://electroworldinc.online/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue. The candidate carried
+  two contradictory prior triages ("landing shell only" and "catalog upgrade")
+  -- both were reading the HTML, which is a 4.8 KB Vite SPA shell on EVERY
+  route including the PDPs in its own sitemap. A network trace settles it: the
+  JS bundle names a wide-open unauthenticated backend. GET /api/products
+  returns the ENTIRE catalog in one call -- 242 products measured 2026-09-12,
+  every one with a non-null integer price and active=1. GET /api/public-config
+  returns {"store_name":"Electro World Inc.","currency":"USD",
+  "store_address":"Randall Street . Monrovia , Liberia"}. Nothing renders at
+  collection time. CURRENCY USD is NOT a judgement call here: the store states
+  it in its own config endpoint -- recorded because Liberia is dual-currency.
+  Catalog is phones, TVs, laptops, audio, cameras, kitchen appliances and some
+  furniture -> channel electronics, coicop_codes unset (the classifier assigns
+  the leaf; the furniture tail would be mis-declared by any single class).
+  Page family parsed: API.
+  VERIFIED 2026-09-12 on a8: 242 rows (`--max-items 200`) -- the FULL catalog in one API call. Sample: 'L Shape Living Room Sofa' USD 1299, 'DJI LITO 1 Drone' USD 799.

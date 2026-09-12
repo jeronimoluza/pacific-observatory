@@ -1,0 +1,40 @@
+scaffolding: spider
+spider: marketliberiall
+url: "https://marketliberiall.com/"
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: LRD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue (prior triage:
+  "marketplace shell, no explicit prices, may need JS-rendered product-feed/API
+  endpoints"). The storefront is indeed a client-rendered Next.js grid --
+  /products server-renders 3 dollar figures and no catalog. The route that
+  works is the one the site's own robots.txt advertises:
+  Allow: /feeds/google-merchant.xml, a Google Merchant RSS product feed
+  (application/rss+xml), structured, no selectors and no JS.
+  CURRENCY is the reason this source matters: <g:price> carries an explicit
+  currency token -- "5500.00 LRD" -- so this is the one Liberian storefront in
+  this batch priced in LIBERIAN DOLLARS and saying so machine-readably, where
+  the rest quote a bare dollarized "$". The spider reads currency per item from
+  the feed and never assumes; the manifest LRD is the fallback.
+  CATALOG SIZE recorded deliberately: 20 items, measured 2026-09-12, and the
+  feed has no paging parameter -- it is the whole view we get. Small but real
+  local goods (farm inputs, provisions; sample "NPK Fertilizer 50kg Farm Sack"
+  LRD 5500.00 from seller "Kollie Provision Shop"), and it clears the >=5-row
+  gate. A future run seeing ~20 rows should read that as the feed's real size.
+  channel marketplace -- third-party sellers, the population census.py
+  excludes; tagged honestly rather than dressed as dept-store.
+  Page family parsed: API (RSS feed); the emitted url is the item permalink and
+  is never fetched.
+  VERIFIED 2026-09-12 on a8: 20 rows (`--max-items 200`) -- the whole feed. Sample: 'NPK Fertilizer 50kg Farm Sack' LRD 5500.00, seller 'Kollie Provision Shop'.

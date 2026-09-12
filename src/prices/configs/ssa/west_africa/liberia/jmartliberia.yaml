@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: jmartliberia
+url: "https://www.jmartliberia.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 2
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue. Prior triage said
+  "homepage mostly promo/static, product catalog not obvious, Not-ready" --
+  measured wrong. The site is Odoo eCommerce (server: Odoo.sh) and publishes
+  /sitemap.xml with 697 /shop/<slug>-<id> PDP URLs (measured 2026-09-12), each
+  fully server-rendered. ENUMERABILITY is by sitemap, not pagination. The PDPs
+  carry Odoo MICRODATA, not schema.org JSON-LD -- the repo's rows_from_jsonld
+  and row_from_meta helpers both return 0 rows on this tenant, which is why
+  this needs its own small spider rather than _jsonld_sitemap_base.
+  CURRENCY: the tenant's own itemprop="priceCurrency" emits "US", not a valid
+  ISO 4217 code (Odoo symbol misconfiguration); price renders with "$". Forced
+  to USD -- flagged, not silently accepted, since Liberia is dual-currency.
+  Wide catalog (furniture, appliances, electronics, kitchen/household) so
+  channel dept-store and coicop_codes unset. Page family parsed: PDP.
+  VERIFIED 2026-09-12 on a8: 202 rows (`--max-items 200`; 697 product URLs available in the sitemap, so the run was cap-bound, not supply-bound). Sample: 'File Cabinet 800 | 2D | Zichen' USD 450.00.

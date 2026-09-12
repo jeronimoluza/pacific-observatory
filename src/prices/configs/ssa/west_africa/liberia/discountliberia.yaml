@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: discountliberia
+url: "https://discountliberia.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 2
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue (prior triage:
+  NEEDS-CUSTOM-CRAWLER, "no standard platform API"). The triage was right that
+  there is no platform API and wrong that a bespoke crawler was needed -- the
+  site publishes a full product sitemap (3,325 /products/details/<slug> URLs,
+  measured) and renders schema.org Product JSON-LD on every PDP, so it drops
+  straight onto the repo's existing _jsonld_sitemap_base. ENUMERABILITY is by
+  sitemap, not pagination: 3,325 distinct product <loc> entries fetched and
+  deduped live 2026-09-12. Catalog is wide general merchandise (hardware,
+  vehicles/transport parts, appliances, furniture, electronics, computers,
+  phones) so channel dept-store and coicop_codes unset. CURRENCY USD from the
+  PDP JSON-LD priceCurrency -- flagged, not assumed, since Liberia is
+  dual-currency. Page family parsed: PDP.
+  VERIFIED 2026-09-12 on a8: 202 rows (`prices collect --source discountliberia --max-items 200`), cap-bound -- the run enqueued 3,328 requests (3,325 product URLs plus the sitemap), so supply is far above the cap. Sample: "New Huion KAMVAS 22 ... Graphic Tablet with Stylus" USD 493.9, category "Phones & Tablets" (the JSON-LD carries the breadcrumb, which most sources here do not). By row supply this is the largest new Liberia source in this batch.

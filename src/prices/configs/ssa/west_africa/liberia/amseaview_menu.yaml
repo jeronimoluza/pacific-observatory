@@ -1,0 +1,34 @@
+scaffolding: spider
+spider: amseaview_menu
+url: "https://amseaviewresidence.com/restaurant_menu"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: monthly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue. AM SeaView Residence &
+  Hotel, Paynesville -- breakfast, seafood, pizza, sandwiches, soft drinks,
+  beer, wine, spirits and cocktails with explicit prices. COICOP 11.1 catering
+  plus on-premises alcohol, which retailer SKU sources structurally cannot
+  reach. Next.js but SERVER-RENDERED: ~58 priced items are already in the raw
+  HTML of /restaurant_menu (measured 2026-09-12), so Tier 1A, no Playwright.
+  The spider walks the 16-page /sitemap.xml and parses whatever menu rows each
+  page holds rather than hard-coding one path, so the bar/dining pages are
+  picked up too. CURRENCY USD is stated by the page itself -- "Prices are in
+  US dollars and may change" -- recorded rather than assumed because Liberia
+  is dual-currency. IMPORTANT for downstream: the page also states 13% GST is
+  added to the final order, so these are PRE-TAX menu prices. coicop_codes
+  unset (prepared dishes and alcoholic drinks are different COICOP classes, so
+  not a narrow source); channel other (no food-service value in the enum).
+  Page family parsed: listing (menu pages).
+  VERIFIED 2026-09-12 on a8: 58 distinct dishes (`--max-items 200`) -- 25 from /bar plus 33 from /restaurant. OVERLAP TRAP found here: /dining is the UNION of those two pages, so the first run emitted 116 rows for 58 dishes and the per-dish url anchor could NOT collapse them (different page = different url_hash), which would have put every dish in the corpus twice. The spider now dedupes on dish name across the run. Separately, the very first run returned only 3 rows because every dish on a page shared that page url and the repo DuplicationPipeline dropped the rest -- hence the `#<dish-slug>` anchors; do not remove either guard. Sample: Africa Breakfast USD 10, Bottled Water USD 1.

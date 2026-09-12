@@ -1,0 +1,34 @@
+scaffolding: spider
+spider: murex_plaza_menu
+url: "https://menu.murexplaza.com/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: monthly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue. Murex Plaza Hotel
+  restaurant menu, Monrovia -- prepared food and beverages, i.e. COICOP 11.1
+  catering, a division retailer SKU catalogs structurally cannot reach. Small
+  Laravel/Apache menu app, fully server-rendered on ONE page (~14 priced items
+  in raw HTML, no JS). No sitemap and no pagination: the single document IS
+  the complete menu, which is the honest version of "enumerable" for a menu --
+  the thing that actually has to pass is the >=5-row gate, and it does.
+  channel other (the Channel enum has no food-service value; dept-store and
+  supermarket would both be wrong). coicop_codes left unset rather than
+  declared 11.1: the menu mixes prepared dishes with bottled beer, wine and
+  spirits, which are separate COICOP classes, so this is not a narrow source
+  by the manifest rule. CURRENCY USD -- bare "$" with no machine-readable
+  code, judgement call recorded not assumed; the sibling amseaview_menu source
+  in this directory states "Prices are in US dollars" explicitly for the same
+  market segment. Page family parsed: listing (the single menu page).
+  VERIFIED 2026-09-12 on a8: 14 rows (`--max-items 200`). Sample: Vegetable Fried Noodles USD 12, Baba Ghanouj USD 8, Gnocchi USD 15. NOTE the first attempt returned 1 row: every dish shared the page URL and the repo's DuplicationPipeline dropped the rest. Each row now carries a `#<dish-slug>` anchor so it has its own url_hash -- do not remove that.

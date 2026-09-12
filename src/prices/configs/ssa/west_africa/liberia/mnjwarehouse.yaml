@@ -1,0 +1,34 @@
+scaffolding: spider
+spider: mnjwarehouse
+url: "https://mnjwarehouse.com/"
+channel: home-improvement
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: monthly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue. M&J Warehouse,
+  Monrovia -- hollow blocks, paver blocks, aggregates and equipment-hire day
+  rates, delivered prices. Construction inputs and plant hire, which none of
+  Liberia's retail sources reach. Hand-written static site on Netlify, 4 pages
+  total per its own sitemap, every price server-rendered as
+  <h3>product</h3><p class="price">$0.85 per block, delivered</p>.
+  CATALOG SIZE recorded on purpose: this is a narrow price list on the order
+  of a dozen rows, not a SKU catalog. It clears the >=5-row gate; a future run
+  seeing ~10 rows should read that as the site's real size, not a broken
+  parse. PARSE TRAP recorded: the same figures repeat in <meta description>
+  and og:description, so the spider reads only <p class="price"> in the body.
+  coicop_codes left unset rather than declared 04.3 -- equipment hire is not
+  the same COICOP class as building materials, so this is not a narrow source
+  by the manifest rule. CURRENCY USD: bare "$", no machine-readable code,
+  judgement call recorded not assumed. Page family parsed: listing.
+  VERIFIED 2026-09-12 on a8: 11 rows (`--max-items 200`) across /blocks (4), /aggregates (3) and /equipment-hire (4); the homepage contributes 0, as intended. Sample: 'Sand (Smooth or Rough) ($25 per blade (3 cubic meters), pickup only)' USD 25, 'Backhoe Loader ($525 per day, fuel (35 gallons) included)' USD 525. Same url_hash trap as the menu sources -- the first attempt returned 3 rows until each row got an anchor.

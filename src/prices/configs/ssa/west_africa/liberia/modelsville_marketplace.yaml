@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: modelsville_marketplace
+url: "https://modelsvillegroup.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 2
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue (prior triage had only a
+  single deep product URL and asked for "category index discovery"). Resolved:
+  Odoo eCommerce, /sitemap.xml lists 266 /shop/<slug>-<id> PDP URLs (measured
+  2026-09-12), so the whole catalog enumerates from the sitemap with no
+  category walk at all. PDPs are Odoo microdata, not JSON-LD (rows_from_jsonld
+  and row_from_meta both return 0 rows here), hence a small dedicated spider.
+  PDPs state "Available in Liberia Only". Catalog: air conditioners, kitchen
+  and household appliances, electronics, solar products, bottled water --
+  channel dept-store, coicop_codes unset. CURRENCY USD, and this tenant does
+  emit a valid itemprop="priceCurrency" of "USD" (unlike the sibling
+  jmartliberia tenant); still pinned at class level because Liberia is
+  dual-currency and a silent per-page flip would be invisible downstream.
+  Page family parsed: PDP.
+  VERIFIED 2026-09-12 on a8: 200 rows (`--max-items 200`; 266 product URLs in the sitemap, so cap-bound). Prices eyeballed against the rendered PDP -- 150.00 on the Serenelife SLACHT108 matches the page, no minor-unit error.

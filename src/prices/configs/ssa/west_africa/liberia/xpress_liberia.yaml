@@ -1,0 +1,34 @@
+scaffolding: spider
+spider: xpress_liberia
+url: "https://www.xpressliberia.com/shop"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.5
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue. Monrovia multi-vendor
+  storefront (Laravel/Apache, bespoke code -- no platform API, so the original
+  NEEDS-CUSTOM-CRAWLER triage was right here). Server-rendered, Tier 1A.
+  ENUMERABILITY measured 2026-09-12: /shop?page=1|2|3 return DIFFERENT
+  product-id sets (18 / 14 / 20 distinct ids), so it genuinely paginates.
+  TRAP recorded for the next run: a "featured products" block is re-rendered
+  at the top of EVERY page above the <h2>All Products</h2> heading, so a naive
+  card parse double-counts the same SKUs once per page. The spider scopes to
+  section.products-section-modern AND dedupes on product id across the run.
+  Catalog is mixed local retail (groceries, drinks, cosmetics, personal care,
+  household) across several named vendors -- channel dept-store, coicop_codes
+  unset. CURRENCY: judgement call, recorded not assumed. Prices render as a
+  bare "$" with no machine-readable currency code anywhere on the page and
+  Liberia is dual-currency; the site's own copy quotes US dollars, so USD.
+  Page family parsed: listing (/shop?page=N).
+  VERIFIED 2026-09-12 on a8: 43 distinct products (`--max-items 200`) across /shop pages 1-5; page 5 added 0 new ids and the walk stopped there. The featured-block dedupe is doing real work: pages 2-5 showed 20/20/15/8 cards but only 6/12/7/0 new ids.

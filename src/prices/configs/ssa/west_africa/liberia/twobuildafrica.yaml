@@ -1,0 +1,35 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://2buildafrica.com/collections/all"
+channel: home-improvement
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "twobuildafrica"
+  base_url: "https://2buildafrica.com"
+  currency: "USD"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+throttle_group: shopify
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue (prior triage:
+  NEEDS-CUSTOM-CRAWLER). Live-probed 2026-09-12: standard Shopify, OPEN
+  /products.json, page1=17 products, page2=0 -- small but complete catalog,
+  clears the >=5-row bar with room. Construction inputs: cement, steel rods,
+  light poles, smoke alarms. Sample: "LIGHT POLE (9 METERS-PINE, LV)" USD
+  300.00. channel home-improvement; coicop_codes left unset because the
+  catalog spans building materials (04.3 maintenance) and household safety
+  hardware (05.x) rather than one COICOP class. CURRENCY: USD from
+  Shopify.currency. Page family parsed: API (/products.json).
+  VERIFIED 2026-09-12 on a8: 48 rows (`--max-items 200`, variant-level; 17 products). Sample: LIGHT POLE (9 METERS-PINE, LV) USD 300.00, AAAC cable, Hyundai 5.5 KVA diesel generator, electric wire, nails.

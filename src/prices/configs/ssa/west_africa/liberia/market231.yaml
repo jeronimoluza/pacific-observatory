@@ -1,0 +1,35 @@
+scaffolding: spider
+spider: market231
+url: "https://market231.com/"
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue (prior triage:
+  NEEDS-CUSTOM-CRAWLER). What it actually needed was a network trace: the HTML
+  is a 10 KB React shell with zero prices, but /static/js/main.*.js names an
+  open unauthenticated REST endpoint, GET /api/listings, returning
+  application/json. Measured 2026-09-12: default limit 20, ?limit=200 clamped
+  to 100, ?page=N IGNORED, ?offset=N paginates correctly -- so the spider
+  walks offset in steps of 100 and stops on the first short page.
+  CURRENCY is per row, from the listing's own currency_entered: this is a
+  genuinely dual-currency board and the API carries both the as-entered price
+  and a converted price_lrd. The spider emits the as-entered price with its
+  as-entered currency and NEVER the converted field, so no synthetic FX enters
+  the corpus. The manifest currency USD is the fallback only.
+  channel marketplace -- these are seller-authored classifieds, which is the
+  population enrich/census.py deliberately excludes from the corpus census.
+  Tagged honestly rather than dressed as dept-store. Page family parsed: API;
+  the emitted url is a permalink built from the row slug and is never fetched.
+  VERIFIED 2026-09-12 on a8: 135 rows (`--max-items 200`) -- the FULL active catalog, reached only after the skip/offset fix above. The first, broken version of this spider returned exactly 100.

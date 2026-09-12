@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: kawtal_super_electronics
+url: "https://kawtalsuperelectronics.online/shop"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue (prior triage: "landing
+  shell only, requires deeper click-path/API discovery"). Resolved without
+  either: the product grid is client-rendered, but /shop ALSO server-renders a
+  plain SEO anchor list of every product with the name and price inline --
+  <a href="/product/<uuid>">iPhone XS Max 256GB &mdash; $250.00</a>. Its
+  /sitemap.xml carries only 5 static pages and NO product URLs, so the sitemap
+  route does not work on this tenant. CATALOG SIZE recorded deliberately: the
+  /shop page states "6 products" and 6 is what the spider yields. That clears
+  the >=5-row gate but only just -- a future run seeing a 6-row collect should
+  read it as the shop's real size, not a broken parse. CURRENCY USD: bare "$",
+  no machine-readable code, judgement call recorded not assumed (Liberia is
+  dual-currency; Monrovia phone retail is dollarized). Page family parsed:
+  listing (/shop SEO anchor list).
+  VERIFIED 2026-09-12 on a8: 6 rows (`--max-items 200`) -- the shop's entire stated catalog. Sample: iPhone XS Max 256GB USD 250.00, iPhone XS Max 64GB USD 220.00.

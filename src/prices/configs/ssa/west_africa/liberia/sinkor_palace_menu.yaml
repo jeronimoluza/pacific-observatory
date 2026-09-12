@@ -1,0 +1,35 @@
+scaffolding: spider
+spider: sinkor_palace_menu
+url: "https://www.sinkorpalace.com/restaurantmenu"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: USD
+cadence: monthly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue. Silver Spoon Restaurant
+  at Sinkor Palace, Monrovia -- Liberian dishes, salads, handhelds, pasta,
+  pizza, mains, sides, chef specials and drinks. COICOP 11.1 catering, which
+  retailer SKU catalogs structurally cannot reach. Wix site, but the
+  restaurant-menu widget is SERVER-RENDERED (1.4 MB of HTML, ~100 priced items
+  in the raw response), so Tier 1A and no Playwright despite the SPA shell.
+  Parsed off Wix's stable data-hook contract: item.container / item.name /
+  item.price. TRAP recorded for the next run: the widget's CATEGORY TAB labels
+  also carry dollar amounts (one tab literally reads "Liberian Dishes - $8"),
+  so a page-level price regex invents rows that are not menu items; scoping to
+  data-hook="item.price" inside an item container is what prevents that.
+  channel other (the enum has no food-service value); coicop_codes unset
+  because dishes and alcoholic drinks are different COICOP classes. CURRENCY
+  USD -- bare "$", judgement call recorded not assumed, consistent with the
+  sibling amseaview_menu source which states it in words. Page family parsed:
+  listing (single menu page).
+  VERIFIED 2026-09-12 on a8: 55 rows from 73 item containers (`--max-items 200`); the 18 containers without a parseable price are menu headers and note rows. Sample: Spring Rolls (4pc) USD 7, Sweet Potatoes USD 6. Same url_hash trap -- first attempt returned 1 row until each dish got an anchor.

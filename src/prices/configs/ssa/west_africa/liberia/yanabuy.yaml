@@ -1,0 +1,39 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://yanabuy.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "yanabuy"
+  base_url: "https://yanabuy.com"
+  currency: "USD"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+throttle_group: shopify
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue (prior triage:
+  NEEDS-CUSTOM-CRAWLER, "no standard platform API"). That triage was wrong --
+  live-probed 2026-09-12 as a standard Shopify storefront with an OPEN
+  /products.json: page1=250 products, page2=250 products, product-id sets fully
+  disjoint (enumerable, not a homepage carousel). Sample: "Power Cell
+  Self-Stirring Travel Mug" USD 6.50. Broad Monrovia-delivery marketplace --
+  food delivery, fashion, appliances, home essentials, beauty, electronics --
+  hence channel dept-store and coicop_codes unset (classifier assigns the leaf
+  per product). CURRENCY: USD, read live off the storefront's own
+  Shopify.currency = {"active":"USD"} and "currencyCode":"USD"; Liberia is a
+  dual-currency USD/LRD economy so this is flagged rather than silently
+  assumed. Page family parsed: API (/products.json) -- the spider never
+  fetches an HTML page.
+  VERIFIED 2026-09-12 on a8: 556 rows (`prices collect --source yanabuy --max-items 200`). The Shopify base emits one row per VARIANT and closespider fires only after a whole /products.json page is processed, so 556 > the 200 cap is expected, not a runaway. This is a verification number, not the catalog size.

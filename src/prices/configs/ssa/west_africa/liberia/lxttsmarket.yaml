@@ -1,0 +1,37 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://www.lxttsmarket.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "lxttsmarket"
+  base_url: "https://www.lxttsmarket.com"
+  currency: "USD"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+throttle_group: shopify
+notes: >
+  Onboarded 2026-09-12 from the Liberia PENDING queue (prior triage:
+  NEEDS-CUSTOM-CRAWLER). Live-probed 2026-09-12: standard Shopify, OPEN
+  /products.json, page1=114 products and page2=0 (114 is the whole catalog,
+  not a truncated page). Mixed catalog -- African food/spices, shea butter,
+  honey, plus clothing and accessories -- hence channel dept-store and
+  coicop_codes unset. CURRENCY: USD from Shopify.currency and
+  "currencyCode":"USD" on the live storefront. CAVEAT worth recording: the
+  storefront's own country signals read US, so this is a diaspora-facing seller
+  that states Liberia availability rather than a Monrovia shopfront -- same
+  judgement already taken in this directory for congo_girl_cuisine. Page family
+  parsed: API (/products.json).
+  VERIFIED 2026-09-12 on a8: 317 rows (`--max-items 200`, variant-level; the catalog is 114 products). Composition confirmed from the collected rows: real Liberian food -- Liberian Palm Butter, Coco-Yam Fufu, Plantain Fufu, Gari Kanyan, Raine's Spices palm oil and country spice, Raw Shea Butter, Pure Honey -- alongside apparel and jewelry, which is why channel is dept-store and not specialty-food.
