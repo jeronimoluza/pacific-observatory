@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nhamburguer_gw
+url: "https://meucomercio.com.br/nhamburguer"
+channel: supermarket
+language: pt
+currency: XOF
+cadence: weekly
+coicop_codes: null
+active: true
+notes: >
+  Onboarded 2026-09-12. NHA PEDIDO / Nhamburguer is a Bissau grocery-and-
+  restaurant storefront on the Brazilian white-label platform meucomercio.com.br
+  (Nextar "NEX-SITE"). The .com.br host is the PLATFORM, not the merchant: the
+  store record in the page payload gives Avenida Pansau Na Isna, Bairro de Santa
+  Luzia, Sector Autonomo de Bissau, Guine-Bissau, lat 11.8747 lon -15.5913, and
+  the rendered storefront prices in FCFA.
+
+  Spider is API-only and never fetches a page: the rendered storefront embeds
+  only 20 products and ignores `?page=N`, so it is not enumerable. A Playwright
+  network trace of the in-page search box exposed
+  POST api.ecommerce.nextar.com/api/v2/prod/products, which answers over plain
+  HTTP given three static headers (client, shop-code, token -- the token is a
+  site-wide constant shipped in the public JS bundle, not a credential).
+  Playwright runs at discovery time only.
+
+  Pagination: the API ignores `page` (0/1/2/3 return an identical window);
+  `perPage` is the only lever and is honoured to the full catalogue, so the
+  spider issues a single request. Enumerability was proven by perPage
+  100 -> 100 rows, 1000 -> 1000 rows, 5000 -> 3793 rows (the catalogue floor),
+  not by a page-2 diff, which this API cannot express.
+
+  Currency XOF is forced at the class level: the API payload carries no
+  currency field. Price scale verified against the rendered PDP -- ADOCANTE
+  PINGO DOCE 300 COMPRIMIDOS is SalePrice=1000.0 against a rendered
+  "FCFA 1,000", so SalePrice is already in whole francs and needs no minor-unit
+  division. `PromoSalePrice` is deliberately ignored: several rows carry promo
+  prices whose PromoEndAt is years past, so SalePrice is the only reliable
+  current shelf price.
+
+  Catalogue 2026-09-12: 3,793 products, 3,737 priced, 44 categories spanning
+  food, alcohol, soft drinks, dairy, fresh produce, butchery, household
+  cleaning, paper goods, personal care, baby and parapharmacy -- COICOP 01, 02,
+  05, 06 and 12. First broad grocery source of any kind for Guinea-Bissau.
+
+  Spider parses: API (no page family -- emitted product URLs are storefront
+  permalinks the spider never fetches, so they cannot validate an archive regex
+  locally).

@@ -1,0 +1,44 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+source_key: gw_telecel_tariffs
+module: ssa.west_africa.guinea_bissau.telecel_gw
+function: fetch_gw_telecel_tariffs
+url: https://telecel.gw/planos-tarifarios
+language: pt
+currency: XOF
+cadence: monthly
+fallback_date: 2026-01-01
+channel: null
+notes: |
+  Onboarded 2026-09-12. Telecel is a Guinea-Bissau mobile operator.
+  `telecel.gw` and `telecelgb.com` are the SAME site (byte-identical HTML,
+  same analytics site id) -- telecelgb.com is an alias, deliberately NOT
+  onboarded as a second manifest.
+
+  Probed 2026-09-12. The pages are a client-rendered tRPC/Next.js app: 369 KB
+  of HTML containing ZERO prices, so an html_scrape extractor returns nothing.
+  A Playwright network trace found the hydration endpoint
+  GET /api/trpc/plans.list,bundles.list?batch=1&input=<json>, which answers
+  over plain HTTP with no auth, cookie or warm-up. Playwright ran at discovery
+  time only and does not run at collection time.
+
+  Two row families, both 08.3.2.0 (mobile communication services), so the
+  source is narrow:
+    * plans.list -- Telecel+ prepaid. Its own `price` is 0 (the plan is free
+      to hold), so the plan row itself is NOT emitted; its value is the rate
+      card in sibling fields, emitted as one row per rate with an explicit
+      unit: calls Telecel 72 XOF/min, calls other networks 72 XOF/min,
+      international 120 XOF/min, SMS Telecel 30 XOF/sms, SMS other 35 XOF/sms.
+    * bundles.list -- 7 active prepaid data/combo bundles, 100 to 10,000 XOF,
+      unit set to the bundle's own validityDays so a 30-day bundle is not
+      compared against a 1-day one.
+
+  Currency comes from the plan payload's explicit `currency: "XOF"` field, not
+  from countries.yaml. The bundles endpoint carries no currency field and
+  inherits XOF.
+
+  Test run 2026-09-12 (cutoff backdated): 12 rows -- 5 rate rows + 7 bundles,
+  all XOF, 0 nulls, prices 30-10,000.

@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bissauonlinemarket_gw
+url: "https://bissauonlinemarket.com/"
+channel: marketplace
+language: pt
+currency: XOF
+cadence: monthly
+coicop_codes: null
+active: true
+notes: >
+  Onboarded 2026-09-12. Small Bissau classifieds site on WordPress/Elementor.
+  WooCommerce assets are in the theme but the Store API route 404s -- listings
+  are a JetEngine custom post type, so the catalogue comes from the core WP REST
+  collection /wp-json/wp/v2/_classificados?per_page=100 (whole catalogue in one
+  page, no auth). The REST payload carries the URL and title but NOT the price
+  (JetEngine meta the endpoint does not expose), so the spider fetches each ad
+  page and parses it.
+
+  Price-selector gotcha: every ad page renders SEVEN
+  .jet-listing-dynamic-field__content price nodes -- its own plus one per other
+  ad in the site-wide "related" grid Elementor repeats on every page. Selecting
+  all of them would emit the whole catalogue once per page. The FIRST node is
+  reliably the page's own price, checked against all 7 ads with each first-node
+  value matching its own item (iPhone 14 -> 950.000, PS5 -> 790.000, Compaq
+  Presario -> 290.000, Drone Mijia -> 60.000, lapel mic -> 45.000, two
+  website-build service ads -> 300.000 / 250.000).
+
+  Prices are plain FCFA integers with a "." thousands separator; XOF has no
+  minor unit, so 950.000 FCFA parses to 950000 and a trailing ".000" must NOT
+  be read as a decimal fraction.
+
+  Catalogue is genuinely small and static: 7 ads, 5 goods (consumer
+  electronics) + 2 priced services. Above the 5-row bar but only just -- kept
+  because Guinea-Bissau has essentially no retail coverage and these are real,
+  locally-posted FCFA prices. Enumerability is not testable by a page-2 diff:
+  the REST collection returns the entire catalogue in one response.
+
+  channel: marketplace -- seller-posted ads, so census.py will exclude these
+  rows from the corpus census, which is the correct handling for this surface.
+
+  Spider parses: both (REST index for the URL list, then each ad's PDP).
