@@ -349,17 +349,35 @@ Two recorded gotchas:
 
 ## 9. What is in the handover bundle
 
+The handover has two halves, and they live in different places on purpose.
+
+**Code and procedure — from git.** Clone this branch; these are versioned and
+are the files you run against:
+
 | File | What it is |
 |---|---|
-| `RUNBOOK.md` | this file |
-| `AWS_CC_SWEEP_COOKBOOK.md` | the Common Crawl procedure, costs, traps |
-| `prices_sources_status_v2_with_new_targets.xlsx` | the register, re-synced 2026-09-12 (419 rows flipped to HAVE) |
-| `FINAL_TARGET_LIST_fnb.csv` | 2,295 F&B targets with `owner` split |
-| `country_owner_split.csv` | per-country assignment; flip a cell to trade |
-| `pending_worklist_fnb_ranked.csv` | the same pool ranked food-first with F&B classification and grid emptiness |
+| `src/prices/docs/RUNBOOK.md` | this file |
+| `src/prices/docs/AWS_CC_SWEEP_COOKBOOK.md` | the Common Crawl procedure, costs, traps |
+| `src/prices/configs/**` | every existing manifest — the anti-overlap ground truth |
+| `src/prices/price_scraping/spiders/**` | the spider templates (§4 names the ones to copy) |
+| `src/prices/fetchers/**` | the fetcher templates |
+| `infra/fetch/**` | the EC2 CC fetch fleet (`launch_fleet.sh`, `ccfetch.py`) |
 
-The docs sit at `src/prices/docs/`; the data files at
-`src/prices/docs/handover/`. Clone the branch and they are all there.
+**Target register — from the zip, not git.** A worklist is a planning artifact
+that changes daily; committing one guarantees every clone carries a stale copy
+and that two people diverge on which rows are still open. These arrive in
+`WILLIAM_HANDOVER.zip`:
+
+| File | What it is |
+|---|---|
+| `WILLIAM_HANDOVER.xlsx` | the register of record — your targets, the full pending pool, the country split |
+| `FINAL_TARGET_LIST_fnb.csv` | 2,295 F&B targets with the `owner` split |
+| `country_owner_split.csv` | per-country assignment; flip a cell to trade a country |
+| `pending_worklist_fnb_ranked.csv` | the same pool ranked food-first, with F&B class and grid emptiness |
+
+Re-read the workbook before starting a country. When you finish rows, send the
+sheet back with them flipped rather than committing it — the register is
+exchanged, the code is merged.
 
 ### Templates — use the real files, not copies
 
