@@ -532,11 +532,38 @@ def prices_build(region, subregion, country, only, recompute_leaf_tables, worker
     )
 
 
+_unfiltered_opt = click.option(
+    "--unfiltered",
+    is_flag=True,
+    default=False,
+    help=(
+        "DIAGNOSTIC BUILD: take every minimum-evidence gate to its arithmetic "
+        "floor. Output is renamed *_unfiltered.html and stamped with a banner; "
+        "it can never overwrite a published dashboard."
+    ),
+)
+
+
+def _set_unfiltered(on: bool) -> None:
+    """Arm the gate profile BEFORE anything under `prices.` is imported.
+
+    Every threshold in the prices dashboards is read once, at import of
+    `prices.explorer.profile`, and taken by value from there by each consumer.
+    That is what keeps the switch to one place instead of a conditional at every
+    gate -- and it is why this has to run before the import below it, not after.
+    """
+    import os
+
+    if on:
+        os.environ["PO_PRICES_UNFILTERED"] = "1"
+
+
 @prices.command("publish")
 @_region_opt
 @_subregion_opt
 @click.option("--out", "out_path", default=None, help="Override the output HTML path.")
-def prices_publish(region, subregion, out_path):
+@_unfiltered_opt
+def prices_publish(region, subregion, out_path, unfiltered):
     """Generate CPI dashboards.
 
     PoC scope: renders outputs/prices/global_prices_dashboard.html from the
@@ -546,25 +573,37 @@ def prices_publish(region, subregion, out_path):
     just that set, so pair it with --out to avoid overwriting the
     unrestricted dashboard. --subregion is accepted but ignored until the
     basket widens beyond the EAP PoC.
+
+    With --unfiltered every minimum-evidence gate goes to its arithmetic floor
+    -- the lookback window opens to the whole corpus, the coverage floor to
+    zero, and the qa_status=="trusted" restriction is lifted, so rows the QA
+    layer rejected as wrong are drawn too. Diagnostic only.
     """
     import logging
     from pathlib import Path
 
+    _set_unfiltered(unfiltered)
+    from prices.explorer.profile import unfiltered_path
+    from prices.publish import DASHBOARD_HTML
     from prices.publish import publish as _publish
 
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
     )
+    out = unfiltered_path(Path(out_path) if out_path else DASHBOARD_HTML)
     try:
-        _publish(region=region, out_path=Path(out_path) if out_path else None)
+        written = _publish(region=region, out_path=out)
     except ValueError as exc:
         raise click.ClickException(str(exc))
+    if unfiltered:
+        click.echo(f"UNFILTERED diagnostic build written to {written}")
 
 
 @prices.command("explorer")
 @_region_opt
 @click.option("--out", "out_path", default=None, help="Override the output HTML path.")
-def prices_explorer(region, out_path):
+@_unfiltered_opt
+def prices_explorer(region, out_path, unfiltered):
     """Render the interactive unit-value explorer dashboard.
 
     Writes outputs/prices/global_prices_explorer.html from the build parquet:
@@ -574,10 +613,126 @@ def prices_explorer(region, out_path):
     With --region only that region's countries are shown, but every "vs world"
     yardstick stays global -- pair it with --out so the regional build does not
     overwrite the unrestricted one.
-    """
-    from prices.explorer import run as _explorer_run
 
-    _explorer_run(out_path, region)
+    With --unfiltered every minimum-evidence gate goes to its arithmetic floor,
+    including the chain, geography and fixed-effect gates that decide a VALUE
+    rather than a visibility. Those fits are unmeasured at their floor: a
+    chained index may link on one pair and a period effect may be one item.
+    Diagnostic only, renamed and banner-stamped so it cannot be mistaken for
+    the real dashboard.
+    """
+    from pathlib import Path
+
+    _set_unfiltered(unfiltered)
+    from prices.explorer import run as _explorer_run
+    from prices.explorer.profile import stamp_unfiltered, unfiltered_path
+    from prices.explorer.render import OUT_HTML
+
+    out = unfiltered_path(Path(out_path) if out_path else OUT_HTML)
+    written = _explorer_run(out, region)
+    # The explorer's renderer is not this profile's to edit, so the banner goes
+    # on afterwards, to the file. A no-op on a normal build; on an unfiltered
+    # one it raises rather than leaving the page unstamped.
+    stamp_unfiltered(written or out)
+    if unfiltered:
+        click.echo(f"UNFILTERED diagnostic build written to {written or out}")
+
+
+@prices.command("basket-weights")
+def prices_basket_weights():
+    """Refresh the expenditure-weight table behind the basket comparison.
+
+    Writes data/prices/weights/expenditure_weights.csv -- one tidy
+    (iso3, code, value, round, source) row per economy and COICOP category,
+    from two sources that answer different halves of the same question:
+
+      icp         World Bank ICP household final consumption expenditure, at
+                  COICOP class depth for food and group depth for beverages,
+                  alcohol and tobacco. This is what the default weights are
+                  built from. Latest round available per economy, with no
+                  vintage floor -- the alternative drops Macao, which is the
+                  country the weights exist to fix.
+
+      imf_wgt_pt  the countries' own published CPI weights by division, from
+                  the same IMF dataset the CPI benchmark already uses. Stored
+                  as an alternative division split, not used by default: one
+                  source per tree, because ICP's shares nest and a mixture of
+                  two sources' shares does not.
+
+    Standalone, like cpi-benchmark: the explorer build reads the CSV directly.
+    Network required for the refresh and never for the render -- a build with
+    no table falls back to equal weight per category and says so in the
+    payload.
+    """
+    import logging
+
+    from prices.explorer.sources import load_taxonomy
+    from prices.explorer.weights import default_weights, refresh
+
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    tax = load_taxonomy()
+    divisions = sorted(c for c, m in tax.items() if m.get("lvl") == 1)
+    path = refresh(divisions)
+    weights, meta = default_weights(tax, 3)
+    click.echo(f"wrote {path}")
+    click.echo(f"  {meta['label']}")
+    click.echo(f"  rounds: {meta.get('rounds', {})}")
+    click.echo(f"  {len(weights)} categories carry a default weight")
+    for code, w in sorted(weights.items(), key=lambda kv: -kv[1]):
+        click.echo(f"    {code:<9}{(tax.get(code, {}).get('t') or '')[:44]:<46}"
+                   f"{w * 100:6.2f}%")
+
+
+@prices.command("ppp-benchmark")
+def prices_ppp_benchmark():
+    """Refresh the external price-level benchmark behind the basket ranking.
+
+    Writes data/prices/ppp/price_level_benchmark.csv -- one tidy
+    (iso3, code, value, round, source) row per economy and category, from two
+    independently-produced price levels that our own ranking is checked
+    against and never corrected by:
+
+      icp   World Bank ICP `PX.WL`, price level index, WORLD = 100, at the same
+            classification the expenditure weights come from: our nine food
+            classes, non-alcoholic beverages, alcohol, tobacco, and the two
+            division aggregates that are COICOP 01 and 02 exactly. Same base,
+            same scope, same aggregation as the basket ranking. Latest round
+            per economy with no vintage floor, and the round year is stored so
+            a 2011 benchmark reads as one on screen.
+
+      wdi   `PA.NUS.GDP.PLI` and `PA.NUS.PRVT.PLI`, price level index, UNITED
+            STATES = 100, annual and extrapolated to the current year. This is
+            what `PA.NUS.PPPC.RF` became -- that indicator is retired. Whole
+            economy, so it prices rent and services alongside bread; carried
+            because its vintage is current where ICP's is 2021.
+
+    Standalone, like cpi-benchmark: the explorer build reads the CSV directly.
+    Network required for the refresh and never for the render -- a build with
+    no table draws the ranking without the benchmark chart.
+    """
+    import logging
+
+    from prices.explorer.ppp import load_benchmark, refresh
+    from prices.explorer.sources import BASKET_WEIGHT_LEVEL, load_country_meta, load_taxonomy
+    from prices.explorer.weights import default_weights
+
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    path = refresh()
+    tax = load_taxonomy()
+    weights, _ = default_weights(tax, BASKET_WEIGHT_LEVEL)
+    meta = load_country_meta()
+    got, prov = load_benchmark({s: m["iso3"] for s, m in meta.items()}, weights)
+    click.echo(f"wrote {path}")
+    click.echo(f"  {len(meta)} explorer countries")
+    click.echo(f"  {prov['n_icp']} with an ICP food-and-tobacco price level "
+               f"(World = 100)")
+    click.echo(f"  {prov['n_wdi']} with a WDI whole-economy price level "
+               f"(rescaled by {prov['us_on_world']})")
+    rounds = {}
+    for v in got.values():
+        if v.get("icpYear"):
+            rounds[v["icpYear"]] = rounds.get(v["icpYear"], 0) + 1
+    click.echo(f"  ICP rounds: {dict(sorted(rounds.items()))}")
 
 
 @prices.command("cpi-benchmark")

@@ -30,6 +30,8 @@ import yaml
 from prices.build import unit_collapse
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import RESIDUAL_TITLE_RE, residual_leaves
+from prices.explorer.profile import UNFILTERED, gate, stamp_unfiltered
+from prices.rtcal import fills as fills_mod
 
 logger = logging.getLogger(__name__)
 
@@ -45,9 +47,29 @@ COICOP_XLSX = REPO_ROOT / "data" / "prices" / "enrich" / "coicop_categories.xlsx
 COUNTRIES_YAML = REPO_ROOT / "src" / "configs" / "countries.yaml"
 REGIONS_YAML = REPO_ROOT / "src" / "configs" / "regions.yaml"
 
-CURRENT_LOOKBACK_DAYS = 60
+# The rolling window the "current" snapshot is taken over. Was 60 days, which
+# silently cost 6 of the 209 countries in the corpus -- they simply had no
+# column, with nothing on the page to say a column had been withheld rather than
+# never collected. 90 days recovers 5 of the 6 (203 -> 208 countries) for 263
+# extra cells, and is still a quarter rather than a year, so "current" keeps
+# meaning current. The sixth needs 180 days; the window is on the page, so a
+# reader can see what they are looking at.
+CURRENT_LOOKBACK_DAYS = gate(90, 100_000)
 FX_HISTORY_FLOOR = pd.Timestamp("2013-01-01")
-MIN_OBS_PER_CELL = 1
+# Already at its arithmetic floor: one observed price, or any fill.
+MIN_OBS_PER_CELL = gate(1, 1)
+# Named COICOP leaves a country must price in the window before its column is
+# OFFERED to the low-coverage toggle. This replaces a 25th-percentile cut, and
+# the replacement is the point rather than the number. A relative cutoff removes
+# a quarter of the countries no matter how good the data gets, and it was doing
+# exactly that: on the September 2026 corpus it labelled 50 of 202 countries
+# "low coverage", among them Belgium (45 named leaves), Kuwait (45), Norway
+# (31), Iceland (36) and Tanzania (43) -- and Northern Mariana Islands at 48,
+# one leaf under a threshold that only existed because three quarters of the
+# world happened to be above it. In EAP it labelled 10 of 38. A fixed floor of
+# 10 named leaves out of 258 labels 8 globally and 1 in EAP, and it retires
+# itself as the corpus fills, which the quartile never could.
+COVERAGE_MIN_NAMED_LEAVES = gate(10, 0)
 # Only rows whose trust_level is in this set reach the published dashboard.
 # Cache rows without trust_level (legacy v1-era) are coalesced to "high" by
 # the build stage, so this default is conservative without dropping vetted data.
@@ -206,12 +228,134 @@ def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
         .groupby(["coicop_code", "country", "standard_unit"])
         .agg(
             median_usd=("unit_value_usd", "median"),
-            n_obs=("unit_value_usd", "size"),
+            n_all=("unit_value_usd", "size"),
+            # Distinct shelf items behind the cell, which is what the table
+            # reports as `n=`. NOT n_obs: one product priced weekly for a year
+            # is 52 observations of the same thing, and reporting that as the
+            # evidence base overstates it by the scrape cadence.
+            n_products=("product_name", "nunique"),
+            n_imputed=("imputed", "sum"),
             last_seen=("observation_date", "max"),
         )
         .reset_index()
     )
-    return g[g["n_obs"] >= MIN_OBS_PER_CELL]
+    return _split_imputed(g)
+
+
+def _split_imputed(g: pd.DataFrame) -> pd.DataFrame:
+    """Turn a pooled count into observed / imputed / share, and apply the gate.
+
+    `n_obs` keeps its old meaning -- measured rows -- so every reader of it is
+    unchanged. `imputed` is the cell with no measured price at all, which is the
+    one a reader most needs marked; `imp_share` is the finer reading for cells
+    that mix the two.
+    """
+    g["n_imputed"] = g["n_imputed"].fillna(0).astype(int)
+    g["n_obs"] = (g["n_all"] - g["n_imputed"]).astype(int)
+    g["imp_share"] = (g["n_imputed"] / g["n_all"]).where(g["n_all"] > 0, 0.0)
+    g["imputed"] = g["n_obs"].eq(0)
+    g = g.drop(columns="n_all")
+    return g[(g["n_obs"] >= MIN_OBS_PER_CELL) | (g["n_imputed"] > 0)]
+
+
+def _drop_pruned_rows(df: pd.DataFrame, pruned: pd.DataFrame) -> pd.DataFrame:
+    """Remove observations sitting in a cell RT-CAL rejected as an obvious error.
+
+    The dashboards have to agree about what is real. If the explorer refuses to
+    draw a loaf of bread at US$108/kg and this one still charts it, the two are
+    reporting different corpora, and the reader has no way to tell which. So the
+    same rejection list drives both.
+    """
+    if pruned.empty or df.empty:
+        return df
+    key = df["observation_date"].dt.to_period("M").astype(str)
+    tup = list(
+        zip(
+            df["country"].astype(str),
+            df["coicop_code"].astype(str),
+            df["standard_unit"].astype(str),
+            key,
+        )
+    )
+    bad = set(map(tuple, pruned[fills_mod.CELL_KEY].astype(str).values))
+    return df[[t not in bad for t in tup]]
+
+
+def _fill_rows(obs: pd.DataFrame, fills: pd.DataFrame) -> pd.DataFrame:
+    """Append released fills to the observation frame as rows, flagged.
+
+    They used to be appended to the MONTHLY series alone, and only where a
+    series already existed on measured data. Both restrictions are gone: a fill
+    is an observation-shaped row from here on, so it reaches the current
+    snapshot and the heat table, the region and World medians, and the coverage
+    cutoff -- every aggregate this file builds -- exactly as a measured price
+    does. What keeps it honest is `imputed`, which travels with it to the
+    payload, and `imp_share` on every aggregate it lands in.
+
+    Three things have to be lined up first, and each was a way to get this
+    wrong:
+
+    REGION. `obs` has already been cut to the build's countries; the fills table
+    has not. Appending it whole would put countries in a regional dashboard that
+    the region filter had just taken out.
+
+    DISPLAY UNIT. RT-CAL keys its cells on the unit the summary parquet carries,
+    while `_to_display_units` has already put every observation of a leaf onto
+    ONE unit, rescaling values on the way. A raw fill would either land on a
+    second row for a leaf that is supposed to have one, or sit on a per-piece
+    scale in a per-kilo row. So the fills go through the same conversion, under
+    the display units the OBSERVATIONS chose -- a modelled row never votes on
+    how a commodity is sold. A fill on a leaf with no defensible conversion is
+    dropped, exactly as an observation would be.
+
+    DATE. `period` is a "YYYY-MM" string in RT-CAL's tables and a Timestamp
+    here, so the conversion happens once, at this boundary. A fill is dated to
+    the START of its month, which is what puts it inside or outside the
+    snapshot's rolling window -- a fill for last month counts as last month.
+    """
+    obs = obs.copy()
+    obs["imputed"] = False
+    if fills.empty:
+        return obs
+
+    f = fills[fills["country"].isin(set(obs["country"].unique()))].copy()
+    if f.empty:
+        return obs
+    f["coicop_code"] = f["coicop_code"].map(_normalize_coicop)
+    f = f.dropna(subset=["coicop_code", "standard_unit"])
+    f["observation_date"] = pd.to_datetime(f["period"] + "-01")
+    f = f.rename(columns={"usd": "unit_value_usd"})
+
+    display = (
+        obs.groupby("coicop_code")["standard_unit"].agg(lambda s: s.iloc[0]).to_dict()
+    )
+    typical_mass = (
+        pd.read_csv(TYPICAL_MASS_CSV) if TYPICAL_MASS_CSV.exists() else pd.DataFrame()
+    )
+    before = len(f)
+    f, _ = unit_collapse.collapse(
+        f, typical_mass, value_cols=("unit_value_usd",), canonical=display
+    )
+    f["imputed"] = True
+    f["product_name"] = None
+    keep = [
+        "country",
+        "coicop_code",
+        "standard_unit",
+        "observation_date",
+        "unit_value_usd",
+        "product_name",
+        "imputed",
+        "prob",
+    ]
+    out = pd.concat([obs, f[keep]], ignore_index=True)
+    logger.info(
+        "appended %d of %d released fills to %d observation rows",
+        len(f),
+        before,
+        len(obs),
+    )
+    return out
 
 
 def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
@@ -226,64 +370,127 @@ def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
         sub.groupby(["coicop_code", "country", "month", "standard_unit"])
         .agg(
             median_usd=("unit_value_usd", "median"),
-            n_obs=("unit_value_usd", "size"),
+            n_all=("unit_value_usd", "size"),
+            n_imputed=("imputed", "sum"),
         )
         .reset_index()
     )
-    return g[g["n_obs"] >= MIN_OBS_PER_CELL]
+    return _split_imputed(g)
 
 
 def _region_stats(
     keyed: pd.DataFrame, region_cols: list[dict[str, str]]
-) -> tuple[dict[str, dict[str, float]], dict[str, dict[str, int]]]:
+) -> tuple[
+    dict[str, dict[str, float]],
+    dict[str, dict[str, int]],
+    dict[str, dict[str, int]],
+    dict[str, dict[str, float]],
+]:
+    """Region medians plus two different counts of what stands behind them.
+
+    The median is unweighted over country medians, so the number of countries
+    is what describes the statistic. The number of distinct products is what
+    describes the evidence, and it is the one the table shows. Both are
+    returned because showing one while the tooltip explains the other would
+    make the tooltip false.
+
+    Products are summed across countries without a cross-country dedup: the
+    same name on a Thai and a Vietnamese shelf is two priced items, not one.
+    """
     medians: dict[str, dict[str, float]] = {}
     counts: dict[str, dict[str, int]] = {}
+    products: dict[str, dict[str, int]] = {}
+    shares: dict[str, dict[str, float]] = {}
     for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
         med: dict[str, float] = {}
         cnt: dict[str, int] = {}
+        prod: dict[str, int] = {}
+        imp: dict[str, float] = {}
         for col in region_cols:
-            s = (
-                grp["median_usd"]
+            sub = (
+                grp
                 if col["key"] == "world"
-                else grp.loc[grp["_region"].eq(col["key"]), "median_usd"]
+                else grp.loc[grp["_region"].eq(col["key"])]
             )
-            n = int(s.notna().sum())
+            s = sub["median_usd"]
+            have = s.notna()
+            n = int(have.sum())
             if n:
                 med[col["key"]] = float(s.median())
                 cnt[col["key"]] = n
+                prod[col["key"]] = int(sub.loc[have, "n_products"].sum())
+                # The median is over COUNTRY medians, so its provenance is the
+                # mean imputed share of the countries in it -- not of the rows.
+                imp[col["key"]] = round(
+                    float(sub.loc[have, "imp_share"].mean()), 4
+                )
         key = _cell_key(code, unit)
         medians[key] = med
         counts[key] = cnt
-    return medians, counts
+        products[key] = prod
+        shares[key] = imp
+    return medians, counts, products, shares
 
 
 def _coverage_cutoff(
     current: pd.DataFrame, residual: frozenset[str]
 ) -> tuple[int, set[str], dict]:
-    """Countries in the bottom quartile by breadth of COICOP coverage.
+    """Countries whose COICOP breadth is below a FIXED floor, and the counts.
 
     Breadth is counted over named leaves only. A residual leaf is a catch-all,
     so crediting a country for reaching one would reward the classifier giving
     up rather than the country having a real price for a real category.
 
-    The cut is the 25th percentile of the count, applied strictly (``<``).
-    Counts are small integers and pile up on ties, so ``<=`` would carry every
-    country sitting exactly on the boundary over the line with it and drop
-    materially more than the quartile asked for.
+    THE CUT USED TO BE THE 25TH PERCENTILE, and a percentile is a filter that
+    can never be satisfied: it removes a quarter of the countries however good
+    they all become, and it has no opinion about how thin thin is. On this
+    corpus it called Belgium, Kuwait, Norway, Iceland and Tanzania low-coverage
+    alongside Gibraltar's single leaf, and it stranded Northern Mariana Islands
+    one leaf below a boundary that was a fact about the other 201 countries.
+    `COVERAGE_MIN_NAMED_LEAVES` is an absolute claim about the country instead:
+    below it, a column is too empty to be worth a regional median's attention,
+    and it stops being true the moment the country is collected properly.
+
+    The count per country is returned with the set, because the toggle this
+    feeds hides columns and a hidden column has to be able to say why.
     """
     named = current[~current["coicop_code"].isin(residual)]
     per_country = named.groupby("country")["coicop_code"].nunique()
     if per_country.empty:
-        return 0, set(), {"median": 0, "n_countries": 0, "n_named_leaves": 0}
-    threshold = int(np.percentile(per_country.to_numpy(), 25))
+        return 0, set(), {"median": 0, "n_countries": 0, "n_named_leaves": 0,
+                          "n_dropped": 0, "mode": "floor", "counts": {}}
+    threshold = COVERAGE_MIN_NAMED_LEAVES
     low = set(per_country.index[per_country < threshold])
     stats = {
         "median": int(per_country.median()),
         "n_countries": int(per_country.size),
         "n_named_leaves": int(named["coicop_code"].nunique()),
         "n_dropped": len(low),
+        # An ABSOLUTE floor, said out loud, so the label on the toggle can stop
+        # claiming a quartile. A client reading `mode` can print the right
+        # sentence without having to know which release it is looking at.
+        "mode": "floor",
+        # Named leaves per country. This is what makes the toggle honest: the
+        # reader can see how thin each hidden column actually is, and a future
+        # slider can move the floor without a rebuild.
+        "counts": {str(k): int(v) for k, v in per_country.items()},
     }
     return threshold, low, stats
+
+
+# The imputation fields on a record that has none. The global dashboard's
+# monthly array runs to millions of rows and the file is already ~90 MB, so
+# three constant fields per row is tens of megabytes of "nothing was modelled
+# here" -- which is what an absent key says for free. A client reading these
+# must treat missing as false / zero, which is what `undefined` does in JS
+# anyway.
+_IMP_FIELDS = ("imputed", "imp_share", "n_imputed")
+
+
+def _lean(r: dict) -> dict:
+    if r.get("n_imputed"):
+        return r
+    return {k: v for k, v in r.items() if k not in _IMP_FIELDS}
 
 
 def _payload(
@@ -332,7 +539,9 @@ def _payload(
     # the gap reads as deliberate rather than missing.
     keyed = current.assign(_region=current["country"].map(of_country))
     keyed = keyed[~keyed["coicop_code"].isin(residual)]
-    region_medians, region_n_countries = _region_stats(keyed, region_cols)
+    region_medians, region_n_countries, region_n_products, region_imp = _region_stats(
+        keyed, region_cols
+    )
 
     # The low-coverage toggle drops countries from the table, so it has to drop
     # them from the region and world medians too: a comparison figure that still
@@ -340,20 +549,44 @@ def _payload(
     # direction nobody would check.
     threshold, low_coverage, coverage_stats = _coverage_cutoff(current, residual)
     kept = keyed[~keyed["country"].isin(low_coverage)]
-    region_medians_kept, region_n_countries_kept = _region_stats(kept, region_cols)
+    (
+        region_medians_kept,
+        region_n_countries_kept,
+        region_n_products_kept,
+        region_imp_kept,
+    ) = _region_stats(kept, region_cols)
 
     shown = current[~current["coicop_code"].isin(residual)]
     shown_kept = shown[~shown["country"].isin(low_coverage)]
-    kpi = {
-        "countries": len(country_display),
-        "coicop_leaves": int(shown["coicop_code"].nunique()),
-        "products": int(current["n_obs"].sum()),
-    }
-    kpi_kept = {
-        "countries": len(country_display) - len(low_coverage),
-        "coicop_leaves": int(shown_kept["coicop_code"].nunique()),
-        "products": int(current[~current["country"].isin(low_coverage)]["n_obs"].sum()),
-    }
+
+    def _kpi(cur: pd.DataFrame, shown: pd.DataFrame, n_countries: int) -> dict:
+        """Headline counts, each over exactly the population it names.
+
+        `products` used to be the row count of `current`, which is neither
+        products nor the number the table totals -- one product priced weekly
+        for two months is eight observations and one product. So `products` is
+        now distinct shelf items and `observations` is the price readings behind
+        them, and they are separate tiles because they are separate populations
+        and a reader who sees only one of them cannot tell which they were shown.
+
+        Everything here is scoped to the grid: this is the last
+        CURRENT_LOOKBACK_DAYS of the countries in this build, which is what the
+        heat table draws. Nothing counts the whole corpus.
+        """
+        return {
+            "countries": n_countries,
+            "coicop_leaves": int(shown["coicop_code"].nunique()),
+            "products": int(cur["n_products"].sum()),
+            "observations": int(cur["n_obs"].sum()),
+            "cells": int(len(cur)),
+            "imputed_cells": int(cur["imputed"].sum()),
+        }
+
+    kpi = _kpi(current, shown, len(country_display))
+    kept_cur = current[~current["country"].isin(low_coverage)]
+    kpi_kept = _kpi(
+        kept_cur, shown_kept, len(country_display) - len(low_coverage)
+    )
 
     cutoff = (
         (pd.Timestamp.now().normalize() - pd.Timedelta(days=CURRENT_LOOKBACK_DAYS))
@@ -367,6 +600,10 @@ def _payload(
     )
     return {
         "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
+        # True only in the diagnostic build. Carried in the payload as well as
+        # in the banner, so a client can refuse to treat these numbers as
+        # publishable rather than relying on the reader having seen a stripe.
+        "unfiltered": UNFILTERED,
         "lookback_days": CURRENT_LOOKBACK_DAYS,
         "cutoff_date": cutoff,
         "data_through": data_through,
@@ -377,16 +614,39 @@ def _payload(
         "region_cols": region_cols,
         "region_medians": region_medians,
         "region_n_countries": region_n_countries,
+        "region_n_products": region_n_products,
         "region_medians_kept": region_medians_kept,
         "region_n_countries_kept": region_n_countries_kept,
+        "region_n_products_kept": region_n_products_kept,
+        # Share of each region/World median that came from a fill, as a mean
+        # over the country medians it is a median of.
+        "region_imp": region_imp,
+        "region_imp_kept": region_imp_kept,
         "residual_leaves": sorted(residual & set(current["coicop_code"].dropna())),
         "low_coverage": sorted(low_coverage),
         "coverage_cutoff": {"categories": threshold, **coverage_stats},
         "kpi": kpi,
         "kpi_kept": kpi_kept,
-        "current": current.to_dict(orient="records"),
+        # What each KPI counts, in the payload rather than in the template, so
+        # the tile and its explanation cannot drift apart.
+        "kpi_notes": {
+            "products": "distinct shelf items priced in the window",
+            "observations": "price readings behind them; one item priced "
+            "weekly is many observations of one product",
+            "countries": "countries with at least one published cell",
+            "coicop_leaves": "named COICOP leaves with a published cell",
+            "cells": "(category, country, unit) cells in the table",
+            "imputed_cells": "of those, cells with no measured price at all",
+        },
+        "imputed": {
+            "cells": int(current["imputed"].sum()),
+            "method": "rtcal_v1",
+            "flag_field": "imputed",
+            "share_field": "imp_share",
+        },
+        "current": [_lean(r) for r in current.to_dict(orient="records")],
         "monthly": [
-            {**r, "month": r["month"].date().isoformat()}
+            _lean({**r, "month": r["month"].date().isoformat()})
             for r in monthly.to_dict(orient="records")
         ],
     }
@@ -417,7 +677,20 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
     obs = pd.read_parquet(OBSERVATIONS_PARQUET)
     obs["observation_date"] = pd.to_datetime(obs["observation_date"], errors="coerce")
     obs = obs[obs["observation_date"].notna()]
-    if "qa_status" in obs.columns:
+    if UNFILTERED:
+        # THE ONE GATE IN THE DIAGNOSTIC BUILD THAT IS NOT ABOUT THIN EVIDENCE,
+        # and the one most likely to put a nonsense number on the page. Every
+        # other gate the profile lifts withholds a real figure for being thin;
+        # this one withholds rows the QA layer judged WRONG -- a failed quantity
+        # parse, a failed FX lookup, a unit value outside the plausible band. On
+        # the September 2026 parquet it admits 3,725,851 extra rows on top of
+        # 15,225,019 trusted ones, a 24.5% increase, and none of them have been
+        # checked. It is lifted because "unfiltered" would otherwise be a
+        # half-truth, and the banner says what that means.
+        logger.warning(
+            "UNFILTERED: qa_status filter lifted, %d rows of every status", len(obs)
+        )
+    elif "qa_status" in obs.columns:
         # qa_status == "trusted" already ANDs Layer-1 basis-ok, real quantity,
         # Layer-2 uv-inlier, and FX; it is the single publish gate when present.
         before = len(obs)
@@ -441,6 +714,24 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
         obs = obs[obs["country"].map(of_country) == region]
         logger.info("region==%r filter kept %d of %d rows", region, len(obs), before)
     obs = _to_display_units(obs)
+    # Both empty unless `prices rtcal run` has been executed.
+    #
+    # Folded on the way in, because RT-CAL keys cells on the unit the summary
+    # parquet carries while `_to_display_units` has already folded `item`/`unit`
+    # to one label here. Comparing the two raw would miss 2.7% of fills and 2.4%
+    # of pruned cells -- and both misses are silent, since one is an inner join
+    # returning fewer rows and the other a tuple that simply fails to match.
+    pruned = _fold_piece_units(fills_mod.load_pruned_cells())
+    before = len(obs)
+    obs = _drop_pruned_rows(obs, pruned)
+    if len(obs) != before:
+        logger.info(
+            "rtcal pruning dropped %d of %d rows (%d rejected cells)",
+            before - len(obs),
+            before,
+            len(pruned),
+        )
+    obs = _fill_rows(obs, _fold_piece_units(fills_mod.load_released_fills()))
     current = _current_snapshot(obs)
     monthly = _monthly_series(obs)
 
@@ -451,6 +742,9 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
     out = out_path or DASHBOARD_HTML
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
+    # No-op unless this is the diagnostic build, in which case it raises rather
+    # than shipping an unstamped page.
+    stamp_unfiltered(out)
     logger.info(
         "wrote %s (%d current cells, %d monthly cells)",
         out,

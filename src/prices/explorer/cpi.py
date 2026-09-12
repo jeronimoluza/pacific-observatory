@@ -35,6 +35,9 @@ logger = logging.getLogger(__name__)
 
 __all__ = ["OFFICIAL_CSV", "SERIES_LABEL", "HEADLINE", "refresh", "load_official"]
 
+# Named "monthly" from when monthly was all it held. It now carries quarterly
+# publishers too, each row tagged with its `freq`; the path is kept so an
+# already-built artifact keeps loading.
 OFFICIAL_CSV = REPO_ROOT / "data" / "cpi" / "official_cpi_monthly.csv"
 
 HEADLINE = "_T"
@@ -58,6 +61,51 @@ SERIES_LABEL = {
 DIVISION_OF = {code: code[2:] for code in SERIES_LABEL if code != HEADLINE}
 
 
+# The IMF serves each country at whatever frequency its statistical office
+# publishes, and asking for the wrong one returns an EMPTY frame rather than an
+# error -- so a monthly-only request drops quarterly publishers silently, with
+# nothing in the log to say a country was lost. Monthly is tried first because
+# most countries publish monthly and the explorer keys on months. Quarterly is
+# the fallback, and it is the only reason New Zealand, Papua New Guinea, Vanuatu
+# and Tuvalu have an overlay at all: four Pacific countries that were invisible
+# here for as long as this asked for "M" and nothing else, in a dashboard whose
+# whole subject is the Pacific.
+FREQUENCIES = ("M", "Q")
+
+# A quarterly index value is stamped on the LAST month of its quarter, which is
+# the month the office's number refers to.
+_QUARTER_END_MONTH = {"1": "03", "2": "06", "3": "09", "4": "12"}
+
+# The IMF will answer with a stub rather than nothing: Tuvalu returns two
+# quarterly points, both from 2012, for one series. Drawn on a chart beside a
+# 2019-2026 scraped series that is not an official CPI line, it is a pair of
+# dots a reader would read as one. A country has to publish a series before it
+# gets an overlay, and this is the bar for "publishes".
+MIN_OFFICIAL_PERIODS = 8
+
+
+def _period_key(raw: pd.Series) -> pd.Series:
+    """SDMX time periods to the explorer's "YYYY-MM" key.
+
+    Monthly arrives as "2026-M06", quarterly as "2026-Q2". A quarterly value is
+    written to its quarter's final month and NOT spread across the quarter's
+    three months: the office published one number covering three months, and
+    writing three would invent two of them. The series is then sparser than a
+    monthly one, which is true, and `freq` says so on every row.
+    """
+    s = raw.astype(str)
+    s = s.str.replace(
+        r"^(\d{4})-M(\d{1,2})$",
+        lambda m: f"{m.group(1)}-{int(m.group(2)):02d}",
+        regex=True,
+    )
+    return s.str.replace(
+        r"^(\d{4})-Q([1-4])$",
+        lambda m: f"{m.group(1)}-{_QUARTER_END_MONTH[m.group(2)]}",
+        regex=True,
+    )
+
+
 def refresh(iso3s: list[str], start_period: int = 2012) -> pd.DataFrame:
     """Fetch every division each country publishes and write the tidy table.
 
@@ -71,14 +119,24 @@ def refresh(iso3s: list[str], start_period: int = 2012) -> pd.DataFrame:
 
     rows = []
     for iso3 in iso3s:
-        try:
-            got = _load_or_fetch(iso3, "M", start_period, "")
-        except Exception as exc:  # noqa: BLE001 - one bad country must not stop the rest
-            logger.warning("CPI fetch failed for %s: %s", iso3, exc)
-            continue
-        if got is None or got.empty:
-            continue
-        rows.append(got.assign(COUNTRY=iso3))
+        for freq in FREQUENCIES:
+            try:
+                got = _load_or_fetch(iso3, freq, start_period, "")
+            except Exception as exc:  # noqa: BLE001 - one bad country must not stop the rest
+                logger.warning("CPI fetch failed for %s at %s: %s", iso3, freq, exc)
+                continue
+            if got is None or got.empty:
+                continue
+            if got.TIME_PERIOD.nunique() < MIN_OFFICIAL_PERIODS:
+                logger.info(
+                    "%s publishes only %d %s periods -- no overlay",
+                    iso3,
+                    got.TIME_PERIOD.nunique(),
+                    freq,
+                )
+                continue
+            rows.append(got.assign(COUNTRY=iso3, FREQ=freq))
+            break
     if not rows:
         raise SystemExit("no official CPI could be fetched for any country")
 
@@ -86,12 +144,9 @@ def refresh(iso3s: list[str], start_period: int = 2012) -> pd.DataFrame:
     out = pd.DataFrame(
         {
             "iso3": df.COUNTRY.astype(str),
-            # SDMX writes "2026-M06"; the explorer keys every series on "2026-06"
-            "period": df.TIME_PERIOD.astype(str).str.replace(
-                r"^(\d{4})-M(\d{1,2})$",
-                lambda m: f"{m.group(1)}-{int(m.group(2)):02d}",
-                regex=True,
-            ),
+            # SDMX writes "2026-M06" or "2026-Q2"; the explorer keys on "2026-06"
+            "period": _period_key(df.TIME_PERIOD),
+            "freq": df.FREQ.astype(str),
             "series": df.COICOP_1999.astype(str),
             "index_value": pd.to_numeric(df.value, errors="coerce"),
         }
@@ -136,6 +191,11 @@ def load_official(iso3_by_slug: dict[str, str]) -> dict[str, dict]:
         logger.info("no official CPI table at %s — overlay omitted", OFFICIAL_CSV)
         return {}
     df = pd.read_csv(OFFICIAL_CSV, dtype={"iso3": str, "period": str, "series": str})
+    # A table written before quarterly publishers were fetched has no `freq`
+    # column and is monthly by construction, so it reads back as monthly rather
+    # than failing -- the overlay is optional and must degrade, not break.
+    if "freq" not in df.columns:
+        df["freq"] = "M"
     by_iso3 = {v: k for k, v in iso3_by_slug.items() if v}
     df = df[df.iso3.isin(by_iso3)]
 
@@ -145,5 +205,8 @@ def load_official(iso3_by_slug: dict[str, str]) -> dict[str, dict]:
         entry[series] = {
             "p": g.period.tolist(),
             "v": [round(float(v), 4) for v in g.index_value],
+            # So the client can say "quarterly" beside a line with four points a
+            # year, instead of leaving the reader to infer it from the gaps.
+            "f": str(g.freq.iloc[0]),
         }
     return out
