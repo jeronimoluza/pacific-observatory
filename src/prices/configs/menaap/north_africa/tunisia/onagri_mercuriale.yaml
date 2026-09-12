@@ -1,0 +1,72 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: tn_onagri_mercuriale
+module: menaap.north_africa.tunisia.onagri_mercuriale
+function: fetch_tn_onagri_mercuriale
+url: https://www.onagri.nat.tn/Marche-de-gros-bir-el-kasaa/fr/62
+language: ar
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  ONAGRI (Observatoire National de l'Agriculture, Tunisia) monthly wholesale
+  mercuriale of the Bir El Kassaa national-interest market -- Tunisia's main
+  wholesale produce market. Fruit, vegetables and fish; national reference
+  WHOLESALE prices, not a retail survey.
+
+  URL GOTCHA: `/fr/62` alone is a 404. The slug segment is load-bearing --
+  `/Marche-de-gros-bir-el-kasaa/fr/62` is the live path. (A prior probe note
+  in known_blockers.md gave `/Marche-de-gros-bir-el-kassaa/fr/62`; the live
+  spelling has ONE s in "kasaa".)
+
+  PAGER LIES: the index pager advertises 19 pages at limit=10, but at
+  limit=100 page 1 returns everything and page 3 is empty. Measured
+  2026-09-11: SEVEN issues, January..July 2026 -- the "2014 tail" a prior
+  probe reported is not reachable from this section today. The fetcher walks
+  the pager anyway and stops at the first page that adds no new link.
+
+  FORMAT: each issue is a JasperReports HTML export at
+  /uploads/<epoch>_<hash>.html (3 `table.jrPage` blocks). The hash encodes
+  nothing about the period, so the INDEX LINK TEXT ("Mercuriale Bir El Kassaa
+  Juillet 2026") is the only date source.
+
+  RTL ROW ORDER: source order puts the commodity name LAST --
+  [days, price-change %, price Y-1, price Y, supply-change %, qty Y-1, qty Y,
+  NAME] -- and rows with no quantity data are shorter, so the parser reads the
+  name from cells[-1], never a fixed index.
+
+  YEAR ORDER IS VERIFIED, NOT ASSUMED. cells[1] is the publisher's own
+  year-on-year price change, so the parser checks that price_Y / price_Y-1
+  reproduces it to within 2 points before emitting either column. A row that
+  fails is dropped.
+
+  TWO YEARS PER ISSUE: the mercuriale is a comparison table, so each 2026
+  issue also carries the same month of 2025. The archive holds no 2025 issues,
+  so emitting the comparison column is the only route to 2025 and it doubles
+  the series for free. `notes` records which column each row came from.
+
+  1000x TRAP: prices are published in MILLIMES per kg ("مليم/كلغ") and are
+  divided by 1000 before emission. Figs at "8 000" are TND 8.00/kg. Spot
+  check July 2026: figs 8.00, grapes 6.174, watermelon 0.611 TND/kg.
+
+  COICOP: `_COICOP_MAP` is keyed on the Arabic commodity string after
+  whitespace + tatweel normalisation ("قــارص" -> "قارص"). Unmapped names are
+  logged and DROPPED. The three "other X" rows the report itself publishes go
+  to their section's n.e.c. leaf (01.1.6.5.9 / 01.1.7.4.9 / 01.1.3.1.9),
+  which is a true statement about them rather than a guess. Tunisian
+  vernacular fish names whose taxon is uncertain go to 01.1.3.1.9, correct at
+  leaf grain for any finfish and the section guarantees they are finfish.
+
+  `coicop_classification: classifier` with a per-row `coicop_code` is
+  deliberate and matches zm_mfl_market_bulletin / bi_pihps:
+  concatenate._build_classifier_csv_map ingests a fetcher CSV ONLY for
+  `classifier` sources, so `source_curated` would delete this source's rows
+  from the build. The per-row code rides through as declared_coicop_codes and
+  short-circuits classify at confidence 1.0.
+
+  channel: null -- an agriculture-observatory publication, not an outlet.
+
+  MEASURED first run 2026-09-11: see the run log in the onboarding report.
+  Onboarded 2026-09-11.

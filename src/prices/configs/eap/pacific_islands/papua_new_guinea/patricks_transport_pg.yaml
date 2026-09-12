@@ -15,3 +15,4 @@ notes: |
   Shopify cart metadata reports PGK and the pantry collection exposes current
   product and variant prices through /collections/pantry/products.json.
   Re-verified live 2026-09-01.
+throttle_group: shopify

@@ -33,3 +33,4 @@ notes: |
   markets the English pack is close to worthless.
 
   Test: prices collect --source shopping236_cf --max-items 20.
+throttle_group: shopify

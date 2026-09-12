@@ -14,3 +14,4 @@ notes: >
   Fiji Traders Shopify storefront for laptops, desktops, monitors, components,
   peripherals, and related office electronics. The public /products.json feed
   returned FJD-priced product records during live probe on 2026-09-07.
+throttle_group: shopify

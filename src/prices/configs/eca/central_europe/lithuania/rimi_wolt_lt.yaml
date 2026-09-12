@@ -19,3 +19,4 @@ notes: |
   Re-verified live 2026-08-06: /venue/rimi-mylia -> 200, real
   Lithuanian-language SKUs with EUR prices and barcode_gtin.
   channel:marketplace (Wolt aggregates the first-party retailer's catalog).
+throttle_group: wolt

@@ -19,3 +19,4 @@ notes: |
   Re-verified live 2026-08-06: /venue/maxi-bulevar-osloboenja -> 200, real
   Serbian-language SKUs with RSD prices and barcode_gtin.
   channel:marketplace (Wolt aggregates the first-party retailer's catalog).
+throttle_group: wolt

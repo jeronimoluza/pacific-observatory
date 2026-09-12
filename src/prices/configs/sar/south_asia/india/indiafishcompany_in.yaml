@@ -26,3 +26,4 @@ notes: >
   Fresh fish, seafood and meat (crab, trout, lamb, pomfret, tuna, rohu). Page family: API (products.json, no HTML page ever fetched). Verified live
   2026-09-11: /products.json returns distinct product ids on page=1 vs page=2 (pagination
   confirmed), and shop currency confirmed via /cart.js.
+throttle_group: shopify

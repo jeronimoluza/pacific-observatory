@@ -21,3 +21,4 @@ notes: |
   assignment.
   Full scrape 2026-08-17: 24,817 rows (100 pages), clean finish with no
   429s -- full catalog captured.
+throttle_group: shopify

@@ -15,3 +15,4 @@ notes: |
   games, books, and entertainment goods. The public Shopify /products.json
   feed returned AUD-priced rows on 2026-09-07.
 
+throttle_group: shopify

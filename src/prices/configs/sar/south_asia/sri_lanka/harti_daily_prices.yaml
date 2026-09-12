@@ -1,0 +1,98 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: lk_harti_daily_prices
+module: sar.south_asia.sri_lanka.harti_daily_prices
+function: fetch_lk_harti_daily_prices
+url: https://www.harti.gov.lk/daily-price.php
+language: en
+cadence: daily
+fallback_date: 2015-01-01
+notes: |
+  HARTI (Hector Kobbekaduwa Agrarian Research and Training Institute, a
+  statutory institute under Sri Lanka's Ministry of Agriculture) publishes one
+  PDF bulletin per trading day with two wholesale price tables:
+
+    1. "(Wholesale Prices of Rice & Subsidiary Food Crops)" -- rice grades,
+       dried chillies, red/big onion, potatoes, pulses, sugar, wheat flour and
+       eggs at the Pettah and Marandagahamula wholesale markets. Range +
+       AVERAGE + day-on-day change; only the average is emitted.
+    2. "Wholesale Prices in Selected Markets" -- vegetables and fruit at up to
+       ten dedicated wholesale markets, as a low-high range only; the midpoint
+       is emitted.
+
+  DATING comes from the FIRST COLUMN of the /daily-price.php listing table,
+  never from the PDF: the filenames are inconsistent across the archive
+  (daily_31-12-2015.pdf, "Vegetable Pricenew ex1(2026.09.10).pdf",
+  "Vegetables Wholesale Prices (2026.09.09)1.pdf", and one with the publisher's
+  own typo "Vegetabale"). Measured 2026-09-11: 3,084 distinct bulletins,
+  2015-06-22 to 2026-09-10, all English. Hrefs carry spaces and parentheses and
+  are percent-encoded before the request.
+
+  WHY WORD POSITIONS, NOT extract_tables: neither table is ruled.
+  extract_tables() returns one merged mega-cell with every item name joined by
+  newlines, and extract_text() flows the columns together irrecoverably because
+  the "Change" column is OMITTED when a price did not move -- a text line has a
+  variable number of numbers and no way to say which market a trailing number
+  belongs to. Both parsers take their column anchors from the document's own
+  header row (the repeated "Market" words; the two "Average" words) and assign
+  every word to the nearest column centre.
+
+  MARKET COUNT GROWS over the archive -- six markets in 2015, eight in 2018,
+  nine in 2021, ten in 2026 -- which is why the anchors are read per issue.
+  Two header defects are handled explicitly: pdfplumber merges adjacent header
+  cells into one word in the 2023/2024 issues
+  ("NorochcholeThambuththegamaKeppetipola"), split back on internal capitals;
+  and the 2024 issues break "Variety" onto its own line with the market names
+  on the NEXT line, which silently produced "column 1".."column 10" as market
+  names for a whole year until the name row was located relative to the anchor
+  row instead of assumed.
+
+  NAME-ONLY LINES ARE AMBIGUOUS. A line with a name and no numbers is either a
+  section header or an item whose numbers wrapped to the next line. It is held
+  pending and resolved by what follows. On the rice table only the six known
+  unit-less headings ("Imported Rice", "Big Onion", "Kora", ...) are allowed to
+  become sections -- promoting any held line turned a grade that happened to be
+  unpriced that day into a section and produced labels like "Samba 3 - Nadu 2".
+  On the vegetable table a row whose label starts with "-" is a size
+  continuation ("Pineapple - Large" then bare "- Medium") and is re-joined to
+  its parent.
+
+  THE 50x TRAP: the rice table's unit is published in its own section header
+  and IT CHANGED. Bulletins up to ~2020 read "Rice (Rs/50 kg)" and quote a 50 kg
+  bag (Samba 1 at 4,830 on 2015-12-31); later ones read "Rice (Rs/kg)" (Samba 1
+  at 228.60 on 2026-09-10). The unit is parsed out of each section header and
+  emitted verbatim ("50 kg" / "kg" / "egg" / "fruit"); a row whose unit header
+  did not render is DROPPED rather than defaulted, because a guess there is a
+  silent 50x error.
+
+  COLLISION GUARD: potatoes and big onion are priced in BOTH tables, at Pettah
+  in both. The identity tuple is (source, date, subnational_area, item_name),
+  so the two tables' item names are deliberately kept distinct -- "(wholesale)"
+  for table 1, "(selected markets)" for table 2 -- otherwise one of the two
+  rows would collide on observation_hash and be silently dropped.
+
+  Each issue also repeats table 2 in Sinhala. Those pages are ignored: in the
+  older bulletins the Sinhala text layer is a legacy non-Unicode font that
+  extracts as mojibake, and the numbers are the same ones the English page
+  already carries.
+
+  COICOP: `_COICOP_MAP` is keyed on the normalised label (for table 1 that is
+  "<section> - <row>", because "Imported" appears under Dried Chillies, Big
+  Onion AND Potatoes). Unmapped labels are logged and DROPPED. Measured on a
+  60-bulletin sample spanning 2015-2026: 12,161 rows mapped, 80 dropped
+  (0.65%), all of them section-header text that leaked into a data row.
+
+  `coicop_classification: classifier` with a per-row `coicop_code` is
+  deliberate, matching zm_mfl_market_bulletin:
+  concatenate._build_classifier_csv_map ingests a fetcher CSV ONLY for
+  `classifier` sources, so `source_curated` would delete this source's rows
+  from the build. The per-row code rides through as declared_coicop_codes and
+  short-circuits classify at confidence 1.0.
+
+  channel: null -- a research-institute market bulletin, not an outlet.
+
+  MEASURED first run 2026-09-11: see the onboarding report.
+  Onboarded 2026-09-11.

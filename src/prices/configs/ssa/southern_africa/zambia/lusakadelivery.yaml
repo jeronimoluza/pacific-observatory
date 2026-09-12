@@ -17,3 +17,4 @@ notes: |
   prior probe also saw 'Lancewood sour cream 250ml' 145.00 ZMW). Currency
   ZMW matches countries.yaml. Best Zambia source found: condiments, canned,
   carbohydrates, per-kg fresh produce, and wine/liquor SKUs all present.
+throttle_group: shopify

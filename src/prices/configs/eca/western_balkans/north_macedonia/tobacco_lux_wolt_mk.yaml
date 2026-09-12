@@ -63,3 +63,4 @@ notes: |
 
   SPIDER PAGE FAMILY: listing (venue + per-category item pages); no PDP is
   ever fetched.
+throttle_group: wolt

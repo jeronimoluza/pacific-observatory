@@ -14,3 +14,4 @@ notes: |
   Mothercare Brunei Shopify catalog for baby, nursery, maternity, and related
   household goods. Public /products.json feed returned BND rows on 2026-09-07,
   including swaddles, blankets, and nursery furniture.
+throttle_group: shopify

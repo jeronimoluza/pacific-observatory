@@ -13,3 +13,4 @@ archive_path_re: '^/products/[^/?]+'
 notes: |
   Toyworld New Zealand adds toys and games coverage. The public Shopify
   /products.json feed returned NZD-priced rows on 2026-09-07.
+throttle_group: shopify

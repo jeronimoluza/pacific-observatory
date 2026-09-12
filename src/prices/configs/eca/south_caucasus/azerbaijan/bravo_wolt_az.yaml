@@ -35,3 +35,4 @@ notes: |
   Known base-class limitation (not a bug): SSR renders only page 1 of each
   category, capped at 50 items, so single categories larger than 50 SKUs
   are undercounted.
+throttle_group: wolt

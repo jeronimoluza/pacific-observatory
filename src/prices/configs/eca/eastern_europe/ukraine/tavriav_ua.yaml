@@ -41,3 +41,4 @@ notes: |
   47.10. (Rows exceed --max-items because CLOSESPIDER_ITEMCOUNT stops the
   engine only after the in-flight pages drain.) Sample names eyeballed: all real
   food/beverage SKUs with Ukrainian titles, not boilerplate.
+throttle_group: zakaz

@@ -37,3 +37,4 @@ notes: |
   "Rossignol 2 GO" node), not general web search (search engines
   returned decoy/irrelevant results for Suriname supermarket queries on
   this pass -- see known_blockers_disco_safrica2_suriname.md).
+throttle_group: shopify

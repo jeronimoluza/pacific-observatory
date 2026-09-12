@@ -15,3 +15,4 @@ notes: |
   and household wellness products. The public Shopify /products.json feed
   returned NZD-priced rows on 2026-09-07.
 
+throttle_group: shopify

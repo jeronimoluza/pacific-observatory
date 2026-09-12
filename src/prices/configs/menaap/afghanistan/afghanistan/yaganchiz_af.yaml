@@ -53,3 +53,4 @@ notes: |
 
   MEASURED test run 2026-09-11: `prices collect --source yaganchiz_af
   --max-items 100` -> see row/url counts recorded in the campaign report.
+throttle_group: shopify

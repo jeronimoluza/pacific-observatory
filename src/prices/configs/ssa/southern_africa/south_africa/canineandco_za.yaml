@@ -19,3 +19,4 @@ notes: |
   ZAR 350.00. Page bundle confirms `"currency":"ZAR"`, matches
   countries.yaml. Mixed catalog (pet food, treats, hardware/accessories);
   coicop_codes omitted (classifier assigns per-SKU).
+throttle_group: shopify

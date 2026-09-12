@@ -14,3 +14,4 @@ notes: |
   Shopify.currency active=AZN confirmed in page source. Organic / gluten-free grocery;
   sampled rows food (flour mixes, oils). Catalogue is single-page: no pagination risk.
   Page family parsed: API (/products.json) - collected urls are /products/<handle> permalinks.
+throttle_group: shopify

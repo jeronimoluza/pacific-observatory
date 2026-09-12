@@ -39,3 +39,4 @@ notes: |
   Wolt storefront avoids that block. channel:marketplace (Wolt aggregates
   the first-party retailer's catalog, same convention as the other
   *_wolt_* sources in this repo).
+throttle_group: wolt

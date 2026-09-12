@@ -35,3 +35,4 @@ notes: |
   the same platform, XCD, different island, different shelf).
   Sibling slugs `rams-supermarket-nevis` and `valu-mart-iga-nevis` were both
   probed 2026-09-05 and are DEAD (`categories: []`, 0 products).
+throttle_group: caribeeats

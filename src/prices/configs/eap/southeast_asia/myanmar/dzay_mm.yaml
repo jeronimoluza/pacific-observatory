@@ -14,3 +14,4 @@ notes: |
   electronics with MMK prices. The public Shopify products JSON endpoint
   exposes product and variant IDs, names, product types, tags, availability,
   URLs, and prices. Integrated after live endpoint probing on 2026-09-07.
+throttle_group: shopify

@@ -25,3 +25,4 @@ notes: |
   NOTE: UK stopped reporting to Eurostat after Brexit; latest available
   half-year is 2020-S1 (observation_date 2020-01-01). Row will not update
   on re-runs -- this is the newest data the source has, not a fetcher bug.
+throttle_group: eurostat

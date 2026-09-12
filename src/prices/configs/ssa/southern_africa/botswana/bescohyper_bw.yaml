@@ -26,3 +26,4 @@ notes: >
   ions + product prices) | Scrape-ready (Shopify collections + product prices) | Strong broad-goods so
   urce: electronics appliances toys household goods tools and some hardware/gardening categories; prob
   e /products.json and collection pagination | origin=botswana_sources_candidates_2026-09-10.csv
+throttle_group: shopify

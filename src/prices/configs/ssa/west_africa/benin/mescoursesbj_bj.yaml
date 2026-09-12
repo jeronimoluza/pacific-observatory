@@ -34,3 +34,4 @@ notes: |
   price level" method note -- downstream PPP analysis should treat this
   series with that caveat rather than as a local retail benchmark.
   origin=ddgs sweep, west-africa food gap-fill pass 2026-09-11
+throttle_group: shopify

@@ -16,3 +16,4 @@ notes: |
   Currency BTN matches countries.yaml. Full-line packaged grocery, dairy,
   beverages, and alcohol, comparable in depth to the already-onboarded
   sherza.bt — no fresh-produce product_type observed in the first 500 SKUs.
+throttle_group: shopify

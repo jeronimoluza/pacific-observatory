@@ -17,3 +17,4 @@ notes: |
   treated as AUD, consistent with Nauru retail pricing and neighbouring Nauru
   online grocery sources. Limitation: this scraper intentionally scopes to the
   snacks collection rather than non-food baby goods.
+throttle_group: shopify

@@ -37,3 +37,4 @@ notes: |
   the SPA's route shape (no city-id segment, unlike the Ghana example,
   since the venue was discovered by coordinates rather than by browsing a
   city page).
+throttle_group: boltfood

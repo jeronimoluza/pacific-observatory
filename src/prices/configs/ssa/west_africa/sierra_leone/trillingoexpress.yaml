@@ -26,3 +26,4 @@ notes: >
   ducts.json` and collection pages such as `/collections/all?page=N`; parse product title, vendor/coll
   ection, Le/SLL price, compare-at price, variant availability and pickup/delivery notes. | none obser
   ved from indexed HTML | origin=sierra_leone_candidate_sources.csv
+throttle_group: shopify

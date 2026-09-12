@@ -14,3 +14,4 @@ notes: |
   Inagreen is a Bandung/Jakarta fresh-produce Shopify storefront. The public
   /products.json endpoint returned IDR-priced vegetable and grocery products
   from this environment on 2026-09-07.
+throttle_group: shopify

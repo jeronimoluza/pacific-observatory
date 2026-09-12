@@ -19,3 +19,4 @@ notes: |
   than `convenience` on catalog breadth. Currency SBD (store metadata
   confirms country=SB). Verified 2026-08-11, test run returned >=5 valid
   rows.
+throttle_group: takeapp

@@ -14,3 +14,4 @@ notes: |
   Couple TX exposes a public Shopify collection feed with apparel bundles,
   shirts, and related clothing variants. Added as a second Vietnam apparel
   source to broaden price-visible non-food coverage.
+throttle_group: shopify

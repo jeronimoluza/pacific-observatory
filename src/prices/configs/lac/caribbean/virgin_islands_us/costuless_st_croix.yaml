@@ -22,3 +22,4 @@ notes: |
   app_key/country but a separate physical store; SKU overlap with St.
   Thomas is likely high but assortment/price can differ by island. USVI is
   USD natively, so the currency assumption is solid.
+throttle_group: costuless

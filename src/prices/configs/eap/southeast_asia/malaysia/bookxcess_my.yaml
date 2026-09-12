@@ -14,3 +14,4 @@ notes: |
   BookXcess Malaysia Shopify catalogue. Added for parent-gap breadth in books
   and school-adjacent items; public products.json returned priced MYR book
   variants during the 2026-09-07 probe.
+throttle_group: shopify

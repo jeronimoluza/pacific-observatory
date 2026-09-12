@@ -32,3 +32,4 @@ notes: |
   Measured (--max-items 200, run 2026-08-31): 11/11 rows, 11 distinct
   product_id, 11 distinct url, 0 zero-price, 0 blank-name, currency 100%
   TOP, prices $1-$200, median $6.
+throttle_group: digicel

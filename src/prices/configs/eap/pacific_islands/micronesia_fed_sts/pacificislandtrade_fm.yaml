@@ -15,3 +15,4 @@ notes: |
   marked with the "(LS CHUUK)" prefix. The dedicated collection slug returned
   empty during probing, so this scraper reads /products.json and keeps only
   Chuuk-prefixed grocery rows. Re-verified live 2026-09-01.
+throttle_group: shopify

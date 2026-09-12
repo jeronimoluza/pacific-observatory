@@ -26,3 +26,4 @@ notes: >
   hopify. Site footer says driven by Shopify; use /products.json?limit=250&page=N and extract variants
   /prices. Search-visible pages show Greenland delivery from Sisimiut and product prices. | Useful per
   sonal-care/beauty category coverage. | origin=greenland_price_sources_2026-09-10.csv
+throttle_group: shopify

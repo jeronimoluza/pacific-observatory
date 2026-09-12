@@ -14,3 +14,4 @@ notes: |
   The public Shopify products JSON endpoint exposes product and variant IDs,
   names, product types, tags, availability, URLs, and prices. Integrated for
   durable household-goods coverage after live endpoint probing on 2026-09-07.
+throttle_group: shopify

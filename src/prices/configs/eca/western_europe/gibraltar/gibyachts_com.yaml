@@ -25,3 +25,4 @@ notes: >
   Generated from child-task consolidation on 2026-09-11. Child evidence: KEEP / SHOPIFY-JSON | KEEP / 
   SHOPIFY-JSON | Shopify API confirmed; very broad hardware/tools/electronics/clothing source. | origi
   n=gibraltar_prices_source_rows.csv
+throttle_group: shopify

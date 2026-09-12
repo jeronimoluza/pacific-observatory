@@ -16,3 +16,4 @@ notes: |
   Azerbaijani (Latin script), not English, so language is set to az despite
   the shard's en starting point. 217K stock lines per prior probe notes;
   categories span meat/fish, staples, dairy, snacks, bakery.
+throttle_group: shopify

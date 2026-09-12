@@ -15,3 +15,4 @@ notes: |
   menstrual, and household-container products. Public /products.json feed
   returned BND rows on 2026-09-07, including maternity pads, breast pads, and
   storage containers.
+throttle_group: shopify

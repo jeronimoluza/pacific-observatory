@@ -38,3 +38,4 @@ notes: |
   Test run (--max-items 30): rows returned with clean XOF prices and
   French product names (rice, cosmetics, phone accessories), confirming
   the endpoint works end to end.
+throttle_group: takeapp

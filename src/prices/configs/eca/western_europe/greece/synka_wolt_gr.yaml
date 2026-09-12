@@ -35,3 +35,4 @@ notes: |
   End-to-end test `.venv/bin/po prices collect --source synka_wolt_gr
   --max-items 100`: see test run notes in the onboarding results log for
   row count and sample record.
+throttle_group: wolt

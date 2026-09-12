@@ -18,3 +18,4 @@ notes: |
   and homeopathic dispensary -- whole-catalog walk, no collection filter.
   Existing supermarket_ie.yaml is a basket-comparison aggregate_proxy, not
   itemized -- this is Ireland's first non-proxy, SKU-level manifest.
+throttle_group: shopify

@@ -24,3 +24,4 @@ notes: |
   Verified live 2026-09-11: --max-items 100 run against page 1
   produced rows. Sample: "Kaspian Royal Malossol Caviar (30G)" LKR
   44,000.00, "U10 Lagoon Prawns Box (1KG)" LKR 3,600.00.
+throttle_group: shopify

@@ -25,3 +25,4 @@ notes: |
   target list; no independently scrapable sparalbania site was found, so
   this is the Wolt marketplace listing of the same retailer.
   channel:supermarket (Wolt aggregates the first-party retailer's catalog).
+throttle_group: wolt

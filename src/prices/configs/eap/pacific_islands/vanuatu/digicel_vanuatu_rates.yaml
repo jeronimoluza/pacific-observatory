@@ -16,3 +16,4 @@ notes: |
   postpaid rate tables with service type, rate type, unit, charging basis and
   VUV prices. Added as telecom tariff coverage to supplement Vanuatu's local
   food and CPI sources.
+throttle_group: digicel

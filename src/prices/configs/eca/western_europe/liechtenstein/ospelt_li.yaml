@@ -67,3 +67,4 @@ notes: |
   Ospelt Anstalt vs Migros-owned Denner, KoRo's shared Shopware backend,
   nu3's German-market Shopify tenant), different platform instance,
   different SKU namespace -- not the same shelf.
+throttle_group: shopify

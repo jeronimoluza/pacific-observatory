@@ -41,3 +41,4 @@ notes: |
   divisions_basis: sampled_rows (4 leaf categories sampled across the probe
   + --max-items 15 smoke run; the venue's 206-category tree is much wider
   than what was directly observed, so this is a floor, not the ceiling)
+throttle_group: wolt

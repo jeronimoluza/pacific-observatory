@@ -17,3 +17,4 @@ notes: |
   SALT - 25GM' MUR 60.00, 'Almond Chips ORIGINAL - 25GM' MUR 60.00, 'Whole
   Wheat Chips ORIGINAL - 30GM' MUR 65.00. Page bundle confirms
   `"currency":"MUR"`, matches countries.yaml.
+throttle_group: shopify

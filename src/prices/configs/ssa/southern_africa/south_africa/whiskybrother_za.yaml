@@ -19,3 +19,4 @@ notes: |
   ZAR 430.00, 'Lomond Candelabra Cab Sav 2018' ZAR 285.00. Page bundle
   confirms `"currency":"ZAR"`, matches countries.yaml. Narrow catalog
   (wine/spirits only), coicop_codes scoped to wine (02.1.1) + spirits (02.1.2).
+throttle_group: shopify

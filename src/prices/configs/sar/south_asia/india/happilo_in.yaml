@@ -31,3 +31,4 @@ notes: |
   products live against /products/<handle>.json: names and prices matched
   stored values exactly (e.g. "Happilo Essentials Classic Sultan Seedless
   Dates 500g" 208.25 INR, both stored and live).
+throttle_group: shopify

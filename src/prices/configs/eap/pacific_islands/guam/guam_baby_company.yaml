@@ -15,3 +15,4 @@ notes: >
   collection feed returned toys and baby activity products with USD prices
   during the 2026-09-07 probe. Channel is set to other because the current
   source taxonomy has no dedicated baby/toys channel.
+throttle_group: shopify

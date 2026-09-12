@@ -14,3 +14,4 @@ notes: >
   EveniBlock Samoa Shopify storefront for sportswear, footwear, apparel, bags,
   and accessories. The public /products.json endpoint returned WST-priced
   product and variant rows during live probe on 2026-09-07.
+throttle_group: shopify

@@ -14,3 +14,4 @@ notes: >
   Tapa Creation Samoa Shopify storefront for clothing, uniforms, and sportswear.
   The public /products.json feed returned WST-priced apparel records during
   live probe on 2026-09-07.
+throttle_group: shopify

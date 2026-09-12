@@ -25,3 +25,4 @@ notes: |
   12,250-row file (from an early, uninterrupted run) is the best capture
   to date -- the live catalog is larger. A future run should retry after
   a cooldown period or from a fresh IP for a fuller pull.
+throttle_group: shopify

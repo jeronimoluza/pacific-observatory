@@ -26,3 +26,4 @@ notes: >
   oducts.json and collections; parse product/list prices and compare-at prices. | Search cache describ
   es 'DHightZone' as 100% Guinean with GNF product price, but myshopify subdomain and thin provenance 
   mean review before integration. | origin=guinea_price_source_candidates_2026-09-10.csv
+throttle_group: shopify

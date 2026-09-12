@@ -15,3 +15,4 @@ notes: |
   This is a vendor-level scrape from the same O4A2 marketplace host, not an
   independent storefront domain. The collection exposed 250 priced grocery and
   bulk food rows during live probe on 2026-09-01.
+throttle_group: o4a2

@@ -19,3 +19,4 @@ notes: |
   department store, so channel is dept-store not electronics.
   coicop_divisions: 01, 05, 06, 08, 09
   divisions_basis: sampled_rows (263 rows from the smoke-test pull)
+throttle_group: shopify

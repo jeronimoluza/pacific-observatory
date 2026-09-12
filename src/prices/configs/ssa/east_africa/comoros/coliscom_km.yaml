@@ -38,3 +38,4 @@ notes: |
   Test run (2026-09-06, --max-items 20) returned real rows, e.g. "Lot de
   2 Marmites en fonte alu O 26/32cm" EUR 68.90, "20 Couches 4-9 kg
   Marmailles Plus" EUR 9.48 -- see collect run notes for exact count.
+throttle_group: shopify

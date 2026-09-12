@@ -15,3 +15,4 @@ notes: |
   Croissants', product_type 'Pastries', tags ['A1','Bakery','Pastries']).
   Currency BBD matches countries.yaml. Catalog skews general-merchandise
   (hangers, cards) alongside grocery per prior probe notes.
+throttle_group: shopify

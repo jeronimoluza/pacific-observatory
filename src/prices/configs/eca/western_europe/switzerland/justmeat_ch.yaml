@@ -13,3 +13,4 @@ notes: |
   Shopify. /products.json open, 97 products. Shopify.currency active=CHF.
   Butcher: beef/wagyu/poultry cuts -- COICOP 01.1.2.
   Page family parsed: API (/products.json).
+throttle_group: shopify

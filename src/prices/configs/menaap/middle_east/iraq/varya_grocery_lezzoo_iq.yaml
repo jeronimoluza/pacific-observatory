@@ -41,3 +41,4 @@ notes: |
   Same single-GET-no-pagination limitation as the other Lezzoo venue
   manifests: catalog size here (60) may be undercounted vs the live app,
   but it's the full page-1 menu the platform serves server-side.
+throttle_group: lezzoo

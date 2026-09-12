@@ -24,3 +24,4 @@ scrapy_settings:
 notes: >
   Dhaka fresh fish specialist: whole-fish variants, per-kg prices. Shopify /products.json confirmed live (2026-09-11 SAR gap-fill sweep,
   still_untried_20260911.csv). Page family: API.
+throttle_group: shopify

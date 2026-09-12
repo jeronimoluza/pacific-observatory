@@ -15,3 +15,4 @@ notes: >
   product types, tags, variant ids, availability, and USD prices through the
   public Shopify products endpoint. Added to cover furniture/home durables
   without repeating the food/menu pass.
+throttle_group: shopify

@@ -20,3 +20,4 @@ notes: |
   Turkiye: /v1/pages/front for Istanbul coordinates returns a
   nearest-available-cities fallback listing only Albanian cities -- Wolt
   has no Turkish presence, so no Wolt source was scaffolded for turkiye.
+throttle_group: wolt

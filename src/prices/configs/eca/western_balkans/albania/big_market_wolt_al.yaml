@@ -26,3 +26,4 @@ notes: |
   Market, Spar). channel:supermarket (Wolt aggregates the first-party
   retailer's own catalog; Big Market itself has no scrapable direct site
   found).
+throttle_group: wolt

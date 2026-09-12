@@ -25,3 +25,4 @@ notes: |
   _caribeeats_base.py shared spider, just SLUG="caribeshop-nevis";
   currency in payload was USD, needs a fresh check since Nevis legally uses
   XCD like St Kitts).
+throttle_group: caribeeats

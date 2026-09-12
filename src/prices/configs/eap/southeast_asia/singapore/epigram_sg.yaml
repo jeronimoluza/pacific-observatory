@@ -13,3 +13,4 @@ archive_path_re: '^/products/[^/?]+'
 notes: |
   Epigram Bookshop Singapore Shopify catalogue. Added as an independent
   Singapore books source with priced SGD product variants.
+throttle_group: shopify

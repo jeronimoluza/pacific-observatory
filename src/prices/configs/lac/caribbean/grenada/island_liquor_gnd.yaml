@@ -28,3 +28,4 @@ notes: |
   Payload `currency` is XCD, matching countries.yaml grenada. Distinct from
   `island_liquor_dm` (Dominica) and `island_liquor_kn` (St Kitts) -- same
   brand family, three separate territories, three slugs, three price levels.
+throttle_group: caribeeats

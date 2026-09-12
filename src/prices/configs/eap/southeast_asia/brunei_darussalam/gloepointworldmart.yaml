@@ -18,3 +18,4 @@ notes: |
   the page payload, not parsed from the "$" symbol. Small catalog
   (~19 SKUs at onboarding: cooking oil, packaged snacks, mobile top-up
   vouchers) - single homepage fetch, no pagination observed.
+throttle_group: takeapp

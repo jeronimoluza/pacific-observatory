@@ -45,3 +45,4 @@ notes: |
   CLOSESPIDER_ITEMCOUNT stops the engine only after the in-flight pages
   drain.) Sample names eyeballed: all real food/beverage SKUs with Ukrainian
   titles, not boilerplate.
+throttle_group: zakaz

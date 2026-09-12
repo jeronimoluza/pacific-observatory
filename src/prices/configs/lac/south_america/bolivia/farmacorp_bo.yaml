@@ -17,3 +17,4 @@ notes: |
   titles are Spanish, so language is set to es despite the shard's en
   starting point. Pharmacy chain (COICOP 6 focus); only a minor F&B tail
   (snacks/drinks at checkout).
+throttle_group: shopify

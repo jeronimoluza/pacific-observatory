@@ -19,3 +19,4 @@ notes: |
   distinct product set (confirmed enumerable, not a homepage carousel).
   Shopify.currency active=TTD matches countries.yaml. Whole-catalog walk
   (no category filter) via _shopify_base.py. Page family: API.
+throttle_group: shopify

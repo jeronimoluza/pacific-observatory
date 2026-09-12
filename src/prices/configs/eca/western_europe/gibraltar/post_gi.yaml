@@ -1,0 +1,47 @@
+scaffolding: spider
+spider: generic_woo_configured
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: "https://post.gi/"
+channel: other
+language: en
+currency: GBP
+cadence: monthly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "post_gi"
+  base_url: "https://post.gi"
+  currency: "GBP"
+  language: "en"
+  api_url: "https://post.gi/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Royal Gibraltar Post Office (RGPO) online shop. Onboarded 2026-09-11 from
+  the Gibraltar pending-candidate list, queued there as "NEEDS-CUSTOM-
+  CRAWLER / html_custom". Wrong verdict: WordPress + WooCommerce with an
+  open Store API at /wp-json/wc/store/v1/products, so the shared
+  generic_woo_configured spider covers it with no bespoke code.
+
+  Page family parsed: API. Spider reads the Store API only; the emitted
+  permalinks (/product/<id>/) are PDPs it never fetches.
+
+  Live measurement 2026-09-11: x-wp-total = 8 products, 1 page. GBP declared
+  by prices.currency_code, currency_minor_unit 2 -- "GBP5 Stamp" 500 ->
+  GBP 5.00, "2026-2027 PO Box Payment" 7748 -> GBP 77.48.
+
+  Small but real: 8 SKUs is the whole published catalogue (single stamps,
+  sheets of 25/50 for local / EU / world air mail, and the annual PO Box
+  fee). It clears the 5-row ship gate with margin. Postal tariffs are a
+  COICOP 08.1.0 leaf that nothing else in Gibraltar reaches.
+
+  coicop_codes deliberately left unset even though the catalogue looks
+  narrow: the PO Box rental row is a different service from postage stamps,
+  and the postal-services convention in this repo is to let the classifier
+  place them rather than stamp one code across the shop. channel: other --
+  a post office counter is not one of the retail values in the Channel enum.

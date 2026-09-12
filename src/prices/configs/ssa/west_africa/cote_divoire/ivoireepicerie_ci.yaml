@@ -27,3 +27,4 @@ notes: |
   catalog. Passes the >=5-row gate (21 rows) comfortably despite the small
   size.
   origin=ddgs sweep, west-africa food gap-fill pass 2026-09-11
+throttle_group: shopify

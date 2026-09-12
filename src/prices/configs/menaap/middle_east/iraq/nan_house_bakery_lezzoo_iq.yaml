@@ -30,3 +30,4 @@ notes: >
   decorated celebration cakes). Uses `generic_lezzoo_venue`. End-to-end
   tested via `prices collect --source nan_house_bakery_lezzoo_iq
   --max-items 20`.
+throttle_group: lezzoo

@@ -29,3 +29,4 @@ notes: >
   tock text. | None observed. Shell DNS fetch was transient after an earlier successful JSON response;
    web snapshot on 2026-09-10 shows server-rendered category links and product prices. | origin=marsha
   ll_islands_candidate_price_sources_2026-09-10.csv
+throttle_group: shopify

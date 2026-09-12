@@ -14,3 +14,4 @@ notes: |
   Pacific Bay is a Philippines seafood/frozen-food Shopify storefront. The
   public feed returned PHP-priced fish and seafood rows from this environment
   on 2026-09-07.
+throttle_group: shopify

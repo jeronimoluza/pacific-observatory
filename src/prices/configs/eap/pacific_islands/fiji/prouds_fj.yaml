@@ -15,3 +15,4 @@ notes: >
   jewelry, electronics accessories, apparel, and gift lines. The public
   /products.json endpoint returned product and variant prices during live
   probe on 2026-09-07; currency is inferred as FJD from the Fiji storefront.
+throttle_group: shopify

@@ -34,3 +34,4 @@ notes: |
   Store API): that site holds only 22 products total, of which 7 names
   overlap this catalogue -- a thin second surface, rejected as a separate
   source rather than shipped to inflate the count.
+throttle_group: shopify

@@ -27,3 +27,4 @@ notes: >
   ousehold cleaning paste and novelty products plus Congo-wide delivery. Needs route/API discovery and
    catalogue-size check before integration; likely few SKUs. | origin=congo_rep_candidate_sources_2026
   -09-10.csv
+throttle_group: shopify

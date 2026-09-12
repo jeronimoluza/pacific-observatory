@@ -18,3 +18,4 @@ notes: |
   Bouquet with Scholar Teddy' MUR 600.00 (also carries flowers/gifting,
   non-food, alongside DodoFresh groceries). Page bundle confirms
   `"currency":"MUR"`, matches countries.yaml.
+throttle_group: shopify

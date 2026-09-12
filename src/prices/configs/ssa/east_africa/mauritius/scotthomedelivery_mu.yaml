@@ -20,3 +20,4 @@ notes: |
   Serruria Chardonnay 2019 / 2023 (PROMO)' MUR 907.00. Page bundle confirms
   `"currency":"MUR"`, matches countries.yaml. Narrow catalog (wine/spirits
   only), coicop_codes scoped to wine (02.1.1) + spirits (02.1.2).
+throttle_group: shopify

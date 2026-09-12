@@ -47,3 +47,4 @@ notes: |
   Cold re-fetch verified 2026-09-01: 'Bread Garazin' = 0.50 USD and
   'Aptamil 3 Toddler Milk 1+ Year 800g' = 21.00 USD both matched the
   live products.json payload exactly on re-fetch.
+throttle_group: shopify

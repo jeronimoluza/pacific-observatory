@@ -20,3 +20,4 @@ notes: |
   Re-verified live 2026-08-06: /venue/conad-albania-bulevardi-zogu-i -> 200,
   real Albanian-language SKUs with ALL prices and barcode_gtin.
   channel:marketplace (Wolt aggregates the first-party retailer's catalog).
+throttle_group: wolt

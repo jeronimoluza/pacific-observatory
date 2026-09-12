@@ -14,3 +14,4 @@ notes: |
   Kapok Hong Kong adds fashion, footwear/accessories, and lifestyle goods.
   The public Shopify /products.json feed returned HKD-priced rows on
   2026-09-07.
+throttle_group: shopify

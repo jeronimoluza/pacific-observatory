@@ -27,3 +27,4 @@ notes: |
   EUR 4.58, 1.2 kg. channel:marketplace per scope rules (Wolt is a delivery
   aggregator, not the retailer itself); analytical_role stays retailer_sku
   since every item is a real AB Vassilopoulos SKU with a barcode.
+throttle_group: wolt

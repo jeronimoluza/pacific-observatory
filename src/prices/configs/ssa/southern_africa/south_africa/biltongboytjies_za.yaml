@@ -20,3 +20,4 @@ notes: |
   countries.yaml. Mixed catalog (dried meat, nuts, dried fruit) spans more
   than one COICOP leaf, so coicop_codes is omitted (classifier assigns
   per-SKU).
+throttle_group: shopify

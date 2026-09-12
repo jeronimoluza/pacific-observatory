@@ -15,3 +15,4 @@ notes: |
   related consumer durables. Public /products.json feed returned BND product
   rows on 2026-09-07, including Kindle, PlayStation Portal, and Nintendo Switch
   game listings.
+throttle_group: shopify

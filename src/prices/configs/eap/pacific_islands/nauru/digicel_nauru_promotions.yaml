@@ -17,3 +17,4 @@ notes: |
   tables with plan names, validity, allowances, and AUD prices. This is the same
   operator domain as the existing Digicel Nauru bundle source, so it improves
   source-ID coverage but is not an independent food or grocery retailer.
+throttle_group: digicel

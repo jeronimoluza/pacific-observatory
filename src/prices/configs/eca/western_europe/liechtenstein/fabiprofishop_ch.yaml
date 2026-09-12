@@ -28,3 +28,4 @@ notes: >
   oerschutzstoepsel 3M 1271 id 11112623604050 price CHF 67.20. Shopify JSON provides product ids, vari
   ants, prices, tags. Treat as CH/LI-serving source, not domestic LI. | origin=liechtenstein_candidate
   _price_sources_2026_09_10.csv
+throttle_group: shopify

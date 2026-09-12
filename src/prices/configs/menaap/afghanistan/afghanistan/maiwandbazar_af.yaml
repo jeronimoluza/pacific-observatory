@@ -29,3 +29,4 @@ notes: >
   ({"active":"AFN","rate":"1.0"}) -- not inferred from the domain or symbol.
   Sample product: "LK353 Mittoo Long Kurtis" at AFN 1150.00. Page family:
   API (products.json), no PDP fetched.
+throttle_group: shopify

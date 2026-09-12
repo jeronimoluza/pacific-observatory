@@ -34,3 +34,4 @@ notes: |
   `python run.py prices collect --source sultan_butchery_lezzoo_iq --max-items 20`.
 
   Same single-GET-no-pagination limitation as other Lezzoo venue manifests.
+throttle_group: lezzoo

@@ -14,3 +14,4 @@ notes: |
   Toys R Us Australia adds toys, games, baby, and seasonal durable-goods
   coverage. The public Shopify /products.json feed returned AUD-priced rows on
   2026-09-07.
+throttle_group: shopify

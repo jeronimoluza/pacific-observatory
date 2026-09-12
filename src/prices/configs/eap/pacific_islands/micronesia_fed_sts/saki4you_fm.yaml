@@ -20,3 +20,4 @@ notes: |
   survey publishers; this is Micronesia's first retailer_sku source.
   coicop_divisions: 01, 05, 13
   divisions_basis: sampled_rows (6 of 250+ on page 1; full catalog not walked)
+throttle_group: shopify

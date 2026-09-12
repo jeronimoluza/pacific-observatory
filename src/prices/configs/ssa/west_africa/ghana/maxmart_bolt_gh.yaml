@@ -51,3 +51,4 @@ notes: |
   pair below cannot be validated against collected URLs and is a best
   guess at the SPA's route shape. Bolt venue pages are client-rendered,
   so archived captures are unlikely to parse on any generic tier.
+throttle_group: boltfood

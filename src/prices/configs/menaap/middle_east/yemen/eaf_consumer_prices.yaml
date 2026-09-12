@@ -1,0 +1,74 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: ye_eaf_consumer_prices
+module: menaap.middle_east.yemen.eaf_consumer_prices
+function: fetch_ye_eaf_consumer_prices
+url: https://eaf-ye.com/commodities.php
+language: ar
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  Economic Association Foundation (مؤسسة الرابطة الاقتصادية), Aden -- weekly
+  consumer-price monitoring of essential food commodities in Aden governorate,
+  in Yemeni rial. The page footer states the method: collection every Saturday
+  ("يتم الرصد كل يوم سبت من كل أسبوع").
+
+  DATING -- THE BLOCKER THAT PREVIOUSLY KILLED THIS SOURCE, AND HOW IT IS
+  RESOLVED. The tables carry only ORDINAL week columns ("الاسبوع الأول"..
+  "الاسبوع الخامس") and no calendar date anywhere in the table markup; a scan
+  for date-shaped strings over the whole 3.2 MB page returns three. The period
+  is in the HEADING immediately PRECEDING each table, found by walking
+  backwards through text nodes in document order:
+    "اسعار السلع الاساسية من الاسواق لشهر ديسمبر 2023"
+    "اسعار السلع الاساسية من الاسواق للربع الرابع من عام 2022م"
+    "اسعار السلع الاساسية من الاسواق لشهر ديسمبر عام ٢٠٢١م"
+  All 17 tables resolve. The year is sometimes in Arabic-Indic digits and is
+  transliterated. A table whose heading yields no period is SKIPPED.
+
+  The weekly readings inside a monthly table have no calendar dates of their
+  own, so the MEAN of the weeks present is emitted once as `monthly_avg`
+  rather than four or five invented weekly dates.
+
+  TWO TABLE SHAPES, told apart per ROW by where the row number sits:
+    * monthly -- RTL source order [week5..week1, unit, name, row-number];
+      the name is cells[-2] and the unit cells[-3], never a fixed index,
+      because a four-week month simply drops a column.
+    * period-average (the four 2022 quarters, and Dec 2021) --
+      [row-number, name, YER, USD]. Only the YER column is emitted; the USD
+      column is the association's own conversion, not an independent
+      observation.
+
+  UNITS ARE PER-ROW AND THEY MOVED. Cooking oil is an 8-litre tin in the 2023
+  monthly tables and a 4-litre tin in the 2022 quarterly ones (18,000 against
+  19,043 YER); reading both as one unit would invent a halving. The unit comes
+  from the unit column in the monthly tables and out of the item label in the
+  average tables.
+
+  STALE BUT REAL: the archive runs 2021-12 to 2023-12 and the page has not
+  been updated since. It is onboarded for the historical series, not for a
+  live feed; `cadence: monthly` describes the publication, and a re-run will
+  simply find nothing new.
+
+  PUBLISHER TYPOS ARE LEFT AS PUBLISHED: the Dec-2023 table prints dry onion
+  at 20,000 in one week against 1,500 in the others, and the Dec-2021 average
+  table prints bananas at 1.38 YER/kg. Both are single cells in the source and
+  are emitted unaltered rather than silently repaired.
+
+  COICOP: an ordered substring rule list, because the same commodity is
+  labelled differently in the two shapes ("كيس القمح" against "كيس القمح
+  الامريكي 50كيلو"). Unmatched labels are logged and DROPPED. Reaches
+  divisions 01 and 01.2 (tea).
+
+  `coicop_classification: classifier` with a per-row `coicop_code` is
+  deliberate, matching zm_mfl_market_bulletin:
+  concatenate._build_classifier_csv_map ingests a fetcher CSV ONLY for
+  `classifier` sources, so `source_curated` would delete this source's rows
+  from the build.
+
+  channel: null -- a business-association monitoring bulletin, not an outlet.
+
+  MEASURED first run 2026-09-11: see the onboarding report.
+  Onboarded 2026-09-11.

@@ -14,3 +14,4 @@ notes: |
   Nutrimart Indonesia exposes a public Shopify feed with nutrition products,
   milk, rice, noodles, beverages, and health-food staples. The endpoint
   returned IDR-priced rows on 2026-09-07.
+throttle_group: shopify

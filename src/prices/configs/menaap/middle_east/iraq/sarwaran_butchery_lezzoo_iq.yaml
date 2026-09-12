@@ -30,3 +30,4 @@ notes: >
   IQD. Category composition is veal/lamb meat cuts -- effectively 100%
   COICOP 01.1.2 meat. Uses `generic_lezzoo_venue`. End-to-end tested via
   `prices collect --source sarwaran_butchery_lezzoo_iq --max-items 20`.
+throttle_group: lezzoo

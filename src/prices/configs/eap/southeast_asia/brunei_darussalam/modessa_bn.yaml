@@ -14,3 +14,4 @@ notes: |
   Brunei Shopify storefront for adult apparel and modest fashion. Public
   /products.json feed returned BND product rows on 2026-09-07, including modal
   edit clothing listings.
+throttle_group: shopify

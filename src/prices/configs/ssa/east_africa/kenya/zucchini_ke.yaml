@@ -17,3 +17,4 @@ notes: |
   1490). Currency KES matches countries.yaml. Fresh-produce specialist,
   overlaps foodplus.co.ke on fresh fruit/veg but adds independent price
   observations.
+throttle_group: shopify

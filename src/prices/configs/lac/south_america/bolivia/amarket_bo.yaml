@@ -18,3 +18,4 @@ notes: |
   titles are Spanish, so language is set to es despite the shard's en
   starting point. General e-commerce store, cosmetics/personal-care heavy
   with moderate grocery share.
+throttle_group: shopify

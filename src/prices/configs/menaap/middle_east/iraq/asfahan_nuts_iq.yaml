@@ -28,3 +28,4 @@ notes: >
   Lezzoo limitation) -- enumerability evidenced by 60/60 distinct ids
   within the one page. End-to-end tested via `prices collect --source
   asfahan_nuts_iq --max-items 20`.
+throttle_group: lezzoo

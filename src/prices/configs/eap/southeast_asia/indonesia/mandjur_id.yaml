@@ -13,3 +13,4 @@ archive_path_re: '^/products/[^/?]+'
 notes: |
   Apotek Mandjur is an Indonesia pharmacy storefront. Its public Shopify feed
   returned IDR-priced medicine, device, and personal-care rows on 2026-09-07.
+throttle_group: shopify

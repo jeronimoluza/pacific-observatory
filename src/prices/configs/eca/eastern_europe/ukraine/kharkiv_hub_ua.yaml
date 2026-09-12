@@ -30,3 +30,4 @@ notes: |
 
   Supersedes the two single-banner configs kharkiv_market_ua / vostorg_ua,
   which were never committed.
+throttle_group: zakaz

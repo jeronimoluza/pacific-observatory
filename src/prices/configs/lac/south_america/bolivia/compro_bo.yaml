@@ -17,3 +17,4 @@ notes: |
   matches countries.yaml. Product titles are Spanish, so language is set to
   es despite the shard's en starting point. Prior probe cites a 38-category
   tree focused on national/domestic production.
+throttle_group: shopify

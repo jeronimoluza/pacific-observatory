@@ -40,3 +40,4 @@ notes: |
   over the cap), 0 null names/prices, 1 currency (QAR), 64/64 distinct
   product_id, price range QAR 15.00-14999.00. Full 123-category walk is NOT
   run here — orchestrator queues it.
+throttle_group: shopify

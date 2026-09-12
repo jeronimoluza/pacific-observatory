@@ -17,3 +17,4 @@ notes: |
   endpoint, store-scoped REST (/rest/sc_barbados_sv/V1/products) required
   to get real BBD prices past the 999999/9999999/0 default-scope sentinel.
   FULL_SCRAPE_ROWCOUNT_PLACEHOLDER
+throttle_group: courts

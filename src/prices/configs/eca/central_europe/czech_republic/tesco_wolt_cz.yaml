@@ -33,3 +33,4 @@ notes: |
   divisions_basis: sampled_rows (one leaf category sampled directly; full
   category tree plausibly spans 01/02/05/12/13 like other Wolt supermarket
   manifests but was not walked)
+throttle_group: wolt

@@ -50,3 +50,4 @@ notes: |
   coicop_divisions: 01, 02, 12, 13
   divisions_basis: sampled_rows (200-row smoke sample; category tree not fully walked)
 timeout: 14400
+throttle_group: lulu

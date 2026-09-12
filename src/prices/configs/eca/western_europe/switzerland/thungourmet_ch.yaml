@@ -14,3 +14,4 @@ notes: |
   real catalogue may be larger, base spider walks to MAX_PAGES=200). Shopify.currency
   active=CHF. Wide gourmet-food assortment (meat, fish, cheese, wine, kitchen).
   Page family parsed: API (/products.json).
+throttle_group: shopify

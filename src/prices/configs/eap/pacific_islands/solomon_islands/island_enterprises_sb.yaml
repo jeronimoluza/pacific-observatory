@@ -29,3 +29,4 @@ notes: >
   ck. | None found. Some items are sold out but still carry posted prices; preserve availability separ
   ately rather than dropping all sold-out rows. | origin=solomon_islands_candidate_price_sources_2026-
   09-10.csv
+throttle_group: shopify

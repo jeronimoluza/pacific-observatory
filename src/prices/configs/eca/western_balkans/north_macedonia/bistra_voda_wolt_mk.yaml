@@ -83,3 +83,4 @@ notes: |
   SPIDER PAGE FAMILY: API. The spider fetches no wolt.com page at all;
   emitted urls are synthetic `<venue-url>#<item-id>` fragments (the
   DuplicationPipeline dedups on url, so they must be unique per item).
+throttle_group: wolt

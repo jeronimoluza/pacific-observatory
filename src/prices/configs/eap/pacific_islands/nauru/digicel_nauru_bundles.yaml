@@ -16,3 +16,4 @@ notes: |
   OfferCard records with plan names, features, validity details and AUD prices.
   Added as a telecom tariff source because repeatable food/beverage retail
   coverage in Nauru remains limited.
+throttle_group: digicel

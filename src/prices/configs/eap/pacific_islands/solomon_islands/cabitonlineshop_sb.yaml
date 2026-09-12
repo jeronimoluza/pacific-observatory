@@ -23,3 +23,4 @@ notes: |
   run returned >=5 valid rows. Platform pattern generalizes to every
   take.app storefront (see spider docstring) -- also used by cabitfoody_sb;
   a Brunei take.app storefront is being onboarded separately.
+throttle_group: takeapp

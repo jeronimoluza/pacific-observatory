@@ -14,3 +14,4 @@ notes: >
   Next.js flight payload exposes product ids, names, FJD prices, sold-out
   flags, and countryCode=FJ. Probe on 2026-09-01 returned eight priced
   meal items.
+throttle_group: takeapp

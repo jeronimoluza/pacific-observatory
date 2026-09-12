@@ -19,3 +19,4 @@ notes: |
   category `fresh-fruits-vegetables-1` -> 200, real Sklavenitis SKUs with
   EUR prices and barcode_gtin. channel:marketplace (Wolt aggregates the
   first-party retailer's own catalog).
+throttle_group: wolt

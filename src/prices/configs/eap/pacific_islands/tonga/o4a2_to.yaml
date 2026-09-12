@@ -16,3 +16,4 @@ notes: |
   currency NZD. The scraper uses /products.json and filters only non-zero
   priced rows. Re-verified live 2026-09-01.
 
+throttle_group: o4a2

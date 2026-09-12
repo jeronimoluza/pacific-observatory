@@ -26,3 +26,4 @@ notes: |
   /products.json unlike the archived-HTML cents tiers).
   Test run 2026-09-11: prices collect --source langerhans_na --max-items
   20 -> 20 rows, all priced, all NAD.
+throttle_group: shopify

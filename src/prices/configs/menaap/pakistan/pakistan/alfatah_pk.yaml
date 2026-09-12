@@ -24,3 +24,4 @@ notes: |
   coicop_divisions: 01, 03, 05, 13
   divisions_basis: sampled_rows (339 rows from the smoke-test pull; categories seen: Fruits &
   Vegitables, women's nightwear, homeware -- full catalog not walked)
+throttle_group: shopify

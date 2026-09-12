@@ -48,3 +48,4 @@ notes: |
   divisions_basis: sampled_categories (28-category top-level tree read
   directly from category-listing at onboarding; category-level walk not
   yet exhaustively sampled item-by-item)
+throttle_group: wolt

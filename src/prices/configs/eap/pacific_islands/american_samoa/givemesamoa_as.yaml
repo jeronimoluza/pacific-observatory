@@ -19,3 +19,4 @@ notes: |
   phone cases, flags, blankets, bags, stickers, home goods, and gift items.
   The spider filters obvious food/treat rows so this source supports the
   specialized-goods pass rather than repeating the food-first pass.
+throttle_group: shopify

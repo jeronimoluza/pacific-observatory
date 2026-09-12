@@ -38,3 +38,4 @@ notes: |
   brief's channel list, though the honest per-run food share needs a
   full (uncapped) crawl to confirm since this verification sample was
   non-food-skewed by scheduling order, not by catalogue composition.
+throttle_group: wolt

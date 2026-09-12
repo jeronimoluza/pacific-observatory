@@ -26,3 +26,4 @@ notes: >
   cor catalog) | Scrape-ready (Shopify home decor catalog) | Good home decor/furniture/household goods
    lead; use collection pages and /products.json if enabled | origin=botswana_sources_candidates_2026-
   09-10.csv
+throttle_group: shopify

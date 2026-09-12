@@ -23,3 +23,4 @@ notes: |
   coicop_divisions: 11
   divisions_basis: walked_categories (dataset's own COICOP-1999 analytical
   category taxonomy maps 1:1 to this single COICOP-2018 division)
+throttle_group: eurostat

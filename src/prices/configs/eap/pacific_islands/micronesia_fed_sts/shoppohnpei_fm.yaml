@@ -19,3 +19,4 @@ notes: |
   saki4you_fm (added same round) are Micronesia's first retailer_sku sources.
   coicop_divisions: 01
   divisions_basis: sampled_rows (6 of 66 -- small catalog, but every sampled row was food)
+throttle_group: shopify

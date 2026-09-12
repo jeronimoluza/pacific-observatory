@@ -17,3 +17,4 @@ notes: |
   pepper, coconut products). Channel is `other` rather than a food channel for that reason --
   most of its value here is division 03 (clothing), which FSM has no other source for.
   Page family parsed: API (/products.json).
+throttle_group: shopify

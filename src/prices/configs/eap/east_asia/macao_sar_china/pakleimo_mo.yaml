@@ -14,3 +14,4 @@ notes: |
   Macao Shopify furniture storefront. Public /products.json feed returned MOP
   item rows on 2026-09-07, including mattresses, storage cabinets, ergonomic
   chairs, sofas, desks, and other furniture.
+throttle_group: shopify

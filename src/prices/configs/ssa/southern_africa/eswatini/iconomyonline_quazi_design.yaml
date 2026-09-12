@@ -24,3 +24,4 @@ scrapy_settings:
 notes: >
   Generated from child-task consolidation on 2026-09-11. Child evidence: SCRAPABLE / SHOPIFY HOMEWARE 
   | SCRAPABLE / SHOPIFY HOMEWARE | origin=eswatini_price_sources_added_2026-09-10.md
+throttle_group: shopify

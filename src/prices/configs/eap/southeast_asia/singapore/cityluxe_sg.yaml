@@ -13,3 +13,4 @@ archive_path_re: '^/products/[^/?]+'
 notes: |
   Cityluxe Singapore Shopify catalogue. Added for stationery, writing supplies,
   planners, notebooks, and art/school-adjacent supplies with SGD prices.
+throttle_group: shopify

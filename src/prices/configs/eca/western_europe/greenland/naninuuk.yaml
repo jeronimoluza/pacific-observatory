@@ -26,3 +26,4 @@ notes: >
   hopify. /products.json?limit=250&page=N worked; collection pages show 454 products and prices. Extra
   ct variants and availability. | Useful for COICOP recreation/hobby and household-textile-adjacent go
   ods. | origin=greenland_price_sources_2026-09-10.csv
+throttle_group: shopify

@@ -52,3 +52,4 @@ notes: |
 
   Supersedes the four single-banner configs megamarket_ua / ultramarket_ua /
   zaraz_ua / alcohub_ua, which were never committed.
+throttle_group: zakaz

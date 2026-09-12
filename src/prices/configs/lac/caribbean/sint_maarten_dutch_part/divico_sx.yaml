@@ -46,3 +46,4 @@ notes: |
   WooCommerce Store API answers 200 with 1,077 products but every single one
   reports price "0" (477/477 checked across 5 pages), and the PDP HTML
   carries no price text either. It is an online catalogue without prices.
+throttle_group: shopify

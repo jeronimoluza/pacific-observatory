@@ -1,0 +1,48 @@
+scaffolding: spider
+spider: propertygibraltar_com
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+url: "https://www.propertygibraltar.com/rentals"
+channel: real-estate
+language: en
+currency: GBP
+cadence: monthly
+coicop_codes: ["04.1.1"]
+active: true
+max_items: null
+start_urls: null
+notes: |
+  PropertyGibraltar -- Gibraltar's estate-agency rental portal. Onboarded
+  2026-09-11 from the Gibraltar pending-candidate list ("NEEDS-CUSTOM-
+  CRAWLER / html_custom", which was correct here: no platform API, bespoke
+  spider written).
+
+  It aggregates the books of the territory's agents (BFA, Chesterton and
+  others -- each card carries the listing agent's logo), so one crawl
+  reaches most of the local rental market rather than one agent's stock.
+
+  Page family parsed: listing only. The spider reads
+  /rentals?sale=0&category=1&np=N and emits the /property/<slug> PDP url
+  without fetching it.
+
+  Server-rendered Bootstrap HTML; curl_cffi impersonate=chrome124 clears
+  with a plain 200, no Playwright. 20 listing cards per page, 14 pages at
+  onboarding (~280 live rentals). Enumerability confirmed live 2026-09-11:
+  p1, p2 and p14 return different id sets. They are NOT disjoint -- the
+  portal floats ~4 promoted listings onto every page -- so the crawl's stop
+  condition is "this page equals the previous page exactly", not "any
+  overlap".
+
+  coicop_codes: ["04.1.1"] -- narrow source, residential rentals only
+  (category=1 + sale=0 scopes the query to long-term lets). Prices are
+  quoted "pcm" (per calendar month), matching the monthly pricing_basis
+  convention used by lun_ua.
+
+  Currency GBP: the site prints GBP, and Gibraltar's GIP trades at par with
+  sterling with both circulating locally. Set at spider class level, not
+  parsed from the symbol.
+
+  Gibraltar had 1 of 257 COICOP leaves filled before this pass; 04.1.1
+  (actual rentals for housing) was not among them and no other Gibraltar
+  source reaches it.

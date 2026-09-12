@@ -34,3 +34,4 @@ notes: |
 
   Payload `currency` is XCD, matching countries.yaml dominica. coicop_codes
   left unset -- wide supermarket catalogue, classifier assigns per-leaf.
+throttle_group: caribeeats

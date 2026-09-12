@@ -33,3 +33,4 @@ notes: |
   Mixed grocery/household/electronics catalog -- channel set to
   hypermarket (dominant format). timeout raised for the ~486-category
   full-tree crawl.
+throttle_group: lulu

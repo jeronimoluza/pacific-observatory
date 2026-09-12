@@ -30,3 +30,4 @@ notes: |
   the existing jarir_* multi-country convention. General merchandise/
   appliance/furniture catalog -> channel: dept-store, not electronics.
   FULL_SCRAPE_ROWCOUNT_PLACEHOLDER
+throttle_group: courts

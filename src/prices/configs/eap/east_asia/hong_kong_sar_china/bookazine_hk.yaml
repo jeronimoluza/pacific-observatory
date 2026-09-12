@@ -14,3 +14,4 @@ notes: |
   Bookazine Hong Kong adds books, stationery, toys, cards, and gift goods.
   The public Shopify /products.json feed returned HKD-priced rows on
   2026-09-07.
+throttle_group: shopify

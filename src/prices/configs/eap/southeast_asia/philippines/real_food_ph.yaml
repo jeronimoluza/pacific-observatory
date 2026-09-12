@@ -14,3 +14,4 @@ notes: |
   Real Food Philippines exposes its catalog through the underlying Shopify host,
   which avoids the main-domain Cloudflare block observed earlier. The feed
   returned PHP-priced grocery, frozen food, baby, and pantry rows on 2026-09-07.
+throttle_group: shopify

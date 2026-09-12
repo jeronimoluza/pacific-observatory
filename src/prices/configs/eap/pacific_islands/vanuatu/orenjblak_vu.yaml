@@ -16,3 +16,4 @@ notes: |
   and ID-card accessories. TakeApp stores encode VUV as whole-vatu amounts,
   so this spider overrides the shared TakeApp price divisor to preserve
   displayed VUV prices such as 3000 rather than 30.00.
+throttle_group: takeapp

@@ -19,3 +19,4 @@ notes: |
   storefront. /products.json is the public catalog; sampled products span
   sport jerseys and general merchandise, mixed department-store assortment
   (not food-dominant), priced in FJD. Verified live 2026-09-06.
+throttle_group: shopify

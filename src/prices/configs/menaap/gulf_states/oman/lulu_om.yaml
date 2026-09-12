@@ -27,3 +27,4 @@ notes: |
   approximated as hypermarket.
   coicop_divisions: 01, 03, 05, 08, 09
   divisions_basis: sampled_rows (random 8-URL sample from the products sitemap; category not derivable from PDP markup, full tree not walked)
+throttle_group: lulu

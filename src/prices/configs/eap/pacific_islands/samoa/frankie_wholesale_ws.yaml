@@ -15,3 +15,4 @@ notes: >
   /products.json endpoint returned WST-priced wholesale grocery and household
   product records during live probe on 2026-09-06, including canned food,
   cooking oil, sugar, noodles, drinks, and frozen/meat packs.
+throttle_group: shopify

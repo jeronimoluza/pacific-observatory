@@ -14,3 +14,4 @@ notes: |
   live 2026-08-06: HTTP 200, real SKUs (e.g. 'BIG TREE APPY 500ML',
   product_type 'soft drink', tags ['Grocery','Lilongwe','Malawi']). Currency
   MWK matches countries.yaml.
+throttle_group: shopify

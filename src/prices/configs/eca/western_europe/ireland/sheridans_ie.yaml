@@ -25,3 +25,4 @@ notes: |
   pagination: ~595 products across 3 pages (limit=250). A small number of
   listed "products" are event tickets (talks, festival entry) at price
   0.00 -- filtered out in the spider's `_items` override.
+throttle_group: shopify

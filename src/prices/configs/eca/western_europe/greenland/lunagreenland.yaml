@@ -26,3 +26,4 @@ notes: >
   hopify. /products.json?limit=250&page=N worked; extract product title, handle, vendor, product_type,
    tags, variants, sku, availability, price. | Nuuk shop shipping within Greenland. Strong home-goods/
   furniture/decor coverage. | origin=greenland_price_sources_2026-09-10.csv
+throttle_group: shopify

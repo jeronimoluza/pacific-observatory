@@ -20,3 +20,4 @@ notes: |
   truncated further pagination (Shopify-side throttling under sustained
   load; base class DOWNLOAD_DELAY=2.0s not enough). Live catalog likely
   larger -- re-run after a cooldown for fuller coverage.
+throttle_group: shopify

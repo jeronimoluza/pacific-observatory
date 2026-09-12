@@ -1,0 +1,50 @@
+scaffolding: spider
+spider: generic_woo_configured
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: "https://naturereserve.gi/tickets/"
+channel: other
+language: en
+currency: GBP
+cadence: monthly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "naturereserve_gi"
+  base_url: "https://naturereserve.gi"
+  currency: "GBP"
+  language: "en"
+  api_url: "https://naturereserve.gi/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Gibraltar Nature Reserve (the government-run Upper Rock attraction) online
+  ticket shop. Onboarded 2026-09-11 from the Gibraltar pending-candidate
+  list, where it was queued as "NEEDS-CUSTOM-CRAWLER / html_custom". That
+  verdict was wrong: the site is WordPress + WooCommerce and its Store API
+  at /wp-json/wc/store/v1/products is open with no auth, so no bespoke
+  spider was needed -- the shared generic_woo_configured spider covers it.
+
+  Page family parsed: API. The spider reads the Store API directly and never
+  fetches a browsable page; the permalinks it emits (/shop/tickets/<slug>/)
+  are real PDPs it does not itself request.
+
+  Live measurement 2026-09-11: x-wp-total = 34 products, 1 page at
+  per_page=100. prices.currency_code is "GBP" (declared by the API, not
+  inferred from the displayed symbol) with currency_minor_unit 2, handled by
+  _woo_base -- e.g. "Infant Dolphin" 1850 -> GBP 18.50, "Citibus Hopper +
+  Walk The Rock Adult" 2750 -> GBP 27.50.
+
+  A handful of catalogue entries carry price 0 ("Hopper All Day Ticket",
+  "Taxi Ticket") -- these are placeholder/price-on-application rows and
+  _woo_base already drops zero prices, so the shipped row count is below 34.
+
+  coicop_codes left unset (wide by the narrowness rule): the catalogue mixes
+  attraction admission and guided tours (09.4.2) with Citibus hopper bus
+  tickets (07.3.1) and dolphin boat trips, i.e. more than one 3-digit class.
+  Left to the classifier. channel: other -- an attraction ticket office is
+  not a retail outlet and no closer value exists in the Channel enum.

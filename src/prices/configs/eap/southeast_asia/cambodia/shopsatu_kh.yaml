@@ -16,3 +16,4 @@ notes: |
   names, product types, availability, URLs, and prices. Integrated for
   non-food breadth in toys, baby-adjacent goods, and home goods after live
   endpoint probing on 2026-09-07.
+throttle_group: shopify

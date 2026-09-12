@@ -1,0 +1,68 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: mr_ansade_inpc_prices
+module: ssa.west_africa.mauritania.ansade_inpc_prices
+function: fetch_mr_ansade_inpc_prices
+url: https://admin.ansade.mr/wp-json/ansade/v1/publications/
+language: fr
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  ANSADE (Mauritania's NSO) publishes a monthly INPC note. Most of it is index
+  material, but the bulletin also carries "Tableau 3 : Prix moyens en MRU de
+  detail de quelques produits essentiels au niveau des centres de l'INPC" --
+  thirteen basket items priced in MRU at each of the five INPC collection
+  centres (Aioun, Rosso, Atar, Nouadhibou, Nouakchott). Those are price
+  LEVELS and they are what this fetcher emits. The note's index tables are a
+  different schema (IndexObservation) and would be a separate source; they are
+  NOT emitted here.
+
+  THIS CORRECTS A PRIOR VERDICT. known_blockers.md filed admin.ansade.mr as
+  "a publications index, not a price feed; a price series would have to be
+  mined out of the quarterly Note de conjoncture / IPC bulletins inside
+  pdf_content. Real potential, real work." The potential is real and the work
+  is one table: every INPC note from 2016-01 to 2022-07 carries Tableau 3 in a
+  fixed 13-row x 5-centre layout.
+
+  API: /wp-json/ansade/v1/publications/ is unauthenticated and returns all 531
+  publications in one 11 MB response. Measured 2026-09-11: 177 in the "Prix"
+  category, 128 of them INPC notes, 78 of those carrying Tableau 3.
+  `pdf_content` is populated for only the ~35 most recent publications and is
+  an empty string for everything older, so the fetcher prefers it when present
+  and falls back to downloading file.url and reading it with pdfplumber.
+
+  DATING uses the table caption ("... centres de l'INPC en juillet 2022")
+  first and the publication title ("... (INPC) Janvier 2016") second. Neither
+  alone suffices -- the caption is missing from the ten 2016 notes and the
+  title carries no month on several 2024-2026 notes. The WordPress `date`
+  field is the PUBLICATION date (an August note is published in September) and
+  is never used. The title is read BEFORE the PDF is fetched so a re-run skips
+  the download for months already on disk.
+
+  BILINGUAL LAYOUT GOTCHA: the bulletins print French and Arabic side by side,
+  so every extracted row ends in Arabic text plus bracket debris -- ") (",
+  ") 21 (", and on the courbine row ") ( ) (". Arabic characters are stripped
+  and the bracket residue removed (repeatedly) before matching; without that
+  every row fails the end-of-line anchor and the table reads as empty. Labels
+  themselves contain digits ("bouteille de 12,5 Kg de gaz"), so the label is
+  matched non-greedily against a fixed five-value tail rather than by
+  splitting on the first number. "nd"/"ND" cells are skipped.
+
+  COICOP: 13 stable items, hand-mapped; unmapped labels are logged and
+  DROPPED. Ten are food (division 01), two are LPG bottle refills (04.5.2.2)
+  and one is road diesel (07.2.2.1) -- three divisions from one small table.
+
+  `coicop_classification: classifier` with a per-row `coicop_code` is
+  deliberate, matching zm_mfl_market_bulletin:
+  concatenate._build_classifier_csv_map ingests a fetcher CSV ONLY for
+  `classifier` sources, so `source_curated` would delete this source's rows
+  from the build. The per-row code rides through as declared_coicop_codes and
+  short-circuits classify at confidence 1.0.
+
+  channel: null -- an NSO bulletin, not an outlet.
+
+  MEASURED first run 2026-09-11: see the onboarding report.
+  Onboarded 2026-09-11.

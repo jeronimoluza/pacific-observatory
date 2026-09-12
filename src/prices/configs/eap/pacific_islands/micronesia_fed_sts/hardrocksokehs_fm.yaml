@@ -15,3 +15,4 @@ notes: |
   Micronesia. The public /products.json endpoint exposes food and household SKU
   prices in USD; the scraper drops zero-priced placeholder rows. Re-verified
   live 2026-09-01.
+throttle_group: shopify

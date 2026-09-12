@@ -33,3 +33,4 @@ notes: >
   c car jack kit 124,500 FCFA; school backpack 27,000 FCFA. First crawler probe should try Shopify `/p
   roducts.json` and collections, then fall back to server-rendered cards. | origin=chad_price_source_s
   tatus_rows_20260910_v2_expanded.csv
+throttle_group: shopify

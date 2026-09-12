@@ -15,3 +15,4 @@ notes: >
   dairy, pantry, meat, and beverage products with NZD prices during the
   2026-09-01 probe. Count separately from mysamoa_chan_mow_ws as a distinct
   local supermarket/merchant feed on the same marketplace host.
+throttle_group: shopify

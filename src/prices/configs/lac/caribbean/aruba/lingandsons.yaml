@@ -15,3 +15,4 @@ notes: |
   /meta.json: currency AWG, 1,850 published products, 126 collections).
   Currency AWG matches countries.yaml. Aruba's premium grocery chain, fresh
   produce confirmed.
+throttle_group: shopify

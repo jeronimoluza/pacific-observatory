@@ -28,3 +28,4 @@ notes: >
   /import-procurement; include available flag and product_type/vendor. Needs dedupe and sanity review 
   because many products appear older but were updated in 2026. | origin=tuvalu_candidate_price_sources
   .csv
+throttle_group: shopify

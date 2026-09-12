@@ -21,3 +21,4 @@ notes: |
   covers 41 ECA countries with one implementation.
   coicop_divisions: 04
   divisions_basis: walked_categories (dataset scope is electricity retail price only)
+throttle_group: eurostat

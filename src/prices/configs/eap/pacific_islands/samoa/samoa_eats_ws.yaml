@@ -14,3 +14,4 @@ notes: >
   payload exposes product ids, names, WST prices, sold-out flags, and
   countryCode=WS. Probe on 2026-09-01 returned sushi, starters, and other
   meal items.
+throttle_group: takeapp

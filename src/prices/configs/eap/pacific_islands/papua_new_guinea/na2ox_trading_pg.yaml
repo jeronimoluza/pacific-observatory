@@ -14,3 +14,4 @@ notes: >
   Next.js flight payload exposes product ids, names, PGK prices, sold-out
   flags, and countryCode=PG. Live probe on 2026-09-06 returned 16 physical
   products, mostly snacks, instant noodles, coffee, and drink mixes.
+throttle_group: takeapp

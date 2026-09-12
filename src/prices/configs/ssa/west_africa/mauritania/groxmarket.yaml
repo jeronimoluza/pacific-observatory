@@ -18,3 +18,4 @@ notes: |
   Mauritania), so language is set to fr despite the shard's en starting
   point. Sampled page skews personal-care/cosmetics; whole-catalog walk will
   surface the grocery side.
+throttle_group: shopify

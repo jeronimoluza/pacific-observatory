@@ -18,3 +18,4 @@ notes: |
   countries.yaml. Product titles are Spanish, so language is set to es
   despite the shard's en starting point. Strong staple/basic-basket
   coverage.
+throttle_group: shopify

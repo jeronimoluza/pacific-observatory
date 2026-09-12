@@ -15,3 +15,4 @@ notes: |
   beverages, supplements, and pharmacy-adjacent items. The endpoint returned
   PHP-priced rows from this environment on 2026-09-07.
 
+throttle_group: shopify

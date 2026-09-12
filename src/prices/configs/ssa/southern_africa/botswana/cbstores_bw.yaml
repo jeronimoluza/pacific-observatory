@@ -23,3 +23,4 @@ notes: |
   --source cbstores_bw --max-items 20 -> 20 rows, all priced. Sample:
   BWP 179.99 'Boys Double Velcro Open Toe Adventure Sandal', BWP 79.99
   'Short Sleeve White Tie Detail Shirt'.
+throttle_group: shopify

@@ -14,3 +14,4 @@ notes: |
   National Book Store exposes a public Shopify feed with notebooks, books,
   paper goods, stationery, and school/office supplies. Added for Philippines
   books and stationery coverage missing from the parent source mix.
+throttle_group: shopify

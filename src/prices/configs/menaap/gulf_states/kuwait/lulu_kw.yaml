@@ -33,3 +33,4 @@ notes: |
   homeware) -- channel approximated as hypermarket.
   coicop_divisions: 01, 03, 05, 08, 09
   divisions_basis: sampled_rows (URL keyword sample + spot PDP checks; category not derivable from PDP markup, full tree not walked)
+throttle_group: lulu

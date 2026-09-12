@@ -23,3 +23,4 @@ notes: |
   SKUs, XCD) was probed the same day and deliberately NOT onboarded as a
   separate source -- it is the same brewery's shelf listed twice on one
   platform, and shipping both would double-count it.
+throttle_group: caribeeats

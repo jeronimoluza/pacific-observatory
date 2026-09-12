@@ -13,3 +13,4 @@ archive_path_re: '^/products/[^/?]+'
 notes: |
   MPH Malaysia Shopify catalogue. Added as an independent Malaysia book
   retailer with priced MYR product variants from public products.json.
+throttle_group: shopify

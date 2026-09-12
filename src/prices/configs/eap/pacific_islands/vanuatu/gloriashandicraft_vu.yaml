@@ -16,3 +16,4 @@ notes: |
   specialized non-food/home-decor evidence, not staple retail. TakeApp stores
   encode VUV as whole-vatu amounts, so this spider overrides the shared
   TakeApp price divisor to preserve displayed VUV prices.
+throttle_group: takeapp

@@ -15,3 +15,4 @@ notes: >
   container"). Shopify catalog, open /products.json, 132 products on
   page 1 alone. Currency confirmed USD via Shopify.currency on the
   storefront (matches countries.yaml).
+throttle_group: shopify

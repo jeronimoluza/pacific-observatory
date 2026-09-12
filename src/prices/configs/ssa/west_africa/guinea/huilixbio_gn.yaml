@@ -26,3 +26,4 @@ notes: >
   e /products.json; otherwise parse cards for FG/GNF prices and add-to-cart. | Ships to Guinea and lis
   ts GNF prices, but may serve multiple African countries rather than a Guinea-specific retailer. Revi
   ew provenance and shipping/default market. | origin=guinea_price_source_candidates_2026-09-10.csv
+throttle_group: shopify
