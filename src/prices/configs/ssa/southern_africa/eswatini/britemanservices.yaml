@@ -1,0 +1,68 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: electronics
+spider: britemanservices
+url: https://britemanservices.com/
+language: en
+currency: SZL
+cadence: weekly
+active: true
+notes: |
+  Onboarded 2026-09-12 from the Eswatini pending-candidate list.
+
+  Briteman Services -- IT / consumer-electronics retailer with stores in
+  Mbabane and Manzini (its own copy: "Free delivery within Mbabane and
+  Manzini corridors"; WhatsApp order links carry a +268 number).
+  Bespoke React/Vite SPA: no WooCommerce, no Shopify, no catalog API.
+  The full product list is a plain JS array literal baked into the
+  static asset bundle at build time -- the same shape already handled
+  for busiquip_sz, hence extraction_pattern scrapy_api rather than
+  scrapy_html.
+
+  GOTCHA and the reason the bundle URL is NOT hardcoded the way
+  busiquip_sz's is: the Vite content hash in /assets/index-<hash>.js
+  changes on every site rebuild. The spider fetches the homepage first,
+  reads the bundle paths out of its refs, and scans every
+  /assets/index-*.js it finds. Three index-* bundles are served; one
+  carries the array, the others scan harmlessly.
+
+  Quoting gotcha: the minifier quotes `name` and `specs` with EITHER "
+  or ' depending on what avoids escaping ('MacBook Air M3 13"' uses
+  single quotes), so the item regex accepts both.
+
+  ENUMERABILITY measured 2026-09-12: 16 product objects in the array, 16
+  distinct names, all 16 carrying a positive integer price. A static
+  complete data file, not a page of a paginated listing, so the
+  page1-vs-page2 diff is inapplicable -- the count is the whole catalog.
+
+  MINOR-UNIT CHECK, done by eye as the brief requires: the bundle
+  integers are whole Emalangeni, NOT minor units. Independent
+  confirmation from the pre-rendered homepage HTML, whose WhatsApp deep
+  links embed the displayed price -- "Price: E 12,900" for the iPad Air
+  M2 against price:12900 in the bundle, "Price: E 26,500" for the Dell
+  XPS 15 against price:26500. No /100 and no *100 applied.
+
+  Catalog mix: laptops (Dell XPS, HP EliteBook, MacBook Air), tablets
+  (iPad Air, Galaxy Tab), peripherals, storage, UPS units, bags and a
+  handheld game console -- spans COICOP 09.1 / 08.2 / 05.x, so
+  coicop_codes is left unset for the classifier.
+
+  PDP urls are synthesised with the bundle's own slugifier
+  (lowercase, [^a-z0-9]+ -> "-", trim). Verified against links the
+  homepage actually renders: 'Dell XPS 15 (2025)' ->
+  /product/dell-xps-15-2025 and 'MacBook Air M3 13"' ->
+  /product/macbook-air-m3-13. As with busiquip_sz the PDP route is
+  client-rendered, so the url serves only as the row's per-product
+  identity for DuplicationPipeline's url dedup; the spider never fetches
+  it.
+
+  Currency SZL from the homepage's own "Price: E 12,900" strings
+  (Emalangeni), matching countries.yaml's default. Set at spider class
+  level.
+
+  Page family: neither listing nor PDP -- a static JS data bundle whose
+  filename hash changes per build, so there is no stable archive path
+  for this source and no structured data for the archive fetcher's
+  parser tiers to read.

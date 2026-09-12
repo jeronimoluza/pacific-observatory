@@ -1,0 +1,62 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: swaziswap
+url: https://swaziswap.com/catalogue
+language: en
+currency: SZL
+cadence: weekly
+active: true
+notes: |
+  Onboarded 2026-09-12 from the Eswatini pending-candidate list.
+
+  SwaziSwap -- an Eswatini-domestic online marketplace ("Proudly
+  Eswatini"; delivery stated as within 60km of Mbabane) listing local
+  first-party sellers (Second Hand Appliances, Boiler Art Engineering,
+  plus individual sellers). Django server-rendered HTML, no WAF, no JS:
+  /catalogue returns the whole grid to a plain fetch.
+
+  ENUMERABILITY measured 2026-09-12: /catalogue prints its own count in
+  a .stats-bar ("<strong>8</strong> products") and renders exactly 8
+  .product-card blocks with 8 distinct /product/<slug>/ urls. The page
+  accepts no pagination -- /catalogue?page=2 returns a byte-identical
+  response (same 98,357-byte body, same 8 cards) -- and every sidebar
+  category facet reads "0 products" except the ones these 8 sit in. So
+  this is one complete page, not page 1 of N, and the page1-vs-page2
+  diff test is inapplicable (same situation as busiquip_sz's static
+  bundle). The spider reads the stats-bar count and logs a warning when
+  the rendered card count disagrees with it -- the tripwire for the day
+  the catalog outgrows one page.
+
+  Sits just above the >=5-row ship gate at 8. A young marketplace; worth
+  re-checking for growth rather than assuming the count is stable.
+
+  channel: marketplace, tagged honestly -- SwaziSwap is a seller
+  directory, not a first-party retailer, and its product names are
+  seller-authored, which is exactly what census.py excludes from the
+  corpus census. Its /stores directory is the surface the
+  marketplace-as-directory doctrine prefers, and it IS reachable
+  (https://swaziswap.com/stores -> 200, server-rendered) -- but measured
+  2026-09-12 it lists 9 verified sellers of which only 4 hold any stock
+  at all (3 + 2 + 1 + 1 = the same 8 products), and none of the 9 has an
+  off-platform storefront of its own. So the directory yields no
+  first-party retailer worth a source of its own today; re-check it if
+  the seller count grows.
+
+  Catalog mix at onboarding: second-hand appliances (deep fat fryer, bar
+  fridge), locally fabricated steel goods (braaistand, sliding gate,
+  rabbit cage, swing set) and used vehicle parts (brake pads, wheels and
+  tyres) -- wide across COICOP 05 / 07, so coicop_codes is left unset for
+  the classifier.
+
+  Currency SZL: the card prints "E " (Emalangeni), matching
+  countries.yaml's Eswatini default. Set at spider class level.
+
+  Page family: listing only.
+
+  Archive note: no JSON-LD, no OpenGraph product block and no schema.org
+  itemprop on the catalogue page -- price lives in a plain
+  <p class="card-price"> -- so none of the archive fetcher's four
+  generic parser tiers will read a capture of this source.

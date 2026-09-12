@@ -1,0 +1,57 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["07.1.1.1"]
+channel: other
+spider: mitsubishieswatini
+url: https://mitsubishieswatini.co.sz/
+language: en
+currency: SZL
+cadence: monthly
+active: true
+notes: |
+  Onboarded 2026-09-12 from the Eswatini pending-candidate list.
+
+  Mitsubishi Eswatini (Stucky Motors) -- the country's Mitsubishi
+  franchise. WordPress + Elementor, server-rendered, no WAF (bare Scrapy
+  and curl_cffi chrome124 both 200). The homepage carries the complete
+  new-vehicle range with a "Drive away from" price per model.
+
+  PRICE SEMANTICS, stated plainly because it is a real caveat: these are
+  model-range "drive away from" prices, not per-variant transaction
+  prices. Most models print a RANGE spanning their trim ladder (Xpander
+  E365 995 - E419 995; Next Gen Triton E499 990 - E889 990); Xpander
+  Cross prints a single figure. The spider emits the LOWER bound -- the
+  figure the page itself advertises -- and appends the upper bound to
+  product_name so the spread is not silently lost. Read these as
+  entry-level new-car list prices for the model: the right granularity
+  for a COICOP 07.1.1.1 basket anchor, the wrong granularity for
+  SKU-level stickiness work.
+
+  DEDUPLICATION: the Elementor switcher renders the same model blocks
+  FOUR times in the served HTML (desktop tabs, mobile accordion and two
+  duplicated carousels) -- a naive regex over the page text returns 32
+  price strings for 8 distinct models. The spider dedupes on the model's
+  /vehicles/<slug>/ url, which is stable across the duplicates.
+
+  ENUMERABILITY: this is the manufacturer's complete Eswatini range as
+  the site presents it (the nav's "Vehicles" menu lists exactly these
+  models), not page 1 of a paginated catalog, so the page1-vs-page2 diff
+  test is inapplicable -- the count is the range.
+
+  THOUSANDS-SEPARATOR TRAP: the page separates thousands with a SPACE
+  ("E365 995"), so a regex that stops at the first non-digit reads 365
+  -- a 1000x error. The price regex deliberately accepts spaces inside
+  the number and strips them.
+
+  Currency SZL ("E", Emalangeni), matching countries.yaml's Eswatini
+  default. Set at spider class level, never parsed from the symbol.
+
+  Page family: listing only (the homepage block carries model + price +
+  the model page url; the spider does not fetch /vehicles/<slug>/).
+
+  Archive note: the homepage does emit JSON-LD, but it is WordPress/Yoast
+  WebPage+Organization graph markup, not Product/Offer -- there is no
+  price in any structured block on the page, so a Common Crawl capture
+  will resolve and parse to zero without a bespoke tier.

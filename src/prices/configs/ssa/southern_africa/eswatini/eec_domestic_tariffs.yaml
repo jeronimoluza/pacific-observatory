@@ -1,0 +1,56 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1.0"]
+channel: null
+source_key: eec_domestic_tariffs_sz
+module: ssa.southern_africa.eswatini.eec_domestic_tariffs
+function: fetch_eec_domestic_tariffs_sz
+url: https://www.eec.co.sz/domestic/tariffs/
+language: en
+currency: SZL
+cadence: annual
+fallback_date: 2015-01-01
+active: true
+notes: |
+  Onboarded 2026-09-12 from the Eswatini pending-candidate list
+  ("NEEDS-CUSTOM-CRAWLER", which overstated the difficulty -- this is a
+  plain HTML table, not a crawler problem).
+
+  Eswatini Electricity Company, the national vertically-integrated
+  utility. /domestic/tariffs/ is a static server-rendered Bootstrap page
+  (no WAF, no JS): the schedule is one <table> inside
+  <section id="MainText">, headed by a .section-title <h2> carrying the
+  tariff year ("2026/2027 -- Residential/Domestic Tariffs"). Columns:
+  Type | Non-TOU Tariffs | Facility Charge E/Month | Energy Charge E/kWh.
+
+  SCOPE: the domestic schedule only. EEC publishes separate commercial
+  pages (/commercial/tariffs/ plus four time-of-use schedules T1-T4);
+  those are business tariffs, not household final consumption, and are
+  deliberately not walked.
+
+  Rows emitted, measured 2026-09-12: 6. Five per-kWh energy charges
+  (S10 Life Line 0-75kWh 1.5685; S10 Life Line 76-100kWh 2.8624; S10
+  Life Line >100kWh 6.2973; S1 Domestic 2.8624; S2 General Purpose
+  3.3920) plus the one fixed monthly facility charge printed on the
+  schedule (S2 General Purpose, E208.16/month). The S10/S1 rows leave
+  the facility-charge cell blank and correctly emit no facility row --
+  the parser returns None for an empty cell rather than 0, so a blank
+  can never become a free-electricity observation.
+
+  The page states the energy charge is "inclusive of 2.5% levy (of the
+  energy charge) for Rural Electrification Access Fund and exclusive of
+  the Value Added Tax (VAT) applicable to all non-domestic customers",
+  i.e. the domestic figures are already consumer-facing. Carried per row
+  in `notes`.
+
+  period_kind is "snapshot" (scrape date), not "effective_from": no
+  commencement date is printed anywhere on the page, only the
+  "2026/2027" tariff-year label, which is carried in the row note
+  instead of being turned into an invented April-1 date. Same reasoning
+  and same shape as epal_water_tariff_ao.py.
+
+  Currency SZL (Lilangeni); the table's own headers denominate in "E"
+  (Emalangeni), matching countries.yaml's Eswatini default.
+  fallback_date backdated so run 1 ships the full current schedule.

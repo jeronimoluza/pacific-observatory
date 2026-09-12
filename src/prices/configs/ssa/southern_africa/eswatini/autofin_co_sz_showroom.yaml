@@ -1,0 +1,53 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["07.1.1"]
+channel: other
+spider: autofin_co_sz_showroom
+url: https://autofin.co.sz/showroom/
+language: en
+currency: SZL
+cadence: weekly
+active: true
+notes: |
+  Onboarded 2026-09-12 from the Eswatini pending-candidate list.
+
+  Eswatini Autofin Investments -- the Kia franchise dealer in Mbabane
+  (Cnr. Mshengu Road and Siguca Crescent, Mbabane H100, printed on every
+  card). WordPress + the "Auto Listings" plugin, plain server-rendered
+  HTML, no WAF: bare Scrapy and curl_cffi chrome124 both return 200.
+
+  Page family: listing only. The card carries name + price + PDP url, so
+  the spider never fetches /showroom/<slug>/.
+
+  ENUMERABILITY measured 2026-09-12: FIVE listings is the entire stock,
+  not page 1 of N. /showroom/page/2/ returns HTTP 404 (not an empty
+  page) and the plugin renders no pagination element. The filter form's
+  own facets corroborate: one make (Kia), one year (2023), three models
+  (Picanto / Sorento / Sportage), three body types. The page1-vs-page2
+  diff test is therefore inapplicable here -- there is one page and it
+  is complete. The spider still follows `a.next.page-numbers` when the
+  plugin emits one, so stock growth paginates without a code change.
+  This sits exactly at the >=5-row ship gate; if stock drops the source
+  will fall below it.
+
+  coicop_codes ["07.1.1"] (motor cars) rather than the finer .1 (new) /
+  .2 (second-hand) split: the site's own facets offer New / Used /
+  Certified side by side and the five current cards are low-mileage
+  (4,100-23,000 km) "Certified Vehicle" stock, genuinely straddling both,
+  so the parent class is the honest code.
+
+  Currency SZL from the card's own <span class="currency-symbol">E</span>
+  (Emalangeni), matching countries.yaml's default; set at spider class
+  level, never parsed from the symbol. Prices are quoted "inc VAT" --
+  the consumer-facing figure.
+
+  Archive note: the showroom page does emit one JSON-LD block, but it is
+  the Yoast CollectionPage/BreadcrumbList/WebSite/Organization graph --
+  no Product and no Offer. Verified 2026-09-12: zero itemprop="price"
+  attributes and zero og product: tags on the page. The price lives in
+  <span class="price-amount"> markup only, which none of the archive
+  fetcher's four generic parser tiers reads, so a Common Crawl capture of
+  this source will resolve and then parse to zero unless a bespoke tier
+  is written for it.
