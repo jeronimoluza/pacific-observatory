@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: pretty_potions_bw
+url: https://www.prettypotions.shop/
+channel: cosmetics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12: WooCommerce, Store API OPEN -- 90 products,
+  X-WP-Total=90, currency_code BWP, currency_minor_unit 2.
+  WAF GOTCHA and the reason this is a dedicated spider rather than
+  generic_woo_configured: the tenant 403s EVERY Chrome and Safari curl_cffi
+  profile (chrome120, chrome124, chrome131, safari17_0 all return the same
+  6,192-byte 403 stub, on the bare homepage as well as the API) and clears
+  only on firefox133. A bare-curl or chrome-only probe records this site as
+  WAF-blocked; it is not. The spider pins IMPERSONATE_PROFILE=firefox133,
+  disables scrapy-impersonate RandomBrowserMiddleware (which would otherwise
+  overwrite meta["impersonate"] per request), and matches USER_AGENT to the
+  same Firefox build.
+  K-beauty / skincare -- COICOP 12.1.x. Verified: "Rice 70 Glow Milky Toner"
+  BWP 300.00 (raw 30000 minor units).
+  Page family: API.

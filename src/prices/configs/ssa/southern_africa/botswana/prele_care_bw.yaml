@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://prele.co.bw/"
+channel: cosmetics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "prele_care_bw"
+  base_url: "https://prele.co.bw"
+  currency: "BWP"
+  language: "en"
+  api_url: "https://prele.co.bw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-12: WooCommerce Store API v1 open. 56 products
+  (X-WP-Total=56), all priced, BWP, minor_unit=2. Domestic personal-care
+  brand: hair oils, facial soaps, skin care, bath & cleanse -- COICOP 12.1.x
+  territory, which nothing else in the Botswana set reaches at SKU grain.
+  Sample: "Jojoba Facial Soap 100g" BWP 60.00. Page family: API.

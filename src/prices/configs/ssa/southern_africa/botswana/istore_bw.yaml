@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://istore.co.bw/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "istore_bw"
+  base_url: "https://istore.co.bw"
+  currency: "BWP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-12: Shopify. /products.json?limit=25 returns 25 products;
+  ?page=2 returns a DISJOINT id set (overlap 0), so the catalog paginates
+  and is enumerable -- not a homepage carousel.
+  Authorised Apple reseller in Gaborone. Prices are plain decimals in the
+  variant payload (no minor-unit division) and read as BWP: "Mac mini | M5
+  Pro" 32599.00, "AirTag (2nd Gen) 4 Pack" 2099.00, "Moov Curved Glass
+  Screen Protector" 399.00 -- magnitudes consistent with BWP, not USD/ZAR.
+  Fills COICOP 08.1 / 09.1 consumer-electronics ground that nothing else in
+  the Botswana set reaches. Page family: API.

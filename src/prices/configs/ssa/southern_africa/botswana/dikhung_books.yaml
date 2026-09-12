@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://dikhung.co.bw/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "dikhung_books"
+  base_url: "https://dikhung.co.bw"
+  currency: "BWP"
+  language: "en"
+  api_url: "https://dikhung.co.bw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-12: WooCommerce Store API v1 open. 13 products
+  (X-WP-Total=13), all priced, currency_code=BWP, minor_unit=2.
+  Small independent Gaborone bookshop; categories Best sellers /
+  Business & Economics / Education / Religion. Sample: "The Psychology of
+  Money" BWP 240.00. Small catalog but above the 5-row gate and the only
+  Botswana book retailer in the candidate pool. Page family: API.

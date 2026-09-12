@@ -1,0 +1,24 @@
+scaffolding: spider
+spider: homeandallstore_bw
+url: https://www.homeandallstore.online/
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12: Wix, not one of the generic four. Category pages are a
+  client-rendered SPA shell with no product-list API, but Wix server-injects
+  schema.org Product JSON-LD into every PDP for SEO, so the shared
+  _jsonld_sitemap_base reads it over plain HTTP -- no Playwright at collect
+  time.
+  Enumerable surface: /store-products-sitemap.xml (Wix-generated), 155
+  /product-page/ urls. Mixed household / fitness / apparel catalog.
+  Currency BWP read from the PDP JSON-LD priceCurrency, not assumed from
+  countries.yaml. Verified: "Electronic Fitness Skipping Rope with Counter"
+  BWP 199.74; "Sauna Shirt" BWP 299.98.
+  Page family: PDP only.

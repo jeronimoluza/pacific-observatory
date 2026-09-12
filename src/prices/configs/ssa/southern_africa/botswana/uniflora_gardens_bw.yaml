@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://unifloragardens.com/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "uniflora_gardens_bw"
+  base_url: "https://unifloragardens.com"
+  currency: "BWP"
+  language: "en"
+  api_url: "https://unifloragardens.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-12: WooCommerce Store API v1 open. 42 products
+  (X-WP-Total=42), all priced, BWP, minor_unit=2. Gaborone florist --
+  cut-flower bouquets and arrangements (COICOP 09.3.1 flavour).
+  Sample: "Mixed Bouquet" BWP 950.00. Page family: API.

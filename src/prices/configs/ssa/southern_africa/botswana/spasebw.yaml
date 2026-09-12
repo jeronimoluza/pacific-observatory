@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: spasebw
+url: https://spasebw.com/
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12: WooCommerce, Store API OPEN -- 144 products
+  (X-WP-Total=144), currency_code BWP, currency_minor_unit 2. Outdoor and
+  travel goods: luggage (Cellini), knives (Muela), torches (Nextorch),
+  camping gear.
+  WAF GOTCHA, identical to pretty_potions_bw and the reason this is a
+  dedicated spider rather than generic_woo_configured: every Chrome and
+  Safari curl_cffi profile returns a 6,192-byte 403 stub even on the bare
+  homepage, and only firefox133 clears it. The spider pins
+  IMPERSONATE_PROFILE=firefox133, disables RandomBrowserMiddleware, and
+  matches USER_AGENT to the same Firefox build. All three are required
+  together.
+  Verified: "Qwest Medium Trolley Case" BWP 1899.95 (raw 189995 minor units).
+  Page family: API.

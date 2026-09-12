@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: bms_bw
+url: https://bmsonline.co.bw/store?allCats=1
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12: custom Laravel storefront -- no WooCommerce Store API,
+  no Shopify products.json, no Magento REST, no VTEX, no product sitemap.
+  The /store grid is fully server-rendered with the price inlined as text,
+  so Tier 1A over plain HTTP; Playwright is never used.
+  Enumerability verified live: /store?allCats=1&page=N gives 20 cards per
+  page for pages 1..49 and 13 on page 50 (~993 products); page 100 returns
+  an empty grid. Pages 1/2/3 return DISJOINT product sets, so it paginates
+  rather than re-serving one page.
+  GOTCHA: the rendered pagination links drop allCats=1 and point at
+  /store?page=N, the single-category view. The spider builds its own
+  ?allCats=1&page=N urls instead of following those links.
+  Stationery, school uniforms, batteries, office and general merchandise --
+  a wide catalog, so coicop_codes is left unset for the classifier.
+  Currency BWP is read from the literal "BWP" prefix the site renders in
+  h4.product-price, not assumed from countries.yaml.
+  Page family: listing only -- the spider never fetches a PDP.

@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: crazystore_bw
+url: https://www.crazystore.co.bw/
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12: not WooCommerce/Shopify/Magento/PrestaShop/OpenCart/VTEX
+  -- a custom storefront, but every PDP emits a schema.org Product JSON-LD
+  node, so it rides the shared _jsonld_sitemap_base rather than a bespoke
+  parser.
+  Enumerable surface: https://www.crazystore.co.bw/sitemap.xml, a flat
+  urlset with 7,057 locs of which 7,053 match /products/. Widest catalog
+  onboarded for Botswana in this pass and the only wide non-food chain --
+  housewares, stationery, toys, party, hardware, pet, confectionery.
+  CURRENCY / COUNTRY GOTCHA: robots.txt on the .co.bw host advertises the
+  .co.za sitemap. Following it yields 7,053 crazystore.co.za PDPs priced in
+  ZAR -- a convincing-looking but wrong-country result. The spider pins
+  SITEMAP_URL to the .co.bw sitemap; PDPs there carry priceCurrency=BWP,
+  read off the page, not assumed from countries.yaml.
+  Verified rows: "100 Bulb String Light Cool White, 10m" (sku 301-005131-B)
+  BWP 109.99; "100 Bulb String Light Usb Cool White" BWP 89.99.
+  Page family: PDP only.

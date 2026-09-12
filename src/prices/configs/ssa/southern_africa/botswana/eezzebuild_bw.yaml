@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: eezzebuild_bw
+url: https://eezzebuild.co.bw/product-catalogue/
+channel: home-improvement
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12: WooCommerce, but the Store API is FIREWALLED -- both
+  /wp-json/wc/store/v1/products and /wp-json/wc/store/products return 401,
+  so generic_woo_configured cannot be used here. The Yoast product sitemap
+  is the enumerable surface instead: /product-sitemap.xml, 759 locs, 758 of
+  them /shop/<slug>/ PDPs (the bare /shop/ index is the first loc and yields
+  no row).
+  Each PDP carries a WooCommerce JSON-LD Product node, read by
+  WooBaseSpider.parse_html via the shared _woo_sitemap_base -- the same
+  parser the archive backfiller uses, so live and archived rows come out of
+  one code path. Currency BWP read from the payload.
+  Building materials (bricks, cement, roofing) -- COICOP 04.3 / 05.x ground
+  no other Botswana source reaches. Verified: "Makoro Clay Stock Brick"
+  BWP 3.17.
+  Page family: PDP only.

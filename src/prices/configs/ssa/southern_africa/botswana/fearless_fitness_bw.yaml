@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://fearlessgroup.co.bw/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "fearless_fitness_bw"
+  base_url: "https://fearlessgroup.co.bw"
+  currency: "BWP"
+  language: "en"
+  api_url: "https://fearlessgroup.co.bw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-12: WooCommerce Store API v1 open. 12 products
+  (X-WP-Total=12), all priced, BWP, minor_unit=2.
+  MIXED catalog: 4 gym-membership tiers (Elite BWP 1550.00, Prestige 850.00,
+  Deluxe 450.00, Standard 200.00 -- recreational service prices) plus 8
+  sportswear SKUs (socks, caps, tights, tops). Because it spans a service
+  and goods classes, coicop_codes is left unset and the classifier assigns
+  per row. Page family: API.

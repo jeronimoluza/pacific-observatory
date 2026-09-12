@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://areliada.co.bw/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "areliada_bw"
+  base_url: "https://areliada.co.bw"
+  currency: "BWP"
+  language: "en"
+  api_url: "https://areliada.co.bw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-12: WooCommerce Store API v1 open, no auth.
+  /wp-json/wc/store/v1/products?per_page=100 -> 53 products, X-WP-Total=53
+  (single page, whole catalog). currency_code=BWP, currency_minor_unit=2
+  read from the payload -- the base spider divides by 10**minor_unit.
+  Sample: "Jorge Bischoff Black Quilted Crossbody Bag with Tassel"
+  BWP 3660.00 (raw 366000 minor units). Categories: Hand Bags, Shoes.
+  Page family: API -- the spider never fetches an HTML page.
+  Enumerability: total==page size, so the whole catalog is one call; the
+  page1-vs-page2 check is not applicable.

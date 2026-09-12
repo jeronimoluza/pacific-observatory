@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://botswanart.co.bw/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "botswana_art_online"
+  base_url: "https://botswanart.co.bw"
+  currency: "USD"
+  language: "en"
+  api_url: "https://botswanart.co.bw/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-12: WooCommerce Store API v1 open. 72 products
+  (X-WP-Total=72), categories Baskets / Photography / crafts.
+  CURRENCY GOTCHA: the payload reports currency_code=USD, NOT the BWP
+  default in countries.yaml -- this is an export-facing craft storefront
+  priced for overseas buyers. Currency is taken from what the site returns
+  per the Phase-5A rule, so rows land as USD. Treat as an export-price
+  series, not a domestic Gaborone retail price level.
+  Sample: "Ogopoleng-OG006" USD 431.37. Page family: API.

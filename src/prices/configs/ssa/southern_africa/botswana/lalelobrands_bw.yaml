@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://lalelobrands.co.za/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "lalelobrands_bw"
+  base_url: "https://lalelobrands.co.za"
+  currency: "BWP"
+  language: "en"
+  api_url: "https://lalelobrands.co.za/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-09-12: WooCommerce Store API v1 open. 24 products
+  (X-WP-Total=24), all priced. DOMAIN GOTCHA: the storefront sits on a
+  .co.za domain but the Store API returns currency_code=BWP on every row,
+  which is why it is filed under Botswana rather than South Africa.
+  Branded footwear/apparel (Lacoste, Jordan, Adidas, Nike, North Face).
+  Sample: "Lacoste Men T-Clip Sneakers" BWP 1050.00. Page family: API.

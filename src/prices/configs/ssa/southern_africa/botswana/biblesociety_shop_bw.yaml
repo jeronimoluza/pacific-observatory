@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: biblesociety_shop_bw
+url: https://shop.biblesociety.org.bw/shop/
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: BWP
+cadence: monthly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12: WooCommerce with the Store API firewalled (401 on both
+  /wp-json/wc/store/v1/products and /wp-json/wc/store/products), so this
+  takes the sitemap route via the shared _woo_sitemap_base.
+  Enumerable surface: the WordPress core sitemap shard
+  /wp-sitemap-posts-product-1.xml, 36 /product/ PDP urls. Note the shard
+  path -- this install publishes NO /product-sitemap.xml and its
+  /wp-sitemap-posts-page-1.xml carries only the /shop/ landing page, which
+  is what a naive sitemap walk finds and why the first probe read zero.
+  Each PDP carries a WooCommerce JSON-LD Product node. Verified:
+  "Tswana Bible 1908" BWP 200.00; a brown-binding variant BWP 220.00.
+  Setswana-language scripture and religious books. Small catalog but above
+  the 5-row gate and the only printed-media source for Botswana.
+  Page family: PDP only.

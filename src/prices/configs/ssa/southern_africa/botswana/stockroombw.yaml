@@ -1,0 +1,23 @@
+scaffolding: spider
+spider: stockroombw
+url: https://www.stockroombw.com/
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: BWP
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12: Wix, same route as homeandallstore_bw -- Wix-generated
+  /store-products-sitemap.xml lists 35 /product-page/ urls, each PDP carries
+  a server-injected schema.org Product JSON-LD node. Apparel / printed tees.
+  Currency BWP read from the PDP payload. Verified: "Kids All Star T-Shirt"
+  BWP 99.14.
+  GOTCHA: a minority of PDPs carry a placeholder offer price of 1.00 (seen
+  on "African Black Shirt (Tribes Print)") -- unlisted-price items, not BWP 1
+  goods. Small catalog, above the 5-row gate but worth a downstream sanity
+  filter on near-zero prices for this source.
+  Page family: PDP only.
