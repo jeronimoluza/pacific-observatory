@@ -1,0 +1,40 @@
+scaffolding: fetcher
+source_key: as_lbj_charges
+module: eap.pacific_islands.american_samoa.lbj_charges_as
+function: fetch_as_lbj_charges
+url: https://lbjtmc.org/price-transparency/
+channel: null
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: tabular_download
+language: en
+currency: USD
+cadence: quarterly
+fallback_date: 2020-01-01
+coicop_codes:
+  - "06.2.3.1"
+  - "06.3.1.0"
+notes: |
+  LBJ Tropical Medical Center (American Samoa Medical Center Authority,
+  Faga'alu, Pago Pago) hospital price-transparency file. The public
+  /price-transparency/ page links a CMS-format v3.0.0 machine-readable
+  standard-charges CSV hosted by the hospital's vendor; the link carries a
+  per-hospital token, so the fetcher reads it off the page rather than
+  hard-coding it. The file's own hospital_address is "Faga alu, Eastern
+  District 96799, American Samoa" and its license field is LBJ96799|AS, so the
+  geography is confirmed inside the payload, not inferred. Rows are facility
+  charges; the fetcher prefers standard_charge|discounted_cash (the posted
+  cash price) and falls back to standard_charge|gross. Every row in the
+  published file carries setting=both, so COICOP is assigned from the CMS
+  revenue code instead: revenue codes 0100-0219 are room-and-board lines
+  (overnight stay -> 06.3.1.0) and everything else is ancillary/outpatient
+  curative care (06.2.3.1). observation_date is the file's own
+  last_updated_on, so a re-run against an unchanged file returns no rows.
+  Verified live 2026-09-12: 17,706 rows from the 2026-04-01 file (18,602 raw
+  lines, the remainder dropped as duplicate identity tuples). Prices are
+  byte-identical to the published file -- one line, COLLAGEN CROSSLINKS (CPT
+  82523), carries $32,400,517 in the hospital's own file; that outlier is
+  publisher-side, not a parsing artefact, and is left as published rather than
+  silently corrected.
+  Page family parsed: file download reached from a single static HTML page
+  (no listing, no PDP).

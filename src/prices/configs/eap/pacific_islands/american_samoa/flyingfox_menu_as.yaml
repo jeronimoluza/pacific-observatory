@@ -1,0 +1,28 @@
+scaffolding: fetcher
+source_key: as_flyingfox_menu
+module: eap.pacific_islands.american_samoa.flyingfox_menu_as
+function: fetch_as_flyingfox_menu
+url: https://flyingfoxbeer.wixsite.com/home/menu
+channel: specialty-food
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: html_scrape
+language: en
+currency: USD
+cadence: monthly
+fallback_date: 2026-09-01
+coicop_codes:
+  - "11.1.1.1"
+notes: |
+  Flying Fox Brewing Co., a brewery taproom and kitchen in Pago Pago,
+  American Samoa (the page footer carries a P.O. Box 12, Pago Pago, American
+  Samoa 96799 address and a 684 phone number). Wix-rendered menu; the prices
+  are in the server-returned HTML, so no browser is needed. Draft beer and
+  cider are sold in 16 oz and 8 oz pours and food as single-price bowls and
+  sandwiches. Both are consumed on premises, so the whole source is COICOP
+  11.1.1.1 (food and beverage serving services) -- served alcohol is not
+  reclassified to division 02. The parser only accepts a price that is
+  anchored to a preceding item name (optionally via a size line) and drops
+  anything else, matching the conservative pairing rule used by the other
+  American Samoa menu source rather than guessing across a Wix text block.
+  Page family parsed: a single static menu page (no listing, no PDP).

@@ -1,0 +1,27 @@
+scaffolding: fetcher
+source_key: as_ascc_tuition
+module: eap.pacific_islands.american_samoa.ascc_tuition_as
+function: fetch_as_ascc_tuition
+url: https://www.amsamoa.edu/tuitionandfees.html
+channel: null
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: html_scrape
+language: en
+currency: USD
+cadence: annual
+fallback_date: 2026-09-01
+coicop_codes:
+  - "10.4.0.0"
+notes: |
+  American Samoa Community College official tuition and student-fee schedule.
+  ASCC is the territory's public post-secondary institution, so the whole
+  source is tertiary education (10.4.0.0). The page is small static HTML with
+  fees laid out as label/price line pairs in two shapes -- price-leading
+  ("$150.00 Resident") and label-leading ("Late Registration Fee: $20.00
+  (non-refundable)") -- and the fetcher handles both, carrying the section
+  heading into notes. Prose paragraphs that restate figures already captured
+  from the fee lists are skipped by prefix so the same fee is not counted
+  twice. Unit is read from the "per credit / per check / per course" wording
+  where present, else "item".
+  Page family parsed: a single static fee page (no listing, no PDP).

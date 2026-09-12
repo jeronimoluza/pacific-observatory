@@ -1,0 +1,29 @@
+scaffolding: fetcher
+source_key: as_astca_roaming
+module: eap.pacific_islands.american_samoa.astca_roaming_as
+function: fetch_as_astca_roaming
+url: https://www.astca.net/prepaid-mobile/roaming/
+channel: null
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: html_scrape
+language: en
+currency: USD
+cadence: quarterly
+fallback_date: 2026-09-01
+coicop_codes:
+  - "08.3.2.0"
+  - "08.3.3.0"
+  - "08.3.4.0"
+notes: |
+  American Samoa Telecommunications Authority prepaid mobile ROAMING tariff.
+  Distinct from the existing astca_prepaid_as source, which covers the
+  domestic prepaid data-bundle page on the astca.as host; the roaming path
+  404s on astca.as and is only served from astca.net, so both hosts are live
+  and carry different pages. Two server-rendered HTML tables parse cleanly
+  with pandas.read_html: a pay-as-you-go rate table (voice per minute by
+  destination, SMS per message by direction, data per MB) and a prepaid
+  roaming bundle table (price, allotment, services, validity). COICOP is
+  assigned per row from the service mix -- voice/SMS to 08.3.2.0, data-only to
+  08.3.3.0, mixed data+voice+SMS bundles to 08.3.4.0.
+  Page family parsed: a single static tariff page (no listing, no PDP).

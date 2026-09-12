@@ -1,0 +1,32 @@
+scaffolding: fetcher
+source_key: as_spacademy_tuition
+module: eap.pacific_islands.american_samoa.spacademy_tuition_as
+function: fetch_as_spacademy_tuition
+url: https://southpacificacademy.com/admissions/tuition-fees/
+channel: null
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: html_scrape
+language: en
+currency: USD
+cadence: annual
+fallback_date: 2026-09-01
+coicop_codes:
+  - "10.2.0.0"
+  - "10.3.0.0"
+  - "10.5.0.9"
+notes: |
+  South Pacific Academy, a private K3-12 school in Tafuna, Pago Pago,
+  American Samoa (postal address on the page is Pago Pago, American Samoa
+  96799). Two server-rendered tables parse with pandas.read_html: a tuition
+  grid with one column per grade band (K3-4th, 5th-8th, 9th-12th) and one row
+  block per payment plan, and an ancillary-fee table. Only FULL-SCHOOL-YEAR
+  figures are emitted -- the annual plan's single row and each instalment
+  plan's TOTAL: row -- so the three plans stay comparable; the individual
+  instalment rows are deliberately dropped rather than mixed in as if they
+  were prices for the same thing. Grade bands map to COICOP by level
+  (K3-4th -> primary 10.2.0.0, 5th-8th and 9th-12th -> secondary 10.3.0.0);
+  the school's level-neutral fees go to 10.5.0.9. The published grid is
+  labelled for a school year, so the price level moves only when the school
+  reposts it.
+  Page family parsed: a single static fee page (no listing, no PDP).
