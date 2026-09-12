@@ -334,8 +334,23 @@ x = r.get('https://DOMAIN/', impersonate='chrome124', timeout=30)
 print(x.status_code, len(x.text))"
 ```
 
-Try `chrome124`, then `chrome120`, then `safari17_0` — they are **not** interchangeable
-(mall.cz/allegro.cz 403s on both Chrome profiles and clears only on `safari17_0`).
+Try `chrome124`, then `chrome120`, then `safari17_0`, then **`firefox133`** — they are **not**
+interchangeable (mall.cz/allegro.cz 403s on both Chrome profiles and clears only on
+`safari17_0`).
+
+**`firefox133` is load-bearing, not a formality.** Measured 2026-09-12 across three
+independent country runs: Syria, Botswana and Liberia each hit an identical 6,192-byte
+403 stub from Hostinger `hcdn` that 403s on `chrome120`, `chrome124`, `chrome131` AND
+`safari17_0`, and returns 200 on `firefox133`. Seven hosts in total, two of them open
+WooCommerce Store APIs. A Chrome-and-Safari-only ladder writes every one of them off as a
+hard WAF block. `comfy.ua` (Imperva stub on all four, 888 KB real page on `firefox133`)
+and `boom.tj` / `kabulbazar.af` are the same pattern recorded earlier.
+
+**Caveat when you use it on a Woo spider:** `RandomBrowserMiddleware` overwrites
+`request.meta["impersonate"]` unconditionally from `IMPERSONATE_BROWSERS`, which is pinned
+repo-wide to `chrome120`. That makes `WooBaseSpider.IMPERSONATE_PROFILE` a silent no-op —
+the spider 403s on every request despite declaring the profile. Narrow
+`IMPERSONATE_BROWSERS` in that spider's own `custom_settings` instead.
 
 **Measured 2026-08-17:** a 279-domain triage probed with bare `curl` + browser UA produced 112
 `SKIP_WAF` verdicts. Re-probing those with `curl_cffi` impersonation alone recovered a large
@@ -627,7 +642,7 @@ Don't bundle these into a routine country onboarding. Each is its own dedicated 
 - Don't treat CPI (`analytical_role: cpi_benchmark`) as a fallback "when nothing else exists for division X." It's the benchmark series that every country needs *in addition to* its price-level sources, because the downstream PPP / inflation-nowcasting analysis compares the two.
 - Don't ship a source that probe-passes but returns 0–4 rows in the Phase 6 test. Record it as skipped with a hypothesis; revisit later.
 - Don't trust scout sub-agents that say "selectors_unknown: true" — that's a signal to do a real Playwright probe, not to invent selectors anyway.
-- Don't record a WAF/blocked verdict from bare `curl`. It measures curl's TLS handshake, not the site's defenses. Re-probe with `curl_cffi impersonate="chrome124"` (then `chrome120`, `safari17_0`) before writing anything to `known_blockers.md` — 112 such verdicts were re-probed on 2026-08-17 and a large share fell to that one lever.
+- Don't record a WAF/blocked verdict from bare `curl`. It measures curl's TLS handshake, not the site's defenses. Re-probe with `curl_cffi impersonate="chrome124"` (then `chrome120`, `safari17_0`, then `firefox133`) before writing anything to `known_blockers.md` — 112 such verdicts were re-probed on 2026-08-17 and a large share fell to that one lever. Do not stop at the Chrome/Safari profiles: seven hosts across Syria, Botswana and Liberia cleared only on `firefox133` on 2026-09-12.
 - Don't count homepage products as a passing probe. Carousels are curated and unpaginated; "38 products from `/`" says nothing about enumerability. Prove a *category* page paginates — page 2 must return a different set — before scaffolding.
 - Don't try to do COICOP classification in retailer SKU spiders. `src/prices/enrich/classifier/` is the downstream classifier — spiders just emit `product_name` + `category`. Note the classifier consumes the **raw** product name: normalizing or canonicalizing text in the spider measurably *hurts* accuracy, so emit the name exactly as the site renders it.
 - Don't route anything to `src/cpi/coicopping/`. That Gemini classifier is retired. A handful of older spider docstrings and YAML `notes:` still name it — they're stale comments, not live wiring.

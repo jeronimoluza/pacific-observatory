@@ -11176,3 +11176,143 @@ Notes on picks:
   past the first viable pick (e.g. a second, larger chain might exist in a
   different district) were not iterated further — one source per country was
   the brief. Ukraine is the one case worth a second look (see above).
+
+## 2026-09-12 — PENDING-source wave (Syria, Liberia, Chad, Botswana, Eswatini, Guinea-Bissau, American Samoa)
+
+Seven country agents ran in parallel against untried `PENDING` rows. Each was scoped to one
+country's files, so none could safely append here concurrently; their findings are merged below
+and also sit in the per-country inventories.
+
+### Hostinger `hcdn` — a Chrome-and-Safari-only ladder gets this WRONG
+
+**The single highest-value entry in this section.** An identical **6,192-byte 403 stub** with
+`server: hcdn` 403s on `chrome120`, `chrome124`, `chrome131` AND `safari17_0`, and returns
+**200 on `firefox133`**. Measured independently by three different agents in three different
+countries on the same day, so this is a tenant posture, not a one-off.
+
+Recovered by `firefox133` and now shipped:
+
+- **daralamirat.shop** (SY) — WooCommerce Store API, 299 rows
+- **pretty-potions** (BW) — WooCommerce Store API, 90 rows
+- **spasebw** (BW) — WooCommerce Store API, 144 rows
+
+Recovered by `firefox133`, rejected for other measured reasons (not access):
+
+- **cloudmartsy.com** (SY) — WAF beaten, enumerability failed: the same `category.php` URL
+  returns disjoint 24-card sets on repeat hits (overlap 0), union of 6 unparameterised hits is
+  137 distinct ids, and `&page=2` is randomised too. It is a random sample, not a catalog.
+- **marketsyr.com** (SY) — WAF beaten, catalog too small: ~13 priced ads site-wide.
+- **botswanashop.bw**, **life-matters-driving-academy** (BW) — cleared, not pursued.
+
+**Still recorded as blocked but probed on Chrome/Safari only — retry these on `firefox133`:**
+
+- **liberiabuynsell.com** (LR) and **liberiamarketplace** (LR) — same 6,192-byte stub, same
+  `server: hcdn`, probed on chrome124/chrome120/safari17_0 only. Very likely recoverable.
+
+**Implementation caveat.** `RandomBrowserMiddleware` overwrites `request.meta["impersonate"]`
+unconditionally from `IMPERSONATE_BROWSERS` (pinned repo-wide to `chrome120`), so
+`WooBaseSpider.IMPERSONATE_PROFILE` is a **silent no-op** — the spider 403s on every request
+while appearing to declare the right profile. Narrow `IMPERSONATE_BROWSERS` in the spider's own
+`custom_settings` instead. `cassandraonlinemarket_ht` relies on the same broken mechanism.
+
+### Genuine blocks (mandatory gate satisfied — all profiles tried)
+
+- **syria-yousale** (SY) — Cloudflare `cf-mitigated: challenge` on all six profiles
+  (chrome124/120/131, safari17_0, firefox133, edge101).
+- **afribaba.td**, **dukafrica.td**, **perle-tchadienne** (TD) — 403 on every path including
+  `/robots.txt`, on both `chrome124` and `safari17_0`. Not a curl-TLS false positive.
+- **barcodesbotswana**, **shoprite specials BW**, **pets-home-social**, **ubuy.bw** (BW) —
+  403/429 on all five profiles.
+- **ubuy Liberia** (LR) — 429 + `cf-mitigated: challenge` on all three profiles. Also a global
+  dropshipper rather than a Liberian retailer, so relevance fails too.
+- **ctd-bissau**, **bookingauto.net**, **hotels-scanner.com** (GW) — 403 on chrome124,
+  chrome120 and safari17_0 alike. **skyscanner.fr** — PerimeterX captcha.
+
+### TLS handshake failure — NOT a WAF, do not file it as one
+
+- **storkvelkonnect.co.za**, **imali-smart-marketplace** (SZ) — `SSLV3_ALERT_HANDSHAKE_FAILURE`
+  on all three curl_cffi profiles. The server aborts the handshake; no HTTP layer is reached, so
+  no impersonation profile can help. Distinct verdict class from a 403.
+- **orange.bissau** (GW) — TLS verify failure, then timeout.
+
+### Access succeeds, enumerability fails — the recurring false positive
+
+These all return 200 and look like passing probes. Each needed a second measurement.
+
+- **shop.neilsace.com** (AS) — ECI `/inet/storefront/store.php`. The department tree enumerates
+  fine, but every catalog query (3 departments, 3 keyword searches, page 2) returns an identical
+  ~52 KB shell with **zero prices and zero product links**. Catalog is login-walled. No WAF.
+- **market231** (LR) — `?offset=` silently re-serves page one. Probes at offset 0/100/200 each
+  returned "100 rows" with identical id sets; a first spider walked offset to 19,900, logged
+  `rows=100` two hundred times, and scraped exactly 100. `?page=`, `?start=` and `?cursor=` are
+  ignored the same way. **`?skip=` is the one that works.** Now shipped.
+- **dellkorse.bw** (BW) — `?page=2` returns an identical price set.
+- **nhamburguer** (GW) — Nextar `NEX-SITE` ignores `page` entirely; `perPage` is the only lever.
+  Proven with a ladder (100→100, 1000→1000, 5000→3,793). Now shipped at 3,737 rows.
+- **aboufarissolar.td** (TD) — homepage links 41 `product.php?id=N`; every one returns the app's
+  own `File not found.` (16 bytes, distinct from the host's 1,525-byte 404).
+
+### Catalog is real but carries no usable price
+
+- **twt.bw** (BW) — 3,813 products, price `0` on every row sampled across pages 1 and 3.
+  Quote-on-request. **kasimba-hotel** (BW) — 11 rooms, all `0`.
+- **edutoys-world.bw** (BW) — Odoo, 1,945 URLs, the biggest enumerable surface in the pool, but
+  `itemprop="price"` is literally `0.0` inside a `d-none` block and listings carry nothing.
+  Needs Playwright or `/shop/get_combination_info`.
+- **carliberia spare parts** (LR) — listing pages render `class="price"` spans **empty**.
+- **ceiba-bissau** (GW) — Woo Store API returns 200, every room price is `"0"`.
+
+### WooCommerce theme-demo data — passes a naive 5-row gate
+
+A working Store API full of standard sample products is not a catalog. Three in Botswana alone:
+**westdraytonbrands** (the Nest/Basil grocery demo set, USD), **citymews** (a tools demo on a
+Gaborone apartment site, USD), **hibiscus-schools** (Woo's own sample products). Liberia's
+**litwaypicks** is the same class ("Wireless Bluetooth Headphones", "Elegant Summer Dress").
+Chad's **sultana_market**, **ampktechnology** and **magazana** are mock SPA shells whose
+catch-all router returns the same 2-3 KB shell for `/robots.txt` and `/sitemap.xml`.
+
+### Wrong country — probes clean, would corrupt the corpus
+
+- **barllina**, **bellarosaperfumes** (nominally SY) — both on Zid; `/api/v1/products` proxies
+  `api.zid.sa` and reports `"currency": "SAR"`. The `/ar-sy/` path renders FX-converted SYP for
+  display only. Onboarding them books Saudi prices as Syrian.
+- **crazystore.co.bw** (BW) — `robots.txt` advertises the **`.co.za`** sitemap. Following it
+  yields 7,053 ZAR-priced South African PDPs that look exactly like a passing probe. Pin the
+  `.co.bw` sitemap. (The `.co.bw` source itself is shipped.)
+- **juntosgb** (GW) — Shopify wide open, `/meta.json` says `country: FR`, `currency: EUR`.
+- **daarishop** (TD) — verified working, France-based diaspora send-to-family shop in EUR.
+  Remittance prices, not Chadian retail levels.
+- **foodiesbae** (nominally GW) — 68 "Dakar" hits vs 4 "Bissau", and the Bissau hits are the
+  dish *oseille feuille de Bissau*. Senegal platform.
+- **tanoa.shop**, **thekokosamoa**, **toasamoashop**, **samoamarket** (nominally AS) — all four
+  Shopify and all four probe perfectly, declaring `countryCode` US, AU and NZ respectively;
+  samoamarket ships "PICK UP FROM MCDONALD'S, **APIA**". 14 of American Samoa's 34 candidates
+  were Samoa (WS) or US-mainland entities.
+
+### Parser-level silent truncation
+
+- **bmsonline.co.bw** (BW) — the template emits a second `<!DOCTYPE html><html><head>` inside its
+  own head. `lxml`/parsel sees **170 nodes and 8.9 KB of a 76 KB page** and every selector
+  returns zero — at HTTP 200, with no error. BeautifulSoup `html.parser` returns all 20 cards.
+  Invisible without comparing two parsers. Now shipped via a BeautifulSoup path.
+
+### Worth re-probing on a later pass
+
+- **specials.shoprite.co.sz** (SZ) — FlippingBook leaflet. The **archived** Sep-2025 copy carries
+  a full SEO `text-container` yielding 138 clean (price, product, size) food rows; the **current**
+  copy ships that div with 48 chars. No FlippingBook text/search asset is exposed and `/deals/`
+  is 403, so there is no leaflet index to walk. If the publisher re-enables text extraction this
+  becomes Eswatini's only supermarket source.
+- **soukdarna** (TD) — backend found at `/api/public/products` (`/api/products` 401s) but it now
+  returns ~1.4 KB. Below the 5-row bar. Re-probe in ~6 months.
+- **ricebridge** (LR) — `/shop` grid is `animate-pulse` skeletons; the visible `$3-$8` is a
+  delivery-fee tile. Staple rice and oil is a real gap for Liberia.
+- **canalplus** (GW) — geo-gated, not WAF'd. Playwright never clears "Continuer" from a European
+  IP. Needs an in-country exit node.
+
+### Dead hosts (DNS/origin, re-check cheaply)
+
+**damascus-store**, **midad-bookstore** (SY, NXDOMAIN from both the box resolver and 1.1.1.1);
+**amatlgb** (GW, NXDOMAIN since the 2026-09-10 probe); **arsat-gaz-domestique** (TD, HTTP 530);
+**musimboti** (BW, 500); **tswanawana** (BW, 530); **telecel-lr-shop** (LR, TCP timeout from a8
+on all three profiles — unreachable, not TLS); **llc.as.gov** (AS, does not resolve).
