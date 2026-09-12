@@ -1,0 +1,68 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"]
+channel: null
+source_key: al_instat_cpi
+module: eca.western_balkans.albania.instat_cpi
+function: fetch_al_instat_cpi
+url: https://www.instat.gov.al/en/themes/prices/consumer-price-index/
+language: sq
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  INSTAT (Instituti i Statistikave), Albania's NSO. THIS IS AN INDEX SOURCE
+  AND NOTHING ELSE. INSTAT publishes no price LEVELS anywhere: the whole
+  "Prices" domain is CPI, HICP, producer, import, construction-cost and
+  agricultural-product price INDICES, plus a comparative price-LEVEL INDEX
+  under purchasing power parity. It must not be counted as price-level
+  coverage for Albania.
+
+  HOW THAT WAS ESTABLISHED (2026-09-12), so the next run does not redo it:
+    * The PxWeb statistical database is alive but NOT on the port the website
+      advertises. databaza.instat.gov.al:80/:443 time out from two independent
+      networks (port 80 closed); the live instance is on
+      https://databaza.instat.gov.al:8083/pxweb/en/DST/ -- PxWeb 21.1.
+      Its JSON API is DISABLED (/pxweb/api/v1/... returns 404/500 at every
+      depth), so the database is only reachable through ASP.NET VIEWSTATE
+      postbacks. The whole 944-table tree can be dumped in one postback by
+      submitting the "load the whole tree" ActionButton on the DST root.
+    * All 944 table titles were swept. The Prices folder (START__PR) holds 21
+      tables, every one an index. No table of average retail prices in lek
+      exists in the database, and none is listed under A-Z statistics.
+    * The agriculture statistical yearbook (41 sheets) is areas, production
+      and yields -- no farm-gate or market prices.
+
+  WHAT IS READ: the CPI theme page links tab-3-ick-coicop-ver2.xlsx --
+  "Indeksi i Çmimeve të Konsumit", COICOP Version 2, base 2025=100, monthly
+  index LEVELS from 2021-01. Umbraco serves it under a per-upload
+  /media/<hash>/ prefix, so the fetcher scrapes the page for the filename and
+  falls back to the last-known URL. Siblings are deliberately not read: tab-4
+  and tab-5 are monthly/annual rates of change derived from these levels,
+  tab-1/tab-2 are annual averages and changes, and the legacy tab-3.xlsx is
+  the same statistic on the OLD COICOP with a different base (Dec 2020=100,
+  2017-01 .. 2025-12, frozen when Version 2 took over) -- splicing it on would
+  join two classifications and two bases.
+
+  SCOPE: only the 13 COICOP-division rows are emitted. The workbook also
+  carries ~46 sub-division rows (group and class depth, e.g. 01.1.2.2 "Meat,
+  fresh, chilled or frozen") which are real and could be emitted later, but no
+  other cpi_benchmark source in the corpus carries that depth. The all-items
+  "000000" row is dropped -- there is no sanctioned COICOP sentinel for a
+  headline index.
+
+  `coicop_classification: publisher_labeled` -- INSTAT prints its own COICOP
+  Version 2 codes in column A. The fetcher only normalises them (strip the
+  trailing dot, zero-pad) and checks them against the 13 divisions; a division
+  row whose code does not resolve is logged and DROPPED, never emitted with a
+  null code.
+
+  channel: null -- an NSO statistical release, not an outlet.
+
+  GOTCHA: the month header cells carry leading spaces (" 01-21"), so the
+  header must be stripped before parsing, and the header row is located by its
+  "COICOP" label rather than by row number.
+
+  MEASURED first run 2026-09-12: see the onboarding report.
+  Onboarded 2026-09-12.
