@@ -51,6 +51,9 @@ FILES = [
     ("archived_happycenter.py", "archived_happycenter.py"),
     ("archived_spar_zw.py", "archived_spar_zw.py"),
     ("archived_mojsupermarket.py", "archived_mojsupermarket.py"),
+    ("archived_sas_am.py", "archived_sas_am.py"),
+    ("archived_supermax.py", "archived_supermax.py"),
+    ("archived_voli.py", "archived_voli.py"),
     ("archived_bysource.py", "archived_bysource.py"),
     ("selectors.py", "selectors_mod.py"),
 ]
