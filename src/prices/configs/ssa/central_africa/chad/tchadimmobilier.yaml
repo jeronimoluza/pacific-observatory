@@ -1,0 +1,56 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: tchadimmobilier
+url: https://tchadimmobilier.com/
+language: fr
+currency: XAF
+cadence: monthly
+channel: real-estate
+coicop_codes:
+  - "04.1.1"
+active: true
+notes: |
+  Probed 2026-09-12. N'Djamena property portal on WooCommerce; the public
+  Store API is open (no key, no impersonation needed) and reports
+  currency_code XAF with currency_minor_unit 0, so prices need no scaling.
+  Whole catalog is 84 listings across 7 categories and page 2 is empty, so
+  one per_page=100 call is the entire site.
+
+  SCOPED TO RENTALS ON PURPOSE. Unfiltered, the catalog is dominated by
+  property *sales* -- Maisons en Vente (46), Terrains en Vente/Louer (21),
+  Appartements en Vente (1), Jardins (6) -- at 5,000,000 to 50,000,000 XAF.
+  Those are capital transactions, have no COICOP leaf, and would put
+  eight-figure rows into a consumption price corpus under whatever leaf a
+  classifier guessed. The spider pins categories 100 (Maison a Louer) and
+  107 (Appartements Meubles), which the Store API accepts as a
+  comma-separated OR filter: 9 rows against 84 unfiltered.
+
+  Because the scope is one COICOP class, this is a narrow source --
+  source_curated with coicop_codes ["04.1.1"], not classifier-routed.
+
+  Why a dedicated spider rather than generic_woo_configured: the shared Woo
+  base has no filtering hook, and this source needs two. Measured on the
+  9-row scoped payload: three listings have an EMPTY `name` (unpublished
+  drafts), one of them priced 240,000,000 XAF -- a sale mis-filed under a
+  rental category, which as a "monthly rent" would be the single worst row
+  in the Chad corpus. And product id 159 "Black and White" at 115 XAF is the
+  stock WooCommerce sample product left behind in Appartements Meubles.
+  generic_woo_configured emitted all four (verified: 9 rows, 3 nameless).
+  The dedicated spider drops them, leaving 5 rows.
+
+  Rents observed: 400,000-1,500,000 XAF/month for villas and a duplex in
+  Klemat, Toukra Arabe and Habenna. One of the five is a commercial unit
+  ("Deux (2) Grandes boutiques en location a Atrone") rather than household
+  housing -- flagged here rather than filtered, because dropping it would
+  put the source under the 5-row bar and the portal does not tag
+  residential vs commercial anywhere machine-readably.
+
+  Cadence monthly: a 9-listing portal turns over slowly.
+  Page family: API (Store API read directly; the /produit/<slug> permalinks
+  in the payload are never fetched).
+
+  Test: prices collect --source tchadimmobilier --max-items 200 -> 5 rows
+  (whole rental scope; the nameless drafts and the demo product are the
+  4 dropped).

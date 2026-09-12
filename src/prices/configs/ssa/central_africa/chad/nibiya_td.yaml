@@ -1,0 +1,54 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nibiya_td
+url: https://nibiya.com/
+language: fr
+currency: XAF
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12. General Chad classifieds marketplace ("+235" support,
+  N'Djamena), Laravel + Livewire. Not on any off-the-shelf platform:
+  /products.json, /wp-json/wc/store/v1/products, /api/products and
+  /sitemap.xml all 404.
+
+  Enumerable surface is the Livewire listing component, which answers a
+  plain GET at /filter-resultats -- `?categorieId=<Category>` scopes it and
+  `&page=N` paginates, both fully server-rendered (no XHR at collect time).
+  Enumerability check: ?categorieId=Automobiles pages 1/2/3 returned
+  21/18/24 ad links with ZERO overlap between pages, so this paginates for
+  real rather than re-serving page 1.
+
+  21 of the site's 22 categories are crawled verbatim from the homepage nav
+  (the raw URL-encoded `categorieId` values, not slugs we normalise).
+  "Emplois" (job ads) is deliberately excluded -- salaries are not prices.
+  Note the food category is spelled "Nouriture" on the site;
+  ?categorieId=Alimentation is silently empty, which is the kind of guess
+  that would have returned zero rows.
+
+  Breadth is the reason this one matters for Chad: categories span
+  Nouriture, Agro-pastorale, Animaux domestiques, sante, Mobile/tablette,
+  Ordinateurs, Electroniques, Maison & Jardin, mode hommes/femmes,
+  Motocyclettes, Automobiles, Immobilier, Proprietes a louer, Livres,
+  Sports, Services, Educations -- far wider than Chad's existing sources,
+  which are electronics-leaning marketplaces plus one fresh-produce shop.
+
+  Price is a plain integer in `h6.price-item` on the result card. Rows
+  priced at 1 FCFA are dropped: that is the site's placeholder for
+  "price on request", not a real price. Currency is rendered as the
+  ambiguous "FCFA" string only (no machine-readable code anywhere on the
+  page), so XAF is taken from countries.yaml's Chad default rather than
+  read off the site -- same basis as artiaf_td.
+
+  Page family: listing only. Name and price are both on the result card;
+  ad detail pages (https://nibiya.com/fr/<Category>/<slug>_<id>) are
+  collected as urls but never fetched.
+
+  Test: prices collect --source nibiya_td --max-items 200 -> 207 rows, 207
+  distinct urls, 191 distinct names, all XAF, across 5 categories before the
+  max-items fence closed the run (the fence, not the catalog, is the limit --
+  finish_reason was closespider_itemcount with 16 of 21 categories unvisited).

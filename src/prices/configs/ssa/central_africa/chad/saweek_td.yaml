@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: saweek_td
+url: https://saweek.com/
+language: fr
+currency: XAF
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12. Chad multi-vendor marketplace (+235 phone, XAF/FCFA
+  currency selector, vendor shops named Chad Power, Pharma Light, Agro,
+  NECHIVA, Maison et Deco), running the 6valley Laravel storefront.
+
+  Two dead ends worth recording so they are not re-probed:
+    * the 6valley REST API (/api/v1/products/latest, /api/v1/categories)
+      returns `["Unauthorized",401]` with HTTP 200 -- no public key;
+    * /sitemap.xml has 218 <loc> entries but every one points at
+      `http://localhost/6Valley/product/...` and carries the platform's
+      stock demo catalog (lorem-ipsum-book, subrtex sofa, timex-marlin).
+      Those slugs soft-404 to the homepage on saweek.com, so the sitemap is
+      NOT a URL seed here despite its size.
+    * /category/<slug> and /vendor-shop/<slug> pages render zero product
+      cards -- they are not a widening surface either.
+
+  The server-rendered /products listing is the only real surface: 20 product
+  cards, no pagination links, ?page=2 returns the shell with zero cards.
+  That matches the storefront's actual size rather than being a truncation
+  signature. /latest-products, /featured-products and /discounted-products
+  are re-cuts of the same set and are crawled as extra seeds behind an
+  in-spider url dedup, so the run covers the whole storefront.
+
+  Price: `ins.product__new-price` is the live price ("1,500FCFA"), with
+  `del.product__old-price` the struck-through was-price -- the spider takes
+  the former. `category` carries the vendor name (the card's only taxonomy).
+  Currency rendered as "FCFA" only; XAF per countries.yaml's Chad default.
+
+  Page family: listing only -- PDPs are collected as urls, never fetched.
+
+  Test: prices collect --source saweek_td --max-items 200 -> 20 rows
+  (whole storefront; hits the natural end of the listings well under the
+  max-items fence).

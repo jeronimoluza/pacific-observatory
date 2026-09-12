@@ -1,0 +1,55 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.2.0"]
+source_key: td_moov_africa_tariffs
+module: ssa.central_africa.chad.moov_africa_td
+function: fetch_td_moov_africa_tariffs
+url: https://moov-africa.td/
+language: fr
+currency: XAF
+cadence: monthly
+fallback_date: 2024-01-01
+channel: null
+notes: |
+  Probed 2026-09-12. Moov Africa is one of Chad's two mobile operators.
+  WordPress + Elementor, plain `requests` clears it (no WAF, no Playwright,
+  no API).
+
+  Why the candidate triage said NEEDS-CUSTOM-CRAWLER with no prices: the
+  homepage carries zero FCFA strings. The tariffs are one level down, on the
+  /espace-particulier/<offer>/ pages, each of which renders every prepaid
+  bundle server-side as a grid of `div.forfait` cards. Each card is an
+  ordered run of `div.elementor-widget-text-editor` widgets holding plan
+  label, what you get, the USSD activation code, "Durée : ...", and the
+  price. Parsed positionally-independent (price found by the FCFA regex,
+  validity by the "Durée" regex, USSD dropped by its leading `*`) so an
+  Elementor reorder does not silently swap two fields.
+
+  Seven offer pages read: kattir-internet (mobile data),
+  appel-moov-vers-moov (voice), kattir-sms, kattir-mix (combined),
+  kattir-ziada (credit-bonus top-ups), pass-reseaux-sociaux (social
+  passes), offres-internationales (international minutes).
+
+  Cross-page duplication is significant and is deduped, not counted: a
+  shared upsell block (the `*11*125#` data ladder -- 1 GB / 7 jours /
+  1250 FCFA and siblings) renders on nearly every offer page, so the 222
+  raw `.forfait` cards collapse to a much smaller distinct set. Dedup key
+  is (offer text, price, validity), first page seen wins.
+
+  `unit` carries the bundle's VALIDITY window (1h, 24h, 7 jours, 30 jours --
+  what the price actually buys), not a billing period: these are prepaid
+  one-shot bundles, not subscriptions, so there is no recurring charge.
+
+  Single-value COICOP map (08.3.2.0, mobile telecom services) --
+  source_curated, no classifier. This is Chad's first source of any kind in
+  COICOP division 08.
+
+  Currency XAF: FCFA as rendered, and Chad is the Central African CFA zone
+  (XAF, not the West African XOF) -- same basis as the country's other
+  manifests.
+
+  Test: prices collect --source moov_africa_td -> 68 rows (222 raw .forfait
+  cards deduped to 68 distinct tariffs), all XAF, prices 30-59,000, 0 null
+  coicop_code.

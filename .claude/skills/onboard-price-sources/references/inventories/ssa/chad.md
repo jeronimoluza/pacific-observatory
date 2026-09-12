@@ -1,5 +1,58 @@
 # Chad
 
+_Inventory written: 2026-09-12_ (Phase-3 entry from a supplied 41-candidate
+PENDING list; no discovery run. Supersedes the 2026-09-02 pass below, which
+is kept for its dead ends.)
+
+Chad had **2 filled COICOP leaves** going in. Coverage-density rule applied:
+take whatever verifies, cheapest first, no gap-ranking. **Result: 5 shipped**
+(4 spiders + 1 fetcher) out of 41 candidates.
+
+## Shipped
+
+| Source name | URL | Role / channel | Verification rows | Notes |
+|---|---|---|---|---|
+| `nibiya_td` | https://nibiya.com/ | `retailer_sku` / marketplace | **207** (max-items fence, not the catalog) | General Chad classifieds. Laravel+Livewire, but the listing component answers a plain GET at `/filter-resultats?categorieId=<Cat>&page=N`, fully server-rendered. 21 categories crawled (`Emplois` excluded — salaries are not prices). Widest COICOP breadth of anything Chad has. Food category is spelled **`Nouriture`**; `?categorieId=Alimentation` is silently empty. |
+| `moov_africa_td` | https://moov-africa.td/ | `tariff` / null | **68** | Mobile operator prepaid bundles, COICOP 08.3.2.0 — **Chad's first source in division 08**. Homepage has zero prices (which is why triage called it NEEDS-CUSTOM-CRAWLER); tariffs live on `/espace-particulier/<offer>/` as Elementor `div.forfait` cards. 7 offer pages, 222 raw cards deduped to 68 distinct tariffs (a shared upsell block repeats across pages). |
+| `saweek_td` | https://saweek.com/ | `retailer_sku` / marketplace | **20** (whole storefront) | 6valley multi-vendor marketplace. API 401s without a key; `/sitemap.xml` is misgenerated to `http://localhost/6Valley/...` with the platform's demo catalog and is **not** a URL seed. Server-rendered `/products` is the only surface. |
+| `zelvendo_nadjos_td` | https://www.zelvendo.com/boutique/nadjos-shopping-service | `retailer_sku` / fashion | **18** (whole boutique) | One boutique on a small Chadian multi-vendor platform. Name and price come off `button.btn-cart[data-nom][data-prix]` — machine-readable, no display parsing. `?page=N` is a no-op (pages 3-5 byte-identical); the site's own counter says 20 products, so it is a tiny catalog, not a broken paginator. |
+| `tchadimmobilier` | https://tchadimmobilier.com/ | `retailer_sku` / real-estate, **narrow 04.1.1** | **5** | WooCommerce Store API open, XAF minor_unit 0. Scoped to rental categories 100+107 only: unfiltered, 79 of 84 listings are property/land **sales** at 5-50M XAF, which are capital transactions with no COICOP leaf. Dedicated spider (not `generic_woo_configured`) because the scoped payload also needs 3 nameless drafts dropped — one priced 240,000,000 XAF, a sale mis-filed as a rental — plus the WooCommerce demo product id 159. |
+
+## Rejected this pass (measured, do not re-probe without new evidence)
+
+| Candidate | URL | Measured reason |
+|---|---|---|
+| `mssk_app` | https://www.mssk.app/ | **DUPLICATE of `mossosouk_td`.** Has a working `/api/product` (216 products, 9 pages) but 97 of its 196 product names slug-match `mossosouk.com`'s sitemap product slugs — and slug-matching is lossy, so real overlap is higher. It is the Mossosouk app mirror, as the triage note suspected. |
+| `daarishop_fr` | https://daarishop.fr/ | **Verified but rejected.** WooCommerce Store API is open and healthy. It is a France-based diaspora send-to-family shop priced in **EUR** (rice 50 kg at 85 EUR, pharmacy voucher). Those are remittance-service prices, not Chadian retail price levels; onboarding them would inject non-Chad price levels into a PPP corpus. |
+| `aboufarissolar_td` | https://aboufarissolar.com/ | **Product pages are gone.** Homepage links 41 `product.php?id=N` and 32 `category.php?id=N`, but every one returns the app's own `File not found.` (HTTP 404, 16 bytes — distinct from the host's 1525-byte 404). Only the homepage carousel's marketing copy carries FCFA strings. Not enumerable. |
+| `banabaana_td` | https://www.banabaana.com/pays-224-Tchad | **Cannot be scoped to Chad.** The category listings reachable from the Chad page return ads from Abidjan, Dakar and Atlantique (Benin). Pan-African classifieds with a country landing page, not a Chad catalog. |
+| `soukdarna_td` | https://www.soukdarna.com/ | **Catalog now near-empty.** SPA; found the backend at `/api/public/products` (`/api/products` 401s). It returns ~1.4 KB — a handful of products across 3 categories, nothing like the ThinkPad/solar-panel catalog the triage note described. Below the 5-row bar. Worth one re-probe if the site refills. |
+| `sultana_market_td`, `ampktechnology_td`, `magazana_td` | — | **Mock/demo SPA shells.** 2-3 KB HTML, catch-all router returns the same shell for every path including `/robots.txt` and `/sitemap.xml`; the only API string in their JS bundles is `/api/broadcast`. The "products" in the triage notes ("Smartphone Galaxy Ultra", "Laptop Gaming Elite", "Manteau Long Camel") are generated placeholder catalogs. `magazana` says so itself: `Aucun produit disponible`. |
+| `afribaba_td`, `dukafrica_td`, `perle_tchadienne_social` | — | **403 on every path including `/robots.txt`**, under `curl_cffi impersonate=chrome124` *and* `safari17_0`. Not a curl-TLS false positive. |
+| `arsat_gaz_domestique_td` | afrique-info.com/article/949 | HTTP **530** (origin down). |
+| `airtel_td_internet` | https://www.airtel.td/network/internet-package | **SPA, zero prices server-side.** 6.7 KB shell, 12 JS bundles, only `maps.googleapis.com` in them. Would need Playwright. Real pity — this is Chad's other mobile operator and would pair with `moov_africa_td`. Flagged as the best remaining division-08 target. |
+| `ilnet_telecoms_td` | https://ilnet-telecoms.td/offers | 472-byte shell, one JS bundle, no API strings. |
+| `shamsconnect_menu_td` | https://shamsconnect.com/menu | **SPA, zero prices server-side** (4.4 KB shell). The bilingual FCFA menu the triage note describes is real but client-rendered; needs Playwright. Best remaining COICOP 11.1.1 target. |
+| `jam_pharma_td` | https://www.jam-pharma.com/tarifs | **No medicine prices.** Sitemap is 55 URLs, 44 of them `/pharmacie/*` directory pages. The only prices on the site are its own B2B SaaS subscription tariffs (15,000 FCFA/month to pharmacies) — a software licence, not a consumer price. |
+| `konoom_td` | https://konoom.td/ | Corporate media/textile site (`services-fr`, `media-center-fr`, `about-us-fr`). No catalog, no tariff table. |
+| `restaurant_bebo_td` | https://mon-site-web-five.vercel.app/ | Generic Vercel default subdomain; the FCFA strings sit in a "Top Restaurants à N'Djamena" review-directory block, not a structured menu. No stable identity, no enumerable menu. |
+| `omega_impact_td`, `monrespro_business_td`, `hubformationtchad`, `satech_schooly_td`, `learncafe_td`, `rpm412_kalcal_td`, `sahelpackage_td` | — | **Service/SaaS tariffs, and several are price *ranges*** (Omega Impact quotes "150,000-400,000 FCFA" per engagement). B2B consulting fees, software subscriptions and logistics quotes are not household consumption prices. |
+| `belivay_cemac_td` | https://belivay.com/ | Regional CEMAC marketplace, **Cameroon-first**; the candidate URL itself carries `?mock=1`. Django REST backend visible in the JS bundle (`/api/catalog/...`) but no Chad-scoped product locality. |
+| `librairie_numerique_africaine_chad` | — | Pan-African digital publisher with Chad-*topic* books, not a Chad retailer. |
+| `carros_td` | https://carros.com/ | **NOT PROBED TO A VERDICT.** Global vehicle-listings site with a real 10-shard `sitemap-cars.xml` index and a `sitemap-car_states.xml`. Chad PDPs exist (the triage note cites a Chari-Baguirmi Hilux), but scoping the crawl to Chad was not attempted. Left as the best remaining COICOP 07.1 lead. |
+| `abdramani_solutions_td`, `vepaar_lossirimou_td`, `arcep_observatoire_telecom_2020`, `club_mcm_td`, `iambeezy_chad_price_blog`, `petitfute_ndjamena_restaurants`, `starlink_td_tariffs`, `nibiya`-adjacent social pages | — | Social-page mirrors, third-party directory listings, a Scribd PDF, and one price-comparison blog post. None is a first-party catalog with an enumerable surface. `iambeezy` is a **secondary** price write-up of N'Djamena baskets — interesting as a cross-check, not as a source. |
+
+## Next gaps to target (priority order)
+
+1. **`airtel_td_internet`** — Playwright. Pairs with the `moov_africa_td` tariff source to give division 08 two operators instead of one.
+2. **`shamsconnect_menu_td`** — Playwright. Would be Chad's first restaurant/COICOP 11.1.1 source.
+3. **`carros_td`** — scope the `sitemap-cars.xml` shards to Chad cities/states for COICOP 07.1.
+4. **`soukdarna_td`** — re-probe `/api/public/products` in ~6 months; the surface is good, the catalog is currently empty.
+
+---
+
+# Chad — earlier passes
+
 _Inventory written: 2026-09-02_ (search-starved re-run; supersedes the
 2026-09-01 partial pass)
 

@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zelvendo_nadjos_td
+url: https://www.zelvendo.com/boutique/nadjos-shopping-service
+language: fr
+currency: XAF
+cadence: weekly
+channel: fashion
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-09-12. Zelvendo is a small Chadian multi-boutique platform
+  (custom PHP, Cloudinary-hosted images); this manifest is scoped to the one
+  boutique the candidate list names, Nadjos Shopping Service. No platform
+  API: /products.json, /wp-json/*, /api/products and /sitemap.xml all 404.
+
+  Name and price are machine-readable on the add-to-cart button rather than
+  needing display-text parsing:
+    <button class="btn-cart" data-id="190" data-nom="Nuisette"
+            data-prix="3500.00" data-vendeur-nom="Nadjos Shopping  Service">
+  `data-prix` is a plain decimal -- no minor-unit trap -- and agrees with the
+  card's rendered "3 500 FCFA".
+
+  Pagination is a no-op: ?page=1..5 on the boutique URL all re-serve the same
+  card set (pages 3-5 byte-identical), and the page's own counter reports 20
+  products. That is the rakhaz_td situation -- the whole tiny catalog fits on
+  one page -- not a paginator we could walk past, so the spider fetches the
+  boutique page exactly once and does not chase ?page=N.
+
+  Currency rendered as "FCFA" only; XAF per countries.yaml's Chad default.
+  Page family: listing only -- produit.php?id=<n> urls are emitted but never
+  fetched.
+
+  Test: prices collect --source zelvendo_nadjos_td --max-items 200 -> 18 rows
+  (one request, finish_reason finished), 18 distinct product ids and urls
+  over 11 distinct names -- the shop lists several colourways of the same
+  garment as separate SKUs.
