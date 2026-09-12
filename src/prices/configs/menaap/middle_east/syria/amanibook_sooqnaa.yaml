@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: amanibook_sooqnaa
+url: https://amanibook.sooqnaa.com/
+language: ar
+cadence: weekly
+channel: other
+coicop_codes:
+  - "09.7.1.9"
+notes: |
+  "أماني" (Amani) -- a Syrian bookstore on sooqnaa.com, a storefront host
+  that gives each merchant a <store>.sooqnaa.com Next.js site.
+
+  ACCESS: the central api.sooqnaa.com is authenticated (401
+  "No authentication token provided"), so the spider reads the
+  server-rendered React Server Component flight payload the storefront
+  itself embeds -- the same bytes the page renders from, no browser and
+  no JS execution. See spiders/_sooqnaa_base.py for the shared contract.
+
+  ENUMERABILITY (MEASURED 2026-09-12): /ar/products?page=N serves 24
+  products per page and the flight payload reports total=107. Page 1 vs
+  page 2 are disjoint apart from the site-wide "latest products" strip
+  that every page renders (1 shared id), so the spider dedupes by product
+  id and stops when a page contributes zero NEW ones.
+
+  CURRENCY: SYP, read from this store's own "currency":"SYP" field in the
+  flight payload on 2026-09-12 -- not from countries.yaml.
+
+  Sample product 2026-09-12: "هسريك فيكسيوس (فن قراءة العقول)" at SYP 550.
+
+  NARROW SOURCE: every product is a book. VERIFIED against the full
+  107-row verification run 2026-09-12 -- 106 rows carry no category and 1
+  carries "كتب" (books), and the titles are novels, poetry diwans and
+  self-help/business ("ديوان مجنون ليلى", "لغات الحب الخمس", "العادات
+  السبع للمراهقين الأكثر فعالية"). coicop_codes therefore declares the
+  leaf 09.7.1.9 ("Other books" -- the non-educational branch of 09.7.1),
+  not the parent class, and the classifier is short-circuited.
+
+  Page family: listing.

@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mid_dex
+url: https://mid.dex.sy/
+language: ar
+cadence: weekly
+channel: electronics
+notes: |
+  "معرض الشرق الأوسط للأدوات الكهربائية" (Middle East Electrical
+  Appliances) -- a Syrian household-electricals retailer.
+
+  PLATFORM: dex.sy, same public /api/products JSON contract as nana_dex
+  and karazzah_dex (see spiders/_dex_sy_base.py). No auth required.
+
+  ENUMERABILITY (MEASURED 2026-09-12): meta.total=49 over 3 pages at
+  limit=24; page 1 vs page 2 productId sets disjoint, zero overlap.
+
+  CURRENCY: SYP, read from this store's own "baseCurrency":"SYP" in the
+  homepage RSC flight payload on 2026-09-12 (the products API itself
+  carries no currency field).
+
+  Sample product 2026-09-12: "مراوح" (fans) at SYP 33.
+
+  PRICE LEVEL -- flagged, not silently shipped. The quoted levels are low
+  for the goods described (a fan at SYP 33, an air fryer at SYP 85,
+  "مروحة الدسوقي" at SYP 55). This is NOT a minor-unit or scaling bug:
+  the storefront's own rendered card text reads "مروحة الدسوقي | ليرة
+  سورية | 55 | لكل قطعة", exactly matching the API integer, so the spider
+  reproduces what the site publishes. They are internally consistent with
+  the store's own SYP 1,000 free-delivery threshold, and with Syria's
+  2026 redenomination. Treat the source as a young storefront whose price
+  levels are worth an outlier check downstream rather than assuming a
+  100x error in the extractor.
+
+  CATALOGUE: fans, refrigerators, beverage coolers, air coolers, electric
+  grills and cookers, juicers, washing machines, kettles, meat grinders,
+  gas ovens, food processors, vacuum cleaners, steam irons, coffee
+  makers, plus kitchen and plumbing tools. Spans COICOP 05.3, 05.4 and
+  05.5 -- wide by the narrowness rule, so coicop_codes is left unset.
+
+  Page family: API.

@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: daralamirat_shop
+url: https://daralamirat.shop/
+language: ar
+cadence: weekly
+channel: cosmetics
+notes: |
+  "دار الأميرات" (Dar Al-Amirat) -- a Damascus beauty and personal-care
+  store on WordPress + WooCommerce, with the public Store API open at
+  /wp-json/wc/store/v1/products.
+
+  WAF -- this is why the source sat untried. The site is behind
+  Hostinger's `hcdn` edge, which returns a 403 (6192-byte stub) on EVERY
+  Chrome and Safari curl_cffi profile tried (chrome124, chrome120,
+  chrome131, safari17_0) and 200 on `firefox133`. A bare-curl or
+  Chrome-profile probe reads this as a hard block and is wrong. The same
+  lever recovered cloudmartsy.com and marketsyr.com in the same pass, so
+  `hcdn` + universal-Chrome-403 is worth trying firefox133 on first.
+
+  settings.py's RandomBrowserMiddleware unconditionally re-picks
+  request.meta["impersonate"] from IMPERSONATE_BROWSERS (pinned
+  repo-wide to chrome120), which silently overrides WooBaseSpider's
+  IMPERSONATE_PROFILE. The spider therefore narrows IMPERSONATE_BROWSERS
+  to ["firefox133"] in its own custom_settings so the middleware can only
+  pick the profile that works. Shared code was not touched.
+
+  ENUMERABILITY (MEASURED 2026-09-12, firefox133): x-wp-total=358,
+  x-wp-totalpages=18 at per_page=20; page 1 vs page 2 product-id sets
+  disjoint, zero overlap -- genuine pagination.
+
+  CURRENCY: SYP. The Store API reports currency_code=SYP with
+  currency_minor_unit=0 and currency_suffix " ل.س" (price "70" -> SYP 70).
+  Read from the payload, not inferred.
+
+  Sample product 2026-09-12: "كاكازيان ماسك العين المضيء هالو كيتي زهري
+  للهالات 6غ" at SYP 70.
+
+  coicop_codes left unset -- oral care, deodorants, masks, creams, hair
+  care, body wash and eye care span COICOP 12.1 with a 06.x tail, so the
+  classifier assigns per product.
+
+  Page family: API.

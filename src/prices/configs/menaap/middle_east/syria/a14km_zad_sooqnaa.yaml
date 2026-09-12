@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: a14km_zad_sooqnaa
+url: https://a14km.sooqnaa.com/
+language: ar
+cadence: weekly
+channel: other
+coicop_codes:
+  - "09.7.1.9"
+notes: |
+  "زاد | ZAD" -- a Syrian book and study-text store on sooqnaa.com. Same
+  platform and flight-payload contract as amanibook_sooqnaa (see
+  spiders/_sooqnaa_base.py).
+
+  DISAMBIGUATION: the "ZAD" (زاد, provisions) branding reads like a
+  grocery and an earlier Syria pass dropped the store on that assumption.
+  Confirmed on the live listing 2026-09-12 that the catalogue is books
+  and religious/study texts, not food -- which makes it a useful source
+  here rather than a reject, because the gap-fill rule for Syria is
+  breadth, not division 01.
+
+  ENUMERABILITY (MEASURED 2026-09-12): flight payload reports total=30;
+  page 1 vs page 2 yielded 28 + 9 product ids with 3 shared (the
+  site-wide "latest products" strip), so the spider dedupes by id.
+
+  CURRENCY: SYP, read from this store's own "currency":"SYP" field in the
+  flight payload on 2026-09-12.
+
+  NARROW SOURCE: books. VERIFIED against the full 30-row verification run
+  2026-09-12 -- categories are "الكتب الرقمية" (digital books, 20),
+  "طالب العلم" (student-of-knowledge / study texts, 6), "دعاء" (prayers,
+  2) and 2 uncategorised; titles are novels, Islamic study texts and
+  devotional works. coicop_codes declares the leaf 09.7.1.9, whose own
+  COICOP gloss explicitly names "religious books", rather than the
+  parent class. Digital editions sit on the same leaf.
+
+  Page family: listing.

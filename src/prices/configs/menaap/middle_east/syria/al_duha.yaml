@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: al_duha
+url: https://al-duha.com/
+language: ar
+cadence: weekly
+channel: other
+notes: |
+  "مكتبة الضحى" (Al-Duha) -- a Damascus (al-Halbouni) stationers and
+  general small-goods store on a custom Laravel storefront. No JSON API;
+  the listing HTML carries name, PDP link and price, so this is a
+  listing-only spider with no PDP fetch.
+
+  ENUMERABILITY (MEASURED 2026-09-12): /products?page=N returns 15
+  distinct /product/<id> links per page; pages 1, 2 and 3 returned
+  disjoint id sets (zero overlap) -- genuine pagination.
+
+  MARKUP: one div.product-card-wrap per product, with
+  a[href=".../product/<id>"] > h6.product-card-title (name) and
+  div.product-card-price > span.price-current (price).
+
+  CURRENCY: USD -- and this one needs saying. The site renders TWO prices
+  per card: its own quoted "$6.00" in span.price-current and a separate
+  div.price-syp reading "≈ 840 ل.س", explicitly marked an approximation
+  and derived from an FX rate the site sets itself. The spider takes the
+  quoted USD and deliberately DROPS the approximate SYP conversion rather
+  than emitting a site-derived number as a price observation.
+
+  CATALOGUE: pens, notebooks, erasers, rulers, colouring supplies, plus
+  tableware, tissue boxes, small fans and children's items -- spans
+  COICOP 09.7, 05.4 and 05.3, so coicop_codes is left unset.
+
+  channel: other -- a stationer is not any listed value's discriminating
+  test.
+
+  Page family: listing.

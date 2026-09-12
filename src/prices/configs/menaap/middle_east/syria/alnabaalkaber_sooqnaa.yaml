@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: alnabaalkaber_sooqnaa
+url: https://alnabaalkaber.sooqnaa.com/
+language: ar
+cadence: weekly
+channel: other
+notes: |
+  "النبع الكبير" (Al-Naba Al-Kaber) -- a Syrian prepared-food /
+  restaurant store on sooqnaa.com. Same platform and flight-payload
+  contract as amanibook_sooqnaa (see spiders/_sooqnaa_base.py).
+
+  ENUMERABILITY (MEASURED 2026-09-12): flight payload reports total=54;
+  page 1 vs page 2 yielded 29 + 28 product ids with 2 shared (the
+  site-wide "latest products" strip), so the spider dedupes by id.
+
+  CURRENCY: SYP, read from this store's own "currency":"SYP" field in the
+  flight payload on 2026-09-12.
+
+  CATALOGUE (MEASURED from the full 54-row verification run 2026-09-12,
+  which is WIDER than the discovery note's "appetisers" description):
+  مقبلات appetisers 14, مشاوي grills 13, سلطات salads 10, مشروبات drinks
+  8, مقبلات ممتازة premium appetisers 7, نرجيلة shisha 2. The drinks
+  include imported beer, alcohol-free beer, energy drinks, juice and
+  cola. So the source spans catering (COICOP 11.1.1), alcoholic
+  beverages (02.1), non-alcoholic beverages (01.2) and tobacco/shisha
+  (02.3) -- decisively wide, and coicop_codes is left unset so the
+  classifier assigns per product. Do NOT narrow this to a catering leaf.
+
+  channel: other -- prepared-food / dining, the same call already made
+  for hotpepper_jp.
+
+  Page family: listing.

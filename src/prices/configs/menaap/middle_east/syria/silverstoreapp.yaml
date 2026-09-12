@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: silverstoreapp
+url: https://silverstoreapp.com/
+language: ar
+cadence: weekly
+channel: dept-store
+notes: |
+  "متجر سيلفر" (Silver Store) -- a broad-catalogue Syrian online store on
+  a 6Valley-style PHP storefront, server-rendered. No JSON API found
+  (/api/products, /api/v1/products both 404); the listing HTML carries
+  everything, so this is a listing-only spider with no PDP fetch.
+
+  ENUMERABILITY (MEASURED 2026-09-12): /products?page=N returns 20
+  product cards per page; pages 1, 2 and 3 returned disjoint product-slug
+  sets (zero overlap) -- genuine pagination, not a homepage carousel.
+
+  MARKUP: one div.product-single-hover per product; name and PDP link in
+  div.single-product-details h4 a[href=".../product/<slug>"], price in
+  the following h5.product-price span ("700 ل.س").
+
+  CURRENCY: SYP, read from the page's own "ل.س" (Syrian Pound) suffix on
+  every price. No USD prices were observed on the listing pages sampled
+  2026-09-12.
+
+  CATALOGUE: genuinely wide -- the site's own category tree includes baby
+  food, automotive oils and fluids, bath and body, baby diapers, books,
+  bags, bar stools, amino acids, air fresheners, action cameras and
+  accessory sets; its brand pages carry Lipton, Ahmad Tea, Hamwi Cafe and
+  Unicafe. Spans most of COICOP 01-13, so coicop_codes is left unset and
+  the classifier assigns the leaf per product.
+
+  channel: dept-store -- first-party, broad, not grocery-led.
+
+  Page family: listing.

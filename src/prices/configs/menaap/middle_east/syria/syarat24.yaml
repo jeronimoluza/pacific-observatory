@@ -1,0 +1,52 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: syarat24
+url: https://syarat24.com/
+language: ar
+cadence: weekly
+channel: marketplace
+coicop_codes:
+  - "07.1.1.2"
+notes: |
+  "سيارات٢٤" (Sayarat24) -- used- and new-car classifieds for Syria.
+  Next.js front end backed by a public, unauthenticated JSON listing API
+  at /api/listings.
+
+  ACCESS (MEASURED 2026-09-12): GET /api/listings?page=N -> 200 JSON, no
+  auth, no cookies, no Referer. Clears on the repo-pinned chrome120
+  profile.
+
+  ENUMERABILITY (MEASURED 2026-09-12): pagination.total=63 over 3 pages
+  at perPage=30; page 1 vs page 2 listing-id sets disjoint, zero overlap.
+  Note the site's own search UI advertises 1,000+ cars -- the API's 63 is
+  the active-listing count it actually serves, and that is what the row
+  count reflects.
+
+  CURRENCY: the payload carries BOTH priceUSD and priceSYP. All 30
+  listings sampled 2026-09-12 had priceUSD populated and priceSYP null --
+  Syrian used cars are quoted in dollars. The spider emits whichever
+  field is populated and stamps the matching ISO code PER ROW rather than
+  pinning one currency for the source, so a future shift to SYP quoting
+  is recorded rather than mislabelled.
+
+  NARROW SOURCE: every row is a SECOND-HAND passenger car. MEASURED over
+  the full 63-row verification run 2026-09-12: condition is USED_GOOD on
+  62 rows and USED_FAIR on 1, with zero new-car rows. coicop_codes
+  therefore declares the leaf 07.1.1.2 ("Second-hand motor cars"), not
+  the parent class 07.1.1 -- which has children (07.1.1.1 new /
+  07.1.1.2 second-hand) and so fails enrich/coicop_codes.py's
+  is_narrow() leaf test, silently falling back to the classifier. If the
+  site later starts carrying new cars this declaration becomes wrong and
+  should be dropped rather than widened to a pair: ["07.1.1.1",
+  "07.1.1.2"] resolves to "07.1", which is not a leaf either.
+
+  PRODUCT NAME: the API has no free-text title, so the spider composes
+  "<year> <Brand> <Model> <trim>" from the structured fields. nameAr is
+  available and deliberately unused, to keep one consistent name shape.
+
+  channel: marketplace -- listings are seller- and dealer-posted
+  (seller.role SELLER_DEALER), not first-party inventory.
+
+  Page family: API.

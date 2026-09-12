@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vipstore_sooqnaa
+url: https://vipstore.sooqnaa.com/
+language: ar
+cadence: weekly
+channel: electronics
+notes: |
+  "متجر VIP Store" -- a Syrian mobile-phone and digital-services store on
+  sooqnaa.com. Same platform and flight-payload contract as
+  amanibook_sooqnaa (see spiders/_sooqnaa_base.py).
+
+  CATALOGUE (MEASURED from the full 107-row verification run 2026-09-12,
+  which CONTRADICTS the discovery note's "digital services" label):
+  handsets and accessories dominate -- Xiaomi 17, Samsung 8, Apple 2,
+  Honor 1, plus قسم أجهزة الموبايل (mobile devices) 6 and قسم صيانة
+  الموبايل (phone repair) 6; the digital tail is قسم الألعاب (games) 20,
+  قسم الاشتراكات (subscriptions) 16, قسم التطبيقات (apps) 14, قسم العملات
+  و الرصيد (currency/credit) 6, البطاقات الرقمية (digital cards) 6 and
+  قسم الحوالات المالية (money transfer) 2. Sample row: "HONOR Choice T10"
+  at USD 90. channel is therefore `electronics`, not `other`.
+
+  ENUMERABILITY (MEASURED 2026-09-12): flight payload reports total=107;
+  page 1 vs page 2 yielded 32 + 29 product ids with 3 shared (the
+  site-wide "latest products" strip), so the spider dedupes by id.
+
+  CURRENCY: USD -- this store's own "currency" field reads "USD" while
+  the other three sooqnaa stores onboarded in the same pass read "SYP".
+  Taken from the payload, NOT from countries.yaml's SYP default: Syrian
+  sellers price digital top-ups in dollars. Confirmed, not assumed.
+
+  coicop_codes left unset -- the catalogue straddles COICOP 08.2
+  (telephone equipment), 08.3 (telephone/internet services), 09.4
+  (recreational/cultural services) and 13.x (financial services), which
+  are different 3-digit classes, so it is wide by the narrowness rule.
+
+  Page family: listing.

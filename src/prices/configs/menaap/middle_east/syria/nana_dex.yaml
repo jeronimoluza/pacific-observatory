@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nana_dex
+url: https://nana.dex.sy/
+language: ar
+cadence: weekly
+channel: fresh-market
+notes: |
+  "نعناع حماه" (Nana Hama) -- an online greengrocer in Hama selling fresh
+  fruit, vegetables and herbs with same-day delivery.
+
+  PLATFORM: dex.sy, a Syrian single-vendor storefront host. Public,
+  unauthenticated JSON API at /api/products (see
+  spiders/_dex_sy_base.py for the shared contract). No auth, no cookies,
+  no Referer header required; clears on the repo-pinned chrome120
+  impersonation profile.
+
+  ENUMERABILITY (MEASURED 2026-09-12): meta.total=37 over 2 pages at
+  limit=24; page 1 vs page 2 productId sets disjoint, zero overlap --
+  genuine pagination, not a homepage carousel.
+
+  CURRENCY: SYP. The /api/products payload carries NO currency field, so
+  it was read instead from this store's own embedded config in the
+  homepage RSC flight payload ("baseCurrency":"SYP") -- not inferred from
+  the .sy TLD. The spider pins the measured value per store.
+
+  Sample product 2026-09-12: "تين" (figs) at SYP 80, stockQuantity 100.
+
+  coicop_codes left unset -- the catalogue is fresh produce led (COICOP
+  01.1.6 / 01.1.7) but carries eggs, dairy and pantry lines too, so the
+  classifier assigns the leaf per product.
+
+  Page family: API.
+
+  Onboarded in the Syria gap-fill pass (Syria had 1 filled COICOP leaf of
+  257 before this wave), under the coverage-density rule: take whatever
+  verifies.

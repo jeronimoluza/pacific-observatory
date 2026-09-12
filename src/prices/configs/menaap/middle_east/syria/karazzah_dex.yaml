@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: karazzah_dex
+url: https://karazzah.dex.sy/
+language: ar
+cadence: weekly
+channel: other
+notes: |
+  Karazzah -- a Hama accessories, costume-jewellery and gifts store.
+
+  PLATFORM: dex.sy, same public /api/products JSON contract as nana_dex
+  and mid_dex (see spiders/_dex_sy_base.py). No auth required.
+
+  ENUMERABILITY (MEASURED 2026-09-12): meta.total=37 over 2 pages at
+  limit=24; page 1 vs page 2 productId sets disjoint, zero overlap.
+
+  CURRENCY: SYP, read from this store's own "baseCurrency":"SYP" in the
+  homepage RSC flight payload on 2026-09-12.
+
+  Sample product 2026-09-12: "طقم جوهرة الحب" (a jewellery set),
+  sku "KH-192.75".
+
+  channel: other -- jewellery and gift retail is neither apparel
+  (`fashion`) nor any other value's discriminating test. coicop_codes
+  left unset: the core is COICOP 13.1 (jewellery / personal effects) but
+  the gift tail can land in 09.3, so the classifier decides per product.
+
+  Page family: API.
