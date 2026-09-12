@@ -366,7 +366,7 @@ are the files you run against:
 **Target register — from the zip, not git.** A worklist is a planning artifact
 that changes daily; committing one guarantees every clone carries a stale copy
 and that two people diverge on which rows are still open. These arrive in
-`WILLIAM_HANDOVER.zip`:
+`prices_will_handover_20260912.zip`:
 
 | File | What it is |
 |---|---|
