@@ -35,7 +35,7 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 CRAWLS=$(paste -sd, "$HERE/crawls.txt")
 # Kept after the run rather than cleaned up: the instances are keyless, so the
 # generated UserData is the only record of what a box was actually told to do.
-UDDIR=${UDDIR:-$(mktemp -d -t ccfetch-userdata)}
+UDDIR=${UDDIR:-$(mktemp -d "${TMPDIR:-/tmp}/ccfetch-userdata.XXXXXX")}
 
 # Spread across AZs: eight of one instance type in a single AZ is a capacity
 # refusal waiting to happen.
