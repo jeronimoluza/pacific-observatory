@@ -261,6 +261,15 @@ function mount(id, opts) {
      nothing is skipped outright, and one that does change something puts the
      focus back on the row it was on. */
   var lastSig = null;
+  /* A mount that hands its own `opts.count` is telling this panel what "no
+     data" means for it -- for catfilterCtry that is zero items under the node
+     for the country currently selected, which is a different (and much
+     smaller) set than the global LIVE tree above. Where a mount does not
+     override the count (world, compare) LIVE alone still governs, unchanged.
+     `count` is an aggregate over the whole subtree, so a node reading 0 means
+     none of its descendants have anything either -- safe to drop the row and
+     never recurse into it. */
+  function hasCount(c) { return !opts.count || opts.count(c) > 0; }
   function paint(cur) {
     var f = visible(), out = [], shown = 0;
     var sig = (MULTI ? Object.keys(cur).sort().join(",") : cur) + "|" +
@@ -272,7 +281,8 @@ function mount(id, opts) {
     (function walk(list, d) {
       list.forEach(function (c) {
         if (f && !f.vis[c]) return;
-        var k = kids(c).filter(function (x) { return !f || f.vis[x]; });
+        if (!hasCount(c)) return;
+        var k = kids(c).filter(function (x) { return (!f || f.vis[x]) && hasCount(x); });
         var open = !!k.length && !!(openSet[c] || (f && f.auto[c]));
         out.push(row(c, d, cur, !!k.length, open));
         shown++;
