@@ -9,7 +9,7 @@
    cycled by rank, so filtering a place out never repaints the ones that remain. */
 var PAL  = ["#1c6fbe","#a83f8c","#cf5a2b","#0f8f6e","#a67c10","#4a4fb5"];
 var INK  = "#1b211f", RULE = "#e7e4dc", FAINT = "#787d7a", DIM = "#5c625f";
-var CHEAP = "#17627d", DEAR = "#b5442e";
+var CHEAP = "#17627d", EXPENSIVE = "#b5442e";
 var UNIT_LABEL = {kg:"per kg", lt:"per litre", unit:"per piece"};
 var UNIT_SHORT  = {kg:"kg", lt:"litre", unit:"piece"};
 var UNIT_OF     = {kg:"/kg", lt:"/L", unit:"/piece"};
@@ -224,7 +224,7 @@ function cellsFor(ni, ui) { return (byNodeUnit.get(ni + "|" + ui) || []).filter(
    the local figure is the one somebody standing in the shop would recognise;
    they are the same fact in two units, and hiding either one costs the reader
    something real. A reader shown only `119 TWD` has no idea whether that is
-   dear, and a reader shown only `$3.75` cannot check it against a receipt.
+   expensive, and a reader shown only `$3.75` cannot check it against a receipt.
 
    So `S.cur` decides which of the two LEADS -- which is set in the table's own
    type and which is the greyed footnote beside it -- and never which exists.
@@ -890,15 +890,15 @@ function renderRanking() {
       (r.imp > 0 ? ' <span class="impm">◇</span>' : "") + "</div>" +
       '<div class="tr">' +
       '<div class="f" style="left:' + pos(a) + "%;width:" + (pos(b) - pos(a)) + "%;background:" +
-      (up ? DEAR : CHEAP) + '"></div></div>' +
-      '<div class="v" style="color:' + (up ? DEAR : CHEAP) + '">' +
+      (up ? EXPENSIVE : CHEAP) + '"></div></div>' +
+      '<div class="v" style="color:' + (up ? EXPENSIVE : CHEAP) + '">' +
       r.level.toFixed(0) + "</div></div>";
   }).join("");
 
   /* Every bar is drawn at full strength. The item count behind each one is
      still in its hover title, which is where a reader who wants it looks. */
   document.getElementById("rankLegend").innerHTML =
-    '<span><i class="sw" style="background:' + DEAR + '"></i>above the world median</span>' +
+    '<span><i class="sw" style="background:' + EXPENSIVE + '"></i>above the world median</span>' +
     '<span><i class="sw" style="background:' + CHEAP + '"></i>below it</span>' +
     (rows.some(function (r) { return r.imp > 0; })
       ? '<span><span class="impm">◇</span> rests partly on imputed months</span>' : "");
@@ -1749,7 +1749,7 @@ function renderCompare() {
            a "1 source" pill, and a country whose whole basket rests on one
            source is told so in prose on its own profile. */
         backgroundColor: plot.map(function (r) {
-          if (r.c.flag) return DEAR;
+          if (r.c.flag) return EXPENSIVE;
           if (r.c.mod >= 0.5) return PAL[5];
           return PAL[0]; }),
         /* A cell carrying an imputed month is outlined rather than recoloured:
@@ -1795,7 +1795,7 @@ function renderCompare() {
   function sw(col, txt) { return '<span><i class="sw" style="background:' + col + '"></i>' + txt + "</span>"; }
   var leg = [];
   if (seen.mod) leg.push(sw(PAL[5], "modelled, not an observed shelf price"));
-  if (seen.flag) leg.push(sw(DEAR, "outside plausible bounds"));
+  if (seen.flag) leg.push(sw(EXPENSIVE, "outside plausible bounds"));
   if (seen.imp) leg.push('<span><i class="sw" style="background:transparent;border:1.4px solid ' +
     INK + '"></i>outlined: some months behind it are imputed</span>');
   document.getElementById("cmpLegend").innerHTML = leg.join("");
@@ -2038,7 +2038,7 @@ function renderCountry() {
     ", versus " + esc(benchName());
   /* The count is the FILTERED count -- it is read off `top`, which is what the
      selection left standing, so a stale 59 can never sit beside a chart of 12.
-     And the chart has always drawn at most the dearest 15 and the cheapest 15;
+     And the chart has always drawn at most the 15 most expensive and the 15 cheapest;
      it never said so, which made a 200-item basket look like a 30-item one. A
      view that is truncated and looks complete is the one failure this control
      exists to remove, so the middle of the distribution is counted out loud. */
@@ -2048,7 +2048,7 @@ function renderCountry() {
     (top.length === 1 ? "1 item" : top.length + " items") +
     (scope.length ? " in the selected categories" : "") +
     (hidden
-      ? ", of which the <b>15 dearest</b> and the <b>15 cheapest</b> are drawn — " +
+      ? ", of which the <b>15 most expensive</b> and the <b>15 cheapest</b> are drawn — " +
         hidden + " in the middle " + (hidden === 1 ? "is" : "are") +
         " not on the chart. Every one of them is in the table below."
       : ", all drawn."));
@@ -2057,7 +2057,7 @@ function renderCountry() {
     type:"bar",
     data:{ labels: show.map(function (r) { return r.name + " (" + UNIT_SHORT[r.c.unit] + ")"; }),
       datasets:[{ data: show.map(function (r) { return (r.ratio - 1) * 100; }),
-        backgroundColor: show.map(function (r) { return r.ratio >= 1 ? DEAR : CHEAP; }),
+        backgroundColor: show.map(function (r) { return r.ratio >= 1 ? EXPENSIVE : CHEAP; }),
         borderWidth:0, borderRadius:3 }] },
     options:{ indexAxis:"y",
       onClick:function (e, els) { if (els.length) APP.openNode(show[els[0].index].c.node); },
@@ -2688,7 +2688,7 @@ function renderFxBars(ci) {
           borderSkipped:false, order:1 },
         { label:"The product's own price change",
           data: show.map(function (r) { return [0, r.real * 100]; }),
-          backgroundColor: show.map(function (r) { return r.real >= 0 ? DEAR : CHEAP; }),
+          backgroundColor: show.map(function (r) { return r.real >= 0 ? EXPENSIVE : CHEAP; }),
           borderWidth:0, order:2 }
       ]},
     options:{ indexAxis:"y",
@@ -2719,7 +2719,7 @@ function renderFxBars(ci) {
   });
 
   document.getElementById("fxbLegend").innerHTML =
-    '<span><i class="sw" style="background:' + DEAR + '"></i>the product&rsquo;s own ' +
+    '<span><i class="sw" style="background:' + EXPENSIVE + '"></i>the product&rsquo;s own ' +
     "price rose</span>" +
     '<span><i class="sw" style="background:' + CHEAP + '"></i>the product&rsquo;s own ' +
     "price fell</span>" +
@@ -2859,7 +2859,7 @@ function hexMix(a, b, t) {
 /* diverging: one hue each side of a neutral midpoint, clipped at +/-100% so a
    single extreme cell cannot wash the rest of the table out */
 function heatT(r) { return Math.pow(Math.min(1, Math.abs(r) / HM_FULL), 0.8); }
-function heatColor(r) { return hexMix(HM_MID, r >= 0 ? DEAR : CHEAP, heatT(r)); }
+function heatColor(r) { return hexMix(HM_MID, r >= 0 ? EXPENSIVE : CHEAP, heatT(r)); }
 
 function renderWaterfall() {
   var slug = S.country, m = DATA.cty[slug] || {}, ci = DATA.ctyIdx.indexOf(slug);
@@ -2887,7 +2887,7 @@ function renderWaterfall() {
      was not a corner case -- every one of Vietnam's 18 groups and all 14 of
      Indonesia's came out net-negative, so the chart contained NO upward bar at
      all while the table beside it listed 24 and 7 items priced above the
-     world, sorted dearest-first at the top of the screen. The gap really was
+     world, sorted most-expensive-first at the top of the screen. The gap really was
      negative; the claim that nothing pushed upward was not.
 
      `up` and `dn` are the two halves of the same sum, so `up + dn` is exactly
@@ -2928,7 +2928,7 @@ function renderWaterfall() {
     up.push([run * 100, (run + g.up) * 100]);
     dn.push([(run + g.up) * 100, (run + g.up + g.dn) * 100]);
     tot.push(null);
-    colors.push(g.contrib >= 0 ? DEAR : CHEAP);
+    colors.push(g.contrib >= 0 ? EXPENSIVE : CHEAP);
     meta.push(g);
     run += g.contrib;
   });
@@ -2941,7 +2941,7 @@ function renderWaterfall() {
     type:"bar",
     data:{ labels:labels, datasets:[
       { label:"pushed up by items priced above the world", data:up,
-        backgroundColor:DEAR, borderWidth:0, borderRadius:2, borderSkipped:false },
+        backgroundColor:EXPENSIVE, borderWidth:0, borderRadius:2, borderSkipped:false },
       { label:"pulled down by items priced below it", data:dn,
         backgroundColor:CHEAP, borderWidth:0, borderRadius:2, borderSkipped:false },
       { label:"everything together", data:tot,
@@ -2977,7 +2977,7 @@ function renderWaterfall() {
   });
 
   document.getElementById("wfLegend").innerHTML =
-    '<span><i class="sw" style="background:' + DEAR + '"></i>pushed up by the items ' +
+    '<span><i class="sw" style="background:' + EXPENSIVE + '"></i>pushed up by the items ' +
     "priced above the world</span>" +
     '<span><i class="sw" style="background:' + CHEAP + '"></i>pulled down by the ones ' +
     "priced below it</span>" +
@@ -3252,7 +3252,7 @@ function renderHeatmap() {
   document.getElementById("hmRamp").innerHTML =
     '<span class="lab">cheaper than the world</span>' +
     stops.map(function (t) { return '<i style="background:' +
-      hexMix(HM_MID, t >= 0 ? DEAR : CHEAP, Math.pow(Math.abs(t), 0.8)) + '"></i>'; }).join("") +
+      hexMix(HM_MID, t >= 0 ? EXPENSIVE : CHEAP, Math.pow(Math.abs(t), 0.8)) + '"></i>'; }).join("") +
     '<span class="lab">more expensive</span>' +
     '<span class="lab" style="margin-left:14px">' +
     'full colour at &plusmn;100% &middot; ' +
@@ -3437,7 +3437,7 @@ function renderVsWorldGrid() {
       datasets:[{ data: live.map(function (k) {
           return (Math.exp(overall[k].r) - 1) * 100; }),
         backgroundColor: live.map(function (k) {
-          return overall[k].r >= 0 ? DEAR : CHEAP; }),
+          return overall[k].r >= 0 ? EXPENSIVE : CHEAP; }),
         borderColor: INK,
         borderWidth: live.map(function (k) { return mineOf[k] ? 1.6 : 0; }),
         borderRadius:3 }] },
@@ -3507,7 +3507,7 @@ function renderVsWorldGrid() {
   setHtmlIfPresent("gvRamp",
     '<span class="lab">cheaper than the world</span>' +
     stops.map(function (t) { return '<i style="background:' +
-      hexMix(HM_MID, t >= 0 ? DEAR : CHEAP, Math.pow(Math.abs(t), 0.8)) + '"></i>'; }).join("") +
+      hexMix(HM_MID, t >= 0 ? EXPENSIVE : CHEAP, Math.pow(Math.abs(t), 0.8)) + '"></i>'; }).join("") +
     '<span class="lab">more expensive</span>' +
     '<span class="lab" style="margin-left:14px">full colour at &plusmn;100% &middot; ' +
     "hatched: fewer than " + GV_MIN_LEAVES + " matched items &middot; " + rows.length +
@@ -3923,8 +3923,8 @@ function pppPearson(x, y) {
 }
 /* Everything on LOGS. Both figures are ratios to a world median, so the thing
    that is linear in them is the log, and a slope of 1 there means "one per
-   cent dearer on theirs is one per cent dearer on ours" — which is the claim
-   being tested. A slope below 1 says our spread is COMPRESSED against theirs. */
+   cent more expensive on theirs is one per cent more expensive on ours" --
+   which is the claim being tested. A slope below 1 says our spread is COMPRESSED against theirs. */
 function pppStats(rows) {
   if (rows.length < 3) return null;
   var x = rows.map(function (r) { return Math.log(r.bench); });
@@ -4144,7 +4144,7 @@ function renderPppBench() {
         '<td class="num">' + r.ours.toFixed(0) + "</td>" +
         '<td class="num">' + r.bench.toFixed(0) + "</td>" +
         '<td class="num">' + (r.year || "&mdash;") + "</td>" +
-        '<td class="num" style="color:' + (r.gap > 0 ? DEAR : CHEAP) + '">' +
+        '<td class="num" style="color:' + (r.gap > 0 ? EXPENSIVE : CHEAP) + '">' +
         pppFmtGap(r.gap) + "</td>" +
         '<td class="num">' + r.n + "</td>" +
         '<td class="num">' + r.src + "</td></tr>"; }).join("") + "</tbody>";

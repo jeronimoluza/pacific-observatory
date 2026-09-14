@@ -17,7 +17,7 @@
   --r:3px; --gap:18px;
   /* validated categorical order — fixed, never cycled */
   --c1:#1c6fbe; --c2:#a83f8c; --c3:#cf5a2b; --c4:#0f8f6e; --c5:#a67c10; --c6:#4a4fb5;
-  --cheap:#17627d; --dear:#b5442e; --mid:#b9b5aa;
+  --cheap:#17627d; --expensive:#b5442e; --mid:#b9b5aa;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
   --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
@@ -96,7 +96,7 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
 .rdunit{font-size:20px;font-weight:400;color:var(--faint);letter-spacing:-.3px}
 .rdwhat{font-size:12.5px;color:var(--dim);margin-top:7px;max-width:70ch}
 .rddelta{font-size:12.5px;margin-top:3px;font-variant-numeric:tabular-nums}
-.rddelta .up{color:var(--dear);font-weight:600}
+.rddelta .up{color:var(--expensive);font-weight:600}
 .rddelta .dn{color:var(--cheap);font-weight:600}
 
 /* ---------- KPI strip: rules, not cards ---------- */
@@ -393,7 +393,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 .deco .b:first-child{border-left:0;padding-left:0}
 .deco .b .l{font-size:12px;color:var(--dim)}
 .deco .b .v{font-size:22px;font-weight:600;margin-top:1px;font-variant-numeric:tabular-nums}
-.deco .b.pos .v{color:var(--dear)}
+.deco .b.pos .v{color:var(--expensive)}
 .deco .b.neg .v{color:var(--cheap)}
 .samples{font-size:12px;color:var(--dim);margin-top:10px;line-height:1.65;max-width:96ch}
 .samples code{background:var(--wash);border-radius:var(--r);padding:1px 5px;font-size:11.5px}
@@ -871,7 +871,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         categories in the tree at the left to narrow which part of the basket is on screen &mdash;
         ticking a branch takes everything under it, and ticking nothing means everything. The
         count under the heading is always the count of what the tick marks left, and where there
-        are more than thirty items the chart draws the fifteen dearest and the fifteen cheapest
+        are more than thirty items the chart draws the fifteen most expensive and the fifteen cheapest
         and says how many it left out. <b>Compare against</b> changes the yardstick: the world
         median is the default and the one every other screen here uses, and the two regional
         options are an <b>addition</b> to it &mdash; when one is on, the axis, the column heading
