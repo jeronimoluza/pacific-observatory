@@ -1,6 +1,7 @@
 """Text publish stage: build dashboard_data.json and generate EPU dashboards."""
 
 import json
+import re
 from pathlib import Path
 
 import click
@@ -304,7 +305,8 @@ def _export_region_panel(
     scoped to this region). CSV/DTA: long-on-unit, wide-on-index panel
     merging EPU + topics + actors. XLSX: one sheet per family plus a
     combined ``panel`` sheet, standalone ``topics_framing``/
-    ``actors_framing`` sheets for the uncertainty-attribution data, and a
+    ``actors_framing`` sheets for the uncertainty-attribution data, a
+    ``policies_<tracker>`` sheet per policy tracker that has an addon, and a
     ``sources`` sheet (per-source provenance) when ``database_status`` is
     available for this region.
     """
@@ -376,9 +378,74 @@ def _export_region_panel(
             _front_id_cols(df).to_excel(xw, sheet_name=sheet, index=False)
         if merged is not None:
             _front_id_cols(merged).to_excel(xw, sheet_name="panel", index=False)
+        _write_policy_sheets(xw, region)
         _write_sources_sheet(xw, database_status, region)
 
     return region_json
+
+
+_POLICY_RE = re.compile(r"const D = (\{.*?\});\s*\n", re.S)
+
+# The columns a reader wants first; anything else the addon carries (the
+# corpus-discovery extras) follows in the order it appears.
+_POLICY_FRONT = [
+    "Country",
+    "Policy",
+    "category_display",
+    "subcategory",
+    "onset_year",
+    "date_basis",
+    "provenance",
+    "Active or Proposed Date",
+    "Policy Description",
+    "Source",
+]
+
+
+def _read_addon_policies(region: str, tracker: str) -> pd.DataFrame | None:
+    """The policy rows one addon reports, or None when it has no addon.
+
+    Read from the addon rather than the tracker workbook because the dashboard
+    is what the sheet has to agree with: corpus-discovered measures reach the
+    addon through a ``discovered_<region>.json`` sidecar and never appear in the
+    workbook, so a workbook-sourced sheet would silently omit them.
+    """
+    from text.plotting.small_dashboard_integrated_w_policy import ADDONS_DIR
+    from text.plotting.trackers import addon_filename, tracker_dir
+
+    path = tracker_dir(ADDONS_DIR, tracker) / addon_filename(region)
+    if not path.exists():
+        return None
+    match = _POLICY_RE.search(path.read_text(encoding="utf-8", errors="replace"))
+    if not match:
+        return None
+    rows = json.loads(match.group(1)).get("policies") or []
+    if not rows:
+        return None
+
+    df = pd.DataFrame(rows)
+    # ``years`` is a per-year article-count dict; Excel takes scalars only.
+    if "years" in df.columns:
+        df["years"] = df["years"].apply(
+            lambda v: json.dumps(v, sort_keys=True) if isinstance(v, dict) else v
+        )
+    front = [c for c in _POLICY_FRONT if c in df.columns]
+    return df[front + [c for c in df.columns if c not in front]]
+
+
+def _write_policy_sheets(xw, region: str) -> None:
+    """Append a ``policies_<tracker>`` sheet per tracker, if an addon exists.
+
+    Never raises: a missing or unparsable addon just skips that sheet, the same
+    way a missing status skips ``sources``.
+    """
+    for tracker in ("fuel", "food"):
+        try:
+            df = _read_addon_policies(region, tracker)
+        except Exception:  # noqa: BLE001
+            continue
+        if df is not None:
+            df.to_excel(xw, sheet_name=f"policies_{tracker}", index=False)
 
 
 def _write_sources_sheet(xw, database_status: dict | None, region: str) -> None:
