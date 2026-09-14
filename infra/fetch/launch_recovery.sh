@@ -36,6 +36,13 @@ echo "== preflight"
 echo "  reading  s3://$BUCKET/$MISS_IN_PREFIX/"
 echo "  writing  s3://$BUCKET/$OUT_PREFIX/"
 echo "  misses   s3://$BUCKET/$MISS_PREFIX/"
+# Named before anything costs money, like the prefixes above: a pass scoped to
+# the wrong sources looks exactly like a pass that recovered nothing.
+if [ -n "${SOURCES:-}" ]; then
+  echo "  sources  ${SOURCES}"
+else
+  echo "  sources  ALL (no SOURCES filter)"
+fi
 
 for KEY in fetch/parse.tar.gz fetch/ccfetch.py fetch/run.sh; do
   LINE=$(aws s3 ls "s3://$BUCKET/$KEY" || true)
@@ -82,7 +89,7 @@ echo "  no cc-fetch instances currently running"
 echo
 echo "== launching $COUNT instances, INPUT=misses -> s3://$BUCKET/$OUT_PREFIX/"
 INPUT=misses OUT_PREFIX=$OUT_PREFIX MISS_PREFIX=$MISS_PREFIX \
-  MISS_IN_PREFIX=$MISS_IN_PREFIX \
+  MISS_IN_PREFIX=$MISS_IN_PREFIX SOURCES=${SOURCES:-} \
   MAXSEC=28800 CONC=32 bash "$HERE/launch_fleet.sh" 0 "$COUNT"
 
 echo

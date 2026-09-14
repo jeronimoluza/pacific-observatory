@@ -61,6 +61,10 @@ while [ "$i" -lt "$COUNT" ]; do
     [ -n "${OUT_PREFIX:-}" ] && echo "export OUT_PREFIX=$OUT_PREFIX"
     [ -n "${MISS_PREFIX:-}" ] && echo "export MISS_PREFIX=$MISS_PREFIX"
     [ -n "${MISS_IN_PREFIX:-}" ] && echo "export MISS_IN_PREFIX=$MISS_IN_PREFIX"
+    # Same "unset means default" rule: an empty SOURCES would be written as a
+    # filter matching nothing, which reads as a finished run that recovered
+    # zero rows rather than as a misconfiguration.
+    [ -n "${SOURCES:-}" ] && echo "export SOURCES=$SOURCES"
     # Same reason as above: unset means "let ccfetch use its default", so this
     # is only written when the caller pointed the run at a different resolve.
     [ -n "${MANIFEST_PREFIX:-}" ] && echo "export MANIFEST_PREFIX=$MANIFEST_PREFIX"

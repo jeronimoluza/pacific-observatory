@@ -64,9 +64,13 @@ echo
 echo "== 5. confirm the recovery input is there"
 CRAWLS=$(wc -l < "$HERE/crawls.txt" | tr -d ' ')
 FIRST=$(head -1 "$HERE/crawls.txt")
-N=$(aws s3 ls "s3://$BUCKET/misses/$FIRST/" | grep -c 'jsonl.gz' || true)
+# The prefix the launch will actually read, not a hardcoded "misses/": every
+# round after the first writes its own, so checking the original one passes
+# while the run reads an empty prefix and recovers nothing.
+MISS_IN_PREFIX=${MISS_IN_PREFIX:-misses}
+N=$(aws s3 ls "s3://$BUCKET/$MISS_IN_PREFIX/$FIRST/" | grep -c 'jsonl.gz' || true)
 echo "crawls in list: $CRAWLS"
-echo "miss objects under misses/$FIRST/: $N"
+echo "miss objects under $MISS_IN_PREFIX/$FIRST/: $N"
 if [ "$N" -eq 0 ]; then
   echo "FAIL: no miss objects -- recovery has no input to read"
   exit 1
