@@ -8,6 +8,8 @@ on the cell's dominant `currency`. Nodes are every level of the COICOP tree
 
 from __future__ import annotations
 
+import logging
+
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,7 +46,11 @@ from prices.explorer.sources import (
     load_taxonomy,
 )
 
+from prices.rtcal.fills import drop_pruned, load_pruned_cells, load_released_fills
+
 __all__ = ["REPO_ROOT", "build_payload", "write_payload"]
+
+logger = logging.getLogger(__name__)
 
 
 def _mad(x: pd.Series) -> float:
@@ -55,13 +61,32 @@ def _mad(x: pd.Series) -> float:
     return float(np.median(np.abs(v - np.median(v))))
 
 
+# Columns no consumer of the exploded frame reads. The ladder merge multiplies
+# every row by its ancestor count (~5x), so carrying these multiplies them too:
+# `product_name` alone is ~1.4 GB on `trusted` and ~7 GB once exploded, on a
+# render the OOM killer took three times at ~24 GB. Each is read off a frame
+# that is NOT the exploded one -- `_samples` takes `product_name` and
+# `observation_date` from `trusted`, and the FX table takes `fx_rate` from
+# `obs`. A drop-list, not an allow-list: a column overlooked here still
+# survives the merge.
+_EXPLODE_DROP = [
+    "product_name",
+    "observation_date",
+    "fx_rate",
+    "qa_status",
+    "mass_source",
+    "pricing_basis",
+]
+
+
 def _explode_nodes(trusted: pd.DataFrame) -> pd.DataFrame:
     """One row per (observation, ancestor node) so every tree level aggregates."""
     codes = trusted.coicop_code.unique()
     ladder = pd.DataFrame(
         [(c, n) for c in codes for n in _levels(c)], columns=["coicop_code", "node"]
     )
-    return trusted.merge(ladder, on="coicop_code", how="inner")
+    slim = trusted.drop(columns=_EXPLODE_DROP, errors="ignore")
+    return slim.merge(ladder, on="coicop_code", how="inner")
 
 
 def _cells(exploded: pd.DataFrame) -> pd.DataFrame:
@@ -102,7 +127,29 @@ def _cells(exploded: pd.DataFrame) -> pd.DataFrame:
     return agg
 
 
-def _series(exploded: pd.DataFrame) -> pd.DataFrame:
+def _series(exploded: pd.DataFrame, fills: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Monthly medians per (country, node, unit), optionally with RT-CAL fills.
+
+    Fills are appended as extra rows carrying `imputed`, never merged into an
+    observed one. Three rules keep them honest, and each is load-bearing:
+
+    LEAF ONLY. A fill is already a cell median; an observation is a single row.
+    Exploding fills up the COICOP ladder the way observations are exploded would
+    take a parent node's median over a mixture of the two, so a parent would
+    silently change meaning as fills arrived. Fills join where `node` IS the
+    leaf they were predicted for, and nowhere else.
+
+    NEVER CREATES A SERIES. The depth filter runs on observed periods alone. A
+    line that exists only because it was imputed is a line about the model, not
+    about prices, and `MIN_SERIES_PERIODS` is the reader's guarantee that they
+    are looking at something repeatedly measured.
+
+    NO COLLISIONS TO RESOLVE. Cells the pruner rejected are removed from the
+    observations upstream of here, so the bread priced at US$108/kg is already
+    gone by the time this runs and the month it occupied is a genuine gap. A fill
+    then occupies an empty slot rather than arguing with a drawn point, which is
+    why there is no precedence rule to get wrong.
+    """
     keys = ["country", "node", "standard_unit", "period"]
     s = (
         exploded.groupby(keys, observed=True)
@@ -115,7 +162,32 @@ def _series(exploded: pd.DataFrame) -> pd.DataFrame:
     )
     s = s[s.n >= MIN_CELL_OBS]
     depth = s.groupby(["country", "node", "standard_unit"]).period.transform("nunique")
-    return s[depth >= MIN_SERIES_PERIODS].copy()
+    s = s[depth >= MIN_SERIES_PERIODS].copy()
+    s["imputed"] = False
+    s["prob"] = np.nan
+    if fills is None or fills.empty:
+        return s
+
+    f = fills.rename(columns={"coicop_code": "node"})
+    f = f[f.standard_unit.isin(s.standard_unit.unique())]
+
+    # Only onto series that already cleared the depth filter above.
+    live = s[["country", "node", "standard_unit"]].drop_duplicates()
+    f = f.merge(live, on=["country", "node", "standard_unit"], how="inner")
+
+    # Belt and braces. RT-CAL only targets cells it considers missing, and the
+    # cells it rejected were dropped from `trusted` before this frame was built,
+    # so a fill sharing a period with a drawn observation should be impossible.
+    # If one ever appears, the observation wins and the fill is discarded --
+    # never draw two prices for one month.
+    drawn = set(map(tuple, s[keys].astype(str).values))
+    f = f[[tuple(r) not in drawn for r in f[keys].astype(str).values]]
+    if f.empty:
+        return s
+    f = f.assign(local=np.nan, n=0, imputed=True)[
+        keys + ["usd", "local", "n", "imputed", "prob"]
+    ]
+    return pd.concat([s, f], ignore_index=True)
 
 
 def _leaf_census(tax: dict) -> dict[str, int]:
@@ -378,12 +450,35 @@ def build_payload(region: str | None = None) -> dict:
     tax = load_taxonomy()
     countries = load_country_meta()
     obs = load_observations()
+    # Both empty unless `prices rtcal run` has been executed.
+    #
+    # Fills reach the time-series display only -- not the cells, not the chain,
+    # not the basket. Drawing a modelled point and letting it move an index are
+    # different commitments and only the first is made here.
+    #
+    # PRUNED CELLS ARE DIFFERENT and come out everywhere, at the observation
+    # level, before anything aggregates. Removing a value our own screen calls an
+    # obvious error is a correction, not an imputation, and it would be incoherent
+    # for the chain to keep pricing a cell the series view refuses to draw. This
+    # is the other half of what the method is for: the historical view is full of
+    # points that are wrong on their face, and they should stop being drawn.
+    fills = load_released_fills()
+    pruned = load_pruned_cells()
 
     trusted = obs[
         obs.qa_status.eq("trusted")
         & obs.standard_unit.isin(COMPARABLE_UNITS)
         & obs.unit_value_usd.gt(0)
     ].copy()
+    before = len(trusted)
+    trusted = drop_pruned(trusted, pruned).copy()
+    if len(trusted) != before:
+        logger.info(
+            "rtcal pruning dropped %d of %d trusted rows (%d rejected cells)",
+            before - len(trusted),
+            before,
+            len(pruned),
+        )
 
     world_cells = _cells(_explode_nodes(trusted))
     if region:
@@ -395,7 +490,7 @@ def build_payload(region: str | None = None) -> dict:
 
     exploded = _explode_nodes(trusted)
     cells = _cells(exploded)
-    series = _series(exploded)
+    series = _series(exploded, fills)
     chained = _chained_index(exploded, tax)
     changed = _lagged_changes(exploded, tax)
     levels = _basket_levels(cells, tax)
@@ -487,11 +582,23 @@ def build_payload(region: str | None = None) -> dict:
         "modelled_sources": sorted(MODELLED_SOURCES),
         "plausible_bounds": PLAUSIBLE_USD,
         "min_basket_leaves": MIN_BASKET_LEAVES,
-        # Nothing here is interpolated -- a gap stays a gap, because some of
-        # these gaps are collection artefacts and an imputed value would be
-        # indistinguishable on screen from a measured price move. Two existing
-        # behaviours come close enough to need saying out loud, so they are
-        # published rather than left in the source:
+        # Some gaps are now filled, and the reason the old promise existed is
+        # the reason the new one is shaped the way it is. That promise --
+        # "nothing is interpolated" -- was never about imputation being wrong.
+        # It was about an imputed value being INDISTINGUISHABLE on screen from a
+        # measured price move. RT-CAL answers that objection rather than
+        # overruling it: every fill is labelled, is off by default, and carries
+        # the calibrated probability that it lands within 25% of the truth.
+        #
+        # What did not change is what a fill is allowed to touch. Fills reach
+        # the time-series display and nothing else -- not the chained index, not
+        # the heatmap leaf counts, not the basket. Drawing a modelled point and
+        # letting it move an index are different commitments, and only the first
+        # one has been made. That is why the chain still says, truthfully, that
+        # it interpolates nothing.
+        #
+        # Two older behaviours come close enough to need saying out loud, so they
+        # are published rather than left in the source:
         #
         # `link_gap_months` -- a chain link may span this many periods, and the
         # WHOLE log relative is booked onto the later one. A three-month move
@@ -502,7 +609,15 @@ def build_payload(region: str | None = None) -> dict:
         # model-based, and the client labels it as such.
         "link_gap_months": {"chain": MAX_LINK_GAP_MONTHS, **FREQ_MAX_GAP},
         "fitted_level": "two-way fixed effects on log price (item + period)",
-        "interpolated": False,
+        "interpolated": {
+            "cells": int(len(fills)),
+            "scope": ["series"],
+            "excluded_from": ["cells", "chain", "changes", "basket", "heatmap"],
+            "default_visible": False,
+            "labelled": True,
+            "probability": "calibrated P(within 25% of the observed median)",
+            "method": "rtcal_v1",
+        },
     }
 
     recent = trusted.period.max()
@@ -568,12 +683,20 @@ def build_payload(region: str | None = None) -> dict:
     ):
         if c not in cty_pos or n not in node_pos:
             continue
-        ser[f"{cty_pos[c]}|{node_pos[n]}|{unit_pos[u]}"] = {
+        entry = {
             "p": g.period.tolist(),
             "usd": [round(float(v), 4) for v in g.usd],
             "loc": [None if pd.isna(v) else round(float(v), 4) for v in g.local],
             "n": [int(v) for v in g.n],
         }
+        # `imp`/`pr` are omitted entirely when a series carries no fill, so a
+        # payload built without RT-CAL is byte-identical to the one before it.
+        if bool(g.imputed.any()):
+            entry["imp"] = [1 if v else 0 for v in g.imputed]
+            entry["pr"] = [
+                None if pd.isna(v) else round(float(v), 3) for v in g.prob
+            ]
+        ser[f"{cty_pos[c]}|{node_pos[n]}|{unit_pos[u]}"] = entry
 
     chain: dict[str, dict] = {}
     for (c, n, u), g in chained.groupby(

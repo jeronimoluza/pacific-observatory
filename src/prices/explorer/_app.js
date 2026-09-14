@@ -16,6 +16,7 @@ var UNIT_OF     = {kg:"/kg", lt:"/L", unit:"/piece"};
 
 var S = {
   view:"world", mode:"explore", cur:"usd", incModelled:false, measuredOnly:false,
+  incImputed:false,
   showFlagged:false, evidence:"solid", region:null, node:"01", unit:null, country:null,
   cmpMode:"abs", fxMode:"both", sortCmp:{k:"val",d:1}, sortCtry:{k:"ratio",d:1},
   multi:[], hregion:null, hsort:{k:null, d:1},
@@ -1266,7 +1267,28 @@ function renderCountry() {
 /* =====================================================================
    4. TRENDS & FX
    ===================================================================== */
-function seriesFor(ci, ni, ui) { return DATA.series[ci + "|" + ni + "|" + ui] || null; }
+/* Every trend reads its series through here, which is why the imputed filter
+   lives here and nowhere else. With the toggle off the returned object is the
+   one the payload shipped, untouched — a series carrying no fill has no `imp`
+   array at all, so the common case does no work and behaves exactly as it did
+   before RT-CAL existed. */
+function seriesFor(ci, ni, ui) {
+  var s = DATA.series[ci + "|" + ni + "|" + ui] || null;
+  if (!s || !s.imp) return s;
+  if (S.incImputed) return s;
+  var out = {p:[], usd:[], loc:[], n:[], imp:[], pr:[]}, i;
+  for (i = 0; i < s.p.length; i++) {
+    if (s.imp[i]) continue;
+    out.p.push(s.p[i]); out.usd.push(s.usd[i]); out.loc.push(s.loc[i]);
+    out.n.push(s.n[i]); out.imp.push(0); out.pr.push(null);
+  }
+  return out.p.length ? out : null;
+}
+var HAS_IMPUTED = (function () {
+  var k, ks = Object.keys(DATA.series || {});
+  for (k = 0; k < ks.length; k++) if (DATA.series[ks[k]].imp) return true;
+  return false;
+})();
 /* Sparse months must read as gaps, not as evenly-spaced steps. */
 function monthGrid(periods) {
   var a = periods[0].split("-"), b = periods[periods.length - 1].split("-");
@@ -1389,13 +1411,28 @@ function renderTrends() {
     return base.fx && r > 0 ? r / base.fx * 100 : null; });
 
   var grid = monthGrid(s.p);
+  /* An imputed point must be unmistakable at a glance, not only in the tooltip:
+     a hollow diamond against a filled dot. The arrays are aligned to the DENSE
+     grid, not to the sparse series, because that is what Chart.js indexes. */
+  var impGrid = grid.map(function (m) {
+    var k = s.p.indexOf(m);
+    return k >= 0 && s.imp && s.imp[k] ? 1 : 0;
+  });
+  var anyImp = impGrid.indexOf(1) >= 0;
+  function pointStyle() { return impGrid.map(function (v) { return v ? "rectRot" : "circle"; }); }
+  function pointRadius(r) { return impGrid.map(function (v) { return v ? r + 2.5 : r; }); }
+  function pointFill(col) { return impGrid.map(function (v) { return v ? "#ffffff" : col; }); }
   var ds = [];
   ds.push({label:"Local currency price", data:onGrid(grid, s.p, idxLoc), borderColor:PAL[2],
-           backgroundColor:PAL[2] + "22", borderWidth:2.4, tension:.2, pointRadius:2.5,
+           backgroundColor:PAL[2] + "22", borderWidth:2.4, tension:.2,
+           pointRadius:pointRadius(2.5), pointStyle:pointStyle(),
+           pointBackgroundColor:pointFill(PAL[2]), pointBorderColor:PAL[2],
            spanGaps:true, segment:GAP_SEG});
   if (S.fxMode === "both") {
     ds.push({label:"US$ price", data:onGrid(grid, s.p, idxUsd), borderColor:PAL[0],
-             backgroundColor:PAL[0] + "22", borderWidth:2.4, tension:.2, pointRadius:2.5,
+             backgroundColor:PAL[0] + "22", borderWidth:2.4, tension:.2,
+             pointRadius:pointRadius(2.5), pointStyle:pointStyle(),
+             pointBackgroundColor:pointFill(PAL[0]), pointBorderColor:PAL[0],
              spanGaps:true, segment:GAP_SEG});
     ds.push({label:"Exchange rate (local per US$)", data:onGrid(grid, s.p, idxFx), borderColor:PAL[1],
              borderWidth:1.8, borderDash:[3,3], tension:.2, pointRadius:0, spanGaps:true});
@@ -1405,6 +1442,13 @@ function renderTrends() {
 
   var gaps = grid.length - s.p.length;
   var warn = [];
+  if (anyImp) {
+    var nImp = impGrid.reduce(function (a, b) { return a + b; }, 0);
+    warn.push("<b>" + nImp + " of " + s.p.length + "</b> points on this line are " +
+      "<b>imputed</b>, drawn as hollow diamonds: no price was observed those months and " +
+      "the value is a model estimate. Each carries its own probability of landing within " +
+      "25% of the truth — hover to read it. Turn them off to see only measured prices.");
+  }
   if (s.p.length < 6) warn.push("Only <b>" + s.p.length + " months</b> of data — read the direction, not the slope.");
   if (gaps > s.p.length) warn.push("<b>" + gaps + " of " + grid.length +
     "</b> months in this window have no data at all; the line jumps across them.");
@@ -1425,6 +1469,13 @@ function renderTrends() {
           if (k < 0) return ["", "no observation this month — the line is bridging a gap"];
           return isIdx
             ? ["", s.n[k] + " items linked this month"]
+            : s.imp && s.imp[k]
+            ? ["", "US$ " + (s.usd[k] != null ? s.usd[k].toFixed(2) : "—") +
+                 UNIT_OF[DATA.unitIdx[ui]],
+               "IMPUTED — no price was observed this month",
+               s.pr && s.pr[k] != null
+                 ? Math.round(s.pr[k] * 100) + "% chance it is within 25% of the truth"
+                 : "modelled estimate"]
             : ["", "US$ " + (s.usd[k] != null ? s.usd[k].toFixed(2) : "—") +
                  UNIT_OF[DATA.unitIdx[ui]],
                "local " + (s.loc[k] != null ? s.loc[k].toFixed(2) : "—"),
@@ -1873,6 +1924,12 @@ var APP = {
     seg("cur-usd", S.cur === "usd");
     seg("cur-local", S.cur === "local");
     seg("mod-0", !S.incModelled); seg("mod-1", S.incModelled);
+    seg("imp-0", !S.incImputed); seg("imp-1", S.incImputed);
+    /* A payload built without RT-CAL carries no fills at all, and a control that
+       cannot change anything reads as broken -- so the strip only exists when
+       there is something behind it. */
+    var impSeg = document.getElementById("impSeg");
+    if (impSeg) impSeg.hidden = !HAS_IMPUTED;
     seg("der-0", !S.measuredOnly); seg("der-1", S.measuredOnly);
     seg("flg-0", !S.showFlagged); seg("flg-1", S.showFlagged);
     ["any","solid","corrob"].forEach(function (k) { seg("ev-" + k, S.evidence === k); });
@@ -1923,9 +1980,23 @@ window.APP = APP;
     return '<div><div class="l">' + r[0] + '</div><div class="v">' + r[1] + "</div></div>"; }).join("");
   document.getElementById("aboutFoot").innerHTML =
     "Generated " + m.generated + ". A cell needs " + m.min_cell_obs +
-    "+ observations before it is shown at all. <b>No missing month is ever filled in.</b> " +
-    "Some of these gaps are collection artefacts rather than quiet markets, and an imputed " +
-    "price would be indistinguishable on screen from a measured one — so a gap stays a gap. " +
+    "+ observations before it is shown at all. " +
+    /* The old promise was "no missing month is ever filled in", stated flatly. It is
+       still true when no fills are loaded, and still shown then. What it must never do
+       is survive into a payload that HAS fills -- the reader would be told nothing is
+       filled while hollow diamonds are drawn in front of them. Same objection, same
+       answer as the QA panel: the gap stays a gap until asked for. */
+    (HAS_IMPUTED
+      ? "<b>Filled months are shown only if you ask for them.</b> Some of these gaps are " +
+        "collection artefacts rather than quiet markets, so a gap stays a gap until you " +
+        "turn on “Add imputed” — and then a filled month is drawn as a hollow diamond " +
+        "carrying the calibrated probability that it lands within 25% of the observed " +
+        "median. Filled months reach these curves and nothing else: not the base-100 " +
+        "chain, not the changes, not the basket, not the category counts. "
+      : "<b>No missing month is ever filled in.</b> " +
+        "Some of these gaps are collection artefacts rather than quiet markets, and an " +
+        "imputed price would be indistinguishable on screen from a measured one — so a " +
+        "gap stays a gap. ") +
     "The two places that come closest are said out loud where they are used: the base-100 " +
     "chain may link across up to " + gapMonths("M") + " months and books the whole move onto " +
     "the later one, and the US$ price level is a fitted model output rather than an observed " +

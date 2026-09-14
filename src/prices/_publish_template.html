@@ -122,6 +122,10 @@
     <input type="checkbox" id="covfilter2">
     <span id="covlabel2"></span>
   </label>
+  <label class="covtoggle" id="impfilter-wrap" hidden>
+    <input type="checkbox" id="impfilter">
+    <span id="impfilterlabel"></span>
+  </label>
   <label>COICOP leaf: <select id="leafsel"></select></label>
   <canvas id="chart"></canvas>
 </div>
@@ -166,6 +170,24 @@
   const lowCoverage = new Set(DATA.low_coverage || []);
   const covCut = DATA.coverage_cutoff || {};
   let hideLowCov = false;
+
+  // --- RT-CAL imputed points ---
+  // `DATA.monthly` carries fills only when `prices rtcal run` has produced
+  // released fills; a payload built without it has no `imputed` rows at all,
+  // so the toggle stays hidden and the chart behaves exactly as before.
+  const hasImputed = DATA.monthly.some(r => r.imputed);
+  let includeImputed = false;
+  if (hasImputed) {
+    const nImp = DATA.monthly.filter(r => r.imputed).length;
+    document.getElementById('impfilter-wrap').hidden = false;
+    document.getElementById('impfilterlabel').textContent =
+      'Show ' + nImp.toLocaleString() +
+      ' RT-CAL imputed points (modelled estimates, not measured prices)';
+    document.getElementById('impfilter').addEventListener('change', e => {
+      includeImputed = e.target.checked;
+      if (select.value) renderChart(select.value);
+    });
+  }
 
   // --- KPI bar ---
   function renderKpis() {
@@ -378,21 +400,30 @@
   }
   function renderChart(key) {
     const [code, unit] = String(key).split('|');
+    // Off by default: a reader opts INTO modelled points, never out of them.
     const rows = DATA.monthly.filter(
-      r => r.coicop_code === code && r.standard_unit === unit);
+      r => r.coicop_code === code && r.standard_unit === unit
+        && (includeImputed || !r.imputed));
     const months = [...new Set(rows.map(r => r.month))].sort();
     const cs = [...new Set(rows.map(r => r.country))]
       .filter(c => !(hideLowCov && lowCoverage.has(c)))
       .sort();
-    const datasets = cs.map((c, i) => ({
-      label: DATA.country_names[c] || c,
-      data: months.map(m => {
-        const x = rows.find(r => r.country === c && r.month === m);
-        return x ? x.median_usd : null;
-      }),
-      borderColor: colorCycle(i), backgroundColor: colorCycle(i),
-      tension: 0.15, spanGaps: true,
-    }));
+    const datasets = cs.map((c, i) => {
+      const col = colorCycle(i);
+      const cellAt = m => rows.find(r => r.country === c && r.month === m);
+      // An imputed point must be unmistakable at a glance, not only in the
+      // tooltip: a hollow diamond against a filled dot.
+      return {
+        label: DATA.country_names[c] || c,
+        data: months.map(m => { const x = cellAt(m); return x ? x.median_usd : null; }),
+        pointStyle: months.map(m => { const x = cellAt(m); return x && x.imputed ? 'rectRot' : 'circle'; }),
+        pointRadius: months.map(m => { const x = cellAt(m); return x && x.imputed ? 5 : 3; }),
+        pointBackgroundColor: months.map(m => { const x = cellAt(m); return x && x.imputed ? '#fff' : col; }),
+        pointBorderColor: col,
+        borderColor: col, backgroundColor: col,
+        tension: 0.15, spanGaps: true,
+      };
+    });
     if (chart) chart.destroy();
     chart = new Chart(document.getElementById('chart'), {
       type: 'line',
@@ -402,6 +433,24 @@
         scales: {
           x: { title: { display: true, text: 'Month' } },
           y: { title: { display: true, text: 'Median USD / ' + unit } },
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const c = cs[ctx.datasetIndex];
+                const m = months[ctx.dataIndex];
+                const x = rows.find(r => r.country === c && r.month === m);
+                const val = ctx.parsed.y != null ? ctx.parsed.y.toFixed(2) : '—';
+                if (x && x.imputed) {
+                  const p = x.prob != null ? Math.round(x.prob * 100) + '%' : 'n/a';
+                  return ctx.dataset.label + ': ' + val +
+                    ' — RT-CAL imputed, ' + p + ' chance within 25% of the truth';
+                }
+                return ctx.dataset.label + ': ' + val;
+              },
+            },
+          },
         },
       },
     });

@@ -656,6 +656,10 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         <button id="tr-both" class="on" aria-pressed="true" onclick="APP.set('fxMode','both')">Show all three</button>
         <button id="tr-nofx" aria-pressed="false" onclick="APP.set('fxMode','nofx')">Remove FX</button>
       </div>
+      <div class="seg" id="impSeg" role="group" aria-label="Imputed months" hidden>
+        <button id="imp-0" class="on" aria-pressed="true" onclick="APP.set('incImputed',false)">Measured only</button>
+        <button id="imp-1" aria-pressed="false" onclick="APP.set('incImputed',true)">Add imputed</button>
+      </div>
     </div>
     <div class="samples" id="trKind" style="margin:0 0 10px"></div>
     <div id="trWarn"></div>

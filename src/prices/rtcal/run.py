@@ -53,6 +53,21 @@ OUTPUT_COLS = [
 ]
 
 
+def _write_pruned_cells(flagged: pd.DataFrame) -> None:
+    """Publish the rejected cells so the dashboards can drop them too.
+
+    Pruning is not only a training filter. The point of it, in Will's words, is
+    that the historical view is full of values that are "obviously wrong" and
+    should stop being drawn -- so the same judgement that keeps a cell out of the
+    fit has to be readable by whatever draws the chart. Keyed exactly like the
+    summary parquet so a consumer can anti-join without deriving anything.
+    """
+    cols = ["country", "coicop_code", "standard_unit", "period"]
+    out = flagged[cols + ["median_unit_value_usd", "n_trusted", "outlier_reason"]].copy()
+    config.PRUNED_CELLS_PARQUET.parent.mkdir(parents=True, exist_ok=True)
+    out.to_parquet(config.PRUNED_CELLS_PARQUET, index=False)
+
+
 def load_thresholds(path=None) -> pd.DataFrame:
     """Promoted policy if one exists, otherwise the packaged seed."""
     if path is None:
@@ -103,6 +118,7 @@ def run(summary_path=None, artifacts_dir=None, thresholds_path=None, label_batch
     observed, unmatched = frames.attach_country_context(observed, context)
     observed = frames.add_derived_features(observed)
     train_frame, flagged, pruning_summary = prune_mod.prune(observed)
+    _write_pruned_cells(flagged)
     if verbose:
         print(f"  observed {pruning_summary['input_rows']:,} -> train {pruning_summary['pruned_rows']:,}", flush=True)
 
