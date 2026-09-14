@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import residual_leaves
 from prices.explorer.cpi import DIVISION_OF, SERIES_LABEL, load_official
 from prices.explorer.geo import build_geo_series
@@ -51,6 +52,37 @@ from prices.rtcal.fills import drop_pruned, load_pruned_cells, load_released_fil
 __all__ = ["REPO_ROOT", "build_payload", "write_payload"]
 
 logger = logging.getLogger(__name__)
+
+
+def _fold_piece_units(obs: pd.DataFrame) -> int:
+    """Relabel `item` as `unit`, IN PLACE, on the leaves that vet it as a piece.
+
+    `unit` and `item` are both a price per ONE countable piece; they differ only
+    in how the denominator was reached. `unit` divided a pack price by an
+    explicit count marker, `item` is the extraction ladder's catch-all, trusted
+    only where SOLD_BY_ITEM_LEAVES says the commodity really is an indivisible
+    piece. `COMPARABLE_UNITS` omits `item` because off-allowlist it means "no
+    quantity found" -- but that slice never reaches here: `qa.py::_row_has_quantity`
+    only lets an `item` row reach `trusted` when the leaf is on the allowlist.
+    So the filter was discarding 92,223 rows that had passed every gate, and
+    with them 531 (country, leaf) cells across ~100 countries.
+
+    `publish.py` has folded these two labels together since 2026-09-04; the
+    explorer never grew the equivalent, which is one of the ways the two
+    dashboards disagree about what the corpus contains.
+
+    In place, and not for tidiness: this runs before the trusted filter, on the
+    whole 18.9M-row observation frame with nine object columns in it. Copying
+    that frame to change 92,223 cells peaks around 23 GB and the render is
+    OOM-killed on a 26 GB box. `build_payload` owns the frame `load_observations`
+    just handed it, so mutating it costs one boolean mask and nothing else.
+    Returns the number of rows relabelled.
+    """
+    fold = obs.coicop_code.isin(SOLD_BY_ITEM_LEAVES) & obs.standard_unit.eq("item")
+    n = int(fold.sum())
+    if n:
+        obs.loc[fold, "standard_unit"] = "unit"
+    return n
 
 
 def _mad(x: pd.Series) -> float:
@@ -465,13 +497,42 @@ def build_payload(region: str | None = None) -> dict:
     fills = load_released_fills()
     pruned = load_pruned_cells()
 
+    # Counted BEFORE the fold: the honesty panel discloses how many trusted rows
+    # priced a single piece, and after the fold those rows read as `unit`.
+    item_basis_rows = int(
+        (obs.qa_status.eq("trusted") & obs.standard_unit.eq("item")).sum()
+    )
+    _fold_piece_units(obs)
+
+    # Everything the UNFILTERED frame is needed for is a summary, so take them
+    # all here and let the frame go. Held to the end instead, `obs` (11 GB, nine
+    # object columns over 18.9M rows) sat alongside `trusted` and a full-width
+    # `dropna` copy for the FX table, and the render was OOM-killed at 23.4 GB.
+    qa_status_counts = obs.qa_status.value_counts()
+    is_trusted = obs.qa_status.eq("trusted")
+    qa_mass_source = obs.loc[is_trusted, "mass_source"].value_counts(dropna=False)
+    modelled_rows = int((is_trusted & obs.is_modelled).sum())
+    # Three columns, not thirteen: `obs.dropna(subset=["fx_rate"])` copied the
+    # whole frame to reach a per-(country, month) median.
+    fx_tbl = (
+        obs.loc[obs.fx_rate.notna(), ["country", "period", "fx_rate"]]
+        .groupby(["country", "period"], observed=True)
+        .fx_rate.median()
+        .reset_index()
+    )
+
+    # No `.copy()`: boolean-mask indexing already returns a frame that owns its
+    # data, so the copy was a second 9 GB allocation taken at the one moment
+    # `obs` was still alive -- the peak that got the render killed. Nothing below
+    # writes to `trusted`; it is only read, merged, grouped and reassigned.
     trusted = obs[
-        obs.qa_status.eq("trusted")
-        & obs.standard_unit.isin(COMPARABLE_UNITS)
-        & obs.unit_value_usd.gt(0)
-    ].copy()
+        is_trusted & obs.standard_unit.isin(COMPARABLE_UNITS) & obs.unit_value_usd.gt(0)
+    ]
+    del obs, is_trusted
+    # Pruned AFTER `obs` is released, not before: `drop_pruned` returns a
+    # filtered frame that owns its data, so this never holds two full copies.
     before = len(trusted)
-    trusted = drop_pruned(trusted, pruned).copy()
+    trusted = drop_pruned(trusted, pruned)
     if len(trusted) != before:
         logger.info(
             "rtcal pruning dropped %d of %d trusted rows (%d rejected cells)",
@@ -568,17 +629,10 @@ def build_payload(region: str | None = None) -> dict:
 
     # ---- QA / honesty panel -------------------------------------------
     qa = {
-        "status": {k: int(v) for k, v in obs.qa_status.value_counts().items()},
-        "mass_source": {
-            str(k): int(v)
-            for k, v in obs[obs.qa_status.eq("trusted")]
-            .mass_source.value_counts(dropna=False)
-            .items()
-        },
-        "item_basis_rows": int(
-            (obs.qa_status.eq("trusted") & obs.standard_unit.eq("item")).sum()
-        ),
-        "modelled_rows": int((obs.qa_status.eq("trusted") & obs.is_modelled).sum()),
+        "status": {k: int(v) for k, v in qa_status_counts.items()},
+        "mass_source": {str(k): int(v) for k, v in qa_mass_source.items()},
+        "item_basis_rows": item_basis_rows,
+        "modelled_rows": modelled_rows,
         "modelled_sources": sorted(MODELLED_SOURCES),
         "plausible_bounds": PLAUSIBLE_USD,
         "min_basket_leaves": MIN_BASKET_LEAVES,
@@ -636,11 +690,7 @@ def build_payload(region: str | None = None) -> dict:
         "min_link_leaves": MIN_LINK_LEAVES,
     }
 
-    # ---- FX: local per USD, monthly ------------------------------------
-    fxr = obs.dropna(subset=["fx_rate"])
-    fx_tbl = (
-        fxr.groupby(["country", "period"], observed=True).fx_rate.median().reset_index()
-    )
+    # ---- FX: local per USD, monthly (fx_tbl built before `obs` was freed) ---
     fx: dict[str, dict] = {}
     for c, g in fx_tbl.sort_values("period").groupby("country"):
         fx[c] = {"p": g.period.tolist(), "r": [round(v, 6) for v in g.fx_rate]}
