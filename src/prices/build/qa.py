@@ -224,7 +224,20 @@ def compute_qa(df: pd.DataFrame) -> pd.DataFrame:
         ~scoped | uv_usd.isna() | uv_usd.between(pd.to_numeric(lo), pd.to_numeric(hi))
     ).to_numpy()
 
-    df["qa_fx"] = df.get("fx_rate", pd.Series(pd.NA, index=df.index)).notna().to_numpy()
+    # Two ways FX can fail a row. The rate can be ABSENT -- the original
+    # meaning of this gate -- or it can be PRESENT AND IMPLAUSIBLE, which
+    # this gate used to wave through. MNT sat at 0.6 per USD for 22 days in
+    # 2025 instead of ~3,590; qa_fx returned True and a 2,998 MNT juice
+    # published as $3,980.45. attach_fx_and_usd marks those rows via
+    # prices.fx.audit; see that module for what the check will and will not
+    # catch (notably: it does not fire on real redenominations).
+    fx_present = df.get("fx_rate", pd.Series(pd.NA, index=df.index)).notna()
+    fx_suspect = (
+        df.get("fx_suspect", pd.Series(False, index=df.index))
+        .fillna(False)
+        .astype(bool)
+    )
+    df["qa_fx"] = (fx_present & ~fx_suspect).to_numpy()
 
     df["qa_status"] = _status_vector(df)
     return df

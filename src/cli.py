@@ -558,6 +558,75 @@ def _set_unfiltered(on: bool) -> None:
         os.environ["PO_PRICES_UNFILTERED"] = "1"
 
 
+@prices.command("fx-refresh")
+@click.option("--cache", "cache_path", default=None, help="Override the FX cache path.")
+@click.option("--start", default=None, help="First date to fetch (default: day after the cache ends).")
+@click.option("--end", default=None, help="Last date to fetch (default: today).")
+def prices_fx_refresh(cache_path, start, end):
+    """Extend the prices FX cache forward from Frankfurter v2.
+
+    This is the ONLY prices command that fetches exchange rates. Build and
+    publish read the cache and never touch the network, so a refresh is an
+    explicit, reviewable step rather than a side effect of a build.
+    """
+    from prices.fx.paths import PRICES_FX_CACHE
+    from prices.fx.refresh import refresh
+
+    fetched = refresh(cache_path=cache_path or PRICES_FX_CACHE, start=start, end=end)
+    click.echo(f"Fetched {fetched:,} FX rows.")
+
+
+@prices.command("fx-rebuild")
+@click.option("--out", "out_path", required=True, help="Where to write the rebuilt cache.")
+@click.option("--start", default=None, help="History floor (default: 2013-01-01).")
+@click.option("--end", default=None, help="Last date (default: today).")
+@click.option("--like", "like_cache", default=None,
+              help="Take the currency list from this cache (default: the live one).")
+def prices_fx_rebuild(out_path, start, end, like_cache):
+    """Rebuild the whole FX history from Frankfurter v2 into a NEW file.
+
+    --out is required and deliberately has no default: the live cache is the
+    artifact the entire price corpus depends on, it is gitignored so it exists
+    in exactly one place, and replacing it is a decision to be made after
+    diffing, not a side effect of running this.
+    """
+    from prices.fx.paths import FX_HISTORY_FLOOR
+    from prices.fx.refresh import rebuild
+
+    frame = rebuild(
+        out_path=out_path,
+        start=start or FX_HISTORY_FLOOR,
+        end=end,
+        like_cache=like_cache,
+    )
+    click.echo(
+        f"Wrote {len(frame):,} rows / {frame['currency'].nunique()} currencies "
+        f"to {out_path}"
+    )
+
+
+@prices.command("fx-audit")
+@click.option("--cache", "cache_path", default=None, help="Override the FX cache path.")
+def prices_fx_audit(cache_path):
+    """Report FX rates that are wrong by orders of magnitude.
+
+    Flags a currency that steps and RETURNS, which is a merge artefact; a real
+    redenomination steps and stays, and is not reported.
+    """
+    from prices.fx.audit import find_contaminated_blocks
+    from prices.fx.cache import load_cache
+    from prices.fx.paths import PRICES_FX_CACHE
+
+    cache = load_cache(cache_path or PRICES_FX_CACHE)
+    blocks = find_contaminated_blocks(cache)
+    if blocks.empty:
+        click.echo(f"No contaminated blocks in {len(cache):,} rows.")
+        return
+    click.echo(f"{len(blocks)} contaminated block(s) across "
+               f"{blocks['currency'].nunique()} currencies:")
+    click.echo(blocks.to_string(index=False))
+
+
 @prices.command("publish")
 @_region_opt
 @_subregion_opt
