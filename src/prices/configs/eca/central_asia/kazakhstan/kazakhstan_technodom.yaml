@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_json_html
+analytical_role: retailer_sku
+spider: kazakhstan_technodom
+url: https://www.technodom.kz/catalog/smartfony-i-gadzhety/smartfony-i-telefony/smartfony
+language: ru
+currency: KZT
+cadence: weekly
+channel: electronics
+archive_prefix: www.technodom.kz/p/
+archive_path_re: '^/p/'
+notes: |
+  Airba's former candidate URL now redirects to Technodom Kazakhstan. The
+  replacement retailer's server-rendered category pages embed 24 products per
+  page in __NEXT_DATA__, including SKU, title, current KZT price, category,
+  and stable product slug. Page 2 was verified distinct and the listing reports
+  475 products across 20 pages. The 144-row smoke stopped at a page boundary
+  and is not a discovery cap.

@@ -1,0 +1,9 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: restaurant_menu
+channel: other
+spider: francosresort_menu
+url: https://www.francosresort.com/
+language: en
+currency: SLE
+cadence: weekly

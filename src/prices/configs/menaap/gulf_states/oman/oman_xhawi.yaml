@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: oman_xhawi
+url: https://www.xhawi.com/
+language: en
+currency: OMR
+cadence: weekly
+channel: marketplace
+archive_prefix: www.xhawi.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Oman-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 250 products / 406 positive variants in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: marketplace_sku
+coicop_classification: classifier
+spider: ssdonestore_ss
+url: https://ssdonestore.com/shop/
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: ssdonestore.com/product/
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  SSD One Store is a South Sudan consumer marketplace. Its public homepage
+  states country-wide delivery across South Sudan and identifies the service as
+  a marketplace connecting South Sudan sellers and buyers. The WooCommerce shop
+  is protected by a JavaScript access check, so listing and pagination requests
+  use bounded Playwright rendering. Its rendered DOM has USD item cards and
+  /shop/page/N/ pagination.
+
+  This source covers tangible consumer goods across the Marketplace and Top
+  Products rails, rather than only food. Variable-product price ranges are
+  excluded because no single variant price is specified on a listing card.
+  Marketplace seller and stock conditions may vary; the shown USD price is the
+  public listing price.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: surangel_epicor_store
+url: https://shop.surangel.com/inet/storefront/store.php?mode=advancedsearch
+language: en
+cadence: weekly
+channel: supermarket
+country: Palau
+currency: USD
+notes: |
+  Server-rendered Epicor product pages. Price is the first/retail quantity
+  tier; all source price tiers and their qualifying quantities are retained in
+  raw output. Unit remains source-native (for example EA or LB). USD is an
+  explicit acceptance check because the catalogue displays '$'. Product pages
+  are discovered from the public advanced-search surface and validated seeds.

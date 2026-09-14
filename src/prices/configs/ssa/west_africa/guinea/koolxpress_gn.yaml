@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: koolxpress_gn
+url: https://koolxpress.com/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Public KoolXpress Guinea HTML marketplace. Discovery confirmed server-rendered
+  article routes (/article/ART-*), shop routes, root-card price rows, Conakry
+  locality, and GNF prices. Discover only product/article and shop links from
+  the root and shop pages; article PDPs are the final record scope. Preserve
+  article id, brand, shop and visible list price where supplied.

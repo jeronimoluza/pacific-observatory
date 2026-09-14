@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sierra_leone_foodland_sl
+url: https://foodland.sl/shop/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "foodland.sl/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  WooCommerce catalogue.  The saved 2026-09-12 shop sample confirms
+  category cards at /product-category/, product cards at /product/, and
+  page-number pagination.  The saved Cadbury PDP sample confirms embedded
+  schema.org Product/Offer data (SLL, InStock) and a human-visible
+  description containing Unit Per CRT, Unit Price Le, Crt Price Le, and
+  BarCode.  The spider stores the unit price as price and keeps unit_price,
+  carton_price, units_per_carton, and barcode in raw output.  Live collection
+  remains pending: this worker could not resolve foodland.sl on 2026-09-12.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: mauritius_maulux
+url: https://maulux.mu/
+language: en
+currency: MUR
+cadence: weekly
+channel: cosmetics
+archive_prefix: maulux.mu/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Mauritius-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 250 products / 253 positive variants in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

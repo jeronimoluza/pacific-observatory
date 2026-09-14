@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jacoliquor_cr
+url: https://jacoliquor.com/product-category/cigarros/cigarrillos/
+language: es
+currency: USD
+cadence: weekly
+channel: other
+archive_prefix: jacoliquor.com/product/
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Costa Rica liquor retailer. The saved 2026-09-13 static WooCommerce response
+  contains 20 cigarette cards. The active storefront is USD: the body is
+  tagged currency-usd, the switcher describes USA dollar, and its 0.002273
+  rate converts from the CRC base. The switcher's internal name is incorrectly
+  labelled CRC, so the spider follows the mutually consistent USD evidence.

@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopit_ss
+url: https://shopit.com.ss/electronics/
+language: en
+currency: USD
+cadence: weekly
+channel: electronics
+archive_prefix: shopit.com.ss/
+archive_path_re: '^/[^/?]+\\.html$'
+notes: |
+  Shopit South Sudan is a public CS-Cart storefront protected by a JavaScript
+  access check, so listing and pagination requests use bounded Playwright
+  rendering. The electronics listing
+  explicitly describes countrywide South Sudan delivery and exposes product
+  cards with USD prices. Browser verification on 2026-09-12 found 20 cards on
+  page 1 and stable /electronics/page-N/ pagination through page 8.
+
+  The source is intentionally scoped to Electronics & Appliances, a valid
+  consumer-goods surface under the all-consumer-products policy. Price cents
+  are rendered in a nested sup element: the visible DOM text "USD $15873" is
+  USD 158.73, so the spider reads the integer and nested cent elements
+  separately. Product offers may vary, so the listing price is the public
+  currently advertised price rather than a guaranteed checkout total.

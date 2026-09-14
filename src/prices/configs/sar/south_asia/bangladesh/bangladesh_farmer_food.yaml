@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: bangladesh_farmer_food
+url: https://www.farmerfoodbd.com/
+language: bn
+currency: BDT
+cadence: weekly
+channel: specialty-food
+archive_prefix: www.farmerfoodbd.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Bangladesh-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 100 positive records in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

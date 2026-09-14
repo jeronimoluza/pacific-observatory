@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dadouma_gn
+url: https://www.dadouma.com/categories/
+language: fr
+currency: GNF
+cadence: weekly
+channel: marketplace
+notes: |
+  Guinea-local multi-category consumer marketplace. Browser verification on
+  2026-09-13 showed a fully server-rendered 12-category tree: /categorie/
+  pages enumerate /produits/ leaves, whose a.dd-product-card elements carry
+  canonical PDP ids, full names, and FG prices. Verified examples include
+  refrigerant R600a 20,000 FG and several air conditioners at 2,450,000 to
+  3,350,000 FG; the homepage also renders ten priced offer cards. The spider
+  walks the category tree and skips out-of-stock cards that have no displayed
+  price. chrome124 impersonation is pinned for the Cloudflare edge. COICOP is
+  left to the classifier under the corrected all-consumer-products policy.
+  No archive fields are set pending later CDX measurement.
+

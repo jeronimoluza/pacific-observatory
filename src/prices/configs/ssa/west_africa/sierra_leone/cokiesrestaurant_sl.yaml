@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: menu_item
+spider: cokiesrestaurant_sl
+url: https://www.cokiesrestaurant.com/
+language: en
+currency: SLE
+cadence: weekly
+channel: other
+archive_prefix: cokiesrestaurant.com/#menu-
+archive_path_re: '^/$'
+notes: |
+  Cokie's Cookery & Bar at 1 Pademba Road, Freetown directly renders its weekly
+  menu. Day-specific item records provide names, positive numeric data-price
+  fields, visible Le labels, and unit text; the site's payment code explicitly
+  confirms SLE. Market-price placeholders are excluded. Day, section, and item
+  name form a stable identity so legitimate repeated dishes remain distinct by
+  scheduled offer.

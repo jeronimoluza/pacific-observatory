@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: new_caledonia_shana_nc
+url: https://shana.nc/
+language: fr
+currency: XPF
+cadence: weekly
+channel: cosmetics
+archive_prefix: shana.nc/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  New Caledonia-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23 platform evidence reports 189; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

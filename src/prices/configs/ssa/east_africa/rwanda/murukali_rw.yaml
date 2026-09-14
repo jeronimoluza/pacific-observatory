@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: murukali_rw
+url: https://murukali.com/collections/vegetables
+language: en
+currency: RWF
+cadence: weekly
+channel: marketplace
+notes: |
+  Rwanda grocery/marketplace storefront with a standard Shopify collection
+  endpoint at /collections/vegetables/products.json. Re-verified live
+  2026-09-01: the endpoint returned fresh produce and food-adjacent SKUs
+  with RWF prices, availability flags, product handles and variants
+  including celery, dodo/amaranth, eggplant, lettuce, fennel, cucumber,
+  green banana and packaged food rows. The spider intentionally scopes to
+  the vegetables collection because the unfiltered /products.json feed starts
+  with non-food general-merchandise items.

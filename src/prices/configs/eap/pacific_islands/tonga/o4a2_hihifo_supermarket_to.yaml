@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: marketplace_sku
+coicop_classification: classifier
+spider: o4a2_hihifo_supermarket_to
+url: https://o4a2.com/collections/hihifo-supermarket-foui-1
+language: en
+currency: NZD
+cadence: weekly
+channel: supermarket
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  O4A2 vendor collection for Hihifo Supermarket in Fo'ui, Tonga. This is a
+  vendor-level scrape from the same O4A2 marketplace host, not an independent
+  storefront domain. The collection exposed 250 priced grocery and household
+  rows during live probe on 2026-09-01.

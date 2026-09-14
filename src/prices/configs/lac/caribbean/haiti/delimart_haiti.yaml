@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: exact_asset_id_visual_transcription
+analytical_role: promotional_retail_price
+spider: delimart_haiti
+url: https://delimarthaiti.com/promotions
+language: fr-HT
+currency: HTG
+cadence: monthly
+coicop_classification: classifier
+channel: supermarket
+archive_prefix: delimarthaiti.com/assets/images/prix-ate-plat/
+archive_path_re: '^/assets/images/prix-ate-plat/[0-9]{4}-[0-9]{2}/pri-at-plat-[0-9a-f]+\.png$'
+notes: |
+  Delimart's August 2026 first-party promotion page exposes stable image assets
+  but no item-level HTML. Six page-one cards were manually read and visually
+  checked for product, pack, red-tag current HTG price, and crossed prior price.
+  The spider is an exact asset-ID allowlist and will not guess at new images.
+  Campaign month 2026-08 is normalized to observation_date 2026-08-01 with
+  period_kind=month; it is not treated as proof that the offer remains active.
+  Card #1 is excluded because its heading omits the pack. Card #2 is excluded
+  because its heading says flaked in water while its pictured can says chunk in
+  oil. Card #3 is excluded because two variants share a generic offer title.

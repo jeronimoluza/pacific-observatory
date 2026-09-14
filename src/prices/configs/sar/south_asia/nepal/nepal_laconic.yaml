@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: nepal_laconic
+url: https://laconicnepal.com/
+language: en
+currency: NPR
+cadence: weekly
+channel: fashion
+archive_prefix: laconicnepal.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Nepal-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23/24 platform evidence reports 101 products / 630 variants; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

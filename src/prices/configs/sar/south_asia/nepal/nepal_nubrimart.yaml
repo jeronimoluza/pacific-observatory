@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_next_rsc
+analytical_role: retailer_sku
+spider: nepal_nubrimart
+url: https://www.nubrimart.com/
+language: en
+currency: NPR
+cadence: weekly
+channel: supermarket
+archive_prefix: nubrimart.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Nubri Mart's first-party homepage embeds current grocery records in its Next.js
+  server-component payload. Each record includes a canonical slug, name,
+  category, and explicit priceNpr value. This adapter covers the homepage
+  assortment and does not interpret the site's 4,000+ inventory claim as a cap.

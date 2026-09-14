@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy
+spider: suriname_hsdsonline
+url: https://www.hsdsonline.com/
+language: en
+currency: SRD
+cadence: weekly
+channel: dept-store
+archive_prefix: hsdsonline.com/
+notes: |
+  The fixture has an active SRD switcher and explicit SRD labels in product
+  cards. Current sale/online prices are taken from ins/current markup; struck
+  original prices and tax-inclusive display amounts are not emitted.

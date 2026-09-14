@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_json_api
+analytical_role: marketplace_offer
+spider: gambia_penchami
+url: https://www.penchami.com/api/products
+language: en
+currency: GMD
+cadence: daily
+channel: marketplace
+archive_prefix: penchami.com/products/
+archive_path_re: '^/products/'
+notes: |
+  Penchami is a Gambia-local marketplace whose public first-party API returns
+  approved products with stable IDs, vendor and category objects, prices, and
+  stock. The application explicitly labels prices as GMD and advertises
+  nationwide delivery. The collector uses base product offers only; crossed
+  original prices and optional variant prices are excluded.

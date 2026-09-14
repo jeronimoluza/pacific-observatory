@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: colombia_habanoslatabaqueria
+url: https://www.habanoslatabaqueria.com.co/wp-json/wc/store/v1/products?per_page=100
+language: es
+currency: COP
+cadence: weekly
+channel: other
+archive_prefix: habanoslatabaqueria.com.co/producto/
+archive_path_re: '^/producto/[^/?]+/?$'
+notes: |
+  First-party Habanos La Tabaqueria public WooCommerce Store API. The bounded
+  per_page=100 request is used for onboarding and emits positive COP rows with
+  stable IDs, canonical permalinks, stock state, and zero minor units. This is
+  not a catalogue-completeness claim; the captured headers report 758 total
+  products across 8 pages.

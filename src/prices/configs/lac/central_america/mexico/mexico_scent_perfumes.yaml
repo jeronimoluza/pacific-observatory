@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: mexico_scent_perfumes
+url: https://scentperfumes.mx/
+language: es
+currency: MXN
+cadence: weekly
+channel: cosmetics
+archive_prefix: scentperfumes.mx/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Mexico-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 128 products / 368 positive variants; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: costa_rica_reggae_house
+url: https://reggae.house/
+language: es
+currency: CRC
+cadence: weekly
+channel: other
+archive_prefix: reggae.house/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Costa Rica-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 100 positive records; Woo reports 575; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

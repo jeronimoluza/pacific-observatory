@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: afrivora_gn
+url: https://www.afrivora.com/fr/food?country=GN
+language: fr
+currency: GNF
+cadence: weekly
+channel: marketplace
+notes: |
+  Afrivora is a multi-country seller marketplace/classifieds site, not a
+  single retailer. This source is narrowly scoped to the public food category
+  with the explicit country=GN filter. Browser verification on 2026-09-13
+  returned 20 Guinea-located food-route cards, including chips (5,000 FG),
+  natural drink (5,000 FG), piment (30,000 FG), yoghurt (70,000 FG), and honey
+  (65,000 FG). The page is Next.js and requires Playwright rendering.
+
+  Cards with contact-only prices, the explicit "Nég." badge, or amounts below
+  1,000 GNF are excluded. The latter removes observed placeholder-like 30 FG
+  and 315 FG values. Because sellers can miscategorise listings (the food route
+  included a detergent and some supplements), COICOP is left to the classifier.
+  No archive fields are set pending later CDX measurement.
+

@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+spider: colombia_bloommart
+url: https://www.bloommart.co/collections/tabaco
+language: es
+currency: COP
+cadence: weekly
+channel: other
+notes: |
+  First-party Shopify collection fixture explicitly establishes active currency
+  COP and country CO. Cards use data-product-id, grid-product__title, canonical
+  collection product URLs, and COP prices. Prices prefixed by "De" are retained
+  as observed minimum/current variant prices, not universal fixed-SKU prices.

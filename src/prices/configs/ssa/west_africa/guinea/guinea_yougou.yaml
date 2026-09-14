@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_next_rsc
+analytical_role: marketplace_offer
+spider: guinea_yougou
+url: https://yougouyougou.net/
+language: fr
+currency: GNF
+cadence: daily
+channel: marketplace
+archive_prefix: yougouyougou.net/annonces/
+archive_path_re: '^/annonces/'
+notes: |
+  Yougou's first-party Next.js state embeds current Guinea marketplace listings
+  with stable IDs, seller names, categories, locality, condition, and explicit
+  GNF prices. Services and employment are excluded; tangible apparel, footwear,
+  electronics, baby, and household goods remain in scope. Homepage coverage is
+  not treated as a catalogue cap.

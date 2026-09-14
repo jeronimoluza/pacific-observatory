@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright_html
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: azerbaijan_shoppingaz
+url: https://shoppingaz.az/en/mehsullar/
+language: en
+currency: AZN
+cadence: weekly
+channel: marketplace
+archive_prefix: shoppingaz.az/en/
+archive_path_re: '^/en/(mehsullar|[^/]+/.+)/'
+notes: |
+  Azerbaijan-local ShoppingAZ marketplace catalogue. A challenge-free browser
+  application-state capture on 2026-09-13 exposed 2,700 products over 225 pages.
+  Product cards carry numeric WooCommerce IDs, names, sellers, categories,
+  explicit manat symbols, positive prices, stock state, and stable first-party
+  product URLs. The public Store API was blocked in the same browser context,
+  so the staged collector uses the verified paginated HTML surface.

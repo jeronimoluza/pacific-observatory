@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+spider: maldives_berrycollection
+url: https://berrycollection.com/
+language: en
+currency: MVR
+cadence: weekly
+channel: dept-store
+archive_prefix: berrycollection.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Berry Collection's first-party homepage renders 16 WooCommerce product cards
+  with stable post IDs and product URLs plus explicit MVR prices. Current sale
+  prices are preferred when present. The Store API is blocked by ModSecurity,
+  so the adapter intentionally uses the public HTML and does not claim complete
+  catalogue coverage.

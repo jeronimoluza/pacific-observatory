@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zhmary
+url: https://www.zhmary.com/
+language: en
+currency: AFN
+cadence: weekly
+channel: marketplace
+archive_prefix: zhmary.com/
+notes: |
+  Server-rendered homepage product rails. Preserve vendor and zone; filter
+  restaurant/prepared-food vendors so packaged retail goods remain comparable.

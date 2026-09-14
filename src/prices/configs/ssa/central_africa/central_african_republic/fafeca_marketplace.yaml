@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: central_african_republic_fafeca_marketplace
+url: https://marketplace.fafeca.org/category/agri-food
+language: fr
+cadence: weekly
+channel: marketplace
+archive_prefix: marketplace.fafeca.org/product/
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Bangui marketplace; terms identify displayed CFA prices as XAF. Start with
+  agri-food, then the three enumerated tangible-goods categories. Product-card
+  and PDP scoped parsing deliberately excludes the persistent header cart 0CFA.

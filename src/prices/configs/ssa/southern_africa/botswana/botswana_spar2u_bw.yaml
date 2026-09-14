@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: botswana_spar2u_bw
+url: https://www.spar2u.co.bw/en-BW/categories/pantry/rice-maize-and-pasta
+language: en
+currency: BWP
+cadence: weekly
+channel: supermarket
+notes: |
+  Live SPAR Botswana online-grocery catalogue. Category cards expose stable
+  /en-BW/product/<UPC> routes, product names, and P-denominated prices in the
+  server-rendered rice/maize/pasta category. SPAR2U's terms identify displayed
+  prices as Botswana pula. Onboarding intentionally uses one stable 21-product
+  category rather than traversing the large repeated JSON-LD category graph.
+  This does not replace or falsely revive the stale spar_bw_specials flyer.

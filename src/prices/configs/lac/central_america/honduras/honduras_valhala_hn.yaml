@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: honduras_valhala_hn
+url: https://valhala.hn/
+language: es
+currency: HNL
+cadence: daily
+channel: marketplace
+archive_prefix: valhala.hn/products/
+archive_path_re: '^/products/'
+notes: |
+  Valhala is a Honduras marketplace spanning groceries, technology, apparel,
+  home goods, and other consumer categories. Shopify metadata confirms country
+  HN, Honduras-only shipping, HNL checkout, and 2,310 published products. The
+  shared collector walks all 250-product API pages and emits every current
+  variant; validation caps are not catalog-size limits.

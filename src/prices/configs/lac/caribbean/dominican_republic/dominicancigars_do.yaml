@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dominicancigars_do
+url: https://dominicancigars.com.do/shop/
+language: es
+currency: DOP
+cadence: weekly
+channel: other
+archive_prefix: dominicancigars.com.do/product/
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Santo Domingo retailer of cigars and accessories. The saved 2026-09-13
+  static WooCommerce shop response contains 16 named cards priced with RD$ and
+  links to page 2. Static HTML is sufficient; no browser rendering is used.

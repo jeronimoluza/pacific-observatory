@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: benin_store_jinukun_bj
+url: https://store.jinukun.bj/
+language: fr
+currency: XOF
+cadence: weekly
+channel: supermarket
+archive_prefix: store.jinukun.bj/
+notes: |
+  Benin-local seller of food and other local consumer products. The homepage
+  exposes server-rendered product cards with named products, CFA prices, and
+  stable /produit/<slug> links. Preserve product quantities in the name.

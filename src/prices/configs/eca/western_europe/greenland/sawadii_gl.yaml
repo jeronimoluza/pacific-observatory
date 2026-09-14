@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: restaurant_menu
+coicop_classification: classifier
+spider: sawadii_gl
+url: https://www.sawadii.gl/en/menu
+language: da
+cadence: weekly
+channel: other
+country: Greenland
+currency: DKK
+notes: |
+  Server-rendered ordering menu at Kirkevej 6, 3900 Nuuk. The menu contains
+  both fixed prices and configurable 'From' prices. Price is always the
+  displayed lower bound; `from_price: true` and `price_kind: from` preserve
+  the fact that this is not a final single-SKU transaction price. Fragment
+  identifiers ensure individual menu entries survive URL-based deduplication.

@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mytek_tn
+url: https://www.mytek.tn/informatique/ordinateur-de-bureau.html
+language: fr
+currency: TND
+cadence: weekly
+channel: electronics
+archive_prefix: mytek.tn/
+notes: |
+  Tunisia retailer with direct item-level DT/TND prices and standard listing
+  pagination. Start with one computer category; extend via an explicit category
+  allowlist after validation to avoid accidental service/editorial pages.

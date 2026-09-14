@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: gibraltar_no9gibraltar
+url: https://www.no9gibraltar.com/
+language: en
+currency: GBP
+cadence: weekly
+notes: |
+  No9 Gibraltar online grocery delivery storefront. ShopWired/ecommercedns
+  server-rendered category pages expose product cards with names, product URLs,
+  product_id values in wishlist links, and GBP prices. Initial source came from
+  William's 2026-09-12 handover row 2.
+
+  F&B-scoped category seeds cover beers, chocolate, crisps, energy drinks,
+  fresh/frozen meat, fresh vegetables, pasta/rice/noodles, smoking/vapes, soft
+  drinks, tins/jars, and water. Household cleaning is intentionally excluded
+  from the seed list because the current F&B scorecard only counts COICOP

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: bosnia_isplatise
+url: https://isplatise.ba/
+language: bs
+currency: BAM
+cadence: weekly
+channel: marketplace
+archive_prefix: isplatise.ba/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Bosnia and Herzegovina-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 100 positive records in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

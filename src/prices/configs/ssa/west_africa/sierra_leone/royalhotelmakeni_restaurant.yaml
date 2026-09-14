@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: restaurant_menu
+coicop_classification: classifier
+channel: other
+spider: royalhotelmakeni_restaurant
+url: https://royalhotelmakenisl.com/the-restaurant/
+language: en
+currency: SLE
+cadence: weekly
+archive_prefix: "royalhotelmakenisl.com/the-restaurant/"
+archive_path_re: '^/the-restaurant/?$'
+notes: |
+  Royal Hotel Makeni restaurant menu, 19 Magburaka Road, Makeni. Discovery
+  on 2026-09-12 captured named first-party menu rows with Le prices. The page
+  is server-rendered. The spider limits extraction to atomic
+  `.cs-food-menu-item` blocks and pairs each title with its local Le amount,
+  excluding page headings and hotel booking content.

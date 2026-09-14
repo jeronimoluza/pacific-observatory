@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+spider: bolivia_fsa_bo
+url: https://fsa.bo/
+language: es
+currency: BOB
+cadence: weekly
+channel: pharmacy
+archive_prefix: fsa.bo/
+notes: |
+  Farmacias Santa Ana's first-party homepage exposes current named product
+  cards with stable internal IDs, exact `precio` attributes, and matching `Bs.`
+  display prices. The source covers pharmacy, personal-care, and household
+  consumer products rather than food alone.

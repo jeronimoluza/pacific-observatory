@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: peru_farmacias_peru
+url: https://www.farmaciasperu.pe/
+language: es
+currency: PEN
+cadence: weekly
+channel: pharmacy
+archive_prefix: www.farmaciasperu.pe/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Peru-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 95 positive records in the first 100; Woo reports 211; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

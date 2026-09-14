@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: maldives_plaza_online
+url: https://plaza.com.mv/
+language: en
+currency: MVR
+cadence: weekly
+channel: cosmetics
+archive_prefix: plaza.com.mv/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Maldives-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23 platform evidence reports 1,290 products; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

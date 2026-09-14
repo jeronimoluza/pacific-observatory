@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_paginated_json_api
+analytical_role: marketplace_offer
+spider: angola_buitanda
+url: https://www.buitanda.com/
+language: pt
+currency: AOA
+cadence: daily
+channel: marketplace
+archive_prefix: buitanda.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Buitanda is an Angola consumer marketplace whose public first-party API
+  returns stable product and variant IDs, category, stock, and tax-inclusive
+  final prices in kwanza. The collector emits every positive-price variant and
+  paginates through the server-reported total. The 10,000-record ceiling is a
+  request-safety bound; the verified 2026-09-13 catalog reported 4,658 products.

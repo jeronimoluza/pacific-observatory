@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: tanzania_littlemore
+url: https://littlemore.co.tz/
+language: en
+currency: TZS
+cadence: weekly
+channel: dept-store
+archive_prefix: littlemore.co.tz/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Tanzania-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 99 positive records in the first 100; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

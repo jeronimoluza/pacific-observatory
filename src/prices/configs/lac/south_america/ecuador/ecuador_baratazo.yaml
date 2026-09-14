@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+spider: ecuador_baratazo
+url: https://www.baratazo.com/
+language: es
+currency: USD
+cadence: weekly
+channel: dept-store
+notes: |
+  Scope is all tangible consumer goods shown in the captured WooCommerce product
+  cards. The first-party title and footer identify Baratazo Ecuador and Quito,
+  Ecuador; dollar prices are rendered in the product cards.

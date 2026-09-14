@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: namjecommerce_comoros
+url: https://namjecommerce.com/
+language: fr
+currency: KMF
+cadence: weekly
+channel: marketplace
+archive_prefix: namjecommerce.com/
+notes: |
+  Comoros marketplace. The current homepage states that it lists products and
+  services in Comoros and exposes KMF item prices in its new-arrivals grid.
+  The spider is deliberately limited to visible product-card item-price pairs.

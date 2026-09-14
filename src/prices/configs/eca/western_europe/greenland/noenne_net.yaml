@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: noenne_net
+url: https://www.noenne.net/varekatalog?p=1
+language: da
+currency: DKK
+cadence: weekly
+channel: fashion
+archive_prefix: noenne.net/
+notes: |
+  Server-rendered apparel catalogue for Nønne Nuuk. Enumerate catalogue pages,
+  follow /vare/ product links, preserve stock status, and parse Danish-formatted
+  DKK amounts. Locality is Nuuk Center, Imaneq 1, 3900 Nuuk, Greenland.

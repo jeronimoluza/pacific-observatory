@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html_cards
+analytical_role: retailer_sku
+spider: bhutan_telecom_devices
+url: https://www.bt.bt/product/iphone-17-pro/
+language: en
+currency: BTN
+cadence: weekly
+channel: electronics
+archive_prefix: bt.bt/product/
+archive_path_re: '^/product/'
+notes: |
+  Bhutan Telecom's official device page renders a related-device grid with
+  WordPress post IDs, names, stable routes, and current Nu. prices. BTN is
+  inferred from the official Bhutan-local seller and ngultrum symbol. The
+  four-row related-device grid is validation coverage, not a catalogue cap.

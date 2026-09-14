@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: corozalcigars_bz
+url: https://corozalcigars.com/shop/
+language: en
+currency: USD
+cadence: weekly
+channel: other
+archive_prefix: corozalcigars.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Corozal Cigars is a Belize-local tobacco and accessories retailer whose
+  public WooCommerce Store API exposes exact USD prices, stable IDs, category,
+  stock, and canonical product URLs. Variable ranges are not synthesized; only
+  the API's positive current price is emitted. The verified catalog has five
+  products. This replaces an older mislabeled browser-heavy patch bundle.

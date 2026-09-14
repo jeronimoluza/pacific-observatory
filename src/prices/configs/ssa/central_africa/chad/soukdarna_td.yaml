@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: soukdarna_td
+url: https://soukdarna.com/shop
+language: fr
+currency: XAF
+cadence: weekly
+channel: marketplace
+archive_prefix: soukdarna.com/
+notes: |
+  Soukdarna describes itself as a 100% Chadian ecommerce platform. The public
+  shop currently carries solar, electronics, appliances, clothing and furniture
+  with FCFA prices. Former rejection was category-only.

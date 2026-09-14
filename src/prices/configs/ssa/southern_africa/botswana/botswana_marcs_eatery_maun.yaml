@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: wix_first_party_page_state
+analytical_role: restaurant_menu
+coicop_classification: classifier
+channel: other
+spider: botswana_marcs_eatery_maun
+url: https://www.marcseatery.com/online-ordering
+language: en
+currency: BWP
+cadence: monthly
+notes: |
+  Marc's Eatery menu for Maun, Botswana. The Wix first-party HTML embeds the
+  current dish catalogue and BWP amount/currency in JSON page state. Emit each
+  positive fixed-price dish and each positive named variant. Do not emit BWP 0
+  parent placeholders for configurable dishes.

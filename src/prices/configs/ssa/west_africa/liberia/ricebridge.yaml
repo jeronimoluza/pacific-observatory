@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: diaspora_delivery_catalog
+coicop_classification: classifier
+spider: ricebridge
+url: https://www.ourricebridge.com/
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: ourricebridge.com/
+notes: |
+  Public static product cards list rice and cooking oil delivered to recipients
+  in Greater Monrovia, Liberia. Prices include fulfillment context and should be
+  labeled delivery-included/diaspora pricing for comparability.

@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_paginated_html
+analytical_role: retailer_sku
+spider: azerbaijan_alcoartbaku
+url: https://alcoartbaku.com/en/category
+language: en
+currency: AZN
+cadence: weekly
+channel: specialty-food
+archive_prefix: alcoartbaku.com/en/products/
+archive_path_re: '^/en/products/'
+notes: |
+  AlcoArt Baku publishes current AZN prices and stable product routes for its
+  Baku retail catalogue. The collector walks all five top-level merchandise
+  branches and follows the site's server-reported load-more pages; duplicate
+  products across branches are removed by the production pipeline. Sale cards
+  use the final current amount, while crossed list prices are excluded. The
+  100-page per-branch ceiling is a safety bound, not a catalogue-size claim.

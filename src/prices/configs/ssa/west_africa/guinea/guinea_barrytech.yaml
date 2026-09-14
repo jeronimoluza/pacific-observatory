@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+spider: guinea_barrytech
+url: https://barrytechguinee.com/
+language: fr
+currency: GNF
+cadence: weekly
+channel: electronics
+archive_prefix: barrytechguinee.com/products/
+archive_path_re: '^/products/'
+notes: |
+  BarryTech Guinea's first-party homepage renders named telecommunications
+  products with stable slugs, detail paths, exact price attributes, and explicit
+  GNF labels. This adapter covers the current homepage assortment.

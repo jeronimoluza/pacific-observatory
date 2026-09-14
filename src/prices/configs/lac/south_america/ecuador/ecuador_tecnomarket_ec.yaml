@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+spider: ecuador_tecnomarket_ec
+url: https://tecnomarket.ec/
+language: es
+currency: USD
+cadence: weekly
+channel: electronics
+notes: |
+  Scope is all tangible consumer goods shown in captured Shopify product cards.
+  First-party storefront metadata identifies USD, locale es-EC, country EC, and
+  shipping throughout Ecuador.

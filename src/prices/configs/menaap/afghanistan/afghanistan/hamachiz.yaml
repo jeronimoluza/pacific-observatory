@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hamachiz
+url: https://www.hamachiz.com/collections/snacks
+language: en
+currency: AFN
+cadence: weekly
+channel: marketplace
+archive_prefix: hamachiz.com/
+notes: |
+  Enumerates Shopify-like snacks collection pages and follows product URLs.
+  Current price is the first AFN amount on the PDP; sale/list pairing is
+  intentionally not emitted as a second observation.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: myanmar_ict
+url: https://ict.com.mm/
+language: en
+currency: MMK
+cadence: weekly
+channel: electronics
+archive_prefix: ict.com.mm/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Myanmar-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 250 products / 257 positive variants in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

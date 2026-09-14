@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: nicaragua_smartprice
+url: https://smartprice.com.ni/
+language: es
+currency: NIO
+cadence: weekly
+channel: electronics
+archive_prefix: smartprice.com.ni/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Nicaragua-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 23 positive records; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

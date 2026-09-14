@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: guinea_etsralf
+url: https://etsralf.com/
+language: fr
+currency: GNF
+cadence: weekly
+channel: home-improvement
+archive_prefix: etsralf.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Guinea-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 15 positive records; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

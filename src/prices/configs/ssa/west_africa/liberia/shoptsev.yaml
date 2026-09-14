@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shoptsev
+url: https://shoptsev.com/shop
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: shoptsev.com/
+notes: |
+  ShopTSV (Top Source Ventures) is a Monrovia, Liberia marketplace with a
+  public, hydrated catalog of physical consumer goods. The source explicitly
+  offers delivery in Monrovia and across Liberia, provides a +231 contact, and
+  exposes current USD prices and stable product slugs. The spider is restricted
+  to /product/ rows with a nonzero current price; services, property, vehicles,
+  quote-only rows, unpriced concepts, and arriving-soon rows are not emitted.
+  The page initially renders a loading shell, so Playwright is required.

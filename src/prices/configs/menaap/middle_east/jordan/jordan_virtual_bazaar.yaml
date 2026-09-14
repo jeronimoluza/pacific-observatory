@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: jordan_virtual_bazaar
+url: https://virtual-bazaar.com/
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: virtual-bazaar.com/products/
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Virtual Bazaar is an Amman-based marketplace for made-in-Jordan consumer
+  goods. Shopify's public metadata identifies country JO, active checkout
+  currency USD, and 724 published products. The shared Shopify spider walks
+  /products.json in 250-product pages to exhaustion and emits each available
+  variant. JOD amounts appearing in seller-written descriptions are not used as
+  prices and are not substituted for the authoritative USD variant price.

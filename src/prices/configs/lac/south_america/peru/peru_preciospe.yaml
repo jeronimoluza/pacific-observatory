@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_json_post_search
+analytical_role: price_comparison_merchant_offer
+coicop_classification: classifier
+spider: peru_preciospe
+url: https://api.preciospe.com/
+language: es
+currency: PEN
+cadence: weekly
+channel: marketplace
+notes: |
+  Scope is merchant-attributed tangible-goods offers returned by saved homepage
+  search categories, with national locality Peru.
+  The first-party search UI posts JSON with query and pais=pe to the API root.
+  Emit only rows with an explicit source ID, merchant, positive S/ price, and
+  merchant product URL. For grouped products, flatten explicit ofertas_tiendas
+  entries and never emit the aggregate parent "desde" price.

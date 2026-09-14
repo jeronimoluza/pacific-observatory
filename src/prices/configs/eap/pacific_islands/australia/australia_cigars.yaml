@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: australia_cigars
+url: https://www.cigars.com.au/
+language: en
+currency: AUD
+cadence: weekly
+channel: other
+archive_prefix: www.cigars.com.au/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Australia-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 100 positive records in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_json
+analytical_role: product_catalogue
+coicop_classification: classifier
+spider: chile_casasichel
+url: https://casasichel.com/wp-json/wc/store/v1/products?per_page=100
+language: es
+currency: CLP
+cadence: weekly
+channel: other
+archive_prefix: casasichel.com/
+notes: |
+  Public first-party WooCommerce Store API capture observed 30 positive CLP
+  product rows with IDs, names, canonical permalinks, and stock state. Names
+  are HTML-entity decoded. This is a captured evidence slice, not a claim of
+  catalogue completeness; production/shared ledgers are intentionally untouched.

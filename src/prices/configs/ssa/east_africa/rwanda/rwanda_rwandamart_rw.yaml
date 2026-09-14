@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rwanda_rwandamart_rw
+url: https://rwandamart.rw/shop/
+language: en
+currency: RWF
+cadence: weekly
+channel: marketplace
+notes: |
+  RwandaMart WooCommerce/Bacola marketplace catalogue. Local 2026-09-12
+  samples showed stable product cards on /shop/ with product detail links,
+  WooCommerce price spans, vendor labels, availability badges, and category
+  classes. Live collection still needs central verification.

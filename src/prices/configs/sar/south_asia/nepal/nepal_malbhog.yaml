@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html_cards
+analytical_role: retailer_sku
+spider: nepal_malbhog
+url: https://www.malbhog.com/
+language: en
+currency: NPR
+cadence: weekly
+channel: marketplace
+archive_prefix: malbhog.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Malbhog's first-party homepage renders current featured consumer-product cards
+  with numeric IDs, stable routes, names, and Rs. prices. NPR is inferred from
+  the store's Nepal-only identity, Kathmandu locality metadata, and visible Rs.
+  labels. Crossed old prices are excluded. Homepage coverage is not treated as
+  a catalogue cap.

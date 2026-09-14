@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: honestsupermarket_rw
+url: https://www.honestsupermarket.com/
+language: en
+currency: RWF
+cadence: weekly
+channel: supermarket
+notes: |
+  N.Honest Supermarket exposes a public paginated JSON catalog API at
+  /api/products. Re-verified live 2026-08-31: ?limit=5&page=1 returned 5,174
+  priced products over 1,035 pages, and /api/categories showed food and
+  beverage categories including fruits/vegetables, cooking oil/tins/cans,
+  macaroni/rice, milk/dairy/eggs, soups/spices, snacks/bread, meat/fish,
+  water, juices and soft drinks. No stable product-detail URLs were exposed
+  in the probed payload, so the spider emits API URLs with product/size id
+  fragments for row-level deduplication.

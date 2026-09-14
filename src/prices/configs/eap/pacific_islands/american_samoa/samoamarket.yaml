@@ -1,0 +1,20 @@
+scaffolding: spider
+spider: samoa_market
+url: https://samoamarket.com/collections/wholesale
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: NZD
+cadence: daily
+coicop_codes: null
+archive_prefix: "samoamarket.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Public SamoaMarket catalog. The homepage and shop-online pages describe
+  service to customers worldwide, including American Samoa; grocery partner
+  catalog pages expose food-and-beverage products and product detail URLs.
+  Prices are displayed in NZD on the public storefront. The existing
+  samoa_market spider follows wholesale pagination and product links and
+  extracts name, price, and product code from the product detail page.

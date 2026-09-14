@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+spider: chad_mssk
+url: https://www.mssk.app/
+language: fr
+currency: XAF
+cadence: weekly
+channel: marketplace
+archive_prefix: mssk.app/product/
+archive_path_re: '^/product/'
+notes: |
+  MSSK's Chad marketplace homepage directly renders current consumer-product
+  cards with stable product routes, seller names, and FCFA prices. Seller names
+  are appended to product names to preserve merchant attribution. The parser
+  keeps the direct current span and excludes crossed previous prices. Homepage
+  coverage is a validation sample rather than a catalogue cap.

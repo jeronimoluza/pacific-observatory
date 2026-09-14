@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: polimaxguinee_edaag_gn
+url: https://polimaxguinee.com/catalogue
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  EDAAG TRADING / POLIMAX Guinea public catalogue. The 2026-09-12 discovery
+  captured 51 server-rendered .product-card records with data-category,
+  .product-name, .product-price, and addToCart(id, name, price, 1). Prices are
+  Guinean francs (FG); normalize the output currency to ISO GNF. The listing
+  also supplies the Magasin Central Madina shop context and product packaging
+  where shown. No archive fields are proposed until CDX validation.

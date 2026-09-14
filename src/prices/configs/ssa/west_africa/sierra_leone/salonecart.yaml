@@ -1,0 +1,9 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: product_catalog
+channel: marketplace
+spider: salonecart
+url: https://salonecart.com/category/groceries
+language: en
+currency: SLE
+cadence: weekly

@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+spider: afghanistan_chinacenter
+url: https://afghanchinashoppingcenter.com/en/catalogue
+language: en
+currency: AFN
+cadence: weekly
+channel: other
+archive_prefix: afghanchinashoppingcenter.com/en/catalogue/
+archive_path_re: '^/en/catalogue/'
+notes: |
+  China Center Afghanistan's first-party catalogue directly renders current
+  consumer-product cards with stable routes, names, stock state, and explicit
+  AFN retail prices. The parser deliberately excludes wholesale values and
+  crossed comparison prices. The page currently reports and renders all 11
+  products, so the validation count reflects the live catalogue rather than a
+  crawler discovery cap.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: panama_masxmenos
+url: https://masxmenospanama.com/
+language: es
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: masxmenospanama.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Panama-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 100 positive records; Woo reports 1,182; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

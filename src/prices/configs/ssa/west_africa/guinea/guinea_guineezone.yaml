@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+spider: guinea_guineezone
+url: https://guineezone.com/
+language: fr
+currency: GNF
+cadence: weekly
+channel: marketplace
+archive_prefix: guineezone.com/
+archive_path_re: '^/[0-9a-f]{32}/annonce-'
+notes: |
+  GuineaZone's first-party homepage renders named marketplace listings with
+  stable 32-character IDs, canonical offer URLs, and explicit GNF prices. The
+  markup repeats cards across rails, so rows are deduplicated by ID. A narrow
+  title filter excludes obvious advertising, training, and property offers;
+  tangible consumer goods and vehicles remain in scope.

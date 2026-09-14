@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_next_rsc
+analytical_role: retailer_sku
+spider: nepal_parsabazar
+url: https://parsabazar.com/
+language: en
+currency: NPR
+cadence: weekly
+channel: supermarket
+archive_prefix: parsabazar.com/products/
+archive_path_re: '^/products/'
+notes: |
+  ParsaBazar's first-party homepage embeds current grocery records with stable
+  numeric IDs, names, list prices, stock quantities, units, and categories.
+  NPR is inferred from the store's Nepal-only identity, en_NP locale, nationwide
+  Nepal delivery statement, and visible Rs. labels. Repeated homepage rails are
+  deduplicated by ID; MRP comparison values are not emitted. Homepage coverage
+  is not treated as a catalogue cap.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: maldives_timetech
+url: https://timetech.mv/
+language: en
+currency: MVR
+cadence: weekly
+channel: electronics
+archive_prefix: timetech.mv/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Maldives-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23/24 platform evidence reports 1,498; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

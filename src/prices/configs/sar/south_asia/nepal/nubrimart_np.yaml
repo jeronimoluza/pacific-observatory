@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nubrimart_np
+url: https://www.nubrimart.com/
+language: en
+currency: NPR
+cadence: weekly
+channel: supermarket
+archive_prefix: www.nubrimart.com/
+notes: |
+  The saved first-party fixture declares currenciesAccepted=NPR and identifies
+  Nubri Mart Pvt. Ltd. in New Baneshwor, Kathmandu, Nepal. Product cards expose
+  named goods, positive prices, and canonical /product/ URLs.

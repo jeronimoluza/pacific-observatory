@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: dominican_megasuplidores
+url: https://megasuplidores.com.do/
+language: es
+currency: DOP
+cadence: weekly
+channel: marketplace
+archive_prefix: megasuplidores.com.do/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Dominican Republic-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 100 positive records; Woo reports 218; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

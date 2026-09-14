@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: algeria_mbpuff
+url: https://mbpuff.com/fr
+language: fr
+currency: DZD
+cadence: weekly
+channel: marketplace
+archive_prefix: mbpuff.com/
+notes: |
+  Algeria-local electronic-cigarette and vape retailer. The server-rendered
+  French homepage has product cards with stable /fr/product/<slug> links and
+  DZD current prices. The spider retains only the current strong-tag price,
+  not struck-through former prices or cart values.

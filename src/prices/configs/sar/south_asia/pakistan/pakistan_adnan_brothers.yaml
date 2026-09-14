@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: pakistan_adnan_brothers
+url: https://adnanbrothers.com/
+language: en
+currency: PKR
+cadence: weekly
+channel: home-improvement
+archive_prefix: adnanbrothers.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Pakistan-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23/24 platform evidence reports 241 products; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: woocommerce_html
+analytical_role: restaurant_menu
+coicop_classification: classifier
+channel: specialty-food
+spider: shellbeans_mv
+url: https://shellbeans.com/product/tuna-mayo-sandwich-signature/
+language: en
+currency: MVR
+cadence: weekly
+notes: |
+  Shell Beans' current first-party product page exposes named positive-price
+  WooCommerce menu cards with explicit MVR markup. Its footer identifies the
+  business address as Jazeera Building, Boduthakurufaanu Magu, Malé, Maldives.

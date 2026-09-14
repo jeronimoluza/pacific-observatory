@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: maldives_british_cosmetics
+url: https://mv.britishcosmetics.com/
+language: en
+currency: MVR
+cadence: weekly
+channel: cosmetics
+archive_prefix: mv.britishcosmetics.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Maldives-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23/24 platform evidence reports 83 products / 141 variants; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: marketplace_sku
+coicop_classification: classifier
+spider: o4a2_golden_star_to
+url: https://o4a2.com/collections/golden-star-supermarket-wholesale-vaini
+language: en
+currency: NZD
+cadence: weekly
+channel: wholesale
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  O4A2 vendor collection for Golden Star Supermarket & Wholesale in Vaini,
+  Tonga. This is a vendor-level scrape from the same O4A2 marketplace host, not
+  an independent storefront domain. The collection exposed 250 priced grocery
+  and bulk household rows during live probe on 2026-09-01.

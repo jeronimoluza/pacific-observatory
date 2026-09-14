@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ukraine_abtime_ua
+url: https://abtime.com.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: fashion
+notes: |
+  First-party Abtime Ukraine product-grid capture. The page is a Ukrainian
+  storefront and its repeated .sc-module-item cards expose a stable numeric
+  hidden product_id, canonical relative product link, title, and dedicated
+  .sc-module-price node. Only an exact positive whole-UAH value from that
+  price node is accepted; credit-sticker installment-per-month text is never
+  searched. Cards require the Ukraine locality marker in the page and a
+  matching abtime.com.ua host.

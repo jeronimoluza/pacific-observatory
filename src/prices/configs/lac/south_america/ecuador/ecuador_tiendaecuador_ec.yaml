@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_json
+analytical_role: retailer_sku
+spider: ecuador_tiendaecuador_ec
+url: https://tiendaecuador.ec/wp-json/wc/store/v1/products?per_page=100
+language: es
+currency: USD
+cadence: weekly
+channel: dept-store
+archive_prefix: tiendaecuador.ec/
+notes: |
+  Tienda Ecuador's first-party WooCommerce Store API returns stable IDs,
+  canonical product URLs, stock state, and explicit USD price objects with two
+  minor units. The 100-row onboarding smoke is not a catalogue-size claim.

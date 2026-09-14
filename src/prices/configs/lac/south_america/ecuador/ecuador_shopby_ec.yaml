@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+spider: ecuador_shopby_ec
+url: https://shopby.com.ec/
+language: es
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: shopby.com.ec/
+notes: |
+  Ecuador marketplace homepage cards pair stable product routes with explicit
+  current `Ahora` USD prices. The spider excludes crossed `Antes` values and
+  limits onboarding to the directly rendered promoted products; this is not a
+  catalogue-size claim.
