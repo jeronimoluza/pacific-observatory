@@ -17,6 +17,11 @@ logger = logging.getLogger(__name__)
 HERE = Path(__file__).resolve().parent
 TEMPLATE = HERE / "_template.html"
 APP_JS = HERE / "_app.js"
+# CATFILTER: the category tree ships as its own script and stylesheet and is
+# inlined exactly the way the app script is -- the WB intranet blocks CDNs, so
+# nothing may be linked out.
+CATFILTER_JS = HERE / "_catfilter.js"
+CATFILTER_CSS = HERE / "_catfilter.css"
 VENDOR_CHART_JS = (
     REPO_ROOT / "src" / "text" / "plotting" / "vendor" / "chart.umd.min.js"
 )
@@ -29,6 +34,9 @@ def render(payload: dict) -> str:
     # Guard against a product name closing the inline <script> block.
     blob = blob.replace("</", "<\\/")
     html = html.replace("/*__CHART_JS__*/", VENDOR_CHART_JS.read_text())
+    # CATFILTER
+    html = html.replace("/*__CATFILTER_CSS__*/", CATFILTER_CSS.read_text())
+    html = html.replace("/*__CATFILTER_JS__*/", CATFILTER_JS.read_text())
     html = html.replace("/*__APP_JS__*/", APP_JS.read_text())
     html = html.replace("/*__DATA__*/", blob)
     return html

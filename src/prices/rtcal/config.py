@@ -147,7 +147,17 @@ GATE_PARAMS = {
 NORMAL_GAP_TARGET = 0.80
 NORMAL_GAP_STRICT_TARGET = 0.90
 FORWARD_TIME_TARGET = 0.70
-NEW_SERIES_RELEASE_ENABLED = False
+# Cold-start cells -- a (country, leaf, unit) nobody has ever priced -- are now
+# released. They are the blank cells the dashboard was being asked about, and
+# 139,745 of them were being scored and thrown away every run.
+#
+# THEY ARE THE WEAKEST CLASS IN THE METHOD and that is a decision, not an
+# oversight: the series-holdout fold validates them at ~42% within 25%, against
+# ~80% for a normal gap. They carry the same `imputed` flag and the same
+# per-cell calibrated probability as any other fill, and no accuracy figure is
+# published beside them -- the honest headline number for a mixed population of
+# 42% and 80% cells is not a number, it is the flag.
+NEW_SERIES_RELEASE_ENABLED = True
 
 # Fallback thresholds, used only when no re-estimated table exists yet. These
 # are William's 95pct-database values and are expected to be superseded.
@@ -169,7 +179,11 @@ FOLD_SCHEMES = (
     "fold_country_holdout",
     "fold_product_unit_holdout",
 )
-GATE_SCHEMES = ("fold_country_month_holdout", "fold_product_month_holdout", "fold_time_block")
+GATE_SCHEMES = (
+    "fold_country_month_holdout",
+    "fold_product_month_holdout",
+    "fold_time_block",
+)
 
 # ---- drift, from FULL_DATASET_RUNBOOK.md --------------------------------
 DRIFT_MAX_PRUNED_SHARE = 0.005

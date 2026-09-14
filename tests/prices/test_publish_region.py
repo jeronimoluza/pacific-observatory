@@ -32,6 +32,7 @@ def _current(rows):
                 "standard_unit": "kg",
                 "median_usd": v,
                 "n_obs": 10,
+                "n_products": 4,
                 "last_seen": pd.Timestamp("2026-09-01"),
             }
             for code, country, v in rows
@@ -113,6 +114,7 @@ def _obs(rows):
                 "observation_date": now - pd.Timedelta(days=5),
                 "standard_unit": "kg",
                 "qa_status": "trusted",
+                "product_name": f"{country}-item",
             }
             for country, v in rows
         ]

@@ -13,6 +13,7 @@ to contain this month.
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -49,6 +50,50 @@ BRANCHES = {
     "01.1.9.1": "Other food products",
 }
 N_COUNTRIES = 20
+
+# ---- basket weights -------------------------------------------------------
+# Three categories and a vector over them, small enough that the weighted sum
+# can be checked by hand. The per-category log ratios are the country's own
+# level plus offsets the PUBLISHED weights sum to exactly zero over, so
+# applying `w0` to the matrix returns `cty[slug].level` and no other vector
+# does -- which is what makes a parity assertion at `w0` mean something.
+#
+# `level` is left unrounded here, unlike the real build, because a parity gate
+# of 0.01 cannot be told apart from a rounding of 0.1.
+BW_CODES = ["01.1.1", "01.1.2", "01.1.3"]
+BW_W0 = {"01.1.1": 0.5, "01.1.2": 0.3, "01.1.3": 0.2}
+BW_OFF = {"01.1.1": 0.12, "01.1.2": -0.10, "01.1.3": -0.15}
+BW_K = {"01.1.1": 14, "01.1.2": 13, "01.1.3": 13}
+BW_LAB = {"01.1.1": "Cereals", "01.1.2": "Dairy", "01.1.3": "Fruit"}
+BW_MIN_COV = 0.6
+# Two countries with a hole in the basket, both still over the coverage floor,
+# so the fixture ranks all twenty by default. Moving weight onto what c19 does
+# not price is what takes it under -- see the gate test.
+BW_DROP = {"c18": "01.1.3", "c19": "01.1.2"}
+# The other two selectable vectors. The IMF one is division-shaped in the real
+# payload; here it just has to be a different vector with the same keys.
+BW_EQUAL = {c: 1.0 / len(BW_CODES) for c in BW_CODES}
+BW_IMF = {"01.1.1": 0.2, "01.1.2": 0.4, "01.1.3": 0.4}
+
+
+def bw_expect(slug, w):
+    """The level and coverage `bwLevel` must return for `slug` under `w`.
+
+    The same arithmetic as `_basket_levels` and as `_app.js`, written a third
+    time on purpose: a test that reuses either implementation cannot catch the
+    two agreeing on the wrong thing.
+    """
+    import math
+
+    codes = [c for c in BW_CODES if c != BW_DROP.get(slug)]
+    tot = sum(w[c] for c in BW_CODES)
+    sw = sum(w[c] for c in codes if w[c] > 0)
+    if sw <= 0 or tot <= 0:
+        return None
+    target = math.log((90.0 + int(slug[1:])) / 100.0)
+    acc = sum(w[c] * (target + BW_OFF[c]) for c in codes if w[c] > 0)
+    return {"level": math.exp(acc / sw) * 100.0, "covered": sw / tot,
+            "n": sum(BW_K[c] for c in codes)}
 # monthly compounding factors behind the fixture's FX and official-CPI series
 FX_DRIFT = 1.005
 CPI_HEADLINE = 1.004
@@ -100,6 +145,16 @@ def make_payload() -> dict:
             "defect": 0.0,
             "last": "2026-08",
         }
+        # The published figures, taken from the matrix below rather than
+        # asserted beside it: the client checks itself against these, and a
+        # fixture whose headline disagrees with its own terms would fail the
+        # check for a reason that has nothing to do with the code.
+        exp = bw_expect(slug, BW_W0)
+        cty[slug]["level"] = exp["level"]
+        cty[slug]["level_n"] = exp["n"]
+        cty[slug]["level_cov"] = exp["covered"]
+        cty[slug]["level_gate"] = True
+        cty[slug]["level_ok"] = exp["covered"] >= BW_MIN_COV
 
     # every leaf is priced by every country, at a price that walks with the
     # country index so the ranking and the heatmap both have something to order
@@ -317,6 +372,48 @@ def make_payload() -> dict:
             "division": {"CP01": "01"},
             "source": "IMF, Consumer Price Index (IMF.STA:CPI), monthly index",
         },
+        "basket": {
+            "lvl": 3,
+            "within": "equal-within-parent below the weighted level",
+            "w0": BW_W0,
+            "wmeta": {"source": "icp", "label": "a fixture", "n_reporting": 3,
+                      "level": 3},
+            "cty": {
+                slug: {
+                    c: [
+                        math.log((90.0 + i) / 100.0) + BW_OFF[c],
+                        BW_K[c],
+                    ]
+                    for c in BW_CODES
+                    if c != BW_DROP.get(slug)
+                }
+                for i, slug in enumerate(cty_idx)
+            },
+            "lab": dict(BW_LAB, **{"01": BRANCHES["01"], "01.1": BRANCHES["01.1"]}),
+            "modes": {
+                "equal": {"w": BW_EQUAL,
+                          "meta": {"source": "equal", "name": "Equal",
+                                   "label": "equal weight over all 3 categories",
+                                   "note": "One vote per category.",
+                                   "n_reporting": 0, "level": 3,
+                                   "unpriced": 0.0, "n_priced": 3}},
+                "icp": {"w": BW_W0,
+                        "meta": {"source": "icp", "name": "World Bank (ICP)",
+                                 "label": "a fixture", "note": "Class depth.",
+                                 "n_reporting": 3, "level": 3,
+                                 "unpriced": 0.0, "n_priced": 3}},
+                "imf": {"w": BW_IMF,
+                        "meta": {"source": "imf_wgt_pt",
+                                 "name": "IMF (national CPI weights)",
+                                 "label": "a fixture",
+                                 "note": "Division depth only.",
+                                 "n_reporting": 3, "level": 3,
+                                 "unpriced": 0.0, "n_priced": 3}},
+            },
+            "mode0": "icp",
+            "gates": {"leaf_share": 0.75, "min_leaves": 15, "min_sources": 2,
+                      "defect_share": 0.5, "min_covered": BW_MIN_COV},
+        },
         "samples": {},
         "qa": {
             "status": {"trusted": 100000},
@@ -391,11 +488,13 @@ TAX_BUILD = {
     "01.1.4": {"t": "Noodles", "p": "01.1", "lvl": 3, "leaf": True},
 }
 BUILD_LEAVES = ["01.1.1", "01.1.2", "01.1.3", "01.1.4"]
+# `currency` is load-bearing: the FX table is the median over the country's OWN
+# currency and nothing else, so a country meta without one gets no FX at all.
 BUILD_CMETA = {
-    "aa": {"name": "Aa", "region": "R1", "subregion": "S1"},
-    "bb": {"name": "Bb", "region": "R1", "subregion": "S1"},
-    "cc": {"name": "Cc", "region": "R2", "subregion": "S2"},
-    "dd": {"name": "Dd", "region": "R2", "subregion": "S2"},
+    "aa": {"name": "Aa", "region": "R1", "subregion": "S1", "currency": "USD"},
+    "bb": {"name": "Bb", "region": "R1", "subregion": "S1", "currency": "USD"},
+    "cc": {"name": "Cc", "region": "R2", "subregion": "S2", "currency": "USD"},
+    "dd": {"name": "Dd", "region": "R2", "subregion": "S2", "currency": "USD"},
 }
 OBS_PER_CELL = 3
 

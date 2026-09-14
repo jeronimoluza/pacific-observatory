@@ -95,16 +95,18 @@ def load_pruned_cells(path=None) -> pd.DataFrame:
     src = path or config.PRUNED_CELLS_PARQUET
     if not src.exists():
         return _EMPTY_PRUNED.copy()
-    return pd.read_parquet(src, columns=CELL_KEY).drop_duplicates().reset_index(drop=True)
+    return (
+        pd.read_parquet(src, columns=CELL_KEY).drop_duplicates().reset_index(drop=True)
+    )
 
 
-def drop_pruned(df: pd.DataFrame, pruned: pd.DataFrame, code_col="coicop_code") -> pd.DataFrame:
+def drop_pruned(
+    df: pd.DataFrame, pruned: pd.DataFrame, code_col="coicop_code"
+) -> pd.DataFrame:
     """Anti-join `df` against the pruned cells on the four-part cell key."""
     if pruned.empty or df.empty:
         return df
     key = ["country", code_col, "standard_unit", "period"]
-    bad = set(
-        map(tuple, pruned[CELL_KEY].astype(str).values)
-    )
+    bad = set(map(tuple, pruned[CELL_KEY].astype(str).values))
     mask = [tuple(r) not in bad for r in df[key].astype(str).values]
     return df[mask]

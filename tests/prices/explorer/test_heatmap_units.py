@@ -15,7 +15,7 @@ def test_the_usd_per_unit_toggle_is_gone(page):
 
 
 def test_the_heatmap_renders_gaps_not_dollars(page):
-    page.click("#t-patterns")
+    page.click("#t-world")
     page.wait_for_selector("#hmTbl td.c")
     # every populated cell is a signed percentage gap, never a dollar figure
     labels = page.locator("#hmTbl td.c").all_inner_texts()
@@ -26,7 +26,7 @@ def test_the_heatmap_renders_gaps_not_dollars(page):
 
 
 def test_the_heatmap_caption_never_offers_a_dollar_reading(page):
-    page.click("#t-patterns")
+    page.click("#t-world")
     page.wait_for_selector("#hmTbl td.c")
     assert "US$" not in page.inner_html("#hmSub")
     assert "cheapest in the row" not in page.inner_html("#hmRamp")
@@ -34,7 +34,7 @@ def test_the_heatmap_caption_never_offers_a_dollar_reading(page):
 
 def test_no_client_state_can_bring_the_dollar_reading_back(page):
     """The branch is deleted, not hidden -- an old bookmarked state is inert."""
-    page.click("#t-patterns")
+    page.click("#t-world")
     page.evaluate("APP.set('hmode','usd')")
     page.wait_for_selector("#hmTbl td.c")
     labels = page.locator("#hmTbl td.c").all_inner_texts()
