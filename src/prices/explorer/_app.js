@@ -50,11 +50,12 @@ var S = {
      `cnodes` is a LIST, and it is the only category state on this dashboard
      that is. This tab's chart ranks every item a country prices against the
      same item elsewhere, so a union of categories is a chart -- "cereals and
-     fish" is a perfectly good question -- where the world series and Compare
-     each draw exactly one category and a second pick there can only replace
-     the first. Empty means the whole tree, which is what the tab opens on and
-     is a real state here, not a missing one. Three mounts of the same tree
-     filter read these three variables and never each other. */
+     fish" is a perfectly good question -- where Compare, and the world trend
+     riding beneath it since P6, draw exactly one category between them and a
+     second pick there can only replace the first. Empty means the whole tree,
+     which is what the tab opens on and is a real state here, not a missing
+     one. Two mounts of the same tree filter read these two variables (`node`,
+     `cnodes`) and never each other. */
   cnodes:[], bench:"world",
   /* Which money the two detail TABLES print first -- "usd" or "loc". One key
      and not one per table: "show me the shelf price in the country's own money"
@@ -71,13 +72,19 @@ var S = {
      default — the grain at which a cell compares one item with the same item,
      before the ladder has averaged anything. */
   hdepth:{leaf:1},
-  /* world time series: what to compare, at what category, unit, measure and window.
-     gsel null means "whatever the default is here" — an explicit list only appears
-     once the reader has actually chosen, so a category with thin coverage can never
+  /* world time series: what to compare, at what unit, measure and window. Its
+     CATEGORY is not a variable of its own any more -- it reads `S.node` above,
+     the same one Compare's ranking reads, ever since the card moved onto the
+     Compare tab (P6). This used to be `gnode`, opened on the same item as
+     Compare for the reason given at OPEN_ON above, but kept deliberately
+     separate because the two lived on different tabs and diverged the moment
+     either tree was touched. Once both cards are on one screen that separation
+     is a defect, not a feature -- see the design comment above
+     `renderWorldTrends` and beside `catfilterCmp` in _catfilter.js. gsel null
+     means "whatever the default is here" — an explicit list only appears once
+     the reader has actually chosen, so a category with thin coverage can never
      silently strike a place off the list for good. */
-  /* CATFILTER: the world series opens on the same item Compare does, and for
-     the reason given at OPEN_ON above -- a division is not a thing anyone buys. */
-  gmode:"region", gsel:null, gnode:OPEN_ON, gunit:0, gmeasure:"chg12", gcpi:false,
+  gmode:"region", gsel:null, gunit:0, gmeasure:"chg12", gcpi:false,
   gfreq:"Q", gsmooth:0, gwin:36,
   /* Basket weighting: which vector is selected, the raw vector itself, and the
      fixed vector a custom one was seeded FROM -- which is what Reset returns to
@@ -773,12 +780,17 @@ function levelRows(all) {
 }
 
 /* The heatmap opens the dashboard, so it is drawn first here — every country
-   against every category group, before a control has been touched. The time
-   series is the second question and sits under it. The country ranking left
-   this tab for Compare, where the other cross-country reading lives. */
+   against every category group, before a control has been touched. The
+   country ranking left this tab for Compare, where the other cross-country
+   reading lives, and the world-trend time series followed it there too (P6),
+   so this tab no longer draws a time series of its own. */
 function renderWorld() {
   renderHeatmap();
-  renderWorldTrends();
+  /* renderWorldTrends() used to be called here too. The card it draws moved to
+     the Compare tab (P6), markup and all, so the call moved with it — see
+     renderCompare below. Calling it from both would not have been merely
+     redundant: this tab carries no `#catfilterCmp`/`S.node` tree of its own,
+     and the chart is now driven by that tree's selection. */
   /* Was its own tab. Same tab as the heatmap now, and measured against the
      same world median, so the two read as one argument rather than two. */
   renderVsWorldGrid();
@@ -1267,25 +1279,36 @@ function renderWorldTrends() {
       "A price level only means something for one item; try a change measure, " +
       "which works for any grouping."
     : "Nothing repeats often enough at this level to draw a line.");
-  if (nodes.indexOf(S.gnode) < 0) S.gnode = nodes.indexOf("01") >= 0 ? "01" : nodes[0];
-  var ni = DATA.nodeIdx.indexOf(S.gnode);
+  /* UNIFIED ON S.node (P6). This card used to keep its own category, `gnode`,
+     and a node the current measure could not draw was silently swapped for
+     "01" or whatever node was left standing — the reader picked one thing
+     and the chart drew another, with only the (since-removed) dropdown to
+     notice from. That was tolerable while this card was the only thing on its
+     tab reading that state. It stopped being tolerable the moment the tree at
+     the left of the ranking above became the SAME control: swapping `S.node`
+     here would pull the country bars on this very tab out from under the
+     category the tree still shows ticked, which is a worse failure than a
+     blank chart. So a node the current measure cannot draw is left exactly
+     where the reader put it, and this card says so instead — `nothing()`
+     already renders exactly the message a thin leaf needs, and the level
+     measure gets a more specific one where the cause is known to be a
+     grouping rather than thinness. */
+  if (nodes.indexOf(S.node) < 0) return nothing(
+    levelOnly && allNodes.indexOf(S.node) >= 0
+      ? "<b>" + esc(title(S.node)) + "</b> is a grouping, not a single item, so it has no " +
+        "US$ price level here — try a change measure, which works for any grouping."
+      : "Nothing repeats often enough at this level to draw a line.");
+  var ni = DATA.nodeIdx.indexOf(S.node);
 
   /* The level measure is a US$-per-unit figure, so it is offered only where one
      exists. Disabling it beats silently swapping the category out from under
      the reader, which is what the "not in the list" fallback above would do. */
-  var levelOK = isLeaf(S.gnode) && notResidual(S.gnode);
+  var levelOK = isLeaf(S.node) && notResidual(S.node);
   var lvlBtn = document.getElementById("wv-level");
   lvlBtn.disabled = !levelOK;
   lvlBtn.title = levelOK ? ""
     : "A price per unit only means something for a single named item. " +
-      title(S.gnode) + " is a grouping — pick one item to price it in US$.";
-
-  var sel = document.getElementById("wtNode");
-  sel.innerHTML = nodes.map(function (c) {
-    var lvl = (DATA.tax[c] || {}).lvl || 1;
-    return '<option value="' + c + '">' + new Array(lvl).join("   ") +
-      esc(title(c)) + " · " + c + "</option>"; }).join("");
-  sel.value = S.gnode;
+      title(S.node) + " is a grouping — pick one item to price it in US$.";
 
   /* The unit is read off the node, not off the reader. `dom` is what the node
      is mostly priced in; where the geo series has nothing at that unit there is
@@ -1293,7 +1316,7 @@ function renderWorldTrends() {
      and the label says which — the alternative is a blank chart under a
      confident heading. */
   var units = Object.keys(byNode[ni] || {}).map(Number).sort();
-  var dom = domUnit(S.gnode);
+  var dom = domUnit(S.node);
   S.gunit = units.indexOf(dom) >= 0 ? dom : units[0];
   var ui = S.gunit, unitCode = DATA.unitIdx[ui];
   document.getElementById("wtUnits").innerHTML =
@@ -1372,7 +1395,7 @@ function renderWorldTrends() {
         '<span class="c">' + c.n + "</span></button>"; }).join("") +
     parked.map(function (g) {
       return '<button class="chip ser" style="opacity:.32" title="Still selected, but ' +
-        esc(title(S.gnode)) + ' has no series here — it returns when you change category" ' +
+        esc(title(S.node)) + ' has no series here — it returns when you change category" ' +
         'onclick="APP.toggleGeo(' + arg(g) + ')">' +
         esc((DATA.geos[g] || {}).t || g) + "</button>"; }).join("");
   /* the add-a-place picker was one of the analyst controls and is gone */
@@ -1452,7 +1475,7 @@ function renderWorldTrends() {
      category on screen sits in. Same colour as the country it belongs to, so
      the pairing is readable without a legend; dotted, because it is somebody
      else's measurement rather than ours. */
-  var cpiDrawn = [], cpiBreaks = {}, cpiCode = cpiCodeFor(S.gnode);
+  var cpiDrawn = [], cpiBreaks = {}, cpiCode = cpiCodeFor(S.node);
   var cpiSpecs = (cpiCode ? [[cpiCode, [2,2], 1.8]] : []).concat([["_T", [1,3], 1.4]]);
   if (cpiOn) drawn.forEach(function (g) {
     var slug = g.slice(2), L = lagPeriods(months, f);
@@ -1621,7 +1644,7 @@ function renderWorldTrends() {
       (isLevel ? "Average across the items priced per " + UNIT_SHORT[unitCode] + " in "
                : isIndex ? "Matched-item index for " : "Change vs " +
                  changeLabel(months, word) + " for ") +
-      esc(title(S.gnode)) + " &middot; " + esc(leadT) + " &middot; " + lastP,
+      esc(title(S.node)) + " &middot; " + esc(leadT) + " &middot; " + lastP,
       first && first !== last
         ? (function () {
             var d = (last / first - 1) * 100;
@@ -1661,6 +1684,15 @@ function renderCompare() {
   /* The external benchmark sits under the ranking and answers the same
      question about the same countries, so it is drawn with it. */
   renderPppBench();
+  /* The world-trend card moved to this tab with its markup too (P6), and its
+     renderer has to follow for the same reason renderRanking's does: leave it
+     off this list and the card sits under a heading with an empty canvas.
+     Also drawn unconditionally, before the early returns below — the trend
+     is driven by `S.node` but does not depend on anything renderCompare's own
+     bar chart computes, so a node that draws no bars must not blank the trend
+     too, and a node that draws no trend (see renderWorldTrends) must not blank
+     the bars. */
+  renderWorldTrends();
 
   /* CATFILTER: the breadcrumb and the sibling list that used to be drawn here
      are gone. They showed one rung of the tree at a time — the current node's
@@ -1782,7 +1814,49 @@ function renderCompare() {
         return out; } } } },
       scales:{ x:{ beginAtZero:true, position:"top", grid:{color:RULE},
           title:{display:true, text:"US$ " + UNIT_LABEL[unit]} },
-        y:{ ticks:{font:{size:11}, autoSkip:false}, grid:{display:false} } } }
+        y:{ ticks:{font:{size:11}, autoSkip:false}, grid:{display:false} } } },
+    /* The world median used to live only in the sub-title and the ratio math,
+       never on the chart itself, so two hundred bars ranked each other with no
+       mark for where the world sits among them. The obvious fix is a bar: push
+       one more row onto `plot` at gmed and let it sort in with the rest. It was
+       rejected. The world is not a country — it collected no observations, has
+       no source count, no COICOP cell — and a bar shaped exactly like the ones
+       around it invites the one interaction every other bar answers to: the
+       `onClick` above sends a click straight to that country's trends page,
+       and there is no trends page for "the world". Making that click a no-op
+       for one specific bar is a special case forever sitting in code that
+       otherwise never has to ask "is this actually a country?" A vertical
+       line drawn by a plugin instead of a dataset sidesteps the question
+       rather than answering it: it is drawn after the bars, at the pixel
+       `gmed` maps to on the value axis, and it never becomes an element of
+       `data.datasets` or a row of `plot`, so `onClick`'s `plot[els[0].index]`
+       and the tooltip callback's `plot[t.dataIndex]` above keep counting the
+       same countries in the same order they always did. Chart.js raises no
+       hover event for a mark with no dataset behind it, so rather than build
+       one, the true number the reader would have hovered for is written next
+       to the line instead — always on, never wrong, and it costs one label
+       instead of a hit-test. */
+    plugins: gmed ? [{
+      id:"worldMedianLine",
+      afterDatasetsDraw:function (c) {
+        var area = c.chartArea, x = c.scales.x.getPixelForValue(gmed), ctx = c.ctx;
+        ctx.save();
+        ctx.strokeStyle = DIM;
+        ctx.lineWidth = 1.4;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, area.top);
+        ctx.lineTo(x, area.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = DIM;
+        ctx.font = "600 10.5px system-ui, -apple-system, sans-serif";
+        ctx.textBaseline = "top";
+        ctx.textAlign = x > area.right - 70 ? "right" : "left";
+        ctx.fillText("world $" + gmed.toFixed(2), x + (ctx.textAlign === "right" ? -4 : 4), area.top + 2);
+        ctx.restore();
+      }
+    }] : []
   });
 
   /* The legend names the colours that are actually on the chart and nothing
@@ -1803,6 +1877,11 @@ function renderCompare() {
   if (seen.flag) leg.push(sw(EXPENSIVE, "outside plausible bounds"));
   if (seen.imp) leg.push('<span><i class="sw" style="background:transparent;border:1.4px solid ' +
     INK + '"></i>outlined: some months behind it are imputed</span>');
+  /* The world-median line is not gated behind `seen`: it is drawn whenever
+     `gmed` exists, on every plot, so unlike the three marks above it needs no
+     scan of `plot` to know whether it is present. */
+  if (gmed) leg.push('<span><i class="sw" style="background:transparent;border-top:1.6px dashed ' +
+    DIM + '"></i>world median</span>');
   document.getElementById("cmpLegend").innerHTML = leg.join("");
 
   /* table — each column declares its own type so the comparator never subtracts
@@ -3672,18 +3751,19 @@ var APP = {
   pick:function (code) { S.node = code || OPEN_ON; this.render(); },
   /* CATFILTER: the tree keeps no copy of the selection, it reads the committed
      one back through here. Two copies of one choice is how a picker and the
-     chart under it end up disagreeing — and the app moves this state on its
-     own (a node with no series at the current setting is swapped for one that
-     has one), so a picker holding its own copy would be wrong every time that
-     happened. "cmp" is the Compare tab's item, anything else the world
-     series'. */
+     chart under it end up disagreeing. There used to be a second answer here
+     — "cmp" for Compare's own `S.node`, anything else for the world series'
+     own `S.gnode` — because the two lived on different tabs and each swapped
+     its own stale pick for a live one independently. Now that the trend sits
+     on the Compare tab too (P6), there is only one single-node selection:
+     `#catfilterCmp` drives both the ranking above and the trend beneath it,
+     and "cmp" is kept as the argument every caller already passes, not because
+     anything else is on offer. */
   node:function (which) {
-    if (which === "cmp") return S.node;
-    /* An ARRAY for the multi mount. Each mount reads its own key and no mount
-       can see another's, which is what keeps the three selections
-       independent. */
     if (which === "country") return S.cnodes;
-    return S.gnode; },
+    /* An ARRAY for the multi mount. It reads its own key and cannot see the
+       single mount's, which is what keeps the two selections independent. */
+    return S.node; },
   /* CATFILTER (multi): a token the Country profile's panel can compare against
      to know its per-node counts have gone stale — the country changed, or the
      evidence gate did. */
@@ -3691,7 +3771,6 @@ var APP = {
   openCountry:function (slug) { S.country = slug; S.multi = []; this.go("country"); },
   openNode:function (code) { S.node = code; this.go("compare"); },
   setGeoMode:function (m) { S.gmode = m; S.gsel = null; this.render(); },
-  setGNode:function (c) { S.gnode = c; this.render(); },
   setGMeasure:function (m) { S.gmeasure = m; this.render(); },
   toggleCPI:function () { S.gcpi = !S.gcpi; this.render(); },
   setGWin:function (w) { S.gwin = w; this.render(); },

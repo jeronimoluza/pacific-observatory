@@ -12,14 +12,15 @@
 
    A MODE, BECAUSE THE CHARTS DIFFER. It drew checkboxes everywhere, kept a set
    of ticked terminals, showed a "Filters 3" badge — and then drew ONE category
-   under the world series and on Compare, because those two charts draw one
-   category. The extra ticks went into a "2 more picked, drawn one category at a
+   on Compare, because that tab draws one category (and the world trend now
+   sitting beneath it, since P6, draws that very same one — see `catfilterCmp`
+   below). The extra ticks went into a "2 more picked, drawn one category at a
    time" apology under the panel. A control that accepts input it cannot act on
-   is not a filter, it is a trap. So those two mounts are radios and picking a
+   is not a filter, it is a trap. So that mount is radios and picking a
    second category replaces the first, while the Country profile's ranking chart
    — which really can draw a union of categories, and always could — keeps the
    checkbox tree with its indeterminate parents. One file, one `opts.multi`
-   flag, three mounts; never two copies of a tree widget.
+   flag, two mounts; never two copies of a tree widget.
 
    NO LOCAL COPY OF THE SELECTION. There is no `applied` set here any more, and
    no draft beside it. The tree renders whatever the app says is selected and
@@ -155,16 +156,18 @@ var CHEV = '<svg class="cf-ic" viewBox="0 0 16 16" aria-hidden="true" focusable=
 
 /* ---------------- one mount ----------------
    `get` returns the category the dashboard is actually holding, `set` commits a
-   new one. Every mount is otherwise identical, which is the point: all three
-   pickers on this dashboard are now the same control, and none of them owns
+   new one. Every mount is otherwise identical, which is the point: both
+   pickers on this dashboard are now the same control, and neither owns
    the state it shows.
 
    `opts.multi` is the only thing that differs between them, and it is about HOW
-   MANY nodes may be picked, never about whether the panel is on screen. All
-   three are always-visible left-hand panels.
+   MANY nodes may be picked, never about whether the panel is on screen. Both
+   are always-visible left-hand panels.
 
-     single (Regional View, Compare) — radios, one node, committed on click.
-       No selection is not a state either of those charts has.
+     single (Compare)         — radios, one node, committed on click. No
+       selection is not a state either of the two charts on that tab has —
+       the ranking above and the world trend beneath it (P6) both read this
+       one mount.
      multi  (Country profile)        — checkboxes with the indeterminate
        marker, `get`/`set` speak arrays, and NO selection is a real and useful
        state: it means every item this country prices, which is what that tab
@@ -390,30 +393,19 @@ function mount(id, opts) {
 }
 
 /* ---------------- the mounts ----------------
-   The world series keeps the hidden <select> it always had as its state
-   carrier, and the walk up the tree with it: the reader may pick a node the
-   chart has no series for at the current measure, and the nearest ancestor
-   that does have one stands in. Compare has no such list — it draws a bar per
-   country and says for itself when a grouping cannot be priced — so it commits
-   the code untouched. */
+   There used to be three of these. The world series kept a hidden <select>
+   as its own state carrier and walked up the tree when the reader's pick had
+   no series at the current measure — it lived on a different tab from
+   Compare and had no way to ask "what is Compare showing" instead of keeping
+   its own answer. Now that the trend sits on the Compare tab too (P6), it can
+   ask, and a second single-node mount here would only give the two of them a
+   chance to disagree, the exact failure the walk-up existed to paper over.
+   So there is one single-node mount, `catfilterCmp`, and — unlike the mount
+   it replaces — it commits the code untouched: it draws a bar per country and
+   says for itself when a grouping cannot be priced, and `renderWorldTrends`
+   in _app.js now does the same for the trend beneath it rather than walking
+   the pick up to an ancestor. */
 var MOUNTS = [
-  mount("catfilter", {
-    get: function () {
-      var sel = document.getElementById("wtNode");
-      return (sel && sel.value) || (window.APP && APP.node && APP.node("world")) || null;
-    },
-    set: function (c) {
-      var sel = document.getElementById("wtNode"), want = c;
-      if (sel && sel.options.length) {
-        var avail = {};
-        Array.prototype.forEach.call(sel.options, function (o) { avail[o.value] = 1; });
-        var x = c;
-        while (x && !avail[x]) x = parent(x);
-        want = x || c;
-      }
-      if (window.APP && APP.setGNode) APP.setGNode(want);
-    }
-  }),
   mount("catfilterCmp", {
     get: function () {
       return (window.APP && APP.node && APP.node("cmp")) || null;
