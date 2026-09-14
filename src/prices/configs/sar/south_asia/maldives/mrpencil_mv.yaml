@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: woocommerce_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+spider: mrpencil_mv
+url: https://mrpencil.mv/shop/
+language: en
+currency: MVR
+cadence: weekly
+notes: |
+  Mr Pencil's current first-party shop page exposes named positive-price
+  WooCommerce product cards with an explicit MVR currency symbol. The
+  locality is the assigned Maldives lane and the source's .mv domain.

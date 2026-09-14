@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_server_rendered_search_to_product_detail
+analytical_role: price_comparison_merchant_offer
+coicop_classification: classifier
+spider: uruguay_lomasjusto_uy
+url: https://lomasjusto.uy/buscar?q=iphone
+language: es
+currency: UYU
+cadence: weekly
+channel: marketplace
+notes: |
+  Lo+Justo is a Uruguay price-comparison site. Search and category pages expose
+  product-model cards with aggregate `desde` prices; those values are discovery
+  only and must never be emitted. Follow product-detail routes and emit only
+  explicit merchant rows with a named retailer, positive UYU price, and direct
+  merchant product URL. US-dollar offers and AggregateOffer minima are excluded.

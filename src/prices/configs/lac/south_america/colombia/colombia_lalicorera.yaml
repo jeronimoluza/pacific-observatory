@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+spider: colombia_lalicorera
+url: https://lalicorera.com/productos/cigarrillos
+language: es
+currency: COP
+cadence: weekly
+channel: specialty-food
+archive_prefix: lalicorera.com/
+notes: |
+  First-party Colombia category cards render exact current COP prices, stable
+  product routes, and full pack/unit labels. The spider reads only the direct
+  current-price text and does not substitute crossed previous prices.

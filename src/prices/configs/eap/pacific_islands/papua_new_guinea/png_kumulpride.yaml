@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy
+spider: png_kumulpride
+url: https://kumulpride.com/
+language: en
+currency: USD
+cadence: weekly
+channel: fashion
+archive_prefix: kumulpride.com/
+notes: |
+  The page identifies Papua New Guinea and gives a Vision City Mega Mall,
+  Waigani Drive, 131 NCD address. Current product cards explicitly display
+  dollar signs; PGK (K) appears only as an available switcher option, so USD is
+  retained as the observed storefront currency. Only positive card prices emit.

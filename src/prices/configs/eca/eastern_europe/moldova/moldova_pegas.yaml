@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_json
+analytical_role: retailer_sku
+spider: moldova_pegas
+url: https://pegas.md/api/products?searchCriteria%5BpageSize%5D=100&searchCriteria%5BcurrentPage%5D=1&lng=ro
+language: ro
+currency: MDL
+cadence: weekly
+channel: supermarket
+archive_prefix: pegas.md/
+notes: |
+  Pegas Moldova's first-party Magento REST proxy exposes stable SKU IDs,
+  product names, current MDL prices, live SKU detail URLs, and stock attributes. It
+  reports 9,136 products and accepts 100-item pages, so the onboarding smoke
+  is a validation run rather than a catalogue-size cap. Zero prices and
+  disabled products are excluded.

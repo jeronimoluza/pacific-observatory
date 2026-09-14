@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_json_api
+analytical_role: official_avg
+coicop_classification: classifier
+spider: burkina_faso_fasodata
+url: https://fasodata.com/carte-prix
+language: fr
+currency: XOF
+cadence: weekly
+channel: other
+archive_prefix: fasodata.com/api/prices/latest
+archive_path_re: '^/api/prices/latest$'
+notes: |
+  FasoData's first-party price map calls the public same-origin
+  /api/prices/latest endpoint. A bounded 2026-09-13 validation of the national
+  Burkina Faso WFP query returned HTTP 200 with seven dated food commodities,
+  positive CFA/kg prices, source UUIDs, national location, and observation
+  counts. The spider preserves the source date, location, unit, UUID, quality,
+  and WFP provenance. XOF is emitted because the first-party map labels these
+  Burkina Faso values as CFA/kg. Records are national averages rather than
+  retail offers.

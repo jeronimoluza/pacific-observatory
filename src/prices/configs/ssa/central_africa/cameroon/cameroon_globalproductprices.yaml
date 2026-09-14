@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: html_table
+analytical_role: official_avg
+coicop_classification: classifier
+spider: cameroon_globalproductprices
+url: https://www.globalproductprices.com/Cameroon/
+language: en
+cadence: monthly
+channel: null
+notes: |
+  Global Product Prices Cameroon country page. The page presents food and
+  other household indicators in repeated HTML blocks; the spider keeps only
+  the food-price block rows and records XAF, USD display, unit, date, and the
+  indicator link. Single-page fetch; HTTP 429 stops the crawl.

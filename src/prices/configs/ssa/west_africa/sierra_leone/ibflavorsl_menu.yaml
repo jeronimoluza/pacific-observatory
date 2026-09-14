@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ibflavorsl_menu
+url: https://ibflavorsl.com/menu/
+language: en
+cadence: weekly
+channel: other
+notes: |
+  Static WordPress menu page for IB Flavour SL Ltd at 31 Peninsula Road,
+  Adonkia/Goderich, Freetown. Rendered body text exposes prices as `90Le`,
+  `40 Le`, and size-column values. No product API is needed. Emits prepared
+  meals, desserts, soft drinks and alcoholic drinks as SLL observations;
+  complements grocery coverage and is not a mini-mart/pharmacy SKU catalog.

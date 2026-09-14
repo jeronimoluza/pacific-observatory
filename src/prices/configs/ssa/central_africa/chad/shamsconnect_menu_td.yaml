@@ -1,0 +1,14 @@
+scaffolding: spider
+spider: shamsconnect_menu_td
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html_text
+url: https://shamsconnect.com/menu
+language: fr/ar
+currency: XAF
+cadence: monthly
+notes: |
+  Static bilingual ShamsConnect menu for N'Djamena, Chad. Emit named prepared
+  food items only, preserve section labels and raw displayed prices, and keep
+  this tagged as restaurant-menu pricing rather than retail shelf pricing.

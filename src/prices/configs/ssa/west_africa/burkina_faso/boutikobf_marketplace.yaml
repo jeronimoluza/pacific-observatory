@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: marketplace_listing
+coicop_classification: classifier
+spider: burkina_faso_boutikobf_marketplace
+url: https://www.boutikobf.com/marketplace?category=alimentation
+language: fr
+cadence: weekly
+channel: marketplace
+archive_prefix: boutikobf.com/
+notes: |
+  Ouagadougou marketplace. Start with alimentation; if its cached category
+  response is empty, fall back to the homepage then the unfiltered marketplace.
+  Retain only tangible goods; remove services and deduplicate repeated listings.
+  Emit an alarm log when a claimed category count exceeds extracted candidates.

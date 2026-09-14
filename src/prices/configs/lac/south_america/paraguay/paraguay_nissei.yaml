@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright_magento_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: paraguay_nissei
+url: https://nissei.com/py/
+language: es
+currency: PYG
+cadence: weekly
+channel: electronics
+active: false
+inactive_reason: Production Playwright validation timed out before rendering product cards on 2026-09-13; fixture remains valid for a later isolated retry.
+notes: |
+  Nissei's Paraguay storefront renders Magento product cards with numeric
+  data-product-id values, stable /py/ product URLs, and current prices explicitly
+  labelled Gs. The browser-rendered homepage observed on 2026-09-13 contained
+  numerous tangible consumer products. The staged fixture retains four electronics
+  rows with positive prices from Gs. 50,000 to Gs. 206,000.
+
+  Paraguay locality is explicit in the page title (delivery throughout Paraguay),
+  the /py/ storefront path, and the footer's Ciudad del Este store address and
+  +595 contact number. Earlier direct HTTP attempts returned Cloudflare challenges;
+  this adapter uses ordinary browser rendering and does not interact with or solve
+  a challenge. Current finalPrice text is retained and crossed-out oldPrice text is
+  ignored. No archive fields are set pending later CDX measurement.

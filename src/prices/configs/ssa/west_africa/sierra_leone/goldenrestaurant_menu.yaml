@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: restaurant_menu
+coicop_classification: classifier
+spider: goldenrestaurant_menu
+url: https://thegoldenrestaurant.netlify.app/
+language: en
+cadence: weekly
+channel: other
+notes: |
+  Static Netlify restaurant page for The Golden Restaurant at 112 Jomo
+  Kenyatta Road, Freetown. The homepage exposes a visible "Delicious
+  Menu/Dishes" section with prepared-food item names, SLL/Le prices and short
+  dish descriptions. Emits only concrete restaurant menu rows; excludes
+  promotional sections and non-priced contact/booking content.

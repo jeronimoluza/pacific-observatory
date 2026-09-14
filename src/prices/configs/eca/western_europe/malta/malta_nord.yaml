@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: malta_nord
+url: https://nord.mt/
+language: en
+currency: EUR
+cadence: weekly
+channel: specialty-food
+archive_prefix: nord.mt/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Malta-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 71 positive records; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html_text
+analytical_role: restaurant_menu
+coicop_classification: classifier
+channel: other
+spider: botswana_oceanbasket_menu
+url: https://botswana.oceanbasket.com/menu/main/
+language: en
+currency: BWP
+cadence: monthly
+notes: |
+  Botswana-specific Ocean Basket main menu. Prices are presented with the P
+  symbol; retain each distinct price variant attached to an item rather than
+  collapsing a range. The sushi route is not seeded until it has a current
+  successful source sample.
+  Restaurant menu prices are not retail SKU prices and should remain tagged
+  as a menu/food-away-from-home channel.

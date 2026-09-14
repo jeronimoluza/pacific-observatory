@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: binbin_designs
+url: https://binbindesigns.com/
+language: en
+currency: GMD
+cadence: weekly
+channel: fashion
+archive_prefix: binbindesigns.com/
+notes: |
+  Binbin Designs' current first-party catalogue exposes named tangible products,
+  stable WordPress product URLs, and D-prefixed prices. On-page business copy places
+  the seller in The Gambia; D is therefore interpreted as Gambian dalasi (GMD).
+  Literal `Sample Item` template rows are excluded before emission.

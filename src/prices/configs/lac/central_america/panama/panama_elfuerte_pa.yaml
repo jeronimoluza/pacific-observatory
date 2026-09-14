@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: panama_elfuerte_pa
+url: https://elfuerte.com.pa/
+language: es
+currency: USD
+cadence: weekly
+channel: dept-store
+archive_prefix: elfuerte.com.pa/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Panama-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23 platform evidence reports 11,319 products; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

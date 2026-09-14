@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: supabase_rest
+analytical_role: official_avg
+coicop_classification: classifier
+channel: wholesale
+source_key: somalia_mtacab_so
+module: ssa.east_africa.somalia.mtacab_market_price
+function: fetch_somalia_mtacab_so
+url: https://www.mtacab.so/market-price/
+language: en
+cadence: daily
+fallback_date: 2026-01-01
+notes: |
+  M-TACAB publishes dated daily buying prices for enrolled Somali crop markets.
+  The fetcher discovers the rotatable public Supabase configuration from the
+  first-party browser bundle and reads the complete priced-record table in
+  bounded ranges. Crop, variety, market, date, price, and source-native units
+  are preserved. USD/kg, USD/Loor, USD/Koombo, and other trader measures are
+  not normalized.

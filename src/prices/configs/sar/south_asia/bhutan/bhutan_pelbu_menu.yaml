@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_jsonld
+analytical_role: retailer_sku
+spider: bhutan_pelbu_menu
+url: https://www.pelbusuites.bt/menu
+language: en
+currency: BTN
+cadence: weekly
+channel: other
+archive_prefix: pelbusuites.bt/menu
+archive_path_re: '^/menu'
+notes: |
+  Pelbu Suites publishes its current Thimphu menu as schema.org Menu JSON-LD.
+  The public payload contains named menu items and explicit BTN offers. Stable
+  item identities are deterministic name slugs on the canonical menu URL.

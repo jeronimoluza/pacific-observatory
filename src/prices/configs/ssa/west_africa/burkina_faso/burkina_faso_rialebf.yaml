@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_paginated_json_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: burkina_faso_rialebf
+url: https://rialebf.com/marketplace
+language: fr
+currency: XOF
+cadence: daily
+channel: marketplace
+archive_prefix: rialebf.com/product/
+archive_path_re: '^/product/[0-9]+$'
+notes: |
+  RialeBF's versioned first-party marketplace JavaScript calls the public
+  same-origin /api/products endpoint with page, limit, search, and sortBy
+  parameters. A bounded 2026-09-13 capture returned HTTP 200, 1,389 total
+  products, and 24 named positive-CFA tangible products on page 1. Numeric API
+  IDs map directly to stable /product/{id} URLs. XOF is emitted for the site's
+  displayed CFA prices; discountedPrice is used when the API marks a discount.
+  Obvious service, property, employment, and vehicle listings are excluded.

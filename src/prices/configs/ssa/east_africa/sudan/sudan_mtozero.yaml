@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+spider: sudan_mtozero
+url: https://store.mtozero.com/?lang=en
+language: ar
+currency: SDG
+cadence: weekly
+channel: marketplace
+archive_prefix: store.mtozero.com/product.php
+archive_path_re: '^/product\.php'
+notes: |
+  MtoZero Store's first-party listing renders named products with stable numeric
+  IDs, product URLs, and explicit SDG prices. This adapter covers the current
+  public listing assortment.

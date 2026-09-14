@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_json
+analytical_role: retailer_sku
+spider: paraguay_canastapy
+url: https://www.canastapy.com/api/search
+language: es
+currency: PYG
+cadence: daily
+channel: marketplace
+archive_prefix: canastapy.com/
+notes: |
+  CanastaPY's public first-party API returns current item-level supermarket
+  offers with explicit merchant identity, PYG price, stock state, merchant URL,
+  and observation timestamp. The spider uses ten bounded cross-category queries
+  and emits merchant offers only; it never emits a comparison aggregate.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: dominican_casa_canard
+url: https://lacasadelacanard.com/
+language: es
+currency: DOP
+cadence: weekly
+channel: specialty-food
+archive_prefix: lacasadelacanard.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Dominican Republic-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 250 products / 306 positive variants in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

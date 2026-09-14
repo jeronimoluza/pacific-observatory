@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: paraguay_marketland_py
+url: https://marketland.com.py/wp-json/wc/store/v1/products?per_page=100
+language: es
+currency: PYG
+cadence: weekly
+channel: dept-store
+archive_prefix: marketland.com.py/
+notes: |
+  Marketland Paraguay's public first-party WooCommerce Store API returns stable
+  product IDs, names, canonical permalinks, stock state, and explicit PYG price
+  objects. This broad tangible-consumer scope is a bounded page sample, not a
+  claim of catalogue completeness. Only positive whole-PYG rows emit.

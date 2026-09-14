@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: dominican_domitienda
+url: https://domitiendashop.com/
+language: es
+currency: DOP
+cadence: weekly
+channel: marketplace
+archive_prefix: domitiendashop.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Dominican Republic-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 89 products / 94 positive variants; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

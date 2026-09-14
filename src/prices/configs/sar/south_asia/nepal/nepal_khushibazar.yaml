@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html_cards
+analytical_role: retailer_sku
+spider: nepal_khushibazar
+url: https://www.khushibazar.com.np/products/stationery
+language: en
+currency: NPR
+cadence: weekly
+channel: marketplace
+archive_prefix: khushibazar.com.np/products/
+archive_path_re: '^/products/'
+notes: |
+  Khushi Bazar's first-party stationery listing renders named current offers
+  with numeric IDs, stable routes, stock labels, and Rs. prices. NPR is inferred
+  from the .com.np domain, Nepal-made marketplace statement, Gaindakot address,
+  and visible Rs. labels. Crossed prices and repeated view markup are excluded.
+  This stationery slice is validation coverage, not a catalogue cap.

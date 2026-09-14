@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_next_data
+analytical_role: retailer_sku
+spider: maldives_dianatrading
+url: https://www.dianatradingmv.com/
+language: en
+currency: MVR
+cadence: weekly
+channel: supermarket
+archive_prefix: dianatradingmv.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Diana Trading's first-party Next.js state embeds hundreds of grocery, pet,
+  household, and other consumer products with numeric IDs, names, slugs, prices,
+  packing text, and status. Only status=active records with positive prices are
+  emitted; explicit out-of-stock SKU text is retained as availability state.
+  MVR is inferred from the Maldives-specific merchant/domain and local price
+  scale. The homepage validation cap is not a catalogue-size estimate.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: panama_felix
+url: https://felix.com.pa/
+language: es
+currency: USD
+cadence: weekly
+channel: dept-store
+archive_prefix: felix.com.pa/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Panama-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 250 products / 1,041 positive variants in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_supabase_rest
+analytical_role: marketplace_offer
+spider: guinea_bissau_compraexpress
+url: https://compraexpress.app/produtos
+language: pt
+currency: XOF
+cadence: daily
+channel: marketplace
+archive_prefix: compraexpress.app/produto/
+archive_path_re: '^/produto/'
+notes: |
+  CompraExpress is a Guinea-Bissau marketplace with cash-on-delivery offers in
+  XOF. Its first-party application reads the active local storefront from a
+  public Supabase REST endpoint using a publishable browser key. The collector
+  reproduces the application's visibility filter and stable product routes.
+  Origin-country metadata describes imported goods, not the offer market.

@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_json_ld_product_list
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: australian_direct_suppliers_sb
+url: https://www.australiandirectsuppliers.com/category/smartphones
+language: en
+currency: SBD
+cadence: weekly
+channel: electronics
+archive_prefix: australiandirectsuppliers.com/product-page/
+archive_path_re: '^/product-page/'
+notes: |
+  First-party Wix catalogue explicitly exposes Solomon Islands dollar (SBD)
+  prices in JSON-LD and rendered product cards. The staged parser follows the
+  category's rel=next pagination, retains canonical product-page URLs and
+  URL-derived handles as stable identifiers, and omits non-SBD, zero, or
+  malformed offers. Source locality is Solomon Islands.

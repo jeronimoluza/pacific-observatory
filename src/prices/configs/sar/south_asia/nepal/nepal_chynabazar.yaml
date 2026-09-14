@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_next_rsc
+analytical_role: retailer_sku
+spider: nepal_chynabazar
+url: https://chynabazar.com/categories/stationery
+language: en
+currency: NPR
+cadence: weekly
+channel: other
+archive_prefix: chynabazar.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Chynabazar's first-party stationery category labels prices as NPR and embeds
+  product records in its Next.js server-component payload. Each record supplies
+  a UUID, SKU, slug, numeric price, and stock state. Pagination follows the
+  embedded total-results, current-page, and per-page values rather than treating
+  the 20-row page size as a catalogue cap.

@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: burkina_faso_gams_africa_shop
+url: https://shop.gams-africa.com/index.php
+language: fr
+cadence: weekly
+channel: electronics
+archive_prefix: shop.gams-africa.com/
+notes: |
+  Bobo-Dioulasso custom PHP catalogue. This is electronics/IT, not a food
+  source. Discover the all-products/category/PDP catalogue links rather than
+  treating the homepage carousel as complete coverage.

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gui_market_gn
+url: https://gui-market.com/recherche?sort=popularity
+language: fr
+currency: GNF
+cadence: weekly
+channel: marketplace
+notes: |
+  Guinea-local multi-category consumer marketplace. Browser verification on
+  2026-09-13 found four server-filtered catalog products with current and list
+  GNF prices: article divers, baby furniture, smartphone, and refrigerator.
+  The Next.js page initially reports zero products, then renders four cards;
+  Playwright waits for the stable .details h3[title] structure. The catalog is
+  small but every row is price-bearing and in scope under the corrected
+  all-consumer-products policy. COICOP is left to the classifier. No archive
+  fields are set pending later CDX measurement.
+

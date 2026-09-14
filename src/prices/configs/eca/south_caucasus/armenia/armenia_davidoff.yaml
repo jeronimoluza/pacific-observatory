@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_json
+analytical_role: retailer_sku
+spider: armenia_davidoff
+url: https://davidoffcigars.am/wp-json/wc/store/v1/products?per_page=100
+language: en
+currency: AMD
+cadence: weekly
+channel: other
+archive_prefix: davidoffcigars.am/
+notes: |
+  The current first-party site identifies itself as the official Armenia
+  representative. Its public WooCommerce Store API provides stable product IDs,
+  names, canonical URLs, stock state, and explicit AMD price objects. Only
+  positive AMD rows emit.

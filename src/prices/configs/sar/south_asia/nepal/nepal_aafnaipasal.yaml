@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html_cards
+analytical_role: retailer_sku
+spider: nepal_aafnaipasal
+url: https://aafnaipasal.com/
+language: en
+currency: NPR
+cadence: weekly
+channel: supermarket
+archive_prefix: aafnaipasal.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Aafnai Pasal's first-party homepage renders current grocery cards with stable
+  numeric IDs, names, product routes, and Rs. prices. NPR is inferred from the
+  store's Nepal-only identity, Kuleshwor, Kathmandu address, and visible Rs.
+  labels. Crossed comparison prices are excluded and repeated homepage rails
+  are deduplicated by product ID. Homepage coverage is not a catalogue cap.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: denmark_jware
+url: https://jware.dk/
+language: da
+currency: DKK
+cadence: weekly
+channel: marketplace
+archive_prefix: jware.dk/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Denmark-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 16,028 products; public API requires per_page=10; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

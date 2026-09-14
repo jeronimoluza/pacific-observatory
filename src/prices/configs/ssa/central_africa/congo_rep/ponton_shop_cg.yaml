@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ponton_shop_cg
+url: https://ponton-shop.fr/
+language: fr
+currency: XAF
+cadence: weekly
+channel: marketplace
+archive_prefix: ponton-shop.fr/
+notes: |
+  Ponton Shop describes itself as a Congo-Brazzaville platform. Its server-rendered
+  product cards pair named consumer goods with FCFA prices and canonical product URLs.
+  In Congo-Brazzaville, FCFA is interpreted as XAF.

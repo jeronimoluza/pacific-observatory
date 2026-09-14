@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html_cards
+analytical_role: retailer_sku
+spider: nepal_smartgau
+url: https://smartgau.com/shop
+language: en
+currency: NPR
+cadence: weekly
+channel: supermarket
+archive_prefix: smartgau.com/shop/
+archive_path_re: '^/shop/'
+notes: |
+  SmartGau's first-party shop renders current consumer-product cards with stable
+  product routes, categories, Rs. prices, and explicit out-of-stock controls.
+  NPR is inferred from the store's Nepal-only identity, Morang address, and
+  visible Rs. labels. Crossed old prices are excluded and repeated responsive
+  card markup is deduplicated by product route.

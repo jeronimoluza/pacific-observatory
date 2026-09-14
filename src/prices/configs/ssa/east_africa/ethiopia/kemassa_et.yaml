@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kemassa_et
+url: https://kemassa.com/
+language: en
+currency: ETB
+cadence: weekly
+channel: supermarket
+notes: |
+  Small Addis Ababa farm-fresh produce storefront. The landing page is
+  server-rendered and exposes product cards with English and Amharic names,
+  visible ETB prices and units. Re-verified live 2026-09-01: eight priced
+  fresh-food rows were visible, including onion, tomato, potato, cabbage,
+  carrot, papaya, avocado and banana. Limitation: coverage is shallow and no
+  separate product-list API was confirmed in this pass.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: pakistan_surmawala
+url: https://surmawala.pk/
+language: en
+currency: PKR
+cadence: weekly
+channel: dept-store
+archive_prefix: surmawala.pk/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Pakistan-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23/24 platform evidence reports 5,263 products; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

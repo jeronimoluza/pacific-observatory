@@ -1,0 +1,12 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jamshidi_mart
+url: https://jamshidimart.com/product-category/snacks-cookies/beverages/soft-drink/?sale_status=1
+language: en
+currency: AFN
+cadence: weekly
+channel: supermarket
+archive_prefix: jamshidimart.com/
+notes: WooCommerce soft-drink category; current sale price is emitted before regular price.

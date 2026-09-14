@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: malta_meats_and_eats
+url: https://meatsandeats.com.mt/
+language: en
+currency: EUR
+cadence: weekly
+channel: supermarket
+archive_prefix: meatsandeats.com.mt/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Malta-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 250 positive variants in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

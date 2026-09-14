@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: bhutan_nima_tshongkhang
+url: https://nimatshongkhang.online/
+language: en
+currency: BTN
+cadence: weekly
+channel: dept-store
+archive_prefix: nimatshongkhang.online/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Bhutan-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23 platform evidence reports 100; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

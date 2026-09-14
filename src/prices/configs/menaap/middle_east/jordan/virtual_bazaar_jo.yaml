@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: virtual_bazaar_jo
+url: https://virtual-bazaar.com/
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+notes: |
+  Jordan marketplace for verified Jordanian brands. The storefront displays
+  tangible apparel prices in USD and identifies Jordan/local delivery context;
+  retain USD as the observed storefront currency rather than converting to JOD.

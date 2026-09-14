@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bison_rw
+url: https://bison.rw/shop
+language: en
+currency: RWF
+cadence: weekly
+channel: supermarket
+notes: |
+  Rwanda food supplier/shop with a public React storefront API at
+  /api/shop/catalog. Re-verified live 2026-09-01: the endpoint returned 94
+  priced rows in RWF across food categories Dairy & Eggs, Dry Goods, Fruits,
+  Grains, Herbs, Meat and Vegetables, with stock flags and units such as kg,
+  bunch and piece. The API embeds product images as large base64 payloads;
+  the spider intentionally ignores image fields and emits lean price rows.

@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+spider: albania_cigars_al
+url: https://cigars.al/shop/
+language: en
+currency: ALL
+cadence: weekly
+channel: other
+notes: |
+  First-party fixture confirms WooCommerce store_currency=ALL and each card
+  carries the currency symbol L. The parser uses the stable data-id, product
+  URL, h3 title, and span.price/bdi card contract. Sale prices would be taken
+  from the card's current ins value if present; no sale/list pair was observed
+  in this capture. Zero, missing, or non-L cards are excluded.

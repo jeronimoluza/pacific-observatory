@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_next_rsc
+analytical_role: retailer_sku
+spider: suriname_smartconnexxionz
+url: https://smart-dev.zeus1.tad.sr/
+language: nl
+currency: SRD
+cadence: weekly
+channel: electronics
+archive_prefix: smart-dev.zeus1.tad.sr/products/
+archive_path_re: '^/products/'
+notes: |
+  Smart ConneXXionZ's Suriname storefront embeds current electronics records in
+  its first-party Next.js server-component payload. Records have stable IDs,
+  product slugs, names, and numeric prices; the storefront cart explicitly uses
+  SRD. Duplicate appearances across homepage sections are removed by product ID.

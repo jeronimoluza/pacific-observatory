@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: boutiqaat_kw
+url: https://www.boutiqaat.com/en-kw/women/beauty/t/
+language: en
+currency: KWD
+cadence: weekly
+channel: cosmetics
+archive_prefix: boutiqaat.com/en-kw/
+notes: |
+  Kuwait-localized beauty catalogue with item-level KWD prices. Preserve both
+  regular and discounted prices; never substitute another country storefront.

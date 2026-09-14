@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+spider: sudan_sougdan
+url: https://sougdan.com/
+language: ar
+currency: SDG
+cadence: weekly
+channel: marketplace
+archive_prefix: sougdan.com/products/details/
+archive_path_re: '^/products/details/'
+notes: |
+  Sougdan's first-party homepage renders product cards with stable numeric IDs,
+  canonical detail URLs, exact current-price attributes, and explicit SDG
+  labels. Crossed previous prices are not parsed.

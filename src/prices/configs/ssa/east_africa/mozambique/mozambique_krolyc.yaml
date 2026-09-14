@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: mozambique_krolyc
+url: https://krolyc.co.mz/
+language: pt
+currency: MZN
+cadence: weekly
+channel: marketplace
+archive_prefix: krolyc.co.mz/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Mozambique-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23 platform evidence reports 6,805; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

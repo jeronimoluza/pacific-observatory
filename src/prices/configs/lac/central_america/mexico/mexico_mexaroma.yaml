@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: mexico_mexaroma
+url: https://mexaromastore.com/
+language: es
+currency: MXN
+cadence: weekly
+channel: cosmetics
+archive_prefix: mexaromastore.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Mexico-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 100 positive records in the first response; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

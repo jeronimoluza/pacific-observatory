@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: retailer_sku
+spider: chad_daarishop
+url: https://daarishop.fr/wp-json/wc/store/v1/products?per_page=100&page=1
+language: fr
+currency: EUR
+cadence: weekly
+channel: other
+archive_prefix: daarishop.fr/produit/
+archive_path_re: '^/produit/'
+notes: |
+  Daarishop sells food packs, household essentials, pharmacy vouchers, and
+  other goods for delivery to households in Chad. Its public first-party
+  WooCommerce Store API reports 41 products on one page with stable IDs, URLs,
+  current EUR prices, categories, and stock state. EUR is the observed checkout
+  currency for this cross-border fulfilment service and is not converted to XAF.

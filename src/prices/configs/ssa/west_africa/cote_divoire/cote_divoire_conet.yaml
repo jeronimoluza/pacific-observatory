@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: cote_divoire_conet
+url: https://conet.ci/
+language: fr
+currency: XOF
+cadence: weekly
+channel: electronics
+archive_prefix: conet.ci/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Cote d'Ivoire-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 868 products; API reports FCFA with minor unit zero and requires per_page=10; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: sri_lanka_nesh
+url: https://nesh.lk/
+language: en
+currency: LKR
+cadence: weekly
+channel: other
+archive_prefix: nesh.lk/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Sri Lanka-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23/24 platform evidence reports 3,182 products; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

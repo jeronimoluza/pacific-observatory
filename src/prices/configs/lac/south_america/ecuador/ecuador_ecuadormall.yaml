@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright_legacy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ecuador_ecuadormall
+url: https://www.ecuadormall.com/catalog/default.php?cPath=12
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+notes: |
+  EcuadorMall's canonical HTTPS host exposes a public Food and Beverages
+  category with stable numeric products_id values, product names, and positive
+  prices. The page's currency selector explicitly marks USD / US Dollar as the
+  selected currency. Browser verification on 2026-09-13 observed eight rows,
+  including barley, beans, panela, tea, and canned beer.
+
+  The source's first-party About Us page states that EcuadorMall is based at
+  MachangaraSoft in Quito, Ecuador and lists its Quito office address and +593
+  telephone numbers. The bare host previously alternated between DNS failure
+  and a TLS timeout with zero response bytes; a normal browser session reached
+  the canonical www /catalog route immediately, so this spider deliberately
+  uses Playwright transport. Session IDs are removed from retained product
+  URLs. No archive fields are set pending later CDX measurement.

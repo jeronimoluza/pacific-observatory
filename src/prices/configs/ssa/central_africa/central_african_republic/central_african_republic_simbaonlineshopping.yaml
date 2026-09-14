@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_aspnet_rendered_html
+analytical_role: retailer_price
+spider: central_african_republic_simbaonlineshopping
+url: https://www.simbaonlineshopping.com/Products.aspx?main_cat_ID=1&main_cat_name=Food%20Products&sub_cat_name=Peanut%20Butter&subcat=60
+language: en
+currency: XAF
+cadence: weekly
+coicop_classification: classifier
+channel: supermarket
+archive_prefix: simbaonlineshopping.com/Products.aspx
+archive_path_re: '^/Products\.aspx'
+notes: |
+  Simba Online Shopping's public ASP.NET Products.aspx response renders product
+  names and positive prices in repeater cards. Stable numeric inventory IDs are
+  exposed by each card's hfItemID field, while hfUnitPrice provides the current
+  unit price. The source is assigned to the Central African Republic in the
+  existing target ledger, so its local franc prices are normalized as XAF.
+  Products.aspx does not expose item-detail links; rows retain the canonical,
+  parameterized category URL together with their stable inventory ID.

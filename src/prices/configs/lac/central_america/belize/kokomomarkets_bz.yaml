@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kokomomarkets_bz
+url: https://kokomomarkets.com/shop/
+language: en
+currency: USD
+cadence: daily
+channel: marketplace
+archive_prefix: kokomomarkets.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Kokomo Markets is a Belize consumer marketplace with grocery, beverage,
+  cosmetics, and housewares categories. Its public WooCommerce Store API
+  exposes exact USD current prices, stable IDs, category, stock, and canonical
+  URLs. The complete verified 2026-09-13 catalog contains 45 positive-price
+  products; crossed regular prices are excluded.

@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+spider: albania_tobaccomomi
+url: https://tobaccomomi.com/cigars/?currency=ALL
+language: sq
+currency: ALL
+cadence: weekly
+channel: other
+archive_prefix: tobaccomomi.com/
+notes: |
+  First-party Albania category cards expose stable numeric product IDs, named
+  product routes, stock text, and explicit Lek prices. The currency query fixes
+  the storefront to ALL; the 20-row onboarding smoke is not a catalogue cap.

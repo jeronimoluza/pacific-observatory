@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html_table
+analytical_role: market_price_bulletin
+spider: libya_nashrah
+url: https://nashrah.ly/
+language: ar
+currency: LYD
+cadence: daily
+channel: other
+archive_prefix: nashrah.ly/#row=
+archive_path_re: '^/$'
+notes: |
+  Nashrah is a daily local-price bulletin from the Libya Trade Network. Its
+  first-party tables expose dated retail prices with product, producer, unit,
+  category, and Libyan-dinar notation. Stable composite IDs retain all row
+  dimensions. The source includes food, construction materials, grain, and
+  feed; these are observed market-reference prices rather than seller SKUs.

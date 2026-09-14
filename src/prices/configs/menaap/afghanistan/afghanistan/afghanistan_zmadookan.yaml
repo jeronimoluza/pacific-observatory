@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_public_json_api
+analytical_role: retailer_offer
+coicop_classification: classifier
+spider: afghanistan_zmadookan
+url: https://zmadookan.com/shop
+language: en
+currency: AFN
+cadence: weekly
+channel: supermarket
+archive_prefix: zmadookan.com/product/
+archive_path_re: '^/product/[0-9]+$'
+notes: |
+  Afghanistan grocery storefront backed by the public first-party
+  /api/v1/products endpoint. The response provides positive AFN prices,
+  stock, stable numeric product identifiers, and pagination metadata; public
+  product detail URLs use /product/{id}. Wave 31 verification observed 93
+  active catalog rows across three pages.

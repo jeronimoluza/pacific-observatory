@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: arji_market_am
+url: https://arjimarket.am/en/
+language: en
+currency: AMD
+cadence: weekly
+channel: supermarket
+archive_prefix: "arjimarket.am/en/"
+archive_path_re: '^/en/[a-z0-9-]+/(?:\?.*)?$'
+notes: |
+  Online supermarket with public category pages. Re-verified live 2026-09-01:
+  bread, ham and milk category pages exposed product-detail URLs, names, AMD
+  prices, cart ids for in-stock products and explicit unavailable labels. Some
+  English pages still contain Armenian product names; these are retained rather
+  than translated.

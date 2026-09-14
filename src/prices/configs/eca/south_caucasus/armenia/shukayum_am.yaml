@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shukayum_am
+url: https://shukayum.am/en/
+language: en
+currency: AMD
+cadence: weekly
+channel: supermarket
+archive_prefix: "shukayum.am/en/product-category/"
+archive_path_re: '^/en/product-category/[^?]+/(?:page/[0-9]+/)?$'
+notes: |
+  WooCommerce online grocery market. The unauthenticated WooCommerce Store API
+  returned rest_disabled on 2026-09-01, so the scraper uses public category
+  HTML instead. Category pages expose product names, permalinks, data-price,
+  data-currency and normal WooCommerce next-page links. Re-verified live with
+  fruits/vegetables and dairy pages.

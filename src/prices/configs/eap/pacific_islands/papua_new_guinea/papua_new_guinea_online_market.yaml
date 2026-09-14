@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: papua_new_guinea_online_market
+url: https://pngonlinemarket.com/
+language: en
+currency: PGK
+cadence: weekly
+channel: marketplace
+archive_prefix: pngonlinemarket.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Papua New Guinea-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 8 positive records; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

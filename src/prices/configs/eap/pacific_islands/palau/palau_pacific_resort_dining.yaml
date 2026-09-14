@@ -1,0 +1,22 @@
+scaffolding: fetcher
+extraction_pattern: visually_verified_image_pdf_fixture
+analytical_role: restaurant_menu
+coicop_classification: classifier
+channel: other
+source_key: palau_pacific_resort_dining
+module: eap.pacific_islands.palau.palau_pacific_resort_dining
+function: fetch_palau_pacific_resort_dining
+url: https://www.palauppr.com/wp/wp-content/uploads/2025/04/IRD-Menu.pdf
+language: en
+currency: USD
+cadence: weekly
+fallback_date: 2026-09-12
+notes: |
+  Palau Pacific Resort's current four-page in-room dining PDF is image-only.
+  This staged fetcher emits a deterministic 2026-09-13 snapshot of 54 positive
+  USD menu rows that were individually checked against the four saved first-
+  party page renders. Each row retains its PDF page in source_url, source_page,
+  and notes. Add-on proteins and grouped choices whose price-to-option mapping
+  was not visually unambiguous are excluded. The menu states that all prices
+  include service charge and PGST. Refreshing requires a new captured PDF,
+  page renders, visual verification, and fixture hashes; runtime OCR is not used.

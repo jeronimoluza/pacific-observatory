@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: botswana_echoppies
+url: https://echoppies.com/
+language: en
+currency: BWP
+cadence: weekly
+notes: |
+  eChoppies online supermarket for Botswana. Server-rendered category pages
+  expose product cards with names, product URLs, hidden product identifiers,
+  stock flags, and visible Botswana pula prices. Additional pages are available
+  through the storefront's appendPaging POST endpoint on index.php.
+
+  Initial source came from William's 2026-09-12 handover row 8. Seeds are
+  scoped to food and beverage categories: beverages, edible groceries, CFC,
+  ethnic products, fresh, and perishable. Non-F&B categories such as household,
+  personal care, general merchandise, and pets are intentionally excluded from

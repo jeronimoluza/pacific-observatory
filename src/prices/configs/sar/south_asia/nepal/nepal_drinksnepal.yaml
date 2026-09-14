@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api_paginated
+analytical_role: retailer_sku
+spider: nepal_drinksnepal
+url: https://shop.drinksnepal.com/wp-json/wc/store/v1/products?per_page=100&page=1
+language: en
+currency: NPR
+cadence: weekly
+channel: specialty-food
+archive_prefix: shop.drinksnepal.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Drinks Nepal's main Nepal-local site directly links this first-party shop.
+  Its public WooCommerce Store API supplies stable IDs, product URLs, explicit
+  NPR prices, categories, and stock state. Pagination follows the reported
+  X-WP-TotalPages header. Zero prices are excluded; for variable products the
+  Store API's current minimum offer is retained rather than the range maximum
+  or a crossed comparison value.

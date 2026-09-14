@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_shopify_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: nepal_ebazar
+url: https://ebazar-nepal.myshopify.com/
+language: en
+currency: NPR
+cadence: weekly
+channel: marketplace
+archive_prefix: ebazar-nepal.myshopify.com/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Nepal-local public Shopify catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Wave 23/24 platform evidence reports 89 products / 327 variants; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

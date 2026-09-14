@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_json
+analytical_role: retailer_sku
+spider: maldives_vivohome
+url: https://www.vivohome.mv/products
+language: en
+currency: MVR
+cadence: weekly
+channel: dept-store
+archive_prefix: www.vivohome.mv/product/
+archive_path_re: '^/product/'
+notes: |
+  The products page reveals the current Next.js build ID; its first-party
+  /_next/data/<build>/products.json route returns 100 current products with
+  stable UUIDs, names, categories, regular and sale prices, inventory state,
+  and canonical slugs. Positive sale_price is preferred to regular price.
+  Three duplicate canonical-URL records are discarded; the first values were
+  confirmed against their live product pages. The 97 unique rows are a current
+  snapshot, not a catalogue-size cap.

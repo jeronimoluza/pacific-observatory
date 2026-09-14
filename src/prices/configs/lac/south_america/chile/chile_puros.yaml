@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_woocommerce_store_api
+analytical_role: marketplace_offer
+coicop_classification: classifier
+spider: chile_puros
+url: https://www.puros.cl/
+language: es
+currency: CLP
+cadence: weekly
+channel: other
+archive_prefix: www.puros.cl/products/
+archive_path_re: '^/(products|product)/'
+notes: |
+  Chile-local public Woo catalogue with positive current
+  product prices, stable identifiers, categories, stock state, and canonical
+  product URLs. Scaled platform-wave evidence reports 9 positive records among 28; the collector
+  paginates to exhaustion and omits zero-valued placeholder products.

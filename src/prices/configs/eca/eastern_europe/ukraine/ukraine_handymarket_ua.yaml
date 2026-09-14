@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright_rendered_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ukraine_handymarket_ua
+url: https://handymarket.com.ua/uk/instrumenty/vspomagatelnye
+language: uk
+currency: UAH
+cadence: weekly
+channel: home-improvement
+notes: |
+  Ukraine-local HandyMarket listing for tangible tools and workshop supplies.
+  A normal browser application-state capture on 2026-09-13 rendered 16 current
+  cards on page 1 with stable product codes, canonical first-party URLs, and
+  explicit positive UAH prices. The listing exposes four pages through a
+  rendered active Next link. Direct HTTP is an exhausted Cloudflare-challenge
+  route, so this staged adapter uses browser transport and does not interact
+  with or attempt to solve challenges.

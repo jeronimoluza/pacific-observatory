@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sylishop_gn
+url: https://www.sylishop.com/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Static public Sylishop Guinea marketplace catalogue. Discovery captured GNF
+  cards carrying category, description, merchant and price. Services share the
+  grid with physical goods, so cards categorised Services must be excluded
+  before emitting a row. Preserve merchant and source-native unit/packaging.

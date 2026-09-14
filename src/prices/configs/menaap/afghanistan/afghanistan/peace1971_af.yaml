@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+spider: peace1971_af
+url: https://peace1971.com/
+language: en
+currency: AFN
+cadence: weekly
+channel: other
+archive_prefix: peace1971.com/product/
+archive_path_re: '^/product/'
+notes: |
+  Peace Stationery's first-party Afghanistan homepage renders current product
+  cards with numeric IDs, names, stable product URLs, and explicit AFN prices.
+  Desktop/mobile duplicates are removed by product ID, and commented dollar
+  placeholder values are ignored. The shop route currently returns 403, so the
+  adapter intentionally uses the 15-card public homepage and does not claim
+  full catalogue coverage.

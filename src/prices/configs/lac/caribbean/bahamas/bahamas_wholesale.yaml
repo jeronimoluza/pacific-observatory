@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: dated_pdf_text
+analytical_role: wholesale_offer
+coicop_classification: classifier
+channel: wholesale
+source_key: bahamas_bahamaswholesale
+module: lac.caribbean.bahamas.bahamas_wholesale
+function: fetch_bahamas_bahamaswholesale
+url: https://www.bahamaswholesale.com/product-listing
+language: en
+cadence: weekly
+fallback_date: 2026-01-01
+notes: |
+  Bahamas Wholesale Agencies publishes a dated, public 23-page product price
+  list covering food and non-food consumer goods. The fetcher discovers the
+  current PDF from the first-party listing page and records the payable w/VAT
+  price, source item code, pack unit, and PDF date. The verified 2026-08-24
+  edition yielded 1,288 rows, including two wrapped rows recovered by
+  pdfplumber's layout-aware text extraction.

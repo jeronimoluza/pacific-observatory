@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: buyeswatini_shop
+url: https://www.buyeswatini.shop/291/Product/All
+language: en
+currency: SZL
+cadence: weekly
+channel: marketplace
+archive_prefix: www.buyeswatini.shop/
+notes: |
+  First-party Buy Eswatini listing with server-rendered named product cards,
+  explicit SZL prices, and stable numeric product-detail URLs.

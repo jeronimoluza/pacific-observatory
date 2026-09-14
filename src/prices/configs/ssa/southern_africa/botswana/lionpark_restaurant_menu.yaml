@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.1.1", "01.1.1.2", "02.1.1"]
+spider: lionpark_restaurant_menu
+url: https://www.lionpark.co.bw/restuarant-menu/
+language: en
+currency: BWP
+cadence: monthly
+channel: other
+notes: |
+  Official Lion Park Resort restaurant menu in Gaborone. Server-rendered
+  WordPress HTML lists food, dessert, extras, and selected drink items with
+  Botswana pula prices. The spider extracts only numeric P## prices and skips
+  P... placeholders. The URL preserves the site's published 'restuarant'
+  spelling.

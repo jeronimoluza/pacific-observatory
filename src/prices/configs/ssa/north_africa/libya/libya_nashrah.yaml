@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: official_retail_price_table
+coicop_classification: classifier
+spider: libya_nashrah
+url: https://nashrah.ly/
+language: ar
+currency: LYD
+cadence: daily
+channel: null
+notes: |
+  Nashrah local price newsletter. Public samples expose dated Arabic tables
+  with product name, unit/source text, retail price in Libyan dinars, and
+  daily percentage change. The spider follows the homepage and /slider2 and
+  preserves the bulletin date as observation_date when it is present.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_json_api
+analytical_role: restaurant_menu
+spider: crownxpresssl
+url: https://crownxpresssl.com/menu/
+language: en
+currency: SLE
+cadence: daily
+coicop_classification: classifier
+channel: other
+archive_prefix: crownxpresssl.com/menu/
+archive_path_re: '^/menu/'
+notes: |
+  Crown Xpress publishes its complete Freetown menu through a public first-party
+  API. The verified response contains 182 positive-price, available items in 21
+  categories, with stable numeric IDs and explicit Le prices mapped to SLE.

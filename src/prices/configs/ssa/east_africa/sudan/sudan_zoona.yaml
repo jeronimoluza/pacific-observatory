@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_json_api
+analytical_role: retailer_sku
+spider: sudan_zoona
+url: https://zoonasd.com/api/products
+language: ar
+currency: SDG
+cadence: weekly
+channel: other
+archive_prefix: zoonasd.com/api/products
+archive_path_re: '^/api/products'
+notes: |
+  Zoona Sudan's storefront loads its current mixed consumer catalogue from a
+  public first-party JSON endpoint. Records include stable numeric IDs, names,
+  current SDG prices, categories, and explicit out-of-stock state. The adapter
+  excludes old comparison prices and delivery fees. Product URLs are retained
+  when supplied; otherwise a stable API fragment identifies the record.
