@@ -223,7 +223,21 @@ def _score_hierlex(
     # with the one the scoring pass actually used.
     scored_names = set(frame["product_name_original"])
     all_names = set(products["product_name_original"].astype(str))
-    return ScoreResult(frame=frame, unembedded=frozenset(all_names - scored_names))
+    unembedded = frozenset(all_names - scored_names)
+    # Shards are whole-corpus by construction; `products` may be one region.
+    # `classify.run` turns this frame into a dict keyed on every row, so an
+    # unfiltered return makes a scoped run pay the unscoped memory -- 35.7M
+    # entries, ~13 GB, which is what left 0.7 GB for the decide pool and got the
+    # parent OOM-killed. Filtering AFTER `unembedded` is deliberate: that set is
+    # defined against the names the driver scored anywhere, not just in scope.
+    wanted = (
+        set(products["country"].astype(str))
+        if "country" in products.columns
+        else set()
+    )
+    if wanted:
+        frame = frame[frame["country"].isin(wanted)].reset_index(drop=True)
+    return ScoreResult(frame=frame, unembedded=unembedded)
 
 
 def _fit_head(version: str) -> dict:

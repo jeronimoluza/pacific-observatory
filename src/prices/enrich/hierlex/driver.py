@@ -58,6 +58,10 @@ PAIR_COLS = ["product_name_original", "country"]
 SCORER_BYTES = int(1.65 * 1024**3)
 GATHER_BYTES_PER_ROW = vectors.DIM * 4 * 2  # the fp32 result + the hstack of it
 GATHER_ROWS = 20_000
+# Rows pulled out of products_input per staging batch. Sized so the staging
+# child peaks in the low GBs instead of holding the whole pair table: the
+# 47.5M-row corpus OOM-killed it at 20.4 GB on this 26 GB box.
+STAGE_BATCH_ROWS = 2_000_000
 
 
 def pair_table(products: pd.DataFrame) -> pd.DataFrame:
@@ -172,33 +176,98 @@ def _stage_pairs(
     """Split the corpus into one small pairs file per bucket; report the counts.
 
     This is the whole reason a pool is affordable. `pair_table` over the corpus
-    is 32.7M rows and ~20 GB resident, and `del` does not hand that back to the
-    OS: the frame is tens of millions of python strings out of pymalloc arenas,
-    and a freed arena stays mapped to the process. Forking workers from a parent
-    still holding those pages is what OOM-killed the run in a952fa04 --
-    copy-on-write is no defence, because refcounting writes to the header of
-    every object a child so much as reads.
+    is tens of millions of rows and ~20 GB resident, and `del` does not hand
+    that back to the OS: the frame is tens of millions of python strings out of
+    pymalloc arenas, and a freed arena stays mapped to the process. Forking
+    workers from a parent still holding those pages is what OOM-killed the run
+    in a952fa04 -- copy-on-write is no defence, because refcounting writes to
+    the header of every object a child so much as reads.
 
     So the frame is built in a process that then exits, which returns the pages
     unconditionally, and each worker reads back only the bucket it was handed.
-    """
-    products = pd.read_parquet(products_path, columns=PAIR_COLS)
-    pairs = pair_table(products)
-    del products
 
-    pairs["bucket"] = [embed_store.bucket_of(n) for n in pairs["name"]]
-    keep = set(sorted(pairs["bucket"].unique().tolist())[:max_buckets or None])
+    That was still not enough once the corpus reached 47.5M rows: holding the
+    whole pair table at once peaked at 20.4 GB and the OOM killer took the
+    staging child on a 26 GB box with no swap. Nothing here needs the corpus
+    resident -- a name's bucket depends only on that name -- so the parquet is
+    streamed a batch at a time and each batch is appended to its buckets as its
+    own part file. Peak is then set by STAGE_BATCH_ROWS rather than by the
+    corpus, at the cost of a second pass over the spilled parts.
+
+    Dedup still has to be global, which is why parts are concatenated and
+    de-duplicated per bucket in the second pass rather than per batch: a pair
+    seen in two batches is one pair, and `bucket_of` sends every copy of a name
+    to the same bucket, so a bucket sees all of its own duplicates and none of
+    anyone elses.
+    """
+    import shutil  # noqa: PLC0415
+
+    import pyarrow.parquet as pq  # noqa: PLC0415
+
     stage_dir.mkdir(parents=True, exist_ok=True)
+    parts_dir = stage_dir / "_parts"
+    # A run that died mid-stage leaves parts that would otherwise be folded into
+    # this run's buckets on top of the ones it writes itself.
+    if parts_dir.exists():
+        shutil.rmtree(parts_dir)
+    parts_dir.mkdir(parents=True)
+
+    pf = pq.ParquetFile(products_path)
+    seen: set[int] = set()
+    batches = pf.iter_batches(columns=PAIR_COLS, batch_size=STAGE_BATCH_ROWS)
+    for k, batch in enumerate(batches):
+        df = pair_table(batch.to_pandas())
+        df["bucket"] = [embed_store.bucket_of(n) for n in df["name"]]
+        for b, g in df.groupby("bucket", sort=False):
+            b = int(b)
+            seen.add(b)
+            g[["name", "country"]].to_parquet(
+                parts_dir / f"b{b:03d}.{k:05d}.parquet", index=False
+            )
+        del df
+
+    keep = sorted(seen)[:max_buckets or None]
     counts: dict[int, int] = {}
-    for b, g in pairs.groupby("bucket", sort=True):
-        b = int(b)
-        if b not in keep:
-            continue
+    for b in keep:
+        parts = sorted(parts_dir.glob(f"b{b:03d}.*.parquet"))
+        g = pd.concat(
+            [pd.read_parquet(p) for p in parts], ignore_index=True
+        ).drop_duplicates(ignore_index=True)
         part = stage_dir / f"pairs_{b:03d}.parquet"
         tmp = part.with_suffix(".parquet.tmp")
-        g[["name", "country"]].to_parquet(tmp, index=False)
+        g.to_parquet(tmp, index=False)
         tmp.replace(part)
         counts[b] = len(g)
+        del g
+    shutil.rmtree(parts_dir)
+    return counts
+
+
+def _staged_counts(stage_dir: Path, products_path: Path) -> dict[int, int] | None:
+    """Row counts of an existing staging, or None if it cannot be trusted.
+
+    Staging is a pure function of products_input, so a staging newer than that
+    file describes it exactly. Re-deriving it costs a streamed pass over 47.5M
+    rows (~6 minutes), which a run batched over regions would otherwise pay once
+    per batch for an identical answer. Counts come from parquet metadata, so
+    this reads footers rather than rows.
+    """
+    import pyarrow.parquet as pq  # noqa: PLC0415
+
+    if not stage_dir.is_dir():
+        return None
+    try:
+        newer_than = products_path.stat().st_mtime
+    except OSError:
+        return None
+    parts = sorted(stage_dir.glob("pairs_*.parquet"))
+    if not parts:
+        return None
+    counts: dict[int, int] = {}
+    for p in parts:
+        if p.stat().st_mtime < newer_than:
+            return None
+        counts[int(p.stem.split("_")[1])] = pq.ParquetFile(p).metadata.num_rows
     return counts
 
 
@@ -206,6 +275,14 @@ def _stage(
     products_path: Path, stage_dir: Path, max_buckets: int | None
 ) -> dict[int, int]:
     """`_stage_pairs` in a child, so the parent that forks the pool is small."""
+    if max_buckets is None:
+        cached = _staged_counts(stage_dir, products_path)
+        if cached:
+            print(
+                f"[hierlex] reusing staged pairs for {len(cached)} buckets",
+                flush=True,
+            )
+            return cached
     with ProcessPoolExecutor(max_workers=1) as pool:
         return pool.submit(_stage_pairs, products_path, stage_dir, max_buckets).result()
 
