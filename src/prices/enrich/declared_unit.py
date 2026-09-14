@@ -77,12 +77,21 @@ for _tok, _canon in _EXTRA_UNIT_WORDS.items():
 # A leading approximation/tolerance marker ("~500 g", "+-450g") is stripped
 # before parsing; it does not change which unit fires.
 _LEADING_STRIP_RE = re.compile(r"^[\s+\-±~]+")
-# "<number><optional space><word>" anchored at the start. The word half is
+# "<number><optional separator><word>" anchored at the start. The word half is
 # whatever non-digit/non-space run follows -- deliberately unconstrained, so
 # a rejected token (a currency code, a bare "X" multiplier marker) still
 # falls through the whitelist lookup below rather than being pattern-matched
 # away in the regex itself.
-_NUM_UNIT_RE = re.compile(r"^([0-9]+(?:[.,][0-9]+)?)\s*([^\s0-9]+)")
+#
+# The separator admits `_` as well as whitespace: FEWS NET writes its sale
+# units as "5_kg" / "750_ml", and with a space-only separator the word half
+# came out as "_kg", missed the whitelist, and dropped the row to `item`
+# basis -- which the build then quarantines as `review_missing_qty`. No key
+# in any unit table contains an underscore, so nothing else changes meaning.
+# A number is still not allowed to follow the separator, so an underscore
+# used as a THOUSANDS mark ("1_000 kg") fails the match and falls through
+# rather than being read as 1, the same way "1,000" is refused above.
+_NUM_UNIT_RE = re.compile(r"^([0-9]+(?:[.,][0-9]+)?)[\s_]*([^\s0-9_][^\s0-9]*)")
 _TRAILING_PUNCT_RE = re.compile(r"[.,;:\"']+$")
 
 _QUINTAL_RE = re.compile(r"^quintal\b", re.IGNORECASE)
