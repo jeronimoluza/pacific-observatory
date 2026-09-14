@@ -31,6 +31,7 @@ from prices.build import unit_collapse
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import RESIDUAL_TITLE_RE, residual_leaves
 from prices.explorer.profile import UNFILTERED, gate, stamp_unfiltered
+from prices.explorer.sources import CELL_WINDOW_DAYS
 from prices.rtcal import fills as fills_mod
 
 logger = logging.getLogger(__name__)
@@ -47,14 +48,15 @@ COICOP_XLSX = REPO_ROOT / "data" / "prices" / "enrich" / "coicop_categories.xlsx
 COUNTRIES_YAML = REPO_ROOT / "src" / "configs" / "countries.yaml"
 REGIONS_YAML = REPO_ROOT / "src" / "configs" / "regions.yaml"
 
-# The rolling window the "current" snapshot is taken over. Was 60 days, which
-# silently cost 6 of the 209 countries in the corpus -- they simply had no
-# column, with nothing on the page to say a column had been withheld rather than
-# never collected. 90 days recovers 5 of the 6 (203 -> 208 countries) for 263
-# extra cells, and is still a quarter rather than a year, so "current" keeps
-# meaning current. The sixth needs 180 days; the window is on the page, so a
-# reader can see what they are looking at.
-CURRENT_LOOKBACK_DAYS = gate(90, 100_000)
+# The rolling window the "current" snapshot is taken over. Was the latest
+# CALENDAR MONTH, which parked each cell on whatever month it was last scraped
+# in and left thousands of cells resting on a single observation a few days
+# into a new month; then a fixed 60, then 90 days, each set independently of
+# the explorer dashboard's own window and free to drift from it. Both
+# dashboards now share ONE number -- `CELL_WINDOW_DAYS`, decided at 30 days --
+# so "current" means the same stretch of time on both pages and the two can no
+# longer disagree about what "current" is.
+CURRENT_LOOKBACK_DAYS = CELL_WINDOW_DAYS
 FX_HISTORY_FLOOR = pd.Timestamp("2013-01-01")
 # Already at its arithmetic floor: one observed price, or any fill.
 MIN_OBS_PER_CELL = gate(1, 1)
@@ -464,9 +466,7 @@ def _region_stats(
         imp: dict[str, float] = {}
         for col in region_cols:
             sub = (
-                grp
-                if col["key"] == "world"
-                else grp.loc[grp["_region"].eq(col["key"])]
+                grp if col["key"] == "world" else grp.loc[grp["_region"].eq(col["key"])]
             )
             s = sub["median_usd"]
             have = s.notna()
@@ -477,9 +477,7 @@ def _region_stats(
                 prod[col["key"]] = int(sub.loc[have, "n_products"].sum())
                 # The median is over COUNTRY medians, so its provenance is the
                 # mean imputed share of the countries in it -- not of the rows.
-                imp[col["key"]] = round(
-                    float(sub.loc[have, "imp_share"].mean()), 4
-                )
+                imp[col["key"]] = round(float(sub.loc[have, "imp_share"].mean()), 4)
         key = _cell_key(code, unit)
         medians[key] = med
         counts[key] = cnt
@@ -513,8 +511,18 @@ def _coverage_cutoff(
     named = current[~current["coicop_code"].isin(residual)]
     per_country = named.groupby("country")["coicop_code"].nunique()
     if per_country.empty:
-        return 0, set(), {"median": 0, "n_countries": 0, "n_named_leaves": 0,
-                          "n_dropped": 0, "mode": "floor", "counts": {}}
+        return (
+            0,
+            set(),
+            {
+                "median": 0,
+                "n_countries": 0,
+                "n_named_leaves": 0,
+                "n_dropped": 0,
+                "mode": "floor",
+                "counts": {},
+            },
+        )
     threshold = COVERAGE_MIN_NAMED_LEAVES
     low = set(per_country.index[per_country < threshold])
     stats = {
@@ -640,9 +648,7 @@ def _payload(
 
     kpi = _kpi(current, shown, len(country_display))
     kept_cur = current[~current["country"].isin(low_coverage)]
-    kpi_kept = _kpi(
-        kept_cur, shown_kept, len(country_display) - len(low_coverage)
-    )
+    kpi_kept = _kpi(kept_cur, shown_kept, len(country_display) - len(low_coverage))
 
     cutoff = (
         (pd.Timestamp.now().normalize() - pd.Timedelta(days=CURRENT_LOOKBACK_DAYS))

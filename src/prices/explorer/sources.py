@@ -50,8 +50,8 @@ MIN_CELL_OBS = gate(1, 1)
 # SINGLE observation. A rolling 30 days holds essentially the same grid (25,781
 # cells) at a median of 24 observations each, with 92 single-observation cells
 # rather than 3,539. The cost is 8 countries whose only recent prices are older
-# than 30 days; `publish.py` keeps its wider 90-day window for that reason, so
-# the two dashboards deliberately do NOT share this number.
+# than 30 days. `publish.py` imports this constant rather than keeping its own
+# window, so the two dashboards cannot drift apart on what "current" means.
 CELL_WINDOW_DAYS = gate(30, 100_000)
 # Distinct months a cell needs before it is published as a series -- NOT
 # consecutive months, they may sit anywhere in the span. Was 3, which carried no
