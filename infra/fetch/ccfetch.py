@@ -60,6 +60,11 @@ OUT_PREFIX = os.environ.get("OUT_PREFIX",
 MISS_PREFIX = os.environ.get("MISS_PREFIX",
                              "misses2" if _RECOVERY else "misses")
 MISS_IN_PREFIX = os.environ.get("MISS_IN_PREFIX", "misses")
+# A recovery pass is worth running only over the sources whose extractor
+# changed. Without this the pass re-fetches every miss in the bucket -- the
+# 5.9M of round 12 to re-test twenty parsers -- and the cost of a fix-and-retry
+# loop is set by the whole backlog rather than by the fix. Empty means all.
+SOURCES = frozenset(s for s in os.environ.get("SOURCES", "").split(",") if s)
 MANIFEST_BUCKET = os.environ.get("MANIFEST_BUCKET", OUT_BUCKET)
 MANIFEST_PREFIX = os.environ.get("MANIFEST_PREFIX", "resolve/manifests")
 SHARD = int(os.environ.get("SHARD", "0"))
@@ -285,14 +290,27 @@ def iter_misses(index):
     mine = [k for j, k in enumerate(keys) if j % NSHARDS == SHARD]
     print("%-20s misses: %d objects, %d for shard %d"
           % (index, len(keys), len(mine), SHARD), flush=True)
+    kept = 0
     for key in mine:
         body = _s3.get_object(Bucket=MANIFEST_BUCKET, Key=key)["Body"]
         with gzip.open(io.BytesIO(body.read()), "rt", encoding="utf-8") as fh:
             for line in fh:
                 try:
-                    yield json.loads(line)
+                    rec = json.loads(line)
                 except json.JSONDecodeError:
                     continue
+                # Miss records name the source `source`; `spider` is read too
+                # because miss_row only renames it on the way out and an older
+                # miss object may still carry the manifest spelling. Reading
+                # one of the two would filter every record away and look like
+                # an empty backlog rather than a mismatched key.
+                if SOURCES and (rec.get("source") or rec.get("spider")) not in SOURCES:
+                    continue
+                kept += 1
+                yield rec
+    if SOURCES:
+        print("%-20s misses: %d kept for %d sources"
+              % (index, kept, len(SOURCES)), flush=True)
 
 
 def iter_records(index):

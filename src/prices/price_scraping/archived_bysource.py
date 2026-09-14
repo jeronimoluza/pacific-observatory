@@ -51,6 +51,13 @@ from .archived_supermax import extract as _supermax_pr
 from .archived_voli import extract as _voli_me
 from .archived_sas_am import extract as _sas_am
 from .archived_spar_zw import extract as _spar_zw
+from .archived_plus_nl import extract as _plus_nl
+from .archived_systembolaget import extract as _systembolaget_se
+from .archived_dirk import extract as _dirk_nl
+from .archived_nabiji import extract as _orinabiji_ge
+from .archived_hausples import extract as _hausples_pg
+from .archived_shopify_meta import extract as _shopify_meta
+from .archived_woo import extract as _woo
 
 _YEN = re.compile("^[\\d,]+\\s*円$")
 _GBP = re.compile("£\\s*[\\d,]+(?:\\.\\d+)?")
@@ -395,6 +402,23 @@ _EXTRACTORS = {
     "sas_am": _sas_am,
     "spar_zw": _spar_zw,
     "ckgreaves_vc": _ckgreaves_vc,
+    "plus_nl": _plus_nl,
+    "systembolaget_se": _systembolaget_se,
+    "dirk_nl": _dirk_nl,
+    "orinabiji_ge": _orinabiji_ge,
+    "hausples_pg": _hausples_pg,
+    # Shopify themes that ship no JSON-LD. The four beside alkhaleej_pk do
+    # carry it on their current theme and are already read by the shared tier
+    # -- this runs last, so it costs them nothing and covers the earlier
+    # captures whose theme predates the markup.
+    "alkhaleej_pk": _shopify_meta,
+    "snapcart_pk": _shopify_meta,
+    "al_ikhsan_my": _shopify_meta,
+    "greenvalley_pk": _shopify_meta,
+    "mrdiy_my": _shopify_meta,
+    "meuble2000_nc": _woo,
+    "factory_store_nc": _woo,
+    "waltons_na": _woo,
 }
 
 
