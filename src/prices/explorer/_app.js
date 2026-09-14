@@ -230,7 +230,12 @@ function cellsFor(ni, ui) { return (byNodeUnit.get(ni + "|" + ui) || []).filter(
    type and which is the greyed footnote beside it -- and never which exists.
    Local is dropped silently when the cell has none: an em dash beside a real
    dollar price says "missing" about a number nobody asked for, and in
-   local-first mode that simply leaves the dollar figure standing on its own. */
+   local-first mode that simply leaves the dollar figure standing on its own.
+
+   `forceUsd` overrides `S.cur` for a table that has no currency mode at all --
+   Cell detail on Compare spans many countries in many currencies, so there is
+   no reader preference to read there, only the one reading that is ever
+   comparable. */
 function fmtNum(v) {
   var d = Math.abs(v) >= 100 ? 0 : Math.abs(v) >= 10 ? 1 : Math.abs(v) >= 1 ? 2 : 3;
   return v.toLocaleString(undefined, {minimumFractionDigits:d, maximumFractionDigits:d});
@@ -241,9 +246,9 @@ function fmtUsd(v) {
 function fmtLocal(v, cur) {
   return (v == null || !isFinite(v)) ? "" : fmtNum(v) + (cur ? " " + cur : "");
 }
-function fmtBoth(usd, loc, cur) {
+function fmtBoth(usd, loc, cur, forceUsd) {
   var l = fmtLocal(loc, cur);
-  if (S.cur === "loc" && l) return l + ' <span class="tiny">· ' + fmtUsd(usd) + "</span>";
+  if (!forceUsd && S.cur === "loc" && l) return l + ' <span class="tiny">· ' + fmtUsd(usd) + "</span>";
   return fmtUsd(usd) + (l ? ' <span class="tiny">· ' + l + "</span>" : "");
 }
 function fmtN(v) { return v == null ? "—" : v.toLocaleString(); }
@@ -1801,24 +1806,23 @@ function renderCompare() {
   document.getElementById("cmpLegend").innerHTML = leg.join("");
 
   /* table — each column declares its own type so the comparator never subtracts
-     text, its own cell renderer so the header and the body can never fall out
-     of step, and the drawn set is chosen per currency mode below. */
-  var inLoc = S.cur === "loc";
+     text and its own cell renderer so the header and the body can never fall
+     out of step. No currency mode here: this table spans every country in one
+     screen, each quoted in its own money, so there is nothing to toggle to —
+     the dollar figure leads always and `fmtBoth` is told so (`forceUsd`). */
   var CMP_COLS = {
     name:  {label:"Country",  cls:"",    kind:"text", get:function (r) { return r.name; },
             cell:function (r) { return '<span class="linkish" onclick="APP.openCountry(' +
               arg(r.c.country) + ')">' + esc(r.name) + "</span>"; }},
-    /* Sorted on the dollar figure and only ever on it, in BOTH modes. This
-       column is a cross-country ranking and every row is quoted in a different
-       currency, so a sort on the local magnitude would put 89,000 VND above
-       $12: it would be ordering the exchange rates, not the prices. The header
-       says which figure it is ordered on rather than leaving the reader to
-       work out for themselves why a column of local numbers is not ascending.
-       The dollar figure the order comes from is greyed beside every price, so
-       the ordering stays legible on the row itself. */
-    val:   {label:inLoc ? "Price (sorted in US$)" : "Price", cls:"num", kind:"num",
+    /* Sorted on the dollar figure and only ever on it. This column is a
+       cross-country ranking and every row is quoted in a different currency,
+       so a sort on the local magnitude would put 89,000 VND above $12: it
+       would be ordering the exchange rates, not the prices. The local figure
+       is still printed beside the dollar one, greyed, as a true fact about
+       that row's own shelf. */
+    val:   {label:"Price", cls:"num", kind:"num",
             get:function (r) { return r.usd; },
-            cell:function (r) { return fmtBoth(r.c.usd, r.c.loc, r.c.cur); }},
+            cell:function (r) { return fmtBoth(r.c.usd, r.c.loc, r.c.cur, true); }},
     ratio: {label:"vs world", cls:"num", kind:"num", get:function (r) { return r.ratio; },
             cell:function (r) { return r.ratio ? pct(r.ratio - 1, 0) : "—"; }},
     obs:   {label:"Obs",      cls:"num", kind:"num", get:function (r) { return r.c.obs; },
@@ -1832,27 +1836,10 @@ function renderCompare() {
     flags: {label:"Notes",    cls:"",    kind:"num", get:function (r) { return flagRank(r.c); },
             cell:function (r) { return flagPills(r.c); }}
   };
-  /* `vs world` comes OUT of the local-currency table. The ratio is measured
-     against a world median held in US$, and there is no world median in New
-     Taiwan dollars to hold a New Taiwan dollar price against; printing a dollar
-     ratio on a row that now reads `119 TWD` invites exactly the reading it does
-     not support — "119 TWD against the world in TWD". This is the one column on
-     the table that is a statement about every OTHER country, and it is the one
-     column the local reading has no ruler for. It is one click away, the dollar
-     figure it is computed from is still greyed beside every price, and the
-     subtitle says where it went. */
-  var order = inLoc ? ["name","val","obs","src","mad","per","flags"]
-                    : ["name","val","ratio","obs","src","mad","per","flags"];
-  /* Guard on the columns actually DRAWN, not on the whole definition object:
-     the reader can be sorted on `vs world` at the instant they switch to local,
-     and a sort key pointing at a column that is no longer in the header leaves
-     the arrow nowhere and the row order unexplained. */
+  var order = ["name","val","ratio","obs","src","mad","per","flags"];
   var sk = order.indexOf(S.sortCmp.k) >= 0 ? S.sortCmp.k : "val", sd = S.sortCmp.d;
-  setHtmlIfPresent("cmpTblSub", inLoc
-    ? "Each country in the currency it was quoted in, US$ beside it. Ordered by the " +
-      "<b>US$</b> figure — local amounts are not comparable across currencies. " +
-      "<b>vs world</b> is a US$ comparison and shows in US$ mode."
-    : "US$ per " + UNIT_SHORT[unit] + " for each country, with its own local price beside it.");
+  setHtmlIfPresent("cmpTblSub",
+    "US$ per " + UNIT_SHORT[unit] + " for each country, with its own local price beside it.");
   var tRows = sortRows(shown, CMP_COLS[sk].get, CMP_COLS[sk].kind, sd);
   document.getElementById("cmpTbl").innerHTML =
     "<thead><tr>" + order.map(function (k) { var c = CMP_COLS[k];
@@ -3738,11 +3725,10 @@ var APP = {
     seg("der-0", !S.measuredOnly); seg("der-1", S.measuredOnly);
     seg("flg-0", !S.showFlagged); seg("flg-1", S.showFlagged);
     ["any","thin","solid"].forEach(function (k) { seg("ev-" + k, S.evidence === k); });
-    /* Two tables carry a copy of the currency switch, each beside the table it
-       acts on, and both write the same `S.cur` -- so the pair is synced from
-       the state here and can never be caught disagreeing. */
-    ["cmp","ctry"].forEach(function (t) {
-      seg("cur-usd-" + t, S.cur === "usd"); seg("cur-loc-" + t, S.cur === "loc"); });
+    /* Only Country profile carries a currency switch -- one country, one own
+       shelf. Compare spans every country in its own currency, so there is no
+       "local" reading to switch to there and no control to sync. */
+    seg("cur-usd-ctry", S.cur === "usd"); seg("cur-loc-ctry", S.cur === "loc");
 
     /* A control that cannot change what is on screen reads as broken. Each group
        declares the views it acts on, and the strip disappears when none apply. */

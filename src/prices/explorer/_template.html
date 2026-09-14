@@ -438,19 +438,18 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 </nav>
 
 <!-- Only the controls that change the view in front of you, and only the ones
-     that act on every one of them. There is still no US$/local switch HERE, and
-     the reason has not changed: the charts on these tabs rank countries against
+     that act on every one of them. There is no US$/local switch HERE, and the
+     reason has not changed: the charts on these tabs rank countries against
      each other, and a cross-country ranking has no common ruler outside the
      dollar -- two hundred currencies cannot be put in an order.
 
-     The switch that now exists lives on the two detail TABLES instead -- Cell
-     detail on this tab, All priced items on Country profile -- next to the
-     table it acts on rather than up here where it would look like it governed
-     the charts too. A table ROW is one country's own shelf, and the price on it
-     is a true fact in that country's own money, which is the case the paragraph
-     above never covered. Both figures are still printed either way; the switch
-     decides which of the two leads, and neither table ever SORTS on the local
-     one. -->
+     There is exactly one currency switch on the whole dashboard, on Country
+     profile's "All priced items" table -- one country, one own shelf, so its
+     local price is a true fact worth leading with if the reader wants it. Cell
+     detail on Compare has no switch: it is a cross-country table, every row in
+     a different currency, so the dollar figure always leads and always sorts,
+     with the local one printed beside it, greyed, never as an alternative
+     mode. -->
 <div class="ctlstrip" id="ctlstrip" hidden>
   <div class="grp" data-views="world compare country"><span class="ctllab" id="lab-ev">Evidence</span>
     <div class="seg" role="group" aria-labelledby="lab-ev">
@@ -708,17 +707,11 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
             <h2 style="margin-bottom:0">Cell detail</h2>
             <div class="sub" id="cmpTblSub" style="margin-bottom:0"></div>
           </div>
-          <!-- The currency switch belongs beside the table and nowhere else:
-               it changes this table and no chart on the page. It is written as
-               a `.seg` like every other two-state control here, and both
-               copies of it drive the same `S.cur`. -->
+          <!-- No currency switch here: this table has one row per country and
+               every row is quoted in its own money, so there is no single
+               "local" to switch to. The dollar figure leads every row and the
+               local one prints beside it regardless -- see APP.js fmtBoth. -->
           <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
-            <div class="seg" role="group" aria-label="Currency">
-              <button id="cur-usd-cmp" class="on" aria-pressed="true"
-                onclick="APP.set('cur','usd')">US$</button>
-              <button id="cur-loc-cmp" aria-pressed="false"
-                onclick="APP.set('cur','loc')">Local currency</button>
-            </div>
             <input type="search" id="cmpSearch" aria-label="Filter countries"
               placeholder="Filter countries&hellip;" oninput="APP.searchLater()">
           </div>
