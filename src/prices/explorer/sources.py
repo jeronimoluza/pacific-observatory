@@ -5,6 +5,7 @@ Split from `aggregate` to keep each module inside the repo's 500-line cap.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import numpy as np  # noqa: F401
@@ -52,7 +53,13 @@ MIN_CELL_OBS = gate(1, 1)
 # rather than 3,539. The cost is 8 countries whose only recent prices are older
 # than 30 days. `publish.py` imports this constant rather than keeping its own
 # window, so the two dashboards cannot drift apart on what "current" means.
-CELL_WINDOW_DAYS = gate(30, 100_000)
+#
+# Settable at build time via $PO_PRICES_WINDOW_DAYS, same idiom as
+# PO_PRICES_UNFILTERED in `profile.py`: read once, at import, and taken by
+# value from here by every consumer. Defaults to 30 so an invocation that
+# never sets it behaves exactly as it always has.
+WINDOW_DAYS = int(os.environ.get("PO_PRICES_WINDOW_DAYS", "30"))
+CELL_WINDOW_DAYS = gate(WINDOW_DAYS, 100_000)
 # Distinct months a cell needs before it is published as a series -- NOT
 # consecutive months, they may sit anywhere in the span. Was 3, which carried no
 # recorded justification and sat one above the median cell's 2 months, so it cut

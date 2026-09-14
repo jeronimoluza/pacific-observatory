@@ -4227,6 +4227,16 @@ APP.togglePppUngated = function () { PPP_UNGATED = !PPP_UNGATED; renderPppBench(
   document.getElementById("aboutFoot").innerHTML =
     "Generated " + m.generated + ". A cell needs " + m.min_cell_obs +
     "+ observations before it is shown at all. " +
+    /* At 30 days this was already a loose fit between the "period" label (the
+       newest month a cell was seen in, see `_cells` in aggregate.py) and the
+       window the median is actually pooled over. At 90 it can span three
+       months behind a one-month label, so the reader is told outright that
+       the figure is a pooled window, not a single month's prices. */
+    "Every cell's price is a median over the last " + m.cell_window_days +
+    " days of trusted prices, ending at the corpus's own newest reading -- " +
+    "not one calendar month. The month shown beside a cell is only the most " +
+    "recent reading behind it; at a wide window the figure itself can pool " +
+    "weeks of earlier prices under that label. " +
     /* The old promise was "no missing month is ever filled in", stated flatly. It is
        still true when no fills are loaded, and still shown then. What it must never do
        is survive into a payload that HAS fills -- the reader would be told nothing is
@@ -4261,7 +4271,9 @@ APP.togglePppUngated = function () { PPP_UNGATED = !PPP_UNGATED; renderPppBench(
     " trusted unit values · cells need " + m.min_cell_obs + "+ observations" +
     /* The gate is now "enough observations OR at least one fill", so the old
        flat claim understated what is on screen the moment fills are loaded. */
-    (HAS_IMPUTED ? " or a marked estimate" : "");
+    (HAS_IMPUTED ? " or a marked estimate" : "") +
+    " · current cells pool the last " + m.cell_window_days +
+    " days of prices, not one calendar month";
   /* The weighting comes up before the first render, so nothing is ever drawn
      under the published vector and then redrawn under the reader's. */
   if (BW_ON) {

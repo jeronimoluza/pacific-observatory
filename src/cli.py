@@ -558,12 +558,49 @@ def _set_unfiltered(on: bool) -> None:
         os.environ["PO_PRICES_UNFILTERED"] = "1"
 
 
+_window_opt = click.option(
+    "--window-days",
+    "window_days",
+    type=int,
+    default=None,
+    metavar="N",
+    help=(
+        "Rolling window in days the 'current' cell grid is pooled over. "
+        "Defaults to 30 (or $PO_PRICES_WINDOW_DAYS). A non-default window "
+        "renames the output *_<N>d.html so two windows can never overwrite "
+        "each other."
+    ),
+)
+
+
+def _set_window_days(days: int | None) -> None:
+    """Arm the window BEFORE anything under `prices.` is imported.
+
+    Same reasoning as `_set_unfiltered`: `prices.explorer.sources.WINDOW_DAYS`
+    is read once, at import, and `prices.publish` takes its own lookback from
+    that same constant, so this has to run before either is imported.
+    """
+    import os
+
+    if days is not None:
+        os.environ["PO_PRICES_WINDOW_DAYS"] = str(days)
+
+
+def _window_path(path, window_days: int):
+    """`x.html` -> `x_90d.html` when the window isn't the default 30 days, so
+    a 90-day build can never silently overwrite the default 30-day one."""
+    if window_days == 30:
+        return path
+    return path.with_name(path.stem + f"_{window_days}d" + path.suffix)
+
+
 @prices.command("publish")
 @_region_opt
 @_subregion_opt
 @click.option("--out", "out_path", default=None, help="Override the output HTML path.")
+@_window_opt
 @_unfiltered_opt
-def prices_publish(region, subregion, out_path, unfiltered):
+def prices_publish(region, subregion, out_path, window_days, unfiltered):
     """Generate CPI dashboards.
 
     PoC scope: renders outputs/prices/global_prices_dashboard.html from the
@@ -574,6 +611,12 @@ def prices_publish(region, subregion, out_path, unfiltered):
     unrestricted dashboard. --subregion is accepted but ignored until the
     basket widens beyond the EAP PoC.
 
+    With --window-days, the "current" snapshot pools that many trailing days
+    of prices instead of the default 30. `prices.explorer` and this dashboard
+    share the one number, so both stay on the same definition of "current";
+    a non-default window renames the output so a 30-day and a 90-day build
+    can never collide.
+
     With --unfiltered every minimum-evidence gate goes to its arithmetic floor
     -- the lookback window opens to the whole corpus, the coverage floor to
     zero, and the qa_status=="trusted" restriction is lifted, so rows the QA
@@ -583,27 +626,34 @@ def prices_publish(region, subregion, out_path, unfiltered):
     from pathlib import Path
 
     _set_unfiltered(unfiltered)
+    _set_window_days(window_days)
     from prices.explorer.profile import unfiltered_path
+    from prices.explorer.sources import WINDOW_DAYS
     from prices.publish import DASHBOARD_HTML
     from prices.publish import publish as _publish
 
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
     )
-    out = unfiltered_path(Path(out_path) if out_path else DASHBOARD_HTML)
+    out = unfiltered_path(
+        _window_path(Path(out_path) if out_path else DASHBOARD_HTML, WINDOW_DAYS)
+    )
     try:
         written = _publish(region=region, out_path=out)
     except ValueError as exc:
         raise click.ClickException(str(exc))
     if unfiltered:
         click.echo(f"UNFILTERED diagnostic build written to {written}")
+    elif WINDOW_DAYS != 30:
+        click.echo(f"{WINDOW_DAYS}-day window build written to {written}")
 
 
 @prices.command("explorer")
 @_region_opt
 @click.option("--out", "out_path", default=None, help="Override the output HTML path.")
+@_window_opt
 @_unfiltered_opt
-def prices_explorer(region, out_path, unfiltered):
+def prices_explorer(region, out_path, window_days, unfiltered):
     """Render the interactive unit-value explorer dashboard.
 
     Writes outputs/prices/global_prices_explorer.html from the build parquet:
@@ -613,6 +663,11 @@ def prices_explorer(region, out_path, unfiltered):
     With --region only that region's countries are shown, but every "vs world"
     yardstick stays global -- pair it with --out so the regional build does not
     overwrite the unrestricted one.
+
+    With --window-days, the "current" cell grid pools that many trailing days
+    of prices instead of the default 30 (shared with `prices publish` via
+    $PO_PRICES_WINDOW_DAYS, so the two dashboards never disagree on what
+    "current" means). A non-default window renames the output *_<N>d.html.
 
     With --unfiltered every minimum-evidence gate goes to its arithmetic floor,
     including the chain, geography and fixed-effect gates that decide a VALUE
@@ -624,11 +679,15 @@ def prices_explorer(region, out_path, unfiltered):
     from pathlib import Path
 
     _set_unfiltered(unfiltered)
+    _set_window_days(window_days)
     from prices.explorer import run as _explorer_run
     from prices.explorer.profile import stamp_unfiltered, unfiltered_path
     from prices.explorer.render import OUT_HTML
+    from prices.explorer.sources import WINDOW_DAYS
 
-    out = unfiltered_path(Path(out_path) if out_path else OUT_HTML)
+    out = unfiltered_path(
+        _window_path(Path(out_path) if out_path else OUT_HTML, WINDOW_DAYS)
+    )
     written = _explorer_run(out, region)
     # The explorer's renderer is not this profile's to edit, so the banner goes
     # on afterwards, to the file. A no-op on a normal build; on an unfiltered
@@ -636,6 +695,8 @@ def prices_explorer(region, out_path, unfiltered):
     stamp_unfiltered(written or out)
     if unfiltered:
         click.echo(f"UNFILTERED diagnostic build written to {written or out}")
+    elif WINDOW_DAYS != 30:
+        click.echo(f"{WINDOW_DAYS}-day window build written to {written or out}")
 
 
 @prices.command("basket-weights")
@@ -679,8 +740,10 @@ def prices_basket_weights():
     click.echo(f"  rounds: {meta.get('rounds', {})}")
     click.echo(f"  {len(weights)} categories carry a default weight")
     for code, w in sorted(weights.items(), key=lambda kv: -kv[1]):
-        click.echo(f"    {code:<9}{(tax.get(code, {}).get('t') or '')[:44]:<46}"
-                   f"{w * 100:6.2f}%")
+        click.echo(
+            f"    {code:<9}{(tax.get(code, {}).get('t') or '')[:44]:<46}"
+            f"{w * 100:6.2f}%"
+        )
 
 
 @prices.command("ppp-benchmark")
@@ -713,7 +776,11 @@ def prices_ppp_benchmark():
     import logging
 
     from prices.explorer.ppp import load_benchmark, refresh
-    from prices.explorer.sources import BASKET_WEIGHT_LEVEL, load_country_meta, load_taxonomy
+    from prices.explorer.sources import (
+        BASKET_WEIGHT_LEVEL,
+        load_country_meta,
+        load_taxonomy,
+    )
     from prices.explorer.weights import default_weights
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -724,10 +791,13 @@ def prices_ppp_benchmark():
     got, prov = load_benchmark({s: m["iso3"] for s, m in meta.items()}, weights)
     click.echo(f"wrote {path}")
     click.echo(f"  {len(meta)} explorer countries")
-    click.echo(f"  {prov['n_icp']} with an ICP food-and-tobacco price level "
-               f"(World = 100)")
-    click.echo(f"  {prov['n_wdi']} with a WDI whole-economy price level "
-               f"(rescaled by {prov['us_on_world']})")
+    click.echo(
+        f"  {prov['n_icp']} with an ICP food-and-tobacco price level " f"(World = 100)"
+    )
+    click.echo(
+        f"  {prov['n_wdi']} with a WDI whole-economy price level "
+        f"(rescaled by {prov['us_on_world']})"
+    )
     rounds = {}
     for v in got.values():
         if v.get("icpYear"):
