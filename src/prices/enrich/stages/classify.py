@@ -37,7 +37,7 @@ import pyarrow as pa
 from prices import partition
 from prices.enrich import audit, coicop_codes, coicop_taxonomy, config, uv_gate
 from prices.enrich.classifier import backends
-from prices.enrich.declared_unit import parse_declared_unit
+from prices.enrich.declared_unit import parse_declared_count, parse_declared_unit
 from prices.enrich.extract import StructuralFields, extract
 from prices.enrich.fluid_oz import remap_fluid_oz
 from prices.enrich.stages import decide_pool, decisions_store
@@ -97,12 +97,22 @@ def _structural_fields(
     unit_declared = False
     if qs.pricing_basis == "item" and unit and str(unit).strip():
         basis, amount, su = parse_declared_unit(unit)
-        if basis is not None:
+        declared_count = None if basis is not None else parse_declared_count(unit)
+        # A countable declared unit ("each", "30 pcs", "Dozen") states the
+        # denominator in PIECES, and `merge.compute_unit_value` divides a
+        # count-basis row by `count * multiplier` and never by `amount_value`
+        # -- so it fills `count` and leaves `amount_value` empty, which is the
+        # same shape `extract_decide._finish` emits for a pack count read off
+        # the name. Without it the row keeps `item` basis and the build's
+        # `qa_quantity` gate quarantines it as `review_missing_qty` on every
+        # leaf outside `SOLD_BY_ITEM_LEAVES`, however explicitly the source
+        # said the price was per piece.
+        if basis is not None or declared_count is not None:
             qs = StructuralFields(
-                pricing_basis=basis,
+                pricing_basis=basis if basis is not None else "count",
                 amount_value=amount,
-                standard_unit=su,
-                count=qs.count,
+                standard_unit=su if basis is not None else "unit",
+                count=qs.count if basis is not None else declared_count,
                 multiplier=qs.multiplier,
                 is_promotion=qs.is_promotion,
                 is_bundle=qs.is_bundle,
