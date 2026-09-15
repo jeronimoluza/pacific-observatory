@@ -9,20 +9,19 @@ from prices.enrich.stages import classify as classify_stage
 from prices.enrich.stages import decisions_store
 from prices.enrich.stages import concatenate as concatenate_stage
 from prices.enrich.stages import embed as embed_stage
-from prices.enrich.stages import merge as merge_stage
 from prices.enrich.stages import prepare as prepare_stage
 
 STAGES = {
     "concatenate": concatenate_stage.run,
     "prepare": prepare_stage.run,
     "classify": classify_stage.run,
-    "merge": merge_stage.run,
 }
 
-STAGE_ORDER = ["concatenate", "prepare", "classify", "merge"]
+STAGE_ORDER = ["concatenate", "prepare", "classify"]
 
-# Stages that understand a partition selector. merge still reads the whole
-# corpus, so a scoped run says so rather than quietly ignoring the scope.
+# Stages that understand a partition selector. Every remaining stage does, so
+# this tuple and STAGE_ORDER are the same set today; it stays as the explicit
+# contract a new stage has to opt into rather than inherit.
 #
 # classify joined this list when its two output tables became one parquet part
 # per country: before that, a scoped classify had nowhere to put its answer
@@ -159,7 +158,7 @@ def process_command(
     subregion,
     country,
 ):
-    """AI enrichment pipeline (concatenate → prepare → classify → merge).
+    """AI enrichment pipeline (concatenate → prepare → classify).
 
     `classify` runs the two independent enrich jobs per product: deterministic
     structural regex extraction (pricing_basis / amount / count / promo flags)

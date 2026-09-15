@@ -679,11 +679,12 @@ def run(
     It defaults off because every stage in the pipeline reads the shards:
     `prepare` is `prepare_shards.run` (cli.py:180), and
     `aggregate._observation_chunks` takes the CSV only when the shard tree is
-    absent, which it is not. The two module-level readers left on
-    `config.RAW_PRICES_CSV` are `prepare.run`, shadowed by `prepare_shards.run`
-    at its only call site, and `merge.run`, which does an unchunked
-    `pd.read_csv` of all 39.4 GB and cannot complete in this box's 26 GB. So the
-    default run pays ~10 minutes and 39.4 GB of disk for a file no live caller
+    absent, which it is not. The one module-level reader left on
+    `config.RAW_PRICES_CSV` is `prepare.run`, shadowed by `prepare_shards.run`
+    at its only call site. (`merge.run` was the other: an unchunked
+    `pd.read_csv` of all 39.4 GB that could not complete in this box's 26 GB,
+    writing a CSV with no readers. The stage was removed.) So the default run
+    pays ~10 minutes and 39.4 GB of disk for a file no live caller
     consumes."""
     if not DATA_PRICES_ROOT.is_dir():
         raise FileNotFoundError(f"{DATA_PRICES_ROOT} not found")

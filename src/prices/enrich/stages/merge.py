@@ -1,9 +1,7 @@
-from pathlib import Path
 from typing import Optional
 
 import pandas as pd
 
-from prices.enrich import config
 from prices.enrich.stages.prepare import _row_input_dict, parse_price
 from prices.enrich.versioning import input_hash
 
@@ -121,17 +119,3 @@ def merge_enrichments(
     if "input_hash" in merged.columns:
         merged = merged.drop(columns=["input_hash"])
     return merged
-
-
-def run(csv_path: Optional[Path] = None, out_path: Optional[Path] = None) -> None:
-    csv_path = csv_path or config.RAW_PRICES_CSV
-    out_path = out_path or config.ENRICHED_PRICES_CSV
-    raw = pd.read_csv(csv_path, low_memory=False)
-    if config.CLASSIFIED_PARQUET.exists():
-        enriched = pd.read_parquet(config.CLASSIFIED_PARQUET)
-    else:
-        enriched = pd.DataFrame(columns=["input_hash", *ENRICHMENT_COLS])
-    out = merge_enrichments(raw, enriched, key_recompute=True)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out.to_csv(out_path, index=False)
-    print(f"Wrote {len(out)} rows to {out_path}")
