@@ -54,8 +54,15 @@ def build_rows(discovered: list[dict], existing: pd.DataFrame) -> pd.DataFrame:
     ``#`` is a per-country counter in the workbook -- sparse and restarting at 1
     for each country -- so new rows continue from each country's own maximum
     rather than from the sheet length.
+
+    Not every workbook keeps that promise: eca/fuel mixes plain integers with
+    two global string ID schemes ("P002", "R010") in the same column, which
+    makes the column object dtype and ``max()`` raise. Those spellings carry no
+    per-country ordinal, so they are ignored for the counter and new rows fall
+    back to integers, which cannot collide with them.
     """
-    next_num = existing.groupby("Country")["#"].max().to_dict()
+    numeric = pd.to_numeric(existing["#"], errors="coerce")
+    next_num = numeric.groupby(existing["Country"]).max().to_dict()
     out = []
     for rec in discovered:
         # provenance "both" means the discovery matched a measure the workbook
@@ -65,7 +72,11 @@ def build_rows(discovered: list[dict], existing: pd.DataFrame) -> pd.DataFrame:
         if rec.get("provenance") == "both":
             continue
         country = rec.get("Country")
-        n = int(next_num.get(country, 0) or 0) + 1
+        # NaN when the country's every existing row uses a string ID scheme, so
+        # it has no integer to continue from and starts at 1.
+        prev = next_num.get(country)
+        prev = 0 if prev is None or pd.isna(prev) else int(prev)
+        n = prev + 1
         next_num[country] = n
         out.append(
             {
