@@ -296,8 +296,12 @@ def text_build(
 @click.option(
     "--tracker",
     default="fuel",
-    type=click.Choice(["fuel", "food"]),
-    help="Policy-tracker variant for the policy tab. Default: fuel.",
+    type=click.Choice(["fuel", "food", "development"]),
+    help=(
+        "Policy-tracker variant for the policy tab. Default: fuel. "
+        "'development' shows the 23-bucket development taxonomy on its own and "
+        "is EAP-only, the one region its keywords are translated for."
+    ),
 )
 @click.option(
     "--skip-database-status",

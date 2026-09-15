@@ -8,6 +8,7 @@ The policy iframe is sourced from the per-region HTML files in
 ``src/text/plotting/addons/{tracker}/{region}_policy_addon.html``.
 """
 
+import html
 import json
 from pathlib import Path
 
@@ -16,8 +17,10 @@ import pandas as pd
 from text.plotting.trackers import (
     ADDON_SUFFIX,
     addon_filename,
+    check_region,
     dashboard_filename,
     get_tracker,
+    group_terms,
     tracker_chip_groups,
     tracker_dir,
     tracker_groups,
@@ -1410,16 +1413,36 @@ def _country_options(data):
     )
 
 
-def _chip_one(item, defaults):
+_CHIP_TOOLTIP_TERMS = 40
+
+
+def _chip_title(item, terms):
+    """``title`` text listing the keywords behind one pill, or ``''``.
+
+    Capped because a bucket can carry eighty-seven terms and a tooltip that
+    fills the screen is read as noise. The count is stated first, so a truncated
+    list still says how much was truncated.
+    """
+    words = (terms or {}).get(item)
+    if not words:
+        return ""
+    shown = ", ".join(words[:_CHIP_TOOLTIP_TERMS])
+    if len(words) > _CHIP_TOOLTIP_TERMS:
+        shown += ", ..."
+    return f' title="{html.escape(f"{len(words)} keywords: {shown}", quote=True)}"'
+
+
+def _chip_one(item, defaults, terms=None):
     return (
-        f'<label class="chip"><input type="checkbox" value="{item}"'
+        f'<label class="chip"{_chip_title(item, terms)}>'
+        f'<input type="checkbox" value="{item}"'
         f"{' checked' if item in defaults else ''}>"
         f'<span class="chip-label">{fmt_country(item)}</span></label>'
     )
 
 
-def _chip_group_html(label, members, defaults, expanded):
-    body = "\n".join(_chip_one(i, defaults) for i in members)
+def _chip_group_html(label, members, defaults, expanded, terms=None):
+    body = "\n".join(_chip_one(i, defaults, terms) for i in members)
     return (
         f'<div class="chip-group{" is-open" if expanded else ""}">'
         f'<button type="button" class="chip-group-header">'
@@ -1430,7 +1453,7 @@ def _chip_group_html(label, members, defaults, expanded):
     )
 
 
-def _chip_html(items, defaults, groups=None):
+def _chip_html(items, defaults, groups=None, terms=None):
     """Chip markup, grouped when the tracker declares groups and flat otherwise.
 
     A group lists only the items this region actually has, and anything a
@@ -1438,7 +1461,7 @@ def _chip_html(items, defaults, groups=None):
     gain a topic without it silently vanishing from the pill list.
     """
     if not groups:
-        return "\n".join(_chip_one(i, defaults) for i in items)
+        return "\n".join(_chip_one(i, defaults, terms) for i in items)
 
     out = []
     grouped = set()
@@ -1448,11 +1471,13 @@ def _chip_html(items, defaults, groups=None):
             continue
         grouped.update(members)
         out.append(
-            _chip_group_html(g["label"], members, defaults, g.get("expanded", False))
+            _chip_group_html(
+                g["label"], members, defaults, g.get("expanded", False), terms
+            )
         )
     rest = [i for i in items if i not in grouped]
     if rest:
-        out.append(_chip_group_html("Other", rest, defaults, False))
+        out.append(_chip_group_html("Other", rest, defaults, False, terms))
     return "\n".join(out)
 
 
@@ -1567,6 +1592,7 @@ def build_epu_iframe_html(
     factors_expr=None,
     method_foot_extra="",
     chip_groups=None,
+    chip_terms=None,
 ):
     options = (
         dropdown_options_html
@@ -1583,7 +1609,7 @@ def build_epu_iframe_html(
         .replace("__METHOD_FOOT_EXTRA__", method_foot_extra)
         .replace("__ITEM_LABEL__", item_label)
         .replace("__SEARCH_PLACEHOLDER__", search_placeholder)
-        .replace("__CHIP_HTML__", _chip_html(items, defaults, chip_groups))
+        .replace("__CHIP_HTML__", _chip_html(items, defaults, chip_groups, chip_terms))
         .replace("__COUNTRY_OPTIONS__", options)
         .replace("__COMMON_JS__", EPU_COMMON_JS)
         .replace("__DATA_JSON__", data_expr or json.dumps(data))
@@ -1810,6 +1836,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
     Reads dashboard_data.json, filters units to the region, and writes
     ``outputs/text/dashboards/{tracker}/{region}_policy_dashboard_{suffix}.html``.
     """
+    check_region(region, tracker)
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
 
@@ -1844,13 +1871,24 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
     # alarming: a food index of 150 means nothing until you can see that
     # governance sits at 300. The tracker slice becomes the default focus
     # instead of a hard filter, so the full universe is one click away.
+    #
+    # A lens whose subject *is* one taxonomy opts out with
+    # ``topics_scope: "tracker"`` and filters topics the way actors are already
+    # filtered. There the other groups are not context, they are the same
+    # concepts measured a second way, and showing both is what makes the chart
+    # unreadable rather than what makes it readable.
+    topics_sliced = get_tracker(tracker).get("topics_scope") == "tracker"
     topic_factors: dict = {}
     topic_groups: set = set()
     for key, rows in list(topic_data.items()):
         trimmed, factors, groups = _topic_payload(rows)
-        topic_data[key] = trimmed
+        topic_data[key] = (
+            _keep_groups(trimmed, shown_topics) if topics_sliced else trimmed
+        )
         topic_factors[key] = factors
         topic_groups.update(groups)
+    if topics_sliced:
+        topic_groups &= shown_topics
     # Actors read the same uncertainty attribution as topics rather than the
     # three-way EPU intersection, so the two tabs answer the same question.
     actor_factors: dict = {}
@@ -1903,6 +1941,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
             " numbers, ordered against each other month by month."
         ),
         chip_groups=tracker_chip_groups("topics", tracker),
+        chip_terms=group_terms("topics"),
     )
     actors_epu_html = build_epu_iframe_html(
         actors_data,
@@ -1920,6 +1959,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
             " policy and uncertainty); it now uses uncertainty alone,"
             " matching the Uncertainty Topics tabs."
         ),
+        chip_terms=group_terms("actors"),
     )
 
     region_label = _resolve_region_label(region_subtree, region)
