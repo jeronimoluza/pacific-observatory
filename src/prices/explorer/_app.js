@@ -1354,6 +1354,18 @@ function readout() {}
 function renderWorldTrends() {
   var f = S.gfreq, kind = S.gmode;
   if (!GEO_INDEX[f]) { S.gfreq = f = "M"; }
+  /* A country x ITEM line is injected into GEO_INDEX.M and nowhere else,
+     because it is read off `series`, which is a MONTHLY panel -- see the CLEAF
+     block above. There is no quarterly copy of it and re-aggregating months
+     into quarters here would be a guess the rest of the payload does not make.
+     Left alone, Quarterly stayed selectable and simply drew nothing: on the
+     country scope 251 of the 262 available categories disappear on the switch,
+     250 of them leaves, with no reason given anywhere on screen. So move OFF
+     the frequency before anything reads it, and disable the button below --
+     the same treatment the Index measure already gets three lines down, and
+     for the same reason. */
+  var monthlyOnly = kind === "country" && isLeaf(S.node);
+  if (monthlyOnly && f === "Q") { S.gfreq = f = "M"; }
   /* A country x item line comes from `series`/`changes` (see leafGser), and
      `chain` carries nothing at that depth -- so base-100 has no reading here.
      The measure is moved off Index BEFORE anything reads it, so the button
@@ -1377,6 +1389,12 @@ function renderWorldTrends() {
   document.getElementById("ws-3").textContent = "3 " + word + "s";
   ["Q","M"].forEach(function (x) {
     document.getElementById("wf-" + x).className = f === x ? "on" : ""; });
+  var qBtn = document.getElementById("wf-Q");
+  qBtn.disabled = monthlyOnly;
+  qBtn.title = monthlyOnly
+    ? "One country's line for one item is read off the monthly panel, which " +
+      "has no quarterly copy. Pick a grouping to compare quarters."
+    : "";
   [0,2,3].forEach(function (x) {
     document.getElementById("ws-" + x).className = S.gsmooth === x ? "on" : ""; });
   ["level","index","chg1","chg12","chg24","chg36"].forEach(function (m) {
@@ -2455,16 +2473,18 @@ var GAP_SEG = { borderDash:function (ctx) {
    Both views read the same quantity: ln(country price / world median) for the
    same COICOP leaf in the same unit. The waterfall takes one country's gap
    apart by category group; the heatmap lays every country's groups side by side. */
-var HM_MIN_LEAVES = 3, HM_MID = "#e5e2d9", HM_FULL = Math.log(2);
+var HM_MID = "#e5e2d9", HM_FULL = Math.log(2);
 
 /* The share of the countries on the grid that has to price a category before
-   its row is drawn at all. This is a COVERAGE floor and it is a different
-   quantity from HM_MIN_LEAVES above, which is an AGGREGATION floor: that one
-   asks how many matched items stand behind ONE country's cell before the cell
-   is worth colouring, this one asks how many COUNTRIES hold a cell before the
-   row is worth a line of the reader's attention. Conflating them would let a
-   row built from one country's perfectly-evidenced twelve leaves through as
-   readily as a row forty countries price.
+   its row is drawn at all. This is a COVERAGE floor: it asks how many
+   COUNTRIES hold a cell before the row is worth a line of the reader's
+   attention. It is the only floor left on this grid -- an AGGREGATION floor
+   that asked how many matched items stood behind ONE country's cell was
+   removed, because it silently emptied whole columns for thinly-priced
+   countries: a country with two dairy leaves lost its dairy CLASS cell while
+   keeping both leaf cells, which reads as missing data rather than as a rule.
+   A cell now draws on whatever the country has, and `n` on the tooltip says
+   how many leaves that was.
 
    Without the floor the grid draws rows that are three cells and a hundred
    hatches, and that is the failure mode: a heatmap row reads as a COMPARISON,
@@ -2831,14 +2851,14 @@ function renderHeatmap() {
     Object.keys(c.per).forEach(function (cls) {
       var u = rowUnit[cls];
       var same = c.per[cls].filter(function (x) { return x.unit === u; });
-      /* The three-item floor is about AGGREGATION: a class averaged out of one
-         leaf is that leaf wearing the class's name, and the hatching says so.
-         A LEAF row aggregates nothing — the cell is the item, matched against
-         the world median for the same item in the same unit — so its floor is
-         one. Carrying the three across would hatch every cell in the table at
-         the default depth, which is how a row set nobody could read gets
-         mistaken for a row set with no data. */
-      if (same.length < (isLeaf(cls) ? 1 : HM_MIN_LEAVES)) return;
+      /* One matched item is enough, at every depth. A class averaged out of a
+         single leaf IS that leaf wearing the class's name, which is why this
+         once demanded three -- but the demand cost more than it bought: a
+         country that prices two things in a class lost the class cell while
+         keeping both leaf cells, so the grid showed a hole where the ladder
+         had data. The count is carried on the cell as `n` and reported in the
+         tooltip, so a one-leaf aggregate is legible as one rather than absent. */
+      if (!same.length) return;
       var usable = same.filter(function (x) { return x.r != null; });
       /* A LEAF row is one item, so its matched-item count is always 1 and
          saying so tells the reader nothing. What varies there is how much was
@@ -2970,9 +2990,8 @@ function renderHeatmap() {
     return tr + shown.map(function (r) {
       var cell = r.cells[cls];
       if (!cell) return '<td class="na" title="' + esc(r.name) + " · " + esc(title(cls)) +
-        ": " + (isLeaf(cls)
-          ? "not priced here in " + (UNIT_SHORT[rowUnit[cls]] || "this unit")
-          : "fewer than " + HM_MIN_LEAVES + " matched items") + '"></td>';
+        ": not priced here in " + (UNIT_SHORT[rowUnit[cls]] || "this unit") +
+        '"></td>';
       if (cell.r == null) return '<td class="na" title="' + esc(r.name) +
         ': no world median for these items"></td>';
       var v = (Math.exp(cell.r) - 1) * 100;
@@ -3006,8 +3025,7 @@ function renderHeatmap() {
     '<span class="lab">more expensive</span>' +
     '<span class="lab" style="margin-left:14px">' +
     'full colour at &plusmn;100% &middot; ' +
-    'hatched: not priced here, or fewer than ' + HM_MIN_LEAVES +
-    ' matched items where the row is a grouping &middot; ' +
+    'hatched: not priced here &middot; ' +
     '<span class="impm">◇</span> rests partly on imputed months &middot; ' + rows.length +
     " categories &times; " + shown.length + " countries" +
     (nEmpty ? " &middot; " + nEmpty + " categor" + (nEmpty === 1 ? "y" : "ies") +
@@ -3527,7 +3545,6 @@ window.APP = APP;
   if (IS_REGIONAL && DATA.geos.W) DATA.geos.W.t = BUILD_REGION;
   setTextIfPresent("minleaves", DATA.qa.min_basket_leaves);
   setTextIfPresent("wtPairs", m.geo_min_pairs);
-  setTextIfPresent("hmMinLeaves", HM_MIN_LEAVES);
   /* The basket rule in the build's own words, so the ranking states the
      missing-price policy rather than leaving the reader to infer it. */
   setTextIfPresent("leafshare",
