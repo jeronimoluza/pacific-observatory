@@ -593,6 +593,98 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
           <div id="cmpFlagKey"></div>
         </div>
       </div>
+         UNIFIED ON S.node, NOT A SECOND TREE (option (a) of the two considered;
+         (b) — give this card back its own `#catfilter` mount and `S.gnode` —
+         was rejected). Before this move the world series and Compare opened on
+         the same item and then diverged the moment either tree was touched,
+         because they were two tabs and each needed its own state to remember
+         what it was showing. Landing both cards on ONE tab turns that into a
+         defect: two category trees on one screen, each free to say something
+         different, answering "same thing, right?" with "no" the first time a
+         reader touches either one. So this card reads `S.node` — the tree at
+         the left of the ranking above governs both — and `#catfilter`, `S.gnode`
+         and `APP.setGNode` are gone with it (see _catfilter.js and the state
+         comment near `gmode` in _app.js). The cost of unifying is real and is
+         paid in `renderWorldTrends` below: a thin leaf that ranks fine as a bar
+         chart can still have no trend, and rather than silently swap the tree's
+         selection out from under the ranking above it, this card says so —
+         "Nothing repeats often enough at this level to draw a line." -->
+    <section class="readout">
+      <div class="rdhead">
+        <h2>How have retail prices moved?<button class="ibtn" id="b-wt" aria-expanded="false"
+          aria-controls="i-wt" aria-label="About this chart" onclick="APP.info('wt')">i</button></h2>
+      </div>
+
+      <div class="info" id="i-wt">
+        <div class="beginner-only">
+          Pick what to compare &mdash; <b>whole regions</b>, <b>parts of a region</b> or <b>single
+          countries</b> &mdash; for the category selected in the tree above. Each line answers one
+          question: <b>how much more expensive is this than it was a year ago?</b> Only items priced
+          in <b>both</b> periods in the same country count, and each one carries equal weight, so
+          the line moves when prices move and not when a different shop happens to get collected.
+          <b>Since a year ago</b> is the reading to trust: it compares two months and stops
+          there. <b>Index, base = 100</b> instead cumulates every month's move onto one fixed
+          starting month, and that starting month is itself a single thin reading &mdash; useful,
+          but only if you know what it is resting on. <b>Price level US$</b> is a real
+          dollars-per-kilo figure, so it is offered only for a single named item; a
+          dollars-per-kilo of a whole grouping is not a quantity anyone can buy. Because
+          everything is in <b>US dollars</b>, a line can also move because the currency moved
+          &mdash; Currency effects splits those two apart. Quiet periods are joined by a dashed
+          line; hover any point to see how much data stands behind it.
+        </div>
+            </div>
+
+      <div class="ctlbar">
+        <div class="seg" id="wtMode" role="group" aria-label="Compare by">
+          <button id="wm-region" class="on" aria-pressed="true" onclick="APP.setGeoMode('region')">Regions</button>
+          <button id="wm-subregion" aria-pressed="false" onclick="APP.setGeoMode('subregion')">Subregions</button>
+          <button id="wm-country" aria-pressed="false" onclick="APP.setGeoMode('country')">Countries</button>
+        </div>
+        <span id="wtUnits"></span>
+            </div>
+      <div class="ctlbar">
+        <div class="grp"><span class="ctllab" id="lab-meas">Price change since</span>
+          <div class="seg" role="group" aria-labelledby="lab-meas">
+          <button id="wv-chg1" onclick="APP.setGMeasure('chg1')">previous <span id="wv-chg1-word">month</span></button>
+          <button id="wv-chg12" class="on" aria-pressed="true" onclick="APP.setGMeasure('chg12')">a year ago</button>
+          <button id="wv-chg24" onclick="APP.setGMeasure('chg24')">2 years ago</button>
+          <button id="wv-chg36" onclick="APP.setGMeasure('chg36')">3 years ago</button>
+        </div></div>
+        <div class="grp"><span class="ctllab" id="lab-meas2">Or</span>
+          <div class="seg" role="group" aria-labelledby="lab-meas2">
+          <button id="wv-level" onclick="APP.setGMeasure('level')"
+            title="A model-fitted level, not an observed median">Price level US$ (fitted)</button>
+          <button id="wv-index" onclick="APP.setGMeasure('index')">Index, base = 100</button>
+        </div></div>
+        <div class="grp"><span class="ctllab" id="lab-cpi">Benchmark</span>
+          <div class="seg" role="group" aria-labelledby="lab-cpi">
+          <button id="wv-cpi" aria-pressed="false" onclick="APP.toggleCPI()">Official CPI</button>
+        </div></div>
+        <div class="grp"><span class="ctllab" id="lab-per">Period</span>
+          <div class="seg" role="group" aria-labelledby="lab-per">
+          <button id="wf-Q" class="on" aria-pressed="true" onclick="APP.setGFreq('Q')">Quarterly</button>
+          <button id="wf-M" aria-pressed="false" onclick="APP.setGFreq('M')">Monthly</button>
+        </div></div>
+        <div class="grp"><span class="ctllab" id="lab-sm">Smoothing</span>
+          <div class="seg" role="group" aria-labelledby="lab-sm">
+          <button id="ws-0" class="on" aria-pressed="true" onclick="APP.setGSmooth(0)">Off</button>
+          <button id="ws-2" aria-pressed="false" onclick="APP.setGSmooth(2)"></button>
+          <button id="ws-3" aria-pressed="false" onclick="APP.setGSmooth(3)"></button>
+        </div></div>
+        <div class="grp"><span class="ctllab" id="lab-win">Window</span>
+          <div class="seg" role="group" aria-labelledby="lab-win">
+          <button id="ww-36" class="on" aria-pressed="true" onclick="APP.setGWin(36)">3 years</button>
+          <button id="ww-60" aria-pressed="false" onclick="APP.setGWin(60)">5 years</button>
+          <button id="ww-0" aria-pressed="false" onclick="APP.setGWin(0)">All</button>
+        </div></div>
+      </div>
+
+      <div id="wtWarn"></div>
+      <div class="chips" id="wtChips" role="group" aria-label="Places on the chart" style="margin-bottom:14px"></div>
+      <div class="cwrap" style="height:400px"><canvas id="cWorldTrend" role="img"
+        aria-label="Price trend by place"></canvas></div>
+      <div class="samples" id="wtNote"></div>
+    </section>
     </div>
   </div>
 
@@ -652,98 +744,6 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
        already picked in the tree above, instead of a tab away under a second
        copy of it.
 
-       UNIFIED ON S.node, NOT A SECOND TREE (option (a) of the two considered;
-       (b) — give this card back its own `#catfilter` mount and `S.gnode` —
-       was rejected). Before this move the world series and Compare opened on
-       the same item and then diverged the moment either tree was touched,
-       because they were two tabs and each needed its own state to remember
-       what it was showing. Landing both cards on ONE tab turns that into a
-       defect: two category trees on one screen, each free to say something
-       different, answering "same thing, right?" with "no" the first time a
-       reader touches either one. So this card reads `S.node` — the tree at
-       the left of the ranking above governs both — and `#catfilter`, `S.gnode`
-       and `APP.setGNode` are gone with it (see _catfilter.js and the state
-       comment near `gmode` in _app.js). The cost of unifying is real and is
-       paid in `renderWorldTrends` below: a thin leaf that ranks fine as a bar
-       chart can still have no trend, and rather than silently swap the tree's
-       selection out from under the ranking above it, this card says so —
-       "Nothing repeats often enough at this level to draw a line." -->
-  <section class="readout">
-    <div class="rdhead">
-      <h2>How have retail prices moved?<button class="ibtn" id="b-wt" aria-expanded="false"
-        aria-controls="i-wt" aria-label="About this chart" onclick="APP.info('wt')">i</button></h2>
-    </div>
-
-    <div class="info" id="i-wt">
-      <div class="beginner-only">
-        Pick what to compare &mdash; <b>whole regions</b>, <b>parts of a region</b> or <b>single
-        countries</b> &mdash; for the category selected in the tree above. Each line answers one
-        question: <b>how much more expensive is this than it was a year ago?</b> Only items priced
-        in <b>both</b> periods in the same country count, and each one carries equal weight, so
-        the line moves when prices move and not when a different shop happens to get collected.
-        <b>Since a year ago</b> is the reading to trust: it compares two months and stops
-        there. <b>Index, base = 100</b> instead cumulates every month's move onto one fixed
-        starting month, and that starting month is itself a single thin reading &mdash; useful,
-        but only if you know what it is resting on. <b>Price level US$</b> is a real
-        dollars-per-kilo figure, so it is offered only for a single named item; a
-        dollars-per-kilo of a whole grouping is not a quantity anyone can buy. Because
-        everything is in <b>US dollars</b>, a line can also move because the currency moved
-        &mdash; Currency effects splits those two apart. Quiet periods are joined by a dashed
-        line; hover any point to see how much data stands behind it.
-      </div>
-          </div>
-
-    <div class="ctlbar">
-      <div class="seg" id="wtMode" role="group" aria-label="Compare by">
-        <button id="wm-region" class="on" aria-pressed="true" onclick="APP.setGeoMode('region')">Regions</button>
-        <button id="wm-subregion" aria-pressed="false" onclick="APP.setGeoMode('subregion')">Subregions</button>
-        <button id="wm-country" aria-pressed="false" onclick="APP.setGeoMode('country')">Countries</button>
-      </div>
-      <span id="wtUnits"></span>
-          </div>
-    <div class="ctlbar">
-      <div class="grp"><span class="ctllab" id="lab-meas">Price change since</span>
-        <div class="seg" role="group" aria-labelledby="lab-meas">
-        <button id="wv-chg1" onclick="APP.setGMeasure('chg1')">previous <span id="wv-chg1-word">month</span></button>
-        <button id="wv-chg12" class="on" aria-pressed="true" onclick="APP.setGMeasure('chg12')">a year ago</button>
-        <button id="wv-chg24" onclick="APP.setGMeasure('chg24')">2 years ago</button>
-        <button id="wv-chg36" onclick="APP.setGMeasure('chg36')">3 years ago</button>
-      </div></div>
-      <div class="grp"><span class="ctllab" id="lab-meas2">Or</span>
-        <div class="seg" role="group" aria-labelledby="lab-meas2">
-        <button id="wv-level" onclick="APP.setGMeasure('level')"
-          title="A model-fitted level, not an observed median">Price level US$ (fitted)</button>
-        <button id="wv-index" onclick="APP.setGMeasure('index')">Index, base = 100</button>
-      </div></div>
-      <div class="grp"><span class="ctllab" id="lab-cpi">Benchmark</span>
-        <div class="seg" role="group" aria-labelledby="lab-cpi">
-        <button id="wv-cpi" aria-pressed="false" onclick="APP.toggleCPI()">Official CPI</button>
-      </div></div>
-      <div class="grp"><span class="ctllab" id="lab-per">Period</span>
-        <div class="seg" role="group" aria-labelledby="lab-per">
-        <button id="wf-Q" class="on" aria-pressed="true" onclick="APP.setGFreq('Q')">Quarterly</button>
-        <button id="wf-M" aria-pressed="false" onclick="APP.setGFreq('M')">Monthly</button>
-      </div></div>
-      <div class="grp"><span class="ctllab" id="lab-sm">Smoothing</span>
-        <div class="seg" role="group" aria-labelledby="lab-sm">
-        <button id="ws-0" class="on" aria-pressed="true" onclick="APP.setGSmooth(0)">Off</button>
-        <button id="ws-2" aria-pressed="false" onclick="APP.setGSmooth(2)"></button>
-        <button id="ws-3" aria-pressed="false" onclick="APP.setGSmooth(3)"></button>
-      </div></div>
-      <div class="grp"><span class="ctllab" id="lab-win">Window</span>
-        <div class="seg" role="group" aria-labelledby="lab-win">
-        <button id="ww-36" class="on" aria-pressed="true" onclick="APP.setGWin(36)">3 years</button>
-        <button id="ww-60" aria-pressed="false" onclick="APP.setGWin(60)">5 years</button>
-        <button id="ww-0" aria-pressed="false" onclick="APP.setGWin(0)">All</button>
-      </div></div>
-    </div>
-
-    <div id="wtWarn"></div>
-    <div class="chips" id="wtChips" role="group" aria-label="Places on the chart" style="margin-bottom:14px"></div>
-    <div class="cwrap" style="height:400px"><canvas id="cWorldTrend" role="img"
-      aria-label="Price trend by place"></canvas></div>
-    <div class="samples" id="wtNote"></div>
-  </section>
 
   <!-- The ranking above is measured against OUR OWN world median, so it cannot
        tell the reader whether it is right. This card puts an independently
@@ -964,6 +964,17 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
         <button type="button" id="fxw-6" aria-pressed="false" onclick="APP.setFxWin(6)">6 months</button>
         <button type="button" id="fxw-12" class="on" aria-pressed="true" onclick="APP.setFxWin(12)">12 months</button>
         <button type="button" id="fxw-24" aria-pressed="false" onclick="APP.setFxWin(24)">24 months</button>
+      </div></div>
+      <!-- Single-select, unlike the heatmap's depth chips: a waterfall holding
+           two levels at once would draw a division's bar beside the bars of the
+           items already inside it, and the same move would be counted twice. -->
+      <div class="grp"><span class="ctllab" id="lab-fxlvl">Rows</span>
+        <div class="seg" role="group" aria-labelledby="lab-fxlvl">
+        <button type="button" id="fxl-1" aria-pressed="false" onclick="APP.setFxLvl(1)">Division</button>
+        <button type="button" id="fxl-2" aria-pressed="false" onclick="APP.setFxLvl(2)">Group</button>
+        <button type="button" id="fxl-3" aria-pressed="false" onclick="APP.setFxLvl(3)">Class</button>
+        <button type="button" id="fxl-4" aria-pressed="false" onclick="APP.setFxLvl(4)">Subclass</button>
+        <button type="button" id="fxl-leaf" class="on" aria-pressed="true" onclick="APP.setFxLvl('leaf')">Deepest leaf</button>
       </div></div>
     </div>
     <div class="samples" id="fxbLead" style="margin:0 0 12px"></div>

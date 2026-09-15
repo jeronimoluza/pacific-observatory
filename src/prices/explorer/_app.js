@@ -971,6 +971,37 @@ Object.keys(DATA.gseries).forEach(function (key) {
 
    `chain` carries nothing at depth 5, so base-100 has no reading here and the
    Index button is disabled rather than drawn off a cumulated change. */
+/* A month whose median collapses to a fraction of BOTH its neighbours is a
+   unit or pack-size mis-parse, not a price. 5,733 such points sit across 2,354
+   of 56,357 series, and the LOCAL and DOLLAR lines dive together by the same
+   ratio -- which is exactly what rules the exchange rate out as the cause, and
+   the observation counts are healthy (n=48 on one), which rules out a thin
+   month. Left alone the line plunges to the axis and back in one step.
+   The point is replaced by the previous month's value and flagged `imp`, so it
+   is drawn as a hollow diamond like every other estimate on the chart rather
+   than passing as measured. This is a DISPLAY repair over a pipeline defect:
+   the fix belongs in unit parsing, and until it lands this keeps a mis-parse
+   from reading as a 90% price crash. */
+var FF_DROP = 0.15;
+(function () {
+  var ser = DATA.series || {};
+  Object.keys(ser).forEach(function (k) {
+    var s = ser[k], n = s.p ? s.p.length : 0, hit = 0;
+    if (n < 3 || !s.usd) return;
+    for (var i = 1; i < n - 1; i++) {
+      var a = s.usd[i - 1], b = s.usd[i], c = s.usd[i + 1];
+      if (!(a > 0) || !(b > 0) || !(c > 0)) continue;
+      if (b < FF_DROP * a && b < FF_DROP * c) {
+        s.usd[i] = a;
+        if (s.loc && s.loc[i - 1] > 0) s.loc[i] = s.loc[i - 1];
+        s.imp = s.imp || [];
+        s.imp[i] = 1;
+        hit++;
+      }
+    }
+    if (hit) s.ff = hit;
+  });
+})();
 var CLEAF = {};
 (function () {
   var byF = GEO_INDEX.M = GEO_INDEX.M || {};
@@ -2539,6 +2570,12 @@ function renderTrends() {
       "measured points are always distinguishable on sight; hover any point to see which " +
       "it is.");
   }
+  if (s.ff) warn.push("<b>" + s.ff + "</b> month" + (s.ff > 1 ? "s" : "") +
+    " on this line had a median that collapsed to a fraction of both " +
+    "neighbouring months \u2014 a unit or pack-size mis-parse rather than a real " +
+    "price move. " + (s.ff > 1 ? "Those points carry" : "That point carries") +
+    " the previous month's value and " + (s.ff > 1 ? "are" : "is") +
+    " drawn hollow, like any other estimate.");
   if (s.p.length < 6) warn.push("Only <b>" + s.p.length + " months</b> of data — read the direction, not the slope.");
   if (gaps > s.p.length) warn.push("<b>" + gaps + " of " + grid.length +
     "</b> months in this window have no data at all; the line jumps across them.");
@@ -2674,6 +2711,13 @@ function monthsBack(p, k) {
    would quietly report a different window from the one on the button. */
 var FXB_WINS = [3, 6, 12, 24];
 var FXB_WIN = 12;
+/* Which COICOP level the bars are drawn at. "leaf" is the default because a
+   waterfall of items is what the card was built to show; the levels above it
+   answer the same question for a reader who wants divisions, not products.
+   Single-select, unlike the heatmap's depth chips, because a waterfall mixing
+   two levels would double-count every item inside the coarser one. */
+var FXB_LVLS = [1, 2, 3, 4];
+var FXB_LVL = "leaf";
 /* The right-hand end of every window on this tab: the last month this COUNTRY
    has a published series in. One window per country is the whole point -- read
    the endpoints off each item and the exchange rate stops being a
@@ -2686,6 +2730,17 @@ function countryHi(ci) {
     if (!ps.length) return;
     if (hi == null || ps[ps.length - 1] > hi) hi = ps[ps.length - 1];
   });
+  /* rtcal fills a month FORWARD of the newest published exchange rate, so the
+     last month a country has a SERIES in can be one the FX table has no row
+     for -- 2026-10 against an FX table ending 2026-09, for almost every
+     country at once. A window needs a rate at BOTH ends, so the right edge is
+     the last month that has one. Without this the 12-month split reports "no
+     exchange rate" for major currencies whose rate is not missing at all. */
+  var fr = DATA.fx[DATA.ctyIdx[ci]], fxHi = null;
+  if (fr && fr.p) for (var i = fr.p.length - 1; i >= 0; i--) {
+    if (fr.r[i] > 0) { fxHi = fr.p[i]; break; }
+  }
+  if (hi != null && fxHi != null && hi > fxHi) hi = fxHi;
   return hi;
 }
 /* What the trend panel below states its three readings over -- the same window
@@ -2721,6 +2776,23 @@ function fxbSplit(ci, hi, months) {
       return;
     }
   });
+  /* Roll the item rows up to the requested level. Each item keeps equal
+     weight, matching how every other average on this tab is taken, so a
+     division's bar is the mean of its items' log moves and not a re-weighted
+     basket. The currency leg is shared by construction and does not aggregate. */
+  if (FXB_LVL !== "leaf") {
+    var by = {};
+    out.rows.forEach(function (r) {
+      var k = r.code.split(".").slice(0, FXB_LVL).join(".");
+      (by[k] = by[k] || []).push(r);
+    });
+    out.rows = Object.keys(by).map(function (k) {
+      var g = by[k], tot = 0, imp = false;
+      g.forEach(function (r) { tot += r.total; imp = imp || r.imp; });
+      return {code:k, name:title(k), unit:null, n:g.length,
+              total:tot / g.length, imp:imp};
+    });
+  }
   out.rows.forEach(function (r) { r.real = r.total - out.leg; });
   return out;
 }
@@ -2731,6 +2803,15 @@ function fxbSplit(ci, hi, months) {
    title, and a window this country cannot draw goes dead rather than live-and-
    empty -- except the selected one, which stays clickable so the reader is
    never left with the pressed control disabled under their cursor. */
+function fxbSyncLvls() {
+  FXB_LVLS.concat(["leaf"]).forEach(function (l) {
+    var b = document.getElementById("fxl-" + l);
+    if (!b) return;
+    var on = FXB_LVL === l;
+    b.className = on ? "on" : "";
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+}
 function fxbSyncWins(splits) {
   FXB_WINS.forEach(function (w) {
     var b = document.getElementById("fxw-" + w);
@@ -2795,6 +2876,7 @@ function renderFxBars(ci) {
   var hi = countryHi(ci), splits = {};
   FXB_WINS.forEach(function (w) { splits[w] = hi ? fxbSplit(ci, hi, w) : null; });
   fxbSyncWins(splits);
+  fxbSyncLvls();
 
   var warnEl = document.getElementById("fxbWarn");
   function nothing(msg) {
@@ -2810,9 +2892,8 @@ function renderFxBars(ci) {
   if (sp.leg == null) return nothing(
     "No exchange rate for <b>" + esc(m.name || slug) + "</b> in both " + win.lo +
     " and " + win.hi + ", so a US$ move cannot be split into a currency leg and a " +
-    "price leg over this window. The rate is monthly and is genuinely missing " +
-    "for some months in smaller currencies; another window above may have one at " +
-    "both ends.");
+    "price leg over this window. The rate is monthly and a few currencies are " +
+    "missing one in a given month; another window above may have one at both ends.");
   var fxLeg = sp.leg, rows = sp.rows, r0 = sp.r0, r1 = sp.r1;
 
   /* The rate is quoted LOCAL PER US DOLLAR, so a rise in it is the local
@@ -2861,7 +2942,8 @@ function renderFxBars(ci) {
     type:"bar",
     data:{
       labels: show.map(function (r) {
-        return (r.imp ? "◇ " : "") + r.name + " (" + UNIT_SHORT[r.unit] + ")"; }),
+        return (r.imp ? "◇ " : "") + r.name + " (" +
+          (r.unit ? UNIT_SHORT[r.unit] : r.n + " item" + (r.n > 1 ? "s" : "")) + ")"; }),
       datasets:[
         /* Chart.js draws the HIGHEST `order` first, so the tip's lower number
            puts it on top of the bar — which is what makes the overlap case
@@ -3784,6 +3866,11 @@ var APP = {
   setFxWin:function (k) {
     if (FXB_WINS.indexOf(k) < 0) return;
     FXB_WIN = k;
+    this.render();
+  },
+  setFxLvl:function (k) {
+    if (k !== "leaf" && FXB_LVLS.indexOf(k) < 0) return;
+    FXB_LVL = k;
     this.render();
   },
   go:function (v) { S.view = v;
