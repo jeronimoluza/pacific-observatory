@@ -566,7 +566,7 @@ _window_opt = click.option(
     metavar="N",
     help=(
         "Rolling window in days the 'current' cell grid is pooled over. "
-        "Defaults to 30 (or $PO_PRICES_WINDOW_DAYS). A non-default window "
+        "Defaults to 90 (or $PO_PRICES_WINDOW_DAYS). A non-default window "
         "renames the output *_<N>d.html so two windows can never overwrite "
         "each other."
     ),
@@ -587,9 +587,14 @@ def _set_window_days(days: int | None) -> None:
 
 
 def _window_path(path, window_days: int):
-    """`x.html` -> `x_90d.html` when the window isn't the default 30 days, so
-    a 90-day build can never silently overwrite the default 30-day one."""
-    if window_days == 30:
+    """`x.html` -> `x_30d.html` when the window isn't the default 90 days, so a
+    narrower diagnostic build can never silently overwrite the default one.
+
+    The 90 here is the same default as `sources.WINDOW_DAYS`, spelled again
+    rather than imported: importing it would pull `prices.` in at module import
+    of this file, which is precisely what `_set_window_days` has to run before.
+    Change one and change the other."""
+    if window_days == 90:
         return path
     return path.with_name(path.stem + f"_{window_days}d" + path.suffix)
 
@@ -693,7 +698,7 @@ def prices_publish(region, subregion, out_path, window_days, unfiltered):
     basket widens beyond the EAP PoC.
 
     With --window-days, the "current" snapshot pools that many trailing days
-    of prices instead of the default 30. `prices.explorer` and this dashboard
+    of prices instead of the default 90. `prices.explorer` and this dashboard
     share the one number, so both stay on the same definition of "current";
     a non-default window renames the output so a 30-day and a 90-day build
     can never collide.
@@ -725,7 +730,7 @@ def prices_publish(region, subregion, out_path, window_days, unfiltered):
         raise click.ClickException(str(exc))
     if unfiltered:
         click.echo(f"UNFILTERED diagnostic build written to {written}")
-    elif WINDOW_DAYS != 30:
+    elif WINDOW_DAYS != 90:
         click.echo(f"{WINDOW_DAYS}-day window build written to {written}")
 
 
@@ -746,7 +751,7 @@ def prices_explorer(region, out_path, window_days, unfiltered):
     overwrite the unrestricted one.
 
     With --window-days, the "current" cell grid pools that many trailing days
-    of prices instead of the default 30 (shared with `prices publish` via
+    of prices instead of the default 90 (shared with `prices publish` via
     $PO_PRICES_WINDOW_DAYS, so the two dashboards never disagree on what
     "current" means). A non-default window renames the output *_<N>d.html.
 
@@ -776,7 +781,7 @@ def prices_explorer(region, out_path, window_days, unfiltered):
     stamp_unfiltered(written or out)
     if unfiltered:
         click.echo(f"UNFILTERED diagnostic build written to {written or out}")
-    elif WINDOW_DAYS != 30:
+    elif WINDOW_DAYS != 90:
         click.echo(f"{WINDOW_DAYS}-day window build written to {written or out}")
 
 

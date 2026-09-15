@@ -54,11 +54,22 @@ MIN_CELL_OBS = gate(1, 1)
 # than 30 days. `publish.py` imports this constant rather than keeping its own
 # window, so the two dashboards cannot drift apart on what "current" means.
 #
+# NOW 90 DAYS, not 30. Builds were produced at both and the wider one is what
+# "current" now means: a scrape cadence that is monthly at best for most
+# sources leaves a 30-day window resting on one collection pass per cell, and
+# the countries it drops are exactly the thinly-scraped ones the dashboard is
+# least able to lose. The price of 90 is that a cell's figure can pool prices
+# up to three months old under a one-month "period" label, which is not a
+# rounding detail and is therefore said on screen rather than left inferable --
+# see the window note on every current-price card in `_app.js`.
+#
 # Settable at build time via $PO_PRICES_WINDOW_DAYS, same idiom as
 # PO_PRICES_UNFILTERED in `profile.py`: read once, at import, and taken by
-# value from here by every consumer. Defaults to 30 so an invocation that
-# never sets it behaves exactly as it always has.
-WINDOW_DAYS = int(os.environ.get("PO_PRICES_WINDOW_DAYS", "30"))
+# value from here by every consumer. The override stays: a render can still ask
+# for any other window, and the payload carries whatever it got (`meta
+# .cell_window_days`) so the page labels itself from the build rather than from
+# a number typed into prose.
+WINDOW_DAYS = int(os.environ.get("PO_PRICES_WINDOW_DAYS", "90"))
 CELL_WINDOW_DAYS = gate(WINDOW_DAYS, 100_000)
 # Distinct months a cell needs before it is published as a series -- NOT
 # consecutive months, they may sit anywhere in the span. Was 3, which carried no

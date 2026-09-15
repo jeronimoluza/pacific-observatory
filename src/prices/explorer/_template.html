@@ -237,6 +237,11 @@ select.chip.addgeo:hover{color:var(--ink)}
 .wbar{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
 .wbadge{display:inline-flex;align-items:center;background:var(--c5);color:var(--plate);
   border-radius:var(--r);padding:2px 9px;font-size:11.5px;font-weight:600}
+/* Same trap as `.chips` above: an author `display` outranks the UA's
+   [hidden]{display:none}, so the badge ignored its own `hidden` attribute and
+   was on screen in every mode. That was survivable while its text named the
+   mode; now that it is shown only in Custom and says so, it has to go away. */
+.wbadge[hidden]{display:none}
 .wpanel{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
   padding:12px 0 14px;margin:0 0 14px}
 .wpanel .explain{margin-bottom:11px}
@@ -421,7 +426,6 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
   <button id="t-world"    class="on" role="tab" aria-selected="true"  onclick="APP.go('world')">Global View</button>
   <button id="t-compare"  role="tab" aria-selected="false" onclick="APP.go('compare')">Compare countries</button>
   <button id="t-country"  role="tab" aria-selected="false" onclick="APP.go('country')">Country profile</button>
-  <button id="t-trends"   role="tab" aria-selected="false" onclick="APP.go('trends')">Currency effects</button>
 </nav>
 
 <!-- Only the controls that change the view in front of you, and only the ones
@@ -440,9 +444,9 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 <div class="ctlstrip" id="ctlstrip" hidden>
   <div class="grp" data-views="world compare country"><span class="ctllab" id="lab-ev">Evidence</span>
     <div class="seg" role="group" aria-labelledby="lab-ev">
-      <button id="ev-any" class="on" aria-pressed="true" onclick="APP.set('evidence','any')">Any</button>
+      <button id="ev-any" aria-pressed="false" onclick="APP.set('evidence','any')">Any</button>
       <button id="ev-thin" aria-pressed="false" onclick="APP.set('evidence','thin')">5+ obs</button>
-      <button id="ev-solid" aria-pressed="false" onclick="APP.set('evidence','solid')">10+ obs</button>
+      <button id="ev-solid" class="on" aria-pressed="true" onclick="APP.set('evidence','solid')">10+ obs</button>
     </div>
   </div>
       </div>
@@ -529,6 +533,68 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
 
 <!-- ============ 2. COMPARE ============ -->
 <section id="v-compare" role="tabpanel" aria-labelledby="t-compare" hidden>
+  <!-- The ranking opens this tab rather than the landing page: it and the item
+       bars below it both answer "how does this country compare with that one",
+       over the whole basket first and then one item at a time. -->
+  <div class="card">
+    <h2>How expensive is the basket, country by country?<button class="ibtn" id="b-rank"
+      aria-expanded="false" aria-controls="i-rank" aria-label="How this is worked out"
+      onclick="APP.info('rank')">i</button></h2>
+    <div class="sub" id="rankSub">Matched-basket price level in US$, item by item.</div>
+    <div class="info" id="i-rank">
+      <div class="beginner-only">
+        Each country's prices are compared with the world median <b>item by item</b> &mdash;
+        1&nbsp;kg of rice against 1&nbsp;kg of rice, 1&nbsp;litre of milk against 1&nbsp;litre of
+        milk &mdash; and those differences are then <b>averaged</b>. A country at <b>150</b> pays
+        roughly 50% more in US dollars for the same shopping basket than the typical country here.
+        An item only counts if <b><span id="leafshare">most</span> of the countries on this list
+        price it</b>, so the basket is the same basket everywhere rather than whatever each
+        country happened to have collected. Click any bar to open that country.
+      </div>
+          </div>
+    <!-- The weights are the one number on this card that is not measured here:
+         they come from ICP, or from the countries' own CPI returns, or from
+         nothing at all. So they are offered as a choice rather than asserted,
+         and anything other than the published vector says so on the badge. -->
+    <!-- The panel, the Reset button and the badge are shown ONLY in Custom
+         mode, and the "Show the weights" toggle that used to sit in this bar is
+         gone with them. Each published vector is ONE vector applied to every
+         country, so the grid printed the identical share against every country
+         on the list -- 5.7%, 5.7%, 5.7% -- under a mode whose own name is
+         "national CPI weights". The shares were not wrong, but nothing on
+         screen said they were not per-country, and read off the page they said
+         the opposite of what is true. They are withdrawn rather than
+         re-captioned. Reset and the badge follow the panel because neither
+         means anything with no sliders on screen, and the toggle follows
+         because with the panel gated on the mode there is nothing left for it
+         to decide -- do not restore it. Choosing Custom is what opens the
+         panel now, which is why that chip is no longer a disabled read-out. -->
+    <div id="wBox" hidden>
+      <div class="wbar">
+        <div class="seg" id="wModes" role="group" aria-label="Basket weighting"></div>
+        <button class="chip" id="wReset" onclick="APP.resetWeights()" hidden>Reset</button>
+        <span class="wbadge" id="wBadge" hidden></span>
+      </div>
+      <div class="wpanel" id="wPanel" hidden>
+        <div class="explain" id="wProv"></div>
+        <div class="wgrid" id="wGrid"></div>
+      </div>
+    </div>
+    <div class="spread">
+      <div class="chips" id="regionFilter" role="group" aria-label="Filter by region">
+        <button class="chip on" id="reg-all" aria-pressed="true" onclick="APP.setRegion(null)">All regions</button>
+        <span id="regionChips"></span>
+      </div>
+      <div class="tiny" id="worldCount"></div>
+    </div>
+    <div class="rankscale" id="rankScale"></div>
+    <div class="rankwrap">
+      <div class="cscroll" id="rankList"></div>
+      <div class="datum" id="rankDatum"></div>
+    </div>
+    <div class="legend" id="rankLegend"></div>
+  </div>
+
   <div class="row-side">
     <div class="card catstick">
       <h2>Category</h2>
@@ -633,8 +699,9 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
           dollars-per-kilo figure, so it is offered only for a single named item; a
           dollars-per-kilo of a whole grouping is not a quantity anyone can buy. Because
           everything is in <b>US dollars</b>, a line can also move because the currency moved
-          &mdash; Currency effects splits those two apart. Quiet periods are joined by a dashed
-          line; hover any point to see how much data stands behind it.
+          rather than because any shelf price did, and this chart does not separate the
+          two. Quiet periods are joined by a dashed line; hover any point to see how much
+          data stands behind it.
         </div>
             </div>
 
@@ -691,111 +758,6 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     </section>
     </div>
   </div>
-
-  <!-- The ranking belongs beside the item bars, not on the opening page: both
-       answer "how does this country compare with that one", one item at a time
-       and then over the whole basket. -->
-  <div class="card">
-    <h2>How expensive is the basket, country by country?<button class="ibtn" id="b-rank"
-      aria-expanded="false" aria-controls="i-rank" aria-label="How this is worked out"
-      onclick="APP.info('rank')">i</button></h2>
-    <div class="sub">Matched-basket price level in US$, item by item.</div>
-    <div class="info" id="i-rank">
-      <div class="beginner-only">
-        Each country's prices are compared with the world median <b>item by item</b> &mdash;
-        1&nbsp;kg of rice against 1&nbsp;kg of rice, 1&nbsp;litre of milk against 1&nbsp;litre of
-        milk &mdash; and those differences are then <b>averaged</b>. A country at <b>150</b> pays
-        roughly 50% more in US dollars for the same shopping basket than the typical country here.
-        An item only counts if <b><span id="leafshare">most</span> of the countries on this list
-        price it</b>, so the basket is the same basket everywhere rather than whatever each
-        country happened to have collected. Click any bar to open that country.
-      </div>
-          </div>
-    <!-- The weights are the one number on this card that is not measured here:
-         they come from ICP, or from the countries' own CPI returns, or from
-         nothing at all. So they are offered as a choice rather than asserted,
-         and anything other than the published vector says so on the badge. -->
-    <div id="wBox" hidden>
-      <div class="wbar">
-        <div class="seg" id="wModes" role="group" aria-label="Basket weighting"></div>
-        <button class="chip" id="wToggle" aria-expanded="false" aria-controls="wPanel"
-          onclick="APP.weightPanel()">Show the weights</button>
-        <button class="chip" id="wReset" onclick="APP.resetWeights()">Reset</button>
-        <span class="wbadge" id="wBadge" hidden></span>
-      </div>
-      <div class="wpanel" id="wPanel" hidden>
-        <div class="explain" id="wProv"></div>
-        <div class="wgrid" id="wGrid"></div>
-      </div>
-    </div>
-    <div class="spread">
-      <div class="chips" id="regionFilter" role="group" aria-label="Filter by region">
-        <button class="chip on" id="reg-all" aria-pressed="true" onclick="APP.setRegion(null)">All regions</button>
-        <span id="regionChips"></span>
-      </div>
-      <div class="tiny" id="worldCount"></div>
-    </div>
-    <div class="rankscale" id="rankScale"></div>
-    <div class="rankwrap">
-      <div class="cscroll" id="rankList"></div>
-      <div class="datum" id="rankDatum"></div>
-    </div>
-    <div class="legend" id="rankLegend"></div>
-  </div>
-
-  <!-- The ranking above is measured against OUR OWN world median, so it cannot
-       tell the reader whether it is right. This card puts an independently
-       produced price level on the other axis and lets the two disagree in
-       public. It is hidden outright on a payload with no benchmark table. -->
-  <div class="card" id="pppCard" hidden>
-    <h2>Does our price level agree with the World Bank’s?<button class="ibtn" id="b-ppp"
-      aria-expanded="false" aria-controls="i-ppp" aria-label="How to read this"
-      onclick="APP.info('ppp')">i</button></h2>
-    <div class="sub">Our matched-basket price level against an external one, world = 100 on both axes.</div>
-    <div class="info" id="i-ppp">
-      <div class="beginner-only">
-        The World Bank’s <b>International Comparison Program</b> sends enumerators to
-        price a common list of about a thousand products in each economy and works out
-        what a currency really buys. That is the same question this dashboard asks from
-        scraped shelf prices, asked by different people with a different method, so the
-        two ought to land near the <b>dashed diagonal</b>. Where they do, our number is
-        doing its job. Where a country sits far off it, one of the two is wrong &mdash;
-        and sometimes it is ours.
-        <br><br>
-        This is a <b>benchmark, not a correction</b>: nothing here is folded back into
-        the ranking above.
-        <br><br>
-        <b>Why only food and drink?</b> Because that is all this dashboard prices. Every
-        number behind it is a retail shelf listing in <b>COICOP divisions 01 and 02</b>
-        — food, non-alcoholic beverages, alcohol and tobacco — while the ICP
-        prices the whole of consumption, clothing and transport and rent and schooling
-        included. The scope is matched to <i>ours</i> on purpose: a food-and-drink basket
-        set against a benchmark that also prices rent would look authoritative and mean
-        nothing, and this card exists to be a check rather than to look like one. So the
-        ICP figure here is aggregated over <b>exactly the categories each country
-        actually prices</b>, under exactly the basket weights the ranking is currently
-        using, and the only difference left between the two is the prices themselves.
-        Tobacco sits on neither axis: it is in the corpus, but no tobacco item is priced
-        in enough countries to enter the matched basket, so it is dropped from both sides
-        rather than counted on one. The scope widens when our own prices do.
-        <br><br>
-        The whole-economy figures also price rent, healthcare and haircuts,
-        which are cheap in poor countries in a way that food is not — expect them to
-        sit below the line at the bottom of the scale for that reason alone.
-        <br><br>
-        <b>Vintage matters here.</b> A price level is a real exchange rate and it moves
-        every year; most benchmark values are from the ICP’s 2021 round while these
-        prices were scraped this year, and a handful of countries are benchmarked as far
-        back as 2011. Each country’s vintage is in its tooltip and in the table.
-      </div>
-    </div>
-    <div class="chips" role="group" aria-label="Which benchmark" id="pppChips"></div>
-    <div class="tiny" id="pppStat" style="margin:9px 0 2px"></div>
-    <div class="cwrap" style="height:440px"><canvas id="cPpp" role="img"
-      aria-label="Our price level against an external benchmark"></canvas></div>
-    <div class="legend" id="pppLegend"></div>
-    <div class="tbl-scroll" style="margin-top:10px"><table id="pppOut"></table></div>
-  </div>
 </section>
 
 <!-- ============ 3. COUNTRY ============ -->
@@ -804,7 +766,7 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     <div class="spread" style="margin-bottom:0">
       <div>
         <h2>Country profile</h2>
-        <div class="sub" style="margin-bottom:0">Everything measured in one country, priced per unit.</div>
+        <div class="sub" id="ctryProfSub" style="margin-bottom:0">Everything measured in one country, priced per unit.</div>
       </div>
       <select id="ctrySel" aria-label="Country" onchange="APP.set('country',this.value)"></select>
     </div>
@@ -915,102 +877,6 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
       <div class="tbl-scroll"><table id="ctryTbl"></table></div>
       <div id="ctryFlagKey"></div>
     </div>
-  </div>
-</section>
-
-<!-- ============ 4. CURRENCY EFFECTS ============ -->
-<!-- An exchange-rate move shifts every price in the country by the same
-     proportion, so the currency effect is one number and not a property of any
-     product. This first card draws each product's OWN move as the bar and hangs
-     the shared currency effect off its tip as a hatched extension of the same
-     length on every row. -->
-<section id="v-trends" role="tabpanel" aria-labelledby="t-trends" hidden>
-  <div class="card">
-    <div class="spread">
-      <div>
-        <h2>What moved: the currency, or the price?<button class="ibtn" id="b-fxb"
-          aria-expanded="false" aria-controls="i-fxb" aria-label="How to read this"
-          onclick="APP.info('fxb')">i</button></h2>
-        <div class="sub">Each product's own price move, with the shared
-          exchange-rate effect hung off the tip of it.</div>
-      </div>
-      <select id="fxbCtry" aria-label="Country" onchange="APP.set('country',this.value)"></select>
-    </div>
-    <div class="info" id="i-fxb">
-      <div class="beginner-only">
-        A US$ price can move for two reasons: the shop changed its price, or the local
-        currency changed against the dollar. The second one is <b>the same for
-        everything in the country</b> &mdash; it cannot be bigger for rice than for
-        beer. So the <b>solid bar</b> is the first reason only, the product's own price
-        move with the currency taken out, and that is the part worth comparing across
-        products. The <b>hatched tip</b> on the end of it is the currency, drawn at the
-        same length on every row, and <b>where the tip ends is what the US$ price
-        actually did</b>. When the two pull opposite ways the tip folds back over its
-        own bar, and can cross zero. Figures are in <b>log points</b> so the two parts
-        add up exactly to the total; for small moves a log point and a per cent are
-        much the same number.
-      </div>
-    </div>
-    <!-- The comparison window. Static buttons, repainted in place by
-         fxbSyncWins(): rebuilding a control group with innerHTML deletes the
-         very button the reader just clicked, which costs the focus ring and
-         can move the viewport. -->
-    <div class="ctlbar">
-      <div class="grp"><span class="ctllab" id="lab-fxwin">Compare over</span>
-        <div class="seg" role="group" aria-labelledby="lab-fxwin">
-        <button type="button" id="fxw-3" aria-pressed="false" onclick="APP.setFxWin(3)">3 months</button>
-        <button type="button" id="fxw-6" aria-pressed="false" onclick="APP.setFxWin(6)">6 months</button>
-        <button type="button" id="fxw-12" class="on" aria-pressed="true" onclick="APP.setFxWin(12)">12 months</button>
-        <button type="button" id="fxw-24" aria-pressed="false" onclick="APP.setFxWin(24)">24 months</button>
-      </div></div>
-      <!-- Single-select, unlike the heatmap's depth chips: a waterfall holding
-           two levels at once would draw a division's bar beside the bars of the
-           items already inside it, and the same move would be counted twice. -->
-      <div class="grp"><span class="ctllab" id="lab-fxlvl">Rows</span>
-        <div class="seg" role="group" aria-labelledby="lab-fxlvl">
-        <button type="button" id="fxl-1" aria-pressed="false" onclick="APP.setFxLvl(1)">Division</button>
-        <button type="button" id="fxl-2" aria-pressed="false" onclick="APP.setFxLvl(2)">Group</button>
-        <button type="button" id="fxl-3" aria-pressed="false" onclick="APP.setFxLvl(3)">Class</button>
-        <button type="button" id="fxl-4" aria-pressed="false" onclick="APP.setFxLvl(4)">Subclass</button>
-        <button type="button" id="fxl-leaf" class="on" aria-pressed="true" onclick="APP.setFxLvl('leaf')">Deepest leaf</button>
-      </div></div>
-    </div>
-    <div class="samples" id="fxbLead" style="margin:0 0 12px"></div>
-    <div id="fxbWarn"></div>
-    <div class="cscroll"><div class="cwrap"><canvas id="cFxBars" role="img"
-      aria-label="US$ price change by product, split into the exchange rate and the price"></canvas></div></div>
-    <div class="legend" id="fxbLegend"></div>
-  </div>
-
-  <div class="card">
-    <h2>How much of a price move is the exchange rate?<button class="ibtn" id="b-fx"
-      aria-expanded="false" aria-controls="i-fx" aria-label="How to read this"
-      onclick="APP.info('fx')">i</button></h2>
-    <div class="sub">Indexed to the first period with data = 100.</div>
-    <div class="info" id="i-fx">
-      <div class="beginner-only">
-        When a price in US dollars rises, two different things can be happening: the shop really
-        raised its price, or the local currency lost value against the dollar. The <b>local
-        currency</b> line is the shop; the <b>exchange rate</b> line is the currency. The <b>US$</b>
-        line is what the two do together.
-      </div>
-          </div>
-    <div class="spread">
-      <div class="chips">
-        <select id="trCtry" aria-label="Country" onchange="APP.set('country',this.value)"></select>
-        <select id="trNode" aria-label="Category" onchange="APP.set('node',this.value)"></select>
-        <span id="trUnits"></span>
-      </div>
-      <div class="seg" id="impSeg" role="group" aria-label="Imputed months" hidden>
-        <button id="imp-0" class="on" aria-pressed="true" onclick="APP.set('incImputed',false)">Measured only</button>
-        <button id="imp-1" aria-pressed="false" onclick="APP.set('incImputed',true)">Add imputed</button>
-      </div>
-    </div>
-    <div class="samples" id="trKind" style="margin:0 0 10px"></div>
-    <div id="trWarn"></div>
-    <div class="cwrap" style="height:380px"><canvas id="cTrend" role="img"
-      aria-label="Price in local currency, in US dollars, and the exchange rate"></canvas></div>
-    <div class="deco" id="trDeco"></div>
   </div>
 </section>
 

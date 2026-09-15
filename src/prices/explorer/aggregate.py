@@ -18,6 +18,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from prices.build import unit_collapse
+from prices.build.leaf_typical_mass import TYPICAL_MASS_CSV
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import residual_leaves
 from prices.explorer.cpi import DIVISION_OF, SERIES_LABEL, load_official
@@ -213,7 +215,9 @@ def _concat_rows(a: pd.DataFrame, b: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(out, columns=cols)
 
 
-def _pool(trusted: pd.DataFrame, fills: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def _pool(
+    trusted: pd.DataFrame, fills: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """(observations + fills exploded up the ladder, the fills alone).
 
     THE FILLS GO UP THE LADDER TOO. They used to join only at the leaf they were
@@ -721,7 +725,9 @@ def _basket_levels(
     defect = candidates.groupby("country").flagged.mean().rename("defect_share")
     leaves = _basket_leaves(cells, tax)
     keys = ["node", "standard_unit"]
-    eligible, glob = reference if reference is not None else basket_reference(cells, tax)
+    eligible, glob = (
+        reference if reference is not None else basket_reference(cells, tax)
+    )
     leaves = leaves[pd.MultiIndex.from_frame(leaves[keys]).isin(eligible)]
     leaves = leaves.join(glob, on=keys)
     leaves = leaves[leaves.g.gt(0)]
@@ -884,42 +890,57 @@ def _weight_modes(
         # under it, and a mode where that falls under the gate ranks nobody.
         return {
             "w": {k: round(v, 6) for k, v in sorted(w.items())},
-            "meta": dict(meta, name=name, note=note,
-                         unpriced=round(
-                             1.0 - sum(v for c, v in w.items() if c in priced), 4),
-                         n_priced=sum(1 for c in w if c in priced)),
+            "meta": dict(
+                meta,
+                name=name,
+                note=note,
+                unpriced=round(1.0 - sum(v for c, v in w.items() if c in priced), 4),
+                n_priced=sum(1 for c in w if c in priced),
+            ),
         }
 
     modes = {
-        "icp": entry(icp_w, icp_meta, "World Bank (ICP)",
-                     "Household expenditure shares at COICOP class depth for "
-                     "food and at group depth for beverages, alcohol and "
-                     "tobacco, spread equally below that."),
+        "icp": entry(
+            icp_w,
+            icp_meta,
+            "World Bank (ICP)",
+            "Household expenditure shares at COICOP class depth for "
+            "food and at group depth for beverages, alcohol and "
+            "tobacco, spread equally below that.",
+        ),
     }
     eq_codes = sorted(c for c in codes if c in priced) or codes
     eq_w, eq_meta = equal_weights(eq_codes)
     modes["equal"] = entry(
-        eq_w, eq_meta, "Equal",
+        eq_w,
+        eq_meta,
+        "Equal",
         f"One vote per category, over the {len(eq_codes)} categories this "
         "build actually prices. This is the taxonomy's own shape rather than "
-        "anything about consumption.")
+        "anything about consumption.",
+    )
     imf_w, imf_meta = default_weights(
         tax, BASKET_WEIGHT_LEVEL, source="imf_wgt_pt", universe=set(icp_w)
     )
     if imf_w:
         modes["imf"] = entry(
-            imf_w, imf_meta, "IMF (national CPI weights)",
+            imf_w,
+            imf_meta,
+            "IMF (national CPI weights)",
             "Published at DIVISION depth only, so this sets the food versus "
             "alcohol-and-tobacco split and nothing below it: every category "
-            "inside a division carries the same weight as its neighbours.")
-    else:
-        logger.info(
-            "no usable imf_wgt_pt rows -- the IMF weighting mode is omitted"
+            "inside a division carries the same weight as its neighbours.",
         )
+    else:
+        logger.info("no usable imf_wgt_pt rows -- the IMF weighting mode is omitted")
     for key, m in modes.items():
-        logger.info("weight mode %s: %d categories, %d priced, %.1f%% unpriced",
-                    key, len(m["w"]), m["meta"]["n_priced"],
-                    m["meta"]["unpriced"] * 100)
+        logger.info(
+            "weight mode %s: %d categories, %d priced, %.1f%% unpriced",
+            key,
+            len(m["w"]),
+            m["meta"]["n_priced"],
+            m["meta"]["unpriced"] * 100,
+        )
     return modes
 
 
@@ -1189,13 +1210,66 @@ def build_payload(region: str | None = None) -> dict:
 
     fills = fills[fills.standard_unit.isin(COMPARABLE_UNITS)]
 
+    # ONE DISPLAY UNIT PER LEAF, the same collapse `publish.py` has applied
+    # since 2026-09-04 and the explorer never grew. Without it a leaf's rows sit
+    # in whatever units they were extracted in, and two things break. A per-piece
+    # price is ranked against a per-PIECE world median, so Japanese milk reads
+    # +2305% as a carton and +16% as a litre, and 13 of the 15 "most expensive"
+    # items on the screen are pieces. And a country's leaves scatter across the
+    # kg/lt/unit buckets, so American Samoa's three dairy leaves -- two priced by
+    # the piece, one by the kilo -- clear no bucket's three-leaf floor and the
+    # class cell renders empty when the data is there.
+    #
+    # Here, and not on `obs`: `collapse` copies the rows it keeps, and the
+    # unfiltered 18.9M-row frame cannot be copied on this box. By this line it
+    # has been projected down to `_OBS_TAIL_COLS` and `trusted` is the only large
+    # object alive. This also lands before `_pool`, so every median, series,
+    # chain and `gmed` below is computed on collapsed units.
+    #
+    # The piece fold above already ran, which matters: `unit_collapse` votes on
+    # unit LABELS, and `item`/`unit` are two spellings of one piece price on the
+    # allowlisted leaves, so voting before the fold could hand a leaf to the loser.
+    #
+    # Fills are collapsed against the units the OBSERVATIONS voted for rather
+    # than voting again on their own rows. Voting twice can give one leaf two
+    # display units -- the split row this exists to remove -- and a modelled row
+    # should never get a say in how a commodity is sold.
+    typical_mass = (
+        pd.read_csv(TYPICAL_MASS_CSV) if TYPICAL_MASS_CSV.exists() else pd.DataFrame()
+    )
+    if typical_mass.empty:
+        logger.warning("%s missing -- piece rows cannot convert", TYPICAL_MASS_CSV)
+    before = len(trusted)
+    trusted, suppressed = unit_collapse.collapse(trusted, typical_mass)
+    display = (
+        trusted.groupby("coicop_code")["standard_unit"]
+        .agg(lambda s: s.iloc[0])
+        .to_dict()
+    )
+    fills, _ = unit_collapse.collapse(
+        fills, typical_mass, value_cols=("usd",), canonical=display
+    )
+    logger.info(
+        "unit collapse: %d trusted rows -> %d in %d display units, "
+        "dropped %d unconvertible over %d leaves",
+        before,
+        len(trusted),
+        trusted.standard_unit.nunique(),
+        len(suppressed),
+        suppressed.coicop_code.nunique(),
+    )
+    # The provenance column has done its job by here, and the explorer writes no
+    # suppression audit. Carried on, `_explode_nodes` would multiply an object
+    # column by every row's ancestor count.
+    trusted = trusted.drop(columns="display_unit_source")
+
     # The global pass, over every country in the corpus. It settles the two
     # things a regional payload must NOT settle for itself -- the eligible
     # basket and the world median -- and it is thrown away immediately
     # afterwards, because the exploded frame is the largest object here.
     world_ex, world_ex_fill = _pool(trusted, fills)
     # A SECOND, SMALL POOL rather than a flag on the big one. The current grid
-    # needs a 30-day slice; the series needs all of history. Carrying a marker
+    # needs a CELL_WINDOW_DAYS slice; the series needs all of history. Carrying a marker
     # per row on the exploded frame would cost a byte across ~90M rows, so the
     # window is exploded on its own and thrown away as soon as the grid is out.
     _cw_ex, _cw_fill = _pool(*_cell_window(trusted, fills))
@@ -1272,16 +1346,22 @@ def build_payload(region: str | None = None) -> dict:
             # already folds coverage in and therefore cannot answer "would this
             # country be ranked if coverage were not the question".
             "level_gate": bool(gate_map.get(slug, False)),
-            "level_cov": (round(float(cov_map[slug]), 3)
-                          if slug in cov_map and pd.notna(cov_map[slug]) else None),
+            "level_cov": (
+                round(float(cov_map[slug]), 3)
+                if slug in cov_map and pd.notna(cov_map[slug])
+                else None
+            ),
             # THE COUNTRY'S IMPUTED SHARE, weighted exactly the way its price
             # level is -- the same categories under the same weights -- so this
             # answers "how much of the number this country is ranked on came
             # from a model" rather than "how modelled is this country's corpus",
             # which is a different and much less useful question. Null where the
             # country has no basket at all.
-            "imp": (round(float(imp_map[slug]), 4)
-                    if slug in imp_map and pd.notna(imp_map[slug]) else None),
+            "imp": (
+                round(float(imp_map[slug]), 4)
+                if slug in imp_map and pd.notna(imp_map[slug])
+                else None
+            ),
             # Released fills standing behind this country at any node. A count,
             # not a share; `obs` above counts measured rows and never counts
             # these.
@@ -1424,7 +1504,9 @@ def build_payload(region: str | None = None) -> dict:
     )
     scoped_trusted = in_scope & obs.qa_status.eq("trusted")
     qa = {
-        "status": {k: int(v) for k, v in obs.qa_status[in_scope].value_counts().items()},
+        "status": {
+            k: int(v) for k, v in obs.qa_status[in_scope].value_counts().items()
+        },
         "mass_source": {
             str(k): int(v)
             for k, v in obs.mass_source[scoped_trusted]
@@ -1523,8 +1605,7 @@ def build_payload(region: str | None = None) -> dict:
             # drawn point is either modelled or it is not.
             "fields": {
                 "cells": {"share": "imp", "count": "nim", "prob": "pr"},
-                "series": {"share": "ish", "flag": "imp", "count": "nim",
-                           "prob": "pr"},
+                "series": {"share": "ish", "flag": "imp", "count": "nim", "prob": "pr"},
                 "chain": {"share": "ish"},
                 "changes": {"share": "ish"},
                 "gseries": {"share": "ish", "share_index": "ish_idx"},
@@ -1853,8 +1934,11 @@ def build_payload(region: str | None = None) -> dict:
             # slider, because it is still in the denominator of `covered`.
             "lab": {
                 c: tax[c]["t"]
-                for c in sorted(_weight_labels(
-                    {c: 1.0 for m in basket_modes.values() for c in m["w"]}))
+                for c in sorted(
+                    _weight_labels(
+                        {c: 1.0 for m in basket_modes.values() for c in m["w"]}
+                    )
+                )
                 if c in tax
             },
             "gates": {

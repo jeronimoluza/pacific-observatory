@@ -53,7 +53,7 @@ REGIONS_YAML = REPO_ROOT / "src" / "configs" / "regions.yaml"
 # in and left thousands of cells resting on a single observation a few days
 # into a new month; then a fixed 60, then 90 days, each set independently of
 # the explorer dashboard's own window and free to drift from it. Both
-# dashboards now share ONE number -- `CELL_WINDOW_DAYS`, decided at 30 days --
+# dashboards now share ONE number -- `CELL_WINDOW_DAYS`, decided at 90 days --
 # so "current" means the same stretch of time on both pages and the two can no
 # longer disagree about what "current" is.
 CURRENT_LOOKBACK_DAYS = CELL_WINDOW_DAYS
