@@ -174,7 +174,26 @@ RAW_OBSERVATION_COLS = (
     "source",
     "date",
     "input_hash",
+    "url_hash",
 )
+
+# Written so an observation can be traced to the raw row it came from, and
+# excluded by every whole-table reader: at 31,082,446 rows the pair costs
+# 6.03 GB of object-dtype strings in pandas (measured), against a publish that
+# has already been OOM-killed at 21.6 GB. A consumer that wants lineage asks
+# for these by name.
+LINEAGE_COLS = ("input_hash", "url_hash")
+
+
+def read_observations(path: Path | None = None) -> pd.DataFrame:
+    """The observations table without its lineage columns."""
+    path = path or OBSERVATIONS_PARQUET
+    keep = [
+        f.name
+        for f in pq.ParquetFile(path).schema_arrow
+        if f.name not in LINEAGE_COLS
+    ]
+    return pd.read_parquet(path, columns=keep)
 
 
 def _iter_raw_chunks(csv_path: Path) -> Iterator[pd.DataFrame]:
@@ -245,13 +264,13 @@ class _JoinCache:
             merged = chunk.merge(
                 self.frame, on=JOIN_KEYS, how="inner", suffixes=("_raw", "")
             )
-            return merged.drop(columns=JOIN_KEYS)
+            return merged
         pos = self.index.get_indexer(chunk["input_hash"])
         hit = pos >= 0
-        left = chunk.loc[hit].drop(columns=JOIN_KEYS).reset_index(drop=True)
+        left = chunk.loc[hit].reset_index(drop=True)
         # Mirrors merge's suffixes=("_raw", ""): the LEFT copy of an
-        # overlapping column is the renamed one. Nothing overlaps today beyond
-        # the key, which is dropped either way.
+        # overlapping column is the renamed one. input_hash is kept now, for
+        # lineage, and still cannot collide: __init__ dropped it from values.
         overlap = left.columns.intersection(self.values.columns)
         if len(overlap):
             left = left.rename(columns={c: f"{c}_raw" for c in overlap})

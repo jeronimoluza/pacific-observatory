@@ -28,6 +28,7 @@ import pandas as pd
 import yaml
 
 from prices.build import unit_collapse
+from prices.build.aggregate import read_observations
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import RESIDUAL_TITLE_RE, residual_leaves
 from prices.explorer.profile import UNFILTERED, gate, stamp_unfiltered
@@ -736,7 +737,7 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
         raise FileNotFoundError(
             f"{OBSERVATIONS_PARQUET} not found — run `po prices build` first."
         )
-    obs = pd.read_parquet(OBSERVATIONS_PARQUET)
+    obs = read_observations(OBSERVATIONS_PARQUET)
     obs["observation_date"] = pd.to_datetime(obs["observation_date"], errors="coerce")
     obs = obs[obs["observation_date"].notna()]
     if UNFILTERED:

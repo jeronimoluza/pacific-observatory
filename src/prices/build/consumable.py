@@ -43,6 +43,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from prices.build.aggregate import read_observations
 from prices.enrich import config as enrich_config
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -90,7 +91,7 @@ def _modal(s):
 
 
 def load_trusted() -> pd.DataFrame:
-    obs = pd.read_parquet(OBS_PARQUET)
+    obs = read_observations(OBS_PARQUET)
     t = obs[obs["qa_status"] == "trusted"].copy()
     t = t[~t["source"].isin(AGGREGATOR_SOURCES)].copy()
     t["name_norm"] = t["product_name"].map(_norm)
