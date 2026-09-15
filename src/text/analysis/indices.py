@@ -24,6 +24,22 @@ import numpy as np
 from src.text.analysis.baseline import baseline_mask
 
 warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
+
+
+def _attach(df: pd.DataFrame, new_cols: dict) -> pd.DataFrame:
+    """Add all of `new_cols` to `df` in a single concat.
+
+    Assigning columns one at a time re-does BlockManager bookkeeping over the
+    whole frame on every insert, so building N columns costs far more than N
+    times one insert. A region aggregate pivots one column set per newspaper
+    source (~930 for lac against ~220 for a subregion), which is where that
+    cost stops being negligible.
+    """
+    if not new_cols:
+        return df
+    return pd.concat([df, pd.DataFrame(new_cols, index=df.index)], axis=1, copy=False)
+
+
 warnings.filterwarnings(
     "ignore", message="Mean of empty slice", category=RuntimeWarning
 )
@@ -63,17 +79,24 @@ class IndexCalculator:
         for category in ["E", "P", "U"]:
             # Calculate raw ratio per source
             ratio_cols = []
+            new_cols: dict = {}
+            existing = set(epu_stats.columns)
             for source in sources:
                 count_col = f"{source}_{category}_count"
                 total_col = f"{source}_A_total"
                 ratio_col = f"{source}_{category}_breadth_ratio"
 
-                if count_col in epu_stats.columns and total_col in epu_stats.columns:
-                    epu_stats[ratio_col] = epu_stats[count_col] / epu_stats[total_col]
-                    epu_stats[ratio_col] = epu_stats[ratio_col].replace(
+                if count_col in existing and total_col in existing:
+                    ratio = (epu_stats[count_col] / epu_stats[total_col]).replace(
                         [np.inf, -np.inf], np.nan
                     )
+                    if ratio_col in existing:
+                        epu_stats[ratio_col] = ratio
+                    else:
+                        new_cols[ratio_col] = ratio
                     ratio_cols.append(ratio_col)
+
+            epu_stats = _attach(epu_stats, new_cols)
 
             if ratio_cols:
                 # Standardize, aggregate, normalize
@@ -104,17 +127,24 @@ class IndexCalculator:
         for category in ["E", "P", "U"]:
             # Calculate raw ratio per source
             ratio_cols = []
+            new_cols: dict = {}
+            existing = set(epu_stats.columns)
             for source in sources:
                 kwsum_col = f"{source}_{category}_kwsum"
                 count_col = f"{source}_{category}_count"
                 ratio_col = f"{source}_{category}_intensity_ratio"
 
-                if kwsum_col in epu_stats.columns and count_col in epu_stats.columns:
-                    epu_stats[ratio_col] = epu_stats[kwsum_col] / epu_stats[count_col]
-                    epu_stats[ratio_col] = epu_stats[ratio_col].replace(
+                if kwsum_col in existing and count_col in existing:
+                    ratio = (epu_stats[kwsum_col] / epu_stats[count_col]).replace(
                         [np.inf, -np.inf], np.nan
                     )
+                    if ratio_col in existing:
+                        epu_stats[ratio_col] = ratio
+                    else:
+                        new_cols[ratio_col] = ratio
                     ratio_cols.append(ratio_col)
+
+            epu_stats = _attach(epu_stats, new_cols)
 
             if ratio_cols:
                 # Standardize, aggregate, normalize
@@ -145,17 +175,24 @@ class IndexCalculator:
         for pair in ["EU", "PU", "EP"]:
             # Calculate raw ratio per source
             ratio_cols = []
+            new_cols: dict = {}
+            existing = set(epu_stats.columns)
             for source in sources:
                 count_col = f"{source}_{pair}_count"
                 total_col = f"{source}_A_total"
                 ratio_col = f"{source}_{pair}_share_ratio"
 
-                if count_col in epu_stats.columns and total_col in epu_stats.columns:
-                    epu_stats[ratio_col] = epu_stats[count_col] / epu_stats[total_col]
-                    epu_stats[ratio_col] = epu_stats[ratio_col].replace(
+                if count_col in existing and total_col in existing:
+                    ratio = (epu_stats[count_col] / epu_stats[total_col]).replace(
                         [np.inf, -np.inf], np.nan
                     )
+                    if ratio_col in existing:
+                        epu_stats[ratio_col] = ratio
+                    else:
+                        new_cols[ratio_col] = ratio
                     ratio_cols.append(ratio_col)
+
+            epu_stats = _attach(epu_stats, new_cols)
 
             if ratio_cols:
                 # Standardize, aggregate, normalize
@@ -191,14 +228,21 @@ class IndexCalculator:
             DataFrame with standardized, aggregated, and normalized columns.
         """
         z_cols = []
+        new_cols: dict = {}
+        existing = set(df.columns)
 
         # Standardize each ratio column
         for ratio_col in ratio_cols:
             z_col = ratio_col.replace("_ratio", "_z")
             z_series, std = self._standardize_series(df[ratio_col], df)
-            df[z_col] = z_series.values
+            if z_col in existing:
+                df[z_col] = z_series.values
+            else:
+                new_cols[z_col] = pd.Series(z_series.values, index=df.index)
             self.stds[ratio_col] = std
             z_cols.append(z_col)
+
+        df = _attach(df, new_cols)
 
         # Aggregate (unweighted and weighted)
         df[f"{index_name}_z_unweighted"] = df[z_cols].mean(axis=1, skipna=True)

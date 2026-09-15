@@ -193,27 +193,44 @@ def _standardize_epu(
     z_cols: list[str] = []
     ratio_stds: dict = {}
 
+    existing = set(df.columns)
+    mask = baseline_mask(df["date"], cutoff_start, cutoff_end)
+    # Same fragmentation problem as `_build_topic_or_actor_ratios`: one new
+    # `_z_score` column per source, and this function runs once per topic and
+    # once per actor key, so the inserts multiply. Batch them into one concat.
+    ratio_updates: dict[str, pd.Series] = {}
+    z_new: dict[str, pd.Series] = {}
     for src in sources:
         ratio_col = ratio_template.format(source=src)
-        if ratio_col not in df.columns:
+        if ratio_col not in existing:
             continue
         ratio_cols.append(ratio_col)
 
         # Replace inf with NaN for safety
-        df[ratio_col] = df[ratio_col].replace([np.inf, -np.inf], np.nan)
+        cleaned = df[ratio_col].replace([np.inf, -np.inf], np.nan)
+        ratio_updates[ratio_col] = cleaned
 
-        std = df.loc[
-            baseline_mask(df["date"], cutoff_start, cutoff_end), ratio_col
-        ].std()
+        std = cleaned.loc[mask].std()
         col_key = ratio_col.replace("_ratio", "")
         z_col = f"{col_key}_z_score"
         if std == 0 or pd.isna(std):
-            df[z_col] = np.nan
+            z_series = pd.Series(np.nan, index=df.index)
             ratio_stds[col_key] = None
         else:
-            df[z_col] = df[ratio_col] / std
+            z_series = cleaned / std
             ratio_stds[col_key] = float(std)
+        if z_col in existing:
+            df[z_col] = z_series
+        else:
+            z_new[z_col] = z_series
         z_cols.append(z_col)
+
+    if ratio_updates:
+        # Existing columns, so this is a positional overwrite rather than a
+        # widening insert -- one call instead of len(sources) calls.
+        df[list(ratio_updates)] = pd.DataFrame(ratio_updates, index=df.index)
+    if z_new:
+        df = pd.concat([df, pd.DataFrame(z_new, index=df.index)], axis=1, copy=False)
 
     if not z_cols:
         df["z_score_unweighted"] = np.nan
@@ -280,20 +297,37 @@ def _build_topic_or_actor_ratios(
     naming `{source}_<metric_prefix>{key}_count`.
     """
     df = wide.copy()
+    keys = list(keys)
+    existing = set(df.columns)
+    # Accumulate every new ratio column and attach them in one concat. Assigning
+    # `df[ratio_col] = ...` inside the loop re-does BlockManager bookkeeping over
+    # the whole frame on each insert, so the cost grows with `sources × keys`:
+    # a region aggregate unions ~930 sources across ~90 keyword groups, which is
+    # tens of thousands of inserts into an ever-widening frame.
+    new_cols: dict[str, pd.Series] = {}
     for src in sources:
         a_col = f"{src}_A_total"
-        if a_col not in df.columns:
+        if a_col not in existing:
             continue
+        a_series = df[a_col]
         for k in keys:
             count_col = f"{src}_{metric_prefix}{k}_count"
             ratio_col = f"{src}_{metric_prefix}{k}_ratio"
-            if count_col in df.columns:
-                df[ratio_col] = (
+            if count_col in existing:
+                ratio = (
                     df[count_col]
-                    .div(df[a_col])
+                    .div(a_series)
                     .replace([np.inf, -np.inf], np.nan)
                     .fillna(0)
                 )
+                if ratio_col in existing:
+                    # Overwrite in place so the column keeps its position and
+                    # the concat below cannot introduce a duplicate name.
+                    df[ratio_col] = ratio
+                else:
+                    new_cols[ratio_col] = ratio
+    if new_cols:
+        df = pd.concat([df, pd.DataFrame(new_cols, index=df.index)], axis=1, copy=False)
     return df
 
 
