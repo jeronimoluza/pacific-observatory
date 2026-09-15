@@ -184,7 +184,7 @@ function mount(id, opts) {
   if (!root) return null;
 
   var MULTI = !!opts.multi;
-  var openSet = {}, lastWant = null;
+  var openSet = {}, lastWant = null, seeded = false;
 
   root.className = "cf";
   root.innerHTML =
@@ -322,6 +322,27 @@ function mount(id, opts) {
       var p = parent(c);
       while (p) { openSet[p] = 1; p = parent(p); }
     });
+    /* OPENING STATE. A single mount always shows a tree, because `syncSingle`
+       opens the path down to whatever is selected and something always is. A
+       multi mount opens on "nothing picked" -- the Country profile's own
+       default, and the one that means "every item this country prices" -- so
+       `openSet` was empty and the panel arrived as two collapsed division
+       rows. Same widget, same chevrons, but it reads as a flat pair of
+       checkboxes rather than as the COICOP tree beside it on Compare, and it
+       was taken for a lesser control by a reader comparing the two.
+
+       So a multi mount with nothing picked opens its roots and their children
+       once. That is the same service `syncSingle`'s path-opening performs: the
+       tree is visibly a tree on arrival and the chevrons are visibly the way
+       further down. Once only -- collapsing a branch has to stay collapsed,
+       and this runs again on every country switch and every evidence change. */
+    if (!seeded) {
+      seeded = true;
+      if (!picked.length) ROOTS.forEach(function (c) {
+        openSet[c] = 1;
+        kids(c).forEach(function (k) { openSet[k] = 1; });
+      });
+    }
     paint(cur);
     if (elClear) elClear.disabled = !picked.length;
     elSum.innerHTML = picked.length

@@ -77,9 +77,19 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
   padding:20px 22px;margin-bottom:var(--gap)}
 .card h2,.readout h2{font:400 18px/1.25 var(--serif);margin-bottom:3px}
 .card .sub,.readout .sub{font-size:12.5px;color:var(--dim);margin-bottom:15px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
 .row-side{display:grid;grid-template-columns:330px 1fr;gap:var(--gap);align-items:start}
-@media(max-width:1000px){.row2,.row-side{grid-template-columns:1fr}}
+/* The category tree governs EVERY chart on its tab -- on Compare it drives the
+   country bars and the world trend beneath them (P6) -- so it follows the
+   reader down the page instead of making them scroll back to the top to change
+   item. `align-items:start` above is what lets a grid child stick at all; it
+   was already there. The panel caps its own height and scrolls inside (the
+   tree list is already capped at min(430px,60vh)), so a short viewport cannot
+   strand the unit readout below the fold. Below 1000px the grid collapses to
+   one column, where a pinned full-width panel would cover the chart it feeds --
+   so it is released back to normal flow there. */
+.catstick{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto}
+@media(max-width:1000px){.row-side{grid-template-columns:1fr}
+  .catstick{position:static;max-height:none;overflow:visible}}
 
 /* the readout — the instrument face: one reading, its series beside it */
 .readout{background:var(--plate);border:1px solid var(--rule);border-radius:var(--r);
@@ -173,6 +183,12 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
 .chip.ser.on{background:none;border-color:var(--rule);border-left-width:4px;
   color:var(--ink);font-weight:600;opacity:1}
 .chip.ser.on .c{color:var(--faint)}
+/* The add-a-country picker. It sits in the chip row and is sized like a chip,
+   but it is a real <select>: the native control collapses two hundred places
+   into one element and brings its own keyboard and type-ahead, which is the
+   whole point of not laying the list out as chips. */
+select.chip.addgeo{padding:3px 8px;max-width:230px;color:var(--faint)}
+select.chip.addgeo:hover{color:var(--ink)}
 
 /* ---------- legends ---------- */
 .legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:11.5px;
@@ -301,17 +317,6 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
    is this glyph. It says WHICH figure rests on a filled month and nothing at
    all about how much to trust it. */
 .impm{font-size:9px;color:#3d4441;margin-left:2px;vertical-align:1px}
-/* The column for the region this build was made from, so a reader can see
-   where they are standing in the world. */
-.hm th.ctyh.mine>span{font-weight:700;color:var(--ink)}
-.hm td.c.mine{box-shadow:inset 1px 0 0 var(--ink),inset -1px 0 0 var(--ink)}
-.hm tr.gvall td{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);
-  font-weight:700;height:23px}
-.hm tr.gvall td.ctry{font-weight:700}
-/* Six region names, not two hundred country ones: the 66px column the country
-   grid needs would truncate every one of them. */
-#gvTbl th.ctyh{height:auto;min-width:132px}
-#gvTbl th.ctyh>span{width:126px}
 .ramp{display:flex;align-items:center;gap:0;margin-top:10px}
 .ramp i{width:26px;height:10px;display:block}
 .ramp .lab{font-size:11px;color:var(--faint);padding:0 8px}
@@ -320,18 +325,6 @@ nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:6
 .cwrap{position:relative;width:100%}
 .cscroll{max-height:560px;overflow-y:auto;overflow-x:hidden}
 canvas{max-width:100%}
-
-/* ---------- More ---------- */
-details.more{margin-bottom:var(--gap);border-top:1px solid var(--rule);padding-top:12px}
-details.more>summary{cursor:pointer;font-size:13px;color:var(--dim);list-style:none;
-  display:inline-flex;align-items:center;gap:7px}
-details.more>summary::-webkit-details-marker{display:none}
-details.more>summary::before{content:"+";font-weight:600;font-size:14px;width:15px;height:15px;
-  border:1px solid var(--rule);border-radius:2px;display:inline-flex;align-items:center;
-  justify-content:center;line-height:1}
-details.more[open]>summary::before{content:"\2212"}
-details.more>summary:hover{color:var(--ink)}
-details.more>div{margin-top:14px}
 
 /* ---------- table ---------- */
 .tbl-scroll{overflow-x:auto;max-height:560px;overflow-y:auto}
@@ -532,38 +525,12 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
     <div class="samples" id="gvLead" style="margin-top:14px"></div>
   </div>
 
-  <div class="card">
-    <h2 id="gvGridTitle">Region by category group</h2>
-    <div class="sub" id="gvGridSub">Each category group in each world region, against the world
-      median for the same items.</div>
-    <div class="hmwrap"><table class="hm" id="gvTbl"></table></div>
-    <div class="ramp" id="gvRamp"></div>
-  </div>
-
-  <details class="more">
-    <summary>More about the corpus behind these numbers</summary>
-    <div class="row2">
-      <div class="card">
-        <h2>What is measured, and in what unit</h2>
-        <div class="sub">Trusted observations by COICOP division and by unit of measure.</div>
-        <div class="cwrap" style="height:260px"><canvas id="cUnits" role="img"
-          aria-label="Observations by unit of measure"></canvas></div>
-        <div class="samples" id="unitNote"></div>
-      </div>
-      <div class="card">
-        <h2>Where the data is thickest</h2>
-        <div class="sub">Trusted observations per country (top 25).</div>
-        <div class="cwrap" style="height:400px"><canvas id="cVolume" role="img"
-          aria-label="Observations per country"></canvas></div>
-      </div>
-    </div>
-  </details>
 </section>
 
 <!-- ============ 2. COMPARE ============ -->
 <section id="v-compare" role="tabpanel" aria-labelledby="t-compare" hidden>
   <div class="row-side">
-    <div class="card">
+    <div class="card catstick">
       <h2>Category</h2>
       <div class="sub">Pick one item. The whole COICOP tree is here; open a
         branch with the chevron.</div>
@@ -887,8 +854,14 @@ footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid
          other two: this chart draws a union of categories, so the tree keeps
          the checkboxes. -->
     <div class="row-side">
-      <div>
-        <div class="tiny" style="margin-bottom:6px">Categories &mdash; tick any number</div>
+      <div class="catstick">
+        <!-- Says the same three things the Compare tree's caption says, for the
+             same reason: the tree, the chevron, and how many you may pick. The
+             short version ("Categories - tick any number") named only the last
+             of the three, and a reader who had just read the fuller caption on
+             Compare took this panel for a different and smaller control. -->
+        <div class="tiny" style="margin-bottom:6px">Categories &mdash; tick any number.
+          The whole COICOP tree is here; open a branch with the chevron.</div>
         <div id="catfilterCtry"></div>
       </div>
       <div class="cscroll"><div class="cwrap"><canvas id="cCountry" role="img"

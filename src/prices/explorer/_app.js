@@ -398,7 +398,9 @@ function unitsAt(ni) {
    accepted cost of making it authoritative: a leaf that is dominant-kg
    worldwide now drops the countries that only price it by the piece, where the
    old chip could still reach them. It is stated on screen rather than absorbed
-   — `unitNote` below names the units left out at the node on display. */
+   — `cmpUnits` on the Compare tab names the units left out at the node on
+   display. (It used to point at `unitNote` as well, under the Global View's
+   corpus panel; that panel was removed at the reader's request.) */
 function domUnit(code) {
   var d = (DATA.nodeMeta[code] || {}).dom;
   var i = DATA.unitIdx.indexOf(d);
@@ -794,48 +796,6 @@ function renderWorld() {
   /* Was its own tab. Same tab as the heatmap now, and measured against the
      same world median, so the two read as one argument rather than two. */
   renderVsWorldGrid();
-
-  /* division + unit composition */
-  var divs = {}, units = {};
-  C.forEach(function (c) {
-    if (!keep(c)) return;
-    if (isLeaf(c.node)) {
-      var d = c.node.slice(0, 2);
-      divs[d] = (divs[d] || 0) + c.obs;
-      units[c.unit] = (units[c.unit] || 0) + c.obs;
-    }
-  });
-  var uk = Object.keys(units).sort(function (a, b) { return units[b] - units[a]; });
-  chart("cUnits", {
-    type:"bar",
-    data:{ labels: uk.map(function (u) { return UNIT_SHORT[u]; }),
-      datasets:[{ data: uk.map(function (u) { return units[u]; }),
-        backgroundColor: uk.map(function (u, i) { return PAL[i % PAL.length]; }),
-        borderWidth:0, borderRadius:4 }] },
-    options:{ plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:function (c) {
-      return c.parsed.y.toLocaleString() + " observations priced " + UNIT_LABEL[uk[c.dataIndex]]; } } } },
-      scales:{ y:{ beginAtZero:true, ticks:{ callback:function (v) {
-        return v >= 1e6 ? (v/1e6).toFixed(1)+"M" : v >= 1e3 ? (v/1e3).toFixed(0)+"k" : v; } } } } }
-  });
-  document.getElementById("unitNote").innerHTML =
-    "Divisions present: " + Object.keys(divs).sort().map(function (d) {
-      return "<code>" + d + "</code> " + esc(title(d)); }).join(" · ") +
-    ". Every price is a <b>unit value</b> — the shelf price divided by the quantity in the pack, " +
-    "so a 400&nbsp;g bag and a 2&nbsp;kg bag of the same rice both become a price " +
-    "<span class='ub'>per kg</span>. Units are never pooled with each other.";
-
-  var vol = DATA.ctyIdx.map(function (s) { return {n:DATA.cty[s].name, v:DATA.cty[s].obs}; })
-    .sort(function (a, b) { return b.v - a.v; }).slice(0, 25);
-  chart("cVolume", {
-    type:"bar",
-    data:{ labels: vol.map(function (r) { return r.n; }),
-      datasets:[{ data: vol.map(function (r) { return r.v; }),
-        backgroundColor:PAL[0], borderWidth:0, borderRadius:3 }] },
-    options:{ indexAxis:"y", plugins:{ legend:{display:false} },
-      scales:{ x:{ ticks:{ callback:function (v) {
-        return v >= 1e3 ? (v/1e3).toFixed(0)+"k" : v; } } },
-        y:{ ticks:{font:{size:10.5}, autoSkip:false}, grid:{display:false} } } }
-  });
 }
 function renderRanking() {
   bwSync();
@@ -987,9 +947,85 @@ Object.keys(DATA.gseries).forEach(function (key) {
   var last = s.p[s.p.length - 1];
   if (!LAST_P[a[0]] || last > LAST_P[a[0]]) LAST_P[a[0]] = last;
 });
+/* ---- country x ITEM: the series this card could not see -------------------
+   `build_geo_series` calls one (country, leaf, unit) an ITEM and needs several
+   items in a cell before any of its three estimators will report it. At
+   `region` a cell holds one item per country, so that is easy. At `country` the
+   cell holds exactly ONE item by construction, so the gate can never be met and
+   `gseries` carries no country x leaf series at all -- 0 at COICOP depth 5,
+   against 940 at region. It reads as missing data and is not: the same series
+   is already in this payload, under `series` (the US$ level, 27,455 country x
+   leaf cells) and `changes` (every horizon), and the Trends tab draws it daily.
+
+   So this reads those two instead of asking for a fourth copy. Putting them
+   into `gseries` server-side was measured at +74 MB per file per frequency on a
+   file already at 130 MB, to ship bytes the payload is carrying twice over.
+
+   The level is not a different estimator, it is the SAME one. With a single
+   item the two-way fit is degenerate in a way that happens to be exact: it
+   solves alpha = mean_t(y_t - delta_t) and delta_t = y_t - alpha, so
+   delta_t + alpha = y_t identically and the fitted level collapses onto the
+   item's own median -- which is what `series.usd` holds. Monthly only, because
+   `series` is a monthly panel; a quarter would have to be re-aggregated and
+   guessing at that is how two numbers on one screen start disagreeing.
+
+   `chain` carries nothing at depth 5, so base-100 has no reading here and the
+   Index button is disabled rather than drawn off a cumulated change. */
+var CLEAF = {};
+(function () {
+  var byF = GEO_INDEX.M = GEO_INDEX.M || {};
+  var byKind = byF.country = byF.country || {};
+  Object.keys(DATA.series || {}).forEach(function (key) {
+    var a = key.split("|"), code = DATA.nodeIdx[+a[1]];
+    /* LEAVES ONLY. A non-leaf cell that `gseries` left out was left out because
+       the estimator refused it, not because nobody looked -- substituting a raw
+       median there would quietly change the estimator under the reader. At a
+       leaf there is nothing to substitute: the two agree exactly. */
+    if (!code || !isLeaf(code)) return;
+    CLEAF[a[1]] = 1;
+    (byKind[a[1]] = byKind[a[1]] || {})[a[2]] = 1;
+  });
+})();
+var CSER = {};
+function leafGser(gk, ni, ui) {
+  if (S.gfreq !== "M" || gk.slice(0, 2) !== "C:" || !CLEAF[ni]) return null;
+  var ck = gk + "|" + ni + "|" + ui;
+  if (CSER[ck] !== undefined) return CSER[ck];
+  var ci = DATA.ctyIdx.indexOf(gk.slice(2));
+  var key = ci + "|" + ni + "|" + ui;
+  var s = ci >= 0 ? (DATA.series || {})[key] : null;
+  if (!s) return (CSER[ck] = null);
+  var pos = {}, idx = [], nix = [], one = [], cty = [], ish = [];
+  s.p.forEach(function (per, i) {
+    pos[per] = i; idx.push(null); nix.push(null);
+    /* "1 country, 1 item cell" is the literal truth of this line and is what
+       the tooltip and the support note already know how to say. */
+    one.push(1); cty.push(1);
+    ish.push(s.ish ? s.ish[i] : null);
+  });
+  /* `idx` and `ish_idx` are separate arrays on purpose even though both are all
+     nulls here -- one shared reference between two fields is a bug waiting for
+     the first caller that writes to either. */
+  var out = {p:s.p, lvl:s.usd, idx:idx, k:one, c:cty, ish:ish, ish_idx:nix, chg:{}};
+  var ch = (DATA.changes || {})[key] || {};
+  Object.keys(ch).forEach(function (lag) {
+    var h = ch[lag], v = [], kk = [], sh = [];
+    s.p.forEach(function () { v.push(null); kk.push(0); sh.push(null); });
+    h.p.forEach(function (per, j) {
+      var i = pos[per];
+      if (i == null) return;
+      v[i] = h.v[j];
+      kk[i] = h.k ? h.k[j] : 1;
+      sh[i] = h.ish ? h.ish[j] : null;
+    });
+    out.chg[lag] = {v:v, k:kk, ish:sh};
+  });
+  return (CSER[ck] = out);
+}
 var DRAWN = [];
 function gser(gk, ni, ui) {
-  return DATA.gseries[S.gfreq + "|" + gk + "|" + ni + "|" + ui] || null;
+  return DATA.gseries[S.gfreq + "|" + gk + "|" + ni + "|" + ui] ||
+    leafGser(gk, ni, ui);
 }
 
 /* ---- what the World chart is measuring -----------------------------------
@@ -1230,6 +1266,12 @@ function readout() {}
 function renderWorldTrends() {
   var f = S.gfreq, kind = S.gmode;
   if (!GEO_INDEX[f]) { S.gfreq = f = "M"; }
+  /* A country x item line comes from `series`/`changes` (see leafGser), and
+     `chain` carries nothing at that depth -- so base-100 has no reading here.
+     The measure is moved off Index BEFORE anything reads it, so the button
+     highlighting below and the draw below that cannot disagree. */
+  var leafCountry = kind === "country" && isLeaf(S.node) && f === "M";
+  if (leafCountry && S.gmeasure === "index") S.gmeasure = "chg12";
   var byNode = (GEO_INDEX[f] || {})[kind] || {};
   var allNodes = Object.keys(byNode).map(function (n) { return DATA.nodeIdx[+n]; })
     .filter(Boolean).sort();
@@ -1251,6 +1293,13 @@ function renderWorldTrends() {
     document.getElementById("ws-" + x).className = S.gsmooth === x ? "on" : ""; });
   ["level","index","chg1","chg12","chg24","chg36"].forEach(function (m) {
     document.getElementById("wv-" + m).className = S.gmeasure === m ? "on" : ""; });
+  var idxBtn = document.getElementById("wv-index");
+  idxBtn.disabled = leafCountry;
+  idxBtn.title = leafCountry
+    ? "A base-100 chain needs items that recur in consecutive periods, and one " +
+      "country priced for one item is a single item. Pick a grouping, or read " +
+      "the change measures beside it."
+    : "";
   document.getElementById("wv-chg1-word").textContent = word;
   [36,60,0].forEach(function (w) {
     document.getElementById("ww-" + w).className = S.gwin === w ? "on" : ""; });
@@ -1293,11 +1342,51 @@ function renderWorldTrends() {
      already renders exactly the message a thin leaf needs, and the level
      measure gets a more specific one where the cause is known to be a
      grouping rather than thinness. */
-  if (nodes.indexOf(S.node) < 0) return nothing(
-    levelOnly && allNodes.indexOf(S.node) >= 0
-      ? "<b>" + esc(title(S.node)) + "</b> is a grouping, not a single item, so it has no " +
-        "US$ price level here — try a change measure, which works for any grouping."
-      : "Nothing repeats often enough at this level to draw a line.");
+  if (nodes.indexOf(S.node) < 0) {
+    if (levelOnly && allNodes.indexOf(S.node) >= 0) return nothing(
+      "<b>" + esc(title(S.node)) + "</b> is a grouping, not a single item, so it has no " +
+      "US$ price level here — try a change measure, which works for any grouping.");
+    /* WHY A LEAF IS ALWAYS EMPTY AT `country`, AND IT IS NOT THINNESS.
+       `build_geo_series` calls one (country, leaf, unit) an ITEM -- the country
+       is part of the item's identity, and the item's value in a period is the
+       median over its SKUs. Its three estimators each need several items in a
+       cell before they will report it: the two-way fit needs FE_MIN_PAIRS_LEAF
+       of them to separate an item effect from a period effect, and the chain
+       and the lagged change want GEO_MIN_LINK_PAIRS_LEAF. Both are 4.
+
+       At `region` a cell is (one region, one leaf, one unit) and holds one item
+       per COUNTRY in the region, so four is easy. At `country` the cell is (one
+       country, one leaf, one unit) -- which holds exactly ONE item, by
+       construction, always. 1 < 4, so every country x leaf series is dropped
+       for every country, every leaf and every period. The September 2026 global
+       payload shows the shape exactly: depth 5 has 0 country series, depth 4
+       has 6 (four sibling leaves priced in one country, unit and month is rare),
+       depth 3 has 545 and depth 1 has 315.
+
+       So this is a limit of the estimator, not a gap in the corpus, and the
+       message must not say "nothing repeats often enough" -- that sends the
+       reader looking for data that is already there. The same country's series
+       for the same item IS in the payload (`DATA.series` / `DATA.changes`, 191
+       and 188 countries for rice) and the Trends tab draws it. Point there. */
+    var gword = kind === "country" ? "country" : kind === "subregion" ? "subregion" : "region";
+    var up = null, anc = ancestors(S.node);
+    for (var ai = anc.length - 1; ai >= 0; ai--) {
+      if (anc[ai] !== S.node && nodes.indexOf(anc[ai]) >= 0) { up = anc[ai]; break; }
+    }
+    var single = gword === "country" && isLeaf(S.node);
+    return nothing(
+      "<b>" + esc(title(S.node)) + "</b> has no " + gword + "-level line here. " +
+      (single
+        ? "This card compares several items inside each " + gword + " at once, and one " +
+          gword + " priced for one item is a single item — there is nothing for it to " +
+          "compare. It is a limit of this chart, not missing data: <b>" +
+          esc(title(S.node)) + "</b> is priced over time in this country and the " +
+          "<b>Trends</b> tab draws exactly that series."
+        : "Not enough separate items are priced under it at this level to draw a line.") +
+      (up ? " Here, <b>" + esc(title(up)) + "</b> <span class='ub'>" + esc(up) +
+            "</span> is carried — tick that in the tree on the left, or go back to " +
+            "Regions." : ""));
+  }
   var ni = DATA.nodeIdx.indexOf(S.node);
 
   /* The level measure is a US$-per-unit figure, so it is offered only where one
@@ -1352,10 +1441,21 @@ function renderWorldTrends() {
   /* What the reader picked and what can be drawn today are different things.
      Holding them apart means a thin category *parks* a place instead of striking
      it off, so it comes back the moment the category or window can carry it. */
-  var cap = kind === "country" ? PAL.length : MAX_SLOTS;
+  /* Countries used to cap at PAL.length (six) and open on whichever six had the
+     most drawable points in the current category. Ten is the opening set now,
+     ranked by how many LEAVES the country prices -- the broadest basket, which
+     is the one worth opening on, and a property of the COUNTRY rather than of
+     the category on screen, so the opening set does not reshuffle under the
+     reader every time the tree is touched. The cap is the same MAX_SLOTS every
+     other granularity uses: the reader can now add places one at a time, and a
+     cap of six would have refused the first one they asked for. */
+  var cap = MAX_SLOTS, OPEN_N = kind === "country" ? 10 : cap;
+  function cLeaves(g) { return ((DATA.cty[g.slice(2)] || {}).leaves) || 0; }
   function defaults() {
-    var d = cands.filter(function (c) { return c.g !== "W"; })
-      .slice(0, cap).map(function (c) { return c.g; })
+    var pool = cands.filter(function (c) { return c.g !== "W"; });
+    if (kind === "country") pool = pool.slice().sort(function (a, b) {
+      return cLeaves(b.g) - cLeaves(a.g) || b.n - a.n || (a.t < b.t ? -1 : 1); });
+    var d = pool.slice(0, OPEN_N).map(function (c) { return c.g; })
       .sort(function (a, b) { return DATA.geos[a].t < DATA.geos[b].t ? -1 : 1; });
     if (avail.W) d.unshift("W");
     return d;
@@ -1373,13 +1473,19 @@ function renderWorldTrends() {
   DRAWN = drawn;
 
   var atCap = drawn.filter(function (g) { return g !== "W"; }).length >= cap;
-  /* Countries are capped at eighteen chips, but the World yardstick is drawn by
-     default and must keep its own chip whatever the cap: without one it was on
-     the chart with no way to switch it off. */
+  /* The chip row used to offer the first eighteen countries whether they were on
+     the chart or not: it filled the width with options and still hid 190 of
+     them. It now carries only what is ON the chart -- plus the World yardstick,
+     which is drawn by default and must keep its own chip whatever the cap,
+     because without one it was on the chart with no way to switch it off.
+     Everything else moves into the single collapsed picker after the row. */
   var chips = kind === "country"
-    ? cands.filter(function (c) { return c.g === "W"; })
-        .concat(cands.filter(function (c) { return c.g !== "W"; }).slice(0, 18))
+    ? cands.filter(function (c) { return c.g === "W" || drawn.indexOf(c.g) >= 0; })
     : cands;
+  var more = kind === "country"
+    ? cands.filter(function (c) { return c.g !== "W" && drawn.indexOf(c.g) < 0; })
+        .sort(function (a, b) { return a.t < b.t ? -1 : 1; })
+    : [];
   document.getElementById("wtChips").innerHTML =
     chips.map(function (c) {
       var on = drawn.indexOf(c.g) >= 0, full = !on && c.g !== "W" && atCap;
@@ -1397,8 +1503,20 @@ function renderWorldTrends() {
       return '<button class="chip ser" style="opacity:.32" title="Still selected, but ' +
         esc(title(S.node)) + ' has no series here — it returns when you change category" ' +
         'onclick="APP.toggleGeo(' + arg(g) + ')">' +
-        esc((DATA.geos[g] || {}).t || g) + "</button>"; }).join("");
-  /* the add-a-place picker was one of the analyst controls and is gone */
+        esc((DATA.geos[g] || {}).t || g) + "</button>"; }).join("") +
+    /* ONE control, not two hundred. A <select> collapses the whole remaining
+       list into a single chip-sized element, so "add another country" costs the
+       row no width at all and the reader can still reach every one of them. */
+    (more.length
+      ? '<select class="chip addgeo" aria-label="Add a country to the chart"' +
+        (atCap ? ' disabled title="' + cap +
+          ' lines is the limit &mdash; switch one off first"' : "") +
+        ' onchange="APP.addGeo(this.value);this.selectedIndex=0">' +
+        '<option value="">+ add a country&hellip;</option>' +
+        more.map(function (c) {
+          return '<option value="' + esc(c.g) + '">' + esc(c.t) + " &middot; " +
+            c.n + "</option>"; }).join("") + "</select>"
+      : "");
 
   var kindM = measureKind(), isLevel = kindM === "level", isIndex = kindM === "index";
   var lo = null, hi = null;
@@ -3375,8 +3493,6 @@ function hmDepthPhrase() {
    neighbours. A median taken across a whole class is not a quantity anyone can
    price, which is why nothing here takes one.
    ===================================================================== */
-var GV_MIN_LEAVES = 3, GV_MIN_ROWS = 3;
-
 /* Every world region the payload carries a median for. `rmed` mixes regions
    and subregions in one flat map, so the region list is intersected with
    WORLD_REGIONS; an empty intersection means the labels have been renamed and
@@ -3406,7 +3522,7 @@ function gvLeafGaps(region) {
     var u = dom || DATA.unitIdx.filter(function (x) {
       return g[x] > 0 && rm[x] > 0; })[0];
     if (!u) return;
-    out.push({code:code, cls:classOf(code), unit:u, r:Math.log(rm[u] / g[u])});
+    out.push({code:code, unit:u, r:Math.log(rm[u] / g[u])});
   });
   return out;
 }
@@ -3450,27 +3566,19 @@ function gvRows() {
   return out;
 }
 
+/* Draws the per-row bars and their lead. The "<row> by category group" heat
+   table that used to sit under them was removed at the reader's request -- the
+   tab already opens on a heatmap against the same yardstick, and a second one
+   restated it a level up. `cellHtml`/`band`/the ramp went with it, and so did
+   the per-class fold (`per`/`rowN`) that existed only to fill its cells. The
+   division-level fold below is what the bars read, and it is unchanged. */
 function renderVsWorldGrid() {
-  var tbl = document.getElementById("gvTbl");
-  if (!tbl) return;
-  /* What a row IS, in this build's words. Every count and every caption below
-     uses it, so the two never drift apart. */
-  var ROWWORD = IS_REGIONAL ? "country" : "region";
-  var ROWWORDS = IS_REGIONAL ? "countries" : "regions";
+  if (!document.getElementById("cGlobalBars")) return;
 
   var rowsIn = gvRows();
-  var per = {}, rowN = {}, overall = {}, lab = {}, mineOf = {};
+  var overall = {}, lab = {}, mineOf = {};
   rowsIn.forEach(function (e) {
     lab[e.key] = e.label; mineOf[e.key] = e.mine;
-    var by = {};
-    e.gaps.forEach(function (x) { if (x.cls) (by[x.cls] = by[x.cls] || []).push(x); });
-    var cells = {};
-    Object.keys(by).forEach(function (cls) {
-      if (by[cls].length < GV_MIN_LEAVES) return;
-      cells[cls] = {r:ladderMean(by[cls], cls.split(".").length), n:by[cls].length};
-      rowN[cls] = (rowN[cls] || 0) + 1;
-    });
-    per[e.key] = cells;
     /* The headline figure folds all the way to the division, so a place with
        forty kinds of rice and one kind of beef does not have its number
        decided by rice. Same ladder as the heatmap and the price level. */
@@ -3480,10 +3588,8 @@ function renderVsWorldGrid() {
   var live = rowsIn.map(function (e) { return e.key; })
     .filter(function (k) { return overall[k]; });
   if (!live.length) {
-    tbl.innerHTML = '<tbody><tr><td class="empty">This build carries nothing that ' +
-      "can be set against the world median here.</td></tr></tbody>";
-    setHtmlIfPresent("gvRamp", "");
-    setHtmlIfPresent("gvLead", "");
+    setHtmlIfPresent("gvLead", "This build carries nothing that can be set " +
+      "against the world median here.");
     sizeCanvas("cGlobalBars", 90);
     chart("cGlobalBars", {type:"bar", data:{labels:[], datasets:[]}});
     return;
@@ -3522,63 +3628,6 @@ function renderVsWorldGrid() {
         y:{ ticks:{font:{size:11.5}, autoSkip:false}, grid:{display:false} } } }
   });
 
-  var rows = Object.keys(rowN)
-    .filter(function (c) { return rowN[c] >= GV_MIN_ROWS; }).sort();
-  var head = '<thead><tr><th class="ctry">Category</th>' +
-    live.map(function (k) {
-      return '<th class="ctyh' + (mineOf[k] ? " mine" : "") + '" title="' + esc(lab[k]) +
-        (mineOf[k] ? " — the region this dashboard is built from" : "") +
-        '"><span>' + esc(lab[k]) + "</span></th>"; }).join("") + "</tr></thead>";
-  function cellHtml(k, cls) {
-    var c = per[k][cls];
-    if (!c || c.r == null) return '<td class="na" title="' + esc(lab[k]) + " · " +
-      esc(title(cls)) + ': fewer than ' + GV_MIN_LEAVES + ' matched items"></td>';
-    var v = (Math.exp(c.r) - 1) * 100;
-    var l = Math.abs(v) >= 999 ? (v > 0 ? "+999" : "-999")
-      : (v >= 0 ? "+" : "") + v.toFixed(0);
-    return '<td class="c' + (mineOf[k] ? " mine" : "") + '" style="background:' +
-      heatColor(c.r) + ';color:#1b211f" title="' + esc(lab[k]) + " · " + esc(title(cls)) +
-      ": " + l + "% vs the world median, over " + c.n + ' matched items">' +
-      l + "</td>";
-  }
-  var span = live.length + 1, seen = {};
-  function band(cls) {
-    var a2 = ancestors(cls), out = "";
-    [0, 1].forEach(function (d) {
-      var code = a2[d];
-      if (!code || seen[code] || !DATA.tax[code]) return;
-      seen[code] = 1;
-      out += '<tr class="hmg l' + (d + 1) + '"><td colspan="' + span + '"><span>' +
-        esc(title(code)) + "</span></td></tr>";
-    });
-    return out;
-  }
-  var body = "<tbody>" +
-    '<tr class="gvall"><td class="ctry">Everything priced</td>' +
-    live.map(function (k) {
-      var o = overall[k], v = (Math.exp(o.r) - 1) * 100;
-      var l = (v >= 0 ? "+" : "") + v.toFixed(0);
-      return '<td class="c' + (mineOf[k] ? " mine" : "") + '" style="background:' +
-        heatColor(o.r) + ';color:#1b211f" title="' + esc(lab[k]) + ": " + l +
-        "% vs the world median, over " + o.n + ' matched items">' + l + "</td>";
-    }).join("") + "</tr>" +
-    rows.map(function (cls) {
-      return band(cls) + '<tr><td class="ctry ind" title="' + esc(title(cls)) + '">' +
-        esc(proseTitle(cls)) + '<span class="ru">vs world</span></td>' +
-        live.map(function (k) { return cellHtml(k, cls); }).join("") + "</tr>";
-    }).join("") + "</tbody>";
-  tbl.innerHTML = head + body;
-
-  var stops = [-1, -0.6, -0.3, 0, 0.3, 0.6, 1];
-  setHtmlIfPresent("gvRamp",
-    '<span class="lab">cheaper than the world</span>' +
-    stops.map(function (t) { return '<i style="background:' +
-      hexMix(HM_MID, t >= 0 ? EXPENSIVE : CHEAP, Math.pow(Math.abs(t), 0.8)) + '"></i>'; }).join("") +
-    '<span class="lab">more expensive</span>' +
-    '<span class="lab" style="margin-left:14px">full colour at &plusmn;100% &middot; ' +
-    "hatched: fewer than " + GV_MIN_LEAVES + " matched items &middot; " + rows.length +
-    " groups &times; " + live.length + " " + ROWWORDS + "</span>");
-
   if (!IS_REGIONAL) {
     /* This card was only ever drawn in a regional build, on a tab a global
        build hid, so its lead could say "before this build was narrowed to
@@ -3593,8 +3642,8 @@ function renderVsWorldGrid() {
       "A region is priced by whichever retailers the corpus reaches inside it, so read " +
       "this as what the collected shelves say, not as a sample of the region. Where " +
       "fewer than " + benchMinCountries() + " countries in a region price an item, no " +
-      "regional median is published for it and the cell is left hatched rather than " +
-      "estimated.");
+      "regional median is published for it and the item is left out of that region's " +
+      "bar rather than estimated.");
     return;
   }
   /* The regional lead says the same thing about countries, and then says where
@@ -3616,10 +3665,8 @@ function renderVsWorldGrid() {
         ro.length + " matched items. "
       : "") +
     "A country is priced by whichever retailers the corpus reaches inside it, so read " +
-    "this as what the collected shelves say, not as a sample of the country. A group " +
-    "with fewer than " + GV_MIN_LEAVES + " matched items is left hatched rather than " +
-    "estimated, and a group no " + ROWWORD + " prices " + GV_MIN_ROWS +
-    " times over is left off entirely.");
+    "this as what the collected shelves say, not as a sample of the country. An item " +
+    "the world carries no median for is left out of the fold rather than estimated.");
 }
 
 /* =====================================================================
@@ -4254,9 +4301,6 @@ APP.togglePppUngated = function () { PPP_UNGATED = !PPP_UNGATED; renderPppBench(
       "neighbours. Red is more expensive than the world, blue cheaper. The world " +
       "median is computed over the whole corpus, before this build was narrowed to " +
       esc(BUILD_REGION) + ".");
-    setTextIfPresent("gvGridTitle", "Country by category group");
-    setTextIfPresent("gvGridSub", "Each category group in each " + BUILD_REGION +
-      " country, against the world median for the same items.");
   }
 
   /* A regional build is already scoped to one region, so a region filter is a
