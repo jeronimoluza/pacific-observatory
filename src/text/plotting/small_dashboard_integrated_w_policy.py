@@ -832,6 +832,11 @@ const SCALE_META = {
 };
 const topicState = { slider: null, sliderDates: [], chart: null, onChange: () => {} };
 
+// Keyed by the group slug, and the same map the series tab uses, so one group
+// cannot be called two different things on two tabs of one dashboard.
+const slugLabelMap = __LABEL_MAP_JSON__;
+// Keyed by the title-cased form instead, and kept because it is what fixes the
+// casing the title-caser cannot know about.
 const labelMap = {
     'Imf': 'IMF',
     'Us Government': 'US Government',
@@ -843,6 +848,7 @@ const labelMap = {
     'Housing Real Estate': 'Housing & Real Estate'
 };
 function fmtLabel(key) {
+    if (slugLabelMap[key]) return slugLabelMap[key];
     const raw = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     return labelMap[raw] || raw;
 }
@@ -1489,6 +1495,7 @@ def build_topic_iframe_html(
     all_groups=None,
     data_expr=None,
     factors_expr=None,
+    label_map=None,
 ):
     options = (
         dropdown_options_html
@@ -1513,6 +1520,7 @@ def build_topic_iframe_html(
         .replace("__FACTORS_JSON__", factors_expr or json.dumps(factors))
         .replace("__FOCUS_JSON__", json.dumps(focus_groups))
         .replace("__ALL_GROUPS_JSON__", json.dumps(all_groups))
+        .replace("__LABEL_MAP_JSON__", json.dumps(label_map or {}))
         .replace("__PALETTE_JSON__", json.dumps(PALETTE))
     )
 
@@ -1914,6 +1922,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
         dropdown_options_html=hier_options,
         focus_groups=sorted(topic_groups & shown_topics),
         all_groups=sorted(topic_groups),
+        label_map=TOPICS_LABEL_MAP,
         data_expr=topic_data_expr,
         factors_expr=topic_factors_expr,
     )
