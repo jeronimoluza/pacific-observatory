@@ -67,7 +67,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import yaml
 
-from prices import partition
+from prices import lineage, partition
 from prices.enrich import config, shards
 
 logger = logging.getLogger(__name__)
@@ -582,6 +582,13 @@ def _write_source_shard(
                 source,
                 n_out_of_stock,
             )
+            lineage.record(
+                "concatenate",
+                "concatenate.py:_emit_jsonl",
+                "available is False",
+                n_dropped=n_out_of_stock,
+                scope=f"{country}/{source}",
+            )
             if run_stats is not None:
                 run_stats["rows"] += n_out_of_stock
                 run_stats["sources"] += 1
@@ -606,6 +613,14 @@ def _write_source_shard(
             country,
             source,
             n_dropped,
+        )
+        lineage.record(
+            "concatenate",
+            "concatenate.py:_finalise_shard",
+            "missing product_name/price/currency/country",
+            n_in=n_rows + n_dropped,
+            n_dropped=n_dropped,
+            scope=f"{country}/{source}",
         )
     return n_rows
 

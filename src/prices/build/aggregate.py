@@ -55,7 +55,7 @@ import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
-from prices import partition
+from prices import lineage, partition
 from prices.build.analytical import write_analytical
 from prices.build.basket import FNB_COICOP_PREFIXES, in_scope_countries
 from prices.build.fx import attach_fx_and_usd
@@ -264,9 +264,29 @@ class _JoinCache:
             merged = chunk.merge(
                 self.frame, on=JOIN_KEYS, how="inner", suffixes=("_raw", "")
             )
+            lineage.record(
+                "build",
+                "aggregate.py:_JoinCache.join",
+                "no classified match",
+                n_in=len(chunk),
+                n_dropped=len(chunk) - len(merged),
+            )
             return merged
         pos = self.index.get_indexer(chunk["input_hash"])
         hit = pos >= 0
+        # The largest drop in the pipeline and, until this counter, the only one
+        # nobody measured: every raw observation whose product was never
+        # classified, landed outside the food-and-beverage divisions, or was
+        # rejected, leaves here. Counted, not keyed -- the keys are already in
+        # `decisions_hierlex`, which carries state and trust_level for all
+        # 47.5M products and is the place to ask WHICH rows and why.
+        lineage.record(
+            "build",
+            "aggregate.py:_JoinCache.join",
+            "no classified match",
+            n_in=len(chunk),
+            n_dropped=int((~hit).sum()),
+        )
         left = chunk.loc[hit].reset_index(drop=True)
         # Mirrors merge's suffixes=("_raw", ""): the LEFT copy of an
         # overlapping column is the renamed one. input_hash is kept now, for
@@ -399,7 +419,16 @@ def _join_chunk(
     """
     if not isinstance(cache, _JoinCache):
         cache = _JoinCache(cache)
+    n_before = len(chunk)
     chunk = chunk[in_scope_countries(chunk["country"])].copy()
+    if len(chunk) != n_before:
+        lineage.record(
+            "build",
+            "aggregate.py:_join_chunk",
+            "country outside basket scope",
+            n_in=n_before,
+            n_dropped=n_before - len(chunk),
+        )
     if chunk.empty:
         return chunk
     # Parquet shards carry input_hash, computed once when the shard was written.
@@ -428,10 +457,29 @@ def _require_unit(df: pd.DataFrame) -> pd.DataFrame:
     kept = df.dropna(subset=["coicop_code", "standard_unit"])
     dropped = len(df) - len(kept)
     if dropped:
+        # Keyed, unlike the date floor and the basket-scope filter: those two
+        # drop rows the build is DESIGNED to drop, and recording millions of
+        # expected exclusions buys nothing. A row that survived classification
+        # and still has no leaf or no unit is a surprise, and a surprise is
+        # what a ledger is for.
+        lineage.record_keys(
+            "build",
+            "aggregate.py:_require_unit",
+            "null coicop_code or standard_unit",
+            df.loc[df.index.difference(kept.index)],
+        )
+    if dropped:
         logger.info(
             "Unit filter dropped %d / %d rows (null coicop_code/standard_unit)",
             dropped,
             len(df),
+        )
+        lineage.record(
+            "build",
+            "aggregate.py:_require_unit",
+            "null coicop_code or standard_unit",
+            n_in=len(df),
+            n_dropped=dropped,
         )
     return kept
 
@@ -503,6 +551,19 @@ def _finalize(
             "derived_typical"
         ),
     )
+    unparsed = df[df["price_local"].isna()]
+    if len(unparsed):
+        # Nothing counted this before. A price string that stopped parsing --
+        # the exact thing a parser change moves -- was invisible until a leaf
+        # went missing from a dashboard weeks later. Keyed, because the frame
+        # still carries input_hash and url_hash here and the volume is bounded
+        # by what survived the join.
+        lineage.record_keys(
+            "build",
+            "aggregate.py:_finalize",
+            "price_local unparseable",
+            unparsed,
+        )
     df = df[df["price_local"].notna()].copy()
     df = attach_fx_and_usd(df)
     # Plain division rather than a row-wise notna guard: a NaN operand
@@ -703,6 +764,13 @@ def build_observations(
         FX_HISTORY_FLOOR.date(),
         len(df),
         before,
+    )
+    lineage.record(
+        "build",
+        "aggregate.py:build_observations",
+        f"observation_date before {FX_HISTORY_FLOOR.date()} or unparseable",
+        n_in=before,
+        n_dropped=before - len(df),
     )
     df = _finalize(df, typical_mass=typical_mass)
     if overlay:
