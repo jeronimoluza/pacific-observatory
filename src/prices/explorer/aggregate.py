@@ -32,6 +32,7 @@ from prices.explorer.sources import (
     CHANGE_LAGS,
     COMPARABLE_UNITS,
     CURRENCY_ALIASES,
+    SUPPRESSED_PARQUET,
     FE_MIN_PAIRS,
     FX_EXCURSION_MAX_RUN,
     FX_EXCURSION_RATIO,
@@ -1258,8 +1259,21 @@ def build_payload(region: str | None = None) -> dict:
         len(suppressed),
         suppressed.coicop_code.nunique(),
     )
-    # The provenance column has done its job by here, and the explorer writes no
-    # suppression audit. Carried on, `_explode_nodes` would multiply an object
+    # `collapse` already hands back the dropped rows carrying `drop_reason` and
+    # the `display_unit` they could not reach. Discarding that was the whole
+    # cost of "the explorer writes no suppression audit": the count reached the
+    # log and the evidence reached nothing.
+    if not suppressed.empty:
+        SUPPRESSED_PARQUET.parent.mkdir(parents=True, exist_ok=True)
+        suppressed.to_parquet(SUPPRESSED_PARQUET, index=False)
+        logger.info(
+            "wrote %d suppressed rows over %d leaves -> %s",
+            len(suppressed),
+            suppressed.coicop_code.nunique(),
+            SUPPRESSED_PARQUET,
+        )
+    # The provenance column has done its job by here, and the suppression audit
+    # above has already taken its copy. Carried on, `_explode_nodes` would multiply an object
     # column by every row's ancestor count.
     trusted = trusted.drop(columns="display_unit_source")
 

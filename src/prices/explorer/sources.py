@@ -17,6 +17,12 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 BUILD_DIR = REPO_ROOT / "data" / "prices" / "build"
 OBS_PATH = BUILD_DIR / "global_prices_observations.parquet"
+# Trusted rows `unit_collapse` could not convert to their leaf's display unit.
+# The publish path has written its copy since it shipped; the explorer computed
+# the same frame and dropped it, which is why an explorer leaf could vanish for a
+# country with no record of why. Named apart from publish's file because the two
+# run over different row sets and neither is the other's audit.
+SUPPRESSED_PARQUET = BUILD_DIR / "explorer_suppressed_units.parquet"
 COICOP_XLSX = REPO_ROOT / "data" / "prices" / "enrich" / "coicop_categories.xlsx"
 COUNTRIES_YAML = REPO_ROOT / "src" / "configs" / "countries.yaml"
 REGIONS_YAML = REPO_ROOT / "src" / "configs" / "regions.yaml"
