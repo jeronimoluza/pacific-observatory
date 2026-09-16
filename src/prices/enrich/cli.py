@@ -29,7 +29,11 @@ STAGE_ORDER = ["concatenate", "prepare", "classify"]
 SCOPED_STAGES = ("concatenate", "prepare", "classify")
 
 
-def _invalidate_for(stage: str | None, backend: str | None = None) -> None:
+def _invalidate_for(
+    stage: str | None,
+    backend: str | None = None,
+    selectors: list[str] | None = None,
+) -> None:
     if stage == "concatenate" and concatenate_stage.STATE_FILE.exists():
         concatenate_stage.STATE_FILE.unlink()
     if stage == "prepare" and config.PRODUCTS_INPUT_PARQUET.exists():
@@ -37,15 +41,30 @@ def _invalidate_for(stage: str | None, backend: str | None = None) -> None:
     if stage == "classify":
         # Only the chosen backend's output. Dropping both would make --rebuild
         # on one model quietly destroy the other model's run.
-        out = backends.get(backend).classified_path
-        if out.exists():
-            out.unlink()
+        be = backends.get(backend)
+        out = be.classified_path
         # The table is a directory of per-country parts now; dropping only the
         # legacy file would leave the parts standing and `--rebuild` would be a
         # no-op that looks like it worked.
         parts = decisions_store.parts_root(out)
-        if parts.is_dir():
-            shutil.rmtree(parts)
+        if selectors:
+            # ...and dropping the whole directory is how a SCOPED --rebuild
+            # destroys the corpus. classify.run() rewrites only the countries in
+            # scope and prunes nothing, because it assumes every part it did not
+            # write is still on disk -- so wiping all of them and rebuilding one
+            # leaves exactly one country standing. Invalidate what this run will
+            # actually rewrite, and leave the legacy single-file table alone: a
+            # scoped run cannot rebuild that either.
+            for country in classify_stage.countries_for(selectors) or ():
+                for root in (parts, decisions_store.parts_root(be.decisions_path)):
+                    part = decisions_store.part_path(root, country)
+                    if part.exists():
+                        part.unlink()
+        else:
+            if out.exists():
+                out.unlink()
+            if parts.is_dir():
+                shutil.rmtree(parts)
         # Prediction shards cache head scores per name-bucket; a shard is reused
         # whenever its cached names cover the request, so a bucket untouched by a
         # new batch keeps scores from before a veto-lexicon change and silently
@@ -184,7 +203,7 @@ def process_command(
                 err=True,
             )
     if rebuild:
-        _invalidate_for(stage, backend)
+        _invalidate_for(stage, backend, selectors)
 
     def run_stage(name: str) -> None:
         if name == "concatenate":

@@ -551,9 +551,20 @@ def run(
     if countries is None:
         # A full run is authoritative: a country that no longer produces rows
         # must not keep the part it produced last time. A SCOPED run prunes
-        # nothing, because everything it did not write is out of its scope.
+        # nothing OUTSIDE its scope, because everything it did not write there is
+        # simply not its business.
         decisions_store.prune(dec_root, set(writer.rows_by_country))
         decisions_store.prune(view_root, {p.stem for p in written_views})
+    else:
+        # Inside the scope it is authoritative too. A selected country that
+        # decided zero rows keeps no part: a stale part reads exactly like a
+        # live one, and build cannot tell them apart.
+        decisions_store.prune_scoped(
+            dec_root, countries, set(writer.rows_by_country)
+        )
+        decisions_store.prune_scoped(
+            view_root, countries, {p.stem for p in written_views}
+        )
 
     summary = {
         "backend": be.name,

@@ -211,6 +211,31 @@ def prune(root: Path, keep: Iterable[str]) -> list[Path]:
     return dropped
 
 
+def prune_scoped(root: Path, countries: Iterable, written: Iterable[str]) -> list[Path]:
+    """Drop the parts of IN-SCOPE countries that this run did not write.
+
+    The complement of `prune`, and the other half of the same invariant. A
+    scoped run must not touch what lies outside its scope -- but a country
+    inside the scope that decided zero rows this time is not "untouched", it is
+    empty, and keeping its previous part leaves last run's prices live all the
+    way through build.
+    """
+    root = Path(root)
+    if not root.is_dir():
+        return []
+    written = set(written)
+    dropped = []
+    for country in countries:
+        name = part_name(country)
+        if name in written:
+            continue
+        path = root / f"{name}.parquet"
+        if path.exists():
+            path.unlink()
+            dropped.append(path)
+    return dropped
+
+
 def read(
     path: Path,
     columns: Optional[Sequence[str]] = None,

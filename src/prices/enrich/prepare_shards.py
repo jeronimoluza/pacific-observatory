@@ -283,6 +283,17 @@ def run(
         return []
     prepared_dir = out_dir or PREPARED_DIR
     groups = partition.group_by(selected, "country")
+    if selectors:
+        # A country's prepared parquet is written from its WHOLE shard set, so a
+        # selector narrower than a country -- `--only **/agmarknet` -- has to
+        # widen to every shard in the countries it hit. Preparing one source's
+        # shards would rewrite the country file with only that source's
+        # products, and `write_products_input` below would union the truncated
+        # country straight into products_input.parquet. It self-heals on the
+        # next unscoped run, because the signature recorded here would cover
+        # only the in-scope shards -- but until then the corpus is short.
+        everything = partition.group_by(partition.select(None, root), "country")
+        groups = {key: everything[key] for key in groups if key in everything}
     state = _load_state(prepared_dir)
     # Countries outside this run keep their entry, exactly as concatenate
     # carries a selector-excluded source forward: dropping it would make the
