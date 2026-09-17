@@ -45,8 +45,9 @@ def _prepared_paths(
 
     Scoping happens on the corpus tree and is mapped to countries, because
     prepare's output is per country while a selector may name a single source.
+    The widening rule itself lives in `partition.STAGE_FLOOR`.
     """
-    shards = partition.select(selectors, root)
+    shards = partition.resolve("embed", selectors, root)
     keys = partition.group_by(shards, "country")
     paths = [prepare_shards.prepared_path(key) for key in sorted(keys)]
     return [p for p in paths if p.exists()]

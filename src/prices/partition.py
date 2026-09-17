@@ -199,6 +199,77 @@ def group_by(
     return groups
 
 
+# The partition level each stage can safely WRITE at.
+#
+# A selector finer than a stage's floor is widened to it before the stage runs.
+# The reason is always the same shape: the stage's output file covers a whole
+# country, so building it from a slice of one country writes a truncated file,
+# and the next stage unions that truncation forward as if it were complete.
+#
+# This is the one place that reasoning lives. It was previously re-derived at
+# three call sites -- `prepare_shards`, `classify.countries_for` and
+# `embed._prepared_paths` -- each with its own copy of the argument, which meant
+# the rule could drift one stage at a time without anything noticing.
+#
+# A stage missing from this table is refused rather than defaulted: a new stage
+# that has not thought about its own grain must not inherit one.
+STAGE_FLOOR: dict[str, str] = {
+    # One shard per source, no aggregation across sources. A source-grained
+    # selector is already exactly what this stage writes.
+    "concatenate": "source",
+    # A country's prepared parquet is written from its WHOLE shard set, and
+    # `write_products_input` unions that file straight into
+    # `products_input.parquet`. Preparing one source's shards rewrites the
+    # country file with only that source's products.
+    #
+    # Drops to "source" once scope-module step 4 folds `source` into
+    # `input_hash`; until then two sources in one country can collapse into one
+    # product row, and splitting the scope would split that row's evidence.
+    "prepare": "country",
+    # The decisions table is one parquet part per country, named per country and
+    # rewritten whole. A sub-country run would truncate the part.
+    #
+    # NOT because of the input-hash country fallback, which is the reason this
+    # stage's own docstring gives: that fallback fires only for a row with no
+    # URL, and zero of 172,551,112 raw shard rows lack one. The floor is a
+    # storage accident, which is why step 2 can drop it to row grain.
+    "classify": "country",
+    # Reads prepare's per-country output, so it inherits prepare's floor.
+    "embed": "country",
+}
+
+
+def resolve(
+    stage: str,
+    selectors: Optional[Sequence[str]] = None,
+    root: Optional[Path] = None,
+) -> list[Shard]:
+    """Every shard `stage` must process in order to honour `selectors` safely.
+
+    Same as `select` when the selector is already at or above the stage's floor.
+    Below it, the result widens: `--only **/agmarknet` against a country-floored
+    stage returns every shard in each country agmarknet appears in, because that
+    is what the stage has to read to write a correct country file.
+
+    Widening rather than refusing is deliberate -- naming one source is the
+    normal way to ask for a re-run, and the selector stays a useful shorthand.
+    What is refused is an unknown stage.
+    """
+    try:
+        floor = STAGE_FLOOR[stage]
+    except KeyError:
+        raise SelectorError(
+            f"stage {stage!r} has not declared a scope floor; "
+            f"add it to STAGE_FLOOR with the reason"
+        ) from None
+    selected = select(selectors, root)
+    if not selectors or floor == "source":
+        return selected
+    depth = PARTITION_LEVELS.index(floor) + 1
+    keys = {tuple(s.key.split("/")[:depth]) for s in selected}
+    return [s for s in select(None, root) if tuple(s.key.split("/")[:depth]) in keys]
+
+
 def order_longest_first(shards: Iterable[Shard]) -> list[Shard]:
     """Largest shard first — longest-processing-time-first scheduling. The
     shards are heavily skewed, so handing the biggest to the pool first keeps a

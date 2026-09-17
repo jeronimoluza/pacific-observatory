@@ -430,17 +430,15 @@ def decide_products(
 def countries_for(selectors, root: Optional[Path] = None) -> Optional[list[str]]:
     """The countries a selector names, or None for the whole corpus.
 
-    Country, not source, is the scope grain — the same choice
-    `build.aggregate.overlay_observations` makes, for the same reason. `prepare`
-    groups on `input_hash`, whose fallback key is
-    `(product_name_original, country, currency)`; two sources in one country
-    selling the same URL-less product are therefore ONE products_input row. A
-    source-grained rescope would split that row's evidence and silently change
-    the number, so a selector that names a source recomputes its whole country.
+    Country, not source, is the scope grain; `partition.STAGE_FLOOR` owns the
+    reason and the note that the input-hash country fallback this docstring
+    used to cite is a dead code path.
     """
     if not selectors:
         return None
-    shards = partition.select(selectors, root or partition.PER_SOURCE_DIR)
+    shards = partition.resolve(
+        "classify", selectors, root or partition.PER_SOURCE_DIR
+    )
     return sorted({s.country for s in shards})
 
 
