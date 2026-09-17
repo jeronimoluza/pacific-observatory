@@ -375,9 +375,14 @@ def _classify_funnel(countries: set[str] | None = None) -> pd.DataFrame | None:
     import pyarrow.dataset as ds
 
     rows: dict[tuple, list] = {}
+    # Distinct product names at the same two stages, for the products metric.
+    # Held as (leaf_id, country_id, name_hash, decided) rather than strings:
+    # the triples run to tens of millions before the final dedup, and the names
+    # are free text. A product counts as decided if ANY of its rows was.
+    triples: list[pd.DataFrame] = []
     scanned = matched = 0
     for b in ds.dataset(PRODUCTS_INPUT, format="parquet").to_batches(
-        columns=["input_hash", "n_rows"]
+        columns=["input_hash", "n_rows", "product_name_original"]
     ):
         df = b.to_pandas()
         scanned += len(df)
@@ -387,32 +392,60 @@ def _classify_funnel(countries: set[str] | None = None) -> pd.DataFrame | None:
         if not hit.any():
             continue
         matched += int(hit.sum())
+        k = pos[hit]
         w = pd.to_numeric(df["n_rows"], errors="coerce").fillna(1).to_numpy()[hit]
         sub = pd.DataFrame({
-            "coicop_code": leaf_uniq.take(leaf_codes[pos[hit]]),
-            "country": cty_uniq.take(cty_codes[pos[hit]]),
+            "coicop_code": leaf_uniq.take(leaf_codes[k]),
+            "country": cty_uniq.take(cty_codes[k]),
             "w": w,
-            "wdec": np.where(dec[pos[hit]], w, 0),
+            "wdec": np.where(dec[k], w, 0),
         })
         g = sub.groupby(["coicop_code", "country"]).agg(
             n_classified=("w", "sum"), n_decided=("wdec", "sum")
         )
-        for k, v in g.iterrows():
-            cell = rows.setdefault(k, [0, 0])
+        for key, v in g.iterrows():
+            cell = rows.setdefault(key, [0, 0])
             cell[0] += int(v.n_classified)
             cell[1] += int(v.n_decided)
+        triples.append(
+            pd.DataFrame({
+                "leaf": leaf_codes[k].astype(np.int32),
+                "cty": cty_codes[k].astype(np.int32),
+                "nm": pd.util.hash_pandas_object(
+                    df["product_name_original"], index=False
+                ).to_numpy()[hit],
+                "dec": dec[k],
+            }).drop_duplicates()
+        )
     out = pd.DataFrame(
         [(k[0], k[1], v[0], v[1]) for k, v in rows.items()],
         columns=["coicop_code", "country", "n_classified", "n_decided"],
     )
+    if triples:
+        tr = pd.concat(triples, ignore_index=True)
+        # A name split across input_hashes can be decided on one and not
+        # another; decided-anywhere is the reading that matches "this product
+        # reached a code".
+        tr = tr.groupby(["leaf", "cty", "nm"], as_index=False)["dec"].max()
+        pg = tr.groupby(["leaf", "cty"]).agg(
+            n_classified_products=("nm", "size"), n_decided_products=("dec", "sum")
+        ).reset_index()
+        pg["coicop_code"] = leaf_uniq.take(pg.pop("leaf").to_numpy())
+        pg["country"] = cty_uniq.take(pg.pop("cty").to_numpy())
+        out = out.merge(pg, on=["coicop_code", "country"], how="left")
+        for c in ("n_classified_products", "n_decided_products"):
+            out[c] = out[c].fillna(0).astype(int)
     out["coicop_code"] = out["coicop_code"].map(_normalize_coicop)
     out = out.dropna(subset=["coicop_code"])
     out = out.groupby(["coicop_code", "country"], as_index=False).sum()
     logger.info(
         "classify funnel: %d of %d products_input rows carry a decision; "
-        "%d raw rows classified -> %d decided over %d cells",
+        "%d raw rows classified -> %d decided over %d cells; distinct products "
+        "%d -> %d",
         matched, scanned,
         int(out["n_classified"].sum()), int(out["n_decided"].sum()), len(out),
+        int(out.get("n_classified_products", pd.Series([0])).sum()),
+        int(out.get("n_decided_products", pd.Series([0])).sum()),
     )
     return out
 
@@ -626,12 +659,19 @@ def _upstream_kpi(cur: pd.DataFrame) -> dict:
     up = cur[cur["n_classified"] > 0]
     if up.empty:
         return {}
-    return {
+    out = {
         "classified": int(up["n_classified"].sum()),
         "decided": int(up["n_decided"].sum()),
         "collected_upstream": int(up["n_total"].sum()),
         "upstream_cells": int(len(up)),
     }
+    if "n_classified_products" in up:
+        out.update(
+            classified_products=int(up["n_classified_products"].sum()),
+            decided_products=int(up["n_decided_products"].sum()),
+            products_collected_upstream=int(up["n_products_total"].sum()),
+        )
+    return out
 
 
 def _orphan_cells(published: pd.DataFrame, funnel: pd.DataFrame) -> pd.DataFrame:
@@ -1020,11 +1060,13 @@ def _region_obs(
     all come from one country is not the same finding as one spread over
     twelve, and a total alone cannot tell them apart.
     """
-    fields = ("obs", "obs_all", "prod", "prod_all", "n", "clf", "dec")
+    fields = ("obs", "obs_all", "prod", "prod_all", "n", "clf", "dec",
+              "clfp", "decp")
     out: dict[str, dict[str, dict[str, int]]] = {f: {} for f in fields}
     cols = {"obs": "n_obs", "obs_all": "n_total",
             "prod": "n_products", "prod_all": "n_products_total",
-            "clf": "n_classified", "dec": "n_decided"}
+            "clf": "n_classified", "dec": "n_decided",
+            "clfp": "n_classified_products", "decp": "n_decided_products"}
     for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
         acc: dict[str, dict[str, int]] = {f: {} for f in fields}
         for col in region_cols:
@@ -1169,7 +1211,8 @@ _IMP_FIELDS = ("imputed", "imp_share", "n_imputed")
 # months, so writing them out in full adds tens of megabytes of "no".
 _ZERO_DROP = ("n_lost_qa", "n_lost_unit", "n_lost_prune", "n_lost_other",
               "n_products_lost", "n_top_qa", "n_top_qa_prod",
-              "n_classified", "n_decided")
+              "n_classified", "n_decided",
+              "n_classified_products", "n_decided_products")
 
 
 def _lean(r: dict) -> dict:
@@ -1568,8 +1611,10 @@ def publish(
                 g = grids[key].merge(
                     classify, on=["coicop_code", "country"], how="left"
                 )
-                for c in ("n_classified", "n_decided"):
-                    g[c] = g[c].fillna(0).astype(int)
+                for c in ("n_classified", "n_decided",
+                          "n_classified_products", "n_decided_products"):
+                    if c in g:
+                        g[c] = g[c].fillna(0).astype(int)
                 # THE FUNNEL MUST NOT RUN BACKWARDS. C and D count the same
                 # rows at earlier stages, so C >= D >= O holds by construction
                 # -- and where it does not, the cell's upstream figures are
@@ -1582,6 +1627,13 @@ def publish(
                     (g["n_classified"] < g["n_decided"])
                     | (g["n_decided"] < g["n_total"])
                 )
+                if "n_classified_products" in g:
+                    incoherent = incoherent | (
+                        has & (
+                            (g["n_classified_products"] < g["n_decided_products"])
+                            | (g["n_decided_products"] < g["n_products_total"])
+                        )
+                    )
                 bad = int(incoherent.sum())
                 if bad:
                     logger.info(
@@ -1590,7 +1642,10 @@ def publish(
                         "rather than shown as a negative loss",
                         bad, int(has.sum()),
                     )
-                    g.loc[incoherent, ["n_classified", "n_decided"]] = 0
+                    g.loc[incoherent, [c for c in (
+                        "n_classified", "n_decided",
+                        "n_classified_products", "n_decided_products")
+                        if c in g]] = 0
                 grids[key] = g
                 logger.info(
                     "grid[all]: %d classified -> %d decided -> %d collected "

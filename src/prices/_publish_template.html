@@ -191,6 +191,10 @@
     ? (r.n_products_total != null ? r.n_products_total : (r.n_products || 0))
     : (r.n_total != null ? r.n_total : (r.n_obs || 0)));
   const fmtVal = (v) => (IS_OBS ? Number(v).toLocaleString() : Number(v).toFixed(2));
+  // The upstream pair follows the metric, exactly as T and O do: row counts
+  // under observations, distinct product names under products.
+  const upC = (r) => (measure === 'prod' ? r.n_classified_products : r.n_classified);
+  const upD = (r) => (measure === 'prod' ? r.n_decided_products : r.n_decided);
   // Largest value in the ACTIVE grid and metric. Recomputed on every switch:
   // a scale carried over from the other grid would make all-time read as
   // uniformly darker than it is, which is a lie told in colour. Reduced rather
@@ -320,21 +324,33 @@
           k[key].toLocaleString() + '  '
           + Math.round(100 * k[key] / k.collected) + '%']));
     }
-    if (IS_OBS && !isProd && k.classified != null) {
-      tiles.push(['classified', 'Classifier scored', k.classified.toLocaleString()]);
-      tiles.push(['decided', 'Classifier decided', (k.decided ?? 0).toLocaleString()]);
-      const refused = k.classified - (k.decided ?? 0);
+    if (IS_OBS && k.classified != null) {
+      const kC = isProd ? (k.classified_products ?? 0) : k.classified;
+      const kD = isProd ? (k.decided_products ?? 0) : (k.decided ?? 0);
+      const kU = isProd ? (k.products_collected_upstream ?? 0)
+                        : (k.collected_upstream ?? 0);
+      // These three cover ONLY the cells that carry an upstream figure, while
+      // the collected tile covers every cell, so the two are not comparable
+      // side by side even though each is right. Say so on the tile rather than
+      // quietly letting the row read as a funnel that shrinks and grows.
+      const upNote = 'Over the ' + (k.upstream_cells ?? 0).toLocaleString()
+        + ' cells that carry a classifier count, whose collected total is '
+        + kU.toLocaleString() + '. The collected tile covers every cell, so '
+        + 'compare these with each other and with that figure, not with it.';
+      tiles.push(['classified', 'Classifier scored', kC.toLocaleString(), upNote]);
+      tiles.push(['decided', 'Classifier decided', kD.toLocaleString(), upNote]);
+      const refused = kC - kD;
       if (refused > 0) {
         tiles.push(['lost_refused', 'Lost: classifier refused',
                     refused.toLocaleString() + '  '
-                    + Math.round(100 * refused / k.classified) + '%']);
+                    + Math.round(100 * refused / kC) + '%', upNote]);
       }
       // Against the collected figure for THESE cells, not for all of them.
-      const pre = (k.decided ?? 0) - (k.collected_upstream ?? 0);
+      const pre = kD - kU;
       if (pre > 0) {
         tiles.push(['lost_prebuild', 'Lost: before the build',
                     pre.toLocaleString() + '  '
-                    + Math.round(100 * pre / k.classified) + '%']);
+                    + Math.round(100 * pre / kC) + '%', upNote]);
       }
     }
     if (IS_OBS && k.dead_cells) {
@@ -349,9 +365,9 @@
     }
     const root = document.getElementById('kpis');
     root.textContent = '';
-    tiles.forEach(([key, label, value]) => {
+    tiles.forEach(([key, label, value, note]) => {
       const div = document.createElement('div'); div.className = 'kpi';
-      if (notes[key]) div.title = notes[key];
+      if (note || notes[key]) div.title = note || notes[key];
       const v = document.createElement('div'); v.className = 'v'; v.textContent = value;
       const l = document.createElement('div'); l.className = 'l'; l.textContent = label;
       div.appendChild(v); div.appendChild(l); root.appendChild(div);
@@ -384,13 +400,15 @@
   // The classifier's accept threshold, which is upstream of everything the
   // build does and, in EAP, discards four times what QA does.
   function tauNote(cv) {
-    if (measure === 'prod' || cv.n_classified == null) return '';
-    const c = cv.n_classified, d = cv.n_decided ?? 0, tot = totOf(cv);
+    if (upC(cv) == null) return '';
+    const c = upC(cv), d = upD(cv) ?? 0, tot = totOf(cv);
     const bits = [];
     if (c > d) bits.push((c - d).toLocaleString() + ' the classifier refused');
+
     if (d > tot) bits.push((d - tot).toLocaleString() + ' never reached the build');
-    return ' \u00b7 upstream: ' + c.toLocaleString() + ' rows scored, '
-      + d.toLocaleString() + ' resolved to a code'
+    return ' \u00b7 upstream: ' + c.toLocaleString() + ' ' + unitWord()
+      + (c === 1 ? '' : 's') + ' scored, ' + d.toLocaleString()
+      + ' resolved to a code'
       + (bits.length ? ' (' + bits.join(', ') + ')' : '');
   }
   function lossNote(cv) {
@@ -421,8 +439,10 @@
   };
   const regionObsFor = (key, k) =>
     regionField(measure === 'prod' ? 'prod' : 'obs', key, k);
-  const regionClfFor = (key, k) => regionField('clf', key, k);
-  const regionDecFor = (key, k) => regionField('dec', key, k);
+  const regionClfFor = (key, k) =>
+    regionField(measure === 'prod' ? 'clfp' : 'clf', key, k);
+  const regionDecFor = (key, k) =>
+    regionField(measure === 'prod' ? 'decp' : 'dec', key, k);
   const regionAllFor = (key, k) =>
     regionField(measure === 'prod' ? 'prod_all' : 'obs_all', key, k);
   const regionObsNFor = (key, k) => regionField('n', key, k);
@@ -578,7 +598,7 @@
         else {
           const all = regionAllFor(cell.key, rc.key);
           const rparts = [[kept, 'T'], [all != null ? all : kept, 'O']];
-          if (measure !== 'prod') {
+          {
             const rd = regionDecFor(cell.key, rc.key);
             const rc2 = regionClfFor(cell.key, rc.key);
             // Shown only while the sequence still runs the right way. The
@@ -649,10 +669,9 @@
         // from the classifier store, so they are omitted under the products
         // metric and in the windowed grid, where they would be misattributed.
         const parts = [[n, 'T'], [tot, 'O']];
-        if (measure !== 'prod') {
-          if (cv.n_decided != null) parts.push([cv.n_decided, 'D']);
-          if (cv.n_classified != null) parts.push([cv.n_classified, 'C']);
-        }
+        const cD = upD(cv), cC = upC(cv);
+        if (cD != null) parts.push([cD, 'D']);
+        if (cC != null) parts.push([cC, 'C']);
         td.textContent = '';
         parts.forEach(([v, lab], i) => {
           const sp = document.createElement('span');
@@ -876,10 +895,15 @@
   function windowNote() {
     const g = grid();
     const through = g.data_through || '\u2014';
-    return (g.lookback_days == null)
-      ? 'All time \u2014 every observation in the corpus, through ' + through + '.'
-      : 'Last ' + g.lookback_days + ' days \u2014 cutoff ' + g.cutoff_date
-        + ', data through ' + through + '.';
+    if (g.lookback_days == null) {
+      return 'All time \u2014 every observation in the corpus, through '
+        + through + '.';
+    }
+    // The absence of D and C here is a data limit, not an oversight, and it
+    // belongs next to the control that caused it.
+    return 'Last ' + g.lookback_days + ' days \u2014 cutoff ' + g.cutoff_date
+      + ', data through ' + through + '. Cells show T and O only: the '
+      + 'classifier stages cannot be dated to a window (see the note below).';
   }
 
   function repaint() {
@@ -895,8 +919,10 @@
     const sk = document.getElementById('stagekey');
     const hasUp = rowsOf().some(r => r.n_classified != null);
     if (measure === 'prod') {
-      sk.textContent = 'Each cell: T published \u00b7 O collected. The classifier '
-        + 'stages are row counts and do not apply to distinct product names.';
+      sk.innerHTML = 'Each cell reads <b>T</b> trusted \u00b7 <b>O</b> collected '
+        + '\u00b7 <b>D</b> decided \u00b7 <b>C</b> classified, counted as '
+        + 'distinct product names rather than rows. A product counts as '
+        + 'decided if any of its rows reached a code.';
     } else if (hasUp) {
       sk.innerHTML = 'Each cell reads <b>T</b> trusted \u00b7 <b>O</b> observations '
         + 'collected \u00b7 <b>D</b> decided (resolved to a code) \u00b7 '
@@ -905,10 +931,14 @@
         + 'refused, D\u2192O what never reached the build, O\u2192T what QA, '
         + 'unit collapse and pruning took. D and C are all-time row counts.';
     } else {
-      sk.innerHTML = 'Each cell reads <b>T</b> trusted \u00b7 <b>O</b> observations '
-        + 'collected. <b>D</b> and <b>C</b> are all-time only \u2014 '
-        + 'products_input dates are collapsed by dedup and do not match the '
-        + 'build\u2019s, so a windowed classifier count would be misattributed.';
+      sk.innerHTML = '<b>D</b> and <b>C</b> are all-time only, so this window '
+        + 'shows <b>T</b> trusted \u00b7 <b>O</b> collected. A row the '
+        + 'classifier refused never became an observation, so it has no date '
+        + 'from the build \u2014 only the one products_input kept when it '
+        + 'deduplicated, which shifts weight into the newest year: EAP F&amp;B '
+        + '2023 holds 71,779 decided rows there against 375,424 observations, '
+        + 'while the all-time totals agree to 0.4%. Windowing them would '
+        + 'inflate the recent window. Switch to All time for the full funnel.';
     }
     sk.hidden = false;
     refreshCovLabels();
