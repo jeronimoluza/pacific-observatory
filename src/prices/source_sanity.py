@@ -173,11 +173,12 @@ def source_sanity_command(only: tuple[str, ...]) -> None:
         f"{len(verdicts)} sources judged, {len(flagged)} tier 1 "
         f"(zero after non-zero), {len(never)} never produced a row"
     )
+    # The ledger is written BEFORE anything is printed, and in its own loop.
+    # Emitting inside the print loop made the record depend on stdout surviving:
+    # piping this into `head` closed the pipe, SIGPIPE killed the command
+    # partway, and 8 of 265 verdicts reached the ledger. The ledger is the
+    # durable half of "record loudly" and must not depend on who is reading.
     for v in flagged:
-        click.echo(
-            f"  {v.key:60s} {v.n_empty_trailing:>3d} empty of {v.n_runs:<4d} "
-            f"last good {v.last_nonempty}  newest {v.latest}"
-        )
         lineage.record(
             "collect",
             "source_sanity.zero_after_nonzero",
@@ -187,6 +188,11 @@ def source_sanity_command(only: tuple[str, ...]) -> None:
             n_empty_trailing=v.n_empty_trailing,
             last_nonempty=v.last_nonempty,
             latest=v.latest,
+        )
+    for v in flagged:
+        click.echo(
+            f"  {v.key:60s} {v.n_empty_trailing:>3d} empty of {v.n_runs:<4d} "
+            f"last good {v.last_nonempty}  newest {v.latest}"
         )
     # Non-zero exit is what lets the weekly collect notice without anyone
     # reading the log. It is the only thing this command changes.
