@@ -213,7 +213,7 @@ def _iter_shard_chunks(
     A shard is already the natural chunk, it carries real dtypes, and only the
     eight columns observations needs are read off disk — where the monolith is
     re-parsed from 33 GB of text in 50k-row slices to get the same rows."""
-    for shard in partition.select(selectors, root):
+    for shard in partition.resolve("build", selectors, root):
         yield shard_io.read_shard(shard.path, columns=list(RAW_OBSERVATION_COLS))
 
 
@@ -702,7 +702,7 @@ def build_observations(
 
     root = shard_root or partition.PER_SOURCE_DIR
     shards = (
-        list(partition.select(selectors, root))
+        list(partition.resolve("build", selectors, root))
         if root.is_dir() and any(partition.iter_shards(root))
         else []
     )

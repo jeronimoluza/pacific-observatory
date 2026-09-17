@@ -236,6 +236,24 @@ STAGE_FLOOR: dict[str, str] = {
     "classify": "country",
     # Reads prepare's per-country output, so it inherits prepare's floor.
     "embed": "country",
+    # Two independent reasons, either one sufficient. The unit-value cell is
+    # (coicop_code, country, standard_unit), so its median, MAD and support pool
+    # across every source in a country -- a slice of one source estimates the
+    # cell from part of itself. And `overlay_observations` replaces a recomputed
+    # country's rows wholesale, on the stated grounds that "a recomputed country
+    # is recomputed in full", which only holds once the scope is widened here.
+    #
+    # Measured on malaysia (2,290,878 rows, 25 sources): scoping to
+    # `pricecatcher` alone reports 24,900 unit-value outliers against the full
+    # build's 14,356, gets `uv_cell_n` wrong on 100% of rows, and drops the
+    # 293,617 rows belonging to the other 24 sources.
+    #
+    # Country is a real floor rather than a storage accident: it is the widest
+    # grain the cell key pools over, so widening to it makes a scoped build
+    # exactly reproduce the full build. That is why no pinned statistics table
+    # is needed -- the country slice already carries every row of every cell it
+    # touches.
+    "build": "country",
 }
 
 
