@@ -7,8 +7,8 @@ spider: anripharm_bolt_ua
 url: https://food.bolt.eu/en/p/203396-anri-pharm-vul-zolotoustivska-25-zhk-shevchenkivskyi/
 language: uk
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/203396-anri-pharm-vul-zolotoustivska-25-zhk-shevchenkivskyi/"
+archive_path_re: '^/en/p/203396-anri-pharm-vul-zolotoustivska-25-zhk-shevchenkivskyi(/|$)'
 notes: |
   ANRI-PHARM (Kyiv, Ukraine) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

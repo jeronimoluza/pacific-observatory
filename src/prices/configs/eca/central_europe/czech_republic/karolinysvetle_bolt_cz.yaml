@@ -7,8 +7,8 @@ spider: karolinysvetle_bolt_cz
 url: https://food.bolt.eu/en/p/68709-supermarket-karoliny-svetle/
 language: cs
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/68709-supermarket-karoliny-svetle/"
+archive_path_re: '^/en/p/68709-supermarket-karoliny-svetle(/|$)'
 notes: |
   Supermarket - Karolíny Světlé (Prague, Czech Republic) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

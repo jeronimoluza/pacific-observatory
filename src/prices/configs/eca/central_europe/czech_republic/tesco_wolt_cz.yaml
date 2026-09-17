@@ -7,8 +7,8 @@ url: https://wolt.com/en/cze/prague/venue/tesco-hypermarket-narodni
 language: cs
 cadence: weekly
 channel: marketplace
-archive_prefix: "wolt.com/en/cze/prague/venue/"
-archive_path_re: '^/en/cze/prague/venue/[^/?]+'
+archive_prefix: "wolt.com/en/cze/prague/venue/tesco-hypermarket-narodni/"
+archive_path_re: '^/en/cze/prague/venue/tesco-hypermarket-narodni(/|$)'
 notes: |
   Tesco Hypermarket (Narodni, Prague) on the Wolt delivery marketplace.
   Same SSR query-state walk as tesco_wolt_sk / albert_wolt_cz (shared base

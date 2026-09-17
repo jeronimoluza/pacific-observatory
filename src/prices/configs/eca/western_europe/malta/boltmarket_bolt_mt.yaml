@@ -7,8 +7,8 @@ spider: boltmarket_bolt_mt
 url: https://food.bolt.eu/en/p/1132612-bolt-market-by-spar-valletta/
 language: en
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/1132612-bolt-market-by-spar-valletta/"
+archive_path_re: '^/en/p/1132612-bolt-market-by-spar-valletta(/|$)'
 notes: |
   Bolt Market by SPAR - Valletta (Valletta, Malta) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

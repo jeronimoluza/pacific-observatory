@@ -7,8 +7,8 @@ url: https://wolt.com/en/alb/tirana/venue/big-market-garden
 language: sq
 cadence: weekly
 channel: supermarket
-archive_prefix: "wolt.com/en/alb/tirana/venue/"
-archive_path_re: '^/en/alb/tirana/venue/[^/?]+'
+archive_prefix: "wolt.com/en/alb/tirana/venue/big-market-garden/"
+archive_path_re: '^/en/alb/tirana/venue/big-market-garden(/|$)'
 notes: |
   Big Market (Albanian supermarket chain, one of the largest in the country)
   Garden branch on the Wolt delivery marketplace. Same SSR query-state walk

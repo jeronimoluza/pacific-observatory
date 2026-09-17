@@ -8,8 +8,8 @@ url: https://wolt.com/en/mkd/skopje/venue/bistra-voda
 language: mk
 cadence: weekly
 channel: specialty-food
-archive_prefix: "wolt.com/en/mkd/skopje/venue/"
-archive_path_re: '^/en/mkd/skopje/venue/[^/?]+'
+archive_prefix: "wolt.com/en/mkd/skopje/venue/bistra-voda/"
+archive_path_re: '^/en/mkd/skopje/venue/bistra-voda(/|$)'
 notes: |
   Bistra Voda (Skopje) — a pure SPIRITS retailer on Wolt. Onboarded to put
   North Macedonia on COICOP division 02, which its existing 10 manifests do

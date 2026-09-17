@@ -7,8 +7,8 @@ url: https://wolt.com/en/mkd/skopje/venue/la-noi-shop
 language: mk
 cadence: weekly
 channel: marketplace
-archive_prefix: "wolt.com/en/mkd/skopje/venue/"
-archive_path_re: '^/en/mkd/skopje/venue/[^/?]+'
+archive_prefix: "wolt.com/en/mkd/skopje/venue/la-noi-shop/"
+archive_path_re: '^/en/mkd/skopje/venue/la-noi-shop(/|$)'
 notes: |
   La Noi Market (Skopje, tagged "Supermarket" on Wolt) on the Wolt delivery
   marketplace. Same SSR query-state walk as ab_vassilopoulos_wolt_gr (shared

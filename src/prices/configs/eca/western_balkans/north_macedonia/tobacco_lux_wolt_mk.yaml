@@ -7,8 +7,8 @@ url: https://wolt.com/en/mkd/skopje/venue/tobacco-lux
 language: mk
 cadence: weekly
 channel: convenience
-archive_prefix: "wolt.com/en/mkd/skopje/venue/"
-archive_path_re: '^/en/mkd/skopje/venue/[^/?]+'
+archive_prefix: "wolt.com/en/mkd/skopje/venue/tobacco-lux/"
+archive_path_re: '^/en/mkd/skopje/venue/tobacco-lux(/|$)'
 notes: |
   Tobacco LUX (Skopje) — a convenience/kiosk-format shop on Wolt carrying
   alcohol alongside confectionery, snacks and soft drinks. Onboarded as a

@@ -7,8 +7,8 @@ spider: maxmart_bolt_gh
 url: https://food.bolt.eu/en/137-accra/p/146859-maxmart-east-legon/
 language: en
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/[a-zA-Z\-]+/\d+-[^/?]+/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/137-accra/p/146859-maxmart-east-legon/"
+archive_path_re: '^/en/137-accra/p/146859-maxmart-east-legon(/|$)'
 notes: |
   MaxMart East Legon (Accra supermarket chain) read through Bolt Food's
   public delivery API. Probed 2026-09-11.

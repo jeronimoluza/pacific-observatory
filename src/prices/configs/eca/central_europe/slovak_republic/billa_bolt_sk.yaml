@@ -7,8 +7,8 @@ spider: billa_bolt_sk
 url: https://food.bolt.eu/en/p/195121-billa-karadzicova/
 language: sk
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/195121-billa-karadzicova/"
+archive_path_re: '^/en/p/195121-billa-karadzicova(/|$)'
 notes: |
   BILLA Karadžičova (Bratislava, Slovak Republic) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

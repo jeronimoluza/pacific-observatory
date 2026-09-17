@@ -7,8 +7,8 @@ spider: rimi_bolt_lv
 url: https://food.bolt.eu/en/p/922824-rimi-super-galerija-centrs/
 language: lv
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/922824-rimi-super-galerija-centrs/"
+archive_path_re: '^/en/p/922824-rimi-super-galerija-centrs(/|$)'
 notes: |
   Rimi Super (Galerija Centrs) (Riga, Latvia) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

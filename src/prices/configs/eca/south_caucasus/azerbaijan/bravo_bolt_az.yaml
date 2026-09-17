@@ -7,8 +7,8 @@ spider: bravo_bolt_az
 url: https://food.bolt.eu/en/p/157701-bravo-ataturk-pr/
 language: az
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/157701-bravo-ataturk-pr/"
+archive_path_re: '^/en/p/157701-bravo-ataturk-pr(/|$)'
 notes: |
   Bravo Ataturk pr (Baku, Azerbaijan) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

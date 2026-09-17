@@ -7,8 +7,8 @@ spider: metroexpress_bolt_cy
 url: https://food.bolt.eu/en/p/194665-metro-express-aglantzia/
 language: el
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/194665-metro-express-aglantzia/"
+archive_path_re: '^/en/p/194665-metro-express-aglantzia(/|$)'
 notes: |
   METRO Express Aglantzia (Nicosia, Cyprus) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

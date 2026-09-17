@@ -7,8 +7,8 @@ spider: naivas_bolt_ke
 url: https://food.bolt.eu/en/p/186819-naivas-supermarket-ojijo/
 language: en
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/186819-naivas-supermarket-ojijo/"
+archive_path_re: '^/en/p/186819-naivas-supermarket-ojijo(/|$)'
 notes: |
   Naivas Supermarket Ojijo (Nairobi, Kenya) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

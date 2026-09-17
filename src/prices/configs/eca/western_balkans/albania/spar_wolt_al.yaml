@@ -7,8 +7,8 @@ url: https://wolt.com/en/alb/tirana/venue/spar-mine-peza
 language: sq
 cadence: weekly
 channel: supermarket
-archive_prefix: "wolt.com/en/alb/tirana/venue/"
-archive_path_re: '^/en/alb/tirana/venue/[^/?]+'
+archive_prefix: "wolt.com/en/alb/tirana/venue/spar-mine-peza/"
+archive_path_re: '^/en/alb/tirana/venue/spar-mine-peza(/|$)'
 notes: |
   Spar Albania (Mine Peza branch, Tirana) on the Wolt delivery marketplace.
   Same SSR query-state walk as conad_wolt_al / big_market_wolt_al (shared

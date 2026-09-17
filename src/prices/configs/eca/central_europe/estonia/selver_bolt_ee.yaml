@@ -7,8 +7,8 @@ spider: selver_bolt_ee
 url: https://food.bolt.eu/en/p/160148-selver-torupilli/
 language: et
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/160148-selver-torupilli/"
+archive_path_re: '^/en/p/160148-selver-torupilli(/|$)'
 notes: |
   Selver Torupilli (Tallinn, Estonia) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

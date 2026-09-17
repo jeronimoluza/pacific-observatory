@@ -7,8 +7,8 @@ spider: silverstreet_bolt_bg
 url: https://food.bolt.eu/en/p/196940-silver-street-shop-247/
 language: bg
 cadence: weekly
-archive_prefix: "food.bolt.eu/"
-archive_path_re: '^/en/p/[^/?]+'
+archive_prefix: "food.bolt.eu/en/p/196940-silver-street-shop-247/"
+archive_path_re: '^/en/p/196940-silver-street-shop-247(/|$)'
 notes: |
   Silver Street Shop 24/7 (Sofia, Bulgaria) read through Bolt Food's public
   delivery API. Onboarded 2026-09-11 in a regional Bolt Food sweep --

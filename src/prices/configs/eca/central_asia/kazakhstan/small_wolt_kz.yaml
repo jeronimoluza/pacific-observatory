@@ -7,8 +7,8 @@ url: https://wolt.com/en/kaz/almaty/venue/small-tole-bi
 language: ru
 cadence: weekly
 channel: marketplace
-archive_prefix: "wolt.com/en/kaz/almaty/venue/"
-archive_path_re: '^/en/kaz/almaty/venue/[^/?]+'
+archive_prefix: "wolt.com/en/kaz/almaty/venue/small-tole-bi/"
+archive_path_re: '^/en/kaz/almaty/venue/small-tole-bi(/|$)'
 notes: |
   Small (major Almaty supermarket chain) Tole Bi branch on the Wolt
   delivery marketplace. Same SSR query-state walk as rimi_wolt_lt /
