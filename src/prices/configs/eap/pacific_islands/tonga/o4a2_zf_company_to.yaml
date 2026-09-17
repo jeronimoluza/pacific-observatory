@@ -8,8 +8,11 @@ language: en
 currency: NZD
 cadence: weekly
 channel: wholesale
+# archive_path_re pinned 2026-09-17 to this merchant's slug marker: 96.6%
+# dominant; was already '.*z-f-'. The o4a2.com/products/ namespace is flat,
+# so the prefix alone cannot tell one seller from another.
 archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/.*z-f-'
+archive_path_re: '^/products/.*pick-?up-from-z-f-'
 notes: |
   O4A2 vendor collection for Z & F Vava'u Wholesale & Retail in Neiafu, Tonga.
   This is a vendor-level scrape from the same O4A2 marketplace host, not an

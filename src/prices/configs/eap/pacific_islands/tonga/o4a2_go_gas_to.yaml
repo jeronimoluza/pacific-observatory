@@ -10,8 +10,11 @@ language: en
 currency: NZD
 cadence: weekly
 channel: fuel-station
+# archive_path_re pinned 2026-09-17 to this merchant's slug marker: dominant
+# marker over a 6-path live sample. The o4a2.com/products/ namespace is
+# flat, so the prefix alone cannot tell one seller from another.
 archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_path_re: '^/products/.*pick-?up-from-gogas'
 notes: |
   O4A2 vendor collection for Go Gas LPG products in Tonga. Fuel/utility-adjacent
   source only; useful for COICOP 04.5.2 but not food or beverages. This is a

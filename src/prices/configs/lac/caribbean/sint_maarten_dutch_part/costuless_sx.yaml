@@ -7,8 +7,10 @@ url: https://www.costuless.com/st-maarten
 language: en
 cadence: weekly
 channel: wholesale
-archive_prefix: "www.shopcostuless.com/shop/"
-archive_path_re: '^/shop/[^/?]+'
+# archive_prefix/archive_path_re removed 2026-09-17:
+# www.shopcostuless.com/shop/ -- no marker in a flat /shop/ namespace; the
+# claim spans two countries. costuless_ky owns this scope. Live collection
+# is unaffected; only Common Crawl recovery is.
 notes: |
   channel substituted: the source is a US-style warehouse club (bulk
   buying membership model), which the manifest schema's Channel enum has

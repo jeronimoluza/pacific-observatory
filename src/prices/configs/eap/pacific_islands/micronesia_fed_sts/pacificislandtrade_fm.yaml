@@ -8,8 +8,11 @@ language: en
 currency: USD
 cadence: weekly
 channel: supermarket
-archive_prefix: "pacificislandtrade.com/products/"
-archive_path_re: '^/products/[^/?]+'
+# archive_prefix/archive_path_re removed 2026-09-17:
+# pacificislandtrade.com/products/ -- identical 85 paths to
+# pacificislandtrade_mh and no marker to tell them apart; the claim spans
+# two countries. pacificislandtrade_mh owns this scope. Live collection is
+# unaffected; only Common Crawl recovery is.
 notes: |
   Pacific Island Trade Shopify catalog includes Lei-Side Chuuk Store rows
   marked with the "(LS CHUUK)" prefix. The dedicated collection slug returned

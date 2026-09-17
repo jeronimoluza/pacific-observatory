@@ -7,8 +7,11 @@ url: https://www.mysamoa.co/collections/sula-s-supermarket-bakery
 language: en
 cadence: weekly
 channel: supermarket
+# archive_path_re pinned 2026-09-17 to this merchant's slug marker: 100% of
+# its live slugs carry this marker. The mysamoa.co/products/ namespace is
+# flat, so the prefix alone cannot tell one seller from another.
 archive_prefix: "mysamoa.co/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_path_re: '^/products/.*pick-?up-from-sulas-supermarket-bakery'
 notes: >
   My Samoa marketplace collection for Sula's Supermarket and Bakery in
   Samoa. Public Shopify collection feed returned grocery, fresh bakery,

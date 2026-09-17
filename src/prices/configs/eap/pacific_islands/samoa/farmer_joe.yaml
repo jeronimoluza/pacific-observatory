@@ -1,5 +1,8 @@
 spider: farmer_joe
 language: en
 channel: supermarket
+# archive_path_re pinned 2026-09-17 to this merchant's slug marker: 93.9%
+# dominant. The samoamarket.com/products/ namespace is flat, so the prefix
+# alone cannot tell one seller from another.
 archive_prefix: "samoamarket.com/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_path_re: '^/products/.*pick-?up-from-farmer-joe'

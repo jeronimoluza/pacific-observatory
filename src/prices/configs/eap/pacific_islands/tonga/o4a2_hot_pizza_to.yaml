@@ -10,8 +10,11 @@ language: en
 currency: NZD
 cadence: weekly
 channel: specialty-food
+# archive_path_re pinned 2026-09-17 to this merchant's slug marker: 85.7%
+# dominant. The o4a2.com/products/ namespace is flat, so the prefix alone
+# cannot tell one seller from another.
 archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_path_re: '^/products/.*pick-?up-from-hot-pizza'
 notes: |
   O4A2 vendor collection for Hot Pizza in Tonga. Prepared-food source only;
   useful for COICOP 11.1.1 but not a grocery basket. This is a vendor-level

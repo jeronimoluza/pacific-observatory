@@ -8,8 +8,10 @@ language: en
 currency: NZD
 cadence: weekly
 channel: marketplace
-archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/[^/?]+'
+# archive_prefix/archive_path_re removed 2026-09-17: o4a2.com/products/ --
+# marketplace-wide manifest: its slugs span every merchant, so nothing here
+# is attributable to one storefront. Live collection is unaffected; only
+# Common Crawl recovery is.
 notes: |
   O4A2 multi-vendor Tonga marketplace with grocery, prepared food, pharmacy,
   utilities and other vendors. Shopify metadata identifies country TO and active

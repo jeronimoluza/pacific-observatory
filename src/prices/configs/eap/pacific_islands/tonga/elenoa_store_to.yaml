@@ -10,8 +10,11 @@ language: en
 cadence: weekly
 channel: convenience
 timeout: 600
+# archive_path_re pinned 2026-09-17 to this merchant's slug marker: 100% of
+# its live slugs carry this marker. The o4a2.com/products/ namespace is
+# flat, so the prefix alone cannot tell one seller from another.
 archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/[a-z0-9-]+$'
+archive_path_re: '^/products/.*pick-?up-from-elenoa-store'
 notes: |
   Discovered 2026-09-11 (Pacific food-source pass). Elenoa Store (Popua,
   Tongatapu) is a named, real Tongan convenience/snack store, one of the

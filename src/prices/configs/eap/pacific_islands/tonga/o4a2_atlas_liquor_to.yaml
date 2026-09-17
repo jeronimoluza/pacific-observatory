@@ -10,8 +10,11 @@ language: en
 currency: NZD
 cadence: weekly
 channel: specialty-food
+# archive_path_re pinned 2026-09-17 to this merchant's slug marker: 89.7%
+# dominant; was already '.*atlas-liquor'. The o4a2.com/products/ namespace
+# is flat, so the prefix alone cannot tell one seller from another.
 archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/.*atlas-liquor'
+archive_path_re: '^/products/.*pick-?up-from-atlas-liquor'
 notes: |
   O4A2 vendor collection for Atlas Liquor in Ha'ateiho, Tonga. Alcoholic
   beverage source only; useful for COICOP 02.1 but not a broad food basket.

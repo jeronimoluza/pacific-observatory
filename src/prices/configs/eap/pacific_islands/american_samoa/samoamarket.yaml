@@ -9,8 +9,10 @@ language: en
 currency: NZD
 cadence: daily
 coicop_codes: null
-archive_prefix: "samoamarket.com/products/"
-archive_path_re: '^/products/[^/?]+'
+# archive_prefix/archive_path_re removed 2026-09-17:
+# samoamarket.com/products/ -- same dominant marker (ah-liki-wholesale) as
+# samoa_market, and the claim spans two countries. samoa_market owns this
+# scope. Live collection is unaffected; only Common Crawl recovery is.
 notes: |
   Public SamoaMarket catalog. The homepage and shop-online pages describe
   service to customers worldwide, including American Samoa; grocery partner

@@ -7,8 +7,11 @@ url: https://www.konalivr.com/
 language: fr
 cadence: weekly
 channel: marketplace
+# archive_path_re 2026-09-17 excludes the merchant pages another manifest
+# owns: konalivr_supermarket_gn owns these two merchant pages. Keep this
+# list in step with that manifest.
 archive_prefix: "konalivr.com/merchants/"
-archive_path_re: '^/merchants/[^/?]+/?$'
+archive_path_re: '^/merchants/(?!carrefour-express-kaloum|super-u-kipe)[^/?]+/?$'
 notes: |
   Probed live 2026-08-31. Known trap from earlier probing: this is a
   restaurant/grocery delivery marketplace, not a single grocer, and the

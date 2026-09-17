@@ -7,8 +7,9 @@ url: https://www.mysamoa.co/collections/chan-mow-supermarket
 language: en
 cadence: weekly
 channel: supermarket
-archive_prefix: "mysamoa.co/products/"
-archive_path_re: '^/products/[^/?]+'
+# archive_prefix/archive_path_re removed 2026-09-17: mysamoa.co/products/ --
+# 100% of its live slugs are unmarked, so no URL can be proven to be this
+# store's. Live collection is unaffected; only Common Crawl recovery is.
 notes: >
   My Samoa marketplace collection for Chan Mow Supermarket (Amau). Public
   Shopify collection feed returned grocery, household, produce, and beverage

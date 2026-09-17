@@ -10,8 +10,11 @@ language: en
 cadence: weekly
 channel: supermarket
 timeout: 600
+# archive_path_re pinned 2026-09-17 to this merchant's slug marker: 90.5%
+# dominant. The o4a2.com/products/ namespace is flat, so the prefix alone
+# cannot tell one seller from another.
 archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/[a-z0-9-]+$'
+archive_path_re: '^/products/.*pick-?up-from-rainbow-top'
 notes: |
   Discovered 2026-09-11 (Pacific food-source pass). Rainbow Top - Market
   (Fanga, Tongatapu) is a named, real Tongan supermarket, one of the

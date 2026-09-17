@@ -1,5 +1,8 @@
 spider: samoa_market
 language: en
 channel: supermarket
+# archive_path_re 2026-09-17 excludes the sibling manifests that own a slug
+# marker under this same prefix: the platform's own manifest; keeps the
+# residual scope minus farmer_joe.
 archive_prefix: "samoamarket.com/products/"
-archive_path_re: "^/products/[^/?]+"
+archive_path_re: '^/products/(?!.*pick-?up-from-farmer-joe)[^/?]+'

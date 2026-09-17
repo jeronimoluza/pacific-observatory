@@ -7,8 +7,10 @@ url: https://store.localbites.co.ls/stores/biteliqour
 language: en
 cadence: weekly
 channel: specialty-food
-archive_prefix: "store.localbites.co.ls/products/"
-archive_path_re: '^/products/[^/?]+/?$'
+# archive_prefix/archive_path_re removed 2026-09-17:
+# store.localbites.co.ls/products/ -- no marker in a flat /products/
+# namespace; localbites_ls carries more live rows. localbites_ls owns this
+# scope. Live collection is unaffected; only Common Crawl recovery is.
 notes: |
   Wave 8. BiteLiqour -- a single, named, first-party bottle/liquor store in
   Maseru, hosted on the LocalBites food-delivery platform
