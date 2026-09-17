@@ -202,6 +202,40 @@ def _row_count(path: Path) -> int:
     return max(0, lines - 1)
 
 
+def _items_dir(data_root: Path, m: PriceSourceConfig) -> Path:
+    """Where a spider's JSONL run files land, beside the fetcher's CSV."""
+    return _observations_path(data_root, m).parent / "raw_items"
+
+
+def _run_files(items_dir: Path) -> frozenset:
+    if not items_dir.is_dir():
+        return frozenset()
+    return frozenset(p.name for p in items_dir.glob("*.jsonl"))
+
+
+def _rows_in_new_runs(items_dir: Path, before: frozenset) -> int:
+    """Rows in the run files that appeared while the child was running.
+
+    A spider writes one JSONL per run and never touches the CSV, so the
+    before/after diff on `_observations_path` measured nothing for all 1,997 of
+    them: `new_rows` was always 0 and the status always `ok_norows`. The one
+    ledger meant to report collect health reported nothing at all.
+
+    Counted from the files this run ADDED rather than from the newest file,
+    because a source may write several per run and a retry may write none.
+    """
+    total = 0
+    for path in sorted(items_dir.glob("*.jsonl")) if items_dir.is_dir() else ():
+        if path.name in before:
+            continue
+        try:
+            with open(path, "rb") as fh:
+                total += sum(1 for _ in fh)
+        except OSError:
+            continue
+    return total
+
+
 def _terminate(proc: subprocess.Popen) -> None:
     try:
         os.killpg(os.getpgid(proc.pid), 15)
@@ -218,6 +252,8 @@ def _terminate(proc: subprocess.Popen) -> None:
 
 def _collect_one(m, *, project_root, data_root, run_dir, timeout, max_items) -> dict:
     log_path = run_dir / f"{m.country}__{m.source}.log"
+    items_dir = _items_dir(data_root, m)
+    runs_before = _run_files(items_dir)
     before = _row_count(_observations_path(data_root, m))
     started = time.time()
     status, rc = "ok", 0
@@ -241,7 +277,12 @@ def _collect_one(m, *, project_root, data_root, run_dir, timeout, max_items) -> 
         with open(log_path, "a") as fh:
             fh.write(f"\nrunner_error: {exc}\n")
 
-    new_rows = max(0, _row_count(_observations_path(data_root, m)) - before)
+    # Both halves, so no scaffolding check is needed and none can be wrong: a
+    # spider only moves the first term, a fetcher only the second, and the 134
+    # manifests that declare no `scaffolding:` at all are covered either way.
+    new_rows = _rows_in_new_runs(items_dir, runs_before) + max(
+        0, _row_count(_observations_path(data_root, m)) - before
+    )
     if status == "ok":
         if rc != 0:
             status = "fail"
