@@ -8,8 +8,10 @@ language: en
 currency: FJD
 cadence: weekly
 channel: supermarket
-archive_prefix: "mh.com.fj/product/"
-archive_path_re: '^/product/[^/?]+'
+# archive_prefix/archive_path_re removed 2026-09-17: mh_online owns the
+# mh.com.fj/product/ Common Crawl scope -- same Fiji storefront; mh_online
+# holds 250,840 live rows to this manifest's 100. Both manifests claimed it,
+# so every recovered row landed twice.
 notes: >
   Morris Hedstrom / MaxVal-u Fiji WooCommerce supermarket storefront. The
   unauthenticated Store API at /wp-json/wc/store/products returned FJD-priced

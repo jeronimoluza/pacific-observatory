@@ -11,8 +11,10 @@ cadence: weekly
 channel: supermarket
 currency: BND
 fallback_date: 1970-01-01
-archive_prefix: "seria.supasave.com.bn/product/"
-archive_path_re: '^/product/[^/?]+/?$'
+# archive_prefix/archive_path_re removed 2026-09-17: supasave_bn owns the
+# seria.supasave.com.bn/product/ Common Crawl scope -- same storefront, and
+# this manifest has no `spider:` so it cannot collect at all. Both manifests
+# claimed it, so every recovered row landed twice.
 notes: |
   Supa Save Brunei Seria branch online grocery storefront. WooCommerce Store
   API confirmed open on 2026-09-07:

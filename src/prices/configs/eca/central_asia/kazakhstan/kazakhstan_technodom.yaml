@@ -7,8 +7,10 @@ language: ru
 currency: KZT
 cadence: weekly
 channel: electronics
-archive_prefix: www.technodom.kz/p/
-archive_path_re: '^/p/'
+# archive_prefix/archive_path_re removed 2026-09-17: technodom_kz owns the
+# www.technodom.kz/p/ Common Crawl scope -- same storefront; technodom_kz
+# holds 6,049 CC rows to this manifest's 0. Both manifests claimed it, so
+# every recovered row landed twice.
 notes: |
   Airba's former candidate URL now redirects to Technodom Kazakhstan. The
   replacement retailer's server-rendered category pages embed 24 products per
