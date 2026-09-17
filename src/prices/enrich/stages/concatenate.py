@@ -58,6 +58,7 @@ import hashlib
 import json
 import logging
 from collections import Counter
+from datetime import datetime, timezone
 from itertools import batched
 from pathlib import Path
 from typing import Iterable, Iterator, Optional
@@ -115,6 +116,8 @@ OUTPUT_COLS = [
     # against SHARD_SCHEMA, so a column the schema declares but this list omits
     # is written as all-null rather than raising.
     "declared_coicop_codes",
+    "scraped_at",
+    "origin",
 ]
 
 # The coicop_classification value that routes a fetcher manifest's rows into
@@ -147,6 +150,8 @@ EMITTED_COLS = (
     "details",
     "unit",
     "declared_coicop_codes",
+    "scraped_at",
+    "origin",
 )
 
 # `wayback` is the one non-text emitted column: the emitters set a real bool and
@@ -370,19 +375,73 @@ def _signature(files: list[tuple[str, Path]]) -> tuple[float, int]:
     return (max(mtimes), len(files))
 
 
+# Which channel a row physically came in through, keyed by the input shape
+# `_iter_source_files` tagged it with. This is the ONLY place the mapping is
+# written down: the shape already encodes the input directory, so deriving
+# `origin` anywhere else would be a second, driftable definition.
+#
+# `price_obs` is a fetcher CSV, not a scrape, but it is a current feed rather
+# than an archive, so it lands with the live rows. The column answers "is this
+# observation recovered from an archive?", and for a fetcher the answer is no.
+ORIGIN_BY_SHAPE = {
+    "jsonl": "live",
+    "wayback": "wayback",
+    "cc": "common_crawl",
+    "cc_jsonl": "common_crawl",
+    "price_obs": "live",
+}
+
+
+def _scraped_at(path: Path) -> str:
+    """When this file entered the corpus, as UTC ISO-8601.
+
+    The file mtime, uniformly, for all four input shapes -- not the per-record
+    timestamp. Three reasons the record cannot be the source:
+
+    - It is often absent. A live rakuten item carries no `scraped_at` and no
+      `scraped_at_utc` at all, so a record-derived column would be null for the
+      third-largest source in the corpus.
+    - Where it exists it means different things. A wayback item has BOTH
+      `scraped_at` (RFC-822, when we fetched it) and `scraped_at_utc` (the
+      archive snapshot date); a Common Crawl item has only `scraped_at_utc`,
+      which is the crawl time. Those belong in `date`, not here.
+    - The formats disagree. Mixing RFC-822 and ISO in one column is the same
+      trap `shards` documents for `date`.
+
+    Every record in a file was written by one fetch run, so the mtime is that
+    run's time, is never null, and is one format. It does not enter
+    `input_hash`, so a copy that loses mtime shifts this column without
+    touching row identity."""
+    return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc).isoformat()
+
+
 def _iter_rows(files: list[tuple[str, Path]], stats: Counter) -> Iterator[dict]:
-    """Every raw row of a source, in file order, one at a time."""
+    """Every raw row of a source, in file order, one at a time.
+
+    `origin` and `scraped_at` are stamped here rather than in the emitters:
+    both are properties of the FILE, and this is the only scope that holds the
+    shape and the path together."""
     for shape, path in files:
+        origin = ORIGIN_BY_SHAPE[shape]
+        scraped_at = _scraped_at(path)
         if shape == "jsonl":
-            yield from _emit_jsonl(path, False, stats)
+            rows = _emit_jsonl(path, False, stats)
         elif shape == "wayback":
-            yield from _emit_jsonl(path, True, stats)
+            rows = _emit_jsonl(path, True, stats)
         elif shape == "cc":
-            yield from _emit_cc(path, stats)
+            rows = _emit_cc(path, stats)
         elif shape == "cc_jsonl":
-            yield from _emit_cc_jsonl(path, stats)
+            rows = _emit_cc_jsonl(path, stats)
         elif shape == "price_obs":
-            yield from _emit_price_obs(path)
+            rows = _emit_price_obs(path)
+        else:
+            # Unchanged from the `yield from` chain this replaced: an
+            # unrecognised shape contributes nothing rather than raising.
+            continue
+        for row in rows:
+            row["origin"] = origin
+            row["scraped_at"] = scraped_at
+            yield row
 
 
 def _text(value):
@@ -535,6 +594,19 @@ def _finalise_shard(
             n_dropped += before - len(df)
             if df.empty:
                 continue
+
+            # `scraped_at` and `origin` are stamped per FILE in `_iter_rows`, so
+            # a null here is not missing data -- it is an emitter yielding rows
+            # through a path that skipped the stamp. Raising is the point: the
+            # column is only worth having if every row carries it, and a
+            # silently-null provenance column is the failure mode
+            # `declared_coicop_codes` already demonstrated on 6.14M rows.
+            for col in ("scraped_at", "origin"):
+                if df[col].isna().any():
+                    raise ValueError(
+                        f"{country}/{source}: {int(df[col].isna().sum())} rows "
+                        f"reached the shard with a null {col}"
+                    )
             table = pa.Table.from_pandas(
                 shards.coerce(df[OUTPUT_COLS]),
                 schema=shards.SHARD_SCHEMA,

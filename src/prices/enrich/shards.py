@@ -54,6 +54,18 @@ SHARD_COLUMNS = (
     "details",
     "unit",
     "declared_coicop_codes",
+    # Provenance, both stamped per input file by `concatenate._iter_rows`.
+    # `origin` is which channel the row came in through -- live | wayback |
+    # common_crawl -- and exists so a rung diff can split a population change
+    # (new archive recovery) from an extraction change. `scraped_at` is when
+    # the file entered the corpus, and is the one mandatory timestamp: `date`
+    # is the observation date, which for an archived row is years earlier.
+    #
+    # Neither enters `input_hash`. Row identity must not move when we re-fetch
+    # the same product, and `origin` in particular would split one product into
+    # two identities the moment Common Crawl recovered a URL we also scrape.
+    "scraped_at",
+    "origin",
     "input_hash",
 )
 
