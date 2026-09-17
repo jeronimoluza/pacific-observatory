@@ -523,6 +523,36 @@ def _region_stats(
     return medians, counts, products, shares
 
 
+def _source_provenance(path: Path) -> dict:
+    """Which corpus file this page was built from, stated on the page itself.
+
+    "Generated <timestamp>" says when the HTML was written, which is not the
+    same question as which scrape it rests on -- a page regenerated today off
+    a fortnight-old parquet looks identically fresh. So the corpus file's own
+    mtime, size and row count travel into the payload and onto the page, in
+    UTC and in US Eastern, because the collection cadence is reasoned about in
+    Eastern and a UTC stamp silently lands on the following day for anything
+    that finishes after 20:00.
+
+    Row count comes from the parquet footer, so this is a stat and a metadata
+    read -- it does not touch the data.
+    """
+    import pyarrow.parquet as pq
+
+    st = path.stat()
+    ts = pd.Timestamp(st.st_mtime, unit="s", tz="UTC")
+    return {
+        "name": path.name,
+        "path": str(path.resolve()),
+        "mtime_utc": ts.strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "mtime_et": ts.tz_convert("America/New_York").strftime(
+            "%a %Y-%m-%d %H:%M:%S %Z"
+        ),
+        "size_bytes": int(st.st_size),
+        "rows": int(pq.ParquetFile(path).metadata.num_rows),
+    }
+
+
 def _region_obs(
     keyed: pd.DataFrame, region_cols: list[dict[str, str]]
 ) -> tuple[dict[str, dict[str, int]], dict[str, dict[str, int]]]:
@@ -795,6 +825,7 @@ def _payload(
         region_imp = region_imp_kept = {}
     return {
         "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
+        "source_parquet": _source_provenance(OBSERVATIONS_PARQUET),
         # True only in the diagnostic build. Carried in the payload as well as
         # in the banner, so a client can refuse to treat these numbers as
         # publishable rather than relying on the reader having seen a stripe.

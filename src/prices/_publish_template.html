@@ -155,6 +155,19 @@
   const valOf = (r) => (IS_OBS ? (r.n_obs || 0) : r.median_usd);
   const fmtVal = (v) => (IS_OBS ? Number(v).toLocaleString() : Number(v).toFixed(2));
   document.getElementById('genstamp').textContent = 'Generated ' + DATA.generated_at_utc;
+  // The corpus this page rests on, not just when the HTML was written. See
+  // _source_provenance in publish.py for why both are needed.
+  if (DATA.source_parquet) {
+    const sp = DATA.source_parquet;
+    const el = document.createElement('div');
+    el.className = 'sub'; el.id = 'srcstamp';
+    el.textContent = 'Source corpus: ' + sp.name + ' \u2014 built '
+      + sp.mtime_utc + ' (' + sp.mtime_et + ') \u00b7 '
+      + Number(sp.rows).toLocaleString() + ' rows \u00b7 '
+      + Number(sp.size_bytes).toLocaleString() + ' bytes';
+    el.title = sp.path;
+    document.getElementById('genstamp').after(el);
+  }
   document.getElementById('minobs1').textContent = DATA.min_obs_per_cell;
   document.getElementById('minobs2').textContent = DATA.min_obs_per_cell;
   document.getElementById('fxfloor').textContent = DATA.fx_floor;
