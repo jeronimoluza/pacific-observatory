@@ -39,6 +39,14 @@ logger = logging.getLogger(__name__)
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BUILD_DIR = REPO_ROOT / "data" / "prices" / "build"
 OBSERVATIONS_PARQUET = BUILD_DIR / "global_prices_observations.parquet"
+# The same rows pre-filtered to qa_status == "trusted", written by the build
+# stage in the same run as the full frame. Verified equal to filtering the full
+# frame in memory: 25,873,307 rows either way on the 2026-09-15 build, with
+# identical per-country counts. Read in preference to the full frame because it
+# is the artefact that DEFINES the published set; the qa_status filter below
+# then runs over it as a free assertion, logging "kept N of N" when the file is
+# what it claims to be.
+TRUSTED_PARQUET = BUILD_DIR / "global_prices_trusted_observations.parquet"
 VENDOR_CHART_JS = (
     REPO_ROOT / "src" / "text" / "plotting" / "vendor" / "chart.umd.min.js"
 )
@@ -57,6 +65,23 @@ REGIONS_YAML = REPO_ROOT / "src" / "configs" / "regions.yaml"
 # so "current" means the same stretch of time on both pages and the two can no
 # longer disagree about what "current" is.
 CURRENT_LOOKBACK_DAYS = CELL_WINDOW_DAYS
+# The two cell grids the page carries. "cur" is the rolling window the price
+# dashboard also uses; "all" is every observation in the corpus. Both are built
+# and both ship, because the question "are we losing observations" is answered
+# by comparing them -- a loss visible only in the full history is structural,
+# one visible only in the window is recent.
+GRIDS = {"cur": CURRENT_LOOKBACK_DAYS, "all": None}
+# Human labels for the qa_status values, used in the per-cell loss tooltip.
+# Anything unmapped falls back to the raw value rather than being hidden.
+QA_REASONS = {
+    "review_missing_qty": "no resolvable quantity",
+    "review_uv_outlier": "unit value an outlier",
+    "review_uv_implausible": "unit value implausible",
+    "review_uv_thin": "unit-value cell too thin",
+    "review_uv_category": "unit value out of category range",
+    "review_zero_price": "price was zero",
+    "review_fx": "no FX rate",
+}
 FX_HISTORY_FLOOR = pd.Timestamp("2013-01-01")
 # Already at its arithmetic floor: one observed price, or any fill.
 MIN_OBS_PER_CELL = gate(1, 1)
@@ -238,6 +263,164 @@ def _to_display_units(df: pd.DataFrame) -> pd.DataFrame:
     return kept
 
 
+def _window_cutoff(days: int | None) -> pd.Timestamp:
+    """Start of a grid's window. `None` means the whole corpus."""
+    if days is None:
+        return pd.Timestamp.min
+    return pd.Timestamp.now().normalize() - pd.Timedelta(days=days)
+
+
+def _top_reason(byreason: pd.Series) -> pd.DataFrame:
+    """The single largest qa_status per (leaf, country), and its count.
+
+    A cell loses rows for several reasons at once and naming all of them turns
+    a tooltip into a table. The largest one answers "how is THIS cell losing
+    observations" in a phrase, and the stage totals beside it stop that phrase
+    from reading as the whole loss.
+    """
+    if byreason.empty:
+        return pd.DataFrame(
+            columns=["coicop_code", "country", "top_qa", "n_top_qa"]
+        )
+    s = byreason.sort_values(ascending=False)
+    top = s.groupby(level=[0, 1], sort=False).head(1).reset_index()
+    top.columns = ["coicop_code", "country", "top_qa", "n_top_qa"]
+    return top
+
+
+def _stage_counts(df: pd.DataFrame) -> dict[str, pd.Series]:
+    """Rows per (leaf, country) at one point in the pipeline, per grid window.
+
+    Differencing two of these is how the page knows where observations went:
+    the funnel is not recorded anywhere, so it is measured by counting the
+    frame before and after each stage rather than by trusting a log line.
+    """
+    out: dict[str, pd.Series] = {}
+    for key, days in GRIDS.items():
+        w = df[df["observation_date"] >= _window_cutoff(days)]
+        out[key] = w.groupby(["coicop_code", "country"]).size()
+    return out
+
+
+def _loss_funnel(
+    path: Path, countries: set[str] | None = None
+) -> dict[str, pd.DataFrame]:
+    """What was collected per (leaf, country), and what QA did to it.
+
+    THE DENOMINATOR THE PAGE HAS NEVER SHOWN. A cell reading 14 has always
+    meant "14 rows survived", with no way to tell 14-of-14 from 14-of-900 --
+    opposite findings about a source. This counts the full frame before any
+    gate, and attributes the QA share of the loss to a reason.
+
+    Grouped on (coicop_code, country) and NOT on standard_unit. Every leaf is
+    put onto one display unit downstream, so the unit adds nothing to cell
+    identity -- and a row that failed `review_missing_qty` has no resolvable
+    quantity, so conditioning the denominator on unit agreement would drop the
+    largest failure class from the very count that exists to show it.
+
+    Reads the widest frame this module touches (product_name over 31M rows) and
+    returns only per-cell aggregates, so the caller can free it before the
+    trusted frame is loaded. Both are ~8-16 GB; neither machine nor patience
+    survives holding them at once.
+    """
+    df = pd.read_parquet(
+        path,
+        columns=["coicop_code", "country", "observation_date", "qa_status",
+                 "product_name"],
+    )
+    df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
+    df = df[df["observation_date"].notna()]
+    # SCOPE THE DENOMINATOR TO THE BUILD. The trusted frame is cut to the
+    # region a few lines later in `publish`; if the funnel is not cut with it,
+    # every country outside the region arrives as a cell that collected rows
+    # and published none -- 26,902 phantom orphans on an EAP build, and a
+    # "loss" of half the corpus that is really just the region filter doing
+    # its job.
+    if countries is not None:
+        df = df[df["country"].isin(countries)]
+    df["coicop_code"] = df["coicop_code"].map(_normalize_coicop)
+    df = df.dropna(subset=["coicop_code", "country"])
+    keys = ["coicop_code", "country"]
+
+    out: dict[str, pd.DataFrame] = {}
+    for key, days in GRIDS.items():
+        w = df[df["observation_date"] >= _window_cutoff(days)]
+        g = w.groupby(keys).size().rename("n_total").reset_index()
+        prod = (
+            w.drop_duplicates(keys + ["product_name"])
+            .groupby(keys)
+            .size()
+            .rename("n_products_total")
+            .reset_index()
+        )
+        g = g.merge(prod, on=keys, how="left")
+
+        nt = w[w["qa_status"] != "trusted"]
+        if not nt.empty:
+            g = g.merge(
+                nt.groupby(keys).size().rename("n_lost_qa").reset_index(),
+                on=keys, how="left",
+            )
+            g = g.merge(
+                _top_reason(nt.groupby(keys + ["qa_status"]).size()),
+                on=keys, how="left",
+            )
+            # Products that produced NO trusted row anywhere in the window, and
+            # the reason most of their rows died. A product losing rows to two
+            # different gates is rare beside one failing wholesale, so the
+            # dominant reason is a fair label and a cheap one.
+            tr_keys = (
+                w[w["qa_status"] == "trusted"][keys + ["product_name"]]
+                .drop_duplicates()
+            )
+            lost = nt.merge(tr_keys, on=keys + ["product_name"], how="left",
+                            indicator=True)
+            lost = lost[lost["_merge"] == "left_only"]
+            if not lost.empty:
+                g = g.merge(
+                    lost.drop_duplicates(keys + ["product_name"])
+                    .groupby(keys).size().rename("n_products_lost").reset_index(),
+                    on=keys, how="left",
+                )
+                ptop = _top_reason(lost.groupby(keys + ["qa_status"]).size())
+                ptop.columns = keys + ["top_qa_prod", "n_top_qa_prod"]
+                g = g.merge(ptop, on=keys, how="left")
+        for c in ("n_lost_qa", "n_top_qa", "n_products_lost", "n_top_qa_prod"):
+            if c not in g:
+                g[c] = 0
+            g[c] = g[c].fillna(0).astype(int)
+        for c in ("top_qa", "top_qa_prod"):
+            if c not in g:
+                g[c] = None
+        logger.info(
+            "funnel[%s]: %d collected rows / %d products over %d (leaf, country) "
+            "pairs; %d rows rejected by QA",
+            key,
+            int(g["n_total"].sum()),
+            int(g["n_products_total"].sum()),
+            len(g),
+            int(g["n_lost_qa"].sum()),
+        )
+        out[key] = g
+
+    # Monthly collected counts, for the chart's pass-rate tooltip. Same loose
+    # denominator as the cells, on (leaf, country, month) -- the grain the
+    # series is drawn on.
+    df["month"] = df["observation_date"].dt.to_period("M").dt.to_timestamp()
+    out["_monthly"] = (
+        df.groupby(keys + ["month"]).size().rename("n_total").reset_index()
+    )
+    out["_monthly_products"] = (
+        df.drop_duplicates(keys + ["month", "product_name"])
+        .groupby(keys + ["month"])
+        .size()
+        .rename("n_products_total")
+        .reset_index()
+    )
+    del df
+    return out
+
+
 def _cell_key(code: str, unit: str) -> str:
     """Row identity for the heat table: a COICOP leaf measured in one unit."""
     return f"{code}|{unit}"
@@ -247,7 +430,9 @@ def _humanize_slug(slug: str) -> str:
     return slug.replace("-", " ").replace("_", " ").strip().title()
 
 
-def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
+def _current_snapshot(
+    df: pd.DataFrame, days: int | None = CURRENT_LOOKBACK_DAYS
+) -> pd.DataFrame:
     """Aggregate observations within the last CURRENT_LOOKBACK_DAYS to a
     (coicop_code, country, standard_unit) median. Rows without a parseable
     observation_date are excluded.
@@ -259,8 +444,7 @@ def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
     """
     df = df.copy()
     df["coicop_code"] = df["coicop_code"].map(_normalize_coicop)
-    cutoff = pd.Timestamp.now().normalize() - pd.Timedelta(days=CURRENT_LOOKBACK_DAYS)
-    df = df[df["observation_date"] >= cutoff]
+    df = df[df["observation_date"] >= _window_cutoff(days)]
     df = _fold_piece_units(df)
     g = (
         df.dropna(subset=["unit_value_usd", "coicop_code", "standard_unit"])
@@ -279,6 +463,107 @@ def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
     )
     return _split_imputed(g)
+
+
+def _orphan_cells(published: pd.DataFrame, funnel: pd.DataFrame) -> pd.DataFrame:
+    """(leaf, country) pairs that collected rows but published none.
+
+    THE THINNEST CELLS ON THE PAGE, and until now the only ones it could not
+    show: a cell is built from published rows, so a pair whose every row was
+    rejected had nothing to hang a number on and simply vanished. It read as
+    "we have no data here", when the truth was "we have data here and none of
+    it survived" -- which is the opposite instruction to whoever works on
+    sources.
+
+    They take the leaf's display unit so they land in the row the leaf already
+    has rather than opening a second one. A leaf with no published cell
+    anywhere has no display unit to borrow and gets an empty one; that is 3
+    rows out of 7,312 on the September 2026 corpus.
+    """
+    keys = ["coicop_code", "country"]
+    have = published[keys].drop_duplicates()
+    orphan = funnel.merge(have, on=keys, how="left", indicator=True)
+    orphan = orphan[orphan["_merge"] == "left_only"].drop(columns="_merge")
+    if orphan.empty:
+        return orphan
+    unit_of = (
+        published.groupby("coicop_code")["standard_unit"].agg(lambda s: s.iloc[0])
+        if not published.empty
+        else pd.Series(dtype=object)
+    )
+    orphan = orphan.assign(
+        standard_unit=orphan["coicop_code"].map(unit_of).fillna(""),
+        median_usd=pd.NA,
+        n_obs=0,
+        n_products=0,
+        n_imputed=0,
+        imp_share=0.0,
+        imputed=False,
+        orphan=True,
+        last_seen=pd.NaT,
+    )
+    logger.info(
+        "%d orphan cells (collected but nothing published) carrying %d rows",
+        len(orphan),
+        int(orphan["n_total"].sum()),
+    )
+    return orphan
+
+
+def _assemble_grid(
+    published: pd.DataFrame,
+    funnel: pd.DataFrame,
+    unit_loss: pd.Series,
+    prune_loss: pd.Series,
+) -> pd.DataFrame:
+    """One window's cells, each carrying where its observations went.
+
+    The identity every cell satisfies:
+
+        collected = published + lost_qa + lost_unit + lost_prune + lost_other
+
+    `lost_other` is the residual, and it is kept rather than folded into the
+    others precisely because it is the term nobody predicted. A non-zero
+    residual means a row left the pipeline somewhere this function does not
+    know about, and a page that silently absorbed it into "QA" would be
+    reporting a fiction with the same confidence as a fact.
+    """
+    keys = ["coicop_code", "country"]
+    published = published.copy()
+    published["orphan"] = False
+    grid = pd.concat(
+        [published.merge(funnel, on=keys, how="left"),
+         _orphan_cells(published, funnel)],
+        ignore_index=True,
+    )
+    for name, series in (("n_lost_unit", unit_loss), ("n_lost_prune", prune_loss)):
+        grid[name] = (
+            pd.MultiIndex.from_frame(grid[keys]).map(series).to_numpy()
+            if len(series)
+            else 0
+        )
+        grid[name] = pd.Series(grid[name]).fillna(0).astype(int)
+    for c in ("n_total", "n_products_total", "n_lost_qa", "n_top_qa",
+              "n_products_lost", "n_top_qa_prod"):
+        grid[c] = grid[c].fillna(0).astype(int)
+    # A published cell always has at least its own rows behind it; if the
+    # denominator came back smaller the join missed, and reporting a pass rate
+    # above 100% is worse than reporting none.
+    grid["n_total"] = grid[["n_total", "n_obs"]].max(axis=1)
+    grid["n_products_total"] = grid[["n_products_total", "n_products"]].max(axis=1)
+    grid["n_lost_other"] = (
+        grid["n_total"] - grid["n_obs"] - grid["n_lost_qa"]
+        - grid["n_lost_unit"] - grid["n_lost_prune"]
+    ).clip(lower=0)
+    resid = int(grid["n_lost_other"].sum())
+    if resid:
+        logger.info(
+            "%d rows (%.2f%% of collected) left the pipeline outside the three "
+            "measured stages; carried as lost_other",
+            resid,
+            100 * resid / max(int(grid["n_total"].sum()), 1),
+        )
+    return grid
 
 
 def _split_imputed(g: pd.DataFrame) -> pd.DataFrame:
@@ -466,6 +751,7 @@ def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
         .agg(
             median_usd=("unit_value_usd", "median"),
             n_all=("unit_value_usd", "size"),
+            n_products=("product_name", "nunique"),
             n_imputed=("imputed", "sum"),
         )
         .reset_index()
@@ -555,8 +841,8 @@ def _source_provenance(path: Path) -> dict:
 
 def _region_obs(
     keyed: pd.DataFrame, region_cols: list[dict[str, str]]
-) -> tuple[dict[str, dict[str, int]], dict[str, dict[str, int]]]:
-    """Observations per (leaf, region), and how many countries they came from.
+) -> dict[str, dict[str, dict[str, int]]]:
+    """Per (leaf, region): both metrics, both sides of the funnel, and breadth.
 
     The price view's region column is a median of country medians, so its `n`
     describes countries. Here the column is a SUM, so the two numbers answer
@@ -565,27 +851,29 @@ def _region_obs(
     all come from one country is not the same finding as one spread over
     twelve, and a total alone cannot tell them apart.
     """
-    totals: dict[str, dict[str, int]] = {}
-    counts: dict[str, dict[str, int]] = {}
+    fields = ("obs", "obs_all", "prod", "prod_all", "n")
+    out: dict[str, dict[str, dict[str, int]]] = {f: {} for f in fields}
+    cols = {"obs": "n_obs", "obs_all": "n_total",
+            "prod": "n_products", "prod_all": "n_products_total"}
     for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
-        tot: dict[str, int] = {}
-        cnt: dict[str, int] = {}
+        acc: dict[str, dict[str, int]] = {f: {} for f in fields}
         for col in region_cols:
             sub = (
                 grp if col["key"] == "world" else grp.loc[grp["_region"].eq(col["key"])]
             )
             if sub.empty:
                 continue
-            n = int(sub["n_obs"].sum())
-            tot[col["key"]] = n
+            for f, c in cols.items():
+                if c in sub:
+                    acc[f][col["key"]] = int(sub[c].sum())
             # Countries with a MEASURED observation, not countries with a cell:
-            # a column of modelled-only cells would otherwise report a breadth
-            # the zero total plainly contradicts.
-            cnt[col["key"]] = int(sub.loc[sub["n_obs"] > 0, "country"].nunique())
+            # a column of modelled-only or wholly-rejected cells would otherwise
+            # report a breadth the zero total plainly contradicts.
+            acc["n"][col["key"]] = int(sub.loc[sub["n_obs"] > 0, "country"].nunique())
         key = _cell_key(code, unit)
-        totals[key] = tot
-        counts[key] = cnt
-    return totals, counts
+        for f in fields:
+            out[f][key] = acc[f]
+    return out
 
 
 def _obs_labels(scope_label: str) -> dict[str, str]:
@@ -599,28 +887,33 @@ def _obs_labels(scope_label: str) -> dict[str, str]:
         "page_title": f"{scope_label} price observations - coverage",
         "page_h1": f"{scope_label} — price observations per category and country",
         "sub_note": (
-            "Number of PUBLISHED price observations behind each (COICOP "
-            "category x country) cell, over the last {lookback} days (cutoff "
-            "{cutoff}; data through {through}). Published means the row "
-            "survived the same pipeline the price dashboard draws from: QA "
-            "trusted, a parsed quantity, a resolved unit and an FX rate. Raw "
-            "scrapes that failed any of those are not counted here. The "
-            "{scope} column is the TOTAL for the category, with n = the "
-            "number of countries that contributed a measured observation. "
-            "Catch-all COICOP categories (\u201cOther \u2026\u201d, "
-            "\u201c\u2026 n.e.c.\u201d) ARE shown, unlike in the price "
-            "view: counting rows is unit-free, so the comparability objection "
-            "that hides them there does not apply. A cell reading 0 has no "
-            "measured observation in the window and is on the page only "
-            "because a modelled estimate stands behind it. The colour scale "
-            "is shared across the whole table and log-scaled \u2014 pale = "
-            "few observations, deep blue = many."
+            "Every cell reads PUBLISHED (COLLECTED) for a (COICOP category x "
+            "country) pair. The leading number survived the whole pipeline "
+            "and is what the price dashboard draws; the number in brackets is "
+            "everything collected for that pair before any gate. So 14 (14) "
+            "and 14 (900) are opposite findings about a source, and one "
+            "number could never tell them apart. Hover any cell for where the "
+            "missing rows went \u2014 rejected by QA, dropped as an "
+            "unconvertible unit, or pruned by RT-CAL as an implausible price. "
+            "The {scope} column carries the same pair summed over the "
+            "category, with n = the number of countries contributing a "
+            "published observation. Catch-all COICOP categories "
+            "(\u201cOther \u2026\u201d, \u201c\u2026 n.e.c.\u201d) are "
+            "shown here though the price view hides them: counting rows is "
+            "unit-free, so the comparability objection does not apply. Cells "
+            "reading 0 (N) collected N rows and published NONE of them "
+            "\u2014 the thinnest cells on the page, and ones the price view "
+            "cannot show at all. Shading follows the PUBLISHED count on a "
+            "shared log scale; pale = few, deep blue = many."
         ),
         "sub_note_hist": (
-            "Monthly count of published price observations per (COICOP leaf, "
-            "country). FX history starts {fxfloor}; earlier observations are "
-            "excluded, so this is coverage of the priced corpus, not of the "
-            "scrape."
+            "Monthly count per (COICOP leaf, country), on whichever metric is "
+            "selected above. FX history starts {fxfloor} and earlier "
+            "observations are excluded, so this is the priced corpus rather "
+            "than the scrape; hover a point for the share of that month\u2019s "
+            "collected rows that reached it. This chart is ALWAYS all-time \u2014 "
+            "the window control applies to the table only, because cropping "
+            "the history would hide whether a loss is recent or structural."
         ),
     }
 
@@ -690,10 +983,37 @@ def _coverage_cutoff(
 _IMP_FIELDS = ("imputed", "imp_share", "n_imputed")
 
 
+# Fields that mean "nothing happened here" when absent, which is what an
+# omitted key already says for free. On the global build the loss columns are
+# zero on most cells and the collected count equals the published one on most
+# months, so writing them out in full adds tens of megabytes of "no".
+_ZERO_DROP = ("n_lost_qa", "n_lost_unit", "n_lost_prune", "n_lost_other",
+              "n_products_lost", "n_top_qa", "n_top_qa_prod")
+
+
 def _lean(r: dict) -> dict:
-    if r.get("n_imputed"):
-        return r
-    return {k: v for k, v in r.items() if k not in _IMP_FIELDS}
+    if not r.get("n_imputed"):
+        r = {k: v for k, v in r.items() if k not in _IMP_FIELDS}
+    # A denominator equal to its numerator is a 100% pass rate, which the
+    # client can infer; only a REAL gap needs the bytes.
+    if r.get("n_total") == r.get("n_obs"):
+        r.pop("n_total", None)
+    if r.get("n_products_total") == r.get("n_products"):
+        r.pop("n_products_total", None)
+    for k in _ZERO_DROP:
+        if not r.get(k):
+            r.pop(k, None)
+    if "n_top_qa" not in r:
+        r.pop("top_qa", None)
+    if "n_top_qa_prod" not in r:
+        r.pop("top_qa_prod", None)
+    if not r.get("orphan"):
+        r.pop("orphan", None)
+    # NaN is a valid JS literal but not a value: it reaches the client as
+    # `prob: NaN` on every measured point, which is 9 MB of nothing globally.
+    if isinstance(r.get("prob"), float) and r["prob"] != r["prob"]:
+        r.pop("prob", None)
+    return r
 
 
 def _payload(
@@ -701,6 +1021,8 @@ def _payload(
     monthly: pd.DataFrame,
     region: str | None = None,
     metric: str = "price",
+    days: int | None = CURRENT_LOOKBACK_DAYS,
+    include_monthly: bool = True,
 ) -> dict:
     coicop_titles = _load_coicop_titles()
     country_names = _load_country_names()
@@ -769,13 +1091,14 @@ def _payload(
     # is unit-free and country-local -- so withholding it would hide real
     # coverage for a reason that does not apply.
     kept_all = keyed_all[~keyed_all["country"].isin(low_coverage)]
-    region_obs, region_obs_n = _region_obs(keyed_all, region_cols)
-    region_obs_kept, region_obs_n_kept = _region_obs(kept_all, region_cols)
+    region_obs = _region_obs(keyed_all, region_cols)
+    region_obs_kept = _region_obs(kept_all, region_cols)
 
     shown = current[~current["coicop_code"].isin(residual)]
     shown_kept = shown[~shown["country"].isin(low_coverage)]
 
     def _kpi(cur: pd.DataFrame, shown: pd.DataFrame, n_countries: int) -> dict:
+        live = cur[~cur.get("orphan", False)] if "orphan" in cur else cur
         """Headline counts, each over exactly the population it names.
 
         `products` used to be the row count of `current`, which is neither
@@ -789,36 +1112,54 @@ def _payload(
         CURRENT_LOOKBACK_DAYS of the countries in this build, which is what the
         heat table draws. Nothing counts the whole corpus.
         """
-        return {
+        out = {
             "countries": n_countries,
-            "coicop_leaves": int(shown["coicop_code"].nunique()),
-            "products": int(cur["n_products"].sum()),
-            "observations": int(cur["n_obs"].sum()),
-            "cells": int(len(cur)),
-            "imputed_cells": int(cur["imputed"].sum()),
+            # Breadth and country counts stay PUBLISHABLE-ONLY. An orphan cell
+            # is the thinness the low-coverage cutoff exists to flag, so
+            # crediting a country with breadth for one would let a column of
+            # wholly-rejected cells argue its own way past the gate.
+            "coicop_leaves": int(
+                shown.loc[~shown.get("orphan", False), "coicop_code"].nunique()
+                if "orphan" in shown else shown["coicop_code"].nunique()
+            ),
+            "products": int(live["n_products"].sum()),
+            "observations": int(live["n_obs"].sum()),
+            "cells": int(len(live)),
+            "imputed_cells": int(live["imputed"].sum()),
         }
+        if "n_total" in cur:
+            out.update(
+                collected=int(cur["n_total"].sum()),
+                products_collected=int(cur["n_products_total"].sum()),
+                lost_qa=int(cur["n_lost_qa"].sum()),
+                lost_unit=int(cur["n_lost_unit"].sum()),
+                lost_prune=int(cur["n_lost_prune"].sum()),
+                lost_other=int(cur["n_lost_other"].sum()),
+                dead_cells=int(cur.get("orphan", pd.Series(False)).sum()),
+                dead_cell_rows=int(cur.loc[cur.get("orphan", False), "n_total"].sum())
+                if "orphan" in cur else 0,
+            )
+        return out
 
     kpi = _kpi(current, shown, len(country_display))
     kept_cur = current[~current["country"].isin(low_coverage)]
     kpi_kept = _kpi(kept_cur, shown_kept, len(country_display) - len(low_coverage))
 
-    cutoff = (
-        (pd.Timestamp.now().normalize() - pd.Timedelta(days=CURRENT_LOOKBACK_DAYS))
-        .date()
-        .isoformat()
-    )
+    cutoff = None if days is None else _window_cutoff(days).date().isoformat()
     data_through = (
         pd.to_datetime(current["last_seen"], errors="coerce").max().date().isoformat()
         if not current.empty and current["last_seen"].notna().any()
         else None
     )
     if metric == "obs":
+        # `data_through` above already read `last_seen`; the column itself is
+        # per-cell and unused by the obs client, so it goes with the prices.
         # No price leaves this function in obs mode -- not in a cell, not in a
         # region column, not in a tooltip, and not sitting unread in the blob
         # either. A page that shows counts should not be shipping 750k medians
         # a reader could dig out of view-source, and dropping them takes ~25 MB
         # off the global file.
-        current = current.drop(columns=["median_usd"], errors="ignore")
+        current = current.drop(columns=["median_usd", "last_seen"], errors="ignore")
         monthly = monthly.drop(columns=["median_usd"], errors="ignore")
         region_medians = region_medians_kept = {}
         region_n_products = region_n_products_kept = {}
@@ -826,11 +1167,14 @@ def _payload(
     return {
         "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
         "source_parquet": _source_provenance(OBSERVATIONS_PARQUET),
+        "trusted_parquet": (
+            _source_provenance(TRUSTED_PARQUET) if TRUSTED_PARQUET.exists() else None
+        ),
         # True only in the diagnostic build. Carried in the payload as well as
         # in the banner, so a client can refuse to treat these numbers as
         # publishable rather than relying on the reader having seen a stripe.
         "unfiltered": UNFILTERED,
-        "lookback_days": CURRENT_LOOKBACK_DAYS,
+        "lookback_days": days,
         "cutoff_date": cutoff,
         "data_through": data_through,
         "min_obs_per_cell": MIN_OBS_PER_CELL,
@@ -853,9 +1197,7 @@ def _payload(
         # changes nothing about which cells exist.
         "metric": metric,
         "region_obs": region_obs,
-        "region_obs_n": region_obs_n,
         "region_obs_kept": region_obs_kept,
-        "region_obs_n_kept": region_obs_n_kept,
         **(_obs_labels(region_cols[0]["label"] if region else "Global")
            if metric == "obs" else {}),
         "residual_leaves": sorted(residual & set(current["coicop_code"].dropna())),
@@ -884,7 +1226,7 @@ def _payload(
         "monthly": [
             _lean({**r, "month": r["month"].date().isoformat()})
             for r in monthly.to_dict(orient="records")
-        ],
+        ] if include_monthly else [],
     }
 
 
@@ -910,11 +1252,29 @@ def publish(
     low-coverage cutoff, the monthly series) is consistent with what is on
     screen.
     """
+    if metric not in {"price", "obs"}:
+        raise ValueError(f"unknown metric {metric!r}; expected 'price' or 'obs'")
     if not OBSERVATIONS_PARQUET.exists():
         raise FileNotFoundError(
             f"{OBSERVATIONS_PARQUET} not found — run `po prices build` first."
         )
-    obs = _read_publish_columns(OBSERVATIONS_PARQUET)
+    keep_countries = None
+    if region is not None:
+        _of_country, _region_order = _load_regions()
+        if region not in {rc["key"] for rc in _region_order}:
+            raise ValueError(f"unknown region {region!r} (see regions.yaml)")
+        keep_countries = {c for c, r in _of_country.items() if r == region}
+    funnel = (
+        _loss_funnel(OBSERVATIONS_PARQUET, keep_countries)
+        if metric == "obs" else None
+    )
+    # UNFILTERED deliberately admits rows QA rejected, so it cannot start from
+    # a frame those rows were already removed from.
+    if UNFILTERED or not TRUSTED_PARQUET.exists():
+        obs = _read_publish_columns(OBSERVATIONS_PARQUET)
+    else:
+        obs = _read_publish_columns(TRUSTED_PARQUET)
+        logger.info("trusted frame read from %s", TRUSTED_PARQUET.name)
     obs["observation_date"] = pd.to_datetime(obs["observation_date"], errors="coerce")
     obs = obs[obs["observation_date"].notna()]
     if UNFILTERED:
@@ -953,7 +1313,13 @@ def publish(
         before = len(obs)
         obs = obs[obs["country"].map(of_country) == region]
         logger.info("region==%r filter kept %d of %d rows", region, len(obs), before)
+    # Keys have to be stable across the three stage counts, and
+    # `_to_display_units` normalises `coicop_code` itself -- so do it first and
+    # count against the same spelling on both sides of every difference.
+    obs["coicop_code"] = obs["coicop_code"].map(_normalize_coicop)
+    stage_trusted = _stage_counts(obs) if metric == "obs" else {}
     obs = _to_display_units(obs)
+    stage_unit = _stage_counts(obs) if metric == "obs" else {}
     # Both empty unless `prices rtcal run` has been executed.
     #
     # Folded on the way in, because RT-CAL keys cells on the unit the summary
@@ -971,15 +1337,67 @@ def publish(
             before,
             len(pruned),
         )
+    stage_prune = _stage_counts(obs) if metric == "obs" else {}
     obs = _fill_rows(obs, _fold_piece_units(fills_mod.load_released_fills()))
-    current = _current_snapshot(obs)
     monthly = _attach_fills(
         _monthly_series(obs), _fold_piece_units(fills_mod.load_released_fills())
     )
 
-    if metric not in {"price", "obs"}:
-        raise ValueError(f"unknown metric {metric!r}; expected 'price' or 'obs'")
-    payload = _payload(current, monthly, region=region, metric=metric)
+    if metric != "obs":
+        payload = _payload(
+            _current_snapshot(obs), monthly, region=region, metric=metric
+        )
+    else:
+        mk = ["coicop_code", "country", "month"]
+        monthly = monthly.merge(funnel["_monthly"], on=mk, how="left")
+        monthly = monthly.merge(funnel["_monthly_products"], on=mk, how="left")
+        for c, floor in (("n_total", "n_obs"), ("n_products_total", "n_products")):
+            monthly[c] = monthly[c].fillna(monthly[floor])
+            monthly[c] = monthly[[c, floor]].max(axis=1).astype(int)
+        grids: dict[str, pd.DataFrame] = {}
+        for key, days in GRIDS.items():
+            grids[key] = _assemble_grid(
+                _current_snapshot(obs, days),
+                funnel[key],
+                stage_trusted[key].subtract(stage_unit[key], fill_value=0),
+                stage_unit[key].subtract(stage_prune[key], fill_value=0),
+            )
+            logger.info(
+                "grid[%s]: %d cells (%d orphan), %d published of %d collected",
+                key,
+                len(grids[key]),
+                int(grids[key]["orphan"].sum()),
+                int(grids[key]["n_obs"].sum()),
+                int(grids[key]["n_total"].sum()),
+            )
+        # One `_payload` per grid, then the per-grid parts lifted out. The
+        # shared parts -- country names, COICOP titles, the monthly series,
+        # provenance -- are identical by construction, so the "all" payload IS
+        # the page and each grid contributes only what differs between them.
+        built = {
+            key: _payload(
+                grids[key], monthly, region=region, metric=metric,
+                days=GRIDS[key], include_monthly=(key == "all"),
+            )
+            for key in GRIDS
+        }
+        payload = built["all"]
+        per_grid = ("current", "region_obs", "region_obs_kept", "kpi", "kpi_kept",
+                    "low_coverage", "coverage_cutoff", "lookback_days",
+                    "cutoff_date", "data_through")
+        payload["grids"] = {
+            key: {k: built[key][k] for k in per_grid} for key in GRIDS
+        }
+        payload["grid_order"] = [
+            {"key": "all", "label": "All time"},
+            {"key": "cur", "label": f"Last {CURRENT_LOOKBACK_DAYS} days"},
+        ]
+        payload["default_grid"] = "all"
+        payload["qa_reasons"] = QA_REASONS
+        # The grids carry the cells; a second flat copy would double the
+        # largest array in the file to say the same thing twice.
+        for k in per_grid:
+            payload.pop(k, None)
     chart_js = VENDOR_CHART_JS.read_text()
     html = _render(payload, chart_js)
 
@@ -989,12 +1407,7 @@ def publish(
     # No-op unless this is the diagnostic build, in which case it raises rather
     # than shipping an unstamped page.
     stamp_unfiltered(out)
-    logger.info(
-        "wrote %s (%d current cells, %d monthly cells)",
-        out,
-        len(current),
-        len(monthly),
-    )
+    logger.info("wrote %s (%d monthly cells)", out, len(monthly))
     return out
 
 

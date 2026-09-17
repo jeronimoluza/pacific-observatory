@@ -77,6 +77,21 @@
   .kpi .l { font-size: 10px; color: #6b7280; text-transform: uppercase;
             letter-spacing: 0.04em; margin-top: 2px; }
   .modelled-key { font-style: italic; }
+  .heat .tot { opacity: .60; font-size: 9px; margin-left: 3px; font-weight: 500; }
+  .heat td.dead { background: #fdf3f3 !important; color: #a04040; }
+  .heat td.dead .tot { opacity: .8; }
+  .switches { display: flex; gap: 18px; margin: 12px 0 4px; flex-wrap: wrap; }
+  .swgroup { display: inline-flex; border: 1px solid #d5dbe1; border-radius: 6px;
+             overflow: hidden; }
+  .swgroup .swlab { font-size: 10px; text-transform: uppercase;
+                    letter-spacing: .04em; color: #6b7280; padding: 6px 10px;
+                    background: #f8fafb; border-right: 1px solid #d5dbe1;
+                    display: flex; align-items: center; }
+  .swgroup button { font: inherit; font-size: 12px; padding: 6px 12px; border: 0;
+                    background: #fff; color: #444; cursor: pointer; }
+  .swgroup button + button { border-left: 1px solid #eceff2; }
+  .swgroup button.on { background: #2c3e50; color: #fff; font-weight: 600; }
+  .windownote { font-size: 11px; color: #6b7280; margin: 2px 0 10px; }
   .heat td.modelled { font-style: italic; color: #4b5563; }
   .heat td.modelled::after { content: '~'; font-size: 9px; vertical-align: super;
                              opacity: .65; }
@@ -113,6 +128,11 @@
     for how much of it was modelled.
     Color scale within each row — green=cheapest, red=most expensive.
   </div>
+  <div class="switches" id="switches" hidden>
+    <span class="swgroup" id="sw-metric"></span>
+    <span class="swgroup" id="sw-window"></span>
+  </div>
+  <div class="windownote" id="windownote" hidden></div>
   <label class="covtoggle">
     <input type="checkbox" id="covfilter">
     <span id="covlabel"></span>
@@ -147,13 +167,33 @@
   // toggle: no price appears anywhere on the page in that mode.
   const METRIC = DATA.metric || 'price';
   const IS_OBS = METRIC === 'obs';
-  // Largest cell count in the table, for the shared log scale. A spread over
-  // DATA.current would overflow the call stack on the global build, so it is
-  // reduced.
-  const obsMax = IS_OBS
-    ? DATA.current.reduce((m, r) => Math.max(m, r.n_obs || 0), 1) : 1;
-  const valOf = (r) => (IS_OBS ? (r.n_obs || 0) : r.median_usd);
+  // TWO INDEPENDENT AXES. `measure` is what a cell counts -- price readings or
+  // the distinct shelf items behind them. `gridKey` is how far back it counts.
+  // The window governs the TABLE ONLY: the chart stays all-time whatever is
+  // selected, because cropping the history is exactly how you lose the ability
+  // to tell a recent loss from a structural one.
+  const GRIDS = DATA.grids || null;
+  let gridKey = DATA.default_grid || 'all';
+  let measure = 'obs';
+  const grid = () => (GRIDS ? GRIDS[gridKey] : DATA);
+  const rowsOf = () => grid().current || [];
+  // Every number on the page goes through this pair, so adding a metric is a
+  // line here rather than an edit in six render paths.
+  const valOf = (r) => IS_OBS
+    ? (measure === 'prod' ? (r.n_products || 0) : (r.n_obs || 0))
+    : r.median_usd;
+  const totOf = (r) => (measure === 'prod'
+    ? (r.n_products_total != null ? r.n_products_total : (r.n_products || 0))
+    : (r.n_total != null ? r.n_total : (r.n_obs || 0)));
   const fmtVal = (v) => (IS_OBS ? Number(v).toLocaleString() : Number(v).toFixed(2));
+  // Largest value in the ACTIVE grid and metric. Recomputed on every switch:
+  // a scale carried over from the other grid would make all-time read as
+  // uniformly darker than it is, which is a lie told in colour. Reduced rather
+  // than spread, because Math.max(...rows) overflows the stack on global.
+  let scaleMax = 1;
+  function recomputeScale() {
+    scaleMax = rowsOf().reduce((m, r) => Math.max(m, valOf(r) || 0), 1) || 1;
+  }
   document.getElementById('genstamp').textContent = 'Generated ' + DATA.generated_at_utc;
   // The corpus this page rests on, not just when the HTML was written. See
   // _source_provenance in publish.py for why both are needed.
@@ -201,9 +241,16 @@
   // a view over the same data, not a rebuild: the payload ships both the full
   // and the filtered region medians so the World column agrees with whichever
   // set of columns is on screen.
-  const lowCoverage = new Set(DATA.low_coverage || []);
-  const covCut = DATA.coverage_cutoff || {};
+  let lowCoverage = new Set(grid().low_coverage || []);
+  let covCut = grid().coverage_cutoff || {};
   let hideLowCov = false;
+  // The cutoff is computed per grid, so switching window changes which
+  // countries are thin -- and the label that names them has to follow.
+  function refreshGridState() {
+    lowCoverage = new Set(grid().low_coverage || []);
+    covCut = grid().coverage_cutoff || {};
+    recomputeScale();
+  }
 
   // --- RT-CAL imputed points ---
   // `DATA.monthly` carries fills only when `prices rtcal run` has produced
@@ -233,14 +280,46 @@
   // payload's own note as its tooltip, so the label and its meaning cannot
   // drift apart in two files.
   function renderKpis() {
-    const k = (hideLowCov ? DATA.kpi_kept : DATA.kpi) || {};
+    const g = grid();
+    const k = (hideLowCov ? g.kpi_kept : g.kpi) || {};
     const notes = DATA.kpi_notes || {};
-    const tiles = [
+    // Under the products metric the headline pair is products; under
+    // observations it is rows. Only one pair is shown, because a reader who
+    // meets one number and then totals the table to a different one takes it
+    // for a discrepancy.
+    const isProd = measure === 'prod';
+    const pubN = isProd ? (k.products ?? 0) : (k.observations ?? 0);
+    const allN = isProd ? (k.products_collected ?? 0) : (k.collected ?? 0);
+    const tiles = IS_OBS ? [
+      [isProd ? 'products' : 'observations',
+       isProd ? 'Products published' : 'Observations published',
+       pubN.toLocaleString()],
+      ['collected', isProd ? 'Products collected' : 'Observations collected',
+       allN.toLocaleString()],
+      ['passrate', 'Published', (allN > 0 ? Math.round(100 * pubN / allN) : 0) + '%'],
+      ['countries', 'Countries', k.countries ?? 0],
+      ['coicop_leaves', 'COICOP leaves', k.coicop_leaves ?? 0],
+    ] : [
       ['products', 'Products', (k.products ?? 0).toLocaleString()],
       ['observations', 'Observations', (k.observations ?? 0).toLocaleString()],
       ['countries', 'Countries', k.countries ?? 0],
       ['coicop_leaves', 'COICOP leaves', k.coicop_leaves ?? 0],
     ];
+    if (IS_OBS && !isProd && k.collected) {
+      // The three stages, ranked, so the biggest leak reads first.
+      [['lost_qa', 'Lost: QA'], ['lost_unit', 'Lost: unit'],
+       ['lost_prune', 'Lost: pruned'], ['lost_other', 'Lost: other']]
+        .filter(([key]) => k[key])
+        .sort((a, b) => k[b[0]] - k[a[0]])
+        .forEach(([key, label]) => tiles.push([key, label,
+          k[key].toLocaleString() + '  '
+          + Math.round(100 * k[key] / k.collected) + '%']));
+    }
+    if (IS_OBS && k.dead_cells) {
+      tiles.push(['dead_cells', 'Dead cells',
+                  k.dead_cells.toLocaleString() + ' \u00b7 '
+                  + (k.dead_cell_rows ?? 0).toLocaleString() + ' rows']);
+    }
     if (k.imputed_cells) {
       tiles.push(['imputed_cells', 'Modelled cells',
                   (k.imputed_cells).toLocaleString() + ' of '
@@ -272,10 +351,45 @@
   const residualLeaves = new Set(DATA.residual_leaves || []);
   const regionMedianFor = (key, k) =>
     ((hideLowCov ? DATA.region_medians_kept : DATA.region_medians)[key] || {})[k];
+  const QA = DATA.qa_reasons || {};
+  const reasonOf = (k) => QA[k] || k;
+  const unitWord = () => (measure === 'prod' ? 'product' : 'observation');
+  // "14 of 900 (2%)" -- the parenthetical is the point of the pair, so it is
+  // computed in one place rather than at each call site.
+  const rate = (a, b) => (b > 0 ? Math.round(100 * a / b) : 0);
+  // Where a cell's missing rows went. Only non-zero stages are named: a
+  // tooltip listing four zeroes buries the one number that matters.
+  function lossNote(cv) {
+    const kept = valOf(cv), tot = totOf(cv);
+    if (tot <= kept) return '';
+    const bits = [];
+    const qa = measure === 'prod' ? cv.n_products_lost : cv.n_lost_qa;
+    const top = measure === 'prod' ? cv.top_qa_prod : cv.top_qa;
+    if (qa) {
+      bits.push(qa.toLocaleString() + ' rejected by QA'
+                + (top ? ' (mostly: ' + reasonOf(top) + ')' : ''));
+    }
+    if (measure !== 'prod') {
+      if (cv.n_lost_unit) bits.push(cv.n_lost_unit.toLocaleString() + ' unconvertible unit');
+      if (cv.n_lost_prune) bits.push(cv.n_lost_prune.toLocaleString() + ' pruned as implausible');
+      if (cv.n_lost_other) bits.push(cv.n_lost_other.toLocaleString() + ' unaccounted');
+    } else if (tot - kept - (qa || 0) > 0) {
+      bits.push((tot - kept - (qa || 0)).toLocaleString() + ' lost after QA');
+    }
+    return bits.length ? ' \u2014 ' + bits.join(', ') : '';
+  }
+  // `region_obs` is keyed by field then cell: obs / obs_all / prod / prod_all
+  // / n. Which pair is read follows the metric switch, so the column can never
+  // disagree with the cells beneath it.
+  const regionField = (f, key, k) => {
+    const src = (hideLowCov ? grid().region_obs_kept : grid().region_obs) || {};
+    return ((src[f] || {})[key] || {})[k];
+  };
   const regionObsFor = (key, k) =>
-    ((hideLowCov ? DATA.region_obs_kept : DATA.region_obs)[key] || {})[k];
-  const regionObsNFor = (key, k) =>
-    ((hideLowCov ? DATA.region_obs_n_kept : DATA.region_obs_n)[key] || {})[k];
+    regionField(measure === 'prod' ? 'prod' : 'obs', key, k);
+  const regionAllFor = (key, k) =>
+    regionField(measure === 'prod' ? 'prod_all' : 'obs_all', key, k);
+  const regionObsNFor = (key, k) => regionField('n', key, k);
   const regionNFor = (key, k) =>
     ((hideLowCov ? DATA.region_n_countries_kept : DATA.region_n_countries)[key] || {})[k];
   const regionPFor = (key, k) =>
@@ -290,32 +404,39 @@
   // One row per COICOP leaf. The build puts every row of a leaf onto that
   // leaf's single display unit before publishing, so the unit is a property of
   // the leaf and never varies down a row -- which is why the label omits it.
-  const cells = {};
-  const cellOrder = [];
-  DATA.current.forEach(r => {
-    const k = cellKey(r.coicop_code, r.standard_unit);
-    if (!cells[k]) {
-      cells[k] = {key: k, coicop_code: r.coicop_code,
-                  standard_unit: r.standard_unit, byCountry: {}};
-      cellOrder.push(k);
-    }
-    cells[k].byCountry[r.country] = r;
-  });
-  const cellWidth = (c) => Object.keys(c.byCountry).length;
-  // Catch-all leaves are not shown. "Other green leguminous vegetables" pools
-  // whatever the classifier could not place, so the row is a different bag of
-  // goods in every country and reads across as if it were one commodity. The
-  // rows come out of both views; the KPI tiles above already counted only
-  // named leaves, so they are unaffected.
-  const ordered = cellOrder
-    .map(k => cells[k])
-    .filter(c => IS_OBS || !residualLeaves.has(c.coicop_code))
-    .sort((a, b) => cmpCoicop(a.coicop_code, b.coicop_code)
-                 || cellWidth(b) - cellWidth(a));
+  // Built per grid and cached: the two grids are different cell sets, and
+  // re-deriving 30k cells on every toggle is a visible stall.
+  const gridCache = {};
+  function buildCells() {
+    if (gridCache[gridKey]) return gridCache[gridKey];
+    const cells = {};
+    const cellOrder = [];
+    rowsOf().forEach(r => {
+      const k = cellKey(r.coicop_code, r.standard_unit);
+      if (!cells[k]) {
+        cells[k] = {key: k, coicop_code: r.coicop_code,
+                    standard_unit: r.standard_unit, byCountry: {}};
+        cellOrder.push(k);
+      }
+      cells[k].byCountry[r.country] = r;
+    });
+    const cellWidth = (c) => Object.keys(c.byCountry).length;
+    // Catch-all leaves are hidden in the PRICE view: "Other green leguminous
+    // vegetables" pools whatever the classifier could not place, so the row
+    // reads across countries as if it were one commodity when it is not. A
+    // count makes no such claim, so the obs view keeps them.
+    gridCache[gridKey] = cellOrder
+      .map(k => cells[k])
+      .filter(c => IS_OBS || !residualLeaves.has(c.coicop_code))
+      .sort((a, b) => cmpCoicop(a.coicop_code, b.coicop_code)
+                   || cellWidth(b) - cellWidth(a));
+    return gridCache[gridKey];
+  }
 
   const heat = document.getElementById('heat');
 
   function renderHeat() {
+  const ordered = buildCells();
   countries = hideLowCov ? allCountries.filter(c => !lowCoverage.has(c)) : allCountries;
   heat.textContent = '';
   const thead = document.createElement('thead');
@@ -341,7 +462,7 @@
   const tbody = document.createElement('tbody');
   function obsShade(v) {
     if (v == null) return null;
-    const t = v > 0 ? Math.log(1 + v) / Math.log(1 + obsMax) : 0;
+    const t = v > 0 ? Math.log(1 + v) / Math.log(1 + scaleMax) : 0;
     return {
       bg: `rgb(${Math.round(247 - 200 * t)},${Math.round(251 - 150 * t)},`
         + `${Math.round(255 - 60 * t)})`,
@@ -416,17 +537,27 @@
       rTd.className = 'region' + (rc.key === 'world' ? ' region-world' : '')
                     + (i === regionCols.length - 1 ? ' region-last' : '');
       if (IS_OBS) {
-        const tot = regionObsFor(cell.key, rc.key);
-        if (tot == null) { rTd.textContent = '\u00b7'; rTd.classList.add('na'); }
+        const kept = regionObsFor(cell.key, rc.key);
+        if (kept == null) { rTd.textContent = '\u00b7'; rTd.classList.add('na'); }
         else {
-          rTd.textContent = Number(tot).toLocaleString();
+          const all = regionAllFor(cell.key, rc.key);
+          rTd.textContent = Number(kept).toLocaleString();
+          if (all != null && all !== kept) {
+            const sp = document.createElement('span');
+            sp.className = 'tot';
+            sp.textContent = '(' + Number(all).toLocaleString() + ')';
+            rTd.appendChild(sp);
+          }
           const nc = regionObsNFor(cell.key, rc.key);
           const tag = document.createElement('span');
           tag.className = 'nctry'; tag.textContent = 'n=' + (nc ?? 0);
           rTd.appendChild(tag);
-          rTd.title = rc.label + ': ' + Number(tot).toLocaleString()
-                    + ' published observations from ' + (nc ?? 0)
-                    + ' countr' + ((nc === 1) ? 'y' : 'ies');
+          rTd.title = rc.label + ': ' + Number(kept).toLocaleString() + ' of '
+                    + Number(all ?? kept).toLocaleString() + ' ' + unitWord()
+                    + 's published (' + rate(kept, all ?? kept) + '%) from '
+                    + (nc ?? 0) + ' countr' + ((nc === 1) ? 'y' : 'ies')
+                    + ' \u2014 n counts countries with a PUBLISHED '
+                    + unitWord() + ', so a column of dead cells reports 0.';
         }
         tr.appendChild(rTd);
         return;
@@ -460,20 +591,41 @@
       const td = document.createElement('td');
       if (!cv) { td.className = 'na'; td.textContent = '·'; }
       else if (IS_OBS) {
-        const n = cv.n_obs || 0;
+        const n = valOf(cv), tot = totOf(cv);
         td.textContent = fmtVal(n);
+        if (tot !== n) {
+          const sp = document.createElement('span');
+          sp.className = 'tot';
+          sp.textContent = '(' + Number(tot).toLocaleString() + ')';
+          td.appendChild(sp);
+        }
+        // Shaded by the PUBLISHED count, never the collected one: a cell whose
+        // rows were all rejected must not look as strong as one whose rows all
+        // survived, and shading the denominator would do exactly that.
         const s = obsShade(n);
         td.style.background = s.bg;
         if (s.fg) td.style.color = s.fg;
-        if (n === 0) {
+        if (cv.orphan) {
+          // Collected, published nothing. Flat and marked -- NOT shaded by
+          // size, because its published count is zero and that is the honest
+          // reading however much was thrown away to get there.
+          td.classList.add('dead');
+          td.style.color = '';
+          td.title = 'DEAD CELL: ' + Number(tot).toLocaleString() + ' '
+                   + unitWord() + (tot === 1 ? '' : 's') + ' collected, none '
+                   + 'published' + lossNote(cv) + '. The price dashboard '
+                   + 'cannot show this cell at all.';
+        } else if (n === 0) {
           td.classList.add('modelled');
-          td.title = 'No measured observation in the window. This cell is on '
-                   + 'the page only because an RT-CAL estimate stands behind it.';
+          td.title = 'No measured observation here; an RT-CAL estimate stands '
+                   + 'behind the cell' + lossNote(cv) + '.';
         } else {
-          td.title = n.toLocaleString() + ' published observation'
-                   + (n === 1 ? '' : 's')
-                   + ' \u00b7 ' + (cv.n_products ?? '?') + ' distinct product'
-                   + (cv.n_products === 1 ? '' : 's') + impNote(cv.imp_share);
+          td.title = n.toLocaleString() + ' of ' + Number(tot).toLocaleString()
+                   + ' ' + unitWord() + (tot === 1 ? '' : 's') + ' published ('
+                   + rate(n, tot) + '%)' + lossNote(cv)
+                   + (measure === 'prod' ? '' :
+                      ' \u00b7 ' + (cv.n_products ?? '?') + ' distinct products')
+                   + impNote(cv.imp_share);
         }
       }
       else {
@@ -553,7 +705,9 @@
         scales: {
           x: { title: { display: true, text: 'Month' } },
           y: IS_OBS
-            ? { beginAtZero: true, title: { display: true, text: 'Published observations' } }
+            ? { beginAtZero: true, title: { display: true, text:
+                measure === 'prod' ? 'Distinct products published'
+                                   : 'Observations published' } }
             : { title: { display: true, text: 'Median USD / ' + unit } },
         },
         plugins: {
@@ -564,6 +718,14 @@
                 const m = months[ctx.dataIndex];
                 const x = rows.find(r => r.country === c && r.month === m);
                 const val = ctx.parsed.y != null ? fmtVal(ctx.parsed.y) : '—';
+                if (IS_OBS && x && !x.imputed) {
+                  const tot = totOf(x), kept = valOf(x);
+                  return ctx.dataset.label + ': ' + val + (tot > kept
+                    ? ' \u2014 ' + kept.toLocaleString() + ' of '
+                      + tot.toLocaleString() + ' collected reached the series ('
+                      + rate(kept, tot) + '%)'
+                    : '');
+                }
                 if (x && x.imputed) {
                   const p = x.prob != null ? Math.round(x.prob * 100) + '%' : 'n/a';
                   return ctx.dataset.label + ': ' + val +
@@ -584,19 +746,24 @@
   // to change what they are looking at; the two boxes mirror one state.
   const covBoxes = [document.getElementById('covfilter'),
                     document.getElementById('covfilter2')];
-  const nDropped = lowCoverage.size;
-  const labelText = 'Hide ' + nDropped + ' low-coverage '
-                  + (nDropped === 1 ? 'country' : 'countries');
-  const detailText = ' (fewer than ' + (covCut.categories ?? '?') + ' of '
-                   + (covCut.n_named_leaves ?? '?') + ' categories — the bottom '
-                   + 'quartile; median is ' + (covCut.median ?? '?') + ')';
-  [['covlabel', 0], ['covlabel2', 1]].forEach(([id]) => {
-    const el = document.getElementById(id);
-    el.textContent = labelText;
-    const det = document.createElement('span');
-    det.className = 'cn'; det.textContent = detailText;
-    el.appendChild(det);
-  });
+  function refreshCovLabels() {
+    const nDropped = lowCoverage.size;
+    const labelText = 'Hide ' + nDropped + ' low-coverage '
+                    + (nDropped === 1 ? 'country' : 'countries');
+    // Breadth is counted over PUBLISHED cells only, so a country whose every
+    // cell is dead stays flagged as thin -- which is the point of the flag.
+    const detailText = ' (fewer than ' + (covCut.categories ?? '?') + ' of '
+                     + (covCut.n_named_leaves ?? '?') + ' categories with a '
+                     + 'published cell; median is ' + (covCut.median ?? '?') + ')';
+    [['covlabel', 0], ['covlabel2', 1]].forEach(([id]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = labelText;
+      const det = document.createElement('span');
+      det.className = 'cn'; det.textContent = detailText;
+      el.appendChild(det);
+    });
+  }
   function applyCoverageFilter(on) {
     hideLowCov = on;
     covBoxes.forEach(b => { if (b.checked !== on) b.checked = on; });
@@ -610,9 +777,6 @@
     if (DATA.page_title) document.title = DATA.page_title;
     if (DATA.page_h1) document.querySelector('h1').textContent = DATA.page_h1;
     const fill = (s) => String(s)
-      .replace('{lookback}', DATA.lookback_days)
-      .replace('{cutoff}', DATA.cutoff_date)
-      .replace('{through}', DATA.data_through || '\u2014')
       .replace('{fxfloor}', DATA.fx_floor)
       .replace('{scope}', (DATA.region_cols && DATA.region_cols.length === 1)
         ? DATA.region_cols[0].label : 'World and per-region');
@@ -624,9 +788,63 @@
     }
   }
 
+  // --- metric and window switches ---------------------------------------
+  // The window lives in the page rather than in a second file because the
+  // comparison IS the finding: a loss present all-time but absent in the
+  // window is one you already fixed, and two files make that a diff.
+  function buildSwitch(rootId, label, options, currentKey, onPick) {
+    const root = document.getElementById(rootId);
+    if (!root) return;
+    root.textContent = '';
+    const l = document.createElement('span');
+    l.className = 'swlab'; l.textContent = label;
+    root.appendChild(l);
+    options.forEach(o => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = o.label;
+      if (o.key === currentKey) b.classList.add('on');
+      b.addEventListener('click', () => { if (o.key !== currentKey) onPick(o.key); });
+      root.appendChild(b);
+    });
+  }
+
+  function windowNote() {
+    const g = grid();
+    const through = g.data_through || '\u2014';
+    return (g.lookback_days == null)
+      ? 'All time \u2014 every observation in the corpus, through ' + through + '.'
+      : 'Last ' + g.lookback_days + ' days \u2014 cutoff ' + g.cutoff_date
+        + ', data through ' + through + '.';
+  }
+
+  function repaint() {
+    refreshGridState();
+    buildSwitch('sw-metric', 'Count', [
+      {key: 'obs', label: 'Observations'},
+      {key: 'prod', label: 'Unique product names'},
+    ], measure, (k) => { measure = k; repaint(); });
+    buildSwitch('sw-window', 'Window',
+      (DATA.grid_order || []).map(g => ({key: g.key, label: g.label})),
+      gridKey, (k) => { gridKey = k; repaint(); });
+    document.getElementById('windownote').textContent = windowNote();
+    refreshCovLabels();
+    renderKpis();
+    renderHeat();
+    if (select.value) renderChart(select.value);
+  }
+
+  if (IS_OBS && GRIDS) {
+    document.getElementById('switches').hidden = false;
+    document.getElementById('windownote').hidden = false;
+  }
+
+  recomputeScale();
+  refreshCovLabels();
   renderKpis();
   renderHeat();
   if (monthlySeries.length) { select.value = monthlySeries[0]; renderChart(monthlySeries[0]); }
+  if (IS_OBS && GRIDS) repaint();
 </script>
 </body>
 </html>
