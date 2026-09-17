@@ -28,7 +28,6 @@ import pandas as pd
 import yaml
 
 from prices.build import unit_collapse
-from prices.build.aggregate import read_observations
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import RESIDUAL_TITLE_RE, residual_leaves
 from prices.explorer.profile import UNFILTERED, gate, stamp_unfiltered
@@ -77,6 +76,43 @@ COVERAGE_MIN_NAMED_LEAVES = gate(10, 0)
 # Cache rows without trust_level (legacy v1-era) are coalesced to "high" by
 # the build stage, so this default is conservative without dropping vetted data.
 PUBLISH_TRUST_LEVELS = frozenset({"high"})
+# The only columns anything downstream of `publish` reads. The observations
+# parquet carries 39, and reading all of them materialised 31M rows of
+# `product_url`, `source`, `currency` and twenty-odd unused flags -- around
+# 20 GB of object-dtype strings for columns no figure on the page depends on,
+# which is what put the unrestricted build over this machine's 26 GB and got it
+# SIGKILLed while a region build of the same code finished in seconds.
+#
+# Missing names are skipped rather than raising, so an older parquet still
+# loads; `qa_status` and `trust_level` are the two publish gates and only one
+# of them exists on any given vintage.
+PUBLISH_COLUMNS = (
+    "product_name",  # distinct shelf items behind a cell
+    "country",
+    "observation_date",
+    "standard_unit",
+    "coicop_code",
+    "unit_value_local",  # unit_collapse rescales both value columns
+    "unit_value_usd",
+    "qa_status",  # the publish gate
+    "trust_level",  # the pre-QA-layer fallback gate
+)
+
+
+def _read_publish_columns(path: Path) -> pd.DataFrame:
+    """The observations frame narrowed to what this module actually uses.
+
+    Replaces `build.aggregate.read_observations`, which drops the lineage
+    columns and keeps everything else. The narrowing is not an optimisation
+    detail: without it the global build does not run here at all.
+    """
+    import pyarrow.parquet as pq
+
+    available = set(pq.ParquetFile(path).schema_arrow.names)
+    missing = [c for c in PUBLISH_COLUMNS if c not in available]
+    if missing:
+        logger.info("parquet has no %s — skipping", ", ".join(missing))
+    return pd.read_parquet(path, columns=[c for c in PUBLISH_COLUMNS if c in available])
 
 # `item` and `unit` both carry the price of ONE countable piece; they differ
 # only in how it was reached. `unit` divides a multipack price by an explicit
@@ -487,6 +523,78 @@ def _region_stats(
     return medians, counts, products, shares
 
 
+def _region_obs(
+    keyed: pd.DataFrame, region_cols: list[dict[str, str]]
+) -> tuple[dict[str, dict[str, int]], dict[str, dict[str, int]]]:
+    """Observations per (leaf, region), and how many countries they came from.
+
+    The price view's region column is a median of country medians, so its `n`
+    describes countries. Here the column is a SUM, so the two numbers answer
+    different questions and both are returned: the total is the evidence, the
+    country count is how concentrated it is. A leaf whose 40,000 observations
+    all come from one country is not the same finding as one spread over
+    twelve, and a total alone cannot tell them apart.
+    """
+    totals: dict[str, dict[str, int]] = {}
+    counts: dict[str, dict[str, int]] = {}
+    for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
+        tot: dict[str, int] = {}
+        cnt: dict[str, int] = {}
+        for col in region_cols:
+            sub = (
+                grp if col["key"] == "world" else grp.loc[grp["_region"].eq(col["key"])]
+            )
+            if sub.empty:
+                continue
+            n = int(sub["n_obs"].sum())
+            tot[col["key"]] = n
+            # Countries with a MEASURED observation, not countries with a cell:
+            # a column of modelled-only cells would otherwise report a breadth
+            # the zero total plainly contradicts.
+            cnt[col["key"]] = int(sub.loc[sub["n_obs"] > 0, "country"].nunique())
+        key = _cell_key(code, unit)
+        totals[key] = tot
+        counts[key] = cnt
+    return totals, counts
+
+
+def _obs_labels(scope_label: str) -> dict[str, str]:
+    """Page copy for the observation-count view.
+
+    It lives in the payload rather than the template because the template is
+    shared with the price view, and a page that says "median USD per unit"
+    above a grid of counts is worse than no caption at all.
+    """
+    return {
+        "page_title": f"{scope_label} price observations - coverage",
+        "page_h1": f"{scope_label} — price observations per category and country",
+        "sub_note": (
+            "Number of PUBLISHED price observations behind each (COICOP "
+            "category x country) cell, over the last {lookback} days (cutoff "
+            "{cutoff}; data through {through}). Published means the row "
+            "survived the same pipeline the price dashboard draws from: QA "
+            "trusted, a parsed quantity, a resolved unit and an FX rate. Raw "
+            "scrapes that failed any of those are not counted here. The "
+            "{scope} column is the TOTAL for the category, with n = the "
+            "number of countries that contributed a measured observation. "
+            "Catch-all COICOP categories (\u201cOther \u2026\u201d, "
+            "\u201c\u2026 n.e.c.\u201d) ARE shown, unlike in the price "
+            "view: counting rows is unit-free, so the comparability objection "
+            "that hides them there does not apply. A cell reading 0 has no "
+            "measured observation in the window and is on the page only "
+            "because a modelled estimate stands behind it. The colour scale "
+            "is shared across the whole table and log-scaled \u2014 pale = "
+            "few observations, deep blue = many."
+        ),
+        "sub_note_hist": (
+            "Monthly count of published price observations per (COICOP leaf, "
+            "country). FX history starts {fxfloor}; earlier observations are "
+            "excluded, so this is coverage of the priced corpus, not of the "
+            "scrape."
+        ),
+    }
+
+
 def _coverage_cutoff(
     current: pd.DataFrame, residual: frozenset[str]
 ) -> tuple[int, set[str], dict]:
@@ -559,7 +667,10 @@ def _lean(r: dict) -> dict:
 
 
 def _payload(
-    current: pd.DataFrame, monthly: pd.DataFrame, region: str | None = None
+    current: pd.DataFrame,
+    monthly: pd.DataFrame,
+    region: str | None = None,
+    metric: str = "price",
 ) -> dict:
     coicop_titles = _load_coicop_titles()
     country_names = _load_country_names()
@@ -602,8 +713,8 @@ def _payload(
     # one. Their per-country cells stay, so the coverage is still legible; it is
     # the comparison across countries that is withheld, and the row is marked so
     # the gap reads as deliberate rather than missing.
-    keyed = current.assign(_region=current["country"].map(of_country))
-    keyed = keyed[~keyed["coicop_code"].isin(residual)]
+    keyed_all = current.assign(_region=current["country"].map(of_country))
+    keyed = keyed_all[~keyed_all["coicop_code"].isin(residual)]
     region_medians, region_n_countries, region_n_products, region_imp = _region_stats(
         keyed, region_cols
     )
@@ -620,6 +731,16 @@ def _payload(
         region_n_products_kept,
         region_imp_kept,
     ) = _region_stats(kept, region_cols)
+
+    # OBS METRIC. Totals rather than medians, and over EVERY leaf including the
+    # residuals. The reason a residual leaf's price median is withheld is that
+    # "Other bakery products" is a different bag of goods in each country, so
+    # the comparison is meaningless. Counting rows carries no such claim -- it
+    # is unit-free and country-local -- so withholding it would hide real
+    # coverage for a reason that does not apply.
+    kept_all = keyed_all[~keyed_all["country"].isin(low_coverage)]
+    region_obs, region_obs_n = _region_obs(keyed_all, region_cols)
+    region_obs_kept, region_obs_n_kept = _region_obs(kept_all, region_cols)
 
     shown = current[~current["coicop_code"].isin(residual)]
     shown_kept = shown[~shown["country"].isin(low_coverage)]
@@ -661,6 +782,17 @@ def _payload(
         if not current.empty and current["last_seen"].notna().any()
         else None
     )
+    if metric == "obs":
+        # No price leaves this function in obs mode -- not in a cell, not in a
+        # region column, not in a tooltip, and not sitting unread in the blob
+        # either. A page that shows counts should not be shipping 750k medians
+        # a reader could dig out of view-source, and dropping them takes ~25 MB
+        # off the global file.
+        current = current.drop(columns=["median_usd"], errors="ignore")
+        monthly = monthly.drop(columns=["median_usd"], errors="ignore")
+        region_medians = region_medians_kept = {}
+        region_n_products = region_n_products_kept = {}
+        region_imp = region_imp_kept = {}
     return {
         "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
         # True only in the diagnostic build. Carried in the payload as well as
@@ -685,6 +817,16 @@ def _payload(
         # over the country medians it is a median of.
         "region_imp": region_imp,
         "region_imp_kept": region_imp_kept,
+        # Which number the cells carry. Absent/"price" is the historical
+        # dashboard; "obs" swaps the value, the scale and the page copy and
+        # changes nothing about which cells exist.
+        "metric": metric,
+        "region_obs": region_obs,
+        "region_obs_n": region_obs_n,
+        "region_obs_kept": region_obs_kept,
+        "region_obs_n_kept": region_obs_n_kept,
+        **(_obs_labels(region_cols[0]["label"] if region else "Global")
+           if metric == "obs" else {}),
         "residual_leaves": sorted(residual & set(current["coicop_code"].dropna())),
         "low_coverage": sorted(low_coverage),
         "coverage_cutoff": {"categories": threshold, **coverage_stats},
@@ -723,7 +865,11 @@ def _render(payload: dict, chart_js: str) -> str:
     )
 
 
-def publish(region: str | None = None, out_path: Path | None = None) -> Path:
+def publish(
+    region: str | None = None,
+    out_path: Path | None = None,
+    metric: str = "price",
+) -> Path:
     """Render the dashboard, optionally restricted to one region's countries.
 
     The restriction happens here, before `_to_display_units` and both
@@ -737,7 +883,7 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
         raise FileNotFoundError(
             f"{OBSERVATIONS_PARQUET} not found — run `po prices build` first."
         )
-    obs = read_observations(OBSERVATIONS_PARQUET)
+    obs = _read_publish_columns(OBSERVATIONS_PARQUET)
     obs["observation_date"] = pd.to_datetime(obs["observation_date"], errors="coerce")
     obs = obs[obs["observation_date"].notna()]
     if UNFILTERED:
@@ -800,7 +946,9 @@ def publish(region: str | None = None, out_path: Path | None = None) -> Path:
         _monthly_series(obs), _fold_piece_units(fills_mod.load_released_fills())
     )
 
-    payload = _payload(current, monthly, region=region)
+    if metric not in {"price", "obs"}:
+        raise ValueError(f"unknown metric {metric!r}; expected 'price' or 'obs'")
+    payload = _payload(current, monthly, region=region, metric=metric)
     chart_js = VENDOR_CHART_JS.read_text()
     html = _render(payload, chart_js)
 

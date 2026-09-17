@@ -98,7 +98,7 @@
 
 <div class="view active" id="view-current">
   <div class="kpis" id="kpis"></div>
-  <div class="sub">
+  <div class="sub" id="subnote">
     Median USD per canonical unit, aggregated from observations in the last
     <span id="lookback"></span> days (cutoff <span id="cutoff"></span>; data through
     <span id="datathrough"></span>). Rows are grouped by COICOP 2018 category
@@ -121,7 +121,7 @@
 </div>
 
 <div class="view" id="view-historical">
-  <div class="sub">
+  <div class="sub" id="subnote-hist">
     Monthly median USD per canonical unit. FX history starts
     <span id="fxfloor"></span>; earlier observations are excluded.
     Minimum <span id="minobs2"></span> observations per (COICOP leaf, country, month).
@@ -141,6 +141,19 @@
 <script>/*__CHART_JS__*/</script>
 <script>
   const DATA = /*__DATA__*/;
+  // METRIC decides what number a cell carries. 'price' is the median USD unit
+  // value this page has always shown; 'obs' REPLACES it with the count of
+  // published observations behind the cell -- not an extra column, not a
+  // toggle: no price appears anywhere on the page in that mode.
+  const METRIC = DATA.metric || 'price';
+  const IS_OBS = METRIC === 'obs';
+  // Largest cell count in the table, for the shared log scale. A spread over
+  // DATA.current would overflow the call stack on the global build, so it is
+  // reduced.
+  const obsMax = IS_OBS
+    ? DATA.current.reduce((m, r) => Math.max(m, r.n_obs || 0), 1) : 1;
+  const valOf = (r) => (IS_OBS ? (r.n_obs || 0) : r.median_usd);
+  const fmtVal = (v) => (IS_OBS ? Number(v).toLocaleString() : Number(v).toFixed(2));
   document.getElementById('genstamp').textContent = 'Generated ' + DATA.generated_at_utc;
   document.getElementById('minobs1').textContent = DATA.min_obs_per_cell;
   document.getElementById('minobs2').textContent = DATA.min_obs_per_cell;
@@ -246,6 +259,10 @@
   const residualLeaves = new Set(DATA.residual_leaves || []);
   const regionMedianFor = (key, k) =>
     ((hideLowCov ? DATA.region_medians_kept : DATA.region_medians)[key] || {})[k];
+  const regionObsFor = (key, k) =>
+    ((hideLowCov ? DATA.region_obs_kept : DATA.region_obs)[key] || {})[k];
+  const regionObsNFor = (key, k) =>
+    ((hideLowCov ? DATA.region_obs_n_kept : DATA.region_obs_n)[key] || {})[k];
   const regionNFor = (key, k) =>
     ((hideLowCov ? DATA.region_n_countries_kept : DATA.region_n_countries)[key] || {})[k];
   const regionPFor = (key, k) =>
@@ -279,7 +296,7 @@
   // named leaves, so they are unaffected.
   const ordered = cellOrder
     .map(k => cells[k])
-    .filter(c => !residualLeaves.has(c.coicop_code))
+    .filter(c => IS_OBS || !residualLeaves.has(c.coicop_code))
     .sort((a, b) => cmpCoicop(a.coicop_code, b.coicop_code)
                  || cellWidth(b) - cellWidth(a));
 
@@ -309,7 +326,17 @@
   heat.appendChild(thead);
 
   const tbody = document.createElement('tbody');
+  function obsShade(v) {
+    if (v == null) return null;
+    const t = v > 0 ? Math.log(1 + v) / Math.log(1 + obsMax) : 0;
+    return {
+      bg: `rgb(${Math.round(247 - 200 * t)},${Math.round(251 - 150 * t)},`
+        + `${Math.round(255 - 60 * t)})`,
+      fg: t > 0.62 ? '#fff' : '',
+    };
+  }
   function colorFor(v, lo, hi) {
+    if (IS_OBS) { const s = obsShade(v); return s ? s.bg : '#fff'; }
     if (v == null || lo == null || hi == null || hi === lo) return '#fff';
     const t = (v - lo) / (hi - lo);
     const r = Math.round(180 + 60 * t),
@@ -366,7 +393,8 @@
     }
     tr.appendChild(lbl);
 
-    const countryVals = countries.map(c => cell.byCountry[c]?.median_usd).filter(v => v != null);
+    const countryVals = countries.map(c => { const x = cell.byCountry[c]; return x ? valOf(x) : null; })
+      .filter(v => v != null);
     const lo = Math.min(...countryVals), hi = Math.max(...countryVals);
 
     regionCols.forEach((rc, i) => {
@@ -374,6 +402,22 @@
       const rTd = document.createElement('td');
       rTd.className = 'region' + (rc.key === 'world' ? ' region-world' : '')
                     + (i === regionCols.length - 1 ? ' region-last' : '');
+      if (IS_OBS) {
+        const tot = regionObsFor(cell.key, rc.key);
+        if (tot == null) { rTd.textContent = '\u00b7'; rTd.classList.add('na'); }
+        else {
+          rTd.textContent = Number(tot).toLocaleString();
+          const nc = regionObsNFor(cell.key, rc.key);
+          const tag = document.createElement('span');
+          tag.className = 'nctry'; tag.textContent = 'n=' + (nc ?? 0);
+          rTd.appendChild(tag);
+          rTd.title = rc.label + ': ' + Number(tot).toLocaleString()
+                    + ' published observations from ' + (nc ?? 0)
+                    + ' countr' + ((nc === 1) ? 'y' : 'ies');
+        }
+        tr.appendChild(rTd);
+        return;
+      }
       if (isResidual) {
         rTd.textContent = 'n/a'; rTd.classList.add('withheld');
         rTd.title = 'Withheld: a residual category has no common unit, so a '
@@ -402,6 +446,23 @@
       const cv = cell.byCountry[c];
       const td = document.createElement('td');
       if (!cv) { td.className = 'na'; td.textContent = '·'; }
+      else if (IS_OBS) {
+        const n = cv.n_obs || 0;
+        td.textContent = fmtVal(n);
+        const s = obsShade(n);
+        td.style.background = s.bg;
+        if (s.fg) td.style.color = s.fg;
+        if (n === 0) {
+          td.classList.add('modelled');
+          td.title = 'No measured observation in the window. This cell is on '
+                   + 'the page only because an RT-CAL estimate stands behind it.';
+        } else {
+          td.title = n.toLocaleString() + ' published observation'
+                   + (n === 1 ? '' : 's')
+                   + ' \u00b7 ' + (cv.n_products ?? '?') + ' distinct product'
+                   + (cv.n_products === 1 ? '' : 's') + impNote(cv.imp_share);
+        }
+      }
       else {
         td.textContent = cv.median_usd.toFixed(2);
         td.style.background = colorFor(cv.median_usd, lo, hi);
@@ -427,7 +488,7 @@
   // Keyed on the unit as well, but it is constant within a leaf, so this is
   // one series per leaf; the unit survives only to title the y axis.
   const monthlySeries = [...new Set(DATA.monthly.map(r => cellKey(r.coicop_code, r.standard_unit)))]
-    .filter(k => !residualLeaves.has(k.split('|')[0]))
+    .filter(k => IS_OBS || !residualLeaves.has(k.split('|')[0]))
     .sort((a, b) => cmpCoicop(a.split('|')[0], b.split('|')[0])
                  || a.localeCompare(b));
   const select = document.getElementById('leafsel');
@@ -461,7 +522,7 @@
       // tooltip: a hollow diamond against a filled dot.
       return {
         label: DATA.country_names[c] || c,
-        data: months.map(m => { const x = cellAt(m); return x ? x.median_usd : null; }),
+        data: months.map(m => { const x = cellAt(m); return x ? valOf(x) : null; }),
         pointStyle: months.map(m => { const x = cellAt(m); return x && x.imputed ? 'rectRot' : 'circle'; }),
         pointRadius: months.map(m => { const x = cellAt(m); return x && x.imputed ? 5 : 3; }),
         pointBackgroundColor: months.map(m => { const x = cellAt(m); return x && x.imputed ? '#fff' : col; }),
@@ -478,7 +539,9 @@
         responsive: true,
         scales: {
           x: { title: { display: true, text: 'Month' } },
-          y: { title: { display: true, text: 'Median USD / ' + unit } },
+          y: IS_OBS
+            ? { beginAtZero: true, title: { display: true, text: 'Published observations' } }
+            : { title: { display: true, text: 'Median USD / ' + unit } },
         },
         plugins: {
           tooltip: {
@@ -487,7 +550,7 @@
                 const c = cs[ctx.datasetIndex];
                 const m = months[ctx.dataIndex];
                 const x = rows.find(r => r.country === c && r.month === m);
-                const val = ctx.parsed.y != null ? ctx.parsed.y.toFixed(2) : '—';
+                const val = ctx.parsed.y != null ? fmtVal(ctx.parsed.y) : '—';
                 if (x && x.imputed) {
                   const p = x.prob != null ? Math.round(x.prob * 100) + '%' : 'n/a';
                   return ctx.dataset.label + ': ' + val +
@@ -529,6 +592,24 @@
     if (select.value) renderChart(select.value);
   }
   covBoxes.forEach(b => b.addEventListener('change', e => applyCoverageFilter(e.target.checked)));
+
+  if (IS_OBS) {
+    if (DATA.page_title) document.title = DATA.page_title;
+    if (DATA.page_h1) document.querySelector('h1').textContent = DATA.page_h1;
+    const fill = (s) => String(s)
+      .replace('{lookback}', DATA.lookback_days)
+      .replace('{cutoff}', DATA.cutoff_date)
+      .replace('{through}', DATA.data_through || '\u2014')
+      .replace('{fxfloor}', DATA.fx_floor)
+      .replace('{scope}', (DATA.region_cols && DATA.region_cols.length === 1)
+        ? DATA.region_cols[0].label : 'World and per-region');
+    if (DATA.sub_note) {
+      document.getElementById('subnote').textContent = fill(DATA.sub_note);
+    }
+    if (DATA.sub_note_hist) {
+      document.getElementById('subnote-hist').textContent = fill(DATA.sub_note_hist);
+    }
+  }
 
   renderKpis();
   renderHeat();

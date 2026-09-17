@@ -684,9 +684,17 @@ def prices_fx_audit(cache_path):
 @_region_opt
 @_subregion_opt
 @click.option("--out", "out_path", default=None, help="Override the output HTML path.")
+@click.option(
+    "--metric",
+    type=click.Choice(["price", "obs"]),
+    default="price",
+    show_default=True,
+    help="What each cell carries: the median USD unit value, or the number of "
+    "published observations behind it.",
+)
 @_window_opt
 @_unfiltered_opt
-def prices_publish(region, subregion, out_path, window_days, unfiltered):
+def prices_publish(region, subregion, out_path, metric, window_days, unfiltered):
     """Generate CPI dashboards.
 
     PoC scope: renders outputs/prices/global_prices_dashboard.html from the
@@ -725,7 +733,7 @@ def prices_publish(region, subregion, out_path, window_days, unfiltered):
         _window_path(Path(out_path) if out_path else DASHBOARD_HTML, WINDOW_DAYS)
     )
     try:
-        written = _publish(region=region, out_path=out)
+        written = _publish(region=region, out_path=out, metric=metric)
     except ValueError as exc:
         raise click.ClickException(str(exc))
     if unfiltered:
