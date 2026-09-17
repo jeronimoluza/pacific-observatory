@@ -148,7 +148,7 @@ def task_for(chunk: pd.DataFrame, scored: dict, key_cols, unembedded):
 def iter_decisions(
     in_path: Path,
     chunk_rows: int,
-    countries: Optional[Sequence[str]],
+    scope,
     scored: dict,
     key_cols: Sequence[str],
     unembedded: frozenset,
@@ -161,7 +161,7 @@ def iter_decisions(
     """
     from prices.enrich.stages.classify import decide_rows  # noqa: PLC0415
 
-    chunks = iter_products(in_path, chunk_rows, countries=countries)
+    chunks = iter_products(in_path, chunk_rows, scope=scope)
     n = plan_workers(workers, chunk_rows) if workers > 1 else 1
     if n == 1:
         for chunk in chunks:

@@ -20,6 +20,7 @@ from typing import Iterable, Optional, Sequence
 
 import pandas as pd
 import pyarrow as pa
+import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 # Country values reach us straight from the corpus, so they are not guaranteed
@@ -62,6 +63,41 @@ def existing_countries(root: Path) -> set[str]:
     return {p.stem for p in root.glob("*.parquet")}
 
 
+def _merge_part(tmp: Path, final: Path, schema: pa.Schema, key_col: str, replacing) -> None:
+    """Fold this run's rows into the part already on disk, replacing only `replacing`.
+
+    Needed once a run can be scoped narrower than a country: the part is named
+    per country, so a source-scoped run that simply published its own rows would
+    delete every other source in that country.
+
+    Streamed both ways. Only the replaced key set is resident, which is bounded
+    by the scope; the part being merged into can be the largest country in the
+    corpus and is never held whole.
+
+    A product that used to decide and now decides nothing at all keeps its old
+    row, because a run that produced no key cannot name one to remove. That is
+    the same staleness a scoped run already accepts outside its scope, and the
+    full run's `prune` is what clears it.
+    """
+    keys = pa.array(sorted(replacing)) if replacing else None
+    merging = final.with_suffix(".parquet.merging")
+    try:
+        with pq.ParquetWriter(merging, schema) as out:
+            for src in (tmp, final):
+                for batch in pq.ParquetFile(src).iter_batches():
+                    table = pa.Table.from_batches([batch], schema=schema)
+                    if src is final and keys is not None:
+                        table = table.filter(
+                            pc.invert(pc.is_in(table.column(key_col), value_set=keys))
+                        )
+                    if table.num_rows:
+                        out.write_table(table)
+        merging.replace(final)
+    finally:
+        merging.unlink(missing_ok=True)
+        tmp.unlink(missing_ok=True)
+
+
 class PartitionedWriter:
     """Route frames to one open parquet writer per country.
 
@@ -75,9 +111,24 @@ class PartitionedWriter:
     previous parts intact rather than a half-written one that reads as real.
     """
 
-    def __init__(self, root: Path, schema: pa.Schema):
+    def __init__(
+        self,
+        root: Path,
+        schema: pa.Schema,
+        merge_keys: "Optional[dict[str, set]]" = None,
+        key_col: str = "input_hash",
+    ):
+        """`merge_keys` names the parts this run only partly covers.
+
+        A part listed there is merged rather than replaced, and the value is the
+        set of key values this run is entitled to overwrite. A part absent from
+        it is replaced wholesale, which is what a country-or-wider scope does and
+        what every run did before classify dropped below country.
+        """
         self.root = Path(root)
         self.schema = schema
+        self.merge_keys = merge_keys or {}
+        self.key_col = key_col
         self.root.mkdir(parents=True, exist_ok=True)
         self._writers: dict[str, pq.ParquetWriter] = {}
         self._tmp: dict[str, Path] = {}
@@ -130,7 +181,13 @@ class PartitionedWriter:
         for name, writer in self._writers.items():
             writer.close()
             final = self.root / f"{name}.parquet"
-            self._tmp[name].replace(final)
+            replacing = self.merge_keys.get(name)
+            if replacing is not None and final.exists():
+                _merge_part(
+                    self._tmp[name], final, self.schema, self.key_col, replacing
+                )
+            else:
+                self._tmp[name].replace(final)
             written.append(final)
         self._writers.clear()
         self._tmp.clear()
@@ -171,7 +228,10 @@ def split_by_country(frame: pd.DataFrame, countries: pd.Series):
 
 
 def write_pandas_parts(
-    frames_by_country: "dict[str, list[pd.DataFrame]]", root: Path
+    frames_by_country: "dict[str, list[pd.DataFrame]]",
+    root: Path,
+    merge_keys: "Optional[dict[str, set]]" = None,
+    key_col: str = "input_hash",
 ) -> list[Path]:
     """Write one part per country with pandas, replacing any part already there.
 
@@ -181,10 +241,31 @@ def write_pandas_parts(
     """
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
+    merge_keys = merge_keys or {}
     written = []
-    for country, parts in frames_by_country.items():
-        frame = parts[0] if len(parts) == 1 else pd.concat(parts, ignore_index=True)
+    # A partly-scoped country whose rows all fell outside the view still has to
+    # be rewritten, to drop the rows this run superseded. It has no entry in
+    # `frames_by_country`, so it is added here as an empty one.
+    todo = dict(frames_by_country)
+    for country in merge_keys:
+        if country not in todo and (root / f"{country}.parquet").exists():
+            todo[country] = []
+    for country, parts in todo.items():
+        if not parts:
+            frame = pd.DataFrame()
+        else:
+            frame = parts[0] if len(parts) == 1 else pd.concat(parts, ignore_index=True)
+        replacing = merge_keys.get(country)
         final = root / f"{country}.parquet"
+        if replacing is not None and final.exists():
+            old = pd.read_parquet(final)
+            if key_col in old.columns:
+                old = old[~old[key_col].isin(replacing)]
+            frame = (
+                old
+                if frame.empty
+                else pd.concat([old, frame], ignore_index=True)
+            )
         tmp = final.with_suffix(".parquet.tmp")
         frame.to_parquet(tmp, index=False)
         tmp.replace(final)
@@ -212,7 +293,12 @@ def prune(root: Path, keep: Iterable[str]) -> list[Path]:
 
 
 def prune_scoped(root: Path, countries: Iterable, written: Iterable[str]) -> list[Path]:
-    """Drop the parts of IN-SCOPE countries that this run did not write.
+    """Drop the parts of FULLY in-scope countries that this run did not write.
+
+    `countries` must list only the countries the run covered in full. A country
+    only partly in scope is never empty just because this run wrote nothing for
+    it -- its other sources are still there, and dropping the part would delete
+    them.
 
     The complement of `prune`, and the other half of the same invariant. A
     scoped run must not touch what lies outside its scope -- but a country

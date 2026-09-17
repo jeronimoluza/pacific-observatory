@@ -226,14 +226,21 @@ STAGE_FLOOR: dict[str, str] = {
     # `input_hash`; until then two sources in one country can collapse into one
     # product row, and splitting the scope would split that row's evidence.
     "prepare": "country",
-    # The decisions table is one parquet part per country, named per country and
-    # rewritten whole. A sub-country run would truncate the part.
+    # Nothing in the classify module aggregates: no groupby, no rolling, no
+    # statistic pooled over anything. Every decision is a function of one row,
+    # so the honest floor is the finest grain a selector can name.
     #
-    # NOT because of the input-hash country fallback, which is the reason this
-    # stage's own docstring gives: that fallback fires only for a row with no
-    # URL, and zero of 172,551,112 raw shard rows lack one. The floor is a
-    # storage accident, which is why step 2 can drop it to row grain.
-    "classify": "country",
+    # It sat at "country" because the decisions table is one parquet part per
+    # country and the writer replaced that part wholesale, so a narrower run
+    # truncated it. That is a storage accident, not a grain constraint: the
+    # writer now merges a partially-scoped country's part instead of replacing
+    # it, and the floor drops to where the computation always was.
+    #
+    # The reason the stage's own docstring used to give -- that `input_hash`
+    # falls back to a country-bearing key for a URL-less row -- was never the
+    # real one either. Zero of 172,551,112 raw shard rows lack a URL, so that
+    # path has never executed.
+    "classify": "source",
     # Reads prepare's per-country output, so it inherits prepare's floor.
     "embed": "country",
     # Two independent reasons, either one sufficient. The unit-value cell is

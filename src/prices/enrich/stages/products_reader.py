@@ -32,8 +32,18 @@ PRODUCT_COLS = [
 ]
 
 
-def _country_filter(countries):
-    """`countries` as an arrow predicate, or None for the whole corpus.
+def _scope_filter(scope, dataset=None):
+    """`scope` as an arrow predicate, or None for the whole corpus.
+
+    `scope` is `{country: sources}`, where `sources` is None when the whole
+    country is in scope. A country taken whole contributes a bare `country ==`
+    term, so a country-or-wider selector produces exactly the predicate the
+    country-only filter used to produce and nothing about those runs changes.
+
+    Built as an OR over per-country terms rather than
+    `country.isin(...) & source.isin(...)`: the second form is a cross product,
+    and it would pull `malaysia/rakuten` into a scope of `malaysia/pricecatcher`
+    plus `japan/rakuten`.
 
     Pushed into the scan rather than applied to the frame afterwards. The
     difference is not cosmetic: products_input is 6.4 GB and a mask still pays
@@ -42,9 +52,23 @@ def _country_filter(countries):
     """
     import pyarrow.dataset as pads  # noqa: PLC0415
 
-    if countries is None:
+    if not scope:
         return None
-    return pads.field("country").isin(sorted({str(c) for c in countries}))
+    needs_source = any(sources is not None for sources in scope.values())
+    if needs_source and dataset is not None and "source" not in dataset.schema.names:
+        raise KeyError(
+            "a source-grained scope needs a `source` column and products_input "
+            "has none. Re-run `prices process --stage prepare`, or scope to a "
+            "whole country."
+        )
+    expr = None
+    for country in sorted(scope):
+        sources = scope[country]
+        term = pads.field("country") == str(country)
+        if sources is not None:
+            term = term & pads.field("source").isin(sorted({str(s) for s in sources}))
+        expr = term if expr is None else (expr | term)
+    return expr
 
 
 def _projection(dataset):
@@ -71,7 +95,7 @@ def _warn_absent(in_path: Path, absent) -> None:
     )
 
 
-def read_products(in_path: Path, countries=None) -> pd.DataFrame:
+def read_products(in_path: Path, scope=None) -> pd.DataFrame:
     """`products_input` projected to PRODUCT_COLS, tolerating older files.
 
     Filling missing columns here keeps a stale products_input readable, and —
@@ -84,7 +108,7 @@ def read_products(in_path: Path, countries=None) -> pd.DataFrame:
     dataset = pads.dataset(in_path, format="parquet")
     present, absent = _projection(dataset)
     products = dataset.to_table(
-        columns=present, filter=_country_filter(countries)
+        columns=present, filter=_scope_filter(scope, dataset)
     ).to_pandas()
     for c in absent:
         products[c] = None
@@ -92,7 +116,7 @@ def read_products(in_path: Path, countries=None) -> pd.DataFrame:
     return products[PRODUCT_COLS]
 
 
-def read_product_keys(in_path: Path, key_cols, countries=None) -> pd.DataFrame:
+def read_product_keys(in_path: Path, key_cols, scope=None) -> pd.DataFrame:
     """Only the columns a backend scores on.
 
     `read_products` returns all of PRODUCT_COLS, which is ~19 GB at 36.9M
@@ -111,11 +135,11 @@ def read_product_keys(in_path: Path, key_cols, countries=None) -> pd.DataFrame:
     if missing:
         raise KeyError(f"products_input is missing key columns {missing}")
     return dataset.to_table(
-        columns=list(key_cols), filter=_country_filter(countries)
+        columns=list(key_cols), filter=_scope_filter(scope, dataset)
     ).to_pandas()
 
 
-def iter_products(in_path: Path, chunk_rows: int, countries=None):
+def iter_products(in_path: Path, chunk_rows: int, scope=None):
     """`read_products` in batches, with the same projection and the same
     missing-column fill.
 
@@ -131,7 +155,7 @@ def iter_products(in_path: Path, chunk_rows: int, countries=None):
     dataset = pads.dataset(in_path, format="parquet")
     present, absent = _projection(dataset)
     scanner = dataset.scanner(
-        columns=present, filter=_country_filter(countries), batch_size=chunk_rows
+        columns=present, filter=_scope_filter(scope, dataset), batch_size=chunk_rows
     )
     for batch in scanner.to_batches():
         # A filtered scan yields empty batches for row groups the predicate

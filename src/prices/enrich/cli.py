@@ -55,7 +55,15 @@ def _invalidate_for(
             # leaves exactly one country standing. Invalidate what this run will
             # actually rewrite, and leave the legacy single-file table alone: a
             # scoped run cannot rebuild that either.
-            for country in classify_stage.countries_for(selectors) or ():
+            # Only countries taken WHOLE. A country in scope only in part is
+            # MERGED into by classify, not replaced, so deleting its part here
+            # would destroy the sources this run is not rebuilding: the delete
+            # and the merge would compose into a truncated country.
+            for country, sources in (
+                classify_stage.scope_for(selectors) or {}
+            ).items():
+                if sources is not None:
+                    continue
                 for root in (parts, decisions_store.parts_root(be.decisions_path)):
                     part = decisions_store.part_path(root, country)
                     if part.exists():

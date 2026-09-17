@@ -427,19 +427,45 @@ def decide_products(
     )
 
 
-def countries_for(selectors, root: Optional[Path] = None) -> Optional[list[str]]:
-    """The countries a selector names, or None for the whole corpus.
+def scope_for(selectors, root: Optional[Path] = None):
+    """Which (country, source) pairs this run may touch, or None for everything.
 
-    Country, not source, is the scope grain; `partition.STAGE_FLOOR` owns the
-    reason and the note that the input-hash country fallback this docstring
-    used to cite is a dead code path.
+    Returns `{country: sources}`, where `sources` is None when every source in
+    that country is in scope. That distinction is the whole point: a country
+    taken whole is replaced on disk exactly as it always was, while a country
+    taken in part must be merged into rather than overwritten.
+
+    `source` here is products_input's source column, which `prepare` picks by
+    tie-break over a collapsed group -- so for the 34,058 products (0.072%) that
+    span more than one source, "scope to X" means "products where X won the
+    tie-break". Scope-module step 4 folds `source` into `input_hash` and makes
+    it exact. Until then this is precise about what it selects and imprecise
+    about what that means, which is strictly better than the country-wide
+    rescore it replaces.
     """
     if not selectors:
         return None
-    shards = partition.resolve(
-        "classify", selectors, root or partition.PER_SOURCE_DIR
-    )
-    return sorted({s.country for s in shards})
+    root = root or partition.PER_SOURCE_DIR
+    whole: dict[str, set] = {}
+    for shard in partition.select(None, root):
+        whole.setdefault(shard.country, set()).add(shard.source)
+    picked: dict[str, set] = {}
+    for shard in partition.resolve("classify", selectors, root):
+        picked.setdefault(shard.country, set()).add(shard.source)
+    return {
+        country: (None if sources == whole.get(country) else frozenset(sources))
+        for country, sources in picked.items()
+    }
+
+
+def countries_for(selectors, root: Optional[Path] = None) -> Optional[list[str]]:
+    """The countries a selector touches, or None for the whole corpus.
+
+    A country appears here whether it is in scope whole or in part, so this
+    stays the right answer for "which parts might this run write".
+    """
+    scope = scope_for(selectors, root)
+    return None if scope is None else sorted(scope)
 
 
 def run(
@@ -464,7 +490,8 @@ def run(
     full_out_path = full_out_path or be.decisions_path
     divisions = (division,) if division else be.divisions
 
-    countries = countries_for(selectors, shard_root)
+    scope = scope_for(selectors, shard_root)
+    countries = None if scope is None else sorted(scope)
     if countries is not None and not countries:
         raise RuntimeError(
             f"no shards match {list(selectors)}; refusing to run classify over "
@@ -472,17 +499,25 @@ def run(
             "--only/-c)"
         )
     if countries is not None:
+        partly = sorted(c for c, sources in scope.items() if sources is not None)
         print(
             f"[classify] scoped to {len(countries)} countries: "
             f"{', '.join(countries[:8])}{' …' if len(countries) > 8 else ''}",
             flush=True,
         )
+        if partly:
+            print(
+                f"[classify] {len(partly)} of them only in part "
+                f"({', '.join(partly[:8])}{' …' if len(partly) > 8 else ''}); "
+                "their existing parts are merged into, not replaced",
+                flush=True,
+            )
 
     # Only the backend's key columns, not all of PRODUCT_COLS: `be.score`
     # forks a worker pool, and a resident 19 GB frame gets copied into every
     # child by refcount-driven copy-on-write. The decide loop re-reads the
     # corpus from parquet below, so nothing else needs it here.
-    keys = read_product_keys(in_path, be.key_cols, countries=countries)
+    keys = read_product_keys(in_path, be.key_cols, scope=scope)
     n_products = len(keys)
     result = be.score(keys, version=version, workers=workers)
     # Scoring is the last thing that needs the corpus resident. The decide loop
@@ -521,17 +556,33 @@ def run(
     # and this loop runs at the point where the parent is at its largest. An
     # existing command line must not silently acquire a second pool there; the
     # box has been OOM-killed doing less. One is the sequential path unchanged.
-    with decisions_store.PartitionedWriter(dec_root, DECISION_SCHEMA) as writer:
+    # The parts this run covers only in part, and the keys it may overwrite in
+    # each. Accumulated as the loop decides them rather than read back off the
+    # temporary part, so the merge costs one pass and not two.
+    merge_keys: dict[str, set] = {
+        decisions_store.part_name(country): set()
+        for country, sources in (scope or {}).items()
+        if sources is not None
+    }
+    with decisions_store.PartitionedWriter(
+        dec_root, DECISION_SCHEMA, merge_keys=merge_keys
+    ) as writer:
         for dec in decide_pool.iter_decisions(
             in_path,
             chunk_rows,
-            countries,
+            scope,
             scored,
             be.key_cols,
             unembedded,
             workers=decide_workers,
         ):
             n_dec += len(dec)
+            if merge_keys:
+                stems = dec["country"].map(decisions_store.part_name)
+                for stem in merge_keys:
+                    hit = stems == stem
+                    if hit.any():
+                        merge_keys[stem].update(dec.loc[hit, "input_hash"])
             writer.write(dec)
             # `classified` is still written from pandas, so it keeps the dtypes
             # it has always had; only its file layout changes. The country rides
@@ -545,7 +596,9 @@ def run(
                 views.setdefault(country, []).append(part)
             print(f"[classify] decided {n_dec}/{n_products} rows", flush=True)
 
-    written_views = decisions_store.write_pandas_parts(views, view_root)
+    written_views = decisions_store.write_pandas_parts(
+        views, view_root, merge_keys=merge_keys
+    )
     if countries is None:
         # A full run is authoritative: a country that no longer produces rows
         # must not keep the part it produced last time. A SCOPED run prunes
@@ -557,11 +610,13 @@ def run(
         # Inside the scope it is authoritative too. A selected country that
         # decided zero rows keeps no part: a stale part reads exactly like a
         # live one, and build cannot tell them apart.
+        # Only countries taken WHOLE. One taken in part is never empty just
+        # because this run wrote nothing for it -- its other sources are still
+        # there, and dropping the part would delete them.
+        full = [c for c, sources in scope.items() if sources is None]
+        decisions_store.prune_scoped(dec_root, full, set(writer.rows_by_country))
         decisions_store.prune_scoped(
-            dec_root, countries, set(writer.rows_by_country)
-        )
-        decisions_store.prune_scoped(
-            view_root, countries, {p.stem for p in written_views}
+            view_root, full, {p.stem for p in written_views}
         )
 
     summary = {
