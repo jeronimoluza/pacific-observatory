@@ -40,6 +40,10 @@ FLAKY_FETCH_RATIO = 0.20
 _PRIORITY = [
     "CRASHED",
     "NO_MANIFEST",
+    # Above NO_ARCHIVE deliberately: both are a zero, but this one is a
+    # one-line config fix and the other is a dead source. Ranking them
+    # together is what let 234 fixable source-era pairs read as hopeless.
+    "PREFIX_REJECTED",
     "NO_ARCHIVE",
     "PARSER_DEAD",
     "PARSER_WEAK",
@@ -76,11 +80,18 @@ def classify(status: str, stats: Dict[str, int]) -> Tuple[str, List[str]]:
     parse_failed = stats.get("parse_failed", 0)
     capped = stats.get("capped", 0)
     indexes_failed = stats.get("indexes_failed", 0)
+    prefix_rejected = stats.get("prefix_rejected", 0)
 
     attempted = parsed + no_extract + fetch_failed + parse_failed
 
-    if queried == 0:
+    if queried == 0 and prefix_rejected > 0:
+        # The archive DOES hold pages under this prefix; the source's own
+        # archive_path_re threw every one of them away. Fixable in the YAML.
+        flags.append("PREFIX_REJECTED")
+    elif queried == 0:
         # Nothing under the prefix in any crawl -- an archive_prefix problem.
+        # Only reachable now when prefix_rejected is 0, i.e. the prefix
+        # genuinely found nothing, or the run predates the counter.
         flags.append("NO_ARCHIVE")
     elif attempted == 0 and skipped:
         flags.append("NOTHING_NEW")

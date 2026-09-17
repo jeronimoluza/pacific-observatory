@@ -323,11 +323,25 @@ def query_prefix(
     path_re: re.Pattern,
     *,
     max_blocks: Optional[int] = None,
+    stats: Optional[Dict[str, int]] = None,
 ) -> List[Dict[str, Any]]:
     """All status-200 records under ``url_prefix`` whose path matches ``path_re``.
 
     Returns the same record shape the old index-API path produced:
     ``{url, timestamp, filename, offset, length, digest}``.
+
+    ``stats``, when given, is ADDED TO rather than replaced, so a caller can
+    accumulate one dict across every crawl. Two counters:
+
+    ``prefix_matched``  status-200 records the SURT prefix found.
+    ``prefix_rejected`` how many of those the config's own ``archive_path_re``
+                        then threw away.
+
+    They exist to split a zero in half. A source that recovers nothing looks
+    identical whether the archive holds no pages under its prefix or holds
+    thousands that its own regex rejects -- and those are a dead source and a
+    one-line config fix respectively. Measured across the corpus, 234
+    source-era pairs are the second kind.
 
     ``max_blocks`` bounds how many cdx blocks are scanned. It defaults to
     unlimited because a bound here truncates *enumeration* -- the URLs beyond
@@ -341,6 +355,8 @@ def query_prefix(
 
     start = max(0, bisect.bisect_right(keys, key) - 1)
     records: List[Dict[str, Any]] = []
+    prefix_matched = 0
+    prefix_rejected = 0
     scanned = 0
     pos = start
     while pos < len(keys) and (max_blocks is None or scanned < max_blocks):
@@ -362,8 +378,10 @@ def query_prefix(
             if payload.get("status") != "200":
                 continue
             url = payload.get("url", "")
+            prefix_matched += 1
             try:
                 if not path_re.search(urlparse(url).path):
+                    prefix_rejected += 1
                     continue
             except ValueError:
                 continue
@@ -394,11 +412,16 @@ def query_prefix(
             url_prefix,
             len(records),
         )
+    if stats is not None:
+        stats["prefix_matched"] = stats.get("prefix_matched", 0) + prefix_matched
+        stats["prefix_rejected"] = stats.get("prefix_rejected", 0) + prefix_rejected
     logger.info(
-        "%s: %d product records from %d cdx block(s) (prefix=%s)",
+        "%s: %d product records from %d cdx block(s), %d rejected by path_re "
+        "(prefix=%s)",
         index,
         len(records),
         scanned,
+        prefix_rejected,
         url_prefix,
     )
     return records

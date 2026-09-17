@@ -128,9 +128,15 @@ class CommonCrawlScraper:
 
     # -- index step --
 
-    def _query_index(self, index: str) -> List[Dict[str, Any]]:
-        """Records for this spider's URL prefix in one CC collection."""
-        return query_prefix(index, self.url_prefix, self.path_re)
+    def _query_index(
+        self, index: str, stats: Optional[Dict[str, int]] = None
+    ) -> List[Dict[str, Any]]:
+        """Records for this spider's URL prefix in one CC collection.
+
+        ``stats`` accumulates `prefix_matched` / `prefix_rejected` across
+        crawls, so a run that recovers nothing can say which kind of nothing.
+        """
+        return query_prefix(index, self.url_prefix, self.path_re, stats=stats)
 
     # -- WARC fetch + parse --
 
@@ -442,6 +448,12 @@ class CommonCrawlScraper:
             "indexes": len(self.indexes),
             "indexes_failed": 0,
             "queried": 0,
+            # Both halves of a zero: what the prefix found, and what this
+            # source's own archive_path_re then discarded. `queried` counts
+            # only the survivors, so on its own it cannot tell a dead source
+            # from a bad regex.
+            "prefix_matched": 0,
+            "prefix_rejected": 0,
             "skipped": 0,
             "parsed": 0,
             "fetch_failed": 0,
@@ -464,7 +476,7 @@ class CommonCrawlScraper:
 
         for index in self.indexes:
             try:
-                records = self._query_index(index)
+                records = self._query_index(index, stats)
             except Exception as e:
                 logger.warning(f"{index}: query failed, skipping this crawl: {e}")
                 stats["indexes_failed"] += 1
