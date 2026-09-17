@@ -47,6 +47,25 @@ OBSERVATIONS_PARQUET = BUILD_DIR / "global_prices_observations.parquet"
 # then runs over it as a free assertion, logging "kept N of N" when the file is
 # what it claims to be.
 TRUSTED_PARQUET = BUILD_DIR / "global_prices_trusted_observations.parquet"
+# Upstream of the build entirely: what the classifier proposed, and what it
+# accepted. The production model is hierlex_select_v1_20260910; the store is
+# keyed on (name, country) -- one row per distinct product name per country,
+# with no dates and no row counts -- so it only becomes an observation count by
+# joining through `products_input`, which carries the date and the input_hash
+# grain the classifier ran on.
+ENRICH_DIR = REPO_ROOT / "data" / "prices" / "enrich"
+HIERLEX_PRED_DIR = (
+    ENRICH_DIR / "_hierlex_pred" / "hierlex_select_v1_20260910"
+)
+PRODUCTS_INPUT = ENRICH_DIR / "products_input.parquet"
+# One row per input_hash carrying the state the classifier finished in and the
+# code it settled on -- the artefact the build obeys, unlike the prediction
+# store's base-threshold `accepted` flag.
+DECISIONS_DIR = ENRICH_DIR / "cache" / "decisions_hierlex"
+# States in which the classifier resolved a row to a code. `narrow_source` is
+# a source-declared single leaf that short-circuits the model: still a
+# decision, just not the model's.
+DECIDED_STATES = frozenset({"classified", "narrow_source"})
 VENDOR_CHART_JS = (
     REPO_ROOT / "src" / "text" / "plotting" / "vendor" / "chart.umd.min.js"
 )
@@ -263,6 +282,141 @@ def _to_display_units(df: pd.DataFrame) -> pd.DataFrame:
     return kept
 
 
+def _pair_hash(df: pd.DataFrame, a: str, b: str) -> "np.ndarray":
+    """Stable 64-bit hash of a (name, country) pair.
+
+    The join is on a hash rather than the strings because the classifier store
+    holds 35.7M pairs of free-text product names and the scan it joins against
+    is 47.5M rows; holding both as objects is several GB on a box that is
+    already carrying a 16 GB frame later in the same run. Column NAMES do not
+    enter pandas' row hash -- only values and order -- so the two stores hash
+    identically under different column names.
+    """
+    return pd.util.hash_pandas_object(
+        df[[a, b]].rename(columns={a: "k0", b: "k1"}), index=False
+    ).to_numpy()
+
+
+def _classify_funnel(countries: set[str] | None = None) -> pd.DataFrame | None:
+    """Rows per (leaf, country) at the classify and decide stages.
+
+    Reads the DECISIONS store, which is the artefact the build actually obeys:
+    one row per input_hash, carrying the state the classifier finished in and
+    the code it settled on. The prediction store is the wrong source for this
+    -- its `accepted` flag is a base threshold that target_95 re-thresholded
+    downstream, and taking it at face value puts EAP's decided count below its
+    trusted count, which an upstream stage cannot be.
+
+    C counts every row the classifier SCORED. D counts the rows it resolved to
+    a code: `classified` plus `narrow_source`. `narrow_source` is a row whose
+    source declared a single COICOP leaf, which short-circuits the model
+    (classify.py) -- it is still a decision, just not the model's, so it
+    belongs in D. `rejected` rows are scored but unresolved and appear in C
+    only; they are attributed by `leaf_top1`, the model's best candidate,
+    because `coicop_code` is null for exactly that state and no other.
+
+    WEIGHTED BY `n_rows`. products_input is deduplicated on input_hash and
+    each row stands for that many raw rows, which the build expands again.
+    Counting deduplicated rows instead gives EAP 2.59M classified against
+    12.16M observations -- fewer inputs than outputs, which is impossible.
+
+    ALL-TIME ONLY. products_input carries one collapsed date per deduplicated
+    row and the build re-dates the same rows: EAP holds 4.21M rows dated 2026
+    there against 7.87M in the observations parquet, with all-time totals
+    matching to 0.4%. The rows correspond; the dates do not. A windowed figure
+    here would be precise and wrong.
+    """
+    import numpy as np
+
+    if not DECISIONS_DIR.is_dir() or not PRODUCTS_INPUT.exists():
+        logger.warning(
+            "no decisions store at %s -- cells ship without a classified count",
+            DECISIONS_DIR,
+        )
+        return None
+
+    parts = sorted(DECISIONS_DIR.glob("*.parquet"))
+    if countries is not None:
+        parts = [p for p in parts if p.stem in countries]
+    if not parts:
+        return None
+
+    hs, leaves, ctys, dec = [], [], [], []
+    states: dict[str, int] = {}
+    for p in parts:
+        d = pd.read_parquet(
+            p, columns=["input_hash", "country", "coicop_code", "state", "leaf_top1"]
+        )
+        for s, n in d["state"].value_counts().items():
+            states[s] = states.get(s, 0) + int(n)
+        # `unembedded` was never scored, so it is not a classifier count at all.
+        d = d[d["state"].ne("unembedded")]
+        if d.empty:
+            continue
+        hs.append(pd.util.hash_pandas_object(d["input_hash"], index=False).to_numpy())
+        leaves.append(d["coicop_code"].fillna(d["leaf_top1"]).to_numpy())
+        ctys.append(d["country"].to_numpy())
+        dec.append(d["state"].isin(DECIDED_STATES).to_numpy())
+    if not hs:
+        return None
+    h = np.concatenate(hs)
+    order = np.argsort(h, kind="stable")
+    h = h[order]
+    leaf_codes, leaf_uniq = pd.factorize(pd.Index(np.concatenate(leaves))[order])
+    cty_codes, cty_uniq = pd.factorize(pd.Index(np.concatenate(ctys))[order])
+    dec = np.concatenate(dec)[order]
+    logger.info(
+        "decisions store: %d country parts, %d scored rows (%d resolved to a "
+        "code); states %s",
+        len(parts), len(h), int(dec.sum()),
+        ", ".join(f"{k}={v}" for k, v in sorted(states.items())),
+    )
+
+    import pyarrow.dataset as ds
+
+    rows: dict[tuple, list] = {}
+    scanned = matched = 0
+    for b in ds.dataset(PRODUCTS_INPUT, format="parquet").to_batches(
+        columns=["input_hash", "n_rows"]
+    ):
+        df = b.to_pandas()
+        scanned += len(df)
+        hh = pd.util.hash_pandas_object(df["input_hash"], index=False).to_numpy()
+        pos = np.clip(np.searchsorted(h, hh), 0, len(h) - 1)
+        hit = h[pos] == hh
+        if not hit.any():
+            continue
+        matched += int(hit.sum())
+        w = pd.to_numeric(df["n_rows"], errors="coerce").fillna(1).to_numpy()[hit]
+        sub = pd.DataFrame({
+            "coicop_code": leaf_uniq.take(leaf_codes[pos[hit]]),
+            "country": cty_uniq.take(cty_codes[pos[hit]]),
+            "w": w,
+            "wdec": np.where(dec[pos[hit]], w, 0),
+        })
+        g = sub.groupby(["coicop_code", "country"]).agg(
+            n_classified=("w", "sum"), n_decided=("wdec", "sum")
+        )
+        for k, v in g.iterrows():
+            cell = rows.setdefault(k, [0, 0])
+            cell[0] += int(v.n_classified)
+            cell[1] += int(v.n_decided)
+    out = pd.DataFrame(
+        [(k[0], k[1], v[0], v[1]) for k, v in rows.items()],
+        columns=["coicop_code", "country", "n_classified", "n_decided"],
+    )
+    out["coicop_code"] = out["coicop_code"].map(_normalize_coicop)
+    out = out.dropna(subset=["coicop_code"])
+    out = out.groupby(["coicop_code", "country"], as_index=False).sum()
+    logger.info(
+        "classify funnel: %d of %d products_input rows carry a decision; "
+        "%d raw rows classified -> %d decided over %d cells",
+        matched, scanned,
+        int(out["n_classified"].sum()), int(out["n_decided"].sum()), len(out),
+    )
+    return out
+
+
 def _window_cutoff(days: int | None) -> pd.Timestamp:
     """Start of a grid's window. `None` means the whole corpus."""
     if days is None:
@@ -463,6 +617,21 @@ def _current_snapshot(
         .reset_index()
     )
     return _split_imputed(g)
+
+
+def _upstream_kpi(cur: pd.DataFrame) -> dict:
+    """Classifier totals, and the collected figure for exactly those cells."""
+    if "n_classified" not in cur:
+        return {}
+    up = cur[cur["n_classified"] > 0]
+    if up.empty:
+        return {}
+    return {
+        "classified": int(up["n_classified"].sum()),
+        "decided": int(up["n_decided"].sum()),
+        "collected_upstream": int(up["n_total"].sum()),
+        "upstream_cells": int(len(up)),
+    }
 
 
 def _orphan_cells(published: pd.DataFrame, funnel: pd.DataFrame) -> pd.DataFrame:
@@ -851,10 +1020,11 @@ def _region_obs(
     all come from one country is not the same finding as one spread over
     twelve, and a total alone cannot tell them apart.
     """
-    fields = ("obs", "obs_all", "prod", "prod_all", "n")
+    fields = ("obs", "obs_all", "prod", "prod_all", "n", "clf", "dec")
     out: dict[str, dict[str, dict[str, int]]] = {f: {} for f in fields}
     cols = {"obs": "n_obs", "obs_all": "n_total",
-            "prod": "n_products", "prod_all": "n_products_total"}
+            "prod": "n_products", "prod_all": "n_products_total",
+            "clf": "n_classified", "dec": "n_decided"}
     for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
         acc: dict[str, dict[str, int]] = {f: {} for f in fields}
         for col in region_cols:
@@ -887,14 +1057,24 @@ def _obs_labels(scope_label: str) -> dict[str, str]:
         "page_title": f"{scope_label} price observations - coverage",
         "page_h1": f"{scope_label} — price observations per category and country",
         "sub_note": (
-            "Every cell reads PUBLISHED (COLLECTED) for a (COICOP category x "
-            "country) pair. The leading number survived the whole pipeline "
-            "and is what the price dashboard draws; the number in brackets is "
-            "everything collected for that pair before any gate. So 14 (14) "
-            "and 14 (900) are opposite findings about a source, and one "
-            "number could never tell them apart. Hover any cell for where the "
-            "missing rows went \u2014 rejected by QA, dropped as an "
-            "unconvertible unit, or pruned by RT-CAL as an implausible price. "
+            "Every cell traces one (COICOP category x country) pair back "
+            "through the pipeline: T trusted, O observations collected, D "
+            "decided, C classified. Read right to left. C is every raw row "
+            "the classifier scored for this category; D is the subset it "
+            "resolved to a code, whether the model accepted it or the source "
+            "declared a single leaf and short-circuited it; O is what reached "
+            "the build; T is what the price dashboard draws. So 14 T 14 O and "
+            "14 T 900 O are opposite findings about a source, and one number "
+            "could never tell them apart. D and C appear on the all-time grid "
+            "only: products_input "
+            "is deduplicated with one collapsed date per row and the build "
+            "re-dates the same rows, so a windowed classifier count would be "
+            "precise and wrong. Rows reaching the build without a classifier "
+            "record are not counted in D or C \u2014 57 rows in 20.1M across "
+            "EAP. Hover any cell for where the missing rows went \u2014 "
+            "below the classifier\u2019s confidence threshold, rejected by "
+            "QA, dropped as an unconvertible unit, or pruned by RT-CAL as an "
+            "implausible price. "
             "The {scope} column carries the same pair summed over the "
             "category, with n = the number of countries contributing a "
             "published observation. Catch-all COICOP categories "
@@ -988,7 +1168,8 @@ _IMP_FIELDS = ("imputed", "imp_share", "n_imputed")
 # zero on most cells and the collected count equals the published one on most
 # months, so writing them out in full adds tens of megabytes of "no".
 _ZERO_DROP = ("n_lost_qa", "n_lost_unit", "n_lost_prune", "n_lost_other",
-              "n_products_lost", "n_top_qa", "n_top_qa_prod")
+              "n_products_lost", "n_top_qa", "n_top_qa_prod",
+              "n_classified", "n_decided")
 
 
 def _lean(r: dict) -> dict:
@@ -1135,6 +1316,13 @@ def _payload(
                 lost_unit=int(cur["n_lost_unit"].sum()),
                 lost_prune=int(cur["n_lost_prune"].sum()),
                 lost_other=int(cur["n_lost_other"].sum()),
+                # SUMMED OVER THE SAME CELLS, or the tiles compare different
+                # populations: classified and decided exist only where the
+                # upstream join was coherent, while collected exists
+                # everywhere. Summing each over its own set put the global
+                # headline at 30.3M decided against 31.1M collected -- a
+                # negative loss that is pure aggregation artefact.
+                **_upstream_kpi(cur),
                 dead_cells=int(cur.get("orphan", pd.Series(False)).sum()),
                 dead_cell_rows=int(cur.loc[cur.get("orphan", False), "n_total"].sum())
                 if "orphan" in cur else 0,
@@ -1169,6 +1357,10 @@ def _payload(
         "source_parquet": _source_provenance(OBSERVATIONS_PARQUET),
         "trusted_parquet": (
             _source_provenance(TRUSTED_PARQUET) if TRUSTED_PARQUET.exists() else None
+        ),
+        "classifier": (
+            {"name": HIERLEX_PRED_DIR.name, "windowed": False}
+            if HIERLEX_PRED_DIR.exists() else None
         ),
         # True only in the diagnostic build. Carried in the payload as well as
         # in the banner, so a client can refuse to treat these numbers as
@@ -1213,6 +1405,15 @@ def _payload(
             "weekly is many observations of one product",
             "countries": "countries with at least one published cell",
             "coicop_leaves": "named COICOP leaves with a published cell",
+            "classified": "raw rows the classifier SCORED for this category, "
+            "all-time. products_input dates are collapsed by dedup and do not "
+            "match the build's, so this cannot be windowed",
+            "decided": "of those, rows it resolved to a code -- accepted by "
+            "the model, or short-circuited by a source that declared a single "
+            "leaf. The gap to classified is what the classifier refused",
+            "collected_upstream": "observations collected in the cells that "
+            "carry a classifier count, so the two are comparable. Cells whose "
+            "upstream figures ran backwards are excluded from all three",
             "cells": "(category, country, unit) cells in the table",
             "imputed_cells": "of those, cells with no measured price at all",
         },
@@ -1268,6 +1469,7 @@ def publish(
         _loss_funnel(OBSERVATIONS_PARQUET, keep_countries)
         if metric == "obs" else None
     )
+    classify = _classify_funnel(keep_countries) if metric == "obs" else None
     # UNFILTERED deliberately admits rows QA rejected, so it cannot start from
     # a frame those rows were already removed from.
     if UNFILTERED or not TRUSTED_PARQUET.exists():
@@ -1362,6 +1564,42 @@ def publish(
                 stage_trusted[key].subtract(stage_unit[key], fill_value=0),
                 stage_unit[key].subtract(stage_prune[key], fill_value=0),
             )
+            if key == "all" and classify is not None:
+                g = grids[key].merge(
+                    classify, on=["coicop_code", "country"], how="left"
+                )
+                for c in ("n_classified", "n_decided"):
+                    g[c] = g[c].fillna(0).astype(int)
+                # THE FUNNEL MUST NOT RUN BACKWARDS. C and D count the same
+                # rows at earlier stages, so C >= D >= O holds by construction
+                # -- and where it does not, the cell's upstream figures are
+                # attributed to a leaf the build disagrees with, not measured
+                # wrong. Withhold both rather than publish a negative loss:
+                # checking only C >= O let 559 global cells through and turned
+                # the headline into "-727,751 rows never reached the build".
+                has = g["n_classified"] > 0
+                incoherent = has & (
+                    (g["n_classified"] < g["n_decided"])
+                    | (g["n_decided"] < g["n_total"])
+                )
+                bad = int(incoherent.sum())
+                if bad:
+                    logger.info(
+                        "%d of %d cells with an upstream count had it running "
+                        "backwards (C < D or D < collected); withheld there "
+                        "rather than shown as a negative loss",
+                        bad, int(has.sum()),
+                    )
+                    g.loc[incoherent, ["n_classified", "n_decided"]] = 0
+                grids[key] = g
+                logger.info(
+                    "grid[all]: %d classified -> %d decided -> %d collected "
+                    "(classifier rejected %d, %d more never reached the build)",
+                    int(g["n_classified"].sum()), int(g["n_decided"].sum()),
+                    int(g["n_total"].sum()),
+                    int(g["n_classified"].sum() - g["n_decided"].sum()),
+                    int(g["n_decided"].sum() - g["n_total"].sum()),
+                )
             logger.info(
                 "grid[%s]: %d cells (%d orphan), %d published of %d collected",
                 key,

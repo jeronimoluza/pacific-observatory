@@ -78,6 +78,10 @@
             letter-spacing: 0.04em; margin-top: 2px; }
   .modelled-key { font-style: italic; }
   .heat .tot { opacity: .60; font-size: 9px; margin-left: 3px; font-weight: 500; }
+  .heat .stg { font-size: 7px; opacity: .6; margin-left: 1px; vertical-align: super;
+               letter-spacing: 0; }
+  .stagekey { font-size: 11px; color: #6b7280; margin: 2px 0 8px; }
+  .stagekey b { color: #2c3e50; }
   .heat td.dead { background: #fdf3f3 !important; color: #a04040; }
   .heat td.dead .tot { opacity: .8; }
   .switches { display: flex; gap: 18px; margin: 12px 0 4px; flex-wrap: wrap; }
@@ -133,6 +137,7 @@
     <span class="swgroup" id="sw-window"></span>
   </div>
   <div class="windownote" id="windownote" hidden></div>
+  <div class="stagekey" id="stagekey" hidden></div>
   <label class="covtoggle">
     <input type="checkbox" id="covfilter">
     <span id="covlabel"></span>
@@ -315,6 +320,23 @@
           k[key].toLocaleString() + '  '
           + Math.round(100 * k[key] / k.collected) + '%']));
     }
+    if (IS_OBS && !isProd && k.classified != null) {
+      tiles.push(['classified', 'Classifier scored', k.classified.toLocaleString()]);
+      tiles.push(['decided', 'Classifier decided', (k.decided ?? 0).toLocaleString()]);
+      const refused = k.classified - (k.decided ?? 0);
+      if (refused > 0) {
+        tiles.push(['lost_refused', 'Lost: classifier refused',
+                    refused.toLocaleString() + '  '
+                    + Math.round(100 * refused / k.classified) + '%']);
+      }
+      // Against the collected figure for THESE cells, not for all of them.
+      const pre = (k.decided ?? 0) - (k.collected_upstream ?? 0);
+      if (pre > 0) {
+        tiles.push(['lost_prebuild', 'Lost: before the build',
+                    pre.toLocaleString() + '  '
+                    + Math.round(100 * pre / k.classified) + '%']);
+      }
+    }
     if (IS_OBS && k.dead_cells) {
       tiles.push(['dead_cells', 'Dead cells',
                   k.dead_cells.toLocaleString() + ' \u00b7 '
@@ -359,6 +381,18 @@
   const rate = (a, b) => (b > 0 ? Math.round(100 * a / b) : 0);
   // Where a cell's missing rows went. Only non-zero stages are named: a
   // tooltip listing four zeroes buries the one number that matters.
+  // The classifier's accept threshold, which is upstream of everything the
+  // build does and, in EAP, discards four times what QA does.
+  function tauNote(cv) {
+    if (measure === 'prod' || cv.n_classified == null) return '';
+    const c = cv.n_classified, d = cv.n_decided ?? 0, tot = totOf(cv);
+    const bits = [];
+    if (c > d) bits.push((c - d).toLocaleString() + ' the classifier refused');
+    if (d > tot) bits.push((d - tot).toLocaleString() + ' never reached the build');
+    return ' \u00b7 upstream: ' + c.toLocaleString() + ' rows scored, '
+      + d.toLocaleString() + ' resolved to a code'
+      + (bits.length ? ' (' + bits.join(', ') + ')' : '');
+  }
   function lossNote(cv) {
     const kept = valOf(cv), tot = totOf(cv);
     if (tot <= kept) return '';
@@ -387,6 +421,8 @@
   };
   const regionObsFor = (key, k) =>
     regionField(measure === 'prod' ? 'prod' : 'obs', key, k);
+  const regionClfFor = (key, k) => regionField('clf', key, k);
+  const regionDecFor = (key, k) => regionField('dec', key, k);
   const regionAllFor = (key, k) =>
     regionField(measure === 'prod' ? 'prod_all' : 'obs_all', key, k);
   const regionObsNFor = (key, k) => regionField('n', key, k);
@@ -541,13 +577,30 @@
         if (kept == null) { rTd.textContent = '\u00b7'; rTd.classList.add('na'); }
         else {
           const all = regionAllFor(cell.key, rc.key);
-          rTd.textContent = Number(kept).toLocaleString();
-          if (all != null && all !== kept) {
-            const sp = document.createElement('span');
-            sp.className = 'tot';
-            sp.textContent = '(' + Number(all).toLocaleString() + ')';
-            rTd.appendChild(sp);
+          const rparts = [[kept, 'T'], [all != null ? all : kept, 'O']];
+          if (measure !== 'prod') {
+            const rd = regionDecFor(cell.key, rc.key);
+            const rc2 = regionClfFor(cell.key, rc.key);
+            // Shown only while the sequence still runs the right way. The
+            // region sums classifier figures over the cells that carry them
+            // and collected over every cell, so a region holding withheld
+            // cells can print D below O -- each figure true, the funnel false.
+            const base = (all != null ? all : kept);
+            if (rd && rc2 && rd >= base) {
+              rparts.push([rd, 'D']);
+              rparts.push([rc2, 'C']);
+            }
           }
+          rTd.textContent = '';
+          rparts.forEach(([v, lab], i) => {
+            const sp = document.createElement('span');
+            if (i) sp.className = 'tot';
+            sp.textContent = (i ? ' ' : '') + Number(v).toLocaleString();
+            const lb = document.createElement('span');
+            lb.className = 'stg'; lb.textContent = lab;
+            sp.appendChild(lb);
+            rTd.appendChild(sp);
+          });
           const nc = regionObsNFor(cell.key, rc.key);
           const tag = document.createElement('span');
           tag.className = 'nctry'; tag.textContent = 'n=' + (nc ?? 0);
@@ -592,13 +645,24 @@
       if (!cv) { td.className = 'na'; td.textContent = '·'; }
       else if (IS_OBS) {
         const n = valOf(cv), tot = totOf(cv);
-        td.textContent = fmtVal(n);
-        if (tot !== n) {
-          const sp = document.createElement('span');
-          sp.className = 'tot';
-          sp.textContent = '(' + Number(tot).toLocaleString() + ')';
-          td.appendChild(sp);
+        // T - O - D - C, upstream to the right. D and C are observation counts
+        // from the classifier store, so they are omitted under the products
+        // metric and in the windowed grid, where they would be misattributed.
+        const parts = [[n, 'T'], [tot, 'O']];
+        if (measure !== 'prod') {
+          if (cv.n_decided != null) parts.push([cv.n_decided, 'D']);
+          if (cv.n_classified != null) parts.push([cv.n_classified, 'C']);
         }
+        td.textContent = '';
+        parts.forEach(([v, lab], i) => {
+          const sp = document.createElement('span');
+          if (i) sp.className = 'tot';
+          sp.textContent = (i ? ' ' : '') + Number(v).toLocaleString();
+          const lb = document.createElement('span');
+          lb.className = 'stg'; lb.textContent = lab;
+          sp.appendChild(lb);
+          td.appendChild(sp);
+        });
         // Shaded by the PUBLISHED count, never the collected one: a cell whose
         // rows were all rejected must not look as strong as one whose rows all
         // survived, and shading the denominator would do exactly that.
@@ -613,8 +677,8 @@
           td.style.color = '';
           td.title = 'DEAD CELL: ' + Number(tot).toLocaleString() + ' '
                    + unitWord() + (tot === 1 ? '' : 's') + ' collected, none '
-                   + 'published' + lossNote(cv) + '. The price dashboard '
-                   + 'cannot show this cell at all.';
+                   + 'published' + lossNote(cv) + tauNote(cv)
+                   + '. The price dashboard cannot show this cell at all.';
         } else if (n === 0) {
           td.classList.add('modelled');
           td.title = 'No measured observation here; an RT-CAL estimate stands '
@@ -625,7 +689,7 @@
                    + rate(n, tot) + '%)' + lossNote(cv)
                    + (measure === 'prod' ? '' :
                       ' \u00b7 ' + (cv.n_products ?? '?') + ' distinct products')
-                   + impNote(cv.imp_share);
+                   + tauNote(cv) + impNote(cv.imp_share);
         }
       }
       else {
@@ -828,6 +892,25 @@
       (DATA.grid_order || []).map(g => ({key: g.key, label: g.label})),
       gridKey, (k) => { gridKey = k; repaint(); });
     document.getElementById('windownote').textContent = windowNote();
+    const sk = document.getElementById('stagekey');
+    const hasUp = rowsOf().some(r => r.n_classified != null);
+    if (measure === 'prod') {
+      sk.textContent = 'Each cell: T published \u00b7 O collected. The classifier '
+        + 'stages are row counts and do not apply to distinct product names.';
+    } else if (hasUp) {
+      sk.innerHTML = 'Each cell reads <b>T</b> trusted \u00b7 <b>O</b> observations '
+        + 'collected \u00b7 <b>D</b> decided (resolved to a code) \u00b7 '
+        + '<b>C</b> classified (scored by the classifier). Read right to left '
+        + 'to follow rows through the pipeline: C\u2192D is what the classifier '
+        + 'refused, D\u2192O what never reached the build, O\u2192T what QA, '
+        + 'unit collapse and pruning took. D and C are all-time row counts.';
+    } else {
+      sk.innerHTML = 'Each cell reads <b>T</b> trusted \u00b7 <b>O</b> observations '
+        + 'collected. <b>D</b> and <b>C</b> are all-time only \u2014 '
+        + 'products_input dates are collapsed by dedup and do not match the '
+        + 'build\u2019s, so a windowed classifier count would be misattributed.';
+    }
+    sk.hidden = false;
     refreshCovLabels();
     renderKpis();
     renderHeat();
