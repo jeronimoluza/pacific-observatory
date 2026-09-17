@@ -109,6 +109,7 @@ def input_hashes(df: pd.DataFrame) -> pd.Series:
     Storing it in the shard is what lets both readers stop recomputing it:
     prepare hashed every raw row, and build/aggregate hashed them all again to
     join observations back to the classifier output."""
+    from prices.enrich.source_canonical import canonical_source
     from prices.enrich.stages.prepare import _clean_url
     from prices.enrich.versioning import input_hash
 
@@ -125,18 +126,30 @@ def input_hashes(df: pd.DataFrame) -> pd.Series:
     )
     countries = df["country"] if "country" in df else pd.Series([None] * len(df))
     currencies = df["currency"] if "currency" in df else pd.Series([None] * len(df))
+    sources = (
+        [canonical_source(v) for v in df["source"]]
+        if "source" in df.columns
+        else [""] * len(df)
+    )
 
     out = [
         input_hash(
-            {"product_name_original": str(name), "product_url": url}
+            {
+                "product_name_original": str(name),
+                "product_url": url,
+                "source": source,
+            }
             if url
             else {
                 "product_name_original": str(name),
                 "country": str(country),
                 "currency": str(currency),
+                "source": source,
             }
         )
-        for name, url, country, currency in zip(names, urls, countries, currencies)
+        for name, url, country, currency, source in zip(
+            names, urls, countries, currencies, sources
+        )
     ]
     return pd.Series(out, index=df.index, dtype=object)
 

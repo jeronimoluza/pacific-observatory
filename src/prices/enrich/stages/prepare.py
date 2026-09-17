@@ -8,6 +8,7 @@ import pandas as pd
 
 from core.config import load_countries
 from prices.enrich import config
+from prices.enrich.source_canonical import canonical_source
 from prices.enrich.versioning import input_hash
 
 # Currencies that use European-style number formatting:
@@ -116,19 +117,35 @@ def _clean_url(value) -> str:
 
 
 def _row_input_dict(row: pd.Series) -> dict:
-    """Dedup identity = (product_name, product_url). Rows with no URL (wayback /
-    common-crawl) fall back to (name, country, currency) so they are not
-    over-collapsed by a shared empty URL."""
+    """Dedup identity = (source, product_name, product_url). Rows with no URL
+    (wayback / common-crawl) fall back to (source, name, country, currency) so
+    they are not over-collapsed by a shared empty URL.
+
+    `source` is canonicalised before it enters the key, so the few sellers
+    registered under two source names stay ONE product rather than becoming two
+    -- `prices.enrich.source_canonical` holds that map and the measurement each
+    entry rests on.
+
+    Without `source` in the key, two sources selling the same URL collapse into
+    one product whose price is the median ACROSS sources, and "re-run source X"
+    means "products where X won prepare's tie-break", not "X's rows".
+    """
     name = row.get("product_name_original")
     if name is None or (isinstance(name, float) and pd.isna(name)):
         name = row.get("product_name")
+    source = canonical_source(row.get("source"))
     url = _clean_url(row.get("product_url"))
     if url:
-        return {"product_name_original": str(name), "product_url": url}
+        return {
+            "product_name_original": str(name),
+            "product_url": url,
+            "source": source,
+        }
     return {
         "product_name_original": str(name),
         "country": str(row["country"]),
         "currency": str(row["currency"]),
+        "source": source,
     }
 
 

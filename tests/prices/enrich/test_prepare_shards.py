@@ -118,10 +118,20 @@ def test_country_grain_reproduces_the_global_run_exactly(corpus, tmp_path):
     )
 
 
-def test_source_grain_would_not_have(corpus):
-    """The reason the grain is country. Splitting by source leaves Fiji's two
-    Rice rows uncollapsed, so the slice reports 10 and 30 where the full run
-    reports one row at 20."""
+def test_source_grain_reproduces_the_global_run_too(corpus):
+    """What folding `source` into `input_hash` bought.
+
+    This test used to assert the opposite, and the assertion it made was the
+    reason prepare's grain was country: a group could span two sources, so
+    preparing one shard at a time reported 10 and 30 where the whole corpus
+    reported one row at 20. `source` is part of the dedup identity now, so no
+    group spans two sources and the two runs agree row for row.
+
+    Both of the corpus's cross-source collapses are covered here. Fiji's Rice
+    is the URL-LESS case, two sources sharing (name, country, currency).
+    Ghana's Yam is the URL case, two sources sharing one product_url -- which
+    the old key could not separate either.
+    """
     per_source = pd.concat(
         [
             prepare_input(
@@ -132,19 +142,19 @@ def test_source_grain_would_not_have(corpus):
         ignore_index=True,
     )
     expected = global_prepare(corpus)
-    assert len(per_source) > len(expected)
+    pd.testing.assert_frame_equal(
+        normalise(per_source), normalise(expected), check_dtype=False
+    )
 
-    fiji_rice = per_source[
-        per_source["country"].eq("fiji")
-        & per_source["product_name_original"].eq("Rice 1kg")
-    ]
-    assert sorted(fiji_rice["price"]) == [10.0, 30.0]
-    global_rice = expected[
+    rice = expected[
         expected["country"].eq("fiji")
         & expected["product_name_original"].eq("Rice 1kg")
     ]
-    assert list(global_rice["price"]) == [20.0]
-    assert list(global_rice["n_rows"]) == [2]
+    assert sorted(rice["price"]) == [10.0, 30.0]
+    assert list(rice["n_rows"]) == [1, 1]
+
+    yam = expected[expected["product_name_original"].eq("Yam 1kg")]
+    assert sorted(yam["price"]) == [5.0, 7.0]
 
 
 def test_one_parquet_per_country_at_the_partition_path(corpus, tmp_path):
@@ -246,9 +256,14 @@ def test_an_unchanged_country_is_not_prepared_again(corpus, tmp_path):
 
 
 def test_a_changed_shard_recomputes_its_whole_country(corpus, tmp_path):
-    """Country, not source: `input_hash` falls back to (name, country,
-    currency), so a changed source can move the median of a group whose other
-    members did not change."""
+    """The cache unit is the country: one changed shard recomputes all of it.
+
+    It no longer has to be. `source` is in the dedup identity, so a changed
+    source can no longer move the median of a group whose other members did not
+    change -- shop_b's Rice goes to 50 and shop_a's stays at 10 rather than the
+    pair re-medianing to 30. Country stays the unit until prepare's scope floor
+    drops to source, which needs the per-country writer to learn to merge.
+    """
     out_dir = tmp_path / "_prepared"
     prepare_shards.run(root=corpus, out_dir=out_dir)
 
@@ -262,8 +277,8 @@ def test_a_changed_shard_recomputes_its_whole_country(corpus, tmp_path):
 
     fiji = pd.read_parquet(prepared_path_for(out_dir, "eap/pacific/fiji"))
     rice = fiji[fiji["product_name_original"] == "Rice 1kg"]
-    # shop_a 10 and shop_b 50 are one URL-less group; the median moved with it.
-    assert float(rice["price"].iloc[0]) == 30.0
+    # shop_a and shop_b are two groups now: only shop_b's price moved.
+    assert sorted(rice["price"]) == [10.0, 50.0]
 
 
 def test_a_deleted_prepared_parquet_is_rebuilt(corpus, tmp_path):

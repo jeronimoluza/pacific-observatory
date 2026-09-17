@@ -76,14 +76,17 @@ def test_prepare_dedups_on_input_hash():
     }
     coke = out[out["product_name_original"] == "Coke 1L"].iloc[0]
     assert coke["n_rows"] == 2
-    # Identity for a URL-less row is (name, country, currency) — `category` is
-    # deliberately NOT part of it (see _row_input_dict), so that the same product
-    # filed under two breadcrumbs still collapses to one input_hash.
+    # Identity for a URL-less row is (source, name, country, currency) —
+    # `category` is deliberately NOT part of it (see _row_input_dict), so that
+    # the same product filed under two breadcrumbs still collapses to one
+    # input_hash. This frame carries no `source` column at all, which is the
+    # case a raw row with no source has to survive: it hashes under "".
     assert coke["input_hash"] == input_hash(
         {
             "product_name_original": "Coke 1L",
             "country": "PH",
             "currency": "PHP",
+            "source": "",
         }
     )
 
