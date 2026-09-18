@@ -226,6 +226,14 @@ STAGE_FLOOR: dict[str, str] = {
     # `input_hash`; until then two sources in one country can collapse into one
     # product row, and splitting the scope would split that row's evidence.
     "prepare": "country",
+    # Row-wise and pure: one product in, one extracted row out, no groupby and
+    # no statistic pooled over anything. Nothing about a source's rows depends
+    # on the other sources in its country, so there is no aggregation to split.
+    #
+    # The table is per-country parts and a partly-covered country is MERGED
+    # into, not replaced, which is what makes the source floor safe here --
+    # the same machinery classify got in a0d21d6f, not a second copy of it.
+    "extraction": "source",
     # Nothing in the classify module aggregates: no groupby, no rolling, no
     # statistic pooled over anything. Every decision is a function of one row,
     # so the honest floor is the finest grain a selector can name.

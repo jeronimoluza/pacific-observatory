@@ -9,14 +9,21 @@ from prices.enrich.stages import classify as classify_stage
 from prices.enrich.stages import decisions_store
 from prices.enrich.stages import concatenate as concatenate_stage
 from prices.enrich.stages import embed as embed_stage
+from prices.enrich.stages import extraction as extraction_stage
 from prices.enrich.stages import prepare as prepare_stage
 
 STAGES = {
     "concatenate": concatenate_stage.run,
     "prepare": prepare_stage.run,
+    "extraction": extraction_stage.run,
     "classify": classify_stage.run,
 }
 
+# extraction is deliberately ABSENT from the default order. It is invokable and
+# scopable, but nothing reads its table yet -- classify still extracts inline
+# from the same moved function -- so putting it here would add ~52 minutes to
+# every full run to build something no stage consumes. It joins the order in the
+# same commit that makes decide join against it.
 STAGE_ORDER = ["concatenate", "prepare", "classify"]
 
 # Stages that understand a partition selector. Every remaining stage does, so
@@ -26,7 +33,7 @@ STAGE_ORDER = ["concatenate", "prepare", "classify"]
 # classify joined this list when its two output tables became one parquet part
 # per country: before that, a scoped classify had nowhere to put its answer
 # except a whole-corpus rewrite, so scoping it would have been a lie.
-SCOPED_STAGES = ("concatenate", "prepare", "classify")
+SCOPED_STAGES = ("concatenate", "prepare", "extraction", "classify")
 
 
 def _invalidate_for(
@@ -236,6 +243,8 @@ def process_command(
             prepare_shards.run(
                 selectors=selectors, workers=workers, force=rebuild
             )
+        elif name == "extraction":
+            extraction_stage.run(selectors=selectors, force=rebuild)
         elif name == "classify":
             classify_stage.run(
                 backend=backend,

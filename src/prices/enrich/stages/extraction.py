@@ -34,15 +34,18 @@ rare enough to pass every smoke test and never be noticed.
 from __future__ import annotations
 
 import hashlib
+import json
 from dataclasses import replace
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional, Sequence
 
 import pandas as pd
 import pyarrow as pa
 
+from prices.enrich import config
 from prices.enrich.declared_unit import parse_declared_count, parse_declared_unit
 from prices.enrich.extract import StructuralFields, extract
+from prices.enrich.stages import decisions_store, products_reader
 
 _QTY_BASES = frozenset({"mass", "volume", "length", "count"})
 # A parsed measure, as opposed to a bare piece count. `count` basis is excluded
@@ -240,3 +243,115 @@ def extract_frame(products: pd.DataFrame) -> pd.DataFrame:
         )
         rows.append(row)
     return pd.DataFrame(rows, columns=EXTRACTION_COLS)
+
+
+def _state_path(out_path: Path) -> Path:
+    """The freshness key, beside the parts directory and never inside it.
+
+    Inside, a full run's `prune` would have to learn to spare it. Outside, the
+    two cannot interact at all.
+    """
+    root = decisions_store.parts_root(out_path)
+    return root.with_name(root.name + ".state.json")
+
+
+def _read_fingerprint(out_path: Path) -> Optional[str]:
+    try:
+        return json.loads(_state_path(out_path).read_text())["fingerprint"]
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+def run(
+    in_path: Optional[Path] = None,
+    out_path: Optional[Path] = None,
+    selectors: Optional[Sequence[str]] = None,
+    shard_root: Optional[Path] = None,
+    chunk_rows: int = 500_000,
+    force: bool = False,
+) -> dict:
+    """Extract structural fields for every product into a standalone table.
+
+    Freshness is `code_fingerprint()`, so a regex edit re-runs and an unrelated
+    commit does not -- see the module docstring for why an mtime key is the
+    wrong one here.
+
+    **Only an UNSCOPED run stamps that key.** A scoped run has read one source
+    and knows nothing about the countries it never opened, so letting it write
+    the fingerprint would mark the whole table current on the strength of a few
+    hundred rows -- the same confusion between "what I looked at" and "what is
+    true" that the CC ledger's filename rule made.
+    """
+    # Imported here, not at module scope: classify imports THIS module for
+    # `_structural_fields`, so a top-level import back into classify is a cycle.
+    from prices.enrich.stages import classify
+
+    in_path = in_path or config.PRODUCTS_INPUT_PARQUET
+    out_path = out_path or config.EXTRACTION_PARQUET
+    root = decisions_store.parts_root(out_path)
+    scope = classify.scope_for(selectors, shard_root)
+    fingerprint = code_fingerprint()
+
+    if (
+        not force
+        and scope is None
+        and root.is_dir()
+        and _read_fingerprint(out_path) == fingerprint
+    ):
+        return {
+            "rows": decisions_store.row_count(out_path),
+            "countries": len(decisions_store.existing_countries(root)),
+            "fingerprint": fingerprint,
+            "skipped": True,
+        }
+
+    # A country in scope only in PART is merged into rather than replaced, so
+    # the keys this run may drop have to be known before the first part is
+    # written. They come from products_input, not from what extraction emits:
+    # the two are the same set by construction, and reading it up front costs
+    # one key-only scan instead of buffering every frame in memory.
+    merge_keys = None
+    partial = [c for c, sources in (scope or {}).items() if sources is not None]
+    if partial:
+        keys = products_reader.read_product_keys(
+            in_path, ["input_hash", "country"], scope=scope
+        )
+        merge_keys = {
+            decisions_store.part_name(c): set(
+                keys.loc[keys["country"] == c, "input_hash"]
+            )
+            for c in partial
+        }
+
+    root.mkdir(parents=True, exist_ok=True)
+    writer = decisions_store.PartitionedWriter(
+        root, EXTRACTION_SCHEMA, merge_keys=merge_keys
+    )
+    rows = 0
+    try:
+        for chunk in products_reader.iter_products(in_path, chunk_rows, scope=scope):
+            frame = extract_frame(chunk)
+            writer.write(frame)
+            rows += len(frame)
+        written = writer.close()
+    except BaseException:
+        # Publish nothing on the way out: a half-written part reads exactly
+        # like a complete one.
+        writer.abort()
+        raise
+
+    if scope is None:
+        decisions_store.prune(root, {p.stem for p in written})
+        _state_path(out_path).write_text(json.dumps({"fingerprint": fingerprint}))
+    else:
+        # Only countries taken WHOLE may be pruned. A partly-scoped country that
+        # wrote nothing still has its other sources on disk.
+        whole = [c for c, sources in scope.items() if sources is None]
+        decisions_store.prune_scoped(root, whole, {p.stem for p in written})
+
+    return {
+        "rows": rows,
+        "countries": len(written),
+        "fingerprint": fingerprint,
+        "skipped": False,
+    }

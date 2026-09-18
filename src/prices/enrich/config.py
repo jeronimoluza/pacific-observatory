@@ -206,6 +206,13 @@ DECISIONS_PARQUET = CACHE_DIR / "decisions.parquet"
 # HierLex-Select writes the same two artifacts under its own names.
 CLASSIFIED_HIERLEX_PARQUET = CACHE_DIR / "classified_hierlex.parquet"
 DECISIONS_HIERLEX_PARQUET = CACHE_DIR / "decisions_hierlex.parquet"
+
+# Structural extraction, split out of classify so a regex edit stops re-running
+# the model. A directory of per-country parts like the decisions tables, not the
+# single file the name suggests: `decisions_store.parts_root` derives one from
+# the other, and a scoped run has to be able to rewrite one country without
+# touching the rest.
+EXTRACTION_PARQUET = CACHE_DIR / "extraction.parquet"
 HIERLEX_MODELS_DIR = ENRICH_DIR / "_models" / "hierlex"
 HIERLEX_PRED_DIR = ENRICH_DIR / "_hierlex_pred"
 
