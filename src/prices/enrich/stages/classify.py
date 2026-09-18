@@ -55,92 +55,9 @@ from prices.enrich.stages.products_reader import (  # noqa: F401
 _EMPTY = {c: None for c in ENRICHMENT_COLS}
 
 
-_QTY_BASES = frozenset({"mass", "volume", "length", "count"})
-# A parsed measure, as opposed to a bare piece count. `count` basis is excluded
-# on purpose below: there the count IS the quantity and already scales the
-# denominator, so promoting it would double-count.
-_MEASURED_BASES = frozenset({"mass", "volume", "length"})
-
-# Sources whose trailing "(N pieces)" is a wholesale CASE size rather than a
-# breakdown of the stated measure: the measure describes ONE unit and N of them
-# ship together, so N multiplies the denominator. Verified per source, never
-# assumed -- mangusa_cw is a bulk hypermarket whose own manifest records the
-# convention ("Unoli Canola oil 2ltr (6 pieces)" at XCG 84.10, which is a case
-# price: as a lone 2L bottle it implies ~$23/L of canola oil). Volume basis was
-# already right (volume always multiplies); mass basis was not, and priced a
-# whole case as one piece. Other sources using the same phrasing are NOT listed
-# here -- the identical words mean pack-total at some of them, so each one has
-# to be checked on its own evidence before it is added.
-_PIECE_IS_CASE_SOURCES = frozenset({"mangusa_cw"})
-
-
-def _structural_fields(
-    name, category, country, lang, details=None, unit=None, source=None
-) -> dict:
-    sf = extract(str(name), category or None, country or None, lang or None)
-    # Quantity fallback: some sources (e.g. pickaroo, aldi_au) publish the pack
-    # size in a separate `details` string ("~500 g", "10 pcs") the product_name
-    # omits, so the name alone resolves to `item`. When that happens, read the
-    # quantity off `details`; keep the name's promo/bundle flags.
-    qs = sf
-    if sf.pricing_basis == "item" and details and str(details).strip():
-        sf2 = extract(str(details), category or None, country or None, lang or None)
-        if sf2.pricing_basis in _QTY_BASES:
-            qs = sf2
-    # Second fallback: a fetcher-declared `unit` (e.g. agmarknet's "quintal
-    # (100 kg)") is the last resort, only when name and details found no
-    # quantity at all -- a per-row regex match on the name is more specific
-    # evidence than a source-level sale-unit declaration. This also makes the
-    # declared unit take precedence over the build-time `derived_typical`
-    # leaf-average guess, since that guess only ever applies to rows still
-    # carrying pricing_basis="item" by the time they reach the build.
-    unit_declared = False
-    if qs.pricing_basis == "item" and unit and str(unit).strip():
-        basis, amount, su = parse_declared_unit(unit)
-        declared_count = None if basis is not None else parse_declared_count(unit)
-        # A countable declared unit ("each", "30 pcs", "Dozen") states the
-        # denominator in PIECES, and `merge.compute_unit_value` divides a
-        # count-basis row by `count * multiplier` and never by `amount_value`
-        # -- so it fills `count` and leaves `amount_value` empty, which is the
-        # same shape `extract_decide._finish` emits for a pack count read off
-        # the name. Without it the row keeps `item` basis and the build's
-        # `qa_quantity` gate quarantines it as `review_missing_qty` on every
-        # leaf outside `SOLD_BY_ITEM_LEAVES`, however explicitly the source
-        # said the price was per piece.
-        if basis is not None or declared_count is not None:
-            qs = StructuralFields(
-                pricing_basis=basis if basis is not None else "count",
-                amount_value=amount,
-                standard_unit=su if basis is not None else "unit",
-                count=qs.count if basis is not None else declared_count,
-                multiplier=qs.multiplier,
-                is_promotion=qs.is_promotion,
-                is_bundle=qs.is_bundle,
-                is_multipack=qs.is_multipack,
-                promo_reason=qs.promo_reason,
-            )
-            unit_declared = True
-    piece_is_case = (
-        source in _PIECE_IS_CASE_SOURCES
-        and qs.pricing_basis in _MEASURED_BASES
-        and qs.multiplier == 1
-        and qs.count is not None
-        and qs.count > 1
-    )
-    if piece_is_case:
-        qs = replace(qs, count=1, multiplier=qs.count)
-    return {
-        "pricing_basis": qs.pricing_basis,
-        "amount_value": qs.amount_value,
-        "standard_unit": qs.standard_unit,
-        "count": qs.count,
-        "multiplier": qs.multiplier,
-        "is_promotion": sf.is_promotion,
-        "is_bundle": sf.is_bundle,
-        "is_multipack": sf.is_multipack or piece_is_case,
-        "promo_reason": sf.promo_reason,
-        "unit_declared": unit_declared,
-    }
+from prices.enrich.stages.extraction import (  # noqa: F401
+    _structural_fields,
+)
 
 
 DECISION_COLS = [*ENRICHMENT_COLS, "input_hash", "country", "leaf_top1", "gate_score"]
