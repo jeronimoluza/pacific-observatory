@@ -458,6 +458,9 @@ from prices.source_sanity import (  # noqa: E402
     source_sanity_command as _prices_source_sanity,
 )
 from prices.cc_ledger import cc_ledger_command as _prices_cc_ledger  # noqa: E402
+from prices.cc_exhaustion import (  # noqa: E402
+    cc_exhaustion_command as _prices_cc_exhaustion,
+)
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
@@ -478,6 +481,7 @@ prices.add_command(_prices_rtcal, name="rtcal")
 prices.add_command(_prices_sanity, name="sanity")
 prices.add_command(_prices_source_sanity, name="source-sanity")
 prices.add_command(_prices_cc_ledger, name="cc-ledger")
+prices.add_command(_prices_cc_exhaustion, name="cc-exhaustion")
 
 
 @prices.command("build")
