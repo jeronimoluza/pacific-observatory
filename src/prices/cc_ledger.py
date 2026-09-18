@@ -20,6 +20,15 @@ Two filename conventions carry the same meaning and both must be globbed:
 `livingcost` uses only the second. The plan's first pass globbed only the
 first and silently lost 1,346 files across 56 sources, so the count that
 matters is the union.
+
+A third layout predates both: one hash-named JSON per record. It is NOT an
+unparsed page. The parser ran at fetch time and wrote its result into the
+file, and `concatenate` has always read that layout alongside the JSONL
+(`concatenate.py:363`), so those records are already in the corpus. Status is
+therefore decided by whether a record carries a `product_name`, never by which
+filename it happens to live under -- reading the absence of a
+`cc_parsed_*.jsonl` as "never parsed" reports 51,727 already-ingested records
+as recoverable work.
 """
 
 from __future__ import annotations
@@ -72,14 +81,19 @@ def _count_lines(path: Path) -> int:
         return 0
 
 
-def _legacy_by_crawl(items: Path) -> dict[str, int]:
-    """Crawl -> how many hash-named records it holds.
+def _legacy_by_crawl(items: Path) -> dict[str, tuple[int, int]]:
+    """Crawl -> (records carrying a parse, records held in total).
 
     The pre-compaction layout is one JSON per record with the crawl only
-    inside the file, so this is 88k opens corpus-wide. It is the only way to
-    see the seven sources that fetched records and never parsed one of them.
+    inside the file, so this is 88k opens corpus-wide.
+
+    Reading `product_name` is what makes the status honest. A hash-named
+    record is not a saved page: the parser ran at fetch time and wrote its
+    result into the file, so a record carrying a name was PARSED, in the older
+    layout. Deciding that from the absence of `cc_parsed_*.jsonl` instead
+    confuses layout with state.
     """
-    out: dict[str, int] = {}
+    out: dict[str, list[int]] = {}
     for path in items.glob("*.json"):
         try:
             with open(path, encoding="utf-8") as fh:
@@ -87,9 +101,13 @@ def _legacy_by_crawl(items: Path) -> dict[str, int]:
         except (OSError, ValueError):
             continue
         index = rec.get("cc_index")
-        if index:
-            out[index] = out.get(index, 0) + 1
-    return out
+        if not index:
+            continue
+        seen = out.setdefault(index, [0, 0])
+        seen[1] += 1
+        if rec.get("product_name"):
+            seen[0] += 1
+    return {k: (v[0], v[1]) for k, v in out.items()}
 
 
 def iter_disk_state(
@@ -132,17 +150,21 @@ def iter_disk_state(
 
         # Parsed beats fetched: a crawl with a parsed file got further, and
         # its legacy records are the same pages read by the older layout.
-        for crawl, n in sorted(_legacy_by_crawl(items).items()):
+        #
+        # One row per crawl still, never two: a crawl whose legacy records are
+        # part parsed and part not reports both numbers in one row (`records`
+        # total, `rows` parsed) rather than splitting the grain.
+        for crawl, (done, total) in sorted(_legacy_by_crawl(items).items()):
             if crawl in parsed:
                 continue
             yield {
                 "source": source,
                 "crawl_id": crawl,
                 "crawl_year": int(crawl.split("-")[2]),
-                "status": STATUS_FETCHED,
-                "records": n,
-                "rows": None,
-                "reason": "fetched_never_parsed",
+                "status": STATUS_PARSED if done else STATUS_FETCHED,
+                "records": total,
+                "rows": done,
+                "reason": "legacy_layout" if done else "fetched_never_parsed",
                 "parser_version": None,
                 "run_id": run_id,
                 "ts": ts,
