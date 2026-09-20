@@ -56,3 +56,4 @@ notes: |
   spider's custom_settings (tighter than the shared _woo_sitemap_base
   defaults) -- Tesco runs a real anti-bot stack and getting banned here
   risks the sibling CZ/IE/UK probes too.
+timeout: 28800

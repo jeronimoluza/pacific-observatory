@@ -10,3 +10,4 @@ channel: pharmacy
 throttle_group: aswatson
 archive_prefix: "www.watsons.com.hk/"
 archive_path_re: '(?i)^/en/.+/p/bp_\d+$|^/product-.+/p/bp_\d+$'
+timeout: 28800

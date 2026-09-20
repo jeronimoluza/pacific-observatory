@@ -38,3 +38,4 @@ notes: |
   auchan_sn=PrestaShop, auchan_ua=Zakaz white-label) run 4 DIFFERENT
   platforms -- auchan_hu is a 5th, distinct stack. Do not assume any
   future Auchan banner shares a platform with another without probing.
+timeout: 28800

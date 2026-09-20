@@ -51,3 +51,4 @@ notes: |
   End-to-end test (--max-items 20): 20/20 rows, all priced RON.
   Wide wholesale catalog (food, cleaning, catering supplies, stationery,
   workwear); coicop_codes left unset for the classifier.
+timeout: 28800

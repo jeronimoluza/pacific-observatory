@@ -27,3 +27,4 @@ notes: |
 
   Full-catalog walk = sitemap crawl (22 sub-sitemaps) + one PDP fetch per
   product URL (~22,000 products total). No auth, no WAF observed throughout.
+timeout: 28800

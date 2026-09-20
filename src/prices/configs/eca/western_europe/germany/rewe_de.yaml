@@ -53,3 +53,4 @@ notes: |
   Category taken from the propstore blob's own `categorySlug` (a raw
   category-tree ID, not a human label) -- left as-is rather than resolving it
   since the classifier assigns COICOP leaves from product_name regardless.
+timeout: 28800

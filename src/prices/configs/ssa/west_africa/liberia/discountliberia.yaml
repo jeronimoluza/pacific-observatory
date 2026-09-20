@@ -29,3 +29,4 @@ notes: >
   PDP JSON-LD priceCurrency -- flagged, not assumed, since Liberia is
   dual-currency. Page family parsed: PDP.
   VERIFIED 2026-09-12 on a8: 202 rows (`prices collect --source discountliberia --max-items 200`), cap-bound -- the run enqueued 3,328 requests (3,325 product URLs plus the sitemap), so supply is far above the cap. Sample: "New Huion KAMVAS 22 ... Graphic Tablet with Stylus" USD 493.9, category "Phones & Tablets" (the JSON-LD carries the breadcrumb, which most sources here do not). By row supply this is the largest new Liberia source in this batch.
+timeout: 28800

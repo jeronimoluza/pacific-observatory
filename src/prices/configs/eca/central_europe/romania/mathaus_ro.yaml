@@ -66,3 +66,4 @@ notes: |
   time (2 of 4 casa_victoria and 2 of 4 farmacia-sensiblu sample urls were
   404 on this pass) -- normal for an unbounded sitemap on a fast-turnover
   delivery catalog; the spider just skips those.
+timeout: 28800
