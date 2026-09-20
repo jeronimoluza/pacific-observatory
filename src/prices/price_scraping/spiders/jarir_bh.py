@@ -43,6 +43,14 @@ class JarirBhSpider(scrapy.Spider):
 
     custom_settings = {
         "ROBOTSTXT_OBEY": False,
+        # jarir_sa's sitemap is ordered head-first with stocked products, but
+        # Scrapy's default LIFO scheduler pops the alphabetical tail instead:
+        # ~200k enqueued URLs whose tail is long-tail book slugs that either
+        # 404 on this storefront or return a PDP carrying no Product JSON-LD.
+        # All five storefronts spent their whole budget there and died to
+        # CLOSESPIDER_TIMEOUT_NO_ITEM without ever reaching a real product.
+        "SCHEDULER_DISK_QUEUE": "scrapy.squeues.PickleFifoDiskQueue",
+        "SCHEDULER_MEMORY_QUEUE": "scrapy.squeues.FifoMemoryQueue",
         "CONCURRENT_REQUESTS_PER_DOMAIN": 4,
         "DOWNLOAD_DELAY": 0.5,
         "RETRY_TIMES": 3,
