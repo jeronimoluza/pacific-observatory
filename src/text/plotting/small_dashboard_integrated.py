@@ -6,6 +6,17 @@ from pathlib import Path
 
 import pandas as pd
 
+from text.plotting.small_dashboard_integrated_w_policy import TOPICS_LABEL_MAP
+
+# The shared group labels plus the two short forms this dashboard has always
+# used. Without them a raw group key title-cases into its own prefix, which is
+# where "Dev Macro Growth" came from.
+TOPICS_CHIP_LABELS = {
+    **TOPICS_LABEL_MAP,
+    "gasoline": "Gas",
+    "natural_gas": "Natural Gas",
+}
+
 
 # Countries to exclude from EPU and sentiment visualizations
 EXCLUDE_COUNTRIES = [
@@ -176,7 +187,7 @@ def _build_dashboard_html(
     topics_checkboxes = "\n".join(
         f'<label class="chip"><input type="checkbox" value="{item}"'
         f"{' checked' if item in topics_defaults else ''}>"
-        f'<span class="chip-label">{fmt_country(item)}</span></label>'
+        f'<span class="chip-label">{TOPICS_CHIP_LABELS.get(item, fmt_country(item))}</span></label>'
         for item in topics_items
     )
 
@@ -1216,7 +1227,7 @@ def _build_dashboard_html(
                 defaultItems: topicsDefaultItems,
                 palette: topicsPalette,
                 getChipColor: (item) => topicsPalette[topicsItems.indexOf(item) % topicsPalette.length],
-                chipLabelMap: {{ gasoline: 'Gas', natural_gas: 'Natural Gas' }},
+                chipLabelMap: {topics_label_map_json},
                 toggleName: 'ma-toggle-topics',
                 countryId: 'topics-country',
                 sliderId: 'topics-slider',
@@ -1312,6 +1323,7 @@ def _build_dashboard_html(
         topics_data_json=json.dumps(topics_data),
         actors_data_json=json.dumps(actors_data),
         topics_items_json=json.dumps(topics_items),
+        topics_label_map_json=json.dumps(TOPICS_CHIP_LABELS),
         actors_items_json=json.dumps(actors_items),
         topics_defaults_json=json.dumps(topics_defaults),
         actors_defaults_json=json.dumps(actors_defaults),
