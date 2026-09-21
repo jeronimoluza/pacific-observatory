@@ -6,7 +6,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from text.plotting.small_dashboard_integrated_w_policy import TOPICS_LABEL_MAP
+from text.plotting.small_dashboard_integrated_w_policy import (
+    RANK_LABEL_MAP,
+    TOPICS_LABEL_MAP,
+)
 
 # The shared group labels plus the two short forms this dashboard has always
 # used. Without them a raw group key title-cases into its own prefix, which is
@@ -947,19 +950,10 @@ def _build_dashboard_html(
 
                 const labels = displayEntries.map(entry => entry.label);
 
-                const labelMap = {{
-                    'Imf': 'IMF',
-                    'Us Government': 'US Government',
-                    'Us China Trade War': 'US-China Trade War',
-                    'Covid Pandemic': 'COVID-19 Pandemic',
-                    'Inflation Prices': 'Inflation & Prices',
-                    'Climate Environment': 'Climate & Environment',
-                    'Corruption Governance': 'Corruption & Governance',
-                    'Housing Real Estate': 'Housing & Real Estate'
-                }};
+                const labelMap = {rank_label_map_json};
                 function fmtLabel(key) {{
-                    const raw = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                    return labelMap[raw] || raw;
+                    if (labelMap[key]) return labelMap[key];
+                    return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                 }}
 
                 const datasets = visible.map((item, i) => {{
@@ -1324,6 +1318,7 @@ def _build_dashboard_html(
         actors_data_json=json.dumps(actors_data),
         topics_items_json=json.dumps(topics_items),
         topics_label_map_json=json.dumps(TOPICS_CHIP_LABELS),
+        rank_label_map_json=json.dumps(RANK_LABEL_MAP),
         actors_items_json=json.dumps(actors_items),
         topics_defaults_json=json.dumps(topics_defaults),
         actors_defaults_json=json.dumps(actors_defaults),

@@ -829,19 +829,10 @@ const SCALE_META = {
 };
 const topicState = { slider: null, sliderDates: [], chart: null, onChange: () => {} };
 
-const labelMap = {
-    'Imf': 'IMF',
-    'Us Government': 'US Government',
-    'Us China Trade War': 'US-China Trade War',
-    'Covid Pandemic': 'COVID-19 Pandemic',
-    'Inflation Prices': 'Inflation & Prices',
-    'Climate Environment': 'Climate & Environment',
-    'Corruption Governance': 'Corruption & Governance',
-    'Housing Real Estate': 'Housing & Real Estate'
-};
+const labelMap = __RANK_LABEL_MAP_JSON__;
 function fmtLabel(key) {
-    const raw = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    return labelMap[raw] || raw;
+    if (labelMap[key]) return labelMap[key];
+    return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
 function initTopicTab() {
@@ -1489,6 +1480,7 @@ def build_topic_iframe_html(
         .replace("__FOCUS_JSON__", json.dumps(focus_groups))
         .replace("__ALL_GROUPS_JSON__", json.dumps(all_groups))
         .replace("__PALETTE_JSON__", json.dumps(PALETTE))
+        .replace("__RANK_LABEL_MAP_JSON__", json.dumps(RANK_LABEL_MAP))
     )
 
 
@@ -1550,6 +1542,12 @@ ACTORS_LABEL_MAP = {
     "parliament": "Parliament",
     "government": "Government",
 }
+
+
+# The rank table and the chart legend label by RAW group key, so they need both
+# families in one dict. Keeping it derived means a name added above shows up in
+# every tab instead of only the chips.
+RANK_LABEL_MAP = {**TOPICS_LABEL_MAP, **ACTORS_LABEL_MAP}
 
 
 def build_epu_iframe_html(
