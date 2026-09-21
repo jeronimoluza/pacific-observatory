@@ -1402,10 +1402,13 @@ def _country_options(data):
 
 
 def _chip_one(item, defaults):
+    # The JS rewrites this label on load, but emitting the real name here too
+    # keeps the served HTML honest -- otherwise grepping the file for a bad
+    # label reports one that no reader ever sees.
     return (
         f'<label class="chip"><input type="checkbox" value="{item}"'
         f"{' checked' if item in defaults else ''}>"
-        f'<span class="chip-label">{fmt_country(item)}</span></label>'
+        f'<span class="chip-label">{RANK_LABEL_MAP.get(item, fmt_country(item))}</span></label>'
     )
 
 
