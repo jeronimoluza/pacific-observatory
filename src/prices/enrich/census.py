@@ -49,15 +49,14 @@ DEFAULT_OUT_DIR = config.REPO_ROOT / ".planning" / "census"
 def _load_population(names_or_df):
     """Coerce the input into a DataFrame carrying at least `product_name_original`.
 
-    Accepts a DataFrame (returned as-is), a path to a parquet, or an iterable of
-    raw product names.
+    Accepts a DataFrame (returned as-is) or an iterable of raw product names. A
+    parquet path does NOT come through here any more — `run_census` streams it
+    through `_unique_names_streaming` instead, for the reason recorded there.
     """
     import pandas as pd
 
     if isinstance(names_or_df, pd.DataFrame):
         return names_or_df
-    if isinstance(names_or_df, (str, Path)):
-        return pd.read_parquet(names_or_df)
     return pd.DataFrame({NAME_COLUMN: list(names_or_df)})
 
 
@@ -79,6 +78,51 @@ def _unique_names(df, limit=None):
         unique.append(name)
         if limit is not None and len(unique) >= limit:
             break
+    return unique
+
+
+def _unique_names_streaming(path, limit=None):
+    """`_unique_names` over a parquet, without the frame ever being resident.
+
+    `pd.read_parquet` on the population took 27 GB of anon memory against 26 GB
+    of RAM and was OOM-killed before a single name reached `extract()`. `--limit`
+    could not help: it was applied to the frame AFTER the read, so every limit
+    died identically. Census was written against the ~1.1M-row corpus in the
+    module docstring and the corpus is 48.5M rows now, 44x that.
+
+    So: the two columns this function actually reads, row group by row group,
+    stopping the moment `limit` unique names are in hand. The result is the same
+    order-preserving, non-empty, channel-filtered list `_unique_names` returns.
+    """
+    import pyarrow.parquet as pq
+
+    handle = pq.ParquetFile(path)
+    present = set(handle.schema_arrow.names)
+    name_col = next((c for c in NAME_CANDIDATES if c in present), None)
+    if name_col is None:
+        return []
+    has_channel = CHANNEL_COLUMN in present
+    columns = [name_col] + ([CHANNEL_COLUMN] if has_channel else [])
+
+    seen: set = set()
+    unique: list = []
+    for batch in handle.iter_batches(batch_size=1 << 17, columns=columns):
+        names = batch.column(name_col).to_pylist()
+        channels = (
+            batch.column(CHANNEL_COLUMN).to_pylist()
+            if has_channel
+            else (None,) * len(names)
+        )
+        for name, channel in zip(names, channels):
+            if name is None or channel in EXCLUDED_CHANNELS:
+                continue
+            name = str(name)
+            if not name.strip() or name in seen:
+                continue
+            seen.add(name)
+            unique.append(name)
+            if limit is not None and len(unique) >= limit:
+                return unique
     return unique
 
 
@@ -130,8 +174,10 @@ def run_census(names_or_df, out_dir=None, chunk_size=50_000, limit=None):
     """
     import pandas as pd
 
-    df = _load_population(names_or_df)
-    names = _unique_names(df, limit=limit)
+    if isinstance(names_or_df, (str, Path)):
+        names = _unique_names_streaming(names_or_df, limit=limit)
+    else:
+        names = _unique_names(_load_population(names_or_df), limit=limit)
 
     target = Path(out_dir) if out_dir is not None else DEFAULT_OUT_DIR
     target.mkdir(parents=True, exist_ok=True)

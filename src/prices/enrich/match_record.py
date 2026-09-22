@@ -27,6 +27,12 @@ from prices.enrich.config import ENRICH_DIR
 # The fixed reason vocabulary. `record_suppression` asserts its `reason` is one
 # of these tokens — no suppression is recorded without a cause (closes the
 # always-None promo_reason defect structurally).
+#
+# Two of these are emitted nowhere: `apparel_fabric_weight` has no call site at
+# all, and `dosage_strength` is computed fresh by `shape_label` rather than read
+# off `suppressed_ids`. Left in place — an unused allowlist entry costs nothing,
+# and whether to drop them is a separate question from adding the one that was
+# missing.
 REASON_TOKENS = frozenset(
     {
         "marketing_limit",
@@ -35,6 +41,11 @@ REASON_TOKENS = frozenset(
         "servings_portion",
         "total_breakdown",
         "dosage_strength",
+        # Pass 1f in `extract_decide` has emitted this since it was written and
+        # the allowlist never carried it, so the assert below fired on the first
+        # name advertising a nutrient per serving. Recording is off in the
+        # pipeline, so only the census ever reached it — and could not finish.
+        "nutrient_claim",
     }
 )
 
