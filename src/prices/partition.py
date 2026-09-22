@@ -217,15 +217,20 @@ STAGE_FLOOR: dict[str, str] = {
     # One shard per source, no aggregation across sources. A source-grained
     # selector is already exactly what this stage writes.
     "concatenate": "source",
-    # A country's prepared parquet is written from its WHOLE shard set, and
-    # `write_products_input` unions that file straight into
-    # `products_input.parquet`. Preparing one source's shards rewrites the
-    # country file with only that source's products.
+    # Prepare groups on `input_hash`, which carries the canonical source since
+    # 0aa9b653, so a source's products are a disjoint slice of its country's
+    # and its medians are the same computed alone or alongside the country.
+    # Measured on the post-fold corpus: 0 of 48,507,337 distinct hashes span
+    # more than one source.
     #
-    # Drops to "source" once scope-module step 4 folds `source` into
-    # `input_hash`; until then two sources in one country can collapse into one
-    # product row, and splitting the scope would split that row's evidence.
-    "prepare": "country",
+    # What held this at "country" after that fold was the WRITER, not the
+    # grain. One parquet per country, replaced wholesale, so a source-scoped
+    # run left a country file holding only that source and
+    # `write_products_input` unioned the truncation forward.
+    # `prepare_country` now MERGES a country it only partly covers, carrying
+    # the other sources' rows across untouched -- the same call classify made
+    # in a0d21d6f and extraction inherited.
+    "prepare": "source",
     # Row-wise and pure: one product in, one extracted row out, no groupby and
     # no statistic pooled over anything. Nothing about a source's rows depends
     # on the other sources in its country, so there is no aggregation to split.

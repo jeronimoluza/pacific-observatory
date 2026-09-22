@@ -7,13 +7,29 @@ parquet per country, so the peak footprint is the largest country rather than
 the corpus, and a country can be recomputed on its own.
 
 **Why country and not source.** `prepare_input` groups on `input_hash`, and
-`_row_input_dict` builds that hash from `(product_name_original, product_url)`,
+`_row_input_dict` built that hash from `(product_name_original, product_url)`,
 falling back to `(product_name_original, country, currency)` when there is no
-URL — which is most of the wayback and Common Crawl corpus. `source` appears in
-neither. Two sources in one country selling the same URL-less product are
+URL — which is most of the wayback and Common Crawl corpus. `source` appeared in
+neither. Two sources in one country selling the same URL-less product were
 therefore one prepared row whose price is the *median across sources*, so
 splitting the work by source would silently change the numbers: two rows at 10
 and 30 where the full run produces one row at 20.
+
+**CORRECTED 2026-09-22.** `0aa9b653` folded the canonical source into the dedup
+identity, so `source` IS in `input_hash` and that collapse can no longer
+happen. Measured on the 48,507,776-row post-fold `products_input`: **0 of
+48,507,337 distinct hashes span more than one source.** A source's products are
+a disjoint slice of its country's, so `partition.STAGE_FLOOR["prepare"]` is
+"source" and the unit of WORK is one source.
+
+The unit of STORAGE is still one country, and that is what outlived the hash
+fix. A prepared parquet replaced wholesale leaves a source-scoped run holding
+only that source, and `write_products_input` unions the truncation forward. So
+`prepare_country` merges when handed a country it only partly covers: the
+sources in scope are recomputed, every other source's rows stream across from
+the existing file. `source` in the prepared parquet is exact for that — verified
+against the shard tree on five countries from 0.0 MB to 2.2 GB — which is what
+makes carrying forward by source safe rather than approximately safe.
 
 `country` is in the fallback key, so grouping at that level reproduces the full
 run exactly. The one input it does not is a `product_url` occurring under two
@@ -22,12 +38,15 @@ global groupby collapses it to a single row and `_first_non_empty` picks one of
 the two countries arbitrarily. `find_cross_country_urls` reports those rows
 rather than leaving the question open.
 
-The same argument fixes the grain of the cache. `_prepared/.state.json` records
-the shards each country was last prepared from, and a country whose shards are
-unchanged is skipped — but the unit has to be the whole country, because one
-changed source can move the median of a group whose other members did not
-change. `write_products_input` unions every prepared country off disk rather
-than only the recomputed ones, so a skipped country still reaches the output.
+The cache stays whole-country for a different reason. `_prepared/.state.json`
+records the shards each country was last prepared from, and a country whose
+shards are unchanged is skipped. A source-scoped run has read some of that
+country's sources and knows nothing about the rest, so it must not claim the
+country is current: it DROPS the country's entry instead of stamping it, and
+the next unscoped run recomputes. That is the same call extraction's fingerprint
+makes when only an unscoped run may stamp it. `write_products_input` unions
+every prepared country off disk rather than only the recomputed ones, so a
+skipped country still reaches the output.
 """
 
 from __future__ import annotations
@@ -40,6 +59,7 @@ from typing import Iterable, Optional, Sequence
 
 import pandas as pd
 import pyarrow as pa
+import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 from prices import partition
@@ -172,10 +192,54 @@ def _spill_dir(out_dir: Path, key: Sequence[str]) -> Path:
     return out_dir.parent / f"{out_dir.name}_spill" / "-".join(key)
 
 
+def _merge_forward(path: Path, fresh: Path, scoped_sources: set) -> None:
+    """Fold freshly prepared rows into an existing country parquet.
+
+    Streamed row group by row group rather than concatenated in memory: the
+    country grain exists to bound the peak at one country, and japan's prepared
+    part is 2.2 GB on its own. Rows of the sources this run covered come from
+    `fresh`; every other source's rows are carried across from `path`
+    untouched. The two sets are disjoint because `input_hash` carries `source`.
+
+    A row whose `source` is null is carried forward rather than dropped. There
+    are none today; the alternative is a null quietly deleting data.
+    """
+    schema = pa.unify_schemas([pq.read_schema(path), pq.read_schema(fresh)])
+    scoped = pa.array(sorted(scoped_sources))
+    tmp = path.with_name(path.name + ".merging")
+    carried = recomputed = 0
+    try:
+        with pq.ParquetWriter(tmp, schema) as writer:
+            for batch in pq.ParquetFile(path).iter_batches(batch_size=1 << 18):
+                table = pa.Table.from_batches([batch]).cast(schema)
+                hit = pc.fill_null(pc.is_in(table["source"], value_set=scoped), False)
+                table = table.filter(pc.invert(hit))
+                if table.num_rows:
+                    writer.write_table(table)
+                    carried += table.num_rows
+            for batch in pq.ParquetFile(fresh).iter_batches(batch_size=1 << 18):
+                table = pa.Table.from_batches([batch]).cast(schema)
+                writer.write_table(table)
+                recomputed += table.num_rows
+        tmp.replace(path)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
+    finally:
+        fresh.unlink(missing_ok=True)
+    logger.info(
+        "[prepare] %s: merged %d recomputed rows over %d carried forward",
+        path.stem,
+        recomputed,
+        carried,
+    )
+
+
 def prepare_country(
     country_shards: Sequence[partition.Shard],
     key: Sequence[str],
     out_dir: Optional[Path] = None,
+    scoped_sources: Optional[set] = None,
     stream_above: int = STREAM_ABOVE_BYTES,
 ) -> Path:
     """Prepare one country's shards into one parquet.
@@ -184,19 +248,26 @@ def prepare_country(
     aggregated one bucket at a time. The grouping stays EXACT because the
     buckets partition the hash rather than the corpus: every row sharing an
     `input_hash` lands in the same bucket, so `_aggregate` still sees a whole
-    group at once, which is what `price=median` and `_modal_or_empty` need and
-    what a split by source would not give.
+    group at once, which is what `price=median` and `_modal_or_empty` need.
+
+    `scoped_sources` names the sources this run covers when it covers only PART
+    of the country. The fresh rows are then written to a sibling and folded in,
+    so the existing country survives both the merge and a crash during it. The
+    sibling is deliberately not named `*.parquet`: `write_products_input`
+    rglobs that pattern and would union a half-written slice as a country.
     """
     out_dir = out_dir or PREPARED_DIR
     path = prepared_path(key, out_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
+    merging = bool(scoped_sources) and path.exists()
+    dest = path.with_name(path.name + ".fresh") if merging else path
     total = sum(s.size for s in country_shards)
     if total > stream_above:
         spill = _spill_dir(out_dir, key)
         try:
             n_prepared = prepare_input_streaming(
                 shards.iter_batches(country_shards, columns=list(PREPARE_COLUMNS)),
-                path,
+                dest,
                 shuffle_dir=spill,
                 verbose=False,
             )
@@ -209,22 +280,24 @@ def prepare_country(
             SHUFFLE_BUCKETS,
             n_prepared,
         )
-        return path
-    raw = shards.read_shards(country_shards, columns=list(PREPARE_COLUMNS))
-    prepared = prepare_input(raw)
-    prepared.to_parquet(path, index=False)
-    logger.info(
-        "[prepare] %s: %d raw rows -> %d prepared",
-        "/".join(key),
-        len(raw),
-        len(prepared),
-    )
+    else:
+        raw = shards.read_shards(country_shards, columns=list(PREPARE_COLUMNS))
+        prepared = prepare_input(raw)
+        prepared.to_parquet(dest, index=False)
+        logger.info(
+            "[prepare] %s: %d raw rows -> %d prepared",
+            "/".join(key),
+            len(raw),
+            len(prepared),
+        )
+    if merging:
+        _merge_forward(path, dest, set(scoped_sources))
     return path
 
 
 def _prepare_one(args: tuple) -> Path:
-    country_shards, key, out_dir = args
-    return prepare_country(country_shards, key, out_dir)
+    country_shards, key, out_dir, scoped_sources = args
+    return prepare_country(country_shards, key, out_dir, scoped_sources)
 
 
 def write_products_input(
@@ -282,13 +355,16 @@ def run(
         logger.warning("[prepare] no shards matched %s", selectors)
         return []
     prepared_dir = out_dir or PREPARED_DIR
-    # Widened to prepare's scope floor. `partition.STAGE_FLOOR` owns the reason
-    # -- a country's prepared parquet is written from its WHOLE shard set and
-    # `write_products_input` unions it forward, so a sub-country scope writes a
-    # truncated country and the corpus is short until the next unscoped run.
+    # Grouped by country because one parquet per country is what this stage
+    # WRITES, not because the arithmetic needs a whole country -- since the hash
+    # fold it does not. `partition.STAGE_FLOOR` owns that reasoning.
     groups = partition.group_by(
         partition.resolve("prepare", selectors, root), "country"
     )
+    # Every shard each country HAS, so a country the selector covers in full can
+    # be told from a slice of one. `select(None)` walks the tree; it reads no
+    # shard, so the cost is a stat per file and not a parquet open.
+    whole = partition.group_by(partition.select(None, root), "country")
     state = _load_state(prepared_dir)
     # Countries outside this run keep their entry, exactly as concatenate
     # carries a selector-excluded source forward: dropping it would make the
@@ -300,7 +376,12 @@ def run(
     n_skipped = 0
     for key, group in sorted(groups.items()):
         name = "/".join(key)
-        signature = _signature(group)
+        partial = len(group) < len(whole.get(key, group))
+        # A partly-covered country gets no signature, which does double duty:
+        # the skip gate below cannot fire on it (naming a source IS the request
+        # to redo it), and `record` drops its state entry instead of stamping a
+        # coverage this run never had.
+        signature = None if partial else _signature(group)
         if (
             not force
             and signature
@@ -309,8 +390,11 @@ def run(
         ):
             n_skipped += 1
             continue
+        scoped_sources = {s.key.split("/")[3] for s in group} if partial else None
         pending[str(prepared_path(key, out_dir))] = (name, signature)
-        jobs.append((sum(s.size for s in group), (group, key, out_dir)))
+        jobs.append(
+            (sum(s.size for s in group), (group, key, out_dir, scoped_sources))
+        )
 
     budget = partition.memory_budget_bytes()
     logger.info(
@@ -331,9 +415,14 @@ def run(
         countries were recomputed from scratch, because this used to run two
         lines below a `run_budgeted` the exception went straight past."""
         entry = pending.get(str(path))
-        if entry is not None:
-            new_state[entry[0]] = entry[1]
-            _save_state(prepared_dir, new_state)
+        if entry is None:
+            return
+        name, signature = entry
+        if signature is None:
+            new_state.pop(name, None)
+        else:
+            new_state[name] = signature
+        _save_state(prepared_dir, new_state)
 
     # PartialFailure propagates: a run that lost a country has to stop rather
     # than union a tree in which that country is missing or stale.
