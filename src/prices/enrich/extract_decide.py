@@ -337,8 +337,8 @@ def _finish(st, pricing_basis, standard_unit, amount_value, count, multiplier):
         standard_unit=standard_unit,
         count=count,
         multiplier=multiplier,
-        is_promotion=_markers_fire(st.item_name, st.lang, _PROMO_MARKERS),
-        is_bundle=_markers_fire(st.item_name, st.lang, _BUNDLE_MARKERS),
+        is_promotion=_markers_fire(st.item_name, st.effective_lang, _PROMO_MARKERS),
+        is_bundle=_markers_fire(st.item_name, st.effective_lang, _BUNDLE_MARKERS),
         is_multipack=is_multipack,
         promo_reason=None,
     )
@@ -361,8 +361,8 @@ def _rung_apos_emit(st):
         standard_unit=um["su"],
         count=1,
         multiplier=mult,
-        is_promotion=_markers_fire(st.item_name, st.lang, _PROMO_MARKERS),
-        is_bundle=_markers_fire(st.item_name, st.lang, _BUNDLE_MARKERS),
+        is_promotion=_markers_fire(st.item_name, st.effective_lang, _PROMO_MARKERS),
+        is_bundle=_markers_fire(st.item_name, st.effective_lang, _BUNDLE_MARKERS),
         is_multipack=mult > 1,
         promo_reason=None,
     )
@@ -379,8 +379,8 @@ def _rung_pharma_emit(st):
         standard_unit="unit",
         count=1,
         multiplier=1,
-        is_promotion=_markers_fire(st.item_name, st.lang, _PROMO_MARKERS),
-        is_bundle=_markers_fire(st.item_name, st.lang, _BUNDLE_MARKERS),
+        is_promotion=_markers_fire(st.item_name, st.effective_lang, _PROMO_MARKERS),
+        is_bundle=_markers_fire(st.item_name, st.effective_lang, _BUNDLE_MARKERS),
         is_multipack=False,
         promo_reason=None,
     )
@@ -558,7 +558,6 @@ def decide(
     pharma_per_unit,
     item_name,
     stripped,
-    lang,
     has_non_ascii,
     effective_lang,
 ):
@@ -629,7 +628,9 @@ def decide(
         apos=apos,
         pharma_per_unit=pharma_per_unit,
         item_name=item_name,
-        lang=lang,
+        # effective_lang, not lang: lang is 'en' corpus-wide, which made
+        # _markers_fire skip every non-English marker group.
+        effective_lang=effective_lang,
         pack_count=pack_count,
         pack_value=pack_value,
         pack_unit=pack_unit,

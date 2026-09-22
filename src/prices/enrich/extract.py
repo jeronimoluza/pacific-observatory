@@ -486,7 +486,6 @@ def extract(
         pharma_per_unit=pharma_per_unit,
         item_name=item_name,
         stripped=stripped,
-        lang=lang,
         has_non_ascii=has_non_ascii,
         effective_lang=effective_lang,
     )
