@@ -40,6 +40,32 @@
           "กนง.",
           "ทิศทางนโยบายการเงิน"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 0.85,
+          "sample_n": 20,
+          "rejected": []
+        }
       }
     },
     "central_bank": {
@@ -86,6 +112,32 @@
           "แบงก์ชาติ",
           "ECB"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "flagged",
+          "precision": 0.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        }
       }
     },
     "policy_rate": {
@@ -148,6 +200,38 @@
           "อัตราดอกเบี้ยซื้อคืนพันธบัตรระยะ 1 วัน",
           "เฟดฟันด์"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 0.75,
+          "sample_n": 20,
+          "rejected": [
+            "tasa de interés interbancaria"
+          ]
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": [
+            {
+              "prefix": "gösterge faiz"
+            }
+          ]
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        }
       }
     },
     "interest_rates": {
@@ -186,6 +270,35 @@
           "ดอกเบี้ยเงินกู้",
           "ดอกเบี้ยเงินฝาก"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 0.9,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "flagged",
+          "precision": 0.35,
+          "sample_n": 20,
+          "rejected": [
+            "อัตราดอกเบี้ย",
+            "ดอกเบี้ยเงินกู้"
+          ]
+        }
       }
     },
     "monetary_tightening": {
@@ -290,6 +403,34 @@
           "เพิ่มอัตราดอกเบี้ย",
           "ดอกเบี้ยขาขึ้น"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "flagged",
+          "precision": 0.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 0.85,
+          "sample_n": 20,
+          "rejected": [
+            "ดอกเบี้ยขาขึ้น"
+          ]
+        }
       }
     },
     "monetary_easing": {
@@ -405,6 +546,37 @@
           "มาตรการผ่อนคลายเชิงปริมาณ",
           "QE"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 0.9,
+          "sample_n": 20,
+          "rejected": [
+            "reducción de tasas"
+          ]
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 0.15,
+          "sample_n": 20,
+          "rejected": [
+            "ลดอัตราดอกเบี้ย",
+            "ลดดอกเบี้ย"
+          ]
+        }
       }
     },
     "money_supply": {
@@ -445,6 +617,34 @@
           "ปริมาณเงินตามความหมายกว้าง",
           "ปริมาณเงินตามความหมายแคบ"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 0.9,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 0.85,
+          "sample_n": 20,
+          "rejected": [
+            "geniş para"
+          ]
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 1,
+          "rejected": []
+        }
       }
     },
     "foreign_exchange_reserves": {
@@ -503,6 +703,32 @@
           "ทุนสำรองเงินตราต่างประเทศ",
           "ทุนสำรองทางการ"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 8,
+          "rejected": []
+        }
       }
     },
     "exchange_rate_policy": {
@@ -562,6 +788,34 @@
           "ระบบลอยตัวแบบมีการจัดการ",
           "ลอยตัวค่าเงิน"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 0.9,
+          "sample_n": 20,
+          "rejected": [
+            "sabit kur"
+          ]
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 4,
+          "rejected": []
+        }
       }
     },
     "currency_devaluation": {
@@ -608,6 +862,32 @@
           "ลดค่าสกุลเงิน",
           "ประกาศลดค่าเงิน"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 0.9,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 2,
+          "rejected": []
+        }
       }
     },
     "foreign_exchange_controls": {
@@ -652,6 +932,32 @@
           "ควบคุมการแลกเปลี่ยนเงิน",
           "ควบคุมปริวรรตเงินตรา"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 5,
+          "rejected": []
+        }
       }
     },
     "multiple_exchange_rates": {
@@ -700,6 +1006,26 @@
           "อัตราแลกเปลี่ยนหลายอัตรา",
           "อัตราแลกเปลี่ยนสองอัตรา"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 7,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 2,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        }
       }
     },
     "currency_convertibility": {
@@ -728,6 +1054,26 @@
           "การแปลงสภาพเงินตรา",
           "ความสามารถในการแปลงค่าเงิน"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 1,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 4,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        }
       }
     },
     "dollarization": {
@@ -761,6 +1107,26 @@
           "dollarization",
           "dollarisation"
         ]
+      },
+      "review": {
+        "en": {
+          "status": "flagged",
+          "precision": 0.5,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        }
       }
     }
   }
