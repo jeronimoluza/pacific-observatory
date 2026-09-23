@@ -57,6 +57,14 @@ so the second occurrence is dropped as a redundant read of the same
 observation rather than a second one; a resolved URL that disagreed with
 itself on the same page would instead be dropped entirely, since nothing here
 says which of the two figures is the real one.
+
+Before 2021 LOHACO lived at ``lohaco.jp/product/<id>/`` (``archive_also``), a
+different template with no JSON-LD in 2016-2018. There the page's own price is
+the one ``sellPrice`` inside ``cp-product_itemInfoPrice`` and the name is the
+page's ``<h1>``: exactly one of each on every 2017 capture that prices at all
+(14 of 25 JSON-LD misses in a CC-MAIN-2017-26 sample). The rest carry no own
+price in the HTML (it is filled by script, or the page only lists other
+products), so they stay misses.
 """
 
 from __future__ import annotations
@@ -95,8 +103,24 @@ def _resolve_href(href: str | None, url: str) -> str:
     return urljoin(url, href)
 
 
+def _old_site_row(doc: Any, url: str) -> dict | None:
+    """The page's own row on a pre-2021 ``lohaco.jp`` capture, or None."""
+    boxes = [el for el in doc.iter()
+             if isinstance(el.tag, str) and "cp-product_itemInfoPrice" in _classes(el)]
+    prices = {_text(el) for box in boxes for el in box.iter()
+              if isinstance(el.tag, str) and "sellPrice" in _classes(el)}
+    names = [_text(h) for h in doc.iter("h1")]
+    if len(prices) != 1 or len(names) != 1 or not names[0]:
+        return None
+    return price_row(names[0], normalize_price(prices.pop(), "JPY"), url, "JPY")
+
+
 def extract(doc: Any, url: str) -> list[dict]:
-    """Every ranking-rail row this capture prices, read by class and shape alone."""
+    """The page's own row on an old ``lohaco.jp`` capture, else every
+    ranking-rail row this capture prices, read by class and shape alone."""
+    own = _old_site_row(doc, url)
+    if own:
+        return [own]
     pairs = []
     for el in doc.iter():
         if not isinstance(el.tag, str) or "itemPrice" not in _classes(el):
