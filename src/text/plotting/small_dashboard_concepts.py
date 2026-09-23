@@ -1155,6 +1155,7 @@ const defaultItems = __DEFAULTS_JSON__;
 const palette = __PALETTE_JSON__;
 const chipLabelMap = __LABEL_MAP_JSON__;
 const actorFactors = __FACTORS_JSON__;
+const pooledCounts = __POOL_JSON__;
 const MEASURE_META = {
     intensity: {
         blurb: 'Articles mentioning the __NOUN__, as a share of all articles. No uncertainty condition &mdash; this is how much the __NOUN__ is covered, full stop.'
@@ -1256,6 +1257,29 @@ function render() {
         return (f == null || f === 0) ? null : raw / f;
     }
 
+    // A weekly or daily point from pooled counts: the period's matching
+    // articles over its articles, summed across sources, against the same
+    // pooled share in the baseline. Averaging per-source daily indices instead
+    // lets one article on a thin day spike the week.
+    const countryPool = pooledCounts[country] || {};
+    function tailValue(entry, item) {
+        const base = countryPool.base && countryPool.base[item + suffix];
+        if (countryPool.rows && base) {
+            const d = scale === 'index' ? base[0] / 100 : base[1];
+            let num = 0, den = 0;
+            entry.rows.forEach(r => {
+                const c = countryPool.rows[r.date];
+                if (!c || !c[item]) return;
+                num += measure === 'intensity' ? c[item][1] : c[item][0];
+                den += measure === 'framing' ? c.U : c.A;
+            });
+            return (den && d) ? num / den / d : null;
+        }
+        const vals = entry.rows.map(r => valueOf(r, item)).filter(v => v != null && v !== 0);
+        if (!vals.length) return null;
+        return entry.type === 'weekly' ? computeAverage(vals) : vals[0];
+    }
+
     const monthlyData = data.filter(r => !isDaily(r));
     const dailyData = data
         .filter(r => isDaily(r) && selectedItems.some(i => r[i + suffix] != null))
@@ -1277,11 +1301,7 @@ function render() {
         datasets.push.apply(datasets, maSets);
         if (dailyDisplay.entries.length) {
             const lastMonthly = monthlyData.length > 0 ? valueOf(monthlyData[monthlyData.length - 1], item) : null;
-            const dailyValues = dailyDisplay.entries.map(entry => {
-                const vals = entry.rows.map(r => valueOf(r, item)).filter(v => v != null && v !== 0);
-                if (!vals.length) return null;
-                return entry.type === 'weekly' ? computeAverage(vals) : vals[0];
-            });
+            const dailyValues = dailyDisplay.entries.map(entry => tailValue(entry, item));
             const dataPoints = [];
             const pointRadius = [];
             const pointHoverRadius = [];
@@ -1339,11 +1359,7 @@ function render() {
     });
     const allVals = selectedItems.flatMap(item => {
         const monthlyVals = monthlyData.map(r => valueOf(r, item));
-        const dailyVals = dailyDisplay.entries.map(entry => {
-            const vals = entry.rows.map(r => valueOf(r, item)).filter(v => v != null && v !== 0);
-            if (!vals.length) return null;
-            return entry.type === 'weekly' ? computeAverage(vals) : vals[0];
-        });
+        const dailyVals = dailyDisplay.entries.map(entry => tailValue(entry, item));
         return monthlyVals.concat(dailyVals);
     }).filter(v => v != null && v !== 0);
     const yMax = (scale === 'index' && allVals.length)
@@ -1628,6 +1644,7 @@ def build_epu_iframe_html(
     method_foot_extra="",
     chip_groups=None,
     chip_html=None,
+    pool=None,
 ):
     options = (
         dropdown_options_html
@@ -1653,6 +1670,7 @@ def build_epu_iframe_html(
         .replace("__PALETTE_JSON__", json.dumps(PALETTE))
         .replace("__LABEL_MAP_JSON__", json.dumps(label_map))
         .replace("__FACTORS_JSON__", factors_expr or json.dumps(factors or {}))
+        .replace("__POOL_JSON__", json.dumps(pool or {}))
     )
 
 
@@ -2025,6 +2043,30 @@ def _merge_rows(a: list, b: list) -> list:
     return [by_date[d] for d in sorted(by_date)]
 
 
+def _pool_payload(attribution: dict) -> dict:
+    """The daily tail as pooled counts, for the weekly and daily points.
+
+    Returns {"rows": {date: {"A", "U", <item>: [UG, G]}}, "base": {<item>_<measure>:
+    [mean, std]}}, or {} when the build wrote no pooled files.
+    """
+    rows: dict = {}
+    base: dict = {}
+    for family in ("concepts", "groups"):
+        for r in attribution.get(f"{family}_pooled") or []:
+            row = rows.setdefault(r["date"], {"A": r["A_total"], "U": r["U_count"]})
+            for col, v in r.items():
+                if col.startswith("UG_"):
+                    row[col[3:]] = [v, r["G_" + col[3:]]]
+        for r in attribution.get(f"{family}_pooled_baseline") or []:
+            i = 0 if r["stat"] == "mean" else 1
+            for col, v in r.items():
+                if col != "stat":
+                    base.setdefault(col, [None, None])[i] = (
+                        None if v is None or v != v else v
+                    )
+    return {"rows": rows, "base": base} if rows else {}
+
+
 def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
     """Generate the concepts dashboard for ``region``.
 
@@ -2053,6 +2095,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
     RANK_LABEL_MAP.update(labels)
 
     concept_data: dict = {}
+    concept_pool: dict = {}
     actors_data: dict = {}
     for key, unit in units.items():
         if key not in valid_keys:
@@ -2063,6 +2106,8 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         )
         if rows:
             concept_data[key] = rows
+        if pooled := _pool_payload(attribution):
+            concept_pool[key] = pooled
         if attribution.get("actors"):
             actors_data[key] = attribution["actors"]
 
@@ -2116,6 +2161,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
             " A group series counts articles matching any concept beneath it."
         ),
         chip_html=_schema_tree_html(schema, items, defaults),
+        pool=concept_pool,
     )
     actors_html = build_epu_iframe_html(
         actors_data,

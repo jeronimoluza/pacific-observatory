@@ -421,4 +421,72 @@ def build_outputs(
         attr_folder.mkdir(parents=True, exist_ok=True)
         _write_csv(attr_folder / f"{output_name}.csv", attr_out)
 
+        if source_file in extra_epus and daily_tail_start is not None:
+            _write_pooled(
+                attr_folder,
+                output_name,
+                ug_counts,
+                sources,
+                group_names,
+                cutoff_start_date,
+                cutoff_end_date,
+                daily_tail_start,
+            )
+
     return calc_topics_idx, calc_actors_idx
+
+
+def _write_pooled(
+    attr_folder,
+    family,
+    ug_counts,
+    sources,
+    group_names,
+    cutoff_start_date,
+    cutoff_end_date,
+    daily_tail_start,
+):
+    """Write the daily tail as counts pooled across sources, plus the baseline.
+
+    The per-source index turns one article on a thin day into a spike, because
+    a single source's day has few articles to divide by. The dashboard builds
+    its weekly and daily points from these instead: the period's matching
+    articles over the period's articles, summed across every source, then
+    divided by the same pooled share's baseline mean (index) or std (z).
+
+    `{family}_pooled.csv` holds the daily tail rows (A_total, U_count,
+    `UG_<g>`, `G_<g>`); `{family}_pooled_baseline.csv` holds one `mean` and one
+    `std` row of the pooled monthly share per `<g>_<measure>`.
+    """
+
+    def _sum(cols):
+        present = [c for c in cols if c in ug_counts.columns]
+        return ug_counts[present].sum(axis=1) if present else 0
+
+    pooled = ug_counts[["date", "ym"]].copy()
+    pooled["A_total"] = _sum([f"{s}_A_total" for s in sources])
+    pooled["U_count"] = _sum([f"{s}_U_count" for s in sources])
+    for g in group_names:
+        pooled[f"UG_{g}"] = _sum([f"{s}_UG_{g}_count" for s in sources])
+        pooled[f"G_{g}"] = _sum([f"{s}_G_{g}_count" for s in sources])
+
+    tail = pooled["date"] >= pd.Timestamp(daily_tail_start)
+    months = pooled[
+        ~tail & baseline_mask(pooled["date"], cutoff_start_date, cutoff_end_date)
+    ]
+    stats = {"stat": ["mean", "std"]}
+    for g in group_names:
+        for measure, num, den in (
+            ("absolute", f"UG_{g}", "A_total"),
+            ("framing", f"UG_{g}", "U_count"),
+            ("intensity", f"G_{g}", "A_total"),
+        ):
+            share = (months[num] / months[den]).replace([np.inf, -np.inf], np.nan)
+            stats[f"{g}_{measure}"] = [share.mean(), share.std()]
+
+    out = pooled[tail].copy()
+    out["date"] = out["date"].dt.strftime("%Y-%m-%d")
+    out.to_csv(attr_folder / f"{family}_pooled.csv", index=False, encoding="utf-8")
+    pd.DataFrame(stats).to_csv(
+        attr_folder / f"{family}_pooled_baseline.csv", index=False, encoding="utf-8"
+    )
