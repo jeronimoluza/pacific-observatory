@@ -30,7 +30,7 @@ IID=$(curl -s -H "X-aws-ec2-metadata-token: $TOK" \
 echo "instance=$IID crawls=$CRAWLS shards=$SHARD_BASE+$NPROC of $NSHARDS"
 
 dnf install -y python3-pip
-pip3 install --quiet boto3 lxml
+pip3 install --quiet boto3 lxml beautifulsoup4
 
 mkdir -p /opt/cc/parse
 aws s3 cp "s3://$BUCKET/fetch/parse.tar.gz" /opt/cc/parse.tar.gz

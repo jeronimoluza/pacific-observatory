@@ -36,7 +36,6 @@ import gzip
 import io
 import json
 import os
-import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -69,9 +68,6 @@ WORK = os.environ.get("WORK", "/tmp/ccfetch")
 # one object per (crawl, shard), so a killed instance resumes at crawl grain.
 RESUME = os.environ.get("RESUME", "1") != "0"
 
-_CHARSET_HDR = re.compile(rb"charset\s*=\s*[\"']?([\w\-]+)", re.I)
-_CHARSET_META = re.compile(rb"charset\s*=\s*[\"']?([\w\-]+)", re.I)
-
 _cfg = Config(
     max_pool_connections=CONC + 16,
     retries={"max_attempts": 8, "mode": "adaptive"},
@@ -80,12 +76,18 @@ _cfg = Config(
 )
 _s3 = boto3.client("s3", config=_cfg)
 
-sys.path.insert(0, os.environ.get("PARSE_DIR", "/tmp/parse"))
-from archived import row_from_meta, rows_from_jsonld  # noqa: E402
-from archived_bysource import rows_from_source  # noqa: E402
-from archived_embedded import rows_from_next_flight  # noqa: E402
-from archived_microdata import rows_from_microdata  # noqa: E402
-from archived_nextdata import rows_from_nextdata  # noqa: E402
+PARSE_DIR = os.environ.get("PARSE_DIR", "/tmp/parse")
+sys.path.insert(0, PARSE_DIR)
+# The same ladder the local fetcher runs (archived_ladder.py), called without
+# a hook: hooks live on scrapy spiders, which the bundle does not carry.
+from archived_ladder import decode, parse_rows  # noqa: E402
+
+# {source: declared currency}, written by bundle_parse from the same
+# `declared_currency_for` the local fetcher stamps with. The archived page's
+# priceCurrency is whatever its SEO plugin emitted; a wrong one is silent and
+# gets multiplied by FX downstream (waltermart: peso prices banked as USD).
+with open(os.path.join(PARSE_DIR, "currency.json"), encoding="utf-8") as _fh:
+    _CURRENCY = json.load(_fh)
 
 
 # ----------------------------------------------------------------- WARC layer
@@ -106,70 +108,6 @@ def split_warc(raw):
     if not body.strip():
         return None, "empty_body"
     return blob[i + 4:j], body
-
-
-def decode(headers, body):
-    """Text, preferring the charset the page declares.
-
-    Old captures are routinely Shift_JIS, Big5, EUC-KR or windows-1251. Decoding
-    those as latin-1 does not raise -- it silently produces mojibake, which
-    reaches the product name and is unrecoverable downstream.
-    """
-    m = _CHARSET_HDR.search(headers or b"") or _CHARSET_META.search(body[:4096])
-    if m:
-        cs = m.group(1).decode("ascii", "ignore").lower()
-        if cs.replace("_", "-") not in ("utf-8", "utf8"):
-            try:
-                return body.decode(cs)
-            except (UnicodeDecodeError, LookupError):
-                pass
-    for enc in ("utf-8", "latin-1"):
-        try:
-            return body.decode(enc)
-        except UnicodeDecodeError:
-            continue
-    return body.decode("utf-8", "replace")
-
-
-# ---------------------------------------------------------------- parse layer
-
-def parse_rows(html, url, source=None):
-    """The spider-independent tiers, in measured yield order, then per-source.
-
-    Microdata and then `__NEXT_DATA__` are last among the portable tiers: each
-    was measured only on pages the tiers above already fail, so appending them
-    cannot change a page that parses today. Over the 2,142 cached captures
-    that reach this point the two never read the same page, so their order
-    relative to each other is not load-bearing either.
-
-    The per-source tier runs after all of them and returns nothing for any
-    source without an extractor, so it too can only add rows to a page that
-    would otherwise bank nothing. It is worth carrying here rather than being
-    left to a later local pass: the seven sources it covers hold 37.2% of the
-    misses, and re-fetching them is the expensive half of recovering them.
-
-    ``source`` is optional so a caller with no manifest field still parses; it
-    simply gets the portable tiers, which is the behaviour that shipped before.
-    """
-    rows = rows_from_jsonld(html, url)
-    if rows:
-        return rows, "jsonld"
-    row = row_from_meta(html, url)
-    if row:
-        return [row], "meta"
-    rows = rows_from_next_flight(html, url)
-    if rows:
-        return rows, "flight"
-    rows = rows_from_microdata(html, url)
-    if rows:
-        return rows, "microdata"
-    rows = rows_from_nextdata(html, url)
-    if rows:
-        return rows, "nextdata"
-    rows = rows_from_source(html, url, source)
-    if rows:
-        return rows, "bysource"
-    return [], "none"
 
 
 def to_iso(ts):
@@ -233,6 +171,8 @@ def fetch_one(rec, state):
         # `spider` banks every recovered row with source=None, and the tier
         # dispatch below reads `source` and works, so the run looks healthy.
         row["source"] = rec.get("spider") or rec.get("source")
+        if _CURRENCY.get(row["source"]):
+            row["currency"] = _CURRENCY[row["source"]]
         row["cc_timestamp"] = rec.get("timestamp")
         row["parse_tier"] = tier
         out.append(row)

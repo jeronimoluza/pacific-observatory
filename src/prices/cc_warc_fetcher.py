@@ -23,7 +23,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import requests
-from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from .cc_config import all_cc_configs, declared_currency_for
@@ -32,10 +31,7 @@ from .cc_index import choose_family
 from .cc_samples import SampleKeeper
 from .cc_index import query_prefix
 from .backfill import _load_spider_parse_html
-from .price_scraping.archived import row_from_meta, rows_from_jsonld
-from .price_scraping.archived_microdata import rows_from_microdata
-from .price_scraping.archived_embedded import rows_from_next_flight
-from .price_scraping.selectors import extract_with_fallback, get_selectors
+from .price_scraping.archived_ladder import decode, parse_rows
 
 logger = logging.getLogger(__name__)
 
@@ -79,19 +75,6 @@ class CommonCrawlScraper:
         self.path_re = re.compile(cfg["path_re"] or "")
         self.declared_currency: str = declared_currency_for(spider_name)
         self.parse_html_fn = _load_spider_parse_html(spider_name)
-        # Platform-base spiders (Woo/Shopify/VTEX/...) scrape JSON APIs and have
-        # no CSS selectors; their `parse_html` hook is the only archived-HTML
-        # parser they have. Only demand selectors when there is no hook.
-        # A spider with neither a hook nor selectors used to raise here, which
-        # closed the archived-parse path to every such source rather than
-        # letting the generic JSON-LD/meta tiers try.
-        if self.parse_html_fn:
-            self.selectors = {}
-        else:
-            try:
-                self.selectors = get_selectors(spider_name)
-            except KeyError:
-                self.selectors = {}
         self.scraped_at = datetime.now(timezone.utc).isoformat()
         choose_family()
         self._file_lock = threading.Lock()
@@ -188,157 +171,13 @@ class CommonCrawlScraper:
         sep2 = http_block.find(b"\r\n\r\n")
         if sep2 < 0:
             return None
-        body = http_block[sep2 + 4 :]
-
-        for enc in ("utf-8", "latin-1"):
-            try:
-                return body.decode(enc, errors="replace")
-            except Exception:
-                continue
-        return None
-
-    # Spiders that embed product data in ld+json rather than CSS-accessible elements.
-    _LDJSON_SPIDERS = {"cosmed", "fairprice", "carrefour_tw"}
-
-    # Spiders that embed price/name in __NEXT_DATA__ JSON (Next.js SPA, no meta price tag).
-    _NEXTDATA_SPIDERS = {"tiki"}
-
-    def _extract_ldjson_fallback(self, html: str, out: Dict[str, Any]) -> None:
-        m = re.search(
-            r'<script[^>]+type="application/ld\+json"[^>]*>(.*?)</script>',
-            html,
-            re.DOTALL | re.IGNORECASE,
-        )
-        if not m:
-            return
-        raw = m.group(1).strip()
-        d = None
-        for candidate in (raw, raw.rstrip().rstrip("}")):
-            try:
-                d = json.loads(candidate)
-                break
-            except Exception:
-                continue
-        if d is None:
-            return
-        if d.get("@type") != "Product":
-            return
-        if "product_name" not in out:
-            name = d.get("name", "")
-            if name:
-                out["product_name"] = name
-        if "price" not in out:
-            offers = d.get("offers", {})
-            if isinstance(offers, list):
-                offers = offers[0] if offers else {}
-            price = offers.get("price")
-            if price is not None:
-                out["price"] = str(price)
-        if "category" not in out:
-            cat_m = re.search(r'"ShopCategory_ShowName"\s*:\s*"([^"]+)"', html)
-            if cat_m:
-                out["category"] = cat_m.group(1)
-
-    def _extract_nextdata_fallback(
-        self, soup: "BeautifulSoup", out: Dict[str, Any]
-    ) -> None:
-        tag = soup.find("script", id="__NEXT_DATA__")
-        if not tag or not tag.string:
-            return
-        try:
-            d = json.loads(tag.string)
-        except Exception:
-            return
-        try:
-            data = d["props"]["initialState"]["productv2"]["productData"]["response"][
-                "data"
-            ]
-        except (KeyError, TypeError):
-            return
-        if not isinstance(data, dict):
-            return
-        if "product_name" not in out:
-            name = data.get("name", "")
-            if name:
-                out["product_name"] = str(name)
-        if "price" not in out:
-            price = data.get("price")
-            if price is not None:
-                out["price"] = str(price)
-        if "product_id" not in out:
-            pid = data.get("id") or data.get("sku")
-            if pid:
-                out["product_id"] = str(pid)
-
-    def _extract_data_from_html(self, html: str) -> Dict[str, Any]:
-        soup = BeautifulSoup(html, "html.parser")
-        out: Dict[str, Any] = {}
-        for field, selector_list in self.selectors.items():
-            v = extract_with_fallback(soup, selector_list)
-            if v:
-                out[field] = v
-        if self.spider_name in self._LDJSON_SPIDERS:
-            self._extract_ldjson_fallback(html, out)
-        if self.spider_name in self._NEXTDATA_SPIDERS:
-            self._extract_nextdata_fallback(soup, out)
-        return out
-
-    def _generic_rows(self, html: str, url: str) -> List[Dict[str, Any]]:
-        """Spider-independent tiers: schema.org/OpenGraph, Next.js flight, then
-        inline microdata.
-
-        These surfaces are standardised, so they survive the site redesigns
-        that invalidate a spider's era-specific selectors. That makes them the
-        right last resort for archived HTML of any age.
-
-        Microdata is last on purpose. It is the era-appropriate tier -- 1.71x
-        uplift on pre-2020 captures against 1.04x on 2023+ -- but it was
-        measured only on pages the tiers above already fail, so appending it
-        is the one placement that cannot change a page that parses today.
-        """
-        rows = rows_from_jsonld(html, url)
-        if rows:
-            return rows
-        row = row_from_meta(html, url)
-        if row:
-            return [row]
-        rows = rows_from_next_flight(html, url)
-        if rows:
-            return rows
-        return rows_from_microdata(html, url)
+        return decode(http_block[:sep2], http_block[sep2 + 4 :])
 
     def _parse_rows(self, html: str, url: str) -> List[Dict[str, Any]]:
-        """Rows for one archived page: the spider's hook, then the selectors,
-        then the generic tiers.
-
-        A `parse_html` hook may yield several rows per page (product variants,
-        SKUs); the selector path always yields at most one.
-
-        Every tier falls through to the next. The hook and the selectors are
-        both written against *current* markup, so on an old capture they
-        routinely match nothing — or match a name but not a price. Stopping
-        there returned a silent zero for the page and never tried the
-        standardised surfaces that would still have parsed it.
-        """
-        if self.parse_html_fn is not None:
-            try:
-                rows = [r for r in self.parse_html_fn(html, url) if r]
-            except Exception:
-                logger.debug(f"parse_html failed for {url}", exc_info=True)
-                rows = []
-            if rows:
-                return rows
-            return self._generic_rows(html, url)
-        extracted = self._extract_data_from_html(html)
-        # A row without a price is not a usable observation: half-matching
-        # selectors (name still resolves, price class renamed) are the common
-        # wrong-era failure, so treat that as a miss and fall through.
-        if extracted.get("price"):
-            return [extracted]
-        generic = self._generic_rows(html, url)
-        if generic:
-            return generic
-        return [extracted] if extracted else []
+        """Rows for one archived page, from the ladder the fleet also runs
+        (``archived_ladder.parse_rows``), with this spider's hook."""
+        rows, _tier = parse_rows(html, url, self.spider_name, hook=self.parse_html_fn)
+        return rows
 
     # -- save --
 

@@ -15,6 +15,7 @@ launching with no per-source fix at all.
 stdlib module on a bare sys.path, and the package-relative imports are rewritten
 to flat ones.
 """
+import json
 import os
 import re
 import shutil
@@ -52,6 +53,7 @@ FILES = [
     ("archived_spar_zw.py", "archived_spar_zw.py"),
     ("archived_mojsupermarket.py", "archived_mojsupermarket.py"),
     ("archived_bysource.py", "archived_bysource.py"),
+    ("archived_ladder.py", "archived_ladder.py"),
     ("selectors.py", "selectors_mod.py"),
 ]
 
@@ -118,6 +120,17 @@ def main():
                 pending = True
                 print("staged %-24s -> %-24s %d lines  (dependency of %s)"
                       % (fn, fn, dtext.count("\n"), name))
+
+    # The declared currency per source, resolved here where the manifests and
+    # spider classes exist, so the fleet stamps what the local fetcher stamps.
+    sys.path.insert(0, os.path.join(REPO, "src"))
+    from prices.cc_config import all_cc_configs, declared_currency_for
+
+    currency = {s: declared_currency_for(s) for s in sorted(all_cc_configs())}
+    currency = {s: c for s, c in currency.items() if c}
+    with open(os.path.join(DEST, "currency.json"), "w", encoding="utf-8") as fh:
+        json.dump(currency, fh, sort_keys=True)
+    print("staged currency.json             %d sources" % len(currency))
 
     root = DEST.rstrip("/")
     shutil.make_archive(root, "gztar", DEST)
