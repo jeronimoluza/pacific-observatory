@@ -344,8 +344,6 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .chip-group:not(.is-open) .chip-group-body > .chip:has(input:checked) { display: inline-flex; }
 .chip.is-filtered { display: none !important; }
 .tree { width: 100%; }
-.tree .chip-group:not(.is-open) .chip-group-body > .chip.is-hit,
-.tree .chip-group:not(.is-open) .chip-group-body > .chip:has(input:checked) { display: flex; }
 /* Keyword tree: heading > group > subgroup > concept. Rows, not pills: a checkbox
    swatch in the series colour, indented under its parent. */
 .tree .chip-group-body { display: block; padding: 0 0 6px 0; }
@@ -387,12 +385,14 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .tree-group.is-open > .tree-row > .tree-caret { transform: rotate(90deg); }
 .tree-count { color: #999; font-size: 0.75em; padding-right: 4px; font-variant-numeric: tabular-nums; }
 .tree-group > .chip-group-body { padding: 0 0 2px 22px; }
-.tree-group:not(.is-open) > .chip-group-body > .chip:not(.is-hit):not(:has(input:checked)) { display: none; }
-.tree-group:not(.is-open) > .chip-group-body > .tree-group:not(:has(.chip.is-hit, input:checked)) { display: none; }
-.tree-heading:not(.is-open) > .chip-group-body > * { display: none; }
-.tree-heading:not(.is-open) > .chip-group-body > .chip.is-hit,
-.tree-heading:not(.is-open) > .chip-group-body > .chip:has(input:checked),
-.tree-heading:not(.is-open) > .chip-group-body > .tree-group:has(.chip.is-hit, input:checked) { display: block; }
+/* In the tree, collapsing hides everything beneath, ticked or not; the closed
+   row says how many lines it hides instead. Only a search hit reaches inside. */
+.tree .chip-group:not(.is-open) .chip-group-body > .chip:not(.is-hit) { display: none; }
+.tree .chip-group:not(.is-open) .chip-group-body > .chip.is-hit { display: flex; }
+.tree-group:not(.is-open) > .chip-group-body > .tree-group:not(:has(.chip.is-hit)) { display: none; }
+.tree-heading:not(.is-open) > .chip-group-body > .tree-group:not(:has(.chip.is-hit)) { display: none; }
+.tree-on { color: #667eea; font-size: 0.72em; white-space: nowrap; padding-right: 6px; }
+.tree-group.is-open > .tree-row > .tree-on { display: none; }
 .chip {
     display: inline-flex;
     align-items: center;
@@ -1208,6 +1208,20 @@ function applyChipFilters() {
         const cnt = group.querySelector('.chip-group-count');
         if (cnt) cnt.textContent = shown;
     });
+    // A search hit keeps its parent group rows on screen, so it reads in context.
+    document.querySelectorAll('#item-select .chip.is-hit').forEach(chip => {
+        let g = chip.closest('.chip-group-body');
+        while (g && (g = g.closest('.tree-group'))) {
+            const row = g.querySelector(':scope > .tree-row > .chip');
+            if (row) row.classList.remove('is-filtered');
+            g = g.parentElement;
+        }
+    });
+    document.querySelectorAll('#item-select .tree-group').forEach(group => {
+        const on = group.querySelectorAll(':scope > .chip-group-body input:checked').length;
+        const el = group.querySelector(':scope > .tree-row > .tree-on');
+        if (el) el.textContent = on ? on + ' on chart' : '';
+    });
 }
 function setSelected(picks) {
     const set = new Set(picks);
@@ -1895,6 +1909,7 @@ def _tree_node(h: dict, gid: str, items: list, defaults: list, open_=False) -> s
         f'<div class="chip-group tree-group{" is-open" if open_ else ""}"><div class="tree-row">'
         '<button type="button" class="tree-caret" aria-label="Show concepts">&#9656;</button>'
         f"{_tree_leaf(gid, g['label'], defaults)}"
+        '<span class="tree-on"></span>'
         f'<span class="tree-count">{len(below)}</span></div>'
         f'<div class="chip-group-body">{body}</div></div>'
     )
