@@ -3,6 +3,11 @@ language: ja
 channel: supermarket
 archive_prefix: "lohaco.yahoo.co.jp/store/"
 archive_path_re: '^/store/[^/?]+'
+# LOHACO was lohaco.jp until 2021. Only its /product/ pages carry a price:
+# category, store, ranking and review pages parsed nothing in a 2019 sample.
+archive_also:
+  - prefix: "lohaco.jp/product/"
+    path_re: ""
 notes: |
   LOHACO by ASKUL (lohaco.yahoo.co.jp) — distinct ASKUL retail catalog on a
   yahoo.co.jp subdomain, own /store/h-lohaco/item/{id}/ SKU namespace. Not

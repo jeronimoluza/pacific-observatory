@@ -68,9 +68,11 @@ def resolve_index(
             if not cfg:
                 continue
             try:
-                records = query_prefix(
-                    index, cfg["prefix"], re.compile(cfg["path_re"] or "")
-                )
+                records = [
+                    rec
+                    for prefix, path_re in cfg["scopes"]
+                    for rec in query_prefix(index, prefix, re.compile(path_re))
+                ]
             except Exception as exc:  # noqa: BLE001 - one bad source must not
                 # abandon the other 622 already paid for by this crawl's parse.
                 logger.warning("%s/%s: resolve failed: %s", index, src.spider, exc)

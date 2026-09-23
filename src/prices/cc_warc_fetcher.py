@@ -71,8 +71,7 @@ class CommonCrawlScraper:
         self.output_dir = Path(output_dir)
         self.indexes = indexes
         cfg = configs[spider_name]
-        self.url_prefix: str = cfg["prefix"]
-        self.path_re = re.compile(cfg["path_re"] or "")
+        self.scopes = [(prefix, re.compile(path_re)) for prefix, path_re in cfg["scopes"]]
         self.declared_currency: str = declared_currency_for(spider_name)
         self.parse_html_fn = _load_spider_parse_html(spider_name)
         self.scraped_at = datetime.now(timezone.utc).isoformat()
@@ -114,12 +113,16 @@ class CommonCrawlScraper:
     def _query_index(
         self, index: str, stats: Optional[Dict[str, int]] = None
     ) -> List[Dict[str, Any]]:
-        """Records for this spider's URL prefix in one CC collection.
+        """Records for this spider's URL prefixes in one CC collection.
 
         ``stats`` accumulates `prefix_matched` / `prefix_rejected` across
         crawls, so a run that recovers nothing can say which kind of nothing.
         """
-        return query_prefix(index, self.url_prefix, self.path_re, stats=stats)
+        return [
+            rec
+            for prefix, path_re in self.scopes
+            for rec in query_prefix(index, prefix, path_re, stats=stats)
+        ]
 
     # -- WARC fetch + parse --
 

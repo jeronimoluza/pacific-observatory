@@ -129,7 +129,10 @@ def interleave_indexes(indexes: List[str]) -> List[str]:
 
 @lru_cache(maxsize=1)
 def all_cc_configs() -> Dict[str, Dict[str, str]]:
-    """Return ``{spider: {"prefix", "path_re", "currency"}}`` per scoped manifest.
+    """Return ``{spider: {"prefix", "path_re", "currency", "scopes"}}`` per scoped manifest.
+
+    ``scopes`` is every ``(prefix, path_re)`` pair the storefront is archived
+    under: the primary pair first, then each ``archive_also`` entry.
 
     A spider served by several manifests takes the first scope encountered in
     manifest-discovery order; the scope is a property of the storefront, not of
@@ -152,6 +155,8 @@ def all_cc_configs() -> Dict[str, Dict[str, str]]:
                 "prefix": cfg.archive_prefix,
                 "path_re": cfg.archive_path_re or "",
                 "currency": cfg.currency or "",
+                "scopes": [(cfg.archive_prefix, cfg.archive_path_re or "")]
+                + [(a["prefix"], a.get("path_re") or "") for a in cfg.archive_also or []],
             },
         )
     return out

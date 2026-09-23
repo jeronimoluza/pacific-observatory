@@ -31,12 +31,13 @@ def known_domains() -> List[str]:
 
     domains: set = set()
     for cfg in all_cc_configs().values():
-        host = cfg["prefix"].partition("/")[0].lower()
-        if not host:
-            continue
-        ext = tldextract.extract(host)
-        if ext.registered_domain:
-            domains.add(ext.registered_domain)
+        for prefix, _ in cfg["scopes"]:
+            host = prefix.partition("/")[0].lower()
+            if not host:
+                continue
+            ext = tldextract.extract(host)
+            if ext.registered_domain:
+                domains.add(ext.registered_domain)
     return sorted(domains)
 
 

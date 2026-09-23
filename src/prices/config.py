@@ -49,6 +49,10 @@ class PriceSourceConfig(BaseModel):
     # category, and static pages that live under the same prefix.
     archive_prefix: str | None = None
     archive_path_re: str | None = None
+    # Other hosts the same storefront was archived under (an old domain), each
+    # a `{prefix, path_re}` pair because another host means other page paths.
+    # Read by the Common Crawl resolvers only; the Wayback backfill ignores it.
+    archive_also: list[dict[str, str]] | None = None
     coicop_classification: str | None = None
     currency: str | None = None
     inactive_reason: str | None = None
