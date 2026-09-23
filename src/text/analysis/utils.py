@@ -562,6 +562,117 @@ def load_all_groups(
     return merged
 
 
+# Concepts: one file per heading under ``keywords/concepts/``, every language
+# inline. A form is a plain string or ``{"prefix": str}``; a prefix form keeps
+# the left word boundary and drops the right one, so it is allowed only where
+# suffixes carry case and number.
+PREFIX_LANGUAGES = frozenset({"turkish"})
+CONCEPTS_DIR = Path(__file__).parent / "keywords" / "concepts"
+
+
+def _concept_language_ok(lang: str) -> bool:
+    base = Path(__file__).parent / "keywords"
+    return lang != "concepts" and (base / lang).is_dir()
+
+
+def load_concept_catalog(concepts_dir: Union[Path, None] = None) -> dict:
+    """Read and validate every heading file under ``keywords/concepts/``.
+
+    Raises ValueError naming the file and id on any rule violation; the rules
+    are the whole enforcement mechanism, so nothing here is advisory.
+    """
+    concepts_dir = CONCEPTS_DIR if concepts_dir is None else Path(concepts_dir)
+    headings: dict = {}
+    concepts: dict = {}
+    clusters: dict = {}
+    owner: dict = {}
+    for path in sorted(concepts_dir.glob("*.json")):
+        with open(path, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        name = path.name
+
+        def fail(msg: str, _name=name):
+            raise ValueError(f"concepts/{_name}: {msg}")
+
+        if raw.get("heading") != path.stem:
+            fail(f"heading {raw.get('heading')!r} does not equal the file stem")
+        file_clusters = raw.get("clusters") or {}
+        file_concepts = raw.get("concepts") or {}
+        for cid in list(file_clusters) + list(file_concepts):
+            if cid in owner:
+                fail(f"id '{cid}' already defined in concepts/{owner[cid]}")
+            owner[cid] = name
+        for cid, c in file_concepts.items():
+            cluster = c.get("cluster")
+            if cluster is not None and cluster not in file_clusters:
+                fail(
+                    f"concept '{cid}': cluster '{cluster}' is not in this file's clusters"
+                )
+            forms = c.get("forms") or {}
+            if not forms.get("en"):
+                fail(f"concept '{cid}': forms.en is missing or empty")
+            for lang, lang_forms in forms.items():
+                if not _concept_language_ok(lang):
+                    fail(f"concept '{cid}': '{lang}' is not a keyword directory name")
+                for form in lang_forms:
+                    if isinstance(form, str) and form:
+                        continue
+                    if (
+                        isinstance(form, dict)
+                        and set(form) == {"prefix"}
+                        and isinstance(form["prefix"], str)
+                        and form["prefix"]
+                    ):
+                        if lang not in PREFIX_LANGUAGES:
+                            fail(
+                                f"concept '{cid}': prefix form in '{lang}', not a prefix language"
+                            )
+                        continue
+                    fail(f"concept '{cid}': bad form {form!r} in '{lang}'")
+            concepts[cid] = {**c, "heading": path.stem}
+        for kid, k in file_clusters.items():
+            clusters[kid] = {**k, "heading": path.stem}
+        headings[path.stem] = {
+            "label": raw.get("label", path.stem),
+            "clusters": list(file_clusters),
+            "concepts": list(file_concepts),
+        }
+    return {"headings": headings, "concepts": concepts, "clusters": clusters}
+
+
+def load_concepts(language: str = "en") -> Tuple[Dict[str, list], Dict[str, list]]:
+    """Concept and cluster forms for one language.
+
+    No English fallback: English words in Thai text would be a different
+    measurement. A concept with no forms in ``language`` gets an empty list.
+    Forms listed in ``review.<lang>.rejected`` never load.
+    """
+    language = LANGUAGE_ALIASES.get(language, language)
+    catalog = load_concept_catalog()
+    concepts: Dict[str, list] = {}
+    clusters: Dict[str, list] = {kid: [] for kid in catalog["clusters"]}
+    for cid, c in catalog["concepts"].items():
+        if c.get("deprecated"):
+            continue
+        rejected = ((c.get("review") or {}).get(language) or {}).get("rejected") or []
+        forms = [f for f in c["forms"].get(language, []) if f not in rejected]
+        concepts[cid] = forms
+        if c.get("cluster") is not None:
+            clusters[c["cluster"]].extend(
+                f for f in forms if f not in clusters[c["cluster"]]
+            )
+    return concepts, clusters
+
+
+def concept_keys() -> Tuple[List[str], List[str]]:
+    """Non-deprecated concept ids and cluster ids, the same for every language."""
+    catalog = load_concept_catalog()
+    return (
+        [cid for cid, c in catalog["concepts"].items() if not c.get("deprecated")],
+        list(catalog["clusters"]),
+    )
+
+
 def generate_news_statistics_table(country_folder: Path) -> str:
     """
     Generate a markdown table with news statistics by country and newspaper/media source.

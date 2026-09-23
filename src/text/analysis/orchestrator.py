@@ -20,6 +20,7 @@ from src.text.analysis.outputs import build_outputs
 from src.text.analysis.standardize import standardize_unit
 from src.text.analysis.utils import (
     LANGUAGE_ALIASES,
+    concept_keys,
     load_all_groups,
 )
 
@@ -394,6 +395,11 @@ def process_unit_v2(
 
     all_topics = load_all_groups("topics")
     all_actors = load_all_groups("actors")
+    concept_ids, cluster_ids = concept_keys()
+    extra_families = {
+        "concepts": ("concept_", concept_ids),
+        "clusters": ("cluster_", cluster_ids),
+    }
 
     # Country units write directly to their own cache_dir; aggregate units
     # don't have a cache — they read from constituent countries.
@@ -460,6 +466,7 @@ def process_unit_v2(
         daily_tail_start=current_tail_start,
         topic_keys=list(all_topics.keys()),
         actor_keys=list(all_actors.keys()),
+        extra_families=extra_families,
     )
     build_outputs(
         e_base=bundle["e_base"],
@@ -473,6 +480,7 @@ def process_unit_v2(
         full_write=True,
         replace_from=None,
         output_dir=output_dir,
+        extra_epus=bundle["extra_epus"],
     )
     return diagnostics
 

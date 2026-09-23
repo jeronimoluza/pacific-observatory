@@ -1,0 +1,27 @@
+{
+  "heading": "monetary_policy",
+  "label": "Monetary policy",
+  "clusters": {
+    "financial_distress": { "label": "Financial distress" }
+  },
+  "concepts": {
+    "monetary_tightening": {
+      "label": "Monetary tightening",
+      "cluster": null,
+      "forms": {
+        "en": ["monetary tightening", "tightening of monetary policy"],
+        "es": ["endurecimiento monetario", "endurecimiento de la política monetaria"],
+        "turkish": [{ "prefix": "parasal sıkılaştırma" }],
+        "thai": ["นโยบายการเงินแบบเข้มงวด"]
+      }
+    },
+    "systemic_risk": {
+      "label": "Systemic risk",
+      "cluster": "financial_distress",
+      "forms": {
+        "en": ["systemic risk"],
+        "es": ["riesgo sistémico"]
+      }
+    }
+  }
+}

@@ -262,11 +262,17 @@ def build_outputs(
     full_write=False,
     replace_from: str | None = None,
     output_dir: Path = None,
+    extra_epus: dict | None = None,
 ):
     """Build and write all output CSVs.
 
+    `extra_epus` is `{family: {key: StandardizedUnit}}` for families beyond
+    topics and actors (concepts, clusters); each writes `epu/{family}_epu.csv`
+    and `uncertainty_attribution/{family}.csv`.
+
     Returns (calc_topics_idx, calc_actors_idx) IndexCalculator instances.
     """
+    extra_epus = extra_epus or {}
     base_out = output_dir
     epu_folder = base_out / "epu"
     epu_folder.mkdir(parents=True, exist_ok=True)
@@ -330,6 +336,21 @@ def build_outputs(
         actor_epu[f"EPU_{actor_key}_index"] = aligned[f"EPU_{actor_key}_index"].values
     _write_csv(epu_folder / "actors_epu.csv", actor_epu)
 
+    # ── {family}_epu.csv for extra families ──────────────────────────
+    for family, family_epus in extra_epus.items():
+        family_epu = e_base.epu_stats[["date", "ym"]].copy()
+        for key, e_key in family_epus.items():
+            aligned = pd.merge(
+                family_epu[["date"]],
+                e_key.epu_stats[["date", "epu_weighted"]].rename(
+                    columns={"epu_weighted": f"EPU_{key}_index"}
+                ),
+                on="date",
+                how="left",
+            )
+            family_epu[f"EPU_{key}_index"] = aligned[f"EPU_{key}_index"].values
+        _write_csv(epu_folder / f"{family}_epu.csv", family_epu)
+
     # ── uncertainty_attribution ───────────────────────────────────────
     sources = [col.replace("_body_count", "") for col in e_base.news_cols]
     calc_topics_idx = IndexCalculator(cutoff_start_date, cutoff_end_date)
@@ -338,9 +359,15 @@ def build_outputs(
     for (source_file, output_name), calc in [
         (("topics", "topics"), calc_topics_idx),
         (("actors", "actors"), calc_actors_idx),
+        *(
+            ((family, family), IndexCalculator(cutoff_start_date, cutoff_end_date))
+            for family in extra_epus
+        ),
     ]:
-        groups = load_all_groups(source_file)
-        group_names = list(groups.keys())
+        if source_file in extra_epus:
+            group_names = list(extra_epus[source_file])
+        else:
+            group_names = list(load_all_groups(source_file).keys())
 
         ug_counts = ug_counts_all[source_file]
         attr_df = e_base.epu_stats[["date", "ym"]].copy()

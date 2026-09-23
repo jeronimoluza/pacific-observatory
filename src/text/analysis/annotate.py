@@ -30,6 +30,7 @@ from text.analysis.utils import (
     _is_latin_boundary,
     _is_word_boundary,
     load_all_groups,
+    load_concepts,
     load_topics_words,
     resolved_language,
 )
@@ -52,16 +53,21 @@ class KeywordBundle:
     topics: dict[str, list[str]]
     actors: dict[str, list[str]]
     script_language: str = ""
+    concepts: dict[str, list] = field(default_factory=dict)
+    clusters: dict[str, list] = field(default_factory=dict)
 
     @classmethod
     def for_language(cls, language: str) -> "KeywordBundle":
         lang = LANGUAGE_ALIASES.get(language, language)
+        concepts, clusters = load_concepts(lang)
         return cls(
             language=lang,
             epu=load_topics_words(language=lang),
             topics=load_all_groups("topics", language=lang),
             actors=load_all_groups("actors", language=lang),
             script_language=resolved_language(lang, "topics"),
+            concepts=concepts,
+            clusters=clusters,
         )
 
 
@@ -72,7 +78,7 @@ class KeywordBundle:
 class CombinedAutomaton:
     """An ahocorasick.Automaton plus the category list and per-term length cache.
 
-    Each automaton payload is `(category_tag, term_lower)`. Counts are
+    Each automaton payload is `(category_tag, term_lower, is_prefix)`. Counts are
     resolved per category via greedy non-overlapping dedupe against the
     list of (start, end) tuples for that category.
     """
@@ -91,6 +97,17 @@ def _category_iter(bundle: KeywordBundle) -> Iterable[tuple[str, list[str]]]:
         yield f"topic:{topic_key}", terms
     for actor_key, terms in bundle.actors.items():
         yield f"actor:{actor_key}", terms
+    for concept_id, forms in bundle.concepts.items():
+        yield f"concept:{concept_id}", forms
+    for cluster_id, forms in bundle.clusters.items():
+        yield f"cluster:{cluster_id}", forms
+
+
+def _forms_key(forms: list) -> tuple:
+    """Concept forms as hashable ``(text, is_prefix)`` pairs."""
+    return tuple(
+        (f["prefix"], True) if isinstance(f, dict) else (f, False) for f in forms
+    )
 
 
 def _bundle_cache_key(bundle: KeywordBundle) -> tuple:
@@ -101,12 +118,16 @@ def _bundle_cache_key(bundle: KeywordBundle) -> tuple:
     )
     topics_key = tuple((k, tuple(v)) for k, v in sorted(bundle.topics.items()))
     actors_key = tuple((k, tuple(v)) for k, v in sorted(bundle.actors.items()))
+    concepts_key = tuple((k, _forms_key(v)) for k, v in sorted(bundle.concepts.items()))
+    clusters_key = tuple((k, _forms_key(v)) for k, v in sorted(bundle.clusters.items()))
     return (
         bundle.language,
         bundle.script_language or bundle.language,
         epu_key,
         topics_key,
         actors_key,
+        concepts_key,
+        clusters_key,
     )
 
 
@@ -119,14 +140,22 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
     overwrites the prior value, so we must accumulate the FULL list of (tag,
     term) tuples for each word and emit them all on match.
     """
-    language, script_language, epu_key, topics_key, actors_key = cache_key
+    (
+        language,
+        script_language,
+        epu_key,
+        topics_key,
+        actors_key,
+        concepts_key,
+        clusters_key,
+    ) = cache_key
     categories: list[str] = []
-    by_word: dict[str, list[tuple[str, str]]] = {}
+    by_word: dict[str, list[tuple[str, str, bool]]] = {}
 
-    def add(tag: str, terms):
+    def add(tag: str, terms, is_prefix: bool = False):
         for term in terms:
             t = term.lower()
-            by_word.setdefault(t, []).append((tag, t))
+            by_word.setdefault(t, []).append((tag, t, is_prefix))
 
     for cat, terms in epu_key:
         tag = {"economic": "econ", "policy": "policy", "uncertainty": "uncertain"}[cat]
@@ -140,6 +169,12 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
         tag = f"actor:{actor_key}"
         categories.append(tag)
         add(tag, terms)
+    for family, key in (("concept", concepts_key), ("cluster", clusters_key)):
+        for group_id, forms in key:
+            tag = f"{family}:{group_id}"
+            categories.append(tag)
+            for text, is_prefix in forms:
+                add(tag, [text], is_prefix)
 
     A = ahocorasick.Automaton()
     for word, tag_list in by_word.items():
@@ -174,13 +209,20 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
     per_cat_matches: dict[str, list[tuple[int, int]]] = defaultdict(list)
 
     for end_idx, payload in combo.automaton.iter(text):
-        # `payload` is a tuple of (cat, term) tuples — the same word may
-        # belong to several categories (e.g. policy + actor:government).
-        for cat, term in payload:
+        # `payload` is a tuple of (cat, term, is_prefix) tuples — the same word
+        # may belong to several categories (e.g. policy + actor:government).
+        for cat, term, is_prefix in payload:
             start_idx = end_idx - len(term) + 1
             end_pos = end_idx + 1
             if combo.check_boundaries:
-                if not _is_word_boundary(text, start_idx, end_pos):
+                if is_prefix:
+                    # A prefix form keeps only the left boundary, so the
+                    # suffixes of an agglutinative language still match.
+                    if start_idx > 0 and (
+                        text[start_idx - 1].isalnum() or text[start_idx - 1] == "_"
+                    ):
+                        continue
+                elif not _is_word_boundary(text, start_idx, end_pos):
                     continue
             elif term.isascii():
                 # Latin term in a non-space-delimited pack. Bounding it against
@@ -333,7 +375,12 @@ def _grouped_for_frame(
             .reindex(grouped.index, fill_value=0)
             .astype(int)
         )
-        base = cat.replace("topic:", "topic_").replace("actor:", "actor_")
+        base = (
+            cat.replace("topic:", "topic_")
+            .replace("actor:", "actor_")
+            .replace("concept:", "concept_")
+            .replace("cluster:", "cluster_")
+        )
         grouped[f"{base}_count"] = epu_x
         grouped[f"{base}_U_count"] = u_x
         grouped[f"{base}_A_count"] = g_x
