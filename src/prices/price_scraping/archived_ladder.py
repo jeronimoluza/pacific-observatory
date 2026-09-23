@@ -134,6 +134,23 @@ def _nextdata_fallback(soup: BeautifulSoup, out: Dict[str, Any]) -> None:
             out["product_id"] = str(pid)
 
 
+def _zero_price(row: Dict[str, Any]) -> bool:
+    """Whether a row's price is zero (``$0``, ``0.00``, ``NT$0``).
+
+    No store lists a product at zero. On an archived page it is the value a
+    template renders before its script fills the price in -- pchome's 2014-2023
+    captures are all shells like that -- so a zero-price row is a miss, not an
+    observation. Nothing in a capture marks a zero as a promotion.
+    """
+    price = row.get("price")
+    digits = re.findall(r"\d", "" if price is None else str(price))
+    return bool(digits) and set(digits) == {"0"}
+
+
+def _priced(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    return [r for r in rows if not _zero_price(r)]
+
+
 def selector_row(html: str, spider: Optional[str]) -> Dict[str, Any]:
     """The spider's CSS selectors over one page, plus its per-spider fallbacks.
 
@@ -154,7 +171,7 @@ def selector_row(html: str, spider: Optional[str]) -> Dict[str, Any]:
         _ldjson_fallback(html, out)
     if spider in _NEXTDATA_SPIDERS:
         _nextdata_fallback(soup, out)
-    return out
+    return {} if _zero_price(out) else out
 
 
 def portable_rows(html: str, url: str, source: Optional[str] = None) -> Tuple[List[Dict[str, Any]], str]:
@@ -165,22 +182,22 @@ def portable_rows(html: str, url: str, source: Optional[str] = None) -> Tuple[Li
     cannot change a page that parses today. The per-source tier returns nothing
     for a source without an extractor, so it too can only add rows.
     """
-    rows = rows_from_jsonld(html, url)
+    rows = _priced(rows_from_jsonld(html, url))
     if rows:
         return rows, "jsonld"
     row = row_from_meta(html, url)
-    if row:
+    if row and not _zero_price(row):
         return [row], "meta"
-    rows = rows_from_next_flight(html, url)
+    rows = _priced(rows_from_next_flight(html, url))
     if rows:
         return rows, "flight"
-    rows = rows_from_microdata(html, url)
+    rows = _priced(rows_from_microdata(html, url))
     if rows:
         return rows, "microdata"
-    rows = rows_from_nextdata(html, url)
+    rows = _priced(rows_from_nextdata(html, url))
     if rows:
         return rows, "nextdata"
-    rows = rows_from_source(html, url, source)
+    rows = _priced(rows_from_source(html, url, source))
     if rows:
         return rows, "bysource"
     return [], "none"
@@ -210,7 +227,7 @@ def parse_rows(
     """
     if hook is not None:
         try:
-            rows = [r for r in hook(html, url) if r]
+            rows = _priced([r for r in hook(html, url) if r])
         except Exception:
             logger.debug("parse_html failed for %s", url, exc_info=True)
             rows = []
