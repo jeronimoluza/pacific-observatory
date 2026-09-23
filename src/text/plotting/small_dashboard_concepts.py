@@ -343,6 +343,57 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .chip-group:not(.is-open) .chip-group-body > .chip.is-hit,
 .chip-group:not(.is-open) .chip-group-body > .chip:has(input:checked) { display: inline-flex; }
 .chip.is-filtered { display: none !important; }
+.tree { width: 100%; }
+.tree .chip-group:not(.is-open) .chip-group-body > .chip.is-hit,
+.tree .chip-group:not(.is-open) .chip-group-body > .chip:has(input:checked) { display: flex; }
+/* Keyword tree: heading > cluster > concept. Rows, not pills: a checkbox
+   swatch in the series colour, indented under its parent. */
+.tree .chip-group-body { display: block; padding: 0 0 6px 0; }
+.tree .chip {
+    display: flex;
+    width: 100%;
+    border: 0;
+    border-radius: 4px;
+    padding: 3px 6px;
+    gap: 8px;
+    color: #333;
+}
+.tree .chip::before {
+    content: '';
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--chip-color, #999);
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+.tree .chip:hover { background: #f0f4ff; }
+.tree .chip:has(input:checked) { background: none; color: #222; font-weight: 600; }
+.tree .chip:has(input:checked)::before { background: var(--chip-color, #667eea); }
+.tree .chip:has(input:checked):hover { background: #f0f4ff; }
+.tree-text { display: flex; flex-direction: column; min-width: 0; }
+.tree-alias { color: #999; font-weight: 400; font-size: 0.9em; }
+.tree-row { display: flex; align-items: center; }
+.tree-row > .chip { flex: 1; min-width: 0; }
+.tree-caret, .tree-caret-spacer { flex: 0 0 16px; width: 16px; }
+.tree-caret {
+    border: 0;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    color: #999;
+    font-size: 0.8em;
+    transition: transform 0.15s;
+}
+.tree-caret:hover { color: #667eea; }
+.tree-cluster.is-open > .tree-row > .tree-caret { transform: rotate(90deg); }
+.tree-count { color: #999; font-size: 0.75em; padding-right: 4px; font-variant-numeric: tabular-nums; }
+.tree-cluster > .chip-group-body { padding: 0 0 2px 22px; }
+.tree-cluster:not(.is-open) > .chip-group-body > .chip:not(.is-hit):not(:has(input:checked)) { display: none; }
+.tree-heading:not(.is-open) > .chip-group-body > * { display: none; }
+.tree-heading:not(.is-open) > .chip-group-body > .chip.is-hit,
+.tree-heading:not(.is-open) > .chip-group-body > .chip:has(input:checked),
+.tree-heading:not(.is-open) > .chip-group-body > .tree-cluster:has(.chip.is-hit, input:checked) { display: block; }
 .chip {
     display: inline-flex;
     align-items: center;
@@ -1141,11 +1192,11 @@ function applyChipFilters() {
         const input = chip.querySelector('input');
         const labelEl = chip.querySelector('.chip-label');
         const raw = input.value;
-        const label = fmtChipLabel(raw);
+        const label = chip.dataset.label || fmtChipLabel(raw);
         const color = getChipColor(raw);
         if (color) chip.style.setProperty('--chip-color', color);
         if (labelEl) labelEl.textContent = label;
-        const txt = label.toLowerCase();
+        const txt = (label + ' ' + (chip.dataset.alias || '')).toLowerCase();
         const match = !q || txt.indexOf(q) !== -1;
         // A selected pill always stays on screen: its line is on the chart and
         // the pill is the only way to take it off again.
@@ -1327,6 +1378,11 @@ document.getElementById('item-search').addEventListener('input', applyChipFilter
 document.querySelectorAll('#item-select .chip-group-header').forEach(h => {
     h.addEventListener('click', function() {
         h.parentElement.classList.toggle('is-open');
+    });
+});
+document.querySelectorAll('#item-select .tree-caret').forEach(b => {
+    b.addEventListener('click', function() {
+        b.closest('.tree-cluster').classList.toggle('is-open');
     });
 });
 document.getElementById('default-btn').addEventListener('click', function() {
@@ -1550,6 +1606,7 @@ def build_epu_iframe_html(
     factors_expr=None,
     method_foot_extra="",
     chip_groups=None,
+    chip_html=None,
 ):
     options = (
         dropdown_options_html
@@ -1566,7 +1623,7 @@ def build_epu_iframe_html(
         .replace("__METHOD_FOOT_EXTRA__", method_foot_extra)
         .replace("__ITEM_LABEL__", item_label)
         .replace("__SEARCH_PLACEHOLDER__", search_placeholder)
-        .replace("__CHIP_HTML__", _chip_html(items, defaults, chip_groups))
+        .replace("__CHIP_HTML__", chip_html or _chip_html(items, defaults, chip_groups))
         .replace("__COUNTRY_OPTIONS__", options)
         .replace("__COMMON_JS__", EPU_COMMON_JS)
         .replace("__DATA_JSON__", data_expr or json.dumps(data))
@@ -1799,27 +1856,59 @@ def _schema_labels(schema: dict) -> dict:
     return labels
 
 
-def _schema_chip_groups(schema: dict) -> list:
-    """One open group per heading with its stand-alone concepts, then one
-    closed group per cluster: the cluster series first, its concepts after.
+def _tree_leaf(item, label, defaults, alias=""):
+    alias_attr = f' data-alias="{_esc(alias)}"' if alias else ""
+    alias_html = f'<span class="tree-alias">= {_esc(alias)}</span>' if alias else ""
+    return (
+        f'<label class="chip" data-label="{_esc(label)}"{alias_attr}>'
+        f'<input type="checkbox" value="{item}"{" checked" if item in defaults else ""}>'
+        f'<span class="tree-text"><span class="chip-label">{_esc(label)}</span>'
+        f"{alias_html}</span></label>"
+    )
 
-    The default view is the stand-alone concepts plus the cluster series;
-    opening a cluster's group is how a reader expands it into its concepts.
+
+def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
+    """The concept picker as a tree: heading > cluster > concept.
+
+    Stand-alone concepts sit directly under their heading. A cluster is its own
+    series, so its row has a checkbox, and its caret reveals the member concepts
+    indented beneath it; ticking a cluster draws only the cluster line. A
+    one-member cluster is the same series as its member, so it renders as a
+    single row naming the member instead of a parent with one child.
     """
-    groups = []
+    out = []
     for h in schema["headings"].values():
-        standalone = [cid for cid, c in h["concepts"].items() if c["cluster"] is None]
-        if standalone:
-            groups.append({"label": h["label"], "topics": standalone, "expanded": True})
+        rows = []
+        for cid, c in h["concepts"].items():
+            if c["cluster"] is None and cid in items:
+                rows.append(_tree_leaf(cid, c["label"], defaults))
         for kid, k in h["clusters"].items():
-            groups.append(
-                {
-                    "label": f"{h['label']}: {k['label']}",
-                    "topics": [kid, *k["concepts"]],
-                    "expanded": False,
-                }
+            if kid not in items:
+                continue
+            members = [m for m in k["concepts"] if m in items]
+            if len(k["concepts"]) == 1:
+                alias = h["concepts"][k["concepts"][0]]["label"]
+                rows.append(_tree_leaf(kid, k["label"], defaults, alias))
+                continue
+            body = "\n".join(
+                _tree_leaf(m, h["concepts"][m]["label"], defaults) for m in members
             )
-    return groups
+            rows.append(
+                '<div class="chip-group tree-cluster"><div class="tree-row">'
+                '<button type="button" class="tree-caret" aria-label="Show concepts">&#9656;</button>'
+                f"{_tree_leaf(kid, k['label'], defaults)}"
+                f'<span class="tree-count">{len(members)}</span></div>'
+                f'<div class="chip-group-body">{body}</div></div>'
+            )
+        if rows:
+            out.append(
+                '<div class="chip-group tree-heading is-open">'
+                '<button type="button" class="chip-group-header">'
+                '<span class="chip-group-caret">&#9656;</span>'
+                f'<span class="chip-group-label">{_esc(h["label"])}</span></button>'
+                f'<div class="chip-group-body">{"".join(rows)}</div></div>'
+            )
+    return f'<div class="tree">{"".join(out)}</div>'
 
 
 def _schema_defaults(schema: dict) -> list:
@@ -1972,7 +2061,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         method_foot_extra=(
             " A cluster series counts articles matching any of its concepts."
         ),
-        chip_groups=_schema_chip_groups(schema),
+        chip_html=_schema_tree_html(schema, items, defaults),
     )
     actors_html = build_epu_iframe_html(
         actors_data,
