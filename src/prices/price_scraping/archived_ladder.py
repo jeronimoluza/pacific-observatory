@@ -202,6 +202,11 @@ def parse_rows(
     A selector row without a price is a miss, not a result. It is banked only
     when every tier below also failed (tier ``selectors_noprice``), so a name
     is kept rather than dropped, and it can never displace a priced row.
+
+    A priced selector row gives way only to a portable tier that finds several
+    rows: selectors return one row per page, so on a category page they bank the
+    page title while JSON-LD lists every product, and on a product page they miss
+    the variants.
     """
     if hook is not None:
         try:
@@ -213,9 +218,9 @@ def parse_rows(
             return rows, "hook"
         return portable_rows(html, url, source)
     extracted = selector_row(html, source)
-    if extracted.get("price"):
-        return [extracted], "selectors"
     rows, tier = portable_rows(html, url, source)
+    if extracted.get("price") and len(rows) <= 1:
+        return [extracted], "selectors"
     if rows:
         return rows, tier
     if extracted:
