@@ -21,6 +21,38 @@
     "fx_restrictions": {
       "label": "FX restrictions",
       "parent": "exchange_rate"
+    },
+    "external_sector": {
+      "label": "External sector",
+      "parent": null
+    },
+    "cross_border_flows": {
+      "label": "Capital flows",
+      "parent": "external_sector"
+    },
+    "banking": {
+      "label": "Banking and credit",
+      "parent": null
+    },
+    "credit": {
+      "label": "Credit",
+      "parent": "banking"
+    },
+    "financial_stability_regulation": {
+      "label": "Financial stability and regulation",
+      "parent": null
+    },
+    "financial_integrity": {
+      "label": "Financial integrity",
+      "parent": "financial_stability_regulation"
+    },
+    "inclusion_digital_finance": {
+      "label": "Inclusion and digital finance",
+      "parent": null
+    },
+    "capital_markets_insurance": {
+      "label": "Capital markets and insurance",
+      "parent": null
     }
   },
   "concepts": {
@@ -668,6 +700,50 @@
         }
       }
     },
+    "liquidity": {
+      "label": "Liquidity",
+      "group": "money_and_liquidity",
+      "forms": {
+        "en": [
+          "liquidity",
+          "illiquidity",
+          "liquidity crunch",
+          "liquidity crisis"
+        ],
+        "es": [
+          "liquidez",
+          "inyección de liquidez",
+          "inyecciones de liquidez",
+          "crisis de liquidez",
+          "falta de liquidez",
+          "provisión de liquidez",
+          "liquidez bancaria",
+          "excedente de liquidez"
+        ],
+        "turkish": [
+          {
+            "prefix": "likidite"
+          },
+          {
+            "prefix": "piyasa likidite"
+          },
+          {
+            "prefix": "likidite sıkışıklı"
+          },
+          {
+            "prefix": "likidite enjeksiyon"
+          }
+        ],
+        "thai": [
+          "สภาพคล่องในระบบ",
+          "สภาพคล่องส่วนเกิน",
+          "อัดฉีดสภาพคล่อง",
+          "เสริมสภาพคล่อง",
+          "ขาดสภาพคล่อง",
+          "ภาวะสภาพคล่องตึงตัว"
+        ]
+      }
+    },
     "exchange_rate_policy": {
       "label": "Exchange Rate Policy",
       "group": "exchange_rate",
@@ -964,6 +1040,220 @@
         }
       }
     },
+    "currency_depreciation": {
+      "label": "Currency Depreciation",
+      "group": "exchange_rate",
+      "forms": {
+        "en": [
+          "currency depreciation",
+          "currency depreciations",
+          "depreciation of the currency",
+          "exchange rate depreciation",
+          "exchange-rate depreciation",
+          "currency weakness",
+          "weakening currency",
+          "weaker currency",
+          "currency weakened",
+          "currency has weakened"
+        ],
+        "es": [
+          "depreciación de la moneda",
+          "depreciación de las monedas",
+          "depreciación del peso",
+          "depreciación cambiaria",
+          "depreciación de la divisa",
+          "depreciación del tipo de cambio",
+          "se depreció el peso",
+          "el peso se depreció",
+          "el peso se deprecia",
+          "debilitamiento del peso",
+          "debilidad del peso",
+          "pérdida de valor del peso"
+        ],
+        "turkish": [
+          {
+            "prefix": "liranın değer kayb"
+          },
+          {
+            "prefix": "türk lirasının değer kayb"
+          },
+          {
+            "prefix": "lirada değer kayb"
+          },
+          {
+            "prefix": "liradaki değer kayb"
+          },
+          {
+            "prefix": "tl'nin değer kayb"
+          },
+          {
+            "prefix": "ulusal paranın değer kayb"
+          },
+          {
+            "prefix": "yerel paranın değer kayb"
+          },
+          {
+            "prefix": "türk parasının değer kayb"
+          },
+          {
+            "prefix": "liranın değer yitir"
+          },
+          {
+            "prefix": "liranın zayıfla"
+          },
+          {
+            "prefix": "kur artış"
+          }
+        ],
+        "thai": [
+          "เงินบาทอ่อนค่า",
+          "ค่าเงินอ่อนค่า",
+          "การอ่อนค่าของเงินบาท",
+          "การอ่อนค่าของค่าเงิน",
+          "เงินหยวนอ่อนค่า",
+          "เงินเยนอ่อนค่า",
+          "ดอลลาร์อ่อนค่า"
+        ]
+      }
+    },
+    "currency_appreciation": {
+      "label": "Currency Appreciation",
+      "group": "exchange_rate",
+      "forms": {
+        "en": [
+          "currency appreciation",
+          "appreciation of the currency",
+          "exchange rate appreciation",
+          "exchange-rate appreciation",
+          "strengthening currency",
+          "stronger currency",
+          "currency strengthened",
+          "currency has strengthened"
+        ],
+        "es": [
+          "apreciación de la moneda",
+          "apreciación de las monedas",
+          "apreciación del peso",
+          "apreciación cambiaria",
+          "apreciación de la divisa",
+          "apreciación del tipo de cambio",
+          "se apreció el peso",
+          "el peso se apreció",
+          "el peso se aprecia",
+          "fortalecimiento del peso",
+          "fortaleza del peso",
+          "superpeso",
+          "súper peso"
+        ],
+        "turkish": [
+          {
+            "prefix": "liranın değer kazan"
+          },
+          {
+            "prefix": "türk lirasının değer kazan"
+          },
+          {
+            "prefix": "lirada değer kazan"
+          },
+          {
+            "prefix": "tl'nin değer kazan"
+          },
+          {
+            "prefix": "ulusal paranın değer kazan"
+          },
+          {
+            "prefix": "yerel paranın değer kazan"
+          },
+          {
+            "prefix": "türk parasının değer kazan"
+          },
+          {
+            "prefix": "liranın reel değer kazan"
+          },
+          {
+            "prefix": "reel değerlen"
+          },
+          {
+            "prefix": "liranın güçlen"
+          }
+        ],
+        "thai": [
+          "เงินบาทแข็งค่า",
+          "ค่าเงินแข็งค่า",
+          "การแข็งค่าของเงินบาท",
+          "การแข็งค่าของค่าเงิน",
+          "เงินหยวนแข็งค่า",
+          "เงินเยนแข็งค่า",
+          "ดอลลาร์แข็งค่า"
+        ]
+      }
+    },
+    "currency_crisis": {
+      "label": "Currency Crisis",
+      "group": "exchange_rate",
+      "forms": {
+        "en": [
+          "currency crisis",
+          "currency crises",
+          "currency collapse",
+          "collapse of the currency",
+          "currency meltdown",
+          "exchange rate crisis",
+          "exchange-rate crisis",
+          "speculative attack",
+          "speculative attacks"
+        ],
+        "es": [
+          "crisis cambiaria",
+          "crisis cambiarias",
+          "crisis de la moneda",
+          "crisis del peso",
+          "crisis de balanza de pagos",
+          "colapso de la moneda",
+          "desplome de la moneda",
+          "ataque especulativo",
+          "ataques especulativos",
+          "corrida cambiaria",
+          "corrida contra el peso"
+        ],
+        "turkish": [
+          {
+            "prefix": "kur kriz"
+          },
+          {
+            "prefix": "döviz kriz"
+          },
+          {
+            "prefix": "döviz kuru kriz"
+          },
+          {
+            "prefix": "lira kriz"
+          },
+          {
+            "prefix": "türk lirası kriz"
+          },
+          {
+            "prefix": "kur şok"
+          },
+          {
+            "prefix": "kur atağ"
+          },
+          {
+            "prefix": "kur saldır"
+          },
+          {
+            "prefix": "spekülatif saldır"
+          }
+        ],
+        "thai": [
+          "วิกฤตค่าเงิน",
+          "วิกฤติค่าเงิน",
+          "วิกฤตการณ์ค่าเงิน",
+          "วิกฤตต้มยำกุ้ง",
+          "วิกฤติต้มยำกุ้ง"
+        ]
+      }
+    },
     "foreign_exchange_controls": {
       "label": "Foreign Exchange Controls",
       "group": "fx_restrictions",
@@ -1148,6 +1438,2396 @@
           "sample_n": 20,
           "rejected": []
         }
+      }
+    },
+    "foreign_exchange_shortage": {
+      "label": "Foreign-Exchange Shortage",
+      "group": "fx_restrictions",
+      "forms": {
+        "en": [
+          "foreign-exchange shortage",
+          "foreign exchange shortage",
+          "foreign-exchange shortages",
+          "foreign exchange shortages",
+          "forex shortage",
+          "forex shortages",
+          "dollar shortage",
+          "dollar shortages",
+          "shortage of foreign exchange",
+          "shortage of foreign currency",
+          "foreign currency shortage",
+          "fx shortage"
+        ],
+        "es": [
+          "escasez de divisas",
+          "escasez de dólares",
+          "escasez de moneda extranjera",
+          "falta de dólares",
+          "falta de divisas",
+          "faltante de dólares",
+          "carencia de divisas",
+          "sequía de dólares",
+          "sequía de divisas"
+        ],
+        "turkish": [
+          {
+            "prefix": "döviz darlı"
+          },
+          {
+            "prefix": "döviz kıtlı"
+          },
+          {
+            "prefix": "döviz sıkıntı"
+          },
+          {
+            "prefix": "döviz yetersizli"
+          },
+          {
+            "prefix": "dolar kıtlı"
+          },
+          {
+            "prefix": "dolar darlı"
+          }
+        ],
+        "thai": [
+          "ขาดแคลนเงินตราต่างประเทศ",
+          "ขาดแคลนเงินดอลลาร์",
+          "ขาดแคลนดอลลาร์",
+          "เงินดอลลาร์ขาดแคลน"
+        ]
+      }
+    },
+    "balance_of_payments": {
+      "label": "Balance of Payments",
+      "group": "external_sector",
+      "forms": {
+        "en": [
+          "balance of payments",
+          "balance-of-payments",
+          "balance of payment",
+          "balance of payments crisis",
+          "balance of payments support"
+        ],
+        "es": [
+          "balanza de pagos",
+          "balanzas de pagos",
+          "balance de pagos",
+          "saldo de la balanza de pagos",
+          "cuentas externas",
+          "desequilibrio externo",
+          "desequilibrios externos"
+        ],
+        "turkish": [
+          {
+            "prefix": "ödemeler denge"
+          },
+          {
+            "prefix": "ödemeler bilanço"
+          },
+          {
+            "prefix": "cari işlemler denge"
+          },
+          {
+            "prefix": "cari denge"
+          },
+          {
+            "prefix": "net hata ve noksan"
+          }
+        ],
+        "thai": [
+          "ดุลการชำระเงิน",
+          "ดุลชำระเงิน"
+        ]
+      }
+    },
+    "current_account_deficit": {
+      "label": "Current-Account Deficit",
+      "group": "external_sector",
+      "forms": {
+        "en": [
+          "current-account deficit",
+          "current account deficit",
+          "current-account deficits",
+          "current account deficits",
+          "external deficit",
+          "external deficits"
+        ],
+        "es": [
+          "déficit de cuenta corriente",
+          "déficit en cuenta corriente",
+          "déficit de la cuenta corriente",
+          "déficit en la cuenta corriente",
+          "déficit por cuenta corriente",
+          "déficits de cuenta corriente",
+          "déficits en cuenta corriente",
+          "déficit externo"
+        ],
+        "turkish": [
+          {
+            "prefix": "cari açık"
+          },
+          {
+            "prefix": "cari açığ"
+          },
+          {
+            "prefix": "cari işlemler açık"
+          },
+          {
+            "prefix": "cari işlemler açığ"
+          },
+          {
+            "prefix": "dış açık"
+          },
+          {
+            "prefix": "dış açığ"
+          }
+        ],
+        "thai": [
+          "ขาดดุลบัญชีเดินสะพัด",
+          "บัญชีเดินสะพัดขาดดุล"
+        ]
+      }
+    },
+    "current_account_surplus": {
+      "label": "Current-Account Surplus",
+      "group": "external_sector",
+      "forms": {
+        "en": [
+          "current-account surplus",
+          "current account surplus",
+          "current-account surpluses",
+          "current account surpluses",
+          "external surplus",
+          "external surpluses"
+        ],
+        "es": [
+          "superávit de cuenta corriente",
+          "superávit en cuenta corriente",
+          "superávit de la cuenta corriente",
+          "superávit en la cuenta corriente",
+          "superávit por cuenta corriente",
+          "superávits de cuenta corriente",
+          "superávit externo"
+        ],
+        "turkish": [
+          {
+            "prefix": "cari fazla"
+          },
+          {
+            "prefix": "cari işlemler fazla"
+          }
+        ],
+        "thai": [
+          "เกินดุลบัญชีเดินสะพัด",
+          "บัญชีเดินสะพัดเกินดุล"
+        ]
+      }
+    },
+    "capital_account": {
+      "label": "Capital Account",
+      "group": "external_sector",
+      "forms": {
+        "en": [
+          "capital account",
+          "capital-account",
+          "capital accounts",
+          "capital and financial account",
+          "capital account liberalization",
+          "capital account liberalisation",
+          "capital account convertibility"
+        ],
+        "es": [
+          "cuenta de capital",
+          "cuenta de capitales",
+          "cuenta de capital y financiera",
+          "apertura de la cuenta de capital",
+          "liberalización de la cuenta de capital",
+          "controles de capital",
+          "controles de capitales",
+          "control de capitales"
+        ],
+        "turkish": [
+          {
+            "prefix": "sermaye hesab"
+          },
+          {
+            "prefix": "sermaye ve finans hesab"
+          }
+        ],
+        "thai": [
+          "ดุลบัญชีทุน",
+          "บัญชีทุนและการเงิน",
+          "เปิดเสรีบัญชีทุน"
+        ]
+      }
+    },
+    "capital_flows": {
+      "label": "Capital Flows",
+      "group": "cross_border_flows",
+      "forms": {
+        "en": [
+          "capital flows",
+          "capital inflows",
+          "capital outflows",
+          "capital inflow",
+          "capital outflow",
+          "cross-border capital flows",
+          "foreign capital inflows",
+          "hot money"
+        ],
+        "es": [
+          "flujos de capital",
+          "flujos de capitales",
+          "flujo de capitales",
+          "flujo de capital",
+          "entrada de capitales",
+          "entradas de capitales",
+          "salida de capitales",
+          "salidas de capitales",
+          "movimientos de capital",
+          "movimientos de capitales"
+        ],
+        "turkish": [
+          {
+            "prefix": "sermaye akım"
+          },
+          {
+            "prefix": "sermaye akış"
+          },
+          {
+            "prefix": "sermaye giriş"
+          },
+          {
+            "prefix": "sermaye çıkış"
+          },
+          {
+            "prefix": "sermaye hareket"
+          },
+          {
+            "prefix": "sıcak para"
+          }
+        ],
+        "thai": [
+          "เงินทุนเคลื่อนย้าย",
+          "การเคลื่อนย้ายเงินทุน",
+          "เงินทุนไหลเข้า",
+          "เงินทุนไหลออก",
+          "การไหลออกของเงินทุน",
+          "การไหลเข้าของเงินทุน",
+          "กระแสเงินทุนไหลเข้า",
+          "กระแสเงินทุนไหลออก"
+        ]
+      }
+    },
+    "foreign_direct_investment": {
+      "label": "Foreign Direct Investment",
+      "group": "cross_border_flows",
+      "forms": {
+        "en": [
+          "foreign direct investment",
+          "foreign direct investments",
+          "FDI",
+          "FDI inflows",
+          "FDI inflow",
+          "inward investment",
+          "direct investment inflows"
+        ],
+        "es": [
+          "inversión extranjera directa",
+          "inversiones extranjeras directas",
+          "inversión directa extranjera",
+          "IED",
+          "flujos de IED",
+          "captación de IED"
+        ],
+        "turkish": [
+          {
+            "prefix": "doğrudan yabancı yatırım"
+          },
+          {
+            "prefix": "yabancı doğrudan yatırım"
+          },
+          {
+            "prefix": "uluslararası doğrudan yatırım"
+          },
+          {
+            "prefix": "yurt dışı doğrudan yatırım"
+          },
+          "dyy"
+        ],
+        "thai": [
+          "การลงทุนโดยตรงจากต่างประเทศ",
+          "เงินลงทุนโดยตรงจากต่างประเทศ",
+          "การลงทุนโดยตรงของต่างชาติ",
+          "การลงทุนโดยตรงในต่างประเทศ",
+          "FDI"
+        ]
+      }
+    },
+    "portfolio_investment": {
+      "label": "Portfolio Investment",
+      "group": "cross_border_flows",
+      "forms": {
+        "en": [
+          "portfolio investment",
+          "portfolio investments",
+          "foreign portfolio investment",
+          "foreign portfolio investors",
+          "portfolio inflows",
+          "portfolio outflows",
+          "portfolio flows",
+          "FPI",
+          "FPIs"
+        ],
+        "es": [
+          "inversión de cartera",
+          "inversiones de cartera",
+          "inversión en cartera",
+          "inversión extranjera de cartera",
+          "inversión de portafolio",
+          "inversiones de portafolio",
+          "flujos de cartera",
+          "capitales golondrina",
+          "capital golondrina",
+          "capitales especulativos",
+          "dinero caliente"
+        ],
+        "turkish": [
+          {
+            "prefix": "portföy yatırım"
+          },
+          {
+            "prefix": "portföy giriş"
+          },
+          {
+            "prefix": "portföy çıkış"
+          },
+          {
+            "prefix": "portföy akım"
+          }
+        ],
+        "thai": [
+          "การลงทุนในพอร์ตโฟลิโอ",
+          "การลงทุนแบบพอร์ตโฟลิโอ",
+          "การลงทุนในหลักทรัพย์ต่างประเทศ",
+          "เงินลงทุนในหลักทรัพย์จากต่างประเทศ",
+          "การลงทุนในหลักทรัพย์ของต่างชาติ"
+        ]
+      }
+    },
+    "capital_flight": {
+      "label": "Capital Flight",
+      "group": "cross_border_flows",
+      "forms": {
+        "en": [
+          "capital flight",
+          "flight of capital",
+          "capital exodus"
+        ],
+        "es": [
+          "fuga de capitales",
+          "fugas de capitales",
+          "fuga de capital",
+          "huida de capitales",
+          "fuga de divisas",
+          "fuga de dólares",
+          "salida masiva de capitales"
+        ],
+        "turkish": [
+          {
+            "prefix": "sermaye kaçış"
+          },
+          {
+            "prefix": "sermayenin kaç"
+          },
+          {
+            "prefix": "sıcak paranın kaç"
+          },
+          {
+            "prefix": "yabancı yatırımcı kaçış"
+          }
+        ],
+        "thai": [
+          "เงินทุนหนีออก",
+          "การหนีออกของเงินทุน",
+          "การหลบหนีของเงินทุน",
+          "การหนีของเงินทุน",
+          "capital flight"
+        ]
+      }
+    },
+    "remittances": {
+      "label": "Remittances",
+      "group": "cross_border_flows",
+      "forms": {
+        "en": [
+          "remittances",
+          "remittance",
+          "remittance inflows",
+          "remittance flows",
+          "migrant remittances",
+          "workers' remittances"
+        ],
+        "es": [
+          "remesas",
+          "remesas familiares",
+          "migradólares"
+        ],
+        "turkish": [
+          {
+            "prefix": "işçi döviz"
+          },
+          {
+            "prefix": "i̇şçi döviz"
+          },
+          {
+            "prefix": "gurbetçi döviz"
+          },
+          {
+            "prefix": "işçi havale"
+          },
+          {
+            "prefix": "göçmen para transfer"
+          }
+        ],
+        "thai": [
+          "เงินโอนจากแรงงานต่างประเทศ",
+          "เงินส่งกลับประเทศ",
+          "เงินโอนกลับประเทศ",
+          "เงินส่งกลับของแรงงาน"
+        ]
+      }
+    },
+    "banking_sector": {
+      "label": "Banking Sector",
+      "group": "banking",
+      "forms": {
+        "en": [
+          "banking sector",
+          "banking sectors",
+          "banking system",
+          "banking systems",
+          "banking industry",
+          "commercial banks",
+          "state-owned banks",
+          "domestic banks"
+        ],
+        "es": [
+          "sector bancario",
+          "sistema bancario",
+          "industria bancaria",
+          "banca comercial",
+          "banca múltiple",
+          "banca mexicana",
+          "bancos comerciales",
+          "instituciones bancarias",
+          "banca de desarrollo"
+        ],
+        "turkish": [
+          {
+            "prefix": "bankacılık sektör"
+          },
+          {
+            "prefix": "bankacılık sistem"
+          },
+          {
+            "prefix": "banka sektör"
+          },
+          {
+            "prefix": "bankacılık kesim"
+          },
+          {
+            "prefix": "mevduat bankalar"
+          },
+          {
+            "prefix": "katılım bankalar"
+          },
+          {
+            "prefix": "kamu bankalar"
+          },
+          {
+            "prefix": "bankalar birliğ"
+          }
+        ],
+        "thai": [
+          "ภาคธนาคาร",
+          "ระบบธนาคาร",
+          "อุตสาหกรรมธนาคาร",
+          "กลุ่มธนาคารพาณิชย์"
+        ]
+      }
+    },
+    "bank_failure": {
+      "label": "Bank Failure",
+      "group": "banking",
+      "forms": {
+        "en": [
+          "bank failure",
+          "bank failures",
+          "bank collapse",
+          "bank collapses",
+          "bank insolvency",
+          "failed bank",
+          "failed banks",
+          "collapsed bank",
+          "bank closure",
+          "bank closures",
+          "bank resolution"
+        ],
+        "es": [
+          "quiebra bancaria",
+          "quiebras bancarias",
+          "quiebra de bancos",
+          "quiebra de un banco",
+          "quiebra del banco",
+          "colapso bancario",
+          "colapso del banco",
+          "crisis bancaria",
+          "crisis bancarias",
+          "bancos quebrados",
+          "liquidación bancaria",
+          "resolución bancaria",
+          "cierre de bancos"
+        ],
+        "turkish": [
+          {
+            "prefix": "banka iflas"
+          },
+          {
+            "prefix": "banka batış"
+          },
+          {
+            "prefix": "batan banka"
+          },
+          {
+            "prefix": "bankanın iflas"
+          },
+          {
+            "prefix": "bankaların iflas"
+          },
+          {
+            "prefix": "bankanın batma"
+          },
+          {
+            "prefix": "bankaların batma"
+          },
+          {
+            "prefix": "banka çöküş"
+          },
+          {
+            "prefix": "bankanın çöküş"
+          },
+          {
+            "prefix": "fona devredilen banka"
+          }
+        ],
+        "thai": [
+          "ธนาคารล้ม",
+          "แบงก์ล้ม",
+          "สถาบันการเงินล้ม",
+          "การล่มสลายของธนาคาร",
+          "ธนาคารปิดกิจการ",
+          "ปิดสถาบันการเงิน"
+        ]
+      }
+    },
+    "bank_run": {
+      "label": "Bank Run",
+      "group": "banking",
+      "forms": {
+        "en": [
+          "bank run",
+          "bank runs",
+          "run on the bank",
+          "run on banks",
+          "runs on banks",
+          "run on deposits",
+          "deposit run",
+          "deposit runs",
+          "deposit flight"
+        ],
+        "es": [
+          "corrida bancaria",
+          "corridas bancarias",
+          "pánico bancario",
+          "retiro masivo de depósitos",
+          "retiros masivos de depósitos",
+          "corrida de depósitos",
+          "corrida contra los bancos"
+        ],
+        "turkish": [
+          {
+            "prefix": "banka hücum"
+          },
+          {
+            "prefix": "bankaya hücum"
+          },
+          {
+            "prefix": "bankalara hücum"
+          },
+          {
+            "prefix": "mevduat kaçış"
+          }
+        ],
+        "thai": [
+          "bank run"
+        ]
+      }
+    },
+    "bank_recapitalization": {
+      "label": "Bank Recapitalization",
+      "group": "banking",
+      "forms": {
+        "en": [
+          "bank recapitalization",
+          "bank recapitalisation",
+          "recapitalization of banks",
+          "recapitalisation of banks",
+          "recapitalize banks",
+          "recapitalise banks",
+          "bank bailout",
+          "bank bailouts",
+          "bailout of banks"
+        ],
+        "es": [
+          "recapitalización bancaria",
+          "recapitalización de la banca",
+          "recapitalización de los bancos",
+          "recapitalización de bancos",
+          "rescate bancario",
+          "rescates bancarios",
+          "rescate de la banca",
+          "rescate de los bancos",
+          "Fobaproa",
+          "inyección de capital a los bancos"
+        ],
+        "turkish": [
+          {
+            "prefix": "yeniden sermayelendir"
+          },
+          {
+            "prefix": "bankaların sermayelendir"
+          },
+          {
+            "prefix": "bankalara sermaye desteğ"
+          },
+          {
+            "prefix": "kamu bankalarına sermaye"
+          },
+          {
+            "prefix": "bankaların sermaye artırım"
+          },
+          {
+            "prefix": "bankalara sermaye enjeksiyon"
+          },
+          {
+            "prefix": "rekapitalizasyon"
+          }
+        ],
+        "thai": [
+          "เพิ่มทุนธนาคาร",
+          "เพิ่มทุนให้ธนาคาร",
+          "เพิ่มทุนสถาบันการเงิน",
+          "อัดฉีดเงินทุนให้ธนาคาร"
+        ]
+      }
+    },
+    "nonperforming_loans": {
+      "label": "Nonperforming Loans",
+      "group": "banking",
+      "forms": {
+        "en": [
+          "nonperforming loans",
+          "non-performing loans",
+          "nonperforming loan",
+          "non-performing loan",
+          "NPL",
+          "NPLs",
+          "NPL ratio",
+          "bad loans",
+          "non-performing assets"
+        ],
+        "es": [
+          "cartera vencida",
+          "cartera morosa",
+          "créditos morosos",
+          "préstamos morosos",
+          "morosidad",
+          "índice de morosidad",
+          "préstamos incobrables",
+          "créditos incobrables",
+          "préstamos dudosos",
+          "créditos dudosos",
+          "préstamos en mora",
+          "créditos en mora",
+          "préstamos improductivos"
+        ],
+        "turkish": [
+          {
+            "prefix": "takipteki kredi"
+          },
+          {
+            "prefix": "takipteki alacak"
+          },
+          {
+            "prefix": "tahsili gecikmiş alacak"
+          },
+          {
+            "prefix": "batık kredi"
+          },
+          {
+            "prefix": "sorunlu kredi"
+          },
+          {
+            "prefix": "sorunlu alacak"
+          },
+          {
+            "prefix": "donuk alacak"
+          },
+          "npl"
+        ],
+        "thai": [
+          "หนี้ที่ไม่ก่อให้เกิดรายได้",
+          "หนี้เสีย",
+          "NPL",
+          "NPLs",
+          "สินเชื่อด้อยคุณภาพ",
+          "หนี้ด้อยคุณภาพ"
+        ]
+      }
+    },
+    "deposit_insurance": {
+      "label": "Deposit Insurance",
+      "group": "banking",
+      "forms": {
+        "en": [
+          "deposit insurance",
+          "deposit insurance scheme",
+          "deposit guarantee",
+          "deposit guarantees",
+          "deposit protection",
+          "insured deposits"
+        ],
+        "es": [
+          "seguro de depósitos",
+          "seguro de depósito",
+          "seguro de los depósitos",
+          "seguro de depósitos bancarios",
+          "garantía de depósitos",
+          "garantía de los depósitos",
+          "fondo de garantía de depósitos",
+          "IPAB",
+          "Instituto para la Protección al Ahorro Bancario",
+          "Fogafin"
+        ],
+        "turkish": [
+          {
+            "prefix": "mevduat sigorta"
+          },
+          {
+            "prefix": "mevduat güvence"
+          },
+          {
+            "prefix": "sigorta kapsamındaki mevduat"
+          },
+          {
+            "prefix": "sigortalı mevduat"
+          }
+        ],
+        "thai": [
+          "คุ้มครองเงินฝาก",
+          "ประกันเงินฝาก",
+          "สคฝ."
+        ]
+      }
+    },
+    "credit_growth": {
+      "label": "Credit Growth",
+      "group": "credit",
+      "forms": {
+        "en": [
+          "credit growth",
+          "loan growth",
+          "lending growth",
+          "credit expansion",
+          "credit boom",
+          "private sector credit",
+          "private-sector credit"
+        ],
+        "es": [
+          "crecimiento del crédito",
+          "crecimiento crediticio",
+          "expansión del crédito",
+          "expansión crediticia",
+          "auge crediticio",
+          "boom crediticio",
+          "otorgamiento de crédito",
+          "otorgamiento de créditos",
+          "colocación de créditos"
+        ],
+        "turkish": [
+          {
+            "prefix": "kredi büyüme"
+          },
+          {
+            "prefix": "kredi genişleme"
+          },
+          {
+            "prefix": "kredi genişlet"
+          },
+          {
+            "prefix": "kredi artış"
+          },
+          {
+            "prefix": "kredilerdeki artış"
+          },
+          {
+            "prefix": "kredi ivme"
+          },
+          {
+            "prefix": "kredi patlama"
+          }
+        ],
+        "thai": [
+          "สินเชื่อขยายตัว",
+          "การขยายตัวของสินเชื่อ",
+          "สินเชื่อเติบโต",
+          "การเติบโตของสินเชื่อ"
+        ]
+      }
+    },
+    "credit_crunch": {
+      "label": "Credit Crunch",
+      "group": "credit",
+      "forms": {
+        "en": [
+          "credit crunch",
+          "credit crunches",
+          "credit squeeze",
+          "tight credit",
+          "credit tightening",
+          "credit contraction",
+          "lending freeze"
+        ],
+        "es": [
+          "restricción crediticia",
+          "contracción del crédito",
+          "contracción crediticia",
+          "sequía de crédito",
+          "sequía crediticia",
+          "estrechez crediticia",
+          "racionamiento del crédito",
+          "racionamiento de crédito",
+          "congelamiento del crédito",
+          "endurecimiento del crédito",
+          "crisis de crédito",
+          "crisis crediticia",
+          "credit crunch"
+        ],
+        "turkish": [
+          {
+            "prefix": "kredi daralma"
+          },
+          {
+            "prefix": "kredi daralt"
+          },
+          {
+            "prefix": "kredi sıkışıklı"
+          },
+          {
+            "prefix": "kredi sıkışma"
+          },
+          {
+            "prefix": "kredi kıtlı"
+          },
+          {
+            "prefix": "kredi sıkıntı"
+          },
+          {
+            "prefix": "kredi arzında daral"
+          }
+        ],
+        "thai": [
+          "ภาวะสินเชื่อตึงตัว",
+          "สินเชื่อตึงตัว",
+          "credit crunch",
+          "ภาวะขาดแคลนสินเชื่อ",
+          "เข้มงวดการปล่อยสินเชื่อ",
+          "เข้มงวดในการปล่อยสินเชื่อ",
+          "คุมเข้มการปล่อยสินเชื่อ"
+        ]
+      }
+    },
+    "household_debt": {
+      "label": "Household Debt",
+      "group": "credit",
+      "forms": {
+        "en": [
+          "household debt",
+          "household debts",
+          "household indebtedness",
+          "household borrowing",
+          "household leverage",
+          "consumer debt"
+        ],
+        "es": [
+          "endeudamiento de los hogares",
+          "endeudamiento de las familias",
+          "endeudamiento familiar",
+          "deuda de los hogares",
+          "deuda de las familias",
+          "deuda familiar",
+          "deuda de los consumidores",
+          "endeudamiento de los consumidores",
+          "sobreendeudamiento de los hogares",
+          "sobreendeudamiento de las familias",
+          "deuda de tarjetas de crédito",
+          "deuda en tarjetas de crédito"
+        ],
+        "turkish": [
+          {
+            "prefix": "hanehalkı borç"
+          },
+          {
+            "prefix": "hane halkı borç"
+          },
+          {
+            "prefix": "hanehalkının borç"
+          },
+          {
+            "prefix": "hane halkının borç"
+          },
+          {
+            "prefix": "hanehalkı yükümlülük"
+          },
+          {
+            "prefix": "hane halkı yükümlülük"
+          },
+          {
+            "prefix": "hanelerin borç"
+          },
+          {
+            "prefix": "tüketici borç"
+          },
+          {
+            "prefix": "bireysel borçluluk"
+          },
+          {
+            "prefix": "hanehalkı kaldıraç"
+          }
+        ],
+        "thai": [
+          "หนี้ครัวเรือน",
+          "หนี้สินครัวเรือน",
+          "หนี้ภาคครัวเรือน",
+          "หนี้สินภาคครัวเรือน"
+        ]
+      }
+    },
+    "corporate_debt": {
+      "label": "Corporate Debt",
+      "group": "credit",
+      "forms": {
+        "en": [
+          "corporate debt",
+          "corporate debts",
+          "corporate indebtedness",
+          "corporate borrowing",
+          "corporate leverage"
+        ],
+        "es": [
+          "deuda corporativa",
+          "deuda de las empresas",
+          "deuda de empresas",
+          "deuda empresarial",
+          "endeudamiento corporativo",
+          "endeudamiento de las empresas",
+          "endeudamiento empresarial",
+          "deuda del sector corporativo",
+          "bonos corporativos",
+          "emisión de deuda corporativa",
+          "apalancamiento corporativo"
+        ],
+        "turkish": [
+          {
+            "prefix": "şirket borç"
+          },
+          {
+            "prefix": "şirketlerin borç"
+          },
+          {
+            "prefix": "reel sektör borç"
+          },
+          {
+            "prefix": "reel sektörün borç"
+          },
+          {
+            "prefix": "firma borç"
+          },
+          {
+            "prefix": "firmaların borç"
+          },
+          {
+            "prefix": "özel sektör borç"
+          },
+          {
+            "prefix": "özel sektörün borç"
+          },
+          {
+            "prefix": "kurumsal borç"
+          },
+          {
+            "prefix": "reel sektörün döviz pozisyon"
+          }
+        ],
+        "thai": [
+          "หนี้ภาคธุรกิจ",
+          "หนี้สินภาคธุรกิจ",
+          "หนี้บริษัท",
+          "หนี้ของภาคธุรกิจ",
+          "หนี้ภาคบริษัท"
+        ]
+      }
+    },
+    "mortgage_lending": {
+      "label": "Mortgage Lending",
+      "group": "credit",
+      "forms": {
+        "en": [
+          "mortgage lending",
+          "mortgage loans",
+          "mortgage loan",
+          "mortgages",
+          "mortgage rates",
+          "mortgage rate",
+          "mortgage market",
+          "housing loans",
+          "home loans"
+        ],
+        "es": [
+          "crédito hipotecario",
+          "créditos hipotecarios",
+          "préstamo hipotecario",
+          "préstamos hipotecarios",
+          "hipoteca",
+          "hipotecas",
+          "tasa hipotecaria",
+          "tasas hipotecarias",
+          "mercado hipotecario",
+          "financiamiento hipotecario",
+          "cartera hipotecaria",
+          "crédito para vivienda",
+          "créditos para vivienda"
+        ],
+        "turkish": [
+          {
+            "prefix": "konut kredi"
+          },
+          {
+            "prefix": "ipotekli kredi"
+          },
+          {
+            "prefix": "i̇potekli kredi"
+          },
+          {
+            "prefix": "ipotekli konut finansman"
+          },
+          {
+            "prefix": "konut finansman"
+          },
+          {
+            "prefix": "mortgage"
+          }
+        ],
+        "thai": [
+          "สินเชื่อที่อยู่อาศัย",
+          "สินเชื่อบ้าน",
+          "สินเชื่อเพื่อที่อยู่อาศัย",
+          "กู้ซื้อบ้าน"
+        ]
+      }
+    },
+    "financial_stability": {
+      "label": "Financial Stability",
+      "group": "financial_stability_regulation",
+      "forms": {
+        "en": [
+          "financial stability",
+          "financial instability",
+          "financial stability report",
+          "financial system stability",
+          "stability of the financial system"
+        ],
+        "es": [
+          "estabilidad financiera",
+          "inestabilidad financiera",
+          "estabilidad del sistema financiero",
+          "Consejo de Estabilidad del Sistema Financiero",
+          "Consejo de Estabilidad Financiera",
+          "solidez del sistema financiero",
+          "salud del sistema financiero",
+          "vulnerabilidades financieras"
+        ],
+        "turkish": [
+          {
+            "prefix": "finansal istikrar"
+          },
+          {
+            "prefix": "finansal sistemin istikrar"
+          },
+          {
+            "prefix": "finansal sistemin sağlamlığ"
+          }
+        ],
+        "thai": [
+          "เสถียรภาพทางการเงิน",
+          "เสถียรภาพระบบการเงิน",
+          "เสถียรภาพของระบบการเงิน",
+          "เสถียรภาพระบบสถาบันการเงิน"
+        ]
+      }
+    },
+    "financial_regulation": {
+      "label": "Financial Regulation",
+      "group": "financial_stability_regulation",
+      "forms": {
+        "en": [
+          "financial regulation",
+          "financial regulations",
+          "financial regulator",
+          "financial regulators",
+          "banking regulation",
+          "banking regulations",
+          "bank regulation",
+          "banking supervision",
+          "bank supervision",
+          "financial supervision",
+          "financial oversight"
+        ],
+        "es": [
+          "regulación financiera",
+          "regulaciones financieras",
+          "regulación bancaria",
+          "normativa financiera",
+          "supervisión financiera",
+          "supervisión bancaria",
+          "reforma financiera",
+          "Comisión Nacional Bancaria y de Valores",
+          "CNBV",
+          "regulador financiero",
+          "reguladores financieros",
+          "autoridades financieras",
+          "marco regulatorio financiero"
+        ],
+        "turkish": [
+          {
+            "prefix": "finansal düzenleme"
+          },
+          {
+            "prefix": "finansal düzenleyici"
+          },
+          {
+            "prefix": "finansal regülasyon"
+          },
+          {
+            "prefix": "bankacılık düzenleme"
+          },
+          {
+            "prefix": "bankacılık regülasyon"
+          },
+          {
+            "prefix": "bankacılık denetim"
+          },
+          {
+            "prefix": "bankacılık kanun"
+          },
+          "bddk"
+        ],
+        "thai": [
+          "การกำกับดูแลทางการเงิน",
+          "หน่วยงานกำกับดูแลทางการเงิน",
+          "กำกับดูแลสถาบันการเงิน",
+          "การกำกับดูแลภาคการเงิน",
+          "กฎระเบียบทางการเงิน"
+        ]
+      }
+    },
+    "prudential_regulation": {
+      "label": "Prudential Regulation",
+      "group": "financial_stability_regulation",
+      "forms": {
+        "en": [
+          "prudential regulation",
+          "prudential regulations",
+          "macroprudential",
+          "macro-prudential",
+          "microprudential",
+          "micro-prudential",
+          "prudential norms",
+          "prudential requirements",
+          "prudential measures"
+        ],
+        "es": [
+          "regulación prudencial",
+          "supervisión prudencial",
+          "normas prudenciales",
+          "requisitos prudenciales",
+          "macroprudencial",
+          "macroprudenciales",
+          "Basilea III",
+          "Basilea IV",
+          "acuerdos de Basilea",
+          "Comité de Basilea"
+        ],
+        "turkish": [
+          {
+            "prefix": "ihtiyati düzenleme"
+          },
+          {
+            "prefix": "i̇htiyati düzenleme"
+          },
+          {
+            "prefix": "makroihtiyati"
+          },
+          {
+            "prefix": "makro ihtiyati"
+          },
+          {
+            "prefix": "mikroihtiyati"
+          },
+          {
+            "prefix": "mikro ihtiyati"
+          }
+        ],
+        "thai": [
+          "การกำกับดูแลเชิงระมัดระวัง",
+          "คณะกรรมการนโยบายสถาบันการเงิน",
+          "กนส.",
+          "มาตรการ LTV",
+          "macroprudential"
+        ]
+      }
+    },
+    "capital_adequacy": {
+      "label": "Capital Adequacy",
+      "group": "financial_stability_regulation",
+      "forms": {
+        "en": [
+          "capital adequacy",
+          "capital adequacy ratio",
+          "capital requirements",
+          "capital requirement",
+          "Basel III",
+          "Basel II",
+          "capital buffer",
+          "capital buffers",
+          "tier 1 capital",
+          "tier-1 capital"
+        ],
+        "es": [
+          "adecuación de capital",
+          "suficiencia de capital",
+          "índice de capitalización",
+          "coeficiente de capital",
+          "requerimientos de capital",
+          "requisitos de capital",
+          "colchón de capital",
+          "colchones de capital",
+          "solvencia bancaria",
+          "índice de solvencia",
+          "capital regulatorio",
+          "ratio de capital",
+          "ratio de solvencia",
+          "capitalización bancaria"
+        ],
+        "turkish": [
+          {
+            "prefix": "sermaye yeterlili"
+          },
+          {
+            "prefix": "sermaye tampon"
+          },
+          "basel ii",
+          "basel iii",
+          "basel 3",
+          "basel iv"
+        ],
+        "thai": [
+          "ความเพียงพอของเงินกองทุน",
+          "เงินกองทุนต่อสินทรัพย์เสี่ยง",
+          "BIS ratio"
+        ]
+      }
+    },
+    "systemic_risk": {
+      "label": "Systemic Risk",
+      "group": "financial_stability_regulation",
+      "forms": {
+        "en": [
+          "systemic risk",
+          "systemic risks",
+          "systemically important",
+          "too big to fail",
+          "systemic banking crisis"
+        ],
+        "es": [
+          "riesgo sistémico",
+          "riesgos sistémicos",
+          "importancia sistémica",
+          "sistémicamente importantes",
+          "crisis sistémica",
+          "vulnerabilidades sistémicas",
+          "demasiado grande para caer",
+          "too big to fail"
+        ],
+        "turkish": [
+          {
+            "prefix": "sistemik risk"
+          },
+          {
+            "prefix": "finansal kırılganl"
+          },
+          {
+            "prefix": "sistemik öneme sahip"
+          },
+          {
+            "prefix": "sistemik kriz"
+          }
+        ],
+        "thai": [
+          "ความเสี่ยงเชิงระบบ",
+          "ความเสี่ยงต่อระบบการเงิน",
+          "systemic risk"
+        ]
+      }
+    },
+    "financial_contagion": {
+      "label": "Financial Contagion",
+      "group": "financial_stability_regulation",
+      "forms": {
+        "en": [
+          "financial contagion",
+          "contagion effect",
+          "contagion effects",
+          "contagion risk",
+          "risk of contagion",
+          "market contagion"
+        ],
+        "es": [
+          "contagio financiero",
+          "contagio bancario",
+          "contagio de la crisis financiera",
+          "contagio a los mercados",
+          "contagio en los mercados",
+          "contagio a otros mercados",
+          "contagio a los mercados emergentes",
+          "contagio entre bancos",
+          "efecto contagio en los mercados"
+        ],
+        "turkish": [
+          {
+            "prefix": "finansal bulaşma"
+          },
+          {
+            "prefix": "finansal bulaşıcı"
+          },
+          {
+            "prefix": "finansal yayılma"
+          },
+          {
+            "prefix": "krizin yayılma"
+          },
+          {
+            "prefix": "krizin sıçrama"
+          },
+          {
+            "prefix": "krizin bulaşma"
+          },
+          {
+            "prefix": "krizin diğer ülkelere sıçra"
+          }
+        ],
+        "thai": [
+          "การลุกลามทางการเงิน",
+          "การแพร่กระจายของวิกฤตการเงิน",
+          "วิกฤตการเงินลุกลาม",
+          "ลุกลามไปยังระบบการเงิน"
+        ]
+      }
+    },
+    "illicit_financial_flows": {
+      "label": "Illicit Financial Flows",
+      "group": "financial_integrity",
+      "forms": {
+        "en": [
+          "illicit financial flows",
+          "illicit financial flow",
+          "illicit flows",
+          "illicit capital flows",
+          "trade misinvoicing",
+          "trade mis-invoicing"
+        ],
+        "es": [
+          "flujos financieros ilícitos",
+          "flujos ilícitos de capital",
+          "flujos de capital ilícitos",
+          "flujos de dinero ilícito",
+          "salidas ilícitas de capital",
+          "dinero de origen ilícito"
+        ],
+        "turkish": [
+          {
+            "prefix": "yasa dışı mali akış"
+          },
+          {
+            "prefix": "yasadışı mali akış"
+          },
+          {
+            "prefix": "yasa dışı finansal akış"
+          },
+          {
+            "prefix": "yasadışı finansal akış"
+          },
+          {
+            "prefix": "yasa dışı para akış"
+          },
+          {
+            "prefix": "yasadışı para akış"
+          },
+          {
+            "prefix": "yasa dışı sermaye çıkış"
+          },
+          {
+            "prefix": "kaynağı belirsiz para"
+          }
+        ],
+        "thai": [
+          "กระแสเงินทุนผิดกฎหมาย",
+          "กระแสการเงินที่ผิดกฎหมาย",
+          "กระแสเงินผิดกฎหมาย"
+        ]
+      }
+    },
+    "money_laundering": {
+      "label": "Money Laundering",
+      "group": "financial_integrity",
+      "forms": {
+        "en": [
+          "money laundering",
+          "money-laundering",
+          "anti-money laundering",
+          "anti-money-laundering",
+          "laundering money",
+          "laundered money",
+          "launder money",
+          "FATF"
+        ],
+        "es": [
+          "lavado de dinero",
+          "lavado de activos",
+          "blanqueo de capitales",
+          "blanqueo de dinero",
+          "legitimación de capitales",
+          "recursos de procedencia ilícita",
+          "operaciones con recursos de procedencia ilícita",
+          "lavar dinero",
+          "lavó dinero",
+          "lavaba dinero",
+          "antilavado",
+          "Unidad de Inteligencia Financiera",
+          "UIF"
+        ],
+        "turkish": [
+          {
+            "prefix": "karapara"
+          },
+          {
+            "prefix": "para aklama"
+          },
+          {
+            "prefix": "suç gelirlerinin aklan"
+          },
+          {
+            "prefix": "mali suçları araştırma kurul"
+          },
+          "masak",
+          "fatf"
+        ],
+        "thai": [
+          "ฟอกเงิน",
+          "ปปง.",
+          "ป.ป.ง."
+        ]
+      }
+    },
+    "terrorist_financing": {
+      "label": "Terrorist Financing",
+      "group": "financial_integrity",
+      "forms": {
+        "en": [
+          "terrorist financing",
+          "terror financing",
+          "terrorism financing",
+          "financing of terrorism",
+          "counter-terrorist financing",
+          "terror funding",
+          "terrorist funding"
+        ],
+        "es": [
+          "financiamiento del terrorismo",
+          "financiamiento al terrorismo",
+          "financiación del terrorismo",
+          "financiación al terrorismo",
+          "financiamiento terrorista",
+          "financiación terrorista",
+          "financiar el terrorismo",
+          "Grupo de Acción Financiera Internacional",
+          "GAFI",
+          "GAFILAT"
+        ],
+        "turkish": [
+          {
+            "prefix": "terörün finansman"
+          },
+          {
+            "prefix": "terör finansman"
+          },
+          {
+            "prefix": "terörizmin finansman"
+          },
+          {
+            "prefix": "teröre finansman"
+          },
+          {
+            "prefix": "terörün finanse edil"
+          },
+          {
+            "prefix": "terör örgütüne finansman"
+          },
+          {
+            "prefix": "terör örgütlerinin finansman"
+          }
+        ],
+        "thai": [
+          "สนับสนุนทางการเงินแก่การก่อการร้าย",
+          "สนับสนุนทางการเงินแก่ผู้ก่อการร้าย",
+          "การเงินเพื่อการก่อการร้าย",
+          "ทุนสนับสนุนการก่อการร้าย"
+        ]
+      }
+    },
+    "financial_inclusion": {
+      "label": "Financial Inclusion",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "financial inclusion",
+          "financial exclusion",
+          "unbanked",
+          "underbanked",
+          "financially excluded",
+          "access to financial services"
+        ],
+        "es": [
+          "inclusión financiera",
+          "exclusión financiera",
+          "bancarización",
+          "población no bancarizada",
+          "personas no bancarizadas",
+          "no bancarizados",
+          "acceso a servicios financieros",
+          "acceso a los servicios financieros",
+          "Encuesta Nacional de Inclusión Financiera"
+        ],
+        "turkish": [
+          {
+            "prefix": "finansal kapsayıcılık"
+          },
+          {
+            "prefix": "finansal kapsama"
+          },
+          {
+            "prefix": "finansal içerme"
+          },
+          {
+            "prefix": "finansal erişim"
+          },
+          {
+            "prefix": "finansal hizmetlere erişim"
+          },
+          {
+            "prefix": "bankacılık hizmetlerine erişim"
+          },
+          {
+            "prefix": "banka hesabı olmayan"
+          }
+        ],
+        "thai": [
+          "การเข้าถึงบริการทางการเงิน",
+          "ความครอบคลุมทางการเงิน",
+          "ระบบการเงินที่ทั่วถึง",
+          "financial inclusion"
+        ]
+      }
+    },
+    "access_to_credit": {
+      "label": "Access to Credit",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "access to credit",
+          "access to finance",
+          "access to loans",
+          "access to financing",
+          "credit access",
+          "credit constraints",
+          "credit-constrained",
+          "SME finance",
+          "SME financing",
+          "SME lending"
+        ],
+        "es": [
+          "acceso al crédito",
+          "acceso a crédito",
+          "acceso a créditos",
+          "acceso a préstamos",
+          "acceso al financiamiento",
+          "acceso a financiamiento",
+          "acceso a la financiación",
+          "acceso a financiación",
+          "financiamiento para pymes",
+          "financiamiento a pymes",
+          "crédito a pymes",
+          "créditos a pymes"
+        ],
+        "turkish": [
+          {
+            "prefix": "krediye erişim"
+          },
+          {
+            "prefix": "kredilere erişim"
+          },
+          {
+            "prefix": "kredi erişim"
+          },
+          {
+            "prefix": "finansmana erişim"
+          },
+          {
+            "prefix": "kredi bulmakta zorlan"
+          },
+          {
+            "prefix": "finansmana ulaşım"
+          }
+        ],
+        "thai": [
+          "การเข้าถึงสินเชื่อ",
+          "เข้าถึงสินเชื่อ",
+          "เข้าไม่ถึงสินเชื่อ",
+          "เข้าถึงแหล่งเงินทุน",
+          "เข้าไม่ถึงแหล่งเงินทุน",
+          "เข้าถึงแหล่งเงินกู้"
+        ]
+      }
+    },
+    "microfinance": {
+      "label": "Microfinance",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "microfinance",
+          "micro-finance",
+          "microcredit",
+          "micro-credit",
+          "microloan",
+          "microloans",
+          "microfinance institutions"
+        ],
+        "es": [
+          "microfinanzas",
+          "microfinanciera",
+          "microfinancieras",
+          "microfinanciamiento",
+          "microcrédito",
+          "microcréditos",
+          "micropréstamos",
+          "Sofipos",
+          "sociedades financieras populares",
+          "Tandas para el Bienestar"
+        ],
+        "turkish": [
+          {
+            "prefix": "mikrofinans"
+          },
+          {
+            "prefix": "mikro finans"
+          },
+          {
+            "prefix": "mikrokredi"
+          },
+          {
+            "prefix": "mikro kredi"
+          },
+          {
+            "prefix": "grameen"
+          }
+        ],
+        "thai": [
+          "ไมโครไฟแนนซ์",
+          "microfinance",
+          "นาโนไฟแนนซ์",
+          "พิโกไฟแนนซ์",
+          "สินเชื่อรายย่อยระดับจุลภาค"
+        ]
+      }
+    },
+    "mobile_money": {
+      "label": "Mobile Money",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "mobile money",
+          "M-Pesa",
+          "Mpesa",
+          "mobile wallet",
+          "mobile wallets",
+          "mobile banking"
+        ],
+        "es": [
+          "dinero móvil",
+          "billetera móvil",
+          "billeteras móviles",
+          "M-Pesa",
+          "transferencias por celular"
+        ],
+        "turkish": [
+          {
+            "prefix": "mobil para"
+          },
+          {
+            "prefix": "mobil cüzdan"
+          },
+          {
+            "prefix": "cep telefonuyla para transfer"
+          },
+          "m-pesa"
+        ],
+        "thai": [
+          "โมบายมันนี่",
+          "mobile money",
+          "เงินผ่านมือถือ",
+          "M-Pesa",
+          "เอ็มเปซา"
+        ]
+      }
+    },
+    "digital_finance": {
+      "label": "Digital Finance",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "digital finance",
+          "digital financial services",
+          "digital banking",
+          "digital bank",
+          "digital banks",
+          "neobank",
+          "neobanks",
+          "online banking",
+          "internet banking"
+        ],
+        "es": [
+          "finanzas digitales",
+          "banca digital",
+          "banco digital",
+          "bancos digitales",
+          "banca en línea",
+          "banca móvil",
+          "banca por internet",
+          "neobanco",
+          "neobancos",
+          "servicios financieros digitales",
+          "digitalización financiera",
+          "banca abierta",
+          "open banking"
+        ],
+        "turkish": [
+          {
+            "prefix": "dijital finans"
+          },
+          {
+            "prefix": "dijital banka"
+          },
+          {
+            "prefix": "internet bankacılığ"
+          },
+          {
+            "prefix": "mobil bankacılık"
+          },
+          {
+            "prefix": "mobil bankacılığ"
+          },
+          {
+            "prefix": "açık bankacılık"
+          },
+          {
+            "prefix": "açık bankacılığ"
+          }
+        ],
+        "thai": [
+          "การเงินดิจิทัล",
+          "ธนาคารดิจิทัล",
+          "virtual bank"
+        ]
+      }
+    },
+    "digital_payments": {
+      "label": "Digital Payments",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "digital payments",
+          "digital payment",
+          "electronic payments",
+          "e-payments",
+          "mobile payments",
+          "cashless payments",
+          "QR payments",
+          "QR code payments",
+          "instant payments",
+          "real-time payments",
+          "payment system",
+          "payment systems"
+        ],
+        "es": [
+          "pagos digitales",
+          "pago digital",
+          "pagos electrónicos",
+          "pago electrónico",
+          "medios de pago electrónicos",
+          "medios de pago digitales",
+          "transferencias electrónicas",
+          "pagos sin contacto",
+          "pagos móviles",
+          "pagos con código QR",
+          "SPEI",
+          "CoDi",
+          "DiMo"
+        ],
+        "turkish": [
+          {
+            "prefix": "dijital ödeme"
+          },
+          {
+            "prefix": "mobil ödeme"
+          },
+          {
+            "prefix": "temassız ödeme"
+          },
+          {
+            "prefix": "elektronik ödeme"
+          },
+          {
+            "prefix": "anlık ödeme"
+          },
+          {
+            "prefix": "ödeme kuruluş"
+          },
+          {
+            "prefix": "elektronik para kuruluş"
+          },
+          {
+            "prefix": "dijital cüzdan"
+          },
+          {
+            "prefix": "karekod ile ödeme"
+          }
+        ],
+        "thai": [
+          "การชำระเงินดิจิทัล",
+          "ชำระเงินแบบดิจิทัล",
+          "เพย์เมนต์ดิจิทัล",
+          "การชำระเงินอิเล็กทรอนิกส์",
+          "ชำระเงินทางอิเล็กทรอนิกส์",
+          "พร้อมเพย์",
+          "PromptPay",
+          "สังคมไร้เงินสด",
+          "e-Payment"
+        ]
+      }
+    },
+    "fintech": {
+      "label": "Fintech",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "fintech",
+          "fintechs",
+          "fin-tech",
+          "financial technology",
+          "fintech firms",
+          "fintech companies"
+        ],
+        "es": [
+          "fintech",
+          "fintechs",
+          "tecnología financiera",
+          "tecnofinanzas",
+          "instituciones de tecnología financiera",
+          "Ley Fintech"
+        ],
+        "turkish": [
+          {
+            "prefix": "fintek"
+          },
+          {
+            "prefix": "fintech"
+          },
+          {
+            "prefix": "finansal teknoloji"
+          }
+        ],
+        "thai": [
+          "ฟินเทค",
+          "fintech",
+          "เทคโนโลยีทางการเงิน"
+        ]
+      }
+    },
+    "cryptocurrency": {
+      "label": "Cryptocurrency",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "cryptocurrency",
+          "cryptocurrencies",
+          "crypto",
+          "bitcoin",
+          "crypto assets",
+          "crypto-assets",
+          "crypto asset",
+          "stablecoin",
+          "stablecoins",
+          "ethereum"
+        ],
+        "es": [
+          "criptomonedas",
+          "criptomoneda",
+          "criptoactivos",
+          "criptoactivo",
+          "criptodivisas",
+          "criptodivisa",
+          "bitcoin",
+          "ethereum",
+          "monedas virtuales",
+          "moneda virtual",
+          "activos virtuales",
+          "stablecoins",
+          "stablecoin"
+        ],
+        "turkish": [
+          {
+            "prefix": "kripto para"
+          },
+          {
+            "prefix": "kriptopara"
+          },
+          {
+            "prefix": "kripto varlık"
+          },
+          {
+            "prefix": "kripto borsa"
+          },
+          {
+            "prefix": "bitcoin"
+          },
+          {
+            "prefix": "stablecoin"
+          },
+          {
+            "prefix": "ethereum"
+          }
+        ],
+        "thai": [
+          "คริปโต",
+          "คริปโท",
+          "cryptocurrency",
+          "บิตคอยน์",
+          "bitcoin"
+        ]
+      }
+    },
+    "central_bank_digital_currency": {
+      "label": "Central Bank Digital Currency",
+      "group": "inclusion_digital_finance",
+      "forms": {
+        "en": [
+          "central bank digital currency",
+          "central bank digital currencies",
+          "CBDC",
+          "CBDCs",
+          "digital yuan",
+          "e-CNY",
+          "digital rupee",
+          "digital euro"
+        ],
+        "es": [
+          "moneda digital del banco central",
+          "moneda digital de banco central",
+          "monedas digitales de bancos centrales",
+          "monedas digitales de los bancos centrales",
+          "dinero digital del banco central",
+          "moneda digital soberana",
+          "CBDC",
+          "CBDCs",
+          "euro digital",
+          "yuan digital",
+          "peso digital",
+          "Drex"
+        ],
+        "turkish": [
+          {
+            "prefix": "dijital merkez bankası para"
+          },
+          {
+            "prefix": "merkez bankası dijital para"
+          },
+          {
+            "prefix": "dijital türk lira"
+          },
+          {
+            "prefix": "dijital lira"
+          },
+          "mbdp",
+          "cbdc",
+          {
+            "prefix": "dijital yuan"
+          },
+          {
+            "prefix": "dijital avro"
+          },
+          {
+            "prefix": "dijital euro"
+          }
+        ],
+        "thai": [
+          "CBDC",
+          "เงินบาทดิจิทัล",
+          "หยวนดิจิทัล",
+          "e-CNY",
+          "โครงการอินทนนท์",
+          "mBridge"
+        ]
+      }
+    },
+    "capital_markets": {
+      "label": "Capital Markets",
+      "group": "capital_markets_insurance",
+      "forms": {
+        "en": [
+          "capital market",
+          "capital markets",
+          "securities market",
+          "securities markets",
+          "securities regulator",
+          "securities commission",
+          "securities and exchange commission",
+          "capital market development"
+        ],
+        "es": [
+          "mercado de capitales",
+          "mercados de capitales",
+          "mercado de valores",
+          "mercados de valores",
+          "oferta pública inicial",
+          "ofertas públicas iniciales",
+          "salida a bolsa"
+        ],
+        "turkish": [
+          {
+            "prefix": "sermaye piyasa"
+          },
+          "spk",
+          {
+            "prefix": "halka arz"
+          },
+          {
+            "prefix": "menkul kıymet"
+          }
+        ],
+        "thai": [
+          "ตลาดทุน",
+          "ก.ล.ต.",
+          "กลต."
+        ]
+      }
+    },
+    "stock_market": {
+      "label": "Stock Market",
+      "group": "capital_markets_insurance",
+      "forms": {
+        "en": [
+          "stock market",
+          "stock markets",
+          "stock exchange",
+          "stock exchanges",
+          "equity market",
+          "equity markets",
+          "share prices",
+          "stock prices",
+          "bourse",
+          "initial public offering",
+          "IPO",
+          "IPOs"
+        ],
+        "es": [
+          "bolsa de valores",
+          "bolsas de valores",
+          "mercado bursátil",
+          "mercados bursátiles",
+          "mercado accionario",
+          "mercados accionarios",
+          "BMV",
+          "Bolsa Mexicana de Valores",
+          "Biva",
+          "índice bursátil",
+          "índices bursátiles",
+          "Wall Street",
+          "Dow Jones",
+          "Nasdaq",
+          "bolsa de Nueva York"
+        ],
+        "turkish": [
+          {
+            "prefix": "borsa istanbul"
+          },
+          {
+            "prefix": "borsa i̇stanbul"
+          },
+          "bist",
+          "bi̇st",
+          {
+            "prefix": "bist100"
+          },
+          {
+            "prefix": "borsa endeks"
+          },
+          {
+            "prefix": "hisse senedi piyasa"
+          },
+          {
+            "prefix": "hisse senetleri piyasa"
+          },
+          {
+            "prefix": "pay piyasa"
+          },
+          {
+            "prefix": "borsada işlem gör"
+          }
+        ],
+        "thai": [
+          "ตลาดหุ้น",
+          "ตลาดหลักทรัพย์",
+          "ดัชนีหุ้น",
+          "SET Index",
+          "ตลท."
+        ]
+      }
+    },
+    "bond_market": {
+      "label": "Bond Market",
+      "group": "capital_markets_insurance",
+      "forms": {
+        "en": [
+          "bond market",
+          "bond markets",
+          "bond yield",
+          "bond yields",
+          "government bonds",
+          "sovereign bonds",
+          "corporate bonds",
+          "treasury bonds",
+          "eurobond",
+          "eurobonds",
+          "bond issuance",
+          "sukuk"
+        ],
+        "es": [
+          "mercado de bonos",
+          "mercados de bonos",
+          "mercado de deuda",
+          "mercados de deuda",
+          "mercado de renta fija",
+          "renta fija",
+          "bonos del Tesoro",
+          "bonos soberanos",
+          "bonos gubernamentales",
+          "bonos del gobierno",
+          "rendimiento de los bonos",
+          "rendimientos de los bonos",
+          "Cetes",
+          "emisión de bonos",
+          "curva de rendimientos"
+        ],
+        "turkish": [
+          {
+            "prefix": "tahvil piyasa"
+          },
+          {
+            "prefix": "tahvil ve bono piyasa"
+          },
+          {
+            "prefix": "tahvil getiri"
+          },
+          {
+            "prefix": "tahvil faiz"
+          },
+          {
+            "prefix": "devlet tahvil"
+          },
+          {
+            "prefix": "özel sektör tahvil"
+          },
+          {
+            "prefix": "tahvil ihrac"
+          },
+          {
+            "prefix": "hazine bono"
+          },
+          {
+            "prefix": "eurobond"
+          }
+        ],
+        "thai": [
+          "ตลาดพันธบัตร",
+          "ตลาดตราสารหนี้",
+          "อัตราผลตอบแทนพันธบัตร",
+          "บอนด์ยีลด์"
+        ]
+      }
+    },
+    "insurance_markets": {
+      "label": "Insurance Markets",
+      "group": "capital_markets_insurance",
+      "forms": {
+        "en": [
+          "insurance markets",
+          "insurance market",
+          "insurance sector",
+          "insurance industry",
+          "insurance penetration",
+          "insurance companies",
+          "insurers",
+          "reinsurance",
+          "microinsurance"
+        ],
+        "es": [
+          "sector asegurador",
+          "industria aseguradora",
+          "industria de seguros",
+          "sector de seguros",
+          "mercado de seguros",
+          "mercado asegurador",
+          "compañías de seguros",
+          "compañías aseguradoras",
+          "empresas aseguradoras",
+          "instituciones de seguros",
+          "reaseguro",
+          "reaseguradoras",
+          "Comisión Nacional de Seguros y Fianzas",
+          "CNSF",
+          "penetración del seguro"
+        ],
+        "turkish": [
+          {
+            "prefix": "sigorta sektör"
+          },
+          {
+            "prefix": "sigortacılık sektör"
+          },
+          {
+            "prefix": "sigorta piyasa"
+          },
+          {
+            "prefix": "sigorta ve reasürans"
+          },
+          {
+            "prefix": "reasürans"
+          },
+          {
+            "prefix": "sigorta penetrasyon"
+          },
+          {
+            "prefix": "sigorta prim üretim"
+          }
+        ],
+        "thai": [
+          "ธุรกิจประกันภัย",
+          "อุตสาหกรรมประกันภัย",
+          "ตลาดประกันภัย",
+          "ธุรกิจประกันชีวิต",
+          "อุตสาหกรรมประกันชีวิต",
+          "บริษัทประกันภัย",
+          "คปภ."
+        ]
+      }
+    },
+    "pension_funds": {
+      "label": "Pension Funds",
+      "group": "capital_markets_insurance",
+      "forms": {
+        "en": [
+          "pension funds",
+          "pension fund",
+          "pension fund assets",
+          "pension assets",
+          "provident fund",
+          "provident funds",
+          "superannuation"
+        ],
+        "es": [
+          "fondos de pensiones",
+          "fondo de pensiones",
+          "Afores",
+          "Afore",
+          "Siefores",
+          "Consar",
+          "administradoras de fondos para el retiro",
+          "administradoras de fondos de pensiones",
+          "fondos para el retiro",
+          "ahorro para el retiro",
+          "fondos previsionales"
+        ],
+        "turkish": [
+          {
+            "prefix": "emeklilik fon"
+          },
+          {
+            "prefix": "emeklilik yatırım fon"
+          },
+          {
+            "prefix": "bireysel emeklilik"
+          },
+          {
+            "prefix": "özel emeklilik"
+          },
+          {
+            "prefix": "tamamlayıcı emeklilik"
+          },
+          {
+            "prefix": "otomatik katılım sistem"
+          },
+          "bes"
+        ],
+        "thai": [
+          "กองทุนบำเหน็จบำนาญ",
+          "กองทุนบำนาญ",
+          "กบข.",
+          "กองทุนสำรองเลี้ยงชีพ",
+          "กองทุนการออมแห่งชาติ",
+          "กอช.",
+          "กองทุนเกษียณอายุ"
+        ]
       }
     }
   }
