@@ -1395,7 +1395,15 @@ document.querySelectorAll('#item-select .chip-group-header').forEach(h => {
 });
 document.querySelectorAll('#item-select .tree-caret').forEach(b => {
     b.addEventListener('click', function() {
-        b.closest('.tree-group').classList.toggle('is-open');
+        const group = b.closest('.tree-group');
+        // Opening a group draws its next level: the concepts and subgroups
+        // directly beneath it. Closing leaves the ticks alone.
+        if (!group.classList.toggle('is-open')) return;
+        group.querySelectorAll(
+            ':scope > .chip-group-body > .chip input, ' +
+            ':scope > .chip-group-body > .tree-group > .tree-row input'
+        ).forEach(i => { i.checked = true; });
+        document.getElementById('item-select').dispatchEvent(new Event('change'));
     });
 });
 document.getElementById('default-btn').addEventListener('click', function() {
