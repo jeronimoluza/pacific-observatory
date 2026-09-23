@@ -31,7 +31,7 @@ _CJK: tuple[PackPattern, ...] = (
     PackPattern(
         id="SET_JA",
         regex=re.compile(
-            r"(?P<count>\d+)\s*(?:本入|束セット|個入|枚入|袋入|セット|組)",
+            r"(?P<count>\d+)\s*(?:本入|束セット|点セット|個入|枚入|袋入|セット|組)",
             re.IGNORECASE,
         ),
         groups=("count",),

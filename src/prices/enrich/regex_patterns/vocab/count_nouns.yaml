@@ -69,6 +69,11 @@ EN_APOS_S:
 EN_N_TICKETS:
   {template: num_noun, sep: required, lb: word, case: cs,
    nouns: ['Tickets?', 'tickets?', 'TICKETS?']}
+# Russian pharmacy counts. lb: none, not word: the names glue a Latin `N` to
+# the digits ("ЦИТОФЛАВИН N100 ТАБЛ"), and `(?<!\w)` rejects that -- 2,758
+# corpus rows with it, 730,907 without (00-SPEC, 2026-09-17 round 2).
+RU_TABS_CAPS:
+  {template: num_noun, sep: optional, lb: none, case: ci, nouns: ['табл', 'капс']}
 
 # broad bidirectional count-noun class (C): <num><noun> + guarded <noun><num>.
 # Appended last so existing first-match order is unchanged; fires only when no
@@ -77,7 +82,8 @@ EN_COUNT_NUM_NOUN:
   {template: num_noun, sep: optional, lb: word, case: ci,
    nouns: ['slices?', 'sachets?', 'cakes?', 'combos?', 'pods?', 'sliders?',
            'sticks?', 'bars?', 'tins?', 'trays?', 'tubes?', 'bottles?',
-           'cans?', 'jars?', 'cups?', 'bags?', 'boxe?s?', 'cases?', 'sets?']}
+           'cans?', 'jars?', 'cups?', 'bags?', 'boxe?s?', 'cases?', 'sets?',
+           'pk', 'stk', 'unidades', 'piezas', 'und']}
 # Noun-then-number is the low-precision direction: real large packs are written
 # number-first ("300 Pack", "200'S"), while a bare number TRAILING a container
 # noun is usually an SKU ("Duo Pack 806939") or a gram weight ("TIN BOX 250").

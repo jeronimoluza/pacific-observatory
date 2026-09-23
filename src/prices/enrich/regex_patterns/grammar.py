@@ -255,6 +255,7 @@ _META = {
     "EN_PCS": dict(lang="any"),
     "EN_APOS_S": dict(lang="any"),
     "EN_N_TICKETS": dict(lang="any"),
+    "RU_TABS_CAPS": dict(lang="any"),
     # count_pack/vi + vi_sheets (extra_count, script=None)
     "VI_PIECES": dict(lang="vi"),
     "VI_TO_SHEETS": dict(lang="any"),

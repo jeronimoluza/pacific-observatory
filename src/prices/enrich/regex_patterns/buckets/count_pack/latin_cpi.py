@@ -16,4 +16,5 @@ PATTERNS: tuple[PackPattern, ...] = grammar.build_ids(
     "EN_PCS",
     "EN_APOS_S",
     "EN_N_TICKETS",
+    "RU_TABS_CAPS",
 )

@@ -16,23 +16,30 @@
 # parses -- Python's \d and float() both accept Arabic-Indic and Persian digits,
 # so "454 gram" written as arabic-indic numerals reads without touching the
 # value production.
+# Extraction-quality step 3 added four surfaces (2026-09-23): grs and Georgian
+# გრ (grams), cc and Persian میل (millilitres), in both tables. Each takes this
+# table's fixed shape, pinned here because the YAML has no per-surface field:
+# case-insensitive (VALUE_UNIT and the P-class compile with IGNORECASE), left
+# guard `_LB` (no letter or digit, and no digit-then-dot, before the number),
+# optional whitespace between number and unit, and a trailing `\b`, so "320cc"
+# and "320 CC" read as 0.32 lt while "cc cream" (no number) and "320ccs" do not.
 # M-class canon measure surfaces (the VALUE_UNIT alternation), longest-first-safe.
 measure:
-  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g, гр, г, גרם, גר, ג, กรัม, جرام, غرام, جم, غم, گرم]}
+  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [grs, gm, gr, g, гр, г, გრ, גרם, גר, ג, กรัม, جرام, غرام, جم, غم, گرم]}
   - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg, кг, 'ק"ג', קג, קילוגרם, קילו, กิโลกรัม, กิโล, กก, كيلوجرام, كيلوغرام, کیلوگرم, كجم, كغم, كيلو, کیلو, كغ]}
   - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg, мг]}
   - {basis: mass,   su: kg, mul: 0.0283495, surfaces: [oz]}
   - {basis: mass,   su: kg, mul: 0.453592,  surfaces: [lb]}
-  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, мл, 'מ"ל', מל, מיליליטר, มิลลิลิตร, ซีซี, มล, ملي لتر, میلی‌لیتر, میلی لیتر, ملل, مل]}
+  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, cc, мл, 'מ"ל', מל, מיליליטר, มิลลิลิตร, ซีซี, มล, ملي لتر, میلی‌لیتر, میلی لیتر, ملل, میل, مل]}
   - {basis: volume, su: lt, mul: 1.0,       surfaces: [liters, litres, liter, litre, ltrs, ltr, lt, l, л, ליטר, ל, ลิตร, ليتر, لیتر, لتر]}
 
 # P-class pack-measure unit surfaces — NARROWER than M (no cl, no litre-words,
 # bare l only), reproducing NUM_X_VALUE_UNIT / VALUE_UNIT_X_NUM verbatim.
 pack_measure:
-  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g, гр, г, גרם, גר, ג, กรัม, جرام, غرام, جم, غم, گرم]}
+  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [grs, gm, gr, g, гр, г, გრ, גרם, גר, ג, กรัม, جرام, غرام, جم, غم, گرم]}
   - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg, кг, 'ק"ג', קג, קילוגרם, קילו, กิโลกรัม, กิโล, กก, كيلوجرام, كيلوغرام, کیلوگرم, كجم, كغم, كيلو, کیلو, كغ]}
   - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg, мг]}
   - {basis: mass,   su: kg, mul: 0.0283495, surfaces: [oz]}
   - {basis: mass,   su: kg, mul: 0.453592,  surfaces: [lb]}
-  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, мл, 'מ"ל', מל, מיליליטר, มิลลิลิตร, ซีซี, มล, ملي لتر, میلی‌لیتر, میلی لیتر, ملل, مل]}
+  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, cc, мл, 'מ"ל', מל, מיליליטר, มิลลิลิตร, ซีซี, มล, ملي لتر, میلی‌لیتر, میلی لیتر, ملل, میل, مل]}
   - {basis: volume, su: lt, mul: 1.0,       surfaces: [l, л, ליטר, ל, ลิตร, ليتر, لیتر, لتر]}
