@@ -453,6 +453,7 @@ from prices.enrich.gold_audit.cli import (  # noqa: E402
 )
 
 from prices.rtcal.cli import rtcal as _prices_rtcal  # noqa: E402
+from prices.gate import gate_group as _prices_gate  # noqa: E402
 from prices.sanity import sanity_command as _prices_sanity  # noqa: E402
 from prices.source_sanity import (  # noqa: E402
     source_sanity_command as _prices_source_sanity,
@@ -480,6 +481,7 @@ prices.add_command(_prices_gold_audit, name="gold-audit")
 prices.add_command(_prices_rtcal, name="rtcal")
 prices.add_command(_prices_sanity, name="sanity")
 prices.add_command(_prices_source_sanity, name="source-sanity")
+prices.add_command(_prices_gate, name="gate")
 prices.add_command(_prices_cc_ledger, name="cc-ledger")
 prices.add_command(_prices_cc_exhaustion, name="cc-exhaustion")
 
