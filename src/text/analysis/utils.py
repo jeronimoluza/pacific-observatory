@@ -614,6 +614,8 @@ def load_concept_catalog(concepts_dir: Union[Path, None] = None) -> dict:
             for lang, lang_forms in forms.items():
                 if not _concept_language_ok(lang):
                     fail(f"concept '{cid}': '{lang}' is not a keyword directory name")
+                if not isinstance(lang_forms, list):
+                    fail(f"concept '{cid}': forms.{lang} is not a list")
                 for form in lang_forms:
                     if isinstance(form, str) and form:
                         continue
