@@ -1,7 +1,23 @@
 {
   "heading": "monetary_policy",
   "label": "Monetary policy",
-  "clusters": {},
+  "clusters": {
+    "tightening_cycle": {
+      "label": "Tightening cycle"
+    },
+    "easing_cycle": {
+      "label": "Easing cycle"
+    },
+    "money_and_reserves": {
+      "label": "Money supply and reserves"
+    },
+    "exchange_rate_management": {
+      "label": "Exchange rate management"
+    },
+    "exchange_restrictions": {
+      "label": "Exchange restrictions"
+    }
+  },
   "concepts": {
     "monetary_policy": {
       "label": "Monetary Policy",
@@ -303,7 +319,7 @@
     },
     "monetary_tightening": {
       "label": "Monetary Tightening",
-      "cluster": null,
+      "cluster": "tightening_cycle",
       "forms": {
         "en": [
           "monetary tightening",
@@ -435,7 +451,7 @@
     },
     "monetary_easing": {
       "label": "Monetary Easing",
-      "cluster": null,
+      "cluster": "easing_cycle",
       "forms": {
         "en": [
           "monetary easing",
@@ -581,7 +597,7 @@
     },
     "money_supply": {
       "label": "Money Supply",
-      "cluster": null,
+      "cluster": "money_and_reserves",
       "forms": {
         "en": [
           "money supply",
@@ -649,7 +665,7 @@
     },
     "foreign_exchange_reserves": {
       "label": "Foreign Exchange Reserves",
-      "cluster": null,
+      "cluster": "money_and_reserves",
       "forms": {
         "en": [
           "foreign-exchange reserves",
@@ -733,7 +749,7 @@
     },
     "exchange_rate_policy": {
       "label": "Exchange Rate Policy",
-      "cluster": null,
+      "cluster": "exchange_rate_management",
       "forms": {
         "en": [
           "exchange rate policy",
@@ -820,7 +836,7 @@
     },
     "currency_devaluation": {
       "label": "Currency Devaluation",
-      "cluster": null,
+      "cluster": "exchange_rate_management",
       "forms": {
         "en": [
           "currency devaluation",
@@ -892,7 +908,7 @@
     },
     "foreign_exchange_controls": {
       "label": "Foreign Exchange Controls",
-      "cluster": null,
+      "cluster": "exchange_restrictions",
       "forms": {
         "en": [
           "foreign-exchange controls",
@@ -962,7 +978,7 @@
     },
     "multiple_exchange_rates": {
       "label": "Multiple Exchange Rates",
-      "cluster": null,
+      "cluster": "exchange_restrictions",
       "forms": {
         "en": [
           "multiple exchange rates",
@@ -1030,7 +1046,7 @@
     },
     "currency_convertibility": {
       "label": "Currency Convertibility",
-      "cluster": null,
+      "cluster": "exchange_restrictions",
       "forms": {
         "en": [
           "currency convertibility",
@@ -1078,7 +1094,7 @@
     },
     "dollarization": {
       "label": "Dollarization",
-      "cluster": null,
+      "cluster": "exchange_rate_management",
       "forms": {
         "en": [
           "dollarization",
