@@ -1912,12 +1912,11 @@ def _group_concepts(h: dict, gid: str) -> list:
     return out
 
 
-def _tree_node(h: dict, gid: str, items: list, defaults: list, open_=False) -> str:
+def _tree_node(h: dict, gid: str, items: list, defaults: list) -> str:
     """One group row with its caret and, indented beneath, its children.
 
     A group whose subtree holds a single concept is the same series as that
-    concept, so it renders as a plain row for the concept instead. Top-level
-    groups start open, since their children are the default selection.
+    concept, so it renders as a plain row for the concept instead.
     """
     below = [c for c in _group_concepts(h, gid) if c in items]
     if len(_group_concepts(h, gid)) == 1:
@@ -1932,7 +1931,7 @@ def _tree_node(h: dict, gid: str, items: list, defaults: list, open_=False) -> s
         if c in items
     ) + "".join(_tree_node(h, child, items, defaults) for child in g["groups"])
     return (
-        f'<div class="chip-group tree-group{" is-open" if open_ else ""}"><div class="tree-row">'
+        f'<div class="chip-group tree-group"><div class="tree-row">'
         '<button type="button" class="tree-caret" aria-label="Show concepts">&#9656;</button>'
         f"{_tree_leaf(gid, g['label'], defaults)}"
         '<span class="tree-on"></span>'
@@ -1955,7 +1954,7 @@ def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
             for cid, c in h["concepts"].items()
             if c["group"] is None and cid in items
         ] + [
-            _tree_node(h, gid, items, defaults, open_=True)
+            _tree_node(h, gid, items, defaults)
             for gid, g in h["groups"].items()
             if g["parent"] is None
         ]
@@ -1971,8 +1970,8 @@ def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
 
 
 def _schema_defaults(schema: dict) -> list:
-    """The children of each top-level group: one level of detail below the
-    headline groups, never a group next to its own members.
+    """The top-level groups, plus any concept outside every group. Opening a
+    group draws the level beneath it.
     """
 
     def as_item(h, gid):
@@ -1984,7 +1983,7 @@ def _schema_defaults(schema: dict) -> list:
         out += [cid for cid, c in h["concepts"].items() if c["group"] is None]
         for gid, g in h["groups"].items():
             if g["parent"] is None:
-                out += g["concepts"] + [as_item(h, k) for k in g["groups"]]
+                out.append(as_item(h, gid))
     return out
 
 
