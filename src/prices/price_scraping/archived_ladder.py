@@ -147,6 +147,32 @@ def _zero_price(row: Dict[str, Any]) -> bool:
     return bool(digits) and set(digits) == {"0"}
 
 
+_TITLE_SEP = re.compile(r"\s[-|\u2013\u2014]\s|\uff5c|\|")
+_GENERIC_LABELS = {"www", "shop", "store", "online", "com", "net", "org"}
+# What a site title adds to the brand ("24h購物", "線上購物"). A house-brand
+# product ("Guardian My Melody Lip & Hand Cream Set") leaves far more.
+_TITLE_REST = 8
+
+
+def _site_title(row: Dict[str, Any], url: str) -> bool:
+    """Whether a row's name is only the site's own title (``PChome 24h購物``).
+
+    A template shell carries no product, so a name selector reading ``<title>``
+    or the header returns the site name. A name is the site title when every
+    separator-delimited piece of it is one of the host's labels plus at most a
+    short suffix; a real product title keeps a piece that is not
+    (``SmallRig 2203 - PChome 24h購物``).
+    """
+    name = str(row.get("product_name") or "")
+    host = re.sub(r"^[a-z]+://", "", url.lower()).split("/")[0].split(":")[0]
+    labels = {l for l in host.split(".") if len(l) >= 4 and l not in _GENERIC_LABELS}
+    pieces = [re.sub(r"\W", "", p.lower()) for p in _TITLE_SEP.split(name)]
+    pieces = [p for p in pieces if p]
+    return bool(labels and pieces) and all(
+        any(l in p and len(p.replace(l, "")) <= _TITLE_REST for l in labels) for p in pieces
+    )
+
+
 def _priced(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return [r for r in rows if not _zero_price(r)]
 
@@ -218,7 +244,8 @@ def parse_rows(
 
     A selector row without a price is a miss, not a result. It is banked only
     when every tier below also failed (tier ``selectors_noprice``), so a name
-    is kept rather than dropped, and it can never displace a priced row.
+    is kept rather than dropped, and it can never displace a priced row. A
+    selector row named only for the site (``_site_title``) is a miss outright.
 
     A priced selector row gives way only to a portable tier that finds several
     rows: selectors return one row per page, so on a category page they bank the
@@ -235,6 +262,8 @@ def parse_rows(
             return rows, "hook"
         return portable_rows(html, url, source)
     extracted = selector_row(html, source)
+    if _site_title(extracted, url):
+        extracted = {}
     rows, tier = portable_rows(html, url, source)
     if extracted.get("price") and len(rows) <= 1:
         return [extracted], "selectors"
