@@ -3,8 +3,9 @@
 #
 #   bash launch_fleet.sh <first_shard_base> <n_instances>
 #
-# Each instance runs 2 processes (one per vCPU, since the parse holds the GIL),
-# so instance k covers shards base+2k and base+2k+1 of NSHARDS.
+# Each instance runs NPROC processes (default 2, one per vCPU, since the parse
+# holds the GIL), so instance k covers shards base+NPROC*k onward of NSHARDS.
+# Cover every shard: NSHARDS must equal NPROC x n_instances.
 #
 # Deliberately ramped rather than launched all at once: 64 concurrent reads from
 # one instance is verified, the fleet-wide rate is not, and a Common Crawl block
@@ -24,7 +25,8 @@ REGION=us-east-1
 AMI=ami-0332d564d76dbd8d6
 TYPE=c7i-flex.large
 PROFILE=cc-fetch-ec2-profile
-NSHARDS=16
+NSHARDS=${NSHARDS:-16}
+NPROC=${NPROC:-2}
 INPUT=${INPUT:-manifest}
 MAXSEC=${MAXSEC:-54000}
 CONC=${CONC:-32}
@@ -32,7 +34,7 @@ CONC=${CONC:-32}
 # session, and a launch that silently loses its crawl list is worse than one
 # that fails to start.
 HERE=$(cd "$(dirname "$0")" && pwd)
-CRAWLS=$(paste -sd, "$HERE/crawls.txt")
+CRAWLS=$(paste -sd, "${CRAWLS_FILE:-$HERE/crawls.txt}")
 # Kept after the run rather than cleaned up: the instances are keyless, so the
 # generated UserData is the only record of what a box was actually told to do.
 UDDIR=${UDDIR:-$(mktemp -d -t ccfetch-userdata)}
@@ -44,7 +46,7 @@ SUBNETS=(subnet-06c566e8433daac1e subnet-03f82ddd7c8195957 \
 
 i=0
 while [ "$i" -lt "$COUNT" ]; do
-  SB=$((BASE + i * 2))
+  SB=$((BASE + i * NPROC))
   SUB=${SUBNETS[$((i % ${#SUBNETS[@]}))]}
   UD=$UDDIR/userdata-shard-$SB.sh
   # OUT_PREFIX and MISS_PREFIX are deliberately NOT written when the caller has
@@ -55,7 +57,7 @@ while [ "$i" -lt "$COUNT" ]; do
     echo "export CRAWLS=$CRAWLS"
     echo "export NSHARDS=$NSHARDS"
     echo "export SHARD_BASE=$SB"
-    echo "export NPROC=2"
+    echo "export NPROC=$NPROC"
     echo "export CONC=$CONC"
     echo "export INPUT=$INPUT"
     [ -n "${OUT_PREFIX:-}" ] && echo "export OUT_PREFIX=$OUT_PREFIX"
@@ -81,6 +83,6 @@ while [ "$i" -lt "$COUNT" ]; do
       "ResourceType=instance,Tags=[{Key=Project,Value=cc-fetch},{Key=Name,Value=cc-shard-$SB}]" \
     --instance-initiated-shutdown-behavior terminate \
     --query 'Instances[0].InstanceId' --output text)
-  echo "shard $SB,$((SB + 1))  $ID  $SUB"
+  echo "shards $SB+$NPROC  $ID  $SUB"
   i=$((i + 1))
 done
