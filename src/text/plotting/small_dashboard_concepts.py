@@ -371,8 +371,6 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .tree .chip:has(input:checked) { background: none; color: #222; font-weight: 600; }
 .tree .chip:has(input:checked)::before { background: var(--chip-color, #667eea); }
 .tree .chip:has(input:checked):hover { background: #f0f4ff; }
-.tree-text { display: flex; flex-direction: column; min-width: 0; }
-.tree-alias { color: #999; font-weight: 400; font-size: 0.9em; }
 .tree-row { display: flex; align-items: center; }
 .tree-row > .chip { flex: 1; min-width: 0; }
 .tree-caret, .tree-caret-spacer { flex: 0 0 16px; width: 16px; }
@@ -1196,7 +1194,7 @@ function applyChipFilters() {
         const color = getChipColor(raw);
         if (color) chip.style.setProperty('--chip-color', color);
         if (labelEl) labelEl.textContent = label;
-        const txt = (label + ' ' + (chip.dataset.alias || '')).toLowerCase();
+        const txt = label.toLowerCase();
         const match = !q || txt.indexOf(q) !== -1;
         // A selected pill always stays on screen: its line is on the chart and
         // the pill is the only way to take it off again.
@@ -1856,14 +1854,11 @@ def _schema_labels(schema: dict) -> dict:
     return labels
 
 
-def _tree_leaf(item, label, defaults, alias=""):
-    alias_attr = f' data-alias="{_esc(alias)}"' if alias else ""
-    alias_html = f'<span class="tree-alias">= {_esc(alias)}</span>' if alias else ""
+def _tree_leaf(item, label, defaults):
     return (
-        f'<label class="chip" data-label="{_esc(label)}"{alias_attr}>'
+        f'<label class="chip" data-label="{_esc(label)}">'
         f'<input type="checkbox" value="{item}"{" checked" if item in defaults else ""}>'
-        f'<span class="tree-text"><span class="chip-label">{_esc(label)}</span>'
-        f"{alias_html}</span></label>"
+        f'<span class="chip-label">{_esc(label)}</span></label>'
     )
 
 
@@ -1874,7 +1869,7 @@ def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
     series, so its row has a checkbox, and its caret reveals the member concepts
     indented beneath it; ticking a cluster draws only the cluster line. A
     one-member cluster is the same series as its member, so it renders as a
-    single row naming the member instead of a parent with one child.
+    plain row for the member concept instead of a parent with one child.
     """
     out = []
     for h in schema["headings"].values():
@@ -1887,8 +1882,9 @@ def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
                 continue
             members = [m for m in k["concepts"] if m in items]
             if len(k["concepts"]) == 1:
-                alias = h["concepts"][k["concepts"][0]]["label"]
-                rows.append(_tree_leaf(kid, k["label"], defaults, alias))
+                cid = k["concepts"][0]
+                if cid in items:
+                    rows.append(_tree_leaf(cid, h["concepts"][cid]["label"], defaults))
                 continue
             body = "\n".join(
                 _tree_leaf(m, h["concepts"][m]["label"], defaults) for m in members
@@ -1915,7 +1911,11 @@ def _schema_defaults(schema: dict) -> list:
     out = []
     for h in schema["headings"].values():
         out += [cid for cid, c in h["concepts"].items() if c["cluster"] is None]
-        out += list(h["clusters"])
+        # A one-member cluster is the same series as its concept; show the concept.
+        out += [
+            k["concepts"][0] if len(k["concepts"]) == 1 else kid
+            for kid, k in h["clusters"].items()
+        ]
     return out
 
 
