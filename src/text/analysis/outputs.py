@@ -267,7 +267,7 @@ def build_outputs(
     """Build and write all output CSVs.
 
     `extra_epus` is `{family: {key: StandardizedUnit}}` for families beyond
-    topics and actors (concepts, clusters); each writes `epu/{family}_epu.csv`
+    topics and actors (concepts, groups); each writes `epu/{family}_epu.csv`
     and `uncertainty_attribution/{family}.csv`.
 
     Returns (calc_topics_idx, calc_actors_idx) IndexCalculator instances.

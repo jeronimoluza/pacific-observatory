@@ -395,10 +395,10 @@ def process_unit_v2(
 
     all_topics = load_all_groups("topics")
     all_actors = load_all_groups("actors")
-    concept_ids, cluster_ids = concept_keys()
+    concept_ids, group_ids = concept_keys()
     extra_families = {
         "concepts": ("concept_", concept_ids),
-        "clusters": ("cluster_", cluster_ids),
+        "groups": ("group_", group_ids),
     }
 
     # Country units write directly to their own cache_dir; aggregate units

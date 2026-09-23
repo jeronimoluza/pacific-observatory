@@ -493,7 +493,7 @@ def standardize_unit(
         wide, sources, actor_keys, metric_prefix="actor_"
     )
 
-    # ── Extra families (concepts, clusters) ──────────────────────────
+    # ── Extra families (concepts, groups) ──────────────────────────
     # Same two steps as topics and actors, kept apart so those stay untouched.
     extra_epus: dict[str, dict[str, StandardizedUnit]] = {}
     ug_extra: dict[str, pd.DataFrame] = {}

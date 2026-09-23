@@ -54,12 +54,12 @@ class KeywordBundle:
     actors: dict[str, list[str]]
     script_language: str = ""
     concepts: dict[str, list] = field(default_factory=dict)
-    clusters: dict[str, list] = field(default_factory=dict)
+    groups: dict[str, list] = field(default_factory=dict)
 
     @classmethod
     def for_language(cls, language: str) -> "KeywordBundle":
         lang = LANGUAGE_ALIASES.get(language, language)
-        concepts, clusters = load_concepts(lang)
+        concepts, groups = load_concepts(lang)
         return cls(
             language=lang,
             epu=load_topics_words(language=lang),
@@ -67,7 +67,7 @@ class KeywordBundle:
             actors=load_all_groups("actors", language=lang),
             script_language=resolved_language(lang, "topics"),
             concepts=concepts,
-            clusters=clusters,
+            groups=groups,
         )
 
 
@@ -99,8 +99,8 @@ def _category_iter(bundle: KeywordBundle) -> Iterable[tuple[str, list[str]]]:
         yield f"actor:{actor_key}", terms
     for concept_id, forms in bundle.concepts.items():
         yield f"concept:{concept_id}", forms
-    for cluster_id, forms in bundle.clusters.items():
-        yield f"cluster:{cluster_id}", forms
+    for group_id, forms in bundle.groups.items():
+        yield f"group:{group_id}", forms
 
 
 def _forms_key(forms: list) -> tuple:
@@ -119,7 +119,7 @@ def _bundle_cache_key(bundle: KeywordBundle) -> tuple:
     topics_key = tuple((k, tuple(v)) for k, v in sorted(bundle.topics.items()))
     actors_key = tuple((k, tuple(v)) for k, v in sorted(bundle.actors.items()))
     concepts_key = tuple((k, _forms_key(v)) for k, v in sorted(bundle.concepts.items()))
-    clusters_key = tuple((k, _forms_key(v)) for k, v in sorted(bundle.clusters.items()))
+    groups_key = tuple((k, _forms_key(v)) for k, v in sorted(bundle.groups.items()))
     return (
         bundle.language,
         bundle.script_language or bundle.language,
@@ -127,7 +127,7 @@ def _bundle_cache_key(bundle: KeywordBundle) -> tuple:
         topics_key,
         actors_key,
         concepts_key,
-        clusters_key,
+        groups_key,
     )
 
 
@@ -147,7 +147,7 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
         topics_key,
         actors_key,
         concepts_key,
-        clusters_key,
+        groups_key,
     ) = cache_key
     categories: list[str] = []
     by_word: dict[str, list[tuple[str, str, bool]]] = {}
@@ -169,7 +169,7 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
         tag = f"actor:{actor_key}"
         categories.append(tag)
         add(tag, terms)
-    for family, key in (("concept", concepts_key), ("cluster", clusters_key)):
+    for family, key in (("concept", concepts_key), ("group", groups_key)):
         for group_id, forms in key:
             tag = f"{family}:{group_id}"
             categories.append(tag)
@@ -379,7 +379,7 @@ def _grouped_for_frame(
             cat.replace("topic:", "topic_")
             .replace("actor:", "actor_")
             .replace("concept:", "concept_")
-            .replace("cluster:", "cluster_")
+            .replace("group:", "group_")
         )
         grouped[f"{base}_count"] = epu_x
         grouped[f"{base}_U_count"] = u_x

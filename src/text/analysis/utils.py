@@ -584,7 +584,7 @@ def load_concept_catalog(concepts_dir: Union[Path, None] = None) -> dict:
     concepts_dir = CONCEPTS_DIR if concepts_dir is None else Path(concepts_dir)
     headings: dict = {}
     concepts: dict = {}
-    clusters: dict = {}
+    groups: dict = {}
     owner: dict = {}
     for path in sorted(concepts_dir.glob("*.json")):
         with open(path, "r", encoding="utf-8") as f:
@@ -596,18 +596,28 @@ def load_concept_catalog(concepts_dir: Union[Path, None] = None) -> dict:
 
         if raw.get("heading") != path.stem:
             fail(f"heading {raw.get('heading')!r} does not equal the file stem")
-        file_clusters = raw.get("clusters") or {}
+        file_groups = raw.get("groups") or {}
         file_concepts = raw.get("concepts") or {}
-        for cid in list(file_clusters) + list(file_concepts):
+        for cid in list(file_groups) + list(file_concepts):
             if cid in owner:
                 fail(f"id '{cid}' already defined in concepts/{owner[cid]}")
             owner[cid] = name
+        for gid, g in file_groups.items():
+            seen = [gid]
+            parent = g.get("parent")
+            while parent is not None:
+                if parent not in file_groups:
+                    fail(
+                        f"group '{seen[-1]}': parent '{parent}' is not in this file's groups"
+                    )
+                if parent in seen:
+                    fail(f"group '{gid}': parent chain loops through '{parent}'")
+                seen.append(parent)
+                parent = file_groups[parent].get("parent")
         for cid, c in file_concepts.items():
-            cluster = c.get("cluster")
-            if cluster is not None and cluster not in file_clusters:
-                fail(
-                    f"concept '{cid}': cluster '{cluster}' is not in this file's clusters"
-                )
+            group = c.get("group")
+            if group is not None and group not in file_groups:
+                fail(f"concept '{cid}': group '{group}' is not in this file's groups")
             forms = c.get("forms") or {}
             if not forms.get("en"):
                 fail(f"concept '{cid}': forms.en is missing or empty")
@@ -632,18 +642,35 @@ def load_concept_catalog(concepts_dir: Union[Path, None] = None) -> dict:
                         continue
                     fail(f"concept '{cid}': bad form {form!r} in '{lang}'")
             concepts[cid] = {**c, "heading": path.stem}
-        for kid, k in file_clusters.items():
-            clusters[kid] = {**k, "heading": path.stem}
+        for gid, g in file_groups.items():
+            if not any(
+                gid in _group_chain(c.get("group"), file_groups)
+                for c in file_concepts.values()
+            ):
+                fail(f"group '{gid}' has no concepts beneath it")
+            groups[gid] = {**g, "heading": path.stem}
         headings[path.stem] = {
             "label": raw.get("label", path.stem),
-            "clusters": list(file_clusters),
+            "groups": list(file_groups),
             "concepts": list(file_concepts),
         }
-    return {"headings": headings, "concepts": concepts, "clusters": clusters}
+    return {"headings": headings, "concepts": concepts, "groups": groups}
+
+
+def _group_chain(group: Union[str, None], groups: dict) -> List[str]:
+    """A concept's group, then that group's parent, up to the top."""
+    chain = []
+    while group is not None:
+        chain.append(group)
+        group = groups[group].get("parent")
+    return chain
 
 
 def load_concepts(language: str = "en") -> Tuple[Dict[str, list], Dict[str, list]]:
-    """Concept and cluster forms for one language.
+    """Concept and group forms for one language.
+
+    A group's forms are the union of every concept beneath it, at any depth,
+    so a group series counts articles matching any of those concepts.
 
     No English fallback: English words in Thai text would be a different
     measurement. A concept with no forms in ``language`` gets an empty list.
@@ -652,26 +679,24 @@ def load_concepts(language: str = "en") -> Tuple[Dict[str, list], Dict[str, list
     language = LANGUAGE_ALIASES.get(language, language)
     catalog = load_concept_catalog()
     concepts: Dict[str, list] = {}
-    clusters: Dict[str, list] = {kid: [] for kid in catalog["clusters"]}
+    groups: Dict[str, list] = {gid: [] for gid in catalog["groups"]}
     for cid, c in catalog["concepts"].items():
         if c.get("deprecated"):
             continue
         rejected = ((c.get("review") or {}).get(language) or {}).get("rejected") or []
         forms = [f for f in c["forms"].get(language, []) if f not in rejected]
         concepts[cid] = forms
-        if c.get("cluster") is not None:
-            clusters[c["cluster"]].extend(
-                f for f in forms if f not in clusters[c["cluster"]]
-            )
-    return concepts, clusters
+        for gid in _group_chain(c.get("group"), catalog["groups"]):
+            groups[gid].extend(f for f in forms if f not in groups[gid])
+    return concepts, groups
 
 
 def concept_keys() -> Tuple[List[str], List[str]]:
-    """Non-deprecated concept ids and cluster ids, the same for every language."""
+    """Non-deprecated concept ids and group ids, the same for every language."""
     catalog = load_concept_catalog()
     return (
         [cid for cid, c in catalog["concepts"].items() if not c.get("deprecated")],
-        list(catalog["clusters"]),
+        list(catalog["groups"]),
     )
 
 

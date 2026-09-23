@@ -1,5 +1,5 @@
 """Concepts dashboard: a copy of ``small_dashboard_integrated_w_policy`` whose
-topic tabs read the keyword concepts and clusters instead of the old groups.
+topic tabs read the keyword concepts and their groups instead of the old topic groups.
 
 Labels, chip groups and the schema tab all come from ``keywords_schema.json``,
 which is also embedded as ``<script type="application/json" id="keywords-schema">``
@@ -346,7 +346,7 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .tree { width: 100%; }
 .tree .chip-group:not(.is-open) .chip-group-body > .chip.is-hit,
 .tree .chip-group:not(.is-open) .chip-group-body > .chip:has(input:checked) { display: flex; }
-/* Keyword tree: heading > cluster > concept. Rows, not pills: a checkbox
+/* Keyword tree: heading > group > subgroup > concept. Rows, not pills: a checkbox
    swatch in the series colour, indented under its parent. */
 .tree .chip-group-body { display: block; padding: 0 0 6px 0; }
 .tree .chip {
@@ -384,14 +384,15 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
     transition: transform 0.15s;
 }
 .tree-caret:hover { color: #667eea; }
-.tree-cluster.is-open > .tree-row > .tree-caret { transform: rotate(90deg); }
+.tree-group.is-open > .tree-row > .tree-caret { transform: rotate(90deg); }
 .tree-count { color: #999; font-size: 0.75em; padding-right: 4px; font-variant-numeric: tabular-nums; }
-.tree-cluster > .chip-group-body { padding: 0 0 2px 22px; }
-.tree-cluster:not(.is-open) > .chip-group-body > .chip:not(.is-hit):not(:has(input:checked)) { display: none; }
+.tree-group > .chip-group-body { padding: 0 0 2px 22px; }
+.tree-group:not(.is-open) > .chip-group-body > .chip:not(.is-hit):not(:has(input:checked)) { display: none; }
+.tree-group:not(.is-open) > .chip-group-body > .tree-group:not(:has(.chip.is-hit, input:checked)) { display: none; }
 .tree-heading:not(.is-open) > .chip-group-body > * { display: none; }
 .tree-heading:not(.is-open) > .chip-group-body > .chip.is-hit,
 .tree-heading:not(.is-open) > .chip-group-body > .chip:has(input:checked),
-.tree-heading:not(.is-open) > .chip-group-body > .tree-cluster:has(.chip.is-hit, input:checked) { display: block; }
+.tree-heading:not(.is-open) > .chip-group-body > .tree-group:has(.chip.is-hit, input:checked) { display: block; }
 .chip {
     display: inline-flex;
     align-items: center;
@@ -1380,7 +1381,7 @@ document.querySelectorAll('#item-select .chip-group-header').forEach(h => {
 });
 document.querySelectorAll('#item-select .tree-caret').forEach(b => {
     b.addEventListener('click', function() {
-        b.closest('.tree-cluster').classList.toggle('is-open');
+        b.closest('.tree-group').classList.toggle('is-open');
     });
 });
 document.getElementById('default-btn').addEventListener('click', function() {
@@ -1844,11 +1845,11 @@ def _resolve_region_label(region_subtree: list, region: str) -> str:
 
 
 def _schema_labels(schema: dict) -> dict:
-    """Concept and cluster id -> label, for every label path in the page."""
+    """Concept and group id -> label, for every label path in the page."""
     labels = {}
     for h in schema["headings"].values():
-        for kid, k in h["clusters"].items():
-            labels[kid] = f"{k['label']} (cluster)"
+        for gid, g in h["groups"].items():
+            labels[gid] = g["label"]
         for cid, c in h["concepts"].items():
             labels[cid] = c["label"]
     return labels
@@ -1862,41 +1863,61 @@ def _tree_leaf(item, label, defaults):
     )
 
 
-def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
-    """The concept picker as a tree: heading > cluster > concept.
+def _group_concepts(h: dict, gid: str) -> list:
+    """Every concept beneath a group, at any depth."""
+    g = h["groups"][gid]
+    out = list(g["concepts"])
+    for child in g["groups"]:
+        out += _group_concepts(h, child)
+    return out
 
-    Stand-alone concepts sit directly under their heading. A cluster is its own
-    series, so its row has a checkbox, and its caret reveals the member concepts
-    indented beneath it; ticking a cluster draws only the cluster line. A
-    one-member cluster is the same series as its member, so it renders as a
-    plain row for the member concept instead of a parent with one child.
+
+def _tree_node(h: dict, gid: str, items: list, defaults: list) -> str:
+    """One group row with its caret and, indented beneath, its children.
+
+    A group whose subtree holds a single concept is the same series as that
+    concept, so it renders as a plain row for the concept instead.
+    """
+    below = [c for c in _group_concepts(h, gid) if c in items]
+    if len(_group_concepts(h, gid)) == 1:
+        cid = _group_concepts(h, gid)[0]
+        return _tree_leaf(cid, h["concepts"][cid]["label"], defaults) if below else ""
+    if gid not in items:
+        return ""
+    g = h["groups"][gid]
+    body = "".join(
+        _tree_leaf(c, h["concepts"][c]["label"], defaults)
+        for c in g["concepts"]
+        if c in items
+    ) + "".join(_tree_node(h, child, items, defaults) for child in g["groups"])
+    return (
+        '<div class="chip-group tree-group"><div class="tree-row">'
+        '<button type="button" class="tree-caret" aria-label="Show concepts">&#9656;</button>'
+        f"{_tree_leaf(gid, g['label'], defaults)}"
+        f'<span class="tree-count">{len(below)}</span></div>'
+        f'<div class="chip-group-body">{body}</div></div>'
+    )
+
+
+def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
+    """The concept picker as a tree: heading > group > subgroup > concept.
+
+    Every group is its own series, counting articles that match any concept
+    beneath it, so its row has a checkbox, and its caret reveals its children
+    indented beneath it. Ticking a group draws only the group line.
     """
     out = []
     for h in schema["headings"].values():
-        rows = []
-        for cid, c in h["concepts"].items():
-            if c["cluster"] is None and cid in items:
-                rows.append(_tree_leaf(cid, c["label"], defaults))
-        for kid, k in h["clusters"].items():
-            if kid not in items:
-                continue
-            members = [m for m in k["concepts"] if m in items]
-            if len(k["concepts"]) == 1:
-                cid = k["concepts"][0]
-                if cid in items:
-                    rows.append(_tree_leaf(cid, h["concepts"][cid]["label"], defaults))
-                continue
-            body = "\n".join(
-                _tree_leaf(m, h["concepts"][m]["label"], defaults) for m in members
-            )
-            rows.append(
-                '<div class="chip-group tree-cluster"><div class="tree-row">'
-                '<button type="button" class="tree-caret" aria-label="Show concepts">&#9656;</button>'
-                f"{_tree_leaf(kid, k['label'], defaults)}"
-                f'<span class="tree-count">{len(members)}</span></div>'
-                f'<div class="chip-group-body">{body}</div></div>'
-            )
-        if rows:
+        rows = [
+            _tree_leaf(cid, c["label"], defaults)
+            for cid, c in h["concepts"].items()
+            if c["group"] is None and cid in items
+        ] + [
+            _tree_node(h, gid, items, defaults)
+            for gid, g in h["groups"].items()
+            if g["parent"] is None
+        ]
+        if any(rows):
             out.append(
                 '<div class="chip-group tree-heading is-open">'
                 '<button type="button" class="chip-group-header">'
@@ -1908,14 +1929,20 @@ def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
 
 
 def _schema_defaults(schema: dict) -> list:
+    """The children of each top-level group: one level of detail below the
+    headline groups, never a group next to its own members.
+    """
+
+    def as_item(h, gid):
+        below = _group_concepts(h, gid)
+        return below[0] if len(below) == 1 else gid
+
     out = []
     for h in schema["headings"].values():
-        out += [cid for cid, c in h["concepts"].items() if c["cluster"] is None]
-        # A one-member cluster is the same series as its concept; show the concept.
-        out += [
-            k["concepts"][0] if len(k["concepts"]) == 1 else kid
-            for kid, k in h["clusters"].items()
-        ]
+        out += [cid for cid, c in h["concepts"].items() if c["group"] is None]
+        for gid, g in h["groups"].items():
+            if g["parent"] is None:
+                out += g["concepts"] + [as_item(h, k) for k in g["groups"]]
     return out
 
 
@@ -1928,7 +1955,7 @@ def _form_text(f) -> str:
 
 
 def _schema_page_html(schema: dict) -> str:
-    """The keyword schema as a readable page: heading, cluster, concept, forms."""
+    """The keyword schema as a readable page: heading, group, concept, forms."""
     parts = [
         "<!DOCTYPE html><html><head><meta charset='utf-8'><style>"
         "body{font-family:system-ui,sans-serif;margin:16px;color:#1d2330}"
@@ -1940,14 +1967,17 @@ def _schema_page_html(schema: dict) -> str:
         parts.append(f"<h2>{_esc(h['label'])}</h2>")
         langs = sorted({lang for c in h["concepts"].values() for lang in c["forms"]})
         parts.append(
-            "<table><tr><th>Concept</th><th>Cluster</th>"
+            "<table><tr><th>Concept</th><th>Group</th>"
             + "".join(f"<th>{_esc(lang)}</th>" for lang in langs)
             + "</tr>"
         )
         for c in h["concepts"].values():
-            cluster = h["clusters"][c["cluster"]]["label"] if c["cluster"] else ""
+            path, gid = [], c["group"]
+            while gid is not None:
+                path.insert(0, h["groups"][gid]["label"])
+                gid = h["groups"][gid]["parent"]
             parts.append(
-                f"<tr><td>{_esc(c['label'])}</td><td>{_esc(cluster)}</td>"
+                f"<tr><td>{_esc(c['label'])}</td><td>{_esc(' › '.join(path))}</td>"
                 + "".join(
                     "<td>"
                     + "<br>".join(_esc(_form_text(f)) for f in c["forms"].get(lang, []))
@@ -2005,7 +2035,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
             continue
         attribution = unit.get("attribution") or {}
         rows = _merge_rows(
-            attribution.get("concepts") or [], attribution.get("clusters") or []
+            attribution.get("concepts") or [], attribution.get("groups") or []
         )
         if rows:
             concept_data[key] = rows
@@ -2059,7 +2089,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         data_expr=data_expr,
         factors_expr=factors_expr,
         method_foot_extra=(
-            " A cluster series counts articles matching any of its concepts."
+            " A group series counts articles matching any concept beneath it."
         ),
         chip_html=_schema_tree_html(schema, items, defaults),
     )

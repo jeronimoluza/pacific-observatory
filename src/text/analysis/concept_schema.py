@@ -1,4 +1,4 @@
-"""The keyword schema: every concept heading, cluster and concept as published.
+"""The keyword schema: every concept heading, group and concept as published.
 
 Built from ``keywords/concepts/*.json`` by ``load_concept_catalog`` and written
 by publish to ``outputs/text/dashboard_data/keywords_schema.json``. The
@@ -27,23 +27,29 @@ def build_keywords_schema() -> dict:
     catalog = load_concept_catalog()
     headings = {}
     for heading, h in catalog["headings"].items():
-        clusters = {
-            kid: {
-                "label": catalog["clusters"][kid].get("label", kid),
+        # `concepts` and `groups` list only direct children; a group's series
+        # still counts every concept beneath it, at any depth.
+        groups = {
+            gid: {
+                "label": catalog["groups"][gid].get("label", gid),
+                "parent": catalog["groups"][gid].get("parent"),
+                "groups": [
+                    k for k in h["groups"] if catalog["groups"][k].get("parent") == gid
+                ],
                 "concepts": [
                     cid
                     for cid in h["concepts"]
-                    if catalog["concepts"][cid].get("cluster") == kid
+                    if catalog["concepts"][cid].get("group") == gid
                     and not catalog["concepts"][cid].get("deprecated")
                 ],
-                "columns": _columns("clusters", kid),
+                "columns": _columns("groups", gid),
             }
-            for kid in h["clusters"]
+            for gid in h["groups"]
         }
         concepts = {
             cid: {
                 "label": c.get("label", cid),
-                "cluster": c.get("cluster"),
+                "group": c.get("group"),
                 "forms": c["forms"],
                 "review": c.get("review", {}),
                 "columns": _columns("concepts", cid),
@@ -53,7 +59,7 @@ def build_keywords_schema() -> dict:
         }
         headings[heading] = {
             "label": h["label"],
-            "clusters": clusters,
+            "groups": groups,
             "concepts": concepts,
         }
     return {"headings": headings}

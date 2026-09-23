@@ -1,27 +1,32 @@
 {
   "heading": "monetary_policy",
-  "label": "Monetary policy",
-  "clusters": {
-    "tightening_cycle": {
-      "label": "Tightening cycle"
+  "label": "Monetary and financial stability",
+  "groups": {
+    "monetary_policy": {
+      "label": "Monetary policy",
+      "parent": null
     },
-    "easing_cycle": {
-      "label": "Easing cycle"
+    "interest_rates": {
+      "label": "Interest rates",
+      "parent": "monetary_policy"
     },
-    "money_and_reserves": {
-      "label": "Money supply and reserves"
+    "money_and_liquidity": {
+      "label": "Money and liquidity",
+      "parent": "monetary_policy"
     },
-    "exchange_rate_management": {
-      "label": "Exchange rate management"
+    "exchange_rate": {
+      "label": "Exchange rate",
+      "parent": null
     },
-    "exchange_restrictions": {
-      "label": "Exchange restrictions"
+    "fx_restrictions": {
+      "label": "FX restrictions",
+      "parent": "exchange_rate"
     }
   },
   "concepts": {
-    "monetary_policy": {
-      "label": "Monetary Policy",
-      "cluster": null,
+    "monetary_policy_general": {
+      "label": "Monetary policy (general mentions)",
+      "group": "monetary_policy",
       "forms": {
         "en": [
           "monetary policy",
@@ -86,7 +91,7 @@
     },
     "central_bank": {
       "label": "Central Bank",
-      "cluster": null,
+      "group": "monetary_policy",
       "forms": {
         "en": [
           "central bank",
@@ -156,9 +161,76 @@
         }
       }
     },
+    "interest_rates_general": {
+      "label": "Interest rates (general mentions)",
+      "group": "interest_rates",
+      "forms": {
+        "en": [
+          "interest rate",
+          "interest rates"
+        ],
+        "es": [
+          "tasa de interés",
+          "tasas de interés",
+          "tipo de interés",
+          "tipos de interés"
+        ],
+        "turkish": [
+          {
+            "prefix": "faiz oran"
+          },
+          {
+            "prefix": "faizler"
+          },
+          {
+            "prefix": "faiz hadd"
+          },
+          {
+            "prefix": "mevduat faiz"
+          },
+          {
+            "prefix": "kredi faiz"
+          }
+        ],
+        "thai": [
+          "อัตราดอกเบี้ย",
+          "ดอกเบี้ยเงินกู้",
+          "ดอกเบี้ยเงินฝาก"
+        ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 0.9,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "flagged",
+          "precision": 0.35,
+          "sample_n": 20,
+          "rejected": [
+            "อัตราดอกเบี้ย",
+            "ดอกเบี้ยเงินกู้"
+          ]
+        }
+      }
+    },
     "policy_rate": {
       "label": "Policy Rate",
-      "cluster": null,
+      "group": "interest_rates",
       "forms": {
         "en": [
           "policy rate",
@@ -250,76 +322,9 @@
         }
       }
     },
-    "interest_rates": {
-      "label": "Interest Rates",
-      "cluster": null,
-      "forms": {
-        "en": [
-          "interest rate",
-          "interest rates"
-        ],
-        "es": [
-          "tasa de interés",
-          "tasas de interés",
-          "tipo de interés",
-          "tipos de interés"
-        ],
-        "turkish": [
-          {
-            "prefix": "faiz oran"
-          },
-          {
-            "prefix": "faizler"
-          },
-          {
-            "prefix": "faiz hadd"
-          },
-          {
-            "prefix": "mevduat faiz"
-          },
-          {
-            "prefix": "kredi faiz"
-          }
-        ],
-        "thai": [
-          "อัตราดอกเบี้ย",
-          "ดอกเบี้ยเงินกู้",
-          "ดอกเบี้ยเงินฝาก"
-        ]
-      },
-      "review": {
-        "en": {
-          "status": "passed",
-          "precision": 0.9,
-          "sample_n": 20,
-          "rejected": []
-        },
-        "es": {
-          "status": "passed",
-          "precision": 1.0,
-          "sample_n": 20,
-          "rejected": []
-        },
-        "turkish": {
-          "status": "passed",
-          "precision": 0.95,
-          "sample_n": 20,
-          "rejected": []
-        },
-        "thai": {
-          "status": "flagged",
-          "precision": 0.35,
-          "sample_n": 20,
-          "rejected": [
-            "อัตราดอกเบี้ย",
-            "ดอกเบี้ยเงินกู้"
-          ]
-        }
-      }
-    },
     "monetary_tightening": {
       "label": "Monetary Tightening",
-      "cluster": "tightening_cycle",
+      "group": "interest_rates",
       "forms": {
         "en": [
           "monetary tightening",
@@ -451,7 +456,7 @@
     },
     "monetary_easing": {
       "label": "Monetary Easing",
-      "cluster": "easing_cycle",
+      "group": "interest_rates",
       "forms": {
         "en": [
           "monetary easing",
@@ -597,7 +602,7 @@
     },
     "money_supply": {
       "label": "Money Supply",
-      "cluster": "money_and_reserves",
+      "group": "money_and_liquidity",
       "forms": {
         "en": [
           "money supply",
@@ -663,93 +668,9 @@
         }
       }
     },
-    "foreign_exchange_reserves": {
-      "label": "Foreign Exchange Reserves",
-      "cluster": "money_and_reserves",
-      "forms": {
-        "en": [
-          "foreign-exchange reserves",
-          "foreign exchange reserves",
-          "forex reserves",
-          "fx reserves",
-          "foreign reserves",
-          "international reserves"
-        ],
-        "es": [
-          "reservas internacionales",
-          "reserva internacional",
-          "reservas internacionales netas",
-          "reserva internacional neta",
-          "reservas de divisas",
-          "reservas en divisas",
-          "reservas cambiarias",
-          "reservas en moneda extranjera"
-        ],
-        "turkish": [
-          {
-            "prefix": "döviz rezerv"
-          },
-          {
-            "prefix": "yabancı para rezerv"
-          },
-          {
-            "prefix": "brüt rezerv"
-          },
-          {
-            "prefix": "net rezerv"
-          },
-          {
-            "prefix": "uluslararası rezerv"
-          },
-          {
-            "prefix": "resmi rezerv"
-          },
-          {
-            "prefix": "merkez bankası rezerv"
-          },
-          {
-            "prefix": "tcmb rezerv"
-          },
-          {
-            "prefix": "rezerv erime"
-          }
-        ],
-        "thai": [
-          "ทุนสำรองระหว่างประเทศ",
-          "ทุนสำรองเงินตราต่างประเทศ",
-          "ทุนสำรองทางการ"
-        ]
-      },
-      "review": {
-        "en": {
-          "status": "passed",
-          "precision": 1.0,
-          "sample_n": 20,
-          "rejected": []
-        },
-        "es": {
-          "status": "passed",
-          "precision": 0.95,
-          "sample_n": 20,
-          "rejected": []
-        },
-        "turkish": {
-          "status": "passed",
-          "precision": 1.0,
-          "sample_n": 20,
-          "rejected": []
-        },
-        "thai": {
-          "status": "passed",
-          "precision": 1.0,
-          "sample_n": 8,
-          "rejected": []
-        }
-      }
-    },
     "exchange_rate_policy": {
       "label": "Exchange Rate Policy",
-      "cluster": "exchange_rate_management",
+      "group": "exchange_rate",
       "forms": {
         "en": [
           "exchange rate policy",
@@ -836,7 +757,7 @@
     },
     "currency_devaluation": {
       "label": "Currency Devaluation",
-      "cluster": "exchange_rate_management",
+      "group": "exchange_rate",
       "forms": {
         "en": [
           "currency devaluation",
@@ -906,9 +827,146 @@
         }
       }
     },
+    "dollarization": {
+      "label": "Dollarization",
+      "group": "exchange_rate",
+      "forms": {
+        "en": [
+          "dollarization",
+          "dollarisation"
+        ],
+        "es": [
+          "dolarización",
+          "dolarización de la economía",
+          "economía dolarizada",
+          "economías dolarizadas"
+        ],
+        "turkish": [
+          {
+            "prefix": "dolarizasyon"
+          },
+          {
+            "prefix": "dolarlaşma"
+          },
+          {
+            "prefix": "dolarize"
+          }
+        ],
+        "thai": [
+          "ดอลลาไรเซชัน",
+          "ดอลลาร์ไรเซชัน",
+          "dollarization",
+          "dollarisation"
+        ]
+      },
+      "review": {
+        "en": {
+          "status": "flagged",
+          "precision": 0.5,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        }
+      }
+    },
+    "foreign_exchange_reserves": {
+      "label": "Foreign Exchange Reserves",
+      "group": "exchange_rate",
+      "forms": {
+        "en": [
+          "foreign-exchange reserves",
+          "foreign exchange reserves",
+          "forex reserves",
+          "fx reserves",
+          "foreign reserves",
+          "international reserves"
+        ],
+        "es": [
+          "reservas internacionales",
+          "reserva internacional",
+          "reservas internacionales netas",
+          "reserva internacional neta",
+          "reservas de divisas",
+          "reservas en divisas",
+          "reservas cambiarias",
+          "reservas en moneda extranjera"
+        ],
+        "turkish": [
+          {
+            "prefix": "döviz rezerv"
+          },
+          {
+            "prefix": "yabancı para rezerv"
+          },
+          {
+            "prefix": "brüt rezerv"
+          },
+          {
+            "prefix": "net rezerv"
+          },
+          {
+            "prefix": "uluslararası rezerv"
+          },
+          {
+            "prefix": "resmi rezerv"
+          },
+          {
+            "prefix": "merkez bankası rezerv"
+          },
+          {
+            "prefix": "tcmb rezerv"
+          },
+          {
+            "prefix": "rezerv erime"
+          }
+        ],
+        "thai": [
+          "ทุนสำรองระหว่างประเทศ",
+          "ทุนสำรองเงินตราต่างประเทศ",
+          "ทุนสำรองทางการ"
+        ]
+      },
+      "review": {
+        "en": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "es": {
+          "status": "passed",
+          "precision": 0.95,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "turkish": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 20,
+          "rejected": []
+        },
+        "thai": {
+          "status": "passed",
+          "precision": 1.0,
+          "sample_n": 8,
+          "rejected": []
+        }
+      }
+    },
     "foreign_exchange_controls": {
       "label": "Foreign Exchange Controls",
-      "cluster": "exchange_restrictions",
+      "group": "fx_restrictions",
       "forms": {
         "en": [
           "foreign-exchange controls",
@@ -978,7 +1036,7 @@
     },
     "multiple_exchange_rates": {
       "label": "Multiple Exchange Rates",
-      "cluster": "exchange_restrictions",
+      "group": "fx_restrictions",
       "forms": {
         "en": [
           "multiple exchange rates",
@@ -1046,7 +1104,7 @@
     },
     "currency_convertibility": {
       "label": "Currency Convertibility",
-      "cluster": "exchange_restrictions",
+      "group": "fx_restrictions",
       "forms": {
         "en": [
           "currency convertibility",
@@ -1082,59 +1140,6 @@
           "status": "passed",
           "precision": 1.0,
           "sample_n": 4,
-          "rejected": []
-        },
-        "turkish": {
-          "status": "passed",
-          "precision": 1.0,
-          "sample_n": 20,
-          "rejected": []
-        }
-      }
-    },
-    "dollarization": {
-      "label": "Dollarization",
-      "cluster": "exchange_rate_management",
-      "forms": {
-        "en": [
-          "dollarization",
-          "dollarisation"
-        ],
-        "es": [
-          "dolarización",
-          "dolarización de la economía",
-          "economía dolarizada",
-          "economías dolarizadas"
-        ],
-        "turkish": [
-          {
-            "prefix": "dolarizasyon"
-          },
-          {
-            "prefix": "dolarlaşma"
-          },
-          {
-            "prefix": "dolarize"
-          }
-        ],
-        "thai": [
-          "ดอลลาไรเซชัน",
-          "ดอลลาร์ไรเซชัน",
-          "dollarization",
-          "dollarisation"
-        ]
-      },
-      "review": {
-        "en": {
-          "status": "flagged",
-          "precision": 0.5,
-          "sample_n": 20,
-          "rejected": []
-        },
-        "es": {
-          "status": "passed",
-          "precision": 0.95,
-          "sample_n": 20,
           "rejected": []
         },
         "turkish": {
