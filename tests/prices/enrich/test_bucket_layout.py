@@ -30,7 +30,7 @@ _EXPECTED_CARDINALITY = {
     "per_unit_marker": 7,  # 2026-08-03: +SLASH_KG, BARE_KG, SLASH_LITRE
     "single_measure": 4,
     "multipack": 11,
-    "count_pack": 31,
+    "count_pack": 32,  # 2026-09-23: +RU_TABS_CAPS
     "_unrouted": 1,
 }
 

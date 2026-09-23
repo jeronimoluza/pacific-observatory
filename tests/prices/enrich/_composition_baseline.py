@@ -80,6 +80,7 @@ EXTRA_COUNT: tuple[str, ...] = (
     "en_n_pcs",
     "en_apos_s",
     "en_n_tickets",
+    "ru_tabs_caps",
 )
 
 MULTI_PACK: tuple[str, ...] = (

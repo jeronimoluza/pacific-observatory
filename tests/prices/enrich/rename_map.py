@@ -70,6 +70,7 @@ RENAME: dict[str, str] = {
     "en_n_pcs": "EN_PCS",
     "en_apos_s": "EN_APOS_S",
     "en_n_tickets": "EN_N_TICKETS",
+    "ru_tabs_caps": "RU_TABS_CAPS",
     "vi_m_pieces": "VI_PIECES",
     "vi_to_sheets": "VI_TO_SHEETS",
     # --- _unrouted -----------------------------------------------------------

@@ -95,6 +95,7 @@ _PRE_RENAME_EXTRA_COUNT: tuple[str, ...] = (
     "en_n_pcs",
     "en_apos_s",
     "en_n_tickets",
+    "ru_tabs_caps",
 )
 
 _PRE_RENAME_MULTI_PACK: tuple[str, ...] = (
