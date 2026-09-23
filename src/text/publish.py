@@ -560,6 +560,11 @@ def run_publish(
 
     click.echo(f"  Written: {DASHBOARD_JSON.relative_to(PROJECT_ROOT)}")
 
+    from text.analysis.concept_schema import write_keywords_schema
+
+    schema_path = write_keywords_schema(DASHBOARD_DATA_DIR / "keywords_schema.json")
+    click.echo(f"  Written: {schema_path.relative_to(PROJECT_ROOT)}")
+
     try:
         from text.plotting.small_dashboard_integrated import (
             generate_dashboard_from_json,
