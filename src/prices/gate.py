@@ -71,9 +71,19 @@ DIRECTION = {
     },
 }
 
-# Human-approved cutoffs. Empty until approved; `run` refuses without them.
+# Human-approved cutoffs; `run` refuses a stage without them. Approved
+# 2026-09-23 from `floors` over 1,027 healthy sources. Two depart from the
+# p10/p90 rule: price_parse_rate p10 is 1.0 (1,005 healthy sources sit there,
+# so it failed a source for one lost row in 100k), and qty_coverage is 0.02
+# flat -- non-goods sources (property, bookshops) fail it and park for the
+# weekly review until a food share exists on the post-fold input_hash.
 FLOORS: dict[str, dict[str, float]] = {
-    "extraction": {},
+    "extraction": {
+        "price_parse_rate": 0.95,
+        "qty_coverage": 0.02,
+        "dup_keys": 0,
+        "uv_flag_share": 0.174,
+    },
 }
 
 
