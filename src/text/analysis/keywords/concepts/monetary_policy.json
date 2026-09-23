@@ -1,26 +1,766 @@
 {
   "heading": "monetary_policy",
   "label": "Monetary policy",
-  "clusters": {
-    "financial_distress": { "label": "Financial distress" }
-  },
+  "clusters": {},
   "concepts": {
-    "monetary_tightening": {
-      "label": "Monetary tightening",
+    "monetary_policy": {
+      "label": "Monetary Policy",
       "cluster": null,
       "forms": {
-        "en": ["monetary tightening", "tightening of monetary policy"],
-        "es": ["endurecimiento monetario", "endurecimiento de la política monetaria"],
-        "turkish": [{ "prefix": "parasal sıkılaştırma" }],
-        "thai": ["นโยบายการเงินแบบเข้มงวด"]
+        "en": [
+          "monetary policy",
+          "monetary policies",
+          "monetary policy committee",
+          "monetary policy stance"
+        ],
+        "es": [
+          "política monetaria",
+          "políticas monetarias",
+          "comité de política monetaria",
+          "postura monetaria",
+          "postura de política monetaria",
+          "postura de la política monetaria",
+          "decisión de política monetaria",
+          "decisiones de política monetaria",
+          "anuncio de política monetaria",
+          "orientación de la política monetaria"
+        ],
+        "turkish": [
+          {
+            "prefix": "para politika"
+          },
+          {
+            "prefix": "parasal politika"
+          },
+          "ppk"
+        ],
+        "thai": [
+          "นโยบายการเงิน",
+          "คณะกรรมการนโยบายการเงิน",
+          "กนง.",
+          "ทิศทางนโยบายการเงิน"
+        ]
       }
     },
-    "systemic_risk": {
-      "label": "Systemic risk",
-      "cluster": "financial_distress",
+    "central_bank": {
+      "label": "Central Bank",
+      "cluster": null,
       "forms": {
-        "en": ["systemic risk"],
-        "es": ["riesgo sistémico"]
+        "en": [
+          "central bank",
+          "central banks",
+          "central banker",
+          "central bankers",
+          "monetary authority",
+          "monetary authorities"
+        ],
+        "es": [
+          "banco central",
+          "bancos centrales",
+          "banquero central",
+          "banqueros centrales",
+          "autoridad monetaria",
+          "autoridades monetarias",
+          "banxico",
+          "banco de méxico",
+          "reserva federal",
+          "banco de la república",
+          "bce"
+        ],
+        "turkish": [
+          {
+            "prefix": "merkez banka"
+          },
+          "tcmb",
+          {
+            "prefix": "para otorite"
+          },
+          {
+            "prefix": "parasal otorite"
+          }
+        ],
+        "thai": [
+          "ธนาคารกลาง",
+          "ธนาคารแห่งประเทศไทย",
+          "ธปท.",
+          "แบงก์ชาติ",
+          "ECB"
+        ]
+      }
+    },
+    "policy_rate": {
+      "label": "Policy Rate",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "policy rate",
+          "policy rates",
+          "policy interest rate",
+          "policy interest rates",
+          "key policy rate",
+          "benchmark interest rate",
+          "benchmark interest rates",
+          "key interest rate",
+          "key interest rates"
+        ],
+        "es": [
+          "tasa de política monetaria",
+          "tasas de política monetaria",
+          "tasa de interés de política monetaria",
+          "tasa de referencia",
+          "tasas de referencia",
+          "tasa de interés de referencia",
+          "tasas de interés de referencia",
+          "tipo de interés de referencia",
+          "tipos de interés de referencia",
+          "tipo de interés oficial",
+          "tasa de interés interbancaria",
+          "tasa de interés interbancaria a un día",
+          "tasa de interés objetivo",
+          "tasa rectora",
+          "tasa clave",
+          "tasa de interés clave",
+          "tasa de fondos federales"
+        ],
+        "turkish": [
+          {
+            "prefix": "politika faiz"
+          },
+          {
+            "prefix": "politika oran"
+          },
+          {
+            "prefix": "gösterge faiz"
+          },
+          {
+            "prefix": "bir hafta vadeli repo"
+          },
+          {
+            "prefix": "haftalık repo faiz"
+          },
+          {
+            "prefix": "ana faiz oran"
+          }
+        ],
+        "thai": [
+          "อัตราดอกเบี้ยนโยบาย",
+          "ดอกเบี้ยนโยบาย",
+          "อัตราดอกเบี้ยซื้อคืนพันธบัตรระยะ 1 วัน",
+          "เฟดฟันด์"
+        ]
+      }
+    },
+    "interest_rates": {
+      "label": "Interest Rates",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "interest rate",
+          "interest rates"
+        ],
+        "es": [
+          "tasa de interés",
+          "tasas de interés",
+          "tipo de interés",
+          "tipos de interés"
+        ],
+        "turkish": [
+          {
+            "prefix": "faiz oran"
+          },
+          {
+            "prefix": "faizler"
+          },
+          {
+            "prefix": "faiz hadd"
+          },
+          {
+            "prefix": "mevduat faiz"
+          },
+          {
+            "prefix": "kredi faiz"
+          }
+        ],
+        "thai": [
+          "อัตราดอกเบี้ย",
+          "ดอกเบี้ยเงินกู้",
+          "ดอกเบี้ยเงินฝาก"
+        ]
+      }
+    },
+    "monetary_tightening": {
+      "label": "Monetary Tightening",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "monetary tightening",
+          "tightening of monetary policy",
+          "monetary policy tightening",
+          "tighter monetary policy",
+          "contractionary monetary policy",
+          "rate hike",
+          "rate hikes",
+          "interest rate hike",
+          "interest rate hikes",
+          "interest rate increase",
+          "interest rate increases",
+          "raise interest rates",
+          "raises interest rates",
+          "raised interest rates",
+          "raising interest rates"
+        ],
+        "es": [
+          "endurecimiento monetario",
+          "endurecimiento de la política monetaria",
+          "restricción monetaria",
+          "política monetaria restrictiva",
+          "política monetaria contractiva",
+          "ciclo de alzas",
+          "alza de tasas",
+          "alzas de tasas",
+          "alza en las tasas",
+          "alza de la tasa de interés",
+          "alza en la tasa de interés",
+          "alzas en las tasas de interés",
+          "alza en la tasa de referencia",
+          "aumento de tasas",
+          "aumentos de tasas",
+          "aumento de la tasa de interés",
+          "aumento en la tasa de interés",
+          "incremento de la tasa de interés",
+          "incremento en la tasa de interés",
+          "subir las tasas de interés",
+          "subir la tasa de interés",
+          "subió la tasa de interés",
+          "elevó la tasa de interés",
+          "elevar la tasa de interés",
+          "aumentó la tasa de interés"
+        ],
+        "turkish": [
+          {
+            "prefix": "parasal sıkılaş"
+          },
+          {
+            "prefix": "sıkı para politika"
+          },
+          {
+            "prefix": "sıkılaştırıcı para politika"
+          },
+          {
+            "prefix": "daraltıcı para politika"
+          },
+          {
+            "prefix": "para politikasında sıkılaş"
+          },
+          {
+            "prefix": "para politikasını sıkılaştır"
+          },
+          {
+            "prefix": "faiz artır"
+          },
+          {
+            "prefix": "faiz artış"
+          },
+          {
+            "prefix": "faizleri artır"
+          },
+          {
+            "prefix": "faizleri yükselt"
+          },
+          {
+            "prefix": "faiz oranını artır"
+          },
+          {
+            "prefix": "faiz oranlarını artır"
+          },
+          {
+            "prefix": "faiz oranını yükselt"
+          },
+          {
+            "prefix": "faiz oranlarını yükselt"
+          }
+        ],
+        "thai": [
+          "คุมเข้มนโยบายการเงิน",
+          "นโยบายการเงินแบบเข้มงวด",
+          "นโยบายการเงินแบบตึงตัว",
+          "นโยบายการเงินที่ตึงตัว",
+          "ขึ้นอัตราดอกเบี้ย",
+          "ขึ้นดอกเบี้ย",
+          "เพิ่มอัตราดอกเบี้ย",
+          "ดอกเบี้ยขาขึ้น"
+        ]
+      }
+    },
+    "monetary_easing": {
+      "label": "Monetary Easing",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "monetary easing",
+          "easing of monetary policy",
+          "monetary policy easing",
+          "looser monetary policy",
+          "expansionary monetary policy",
+          "accommodative monetary policy",
+          "rate cut",
+          "rate cuts",
+          "interest rate cut",
+          "interest rate cuts",
+          "cut interest rates",
+          "cuts interest rates",
+          "cutting interest rates",
+          "lower interest rates",
+          "lowered interest rates",
+          "lowers interest rates",
+          "lowering interest rates"
+        ],
+        "es": [
+          "relajamiento monetario",
+          "relajación monetaria",
+          "flexibilización monetaria",
+          "relajamiento de la política monetaria",
+          "flexibilización de la política monetaria",
+          "política monetaria expansiva",
+          "política monetaria acomodaticia",
+          "ciclo de recortes",
+          "recorte de tasas",
+          "recortes de tasas",
+          "recorte a la tasa de interés",
+          "recorte de la tasa de interés",
+          "recorte en la tasa de interés",
+          "recortes a las tasas de interés",
+          "recorte a la tasa de referencia",
+          "baja de tasas",
+          "baja en la tasa de interés",
+          "baja de la tasa de referencia",
+          "reducción de la tasa de interés",
+          "reducción de tasas",
+          "bajar las tasas de interés",
+          "bajar la tasa de interés",
+          "recortó la tasa de interés",
+          "redujo la tasa de interés",
+          "bajó la tasa de interés"
+        ],
+        "turkish": [
+          {
+            "prefix": "parasal gevşe"
+          },
+          {
+            "prefix": "niceliksel gevşe"
+          },
+          {
+            "prefix": "miktarsal gevşe"
+          },
+          {
+            "prefix": "gevşek para politika"
+          },
+          {
+            "prefix": "genişleyici para politika"
+          },
+          {
+            "prefix": "genişletici para politika"
+          },
+          {
+            "prefix": "para politikasında gevşe"
+          },
+          {
+            "prefix": "para politikasını gevşet"
+          },
+          {
+            "prefix": "faiz indir"
+          },
+          {
+            "prefix": "faiz düşür"
+          },
+          {
+            "prefix": "faiz düşüş"
+          },
+          {
+            "prefix": "faizleri indir"
+          },
+          {
+            "prefix": "faizleri düşür"
+          },
+          {
+            "prefix": "faiz oranını indir"
+          },
+          {
+            "prefix": "faiz oranlarını indir"
+          },
+          {
+            "prefix": "faiz oranını düşür"
+          },
+          {
+            "prefix": "faiz oranlarını düşür"
+          }
+        ],
+        "thai": [
+          "ผ่อนคลายนโยบายการเงิน",
+          "นโยบายการเงินแบบผ่อนคลาย",
+          "นโยบายการเงินผ่อนคลาย",
+          "ลดอัตราดอกเบี้ย",
+          "ลดดอกเบี้ย",
+          "ดอกเบี้ยขาลง",
+          "มาตรการผ่อนคลายเชิงปริมาณ",
+          "QE"
+        ]
+      }
+    },
+    "money_supply": {
+      "label": "Money Supply",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "money supply",
+          "broad money",
+          "monetary aggregates",
+          "money supply growth"
+        ],
+        "es": [
+          "oferta monetaria",
+          "masa monetaria",
+          "agregados monetarios",
+          "base monetaria",
+          "crecimiento de la oferta monetaria",
+          "emisión monetaria"
+        ],
+        "turkish": [
+          {
+            "prefix": "para arzı"
+          },
+          {
+            "prefix": "para arzl"
+          },
+          "geniş para",
+          {
+            "prefix": "geniş paranın"
+          },
+          {
+            "prefix": "parasal büyüklük"
+          }
+        ],
+        "thai": [
+          "ปริมาณเงินในระบบ",
+          "ปริมาณเงินตามความหมายกว้าง",
+          "ปริมาณเงินตามความหมายแคบ"
+        ]
+      }
+    },
+    "foreign_exchange_reserves": {
+      "label": "Foreign Exchange Reserves",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "foreign-exchange reserves",
+          "foreign exchange reserves",
+          "forex reserves",
+          "fx reserves",
+          "foreign reserves",
+          "international reserves"
+        ],
+        "es": [
+          "reservas internacionales",
+          "reserva internacional",
+          "reservas internacionales netas",
+          "reserva internacional neta",
+          "reservas de divisas",
+          "reservas en divisas",
+          "reservas cambiarias",
+          "reservas en moneda extranjera"
+        ],
+        "turkish": [
+          {
+            "prefix": "döviz rezerv"
+          },
+          {
+            "prefix": "yabancı para rezerv"
+          },
+          {
+            "prefix": "brüt rezerv"
+          },
+          {
+            "prefix": "net rezerv"
+          },
+          {
+            "prefix": "uluslararası rezerv"
+          },
+          {
+            "prefix": "resmi rezerv"
+          },
+          {
+            "prefix": "merkez bankası rezerv"
+          },
+          {
+            "prefix": "tcmb rezerv"
+          },
+          {
+            "prefix": "rezerv erime"
+          }
+        ],
+        "thai": [
+          "ทุนสำรองระหว่างประเทศ",
+          "ทุนสำรองเงินตราต่างประเทศ",
+          "ทุนสำรองทางการ"
+        ]
+      }
+    },
+    "exchange_rate_policy": {
+      "label": "Exchange Rate Policy",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "exchange rate policy",
+          "exchange-rate policy",
+          "exchange rate policies",
+          "exchange rate regime",
+          "exchange-rate regime",
+          "exchange rate regimes"
+        ],
+        "es": [
+          "política cambiaria",
+          "políticas cambiarias",
+          "política de tipo de cambio",
+          "régimen cambiario",
+          "regímenes cambiarios",
+          "régimen de tipo de cambio",
+          "régimen de libre flotación",
+          "comisión de cambios"
+        ],
+        "turkish": [
+          {
+            "prefix": "kur politika"
+          },
+          {
+            "prefix": "döviz kuru politika"
+          },
+          {
+            "prefix": "kur rejim"
+          },
+          {
+            "prefix": "döviz kuru rejim"
+          },
+          {
+            "prefix": "dalgalı kur"
+          },
+          "sabit kur",
+          {
+            "prefix": "sabit kur rejim"
+          },
+          {
+            "prefix": "sabit kur sistem"
+          },
+          {
+            "prefix": "kur çıpa"
+          }
+        ],
+        "thai": [
+          "นโยบายอัตราแลกเปลี่ยน",
+          "นโยบายค่าเงิน",
+          "ระบบอัตราแลกเปลี่ยน",
+          "ระบบตะกร้าเงิน",
+          "ระบบลอยตัวแบบมีการจัดการ",
+          "ลอยตัวค่าเงิน"
+        ]
+      }
+    },
+    "currency_devaluation": {
+      "label": "Currency Devaluation",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "currency devaluation",
+          "currency devaluations",
+          "devaluation of the currency",
+          "devalued the currency",
+          "devalue the currency",
+          "devalues the currency",
+          "devaluing the currency"
+        ],
+        "es": [
+          "devaluación de la moneda",
+          "devaluaciones de la moneda",
+          "devaluación del peso",
+          "devaluación de la divisa",
+          "devaluación monetaria",
+          "devaluación cambiaria",
+          "maxidevaluación",
+          "devaluó la moneda",
+          "devaluar la moneda",
+          "devalúa la moneda",
+          "devaluó el peso"
+        ],
+        "turkish": [
+          {
+            "prefix": "devalüasyon"
+          },
+          {
+            "prefix": "devaluasyon"
+          },
+          {
+            "prefix": "devalüe"
+          }
+        ],
+        "thai": [
+          "การลดค่าเงิน",
+          "ลดค่าเงินบาท",
+          "ลดค่าเงินหยวน",
+          "ลดค่าสกุลเงิน",
+          "ประกาศลดค่าเงิน"
+        ]
+      }
+    },
+    "foreign_exchange_controls": {
+      "label": "Foreign Exchange Controls",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "foreign-exchange controls",
+          "foreign exchange controls",
+          "foreign-exchange control",
+          "foreign exchange control",
+          "exchange controls",
+          "currency controls"
+        ],
+        "es": [
+          "control de cambios",
+          "controles de cambios",
+          "control cambiario",
+          "controles cambiarios",
+          "cepo cambiario",
+          "restricciones cambiarias"
+        ],
+        "turkish": [
+          {
+            "prefix": "döviz kontrol"
+          },
+          {
+            "prefix": "kambiyo kontrol"
+          },
+          {
+            "prefix": "döviz kısıtlama"
+          },
+          {
+            "prefix": "kambiyo kısıtlama"
+          },
+          {
+            "prefix": "türk parası kıymetini koruma"
+          }
+        ],
+        "thai": [
+          "ควบคุมเงินตราต่างประเทศ",
+          "ควบคุมการแลกเปลี่ยนเงิน",
+          "ควบคุมปริวรรตเงินตรา"
+        ]
+      }
+    },
+    "multiple_exchange_rates": {
+      "label": "Multiple Exchange Rates",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "multiple exchange rates",
+          "multiple exchange rate",
+          "dual exchange rate",
+          "dual exchange rates"
+        ],
+        "es": [
+          "tipos de cambio múltiples",
+          "tipo de cambio múltiple",
+          "tipo de cambio dual",
+          "doble tipo de cambio",
+          "tipos de cambio diferenciados",
+          "tasas de cambio múltiples",
+          "desdoblamiento cambiario"
+        ],
+        "turkish": [
+          "çoklu kur",
+          {
+            "prefix": "çoklu kur uygulama"
+          },
+          {
+            "prefix": "çoklu kur sistem"
+          },
+          {
+            "prefix": "çoklu kur rejim"
+          },
+          {
+            "prefix": "çoklu döviz kur"
+          },
+          "ikili kur",
+          "i̇kili kur",
+          {
+            "prefix": "ikili kur uygulama"
+          },
+          {
+            "prefix": "ikili döviz kur"
+          }
+        ],
+        "thai": [
+          "อัตราแลกเปลี่ยนหลายอัตรา",
+          "อัตราแลกเปลี่ยนสองอัตรา"
+        ]
+      }
+    },
+    "currency_convertibility": {
+      "label": "Currency Convertibility",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "currency convertibility",
+          "convertibility of the currency"
+        ],
+        "es": [
+          "convertibilidad de la moneda",
+          "convertibilidad monetaria",
+          "convertibilidad del peso",
+          "ley de convertibilidad"
+        ],
+        "turkish": [
+          {
+            "prefix": "konvertibilite"
+          },
+          {
+            "prefix": "tam konvertibl"
+          }
+        ],
+        "thai": [
+          "การแปลงสภาพเงินตรา",
+          "ความสามารถในการแปลงค่าเงิน"
+        ]
+      }
+    },
+    "dollarization": {
+      "label": "Dollarization",
+      "cluster": null,
+      "forms": {
+        "en": [
+          "dollarization",
+          "dollarisation"
+        ],
+        "es": [
+          "dolarización",
+          "dolarización de la economía",
+          "economía dolarizada",
+          "economías dolarizadas"
+        ],
+        "turkish": [
+          {
+            "prefix": "dolarizasyon"
+          },
+          {
+            "prefix": "dolarlaşma"
+          },
+          {
+            "prefix": "dolarize"
+          }
+        ],
+        "thai": [
+          "ดอลลาไรเซชัน",
+          "ดอลลาร์ไรเซชัน",
+          "dollarization",
+          "dollarisation"
+        ]
       }
     }
   }
