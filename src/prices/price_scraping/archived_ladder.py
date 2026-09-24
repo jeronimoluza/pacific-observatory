@@ -52,6 +52,14 @@ _NEXTDATA_SPIDERS = {"tiki"}
 # 2019-2020 pages have no JSON-LD, so the selectors still read those.
 _JSONLD_FIRST = {"tiki"}
 
+# Spiders whose per-source archived extractor runs before their selectors.
+# rakuten's selectors read the <title>, so 2016-2021 pages come out as
+# "【楽天市場】<name>" with a "17,500円" price string, where its bysource
+# extractor returns the bare name and a numeric price -- the same price on
+# 53/53 sampled pages, and the shape production's rows already have. Pages the
+# extractor cannot read (the 2026 template) fall through to the ladder as before.
+_BYSOURCE_FIRST = {"rakuten"}
+
 
 def decode(headers: Optional[bytes], body: bytes) -> str:
     """Text, preferring the charset the page declares.
@@ -268,6 +276,10 @@ def parse_rows(
         if rows:
             return rows, "hook"
         return portable_rows(html, url, source)
+    if source in _BYSOURCE_FIRST:
+        rows = _priced(rows_from_source(html, url, source))
+        if rows:
+            return rows, "bysource"
     extracted = selector_row(html, source)
     if _site_title(extracted, url):
         extracted = {}
