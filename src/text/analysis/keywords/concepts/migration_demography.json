@@ -47,6 +47,221 @@
           "migration flows",
           "migratory flows",
           "migrant flows"
+        ],
+        "chinese_simplified": [
+          "移民",
+          "移民潮",
+          "人口迁移",
+          "迁移人口",
+          "人口流动",
+          "移民流动",
+          "移民人数",
+          "移民问题"
+        ],
+        "chinese_traditional": [
+          "人口遷移",
+          "人口遷徙",
+          "人口流動",
+          "移民人數",
+          "移民流入",
+          "移工",
+          "移民工人",
+          "新移民",
+          "新住民",
+          "外來移民",
+          "移民數目"
+        ],
+        "filipino": [
+          "migration",
+          "migrants",
+          "migrant",
+          "migration flows",
+          "migratory flows",
+          "migrasyon",
+          "pandarayuhan",
+          "mga migrante",
+          "migrante"
+        ],
+        "fr": [
+          "migrants",
+          "migrant",
+          "migrante",
+          "migrantes",
+          "immigration",
+          "immigrés",
+          "flux migratoires",
+          "flux migratoire",
+          "phénomène migratoire",
+          "crise migratoire",
+          "pression migratoire",
+          "question migratoire",
+          "solde migratoire",
+          "organisation internationale pour les migrations"
+        ],
+        "indo": [
+          "migrasi penduduk",
+          "migran",
+          "para migran",
+          "kaum migran",
+          "arus migrasi",
+          "gelombang migrasi",
+          "perpindahan penduduk",
+          "migration"
+        ],
+        "japanese": [
+          "移民",
+          "移住",
+          "移住者",
+          "人口移動",
+          "移民の流入",
+          "移民流入",
+          "移民労働者"
+        ],
+        "km": [
+          "ចំណាកស្រុក",
+          "ទេសន្តរប្រវេសន៍",
+          "ទេសន្ដរប្រវេសន៍",
+          "ជនចំណាកស្រុក",
+          "អ្នកចំណាកស្រុក",
+          "លំហូរចំណាកស្រុក",
+          "migration",
+          "migrants",
+          "migrant"
+        ],
+        "korean": [
+          "이주민",
+          "이주자",
+          "이민자",
+          "이주 노동",
+          "인구 이동",
+          "인구이동",
+          "이주 행렬",
+          "이주민 유입",
+          "이민 유입"
+        ],
+        "lao": [
+          "ການເຄື່ອນຍ້າຍຖິ່ນຖານ",
+          "ເຄື່ອນຍ້າຍຖິ່ນຖານ",
+          "ຜູ້ເຄື່ອນຍ້າຍຖິ່ນຖານ",
+          "ການຍົກຍ້າຍຖິ່ນຖານ",
+          "ການຍ້າຍຖິ່ນຖານ",
+          "ການຍ້າຍຖິ່ນ",
+          "ຜູ້ຍ້າຍຖິ່ນ",
+          "ການເຄື່ອນຍ້າຍປະຊາກອນ",
+          "ການເຄື່ອນຍ້າຍຂອງພົນລະເມືອງ",
+          "ການເຄື່ອນຍ້າຍຂອງປະຊາກອນ"
+        ],
+        "malay": [
+          "penghijrahan",
+          "migrasi",
+          "migran",
+          "aliran migran",
+          "aliran penghijrahan",
+          "pekerja migran",
+          "pendatang asing",
+          "penghijrahan penduduk",
+          "migrasi penduduk"
+        ],
+        "mn": [
+          {
+            "prefix": "шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "цагаачлал"
+          },
+          {
+            "prefix": "цагаачид"
+          },
+          {
+            "prefix": "цагаачдын"
+          },
+          {
+            "prefix": "цагаачдад"
+          },
+          {
+            "prefix": "цагаачдыг"
+          },
+          {
+            "prefix": "шилжин суурьшигч"
+          },
+          {
+            "prefix": "шилжин ирэгс"
+          },
+          {
+            "prefix": "шилжин ирэгч"
+          },
+          {
+            "prefix": "шилжин суурьших"
+          }
+        ],
+        "my": [
+          "ရွှေ့ပြောင်းနေထိုင်မှု",
+          "ရွှေ့ပြောင်းနေထိုင်သူ",
+          "ရွှေ့ပြောင်း နေထိုင်သူ",
+          "ရွှေ့ပြောင်းသွားလာမှု",
+          "ရွှေ့ပြောင်းအလုပ်သမား",
+          "ရွှေ့ပြောင်း အလုပ်သမား",
+          "ရွှေ့ပြောင်းလုပ်သား",
+          "ရွှေ့ပြောင်း လုပ်သား",
+          "migrants"
+        ],
+        "portuguese": [
+          "migração",
+          "migrações",
+          "migrante",
+          "migrantes",
+          "fluxos migratórios",
+          "fluxo migratório",
+          "fluxos de migrantes",
+          "movimentos migratórios",
+          "crise migratória",
+          "imigração",
+          "imigrantes",
+          "imigrante"
+        ],
+        "tetum": [
+          "migrasaun",
+          "migrante",
+          "migrante sira",
+          "imigrante",
+          "imigrante sira",
+          "fluxu migrasaun",
+          "fluxu migratóriu",
+          "fluxu migratoriu",
+          "migração",
+          "migracao",
+          "migrações",
+          "migracoes",
+          "migrantes",
+          "imigrantes",
+          "fluxos migratórios",
+          "fluxos migratorios",
+          "fluxo migratório",
+          "fluxo migratorio"
+        ],
+        "thai": [
+          "การย้ายถิ่น",
+          "การย้ายถิ่นฐาน",
+          "การโยกย้ายถิ่นฐาน",
+          "ผู้ย้ายถิ่น",
+          "ผู้อพยพย้ายถิ่น",
+          "แรงงานย้ายถิ่น",
+          "ผู้โยกย้ายถิ่นฐาน",
+          "การอพยพย้ายถิ่น"
+        ],
+        "tok_pisin": [
+          "migration",
+          "migrants",
+          "migrant",
+          "migration flows",
+          "migratory flows",
+          "migrant flows",
+          "maigresen",
+          "migresen",
+          "maigren",
+          "ol maigren",
+          "migran",
+          "ol migran"
         ]
       }
     },
@@ -62,6 +277,202 @@
           "interprovincial migration",
           "inter-provincial migration",
           "inter-island migration"
+        ],
+        "chinese_simplified": [
+          "国内迁移",
+          "国内移民",
+          "省际迁移",
+          "跨省流动",
+          "流动人口",
+          "外来人口",
+          "农民工",
+          "跨省务工",
+          "岛际迁移"
+        ],
+        "chinese_traditional": [
+          "國內遷徙",
+          "國內遷移",
+          "境內遷徙",
+          "跨省遷移",
+          "跨縣市遷移",
+          "島際遷移",
+          "內部遷移"
+        ],
+        "filipino": [
+          "internal migration",
+          "internal migrants",
+          "internal migrant",
+          "domestic migration",
+          "interprovincial migration",
+          "inter-island migration",
+          "Balik Probinsya",
+          "Balik-Probinsya",
+          "Balik Probinsiya",
+          "Balik Probinsya, Bagong Pag-asa"
+        ],
+        "fr": [
+          "migration interne",
+          "migrations internes",
+          "migrations inter-îles",
+          "migration inter-îles",
+          "migration interinsulaire",
+          "migrations interinsulaires",
+          "exode insulaire",
+          "exode vers tahiti",
+          "exode vers le grand nouméa"
+        ],
+        "indo": [
+          "migrasi internal",
+          "migrasi dalam negeri",
+          "migrasi antarprovinsi",
+          "migrasi antar provinsi",
+          "migrasi antarpulau",
+          "migran internal",
+          "program transmigrasi",
+          "kawasan transmigrasi",
+          "lokasi transmigrasi",
+          "peserta transmigrasi",
+          "warga transmigrasi",
+          "transmigrasi lokal",
+          "transmigran",
+          "perantau",
+          "merantau"
+        ],
+        "japanese": [
+          "国内移住",
+          "国内の人口移動",
+          "地域間の人口移動",
+          "地方移住",
+          "転入超過",
+          "転出超過",
+          "人口流出",
+          "東京一極集中",
+          "県外への転出"
+        ],
+        "km": [
+          "ចំណាកស្រុកក្នុងស្រុក",
+          "ចំណាកស្រុកក្នុងប្រទេស",
+          "ការធ្វើចំណាកស្រុកក្នុងស្រុក",
+          "ការធ្វើចំណាកស្រុកក្នុងប្រទេស",
+          "ចំណាកស្រុកផ្ទៃក្នុង",
+          "ចំណាកស្រុកពីខេត្តមួយទៅខេត្តមួយ",
+          "ចំណាកស្រុកពីខេត្ដមួយទៅខេត្ដមួយ",
+          "ចំណាកស្រុកពីខេត្ដមួយទៅខេត្តមួយ",
+          "ចំណាកស្រុកពីខេត្តមួយទៅខេត្ដមួយ",
+          "internal migration"
+        ],
+        "korean": [
+          "국내 이주",
+          "국내이주",
+          "국내 인구이동",
+          "지역 간 인구이동",
+          "지역간 인구이동",
+          "시도 간 이동",
+          "시도간 이동",
+          "수도권 인구 유입",
+          "수도권 순유입",
+          "인구 유출",
+          "인구유출",
+          "청년 유출",
+          "인구 순유출"
+        ],
+        "lao": [
+          "ການເຄື່ອນຍ້າຍພາຍໃນປະເທດ",
+          "ການເຄື່ອນຍ້າຍຖິ່ນຖານພາຍໃນປະເທດ",
+          "ການຍ້າຍຖິ່ນພາຍໃນປະເທດ",
+          "ການຍ້າຍຖິ່ນຖານພາຍໃນປະເທດ",
+          "ການເຄື່ອນຍ້າຍຖິ່ນຖານພາຍໃນ",
+          "ການເຄື່ອນຍ້າຍລະຫວ່າງແຂວງ",
+          "ແຮງງານເຄື່ອນຍ້າຍພາຍໃນປະເທດ"
+        ],
+        "malay": [
+          "penghijrahan dalam negeri",
+          "penghijrahan dalaman",
+          "migrasi dalaman",
+          "migrasi dalam negeri",
+          "penghijrahan antara negeri",
+          "migran dalaman",
+          "penghijrahan antara pulau"
+        ],
+        "mn": [
+          {
+            "prefix": "дотоод шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "дотоодын шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "орон нутгаас шилжин ир"
+          },
+          {
+            "prefix": "хөдөө орон нутгаас шилжин"
+          },
+          {
+            "prefix": "аймгаас нийслэл рүү шилж"
+          },
+          {
+            "prefix": "нийслэлд шилжин ир"
+          },
+          {
+            "prefix": "нийслэлд шилжин суурьш"
+          },
+          {
+            "prefix": "дотоодын цагаач"
+          }
+        ],
+        "my": [
+          "ပြည်တွင်းရွှေ့ပြောင်းနေထိုင်",
+          "ပြည်တွင်း ရွှေ့ပြောင်းနေထိုင်",
+          "ပြည်တွင်းရွှေ့ပြောင်းလုပ်သား",
+          "ပြည်တွင်းရွှေ့ပြောင်းအလုပ်သမား",
+          "ပြည်တွင်းရွှေ့ပြောင်းမှု",
+          "internal migration"
+        ],
+        "portuguese": [
+          "migração interna",
+          "migrações internas",
+          "migrantes internos",
+          "migrante interno",
+          "migração interprovincial",
+          "migração entre províncias",
+          "migração inter-ilhas",
+          "migração entre ilhas",
+          "migração entre municípios",
+          "êxodo interno"
+        ],
+        "tetum": [
+          "migrasaun internu",
+          "migrasaun interna",
+          "migrante internu",
+          "migrasaun entre munisípiu",
+          "migrasaun entre munisipiu",
+          "migrasaun husi munisípiu ba Dili",
+          "migrasaun husi munisipiu ba Dili",
+          "migração interna",
+          "migracao interna",
+          "migrações internas",
+          "migracoes internas",
+          "migrantes internos"
+        ],
+        "thai": [
+          "การย้ายถิ่นภายในประเทศ",
+          "การย้ายถิ่นฐานภายในประเทศ",
+          "ผู้ย้ายถิ่นภายในประเทศ",
+          "การย้ายถิ่นระหว่างจังหวัด",
+          "การย้ายถิ่นข้ามจังหวัด",
+          "ย้ายถิ่นภายในประเทศ"
+        ],
+        "tok_pisin": [
+          "internal migration",
+          "internal migrants",
+          "internal migrant",
+          "domestic migration",
+          "interprovincial migration",
+          "inter-provincial migration",
+          "inter-island migration",
+          "maigresen insait long kantri",
+          "lusim provins i go stap long narapela provins",
+          "muv i go long narapela provins"
         ]
       }
     },
@@ -75,6 +486,170 @@
           "cross-border migration",
           "overseas migration",
           "migration abroad"
+        ],
+        "chinese_simplified": [
+          "国际移民",
+          "跨境移民",
+          "跨国移民",
+          "海外移民",
+          "国际迁移",
+          "跨境迁移"
+        ],
+        "chinese_traditional": [
+          "國際移民",
+          "跨國移民",
+          "跨境移民",
+          "移居外國",
+          "海外移民",
+          "跨國遷徙",
+          "國際遷移"
+        ],
+        "filipino": [
+          "international migration",
+          "international migrants",
+          "cross-border migration",
+          "overseas migration",
+          "migration abroad",
+          "pangingibang-bansa",
+          "nangibang-bansa",
+          "mangibang-bansa"
+        ],
+        "fr": [
+          "migration internationale",
+          "migrations internationales",
+          "migrants internationaux",
+          "migration transfrontalière",
+          "migrations transfrontalières"
+        ],
+        "indo": [
+          "migrasi internasional",
+          "migran internasional",
+          "migrasi lintas batas",
+          "migrasi lintas negara",
+          "migrasi ke luar negeri"
+        ],
+        "japanese": [
+          "国際移住",
+          "国際移民",
+          "国境を越えた移住",
+          "国境を越える移住",
+          "国際移住機関",
+          "IOM",
+          "ＩＯＭ"
+        ],
+        "km": [
+          "ចំណាកស្រុកអន្តរជាតិ",
+          "ចំណាកស្រុកអន្ដរជាតិ",
+          "ការធ្វើចំណាកស្រុកអន្តរជាតិ",
+          "ការធ្វើចំណាកស្រុកអន្ដរជាតិ",
+          "ចំណាកស្រុកទៅក្រៅប្រទេស",
+          "ចំណាកស្រុកឆ្លងដែន",
+          "ចំណាកស្រុកឆ្លងព្រំដែន",
+          "international migration"
+        ],
+        "korean": [
+          "국제 이주",
+          "국제이주",
+          "국제 이민",
+          "국제이민",
+          "해외 이주",
+          "해외이주",
+          "국경 간 이주",
+          "국제 인구이동",
+          "국제인구이동"
+        ],
+        "lao": [
+          "ການເຄື່ອນຍ້າຍລະຫວ່າງປະເທດ",
+          "ການເຄື່ອນຍ້າຍຖິ່ນຖານລະຫວ່າງປະເທດ",
+          "ການເຄື່ອນຍ້າຍຖິ່ນຖານຂ້າມແດນ",
+          "ການເຄື່ອນຍ້າຍຖິ່ນຖານຂ້າມຊາດ",
+          "ການຍ້າຍຖິ່ນລະຫວ່າງປະເທດ",
+          "ການເຄື່ອນຍ້າຍຖິ່ນຖານສາກົນ",
+          "ອົງການສາກົນເພື່ອການເຄື່ອນຍ້າຍຖິ່ນຖານ",
+          "IOM"
+        ],
+        "malay": [
+          "penghijrahan antarabangsa",
+          "migrasi antarabangsa",
+          "penghijrahan rentas sempadan",
+          "migrasi rentas sempadan",
+          "penghijrahan ke luar negara",
+          "migran antarabangsa",
+          "berhijrah ke luar negara"
+        ],
+        "mn": [
+          {
+            "prefix": "олон улсын шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "олон улсын цагаачлал"
+          },
+          {
+            "prefix": "гадаад шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "хил дамнасан шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "гадаадад цагаачл"
+          },
+          {
+            "prefix": "олон улсын цагаачлалын байгууллага"
+          }
+        ],
+        "my": [
+          "နိုင်ငံတကာရွှေ့ပြောင်းနေထိုင်",
+          "နိုင်ငံတကာ ရွှေ့ပြောင်းနေထိုင်",
+          "နိုင်ငံတကာရွှေ့ပြောင်းမှု",
+          "နယ်စပ်ဖြတ်ကျော်ရွှေ့ပြောင်း",
+          "ပြည်ပသို့ရွှေ့ပြောင်း",
+          "ပြည်ပသို့ ရွှေ့ပြောင်း",
+          "IOM",
+          "international migration"
+        ],
+        "portuguese": [
+          "migração internacional",
+          "migrações internacionais",
+          "migrantes internacionais",
+          "migração transfronteiriça",
+          "migração para o estrangeiro",
+          "migração para o exterior",
+          "Organização Internacional para as Migrações",
+          "OIM"
+        ],
+        "tetum": [
+          "migrasaun internasionál",
+          "migrasaun internasional",
+          "migrante internasionál",
+          "migrante internasional",
+          "migrasaun ba rai-liur",
+          "migrasaun ba rai li'ur",
+          "migrasaun ba rai li’ur",
+          "migrasaun transfronteirisa",
+          "migração internacional",
+          "migracao internacional",
+          "migrantes internacionais",
+          "migração transfronteiriça",
+          "migracao transfronteirica"
+        ],
+        "thai": [
+          "การย้ายถิ่นระหว่างประเทศ",
+          "การย้ายถิ่นฐานระหว่างประเทศ",
+          "การย้ายถิ่นข้ามพรมแดน",
+          "การย้ายถิ่นข้ามชาติ",
+          "ผู้ย้ายถิ่นข้ามชาติ",
+          "องค์การระหว่างประเทศเพื่อการโยกย้ายถิ่นฐาน",
+          "IOM"
+        ],
+        "tok_pisin": [
+          "international migration",
+          "international migrants",
+          "cross-border migration",
+          "overseas migration",
+          "migration abroad",
+          "intenesenel maigresen",
+          "go stap long narapela kantri",
+          "go stap long ovasis"
         ]
       }
     },
@@ -89,6 +664,193 @@
           "rural to urban migration",
           "migration to cities",
           "urban drift"
+        ],
+        "chinese_simplified": [
+          "城乡迁移",
+          "乡城迁移",
+          "农业转移人口",
+          "进城务工",
+          "农民进城",
+          "进城落户",
+          "农村人口向城市转移",
+          "农村劳动力转移"
+        ],
+        "chinese_traditional": [
+          "城鄉遷徙",
+          "城鄉遷移",
+          "鄉村移往城市",
+          "農村人口外移",
+          "農村人口湧入城市",
+          "向城市遷移",
+          "人口往都市集中"
+        ],
+        "filipino": [
+          "rural-urban migration",
+          "rural urban migration",
+          "rural-to-urban migration",
+          "rural to urban migration",
+          "migration to cities",
+          "urban migration",
+          "urban drift"
+        ],
+        "fr": [
+          "exode rural",
+          "exode des îles",
+          "exode vers papeete",
+          "exode vers nouméa",
+          "exode vers la ville",
+          "migration vers les villes"
+        ],
+        "indo": [
+          "migrasi desa-kota",
+          "migrasi desa ke kota",
+          "migrasi dari desa ke kota",
+          "perpindahan penduduk dari desa ke kota",
+          "urbanisasi pascalebaran",
+          "urbanisasi pasca-Lebaran",
+          "urbanisasi pasca Lebaran",
+          "pendatang baru ke Jakarta"
+        ],
+        "japanese": [
+          "農村から都市への移住",
+          "農村から都市への人口移動",
+          "地方から都市への人口流出",
+          "都市部への人口流出",
+          "都市への人口流出",
+          "都市部への移住",
+          "地方から都市部"
+        ],
+        "km": [
+          "ចំណាកស្រុកពីជនបទទៅទីក្រុង",
+          "ចំណាកស្រុកពីជនបទមកទីក្រុង",
+          "ការធ្វើចំណាកស្រុកពីជនបទទៅទីក្រុង",
+          "ចំណាកស្រុកមកទីក្រុង",
+          "ចំណាកស្រុកមករាជធានី",
+          "ចំណាកស្រុកមកភ្នំពេញ",
+          "rural-urban migration"
+        ],
+        "korean": [
+          "농촌 인구 유출",
+          "농촌 인구의 도시",
+          "도시로의 이주",
+          "도시로 이주",
+          "농촌에서 도시로",
+          "이촌향도",
+          "농민공",
+          "이농현상",
+          "이농 현상"
+        ],
+        "lao": [
+          "ການເຄື່ອນຍ້າຍຈາກຊົນນະບົດສູ່ຕົວເມືອງ",
+          "ການເຄື່ອນຍ້າຍຈາກຊົນນະບົດເຂົ້າສູ່ຕົວເມືອງ",
+          "ເຄື່ອນຍ້າຍຈາກຊົນນະບົດເຂົ້າຕົວເມືອງ",
+          "ຍ້າຍຈາກຊົນນະບົດເຂົ້າຕົວເມືອງ",
+          "ຍ້າຍຈາກຊົນນະບົດມາຢູ່ຕົວເມືອງ",
+          "ການເຄື່ອນຍ້າຍເຂົ້າສູ່ຕົວເມືອງ",
+          "ເຄື່ອນຍ້າຍເຂົ້າຕົວເມືອງ",
+          "ລັ່ງໄຫຼເຂົ້າຕົວເມືອງ",
+          "ລັ່ງໄຫລເຂົ້າຕົວເມືອງ",
+          "ຫຼັ່ງໄຫຼເຂົ້າຕົວເມືອງ",
+          "ຫລັ່ງໄຫລເຂົ້າຕົວເມືອງ",
+          "ຫຼັ່ງໄຫຼເຂົ້າສູ່ຕົວເມືອງ",
+          "ຫລັ່ງໄຫລເຂົ້າສູ່ຕົວເມືອງ"
+        ],
+        "malay": [
+          "penghijrahan luar bandar ke bandar",
+          "penghijrahan dari luar bandar ke bandar",
+          "migrasi luar bandar ke bandar",
+          "penghijrahan ke bandar",
+          "berhijrah ke bandar",
+          "penghijrahan ke kota",
+          "berhijrah ke kota"
+        ],
+        "mn": [
+          {
+            "prefix": "хөдөөгөөс хот руу"
+          },
+          {
+            "prefix": "хөдөөнөөс хот руу"
+          },
+          {
+            "prefix": "хөдөө орон нутгаас хот руу"
+          },
+          {
+            "prefix": "орон нутгаас нийслэл рүү"
+          },
+          {
+            "prefix": "хөдөөгөөс хотод шилж"
+          },
+          {
+            "prefix": "хөдөөнөөс хотод шилж"
+          },
+          {
+            "prefix": "хөдөөгөөс нийслэл рүү"
+          },
+          {
+            "prefix": "нийслэл рүү чиглэсэн шилжилт"
+          }
+        ],
+        "my": [
+          "ကျေးလက်မှမြို့ပြသို့ရွှေ့ပြောင်း",
+          "ကျေးလက်မှ မြို့ပြသို့ ရွှေ့ပြောင်း",
+          "ကျေးလက်မှမြို့ပေါ်သို့ရွှေ့ပြောင်း",
+          "ကျေးလက်မှ မြို့ပေါ်သို့",
+          "မြို့ပြသို့ရွှေ့ပြောင်း",
+          "မြို့ပြသို့ ရွှေ့ပြောင်း",
+          "rural-urban migration"
+        ],
+        "portuguese": [
+          "migração rural-urbana",
+          "migração rural urbana",
+          "migração do campo para a cidade",
+          "migração das zonas rurais para as cidades",
+          "migração das áreas rurais para as cidades",
+          "migração para as cidades",
+          "migração para a capital",
+          "migração para Díli",
+          "êxodo para as cidades",
+          "êxodo para a capital"
+        ],
+        "tetum": [
+          "migrasaun rurál-urbanu",
+          "migrasaun rural-urbanu",
+          "migrasaun husi rurál ba sidade",
+          "migrasaun husi rural ba sidade",
+          "migrasaun husi área rurál ba área urbana",
+          "migrasaun husi area rural ba area urbana",
+          "migrasaun husi foho ba sidade",
+          "migrasaun husi foho ba Dili",
+          "ema husi foho mai Dili",
+          "migração rural-urbana",
+          "migracao rural-urbana",
+          "migração do campo para a cidade",
+          "migracao do campo para a cidade",
+          "migração para as cidades",
+          "migracao para as cidades"
+        ],
+        "thai": [
+          "การย้ายถิ่นจากชนบทสู่เมือง",
+          "การย้ายถิ่นจากชนบทเข้าสู่เมือง",
+          "การย้ายถิ่นเข้าเมือง",
+          "อพยพเข้ากรุง",
+          "ย้ายเข้ามาทำงานในเมือง",
+          "ย้ายถิ่นเข้าเมืองใหญ่"
+        ],
+        "tok_pisin": [
+          "rural-urban migration",
+          "rural urban migration",
+          "rural-to-urban migration",
+          "rural to urban migration",
+          "migration to cities",
+          "urban drift",
+          "lusim ples i go long taun",
+          "lusim ples na i go long taun",
+          "lusim ples na go long taun",
+          "lusim ples i kam long taun",
+          "lusim ples na i kam long taun",
+          "lusim ples na i go stap long taun",
+          "lusim ples na i go stap long ol bikpela taun",
+          "lusim ples na i go stap long ol taun"
         ]
       }
     },
@@ -106,6 +868,210 @@
           "outmigration",
           "out-migration",
           "brain drain"
+        ],
+        "chinese_simplified": [
+          "移居国外",
+          "移居海外",
+          "移民海外",
+          "移民国外",
+          "出国移民",
+          "人口外流",
+          "移民外流",
+          "人才外流"
+        ],
+        "chinese_traditional": [
+          "移民外流",
+          "移民潮",
+          "移居海外",
+          "移出人口",
+          "人才外流",
+          "移民離港",
+          "移民離台",
+          "移民海外",
+          "移民離臺"
+        ],
+        "filipino": [
+          "emigration",
+          "emigrants",
+          "emigrant",
+          "emigrate",
+          "emigrated",
+          "emigrating",
+          "outmigration",
+          "out-migration",
+          "brain drain",
+          "pangingibang-bansa"
+        ],
+        "fr": [
+          "émigration",
+          "émigrés",
+          "émigré",
+          "émigrée",
+          "émigrer",
+          "émigrent",
+          "émigrants",
+          "émigrant",
+          "fuite des cerveaux",
+          "exode des cerveaux",
+          "solde migratoire négatif",
+          "solde migratoire déficitaire",
+          "départs du territoire",
+          "quittent le territoire"
+        ],
+        "indo": [
+          "emigrasi",
+          "emigran",
+          "beremigrasi",
+          "brain drain",
+          "kabur aja dulu",
+          "KaburAjaDulu",
+          "pindah ke luar negeri"
+        ],
+        "japanese": [
+          "海外移住",
+          "国外移住",
+          "海外に移住",
+          "国外に移住",
+          "頭脳流出",
+          "海外への人材流出",
+          "海外への人口流出",
+          "海外移民"
+        ],
+        "km": [
+          "ការចាកចេញទៅរស់នៅក្រៅប្រទេស",
+          "ចាកចេញទៅរស់នៅក្រៅប្រទេស",
+          "ការហូរចេញនៃធនធានមនុស្ស",
+          "ការហូរចេញខួរក្បាល",
+          "ការបាត់បង់ធនធានមនុស្ស",
+          "emigration",
+          "brain drain"
+        ],
+        "korean": [
+          "해외 이민",
+          "해외이민",
+          "이민을 떠",
+          "두뇌 유출",
+          "두뇌유출",
+          "인재 유출",
+          "인재유출",
+          "해외 이주민",
+          "출국 이민",
+          "이민 행렬",
+          "이민을 가",
+          "이민 떠나",
+          "해외로 이주"
+        ],
+        "lao": [
+          "ການອົບພະຍົບໄປຕ່າງປະເທດ",
+          "ອົບພະຍົບໄປຕ່າງປະເທດ",
+          "ຍ້າຍໄປຢູ່ຕ່າງປະເທດ",
+          "ຍ້າຍໄປຕັ້ງຖິ່ນຖານຢູ່ຕ່າງປະເທດ",
+          "ໄປຕັ້ງຖິ່ນຖານຢູ່ຕ່າງປະເທດ",
+          "ການເຄື່ອນຍ້າຍອອກນອກປະເທດ",
+          "ການຍ້າຍຖິ່ນອອກ",
+          "emigration"
+        ],
+        "malay": [
+          "emigrasi",
+          "pengeluaran hijrah",
+          "penghijrahan keluar",
+          "berhijrah ke luar negara",
+          "penghijrahan bakat",
+          "pengaliran keluar bakat",
+          "kebocoran bakat",
+          "brain drain",
+          "penghijrahan cerdik pandai",
+          "penghijrahan keluar penduduk"
+        ],
+        "mn": [
+          {
+            "prefix": "гадагш цагаачл"
+          },
+          {
+            "prefix": "гадагшаа цагаачл"
+          },
+          {
+            "prefix": "гадаад руу цагаачл"
+          },
+          {
+            "prefix": "гадаадад цагаачил"
+          },
+          {
+            "prefix": "гадаад улсад цагаачил"
+          },
+          {
+            "prefix": "цагаачилсан"
+          },
+          {
+            "prefix": "цагаачилж"
+          },
+          {
+            "prefix": "гадаадад суурьш"
+          },
+          {
+            "prefix": "гадаад руу шилжин суурьш"
+          }
+        ],
+        "my": [
+          "ပြည်ပထွက်ခွာမှု",
+          "ပြည်ပထွက်ခွာသူ",
+          "ပြည်ပသို့ထွက်ခွာမှု",
+          "ပြည်ပသို့ ထွက်ခွာသူ",
+          "ဦးနှောက်ယိုစီး",
+          "ဦးနှောက် ယိုစီး",
+          "ပညာရှင်များ ယိုစီး",
+          "brain drain"
+        ],
+        "portuguese": [
+          "emigração",
+          "emigrante",
+          "emigrantes",
+          "emigrar",
+          "emigraram",
+          "emigrou",
+          "emigram",
+          "emigrando",
+          "fuga de cérebros",
+          "fuga de talentos"
+        ],
+        "tetum": [
+          "emigrasaun",
+          "emigrante",
+          "emigrante sira",
+          "emigra",
+          "fuga sérebru",
+          "fuga serebru",
+          "emigração",
+          "emigracao",
+          "emigrantes",
+          "emigrar",
+          "fuga de cérebros",
+          "fuga de cerebros"
+        ],
+        "thai": [
+          "การอพยพออกนอกประเทศ",
+          "อพยพออกนอกประเทศ",
+          "ย้ายไปอยู่ต่างประเทศ",
+          "ย้ายประเทศ",
+          "สมองไหล",
+          "ภาวะสมองไหล",
+          "การย้ายถิ่นออก",
+          "brain drain"
+        ],
+        "tok_pisin": [
+          "emigration",
+          "emigrants",
+          "emigrant",
+          "emigrate",
+          "emigrated",
+          "emigrating",
+          "outmigration",
+          "out-migration",
+          "brain drain",
+          "brein dren",
+          "brein drein",
+          "lusim kantri na i go stap long narapela kantri",
+          "lusim PNG na i go stap long ovasis"
         ]
       }
     },
@@ -123,6 +1089,307 @@
           "OFWs",
           "guest workers",
           "foreign workers"
+        ],
+        "chinese_simplified": [
+          "劳务移民",
+          "劳工移民",
+          "劳动力流动",
+          "劳务输出",
+          "外出务工",
+          "外派劳务",
+          "海外劳工",
+          "出国务工",
+          "境外务工",
+          "外籍劳工",
+          "外国劳工"
+        ],
+        "chinese_traditional": [
+          "勞動遷徙",
+          "勞工遷移",
+          "勞動力流動",
+          "海外勞工",
+          "外籍勞工",
+          "外勞",
+          "外籍移工",
+          "外籍家庭傭工",
+          "外傭",
+          "輸入外勞"
+        ],
+        "filipino": [
+          "labor migration",
+          "labour migration",
+          "labor mobility",
+          "labour mobility",
+          "overseas workers",
+          "overseas Filipino workers",
+          "overseas Filipino worker",
+          "OFW",
+          "OFWs",
+          "migrant workers",
+          "migrant worker",
+          "migranteng manggagawa",
+          "overseas employment",
+          "foreign workers",
+          "Department of Migrant Workers",
+          "DMW",
+          "Overseas Workers Welfare Administration",
+          "OWWA",
+          "Philippine Overseas Employment Administration",
+          "POEA",
+          "Migrant Workers Office",
+          "deployment ban"
+        ],
+        "fr": [
+          "migration de travail",
+          "migrations de travail",
+          "migrants économiques",
+          "travailleurs migrants",
+          "travailleurs étrangers",
+          "travailleurs immigrés",
+          "main-d'œuvre étrangère",
+          "main-d’œuvre étrangère",
+          "main d'œuvre étrangère",
+          "main d’œuvre étrangère",
+          "mobilité de la main-d'œuvre",
+          "mobilité de la main-d’œuvre"
+        ],
+        "indo": [
+          "migrasi tenaga kerja",
+          "pekerja migran",
+          "buruh migran",
+          "TKI",
+          "TKW",
+          "tenaga kerja asing",
+          "pekerja asing"
+        ],
+        "japanese": [
+          "労働移住",
+          "労働移民",
+          "外国人労働者",
+          "出稼ぎ",
+          "外国人材",
+          "技能実習制度",
+          "技能実習生",
+          "特定技能",
+          "育成就労",
+          "海外就労"
+        ],
+        "km": [
+          "ពលករចំណាកស្រុក",
+          "ពលករទេសន្តរប្រវេសន៍",
+          "ពលករទេសន្ដរប្រវេសន៍",
+          "ទេសន្តរប្រវេសន៍ការងារ",
+          "ទេសន្ដរប្រវេសន៍ការងារ",
+          "ចំណាកស្រុកការងារ",
+          "ចំណាកស្រុកដើម្បីការងារ",
+          "ការធ្វើចំណាកស្រុកដើម្បីការងារ",
+          "ពលករខ្មែរនៅក្រៅប្រទេស",
+          "ពលករខ្មែរនៅប្រទេសថៃ",
+          "ពលករខ្មែរនៅថៃ",
+          "ពលករខ្មែរនៅកូរ៉េ",
+          "ពលករទៅធ្វើការនៅក្រៅប្រទេស",
+          "ពលករបរទេស",
+          "កម្មករបរទេស",
+          "labour migration",
+          "labor migration",
+          "migrant workers"
+        ],
+        "korean": [
+          "노동 이주",
+          "노동이주",
+          "이주노동자",
+          "이주 노동자",
+          "외국인 노동자",
+          "외국인노동자",
+          "외국인 근로자",
+          "외국인근로자",
+          "해외 노동자",
+          "해외 근로자",
+          "고용허가제",
+          "해외 취업",
+          "해외취업",
+          "해외 파견 노동자",
+          "해외파견 노동자",
+          "외국인력",
+          "고용허가",
+          "E-9 비자"
+        ],
+        "lao": [
+          "ການເຄື່ອນຍ້າຍແຮງງານ",
+          "ເຄື່ອນຍ້າຍແຮງງານ",
+          "ແຮງງານເຄື່ອນຍ້າຍ",
+          "ແຮງງານອົບພະຍົບ",
+          "ແຮງງານລາວໄປເຮັດວຽກຢູ່ຕ່າງປະເທດ",
+          "ໄປເຮັດວຽກຢູ່ຕ່າງປະເທດ",
+          "ໄປອອກແຮງງານຢູ່ຕ່າງປະເທດ",
+          "ການຈັດສົ່ງແຮງງານ",
+          "ຈັດສົ່ງແຮງງານລາວ",
+          "ແຮງງານລາວຢູ່ຕ່າງປະເທດ",
+          "ແຮງງານລາວໃນຕ່າງປະເທດ",
+          "ແຮງງານລາວທີ່ເຮັດວຽກຢູ່ຕ່າງປະເທດ",
+          "labor migration",
+          "labour migration"
+        ],
+        "malay": [
+          "penghijrahan buruh",
+          "migrasi buruh",
+          "pekerja asing",
+          "pekerja-pekerja asing",
+          "buruh asing",
+          "pekerja migran",
+          "tenaga kerja asing",
+          "mobiliti buruh",
+          "pekerja luar negara",
+          "pas lawatan kerja sementara",
+          "plks",
+          "pengambilan pekerja asing",
+          "kemasukan pekerja asing",
+          "kuota pekerja asing",
+          "pekerja malaysia di singapura"
+        ],
+        "mn": [
+          {
+            "prefix": "хөдөлмөрийн шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "ажиллах хүчний шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "хөдөлмөрийн цагаач"
+          },
+          {
+            "prefix": "гадаадад хөдөлмөр эрхэл"
+          },
+          {
+            "prefix": "гадаадад хөдөлмөр эрхлэгч"
+          },
+          {
+            "prefix": "гадаадад ажиллаж буй иргэд"
+          },
+          {
+            "prefix": "гадаадад ажиллагсад"
+          },
+          {
+            "prefix": "гадаадад ажиллагсд"
+          },
+          {
+            "prefix": "гадаадын ажилчин"
+          },
+          {
+            "prefix": "гадаадын ажилчд"
+          },
+          {
+            "prefix": "гадаад ажилчин"
+          },
+          {
+            "prefix": "гадаад ажилчд"
+          },
+          {
+            "prefix": "гадаадын ажиллах хүч"
+          }
+        ],
+        "my": [
+          "ပြည်ပအလုပ်အကိုင်",
+          "ပြည်ပ အလုပ်အကိုင်",
+          "ပြည်ပရောက် မြန်မာအလုပ်သမား",
+          "ပြည်ပရောက်မြန်မာအလုပ်သမား",
+          "ပြည်ပရောက် အလုပ်သမား",
+          "ပြည်ပရောက်အလုပ်သမား",
+          "MOU အလုပ်သမား",
+          "MOU စနစ်ဖြင့်",
+          "နိုင်ငံခြားသားအလုပ်သမား",
+          "labour migration",
+          "labor migration",
+          "migrant workers"
+        ],
+        "portuguese": [
+          "migração laboral",
+          "migração de trabalhadores",
+          "mobilidade laboral",
+          "mobilidade de trabalhadores",
+          "trabalhadores migrantes",
+          "trabalhador migrante",
+          "trabalhadores não residentes",
+          "trabalhador não residente",
+          "trabalhadores não-residentes",
+          "trabalhadores estrangeiros",
+          "trabalhador estrangeiro",
+          "trabalhadores importados",
+          "mão-de-obra importada",
+          "mão de obra importada",
+          "mão-de-obra estrangeira",
+          "mão de obra estrangeira",
+          "trabalhadores no estrangeiro",
+          "trabalhadores no exterior",
+          "TNR"
+        ],
+        "tetum": [
+          "migrasaun traballu",
+          "migrasaun laborál",
+          "migrasaun laboral",
+          "mobilidade laborál",
+          "mobilidade laboral",
+          "mobilidade traballu",
+          "traballadór migrante",
+          "traballador migrante",
+          "traballadór migrante sira",
+          "traballador migrante sira",
+          "traballadór iha rai-liur",
+          "traballador iha rai-liur",
+          "traballadór iha rai li'ur",
+          "traballadór iha rai li’ur",
+          "traballador iha rai li'ur",
+          "traballador iha rai li’ur",
+          "traballadór timoroan iha rai-liur",
+          "traballador timoroan iha rai-liur",
+          "traballadór timoroan iha rai li'ur",
+          "traballadór timoroan iha rai li’ur",
+          "traballador timoroan iha rai li'ur",
+          "traballador timoroan iha rai li’ur",
+          "servisu iha rai-liur",
+          "serbisu iha rai-liur",
+          "servisu iha rai li'ur",
+          "servisu iha rai li’ur",
+          "serbisu iha rai li'ur",
+          "serbisu iha rai li’ur",
+          "traballadór estranjeiru",
+          "traballador estranjeiru",
+          "migração laboral",
+          "migracao laboral",
+          "trabalhadores migrantes",
+          "trabalhador migrante",
+          "trabalhadores no estrangeiro",
+          "trabalhadores estrangeiros",
+          "trabalhadores timorenses no estrangeiro"
+        ],
+        "thai": [
+          "แรงงานต่างด้าว",
+          "แรงงานข้ามชาติ",
+          "แรงงานต่างชาติ",
+          "แรงงานไทยในต่างประเทศ",
+          "แรงงานไทยไปทำงานต่างประเทศ",
+          "การย้ายถิ่นของแรงงาน",
+          "การย้ายถิ่นแรงงาน",
+          "การเคลื่อนย้ายแรงงาน"
+        ],
+        "tok_pisin": [
+          "labor migration",
+          "labour migration",
+          "labor mobility",
+          "labour mobility",
+          "overseas workers",
+          "overseas foreign workers",
+          "OFWs",
+          "guest workers",
+          "foreign workers",
+          "wok long narapela kantri",
+          "wok long ovasis",
+          "go wok long ovasis",
+          "go wok long narapela kantri",
+          "PALM skim",
+          "PALM scheme",
+          "Pacific Australia Labour Mobility",
+          "leba mobiliti"
         ]
       }
     },
@@ -135,6 +1402,153 @@
           "circular migrants",
           "temporary migration",
           "temporary migrants"
+        ],
+        "chinese_simplified": [
+          "循环迁移",
+          "循环移民",
+          "临时移民",
+          "短期移民",
+          "临时性移民"
+        ],
+        "chinese_traditional": [
+          "循環遷徙",
+          "循環移民",
+          "循環性移民",
+          "短期移民",
+          "臨時移民",
+          "暫時性移民"
+        ],
+        "filipino": [
+          "circular migration",
+          "circular migrants",
+          "temporary migration",
+          "temporary migrants"
+        ],
+        "fr": [
+          "migration circulaire",
+          "migrations circulaires",
+          "migration temporaire",
+          "migrations temporaires",
+          "migrants temporaires"
+        ],
+        "indo": [
+          "migrasi sirkuler",
+          "migran sirkuler",
+          "migrasi temporer",
+          "migrasi sementara",
+          "migran temporer"
+        ],
+        "japanese": [
+          "循環移住",
+          "循環型移住",
+          "循環型の移住",
+          "一時的な移住",
+          "一時的な移民"
+        ],
+        "km": [
+          "ចំណាកស្រុកតាមវដ្ត",
+          "ចំណាកស្រុកតាមវដ្ដ",
+          "ការធ្វើចំណាកស្រុកតាមវដ្ត",
+          "ការធ្វើចំណាកស្រុកតាមវដ្ដ",
+          "ចំណាកស្រុកបណ្តោះអាសន្ន",
+          "ចំណាកស្រុកបណ្ដោះអាសន្ន",
+          "ពលករចំណាកស្រុកបណ្តោះអាសន្ន",
+          "ពលករចំណាកស្រុកបណ្ដោះអាសន្ន",
+          "circular migration",
+          "temporary migration"
+        ],
+        "korean": [
+          "순환 이주",
+          "순환이주",
+          "일시 이주",
+          "임시 이주",
+          "단기 이주",
+          "순환 이민"
+        ],
+        "lao": [
+          "ການເຄື່ອນຍ້າຍແບບໝູນວຽນ",
+          "ການເຄື່ອນຍ້າຍແບບຫມູນວຽນ",
+          "ການເຄື່ອນຍ້າຍແຮງງານແບບໝູນວຽນ",
+          "ການເຄື່ອນຍ້າຍແຮງງານແບບຫມູນວຽນ",
+          "ການເຄື່ອນຍ້າຍຊົ່ວຄາວ",
+          "ການເຄື່ອນຍ້າຍຖິ່ນຖານຊົ່ວຄາວ",
+          "ແຮງງານເຄື່ອນຍ້າຍຊົ່ວຄາວ",
+          "ການເຄື່ອນຍ້າຍແບບໄປ-ກັບ",
+          "circular migration"
+        ],
+        "malay": [
+          "penghijrahan pusingan",
+          "migrasi kitaran",
+          "penghijrahan sementara",
+          "migran sementara",
+          "pekerja migran sementara",
+          "migrasi sementara"
+        ],
+        "mn": [
+          {
+            "prefix": "түр шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "түр цагаач"
+          },
+          {
+            "prefix": "эргэлтийн шилжилт"
+          },
+          {
+            "prefix": "эргэлтэт шилжилт"
+          },
+          {
+            "prefix": "түр хугацаагаар цагаачл"
+          },
+          {
+            "prefix": "түр хугацаагаар гадаадад ажил"
+          }
+        ],
+        "my": [
+          "အသွားအပြန်ရွှေ့ပြောင်း",
+          "ယာယီရွှေ့ပြောင်း",
+          "ယာယီ ရွှေ့ပြောင်း",
+          "ယာယီရွှေ့ပြောင်းလုပ်သား",
+          "circular migration",
+          "temporary migration"
+        ],
+        "portuguese": [
+          "migração circular",
+          "migrantes circulares",
+          "migração temporária",
+          "migrantes temporários",
+          "trabalho temporário no estrangeiro"
+        ],
+        "tetum": [
+          "migrasaun sirkulár",
+          "migrasaun sirkular",
+          "migrasaun temporária",
+          "migrasaun temporaria",
+          "migrasaun temporáriu",
+          "migrasaun temporariu",
+          "migrante temporáriu",
+          "migrante temporariu",
+          "migração circular",
+          "migracao circular",
+          "migração temporária",
+          "migracao temporaria",
+          "migrantes temporários",
+          "migrantes temporarios"
+        ],
+        "thai": [
+          "การย้ายถิ่นแบบหมุนเวียน",
+          "การย้ายถิ่นชั่วคราว",
+          "ผู้ย้ายถิ่นชั่วคราว",
+          "แรงงานข้ามชาติชั่วคราว",
+          "circular migration"
+        ],
+        "tok_pisin": [
+          "circular migration",
+          "circular migrants",
+          "temporary migration",
+          "temporary migrants",
+          "temporeri maigresen",
+          "ol temporeri maigren"
         ]
       }
     },
@@ -150,6 +1564,187 @@
           "Recognised Seasonal Employer",
           "RSE scheme",
           "seasonal work visa"
+        ],
+        "chinese_simplified": [
+          "季节性迁移",
+          "季节性移民",
+          "季节工",
+          "季节性工人",
+          "季节性务工",
+          "季节性劳工",
+          "季节性工作签证"
+        ],
+        "chinese_traditional": [
+          "季節性遷徙",
+          "季節性移民",
+          "季節性工人",
+          "季節工",
+          "季節性勞工",
+          "季節性工作簽證",
+          "季節性工作計劃"
+        ],
+        "filipino": [
+          "seasonal migration",
+          "seasonal migrants",
+          "seasonal worker program",
+          "seasonal worker programme",
+          "seasonal workers program",
+          "Recognised Seasonal Employer",
+          "RSE scheme",
+          "seasonal work visa",
+          "Pacific Australia Labour Mobility"
+        ],
+        "fr": [
+          "migration saisonnière",
+          "migrations saisonnières",
+          "travailleurs saisonniers étrangers",
+          "programme de travailleurs saisonniers",
+          "recognised seasonal employer",
+          "programme rse",
+          "programme palm",
+          "saisonniers agricoles"
+        ],
+        "indo": [
+          "migrasi musiman",
+          "migran musiman",
+          "pekerja musiman",
+          "program pekerja musiman",
+          "visa kerja musiman",
+          "Recognised Seasonal Employer",
+          "seasonal worker"
+        ],
+        "japanese": [
+          "季節移住",
+          "季節労働者",
+          "季節労働",
+          "季節就労",
+          "季節労働者制度",
+          "RSE",
+          "ＲＳＥ"
+        ],
+        "km": [
+          "ចំណាកស្រុកតាមរដូវ",
+          "ការធ្វើចំណាកស្រុកតាមរដូវ",
+          "ពលករតាមរដូវ",
+          "កម្មករតាមរដូវ",
+          "ពលករចំណាកស្រុកតាមរដូវ",
+          "seasonal worker",
+          "seasonal migration"
+        ],
+        "korean": [
+          "계절근로자",
+          "계절 근로자",
+          "계절노동자",
+          "계절 노동자",
+          "계절근로",
+          "계절 근로",
+          "계절 이주",
+          "계절이주",
+          "계절노동",
+          "계절근로자 프로그램"
+        ],
+        "lao": [
+          "ແຮງງານຕາມລະດູການ",
+          "ໄປອອກແຮງງານຕາມລະດູການ",
+          "ໄປເຮັດວຽກຕາມລະດູການ",
+          "ການເຮັດວຽກຕາມລະດູການ",
+          "ການເຄື່ອນຍ້າຍຕາມລະດູການ",
+          "ແຮງງານລະດູການ",
+          "ໂຄງການແຮງງານຕາມລະດູການ",
+          "seasonal worker"
+        ],
+        "malay": [
+          "penghijrahan bermusim",
+          "migrasi bermusim",
+          "pekerja bermusim",
+          "pekerja musiman",
+          "skim pekerja bermusim",
+          "program pekerja bermusim",
+          "visa kerja bermusim"
+        ],
+        "mn": [
+          {
+            "prefix": "улирлын шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "улирлын чанартай шилжилт"
+          },
+          {
+            "prefix": "улирлын чанартай ажилчин"
+          },
+          {
+            "prefix": "улирлын чанартай ажилчд"
+          }
+        ],
+        "my": [
+          "ရာသီအလိုက်ရွှေ့ပြောင်း",
+          "ရာသီအလိုက် ရွှေ့ပြောင်း",
+          "ရာသီအလိုက်အလုပ်သမား",
+          "ရာသီအလိုက် အလုပ်သမား",
+          "ရာသီအလိုက်လုပ်သား",
+          "seasonal worker",
+          "seasonal workers",
+          "seasonal migration"
+        ],
+        "portuguese": [
+          "migração sazonal",
+          "migrantes sazonais",
+          "trabalhadores sazonais",
+          "trabalhador sazonal",
+          "trabalho sazonal",
+          "programa de trabalhadores sazonais",
+          "programa de trabalho sazonal",
+          "Seasonal Worker Programme",
+          "Pacific Australia Labour Mobility"
+        ],
+        "tetum": [
+          "migrasaun sazonál",
+          "migrasaun sazonal",
+          "traballadór sazonál",
+          "traballador sazonal",
+          "traballu sazonál",
+          "traballu sazonal",
+          "programa traballu sazonál",
+          "programa traballu sazonal",
+          "programa traballadór sazonál",
+          "programa traballador sazonal",
+          "Seasonal Worker Program",
+          "Seasonal Worker Programme",
+          "esquema PALM",
+          "programa PALM",
+          "esquema RSE",
+          "programa RSE",
+          "Recognised Seasonal Employer",
+          "vistu traballu sazonál",
+          "vistu traballu sazonal",
+          "migração sazonal",
+          "migracao sazonal",
+          "trabalhadores sazonais",
+          "trabalho sazonal",
+          "programa de trabalhadores sazonais",
+          "programa de trabalho sazonal"
+        ],
+        "thai": [
+          "แรงงานตามฤดูกาล",
+          "แรงงานภาคเกษตรตามฤดูกาล",
+          "การย้ายถิ่นตามฤดูกาล",
+          "แรงงานไทยเก็บผลไม้",
+          "ไปเก็บผลไม้ต่างประเทศ",
+          "เก็บผลไม้ป่า",
+          "วีซ่าแรงงานตามฤดูกาล",
+          "seasonal worker"
+        ],
+        "tok_pisin": [
+          "seasonal migration",
+          "seasonal migrants",
+          "seasonal worker programme",
+          "seasonal worker program",
+          "Recognised Seasonal Employer",
+          "RSE scheme",
+          "seasonal work visa",
+          "sisonel wok skim",
+          "RSE skim",
+          "RSE wokman"
         ]
       }
     },
@@ -166,6 +1761,211 @@
           "migrant returnees",
           "repatriated workers",
           "repatriation of migrant workers"
+        ],
+        "chinese_simplified": [
+          "回流移民",
+          "返乡移民",
+          "移民回流",
+          "劳动力回流",
+          "返乡农民工",
+          "归国移民",
+          "归国劳工",
+          "海外劳工回国"
+        ],
+        "chinese_traditional": [
+          "回流移民",
+          "返國移工",
+          "回流人口",
+          "移民回流",
+          "返鄉移工",
+          "遣返移工",
+          "移工返國",
+          "海外勞工回國"
+        ],
+        "filipino": [
+          "return migration",
+          "return migrants",
+          "returning migrants",
+          "returning OFWs",
+          "returned migrants",
+          "returnee migrants",
+          "repatriated OFWs",
+          "repatriation of OFWs",
+          "repatriation ng mga OFW",
+          "mga umuwing OFW",
+          "reintegration of OFWs",
+          "reintegration program",
+          "National Reintegration Center for OFWs"
+        ],
+        "fr": [
+          "migration de retour",
+          "migrants de retour",
+          "retour des migrants",
+          "migrants rapatriés",
+          "rapatriement des migrants",
+          "rapatriement des travailleurs"
+        ],
+        "indo": [
+          "migrasi kembali",
+          "migran yang kembali",
+          "pekerja migran yang kembali",
+          "pemulangan pekerja migran",
+          "pemulangan PMI",
+          "pemulangan TKI",
+          "purna PMI",
+          "PMI purna",
+          "TKI purna",
+          "repatriasi pekerja migran"
+        ],
+        "japanese": [
+          "帰還移住",
+          "帰還移民",
+          "帰国移民",
+          "帰国した移民",
+          "帰国した出稼ぎ",
+          "帰国した労働者",
+          "帰還労働者",
+          "出稼ぎからの帰国"
+        ],
+        "km": [
+          "ពលករវិលត្រឡប់",
+          "ពលករត្រឡប់មកវិញ",
+          "ពលករខ្មែរវិលត្រឡប់",
+          "ពលករខ្មែរត្រឡប់មកពីថៃ",
+          "ពលករខ្មែរត្រឡប់មកពីប្រទេសថៃ",
+          "ពលករខ្មែរដែលទើបត្រឡប់មកពីប្រទេសថៃ",
+          "ពលករខ្មែរត្រឡប់មកមាតុភូមិ",
+          "ការវិលត្រឡប់មកវិញរបស់ពលករចំណាកស្រុក",
+          "ពលករចំណាកស្រុកវិលត្រឡប់",
+          "return migration",
+          "returnees"
+        ],
+        "korean": [
+          "귀환 이주",
+          "귀환이주",
+          "귀환 이주민",
+          "귀환 노동자",
+          "귀국 이주민",
+          "역이민",
+          "귀환한 이주",
+          "송환 노동자"
+        ],
+        "lao": [
+          "ແຮງງານກັບຄືນປະເທດ",
+          "ແຮງງານທີ່ກັບຄືນປະເທດ",
+          "ແຮງງານລາວກັບຄືນປະເທດ",
+          "ແຮງງານທີ່ເດີນທາງກັບຄືນ",
+          "ແຮງງານກັບຄືນມາ",
+          "ແຮງງານທີ່ກັບຄືນມາ",
+          "ການກັບຄືນຂອງແຮງງານ",
+          "ແຮງງານກັບຄືນບ້ານ",
+          "ແຮງງານເຄື່ອນຍ້າຍທີ່ກັບຄືນ"
+        ],
+        "malay": [
+          "penghijrahan pulang",
+          "migrasi pulang",
+          "migran yang pulang",
+          "pekerja migran yang pulang",
+          "penghantaran pulang pekerja migran",
+          "pekerja yang dihantar pulang",
+          "pemulangan pekerja migran"
+        ],
+        "mn": [
+          {
+            "prefix": "эх орондоо эргэн ир"
+          },
+          {
+            "prefix": "эх орондоо буцаж ир"
+          },
+          {
+            "prefix": "эх орондоо буцан ир"
+          },
+          {
+            "prefix": "эргэн ирсэн цагаач"
+          },
+          {
+            "prefix": "буцаж ирсэн цагаач"
+          },
+          {
+            "prefix": "эх орондоо эргэн ирэгс"
+          },
+          {
+            "prefix": "эх орондоо эргэж ир"
+          },
+          {
+            "prefix": "эх оронд нь буцаж ирсэн"
+          }
+        ],
+        "my": [
+          "ပြန်လာသော ရွှေ့ပြောင်း",
+          "ပြန်လာသည့် ရွှေ့ပြောင်း",
+          "ပြန်လာသည့်ရွှေ့ပြောင်း",
+          "နေရပ်ပြန် ရွှေ့ပြောင်းလုပ်သား",
+          "နေရပ်ပြန်ရွှေ့ပြောင်း",
+          "ပြည်ပမှပြန်လာသည့်အလုပ်သမား",
+          "ပြည်ပမှ ပြန်လာသော အလုပ်သမား",
+          "return migration",
+          "returnee migrants"
+        ],
+        "portuguese": [
+          "migração de retorno",
+          "migrantes retornados",
+          "migrantes regressados",
+          "retorno de migrantes",
+          "regresso de migrantes",
+          "regresso dos emigrantes",
+          "retorno dos emigrantes",
+          "repatriamento de trabalhadores",
+          "repatriação de trabalhadores",
+          "trabalhadores repatriados",
+          "emigrantes regressados"
+        ],
+        "tetum": [
+          "migrasaun fila fali",
+          "migrante fila fali",
+          "migrante ne'ebé fila fali",
+          "migrante ne’ebé fila fali",
+          "migrante ne'ebe fila fali",
+          "migrante ne’ebe fila fali",
+          "traballadór fila fali",
+          "traballador fila fali",
+          "traballadór migrante fila fali",
+          "traballador migrante fila fali",
+          "traballadór ne'ebé fila husi rai-liur",
+          "traballadór ne’ebé fila husi rai-liur",
+          "traballador ne'ebe fila husi rai-liur",
+          "traballador ne’ebe fila husi rai-liur",
+          "repatriasaun traballadór",
+          "repatriasaun traballador",
+          "repatriasaun traballadór migrante",
+          "repatriasaun traballador migrante",
+          "migração de retorno",
+          "migracao de retorno",
+          "migrantes retornados",
+          "regresso dos migrantes",
+          "repatriamento de trabalhadores"
+        ],
+        "thai": [
+          "การย้ายถิ่นกลับ",
+          "แรงงานคืนถิ่น",
+          "แรงงานไทยกลับประเทศ",
+          "ส่งกลับแรงงาน",
+          "การส่งตัวแรงงานกลับ",
+          "ส่งตัวแรงงานไทยกลับ"
+        ],
+        "tok_pisin": [
+          "return migration",
+          "return migrants",
+          "returning migrants",
+          "returned migrants",
+          "returnee migrants",
+          "migrant returnees",
+          "repatriated workers",
+          "repatriation of migrant workers",
+          "ol maigren i kam bek",
+          "ol wokman i kam bek long kantri",
+          "ripatriesen bilong ol wokman",
+          "ripetriesen bilong ol wokman"
         ]
       }
     },
@@ -182,6 +1982,268 @@
           "illegal migrants",
           "illegal immigrants",
           "unauthorized migration"
+        ],
+        "chinese_simplified": [
+          "非正规移民",
+          "非常规移民",
+          "非法移民",
+          "非法入境",
+          "非法越境",
+          "非法滞留",
+          "偷渡客",
+          "非法入境者"
+        ],
+        "chinese_traditional": [
+          "非正規移民",
+          "非法移民",
+          "非法入境",
+          "非法入境者",
+          "非法移工",
+          "非法居留",
+          "偷渡客"
+        ],
+        "filipino": [
+          "irregular migration",
+          "irregular migrants",
+          "irregular migrant",
+          "illegal migration",
+          "illegal immigration",
+          "illegal migrants",
+          "illegal immigrants",
+          "illegal aliens",
+          "illegal alien",
+          "ilegal na dayuhan",
+          "illegal recruitment",
+          "illegal recruiter",
+          "illegal recruiters",
+          "ilegal na recruitment",
+          "backdoor exit",
+          "backdoor exits"
+        ],
+        "fr": [
+          "migration irrégulière",
+          "migrations irrégulières",
+          "migrants irréguliers",
+          "immigration clandestine",
+          "immigration illégale",
+          "immigration irrégulière",
+          "migrants clandestins",
+          "migrants illégaux",
+          "immigrés clandestins",
+          "immigrants clandestins"
+        ],
+        "indo": [
+          "migrasi ilegal",
+          "migrasi ireguler",
+          "migrasi tidak teratur",
+          "migran ilegal",
+          "migran ireguler",
+          "imigran ilegal",
+          "imigran gelap",
+          "pekerja migran ilegal",
+          "PMI ilegal",
+          "TKI ilegal",
+          "PMI nonprosedural",
+          "pekerja migran nonprosedural",
+          "PMI non-prosedural"
+        ],
+        "japanese": [
+          "非正規移住",
+          "非正規移民",
+          "不法移民",
+          "違法移民",
+          "不法入国",
+          "密入国",
+          "不法就労"
+        ],
+        "km": [
+          "ចំណាកស្រុកខុសច្បាប់",
+          "ការធ្វើចំណាកស្រុកខុសច្បាប់",
+          "ចំណាកស្រុកមិនស្របច្បាប់",
+          "ការធ្វើចំណាកស្រុកមិនប្រក្រតី",
+          "ចំណាកស្រុកមិនប្រក្រតី",
+          "អន្តោប្រវេសន៍ខុសច្បាប់",
+          "អន្ដោប្រវេសន៍ខុសច្បាប់",
+          "ជនអន្តោប្រវេសន៍ខុសច្បាប់",
+          "ជនអន្ដោប្រវេសន៍ខុសច្បាប់",
+          "ឆ្លងដែនខុសច្បាប់",
+          "illegal immigration",
+          "irregular migration"
+        ],
+        "korean": [
+          "불법 이민",
+          "불법이민",
+          "불법 이주",
+          "불법이주",
+          "불법 이민자",
+          "불법이민자",
+          "불법 체류",
+          "불법체류",
+          "불법 입국",
+          "불법입국",
+          "비정규 이주",
+          "비정규 이민",
+          "밀입국"
+        ],
+        "lao": [
+          "ການເຂົ້າເມືອງຜິດກົດໝາຍ",
+          "ການເຂົ້າເມືອງຜິດກົດຫມາຍ",
+          "ເຂົ້າເມືອງຜິດກົດໝາຍ",
+          "ເຂົ້າເມືອງຜິດກົດຫມາຍ",
+          "ເຂົ້າເມືອງແບບຜິດກົດໝາຍ",
+          "ເຂົ້າເມືອງແບບຜິດກົດຫມາຍ",
+          "ການເຂົ້າ-ອອກເມືອງຜິດກົດໝາຍ",
+          "ການເຂົ້າ-ອອກເມືອງຜິດກົດຫມາຍ",
+          "ເຂົ້າ-ອອກເມືອງຜິດກົດໝາຍ",
+          "ເຂົ້າ-ອອກເມືອງຜິດກົດຫມາຍ",
+          "ລັກລອບເຂົ້າເມືອງ",
+          "ລັກລອບເຂົ້າ-ອອກເມືອງ",
+          "ຂ້າມຊາຍແດນຜິດກົດໝາຍ",
+          "ຂ້າມຊາຍແດນຜິດກົດຫມາຍ",
+          "ຂ້າມຊາຍແດນແບບຜິດກົດໝາຍ",
+          "ຂ້າມຊາຍແດນແບບຜິດກົດຫມາຍ",
+          "ການເຄື່ອນຍ້າຍແບບຜິດກົດໝາຍ",
+          "ການເຄື່ອນຍ້າຍແບບຜິດກົດຫມາຍ",
+          "ການເຄື່ອນຍ້າຍທີ່ຜິດກົດໝາຍ",
+          "ການເຄື່ອນຍ້າຍທີ່ຜິດກົດຫມາຍ",
+          "ແຮງງານຜິດກົດໝາຍ",
+          "ແຮງງານຜິດກົດຫມາຍ"
+        ],
+        "malay": [
+          "penghijrahan tidak teratur",
+          "migrasi tidak teratur",
+          "migran tidak teratur",
+          "pendatang asing tanpa izin",
+          "pendatang tanpa izin",
+          "pati",
+          "penghijrahan haram",
+          "pendatang haram",
+          "imigran haram",
+          "migran haram"
+        ],
+        "mn": [
+          {
+            "prefix": "хууль бус цагаач"
+          },
+          {
+            "prefix": "хууль бус шилжилт хөдөлгөөн"
+          },
+          {
+            "prefix": "хууль бусаар хил давж"
+          },
+          {
+            "prefix": "хууль бусаар хил давс"
+          },
+          {
+            "prefix": "хууль бусаар оршин суу"
+          },
+          {
+            "prefix": "хууль бус оршин суугч"
+          },
+          {
+            "prefix": "хууль бусаар цагаачл"
+          },
+          {
+            "prefix": "хууль бусаар ажиллаж буй гадаадын"
+          },
+          {
+            "prefix": "хууль бус гадаадын ажилч"
+          }
+        ],
+        "my": [
+          "တရားမဝင် ဝင်ရောက်",
+          "တရားမ၀င် ၀င်ရောက်",
+          "တရားမဝင်ဝင်ရောက်",
+          "တရားမ၀င်၀င်ရောက်",
+          "တရားမ၀င် ဝင်ရောက်",
+          "တရားမဝင် ခိုးဝင်",
+          "တရားမ၀င် ခိုး၀င်",
+          "တရားမဝင်ခိုးဝင်",
+          "တရားမ၀င်ခိုး၀င်",
+          "တရားမဝင်ရွှေ့ပြောင်း",
+          "တရားမ၀င်ရွှေ့ပြောင်း",
+          "တရားမဝင် ရွှေ့ပြောင်း",
+          "တရားမ၀င် ရွှေ့ပြောင်း",
+          "တရားမဝင်နယ်စပ်ဖြတ်ကျော်",
+          "တရားမ၀င်နယ်စပ်ဖြတ်ကျော်",
+          "တရားမဝင် နယ်စပ်ဖြတ်ကျော်",
+          "တရားမ၀င် နယ်စပ်ဖြတ်ကျော်",
+          "illegal migrants",
+          "irregular migration",
+          "illegal immigration"
+        ],
+        "portuguese": [
+          "migração irregular",
+          "migrações irregulares",
+          "migrantes irregulares",
+          "migrante irregular",
+          "imigração ilegal",
+          "imigrantes ilegais",
+          "imigrante ilegal",
+          "migração ilegal",
+          "migrantes ilegais",
+          "migrante ilegal",
+          "imigração clandestina",
+          "imigrantes clandestinos",
+          "imigração irregular",
+          "imigrantes irregulares",
+          "entrada ilegal",
+          "entradas ilegais",
+          "excesso de permanência",
+          "permanência ilegal",
+          "residentes ilegais"
+        ],
+        "tetum": [
+          "migrasaun irregulár",
+          "migrasaun irregular",
+          "migrasaun ilegál",
+          "migrasaun ilegal",
+          "imigrasaun ilegál",
+          "imigrasaun ilegal",
+          "migrante irregulár",
+          "migrante irregular",
+          "migrante ilegál",
+          "migrante ilegal",
+          "imigrante ilegál",
+          "imigrante ilegal",
+          "imigrante ilegál sira",
+          "imigrante ilegal sira",
+          "migração irregular",
+          "migracao irregular",
+          "migração ilegal",
+          "migracao ilegal",
+          "imigração ilegal",
+          "imigracao ilegal",
+          "imigrantes ilegais",
+          "migrantes irregulares"
+        ],
+        "thai": [
+          "แรงงานผิดกฎหมาย",
+          "แรงงานต่างด้าวผิดกฎหมาย",
+          "หลบหนีเข้าเมือง",
+          "ลักลอบเข้าเมือง",
+          "เข้าเมืองโดยผิดกฎหมาย",
+          "ผู้หลบหนีเข้าเมือง",
+          "ต่างด้าวผิดกฎหมาย",
+          "การย้ายถิ่นที่ไม่ปกติ"
+        ],
+        "tok_pisin": [
+          "irregular migration",
+          "irregular migrants",
+          "irregular migrant",
+          "illegal migration",
+          "illegal immigration",
+          "illegal migrants",
+          "illegal immigrants",
+          "unauthorized migration",
+          "ilegal maigresen",
+          "ilegel maigresen",
+          "ilegal imigresen",
+          "ilegal imaigresen",
+          "ol ilegal maigren",
+          "ol ilegal imigran",
+          "border crossers",
+          "kalapim boda long rot i no stret"
         ]
       }
     },
@@ -195,6 +2257,183 @@
           "undocumented immigrants",
           "undocumented workers",
           "undocumented foreigners"
+        ],
+        "chinese_simplified": [
+          "无证移民",
+          "无证件移民",
+          "无合法身份",
+          "无证劳工",
+          "非法务工",
+          "三非人员",
+          "三非外国人"
+        ],
+        "chinese_traditional": [
+          "無證移民",
+          "無證件移民",
+          "無證移工",
+          "無身分移民",
+          "黑工",
+          "逃逸外勞",
+          "逃逸移工"
+        ],
+        "filipino": [
+          "undocumented migration",
+          "undocumented migrants",
+          "undocumented immigrants",
+          "undocumented workers",
+          "undocumented foreigners",
+          "undocumented OFWs",
+          "undocumented Filipinos",
+          "overstaying foreigners",
+          "overstaying aliens"
+        ],
+        "fr": [
+          "sans-papiers",
+          "étrangers en situation irrégulière",
+          "migrants en situation irrégulière",
+          "migrants sans papiers",
+          "immigrés sans papiers",
+          "travailleurs sans papiers"
+        ],
+        "indo": [
+          "migran tanpa dokumen",
+          "migran tidak berdokumen",
+          "pekerja migran tidak berdokumen",
+          "pekerja tanpa dokumen",
+          "TKI tanpa dokumen",
+          "PMI tanpa dokumen",
+          "imigran tanpa dokumen"
+        ],
+        "japanese": [
+          "不法滞在",
+          "非正規滞在",
+          "超過滞在",
+          "オーバーステイ",
+          "在留資格のない",
+          "在留資格がない",
+          "仮放免"
+        ],
+        "km": [
+          "ពលករគ្មានឯកសារ",
+          "ពលករខុសច្បាប់",
+          "ជនចំណាកស្រុកគ្មានឯកសារ",
+          "ការធ្វើចំណាកស្រុកគ្មានឯកសារ",
+          "ជនបរទេសខុសច្បាប់",
+          "ជនបរទេសគ្មានឯកសារ",
+          "undocumented migrants",
+          "undocumented workers"
+        ],
+        "korean": [
+          "미등록 이주",
+          "미등록이주",
+          "미등록 이주민",
+          "미등록이주민",
+          "미등록 외국인",
+          "미등록외국인",
+          "미등록 이주노동자",
+          "미등록 노동자",
+          "서류 미비 이민자",
+          "서류미비 이민자",
+          "체류 자격 없는"
+        ],
+        "lao": [
+          "ແຮງງານທີ່ບໍ່ມີເອກະສານ",
+          "ແຮງງານບໍ່ມີເອກະສານ",
+          "ບໍ່ມີເອກະສານເຂົ້າເມືອງ",
+          "ບໍ່ມີເອກະສານຜ່ານແດນ",
+          "ບໍ່ມີໜັງສືຜ່ານແດນ",
+          "ບໍ່ມີຫນັງສືຜ່ານແດນ",
+          "ບໍ່ມີເອກະສານເດີນທາງ",
+          "ການເຄື່ອນຍ້າຍໂດຍບໍ່ມີເອກະສານ",
+          "ແຮງງານເຖື່ອນ",
+          "ປັບສະຖານະພາບແຮງງານ",
+          "undocumented"
+        ],
+        "malay": [
+          "penghijrahan tanpa dokumen",
+          "migran tanpa dokumen",
+          "pekerja tanpa dokumen",
+          "pekerja asing tanpa dokumen",
+          "tanpa dokumen perjalanan yang sah",
+          "tanpa dokumen sah",
+          "warga asing tanpa dokumen"
+        ],
+        "mn": [
+          {
+            "prefix": "бичиг баримтгүй цагаач"
+          },
+          {
+            "prefix": "бичиг баримтгүй гадаадын"
+          },
+          {
+            "prefix": "бичиг баримтгүй ажилч"
+          },
+          {
+            "prefix": "бичиг баримтгүй оршин суу"
+          },
+          {
+            "prefix": "бичиг баримтгүй иргэ"
+          },
+          {
+            "prefix": "визийн хугацаа хэтрүүл"
+          },
+          {
+            "prefix": "визийн хугацаагаа хэтрүүл"
+          }
+        ],
+        "my": [
+          "စာရွက်စာတမ်းမရှိသော ရွှေ့ပြောင်း",
+          "စာရွက်စာတမ်းမရှိသည့် အလုပ်သမား",
+          "စာရွက်စာတမ်းမရှိသည့်အလုပ်သမား",
+          "undocumented migrants",
+          "undocumented workers"
+        ],
+        "portuguese": [
+          "migração indocumentada",
+          "migrantes indocumentados",
+          "migrante indocumentado",
+          "imigrantes indocumentados",
+          "imigrante indocumentado",
+          "trabalhadores indocumentados",
+          "estrangeiros indocumentados",
+          "imigrantes sem documentos",
+          "migrantes sem documentos",
+          "sem-papéis",
+          "sem papéis"
+        ],
+        "tetum": [
+          "migrante la iha dokumentu",
+          "migrante sein dokumentu",
+          "migrante sem dokumentu",
+          "migrasaun sein dokumentu",
+          "migrasaun sem dokumentu",
+          "estranjeiru la iha dokumentu",
+          "traballadór la iha dokumentu",
+          "traballador la iha dokumentu",
+          "imigrantes indocumentados",
+          "migrantes indocumentados",
+          "migrantes sem documentos",
+          "trabalhadores sem documentos",
+          "estrangeiros sem documentos"
+        ],
+        "thai": [
+          "แรงงานไม่มีเอกสาร",
+          "แรงงานที่ไม่มีเอกสาร",
+          "แรงงานไร้เอกสาร",
+          "ผู้ย้ายถิ่นไม่มีเอกสาร",
+          "ผู้ย้ายถิ่นที่ไม่มีเอกสาร",
+          "แรงงานเถื่อน"
+        ],
+        "tok_pisin": [
+          "undocumented migration",
+          "undocumented migrants",
+          "undocumented immigrants",
+          "undocumented workers",
+          "undocumented foreigners",
+          "ol maigren i no gat pepa",
+          "ol lain i no gat visa",
+          "ol foriner i no gat visa",
+          "ol lain i no gat paspot"
         ]
       }
     },
@@ -210,6 +2449,219 @@
           "mass displacement",
           "displaced people",
           "displaced persons"
+        ],
+        "chinese_simplified": [
+          "流离失所",
+          "流离失所者",
+          "境内流离失所者",
+          "被迫离开家园",
+          "逃离家园",
+          "难民潮",
+          "大规模流离失所"
+        ],
+        "chinese_traditional": [
+          "流離失所",
+          "被迫遷離",
+          "被迫離開家園",
+          "難民潮",
+          "流離失所者",
+          "境內流離失所",
+          "流離失所人口"
+        ],
+        "filipino": [
+          "population displacement",
+          "displaced population",
+          "displaced populations",
+          "displacement of people",
+          "mass displacement",
+          "displaced people",
+          "displaced persons",
+          "displaced families",
+          "internally displaced persons",
+          "internally displaced",
+          "mga bakwit",
+          "bakwit",
+          "napilitang lumikas"
+        ],
+        "fr": [
+          "personnes déplacées",
+          "populations déplacées",
+          "population déplacée",
+          "déplacés internes",
+          "déplacement de population",
+          "déplacements de population",
+          "déplacements forcés",
+          "déplacement forcé",
+          "migrations forcées"
+        ],
+        "indo": [
+          "pengungsian",
+          "pengungsi",
+          "warga mengungsi",
+          "penduduk mengungsi",
+          "pengungsian massal",
+          "pemindahan paksa penduduk"
+        ],
+        "japanese": [
+          "避難民",
+          "国内避難民",
+          "強制移住",
+          "強制移動",
+          "故郷を追われ",
+          "住む場所を追われ",
+          "難民化",
+          "大量避難"
+        ],
+        "km": [
+          "ជនភៀសសឹក",
+          "ជនភៀសខ្លួន",
+          "ជម្លៀសប្រជាពលរដ្ឋ",
+          "ជម្លៀសប្រជាជន",
+          "ប្រជាជនជម្លៀស",
+          "ពលរដ្ឋជម្លៀស",
+          "ការផ្លាស់ទីលំនៅរបស់ប្រជាជន",
+          "ការជម្លៀសចេញពីទីលំនៅ",
+          "ការផ្លាស់ទីលំនៅដោយបង្ខំ",
+          "displaced people",
+          "displaced persons"
+        ],
+        "korean": [
+          "피란민",
+          "피난민",
+          "실향민",
+          "강제 이주",
+          "강제이주",
+          "대규모 피란",
+          "대규모 피난",
+          "난민 행렬",
+          "국내 실향민",
+          "국내실향민",
+          "삶터를 잃은"
+        ],
+        "lao": [
+          "ຜູ້ພັດຖິ່ນ",
+          "ພັດຖິ່ນຖານ",
+          "ການພັດຖິ່ນ",
+          "ຊາວອົບພະຍົບ",
+          "ຜູ້ອົບພະຍົບ",
+          "ຜູ້ລີ້ໄພ",
+          "ການອົບພະຍົບປະຊາຊົນ",
+          "ອົບພະຍົບປະຊາຊົນ",
+          "ການຍົກຍ້າຍປະຊາຊົນ",
+          "ປະຊາຊົນທີ່ຖືກຍົກຍ້າຍ",
+          "ຄອບຄົວທີ່ຖືກຍົກຍ້າຍ"
+        ],
+        "malay": [
+          "perpindahan penduduk",
+          "penduduk yang dipindahkan",
+          "orang yang dipindahkan",
+          "perpindahan besar-besaran",
+          "dipaksa berpindah",
+          "pemindahan paksa",
+          "penduduk terpaksa berpindah",
+          "perpindahan paksa"
+        ],
+        "mn": [
+          {
+            "prefix": "дүрвэгс"
+          },
+          {
+            "prefix": "дүрвэгч"
+          },
+          {
+            "prefix": "дүрвэн гар"
+          },
+          {
+            "prefix": "олноор дүрвэ"
+          },
+          {
+            "prefix": "хүн амыг нүүлгэн"
+          },
+          {
+            "prefix": "иргэдийг нүүлгэн шилжүүл"
+          },
+          {
+            "prefix": "оршин суугчдыг нүүлгэн шилжүүл"
+          },
+          {
+            "prefix": "албадан нүүлгэ"
+          },
+          {
+            "prefix": "гэр орноо орхин дүрвэ"
+          },
+          {
+            "prefix": "дотооддоо дүрвэгс"
+          }
+        ],
+        "my": [
+          "နေရပ်စွန့်ခွာ",
+          "နေရပ်စွန့်ခွာထွက်ပြေး",
+          "စစ်ရှောင်ပြည်သူ",
+          "စစ်ရှောင် ပြည်သူ",
+          "စစ်ဘေးရှောင်",
+          "IDP",
+          "IDPs",
+          "displaced people",
+          "displaced persons"
+        ],
+        "portuguese": [
+          "deslocação populacional",
+          "deslocação de populações",
+          "deslocamento populacional",
+          "deslocamento de populações",
+          "deslocação em massa",
+          "deslocamento em massa",
+          "deslocados internos",
+          "pessoas deslocadas",
+          "populações deslocadas",
+          "população deslocada",
+          "deslocados"
+        ],
+        "tetum": [
+          "deslokasaun populasaun",
+          "populasaun deslokada",
+          "ema deslokadu",
+          "ema deslokadu sira",
+          "deslokadu internu",
+          "deslokadu interna",
+          "deslokasaun ema",
+          "ema ne'ebé deslokadu",
+          "ema ne’ebé deslokadu",
+          "ema ne'ebe deslokadu",
+          "ema ne’ebe deslokadu",
+          "deslocação populacional",
+          "deslocacao populacional",
+          "deslocação da população",
+          "deslocacao da populacao",
+          "deslocados internos",
+          "pessoas deslocadas",
+          "população deslocada",
+          "populacao deslocada",
+          "deslocamento populacional"
+        ],
+        "thai": [
+          "ผู้พลัดถิ่น",
+          "การพลัดถิ่น",
+          "ผู้หนีภัยการสู้รบ",
+          "ผู้ลี้ภัยจากการสู้รบ",
+          "ผู้อพยพหนีภัย",
+          "ประชาชนพลัดถิ่น",
+          "ต้องอพยพออกจากบ้าน",
+          "อพยพหนีภัย"
+        ],
+        "tok_pisin": [
+          "population displacement",
+          "displaced population",
+          "displaced populations",
+          "displacement of people",
+          "mass displacement",
+          "displaced people",
+          "displaced persons",
+          "ol manmeri i lusim ples bilong ol",
+          "ol lain i lusim ples bilong ol",
+          "displesmen",
+          "ol displest pipel",
+          "IDPs"
         ]
       }
     },
@@ -227,6 +2679,211 @@
           "labour trafficking",
           "trafficking victims",
           "victims of trafficking"
+        ],
+        "chinese_simplified": [
+          "人口贩运",
+          "人口贩卖",
+          "贩卖人口",
+          "贩运人口",
+          "拐卖",
+          "性贩运",
+          "劳工贩运",
+          "人口贩运受害者"
+        ],
+        "chinese_traditional": [
+          "人口販運",
+          "人口販賣",
+          "販賣人口",
+          "人口販子",
+          "人口販運受害者",
+          "性剝削販運",
+          "勞力剝削販運"
+        ],
+        "filipino": [
+          "human trafficking",
+          "trafficking in persons",
+          "trafficking of persons",
+          "people trafficking",
+          "sex trafficking",
+          "labor trafficking",
+          "labour trafficking",
+          "trafficking victims",
+          "victims of trafficking",
+          "biktima ng human trafficking",
+          "biktima ng trafficking",
+          "Inter-Agency Council Against Trafficking",
+          "IACAT",
+          "Anti-Trafficking in Persons Act",
+          "human trafficker",
+          "human traffickers"
+        ],
+        "fr": [
+          "traite des êtres humains",
+          "traite d'êtres humains",
+          "traite d’êtres humains",
+          "trafic d'êtres humains",
+          "trafic d’êtres humains",
+          "victimes de la traite",
+          "traite des personnes",
+          "réseau de traite"
+        ],
+        "indo": [
+          "perdagangan manusia",
+          "perdagangan orang",
+          "tindak pidana perdagangan orang",
+          "TPPO",
+          "korban perdagangan orang",
+          "korban TPPO",
+          "human trafficking"
+        ],
+        "japanese": [
+          "人身取引",
+          "人身売買",
+          "人身取引被害",
+          "人身取引の被害者",
+          "人身売買の被害者"
+        ],
+        "km": [
+          "ជួញដូរមនុស្ស",
+          "ការជួញដូរមនុស្ស",
+          "ជនរងគ្រោះនៃការជួញដូរមនុស្ស",
+          "ការជួញដូរស្ត្រីនិងកុមារ",
+          "ការជួញដូរស្ដ្រីនិងកុមារ",
+          "ការជួញដូរស្រ្ដីនិងកុមារ",
+          "ការជួញដូរស្រ្តីនិងកុមារ",
+          "ការជួញដូរកម្លាំងពលកម្ម",
+          "human trafficking",
+          "trafficking in persons"
+        ],
+        "korean": [
+          "인신매매",
+          "인신 매매",
+          "인신매매 피해자",
+          "성착취 인신매매",
+          "노동 착취 인신매매",
+          "인간매매"
+        ],
+        "lao": [
+          "ຄ້າມະນຸດ",
+          "ການຄ້າຄົນ",
+          "ບັງຄັບຄ້າປະເວນີ",
+          "ຫຼອກລວງໄປຄ້າປະເວນີ",
+          "ຫລອກລວງໄປຄ້າປະເວນີ",
+          "human trafficking",
+          "trafficking in persons"
+        ],
+        "malay": [
+          "pemerdagangan manusia",
+          "pemerdagangan orang",
+          "sindiket pemerdagangan manusia",
+          "sindiket pemerdagangan orang",
+          "mangsa pemerdagangan manusia",
+          "mangsa pemerdagangan orang",
+          "pemerdagangan seks",
+          "atipsom",
+          "pemerdagangan buruh",
+          "antipemerdagangan orang",
+          "akta antipemerdagangan orang"
+        ],
+        "mn": [
+          {
+            "prefix": "хүн худалдаал"
+          },
+          {
+            "prefix": "хүн худалдах гэмт"
+          },
+          {
+            "prefix": "хүн худалдах явдал"
+          },
+          {
+            "prefix": "хүн худалдах гэмт хэрэг"
+          },
+          {
+            "prefix": "хүний наймаа"
+          },
+          {
+            "prefix": "бэлгийн мөлжлөгийн зорилгоор худалда"
+          },
+          {
+            "prefix": "хүчээр хөдөлмөрлүүл"
+          },
+          {
+            "prefix": "хүн худалдаанд"
+          }
+        ],
+        "my": [
+          "လူကုန်ကူး",
+          "လူကုန် ကူး",
+          "လူကုန်ကူးမှု",
+          "လူကုန်ကူးခံရ",
+          "လိင်ကုန်ကူး",
+          "human trafficking",
+          "trafficking in persons"
+        ],
+        "portuguese": [
+          "tráfico de seres humanos",
+          "tráfico humano",
+          "tráfico de pessoas",
+          "tráfico sexual",
+          "tráfico para exploração sexual",
+          "tráfico para exploração laboral",
+          "vítimas de tráfico",
+          "vítima de tráfico",
+          "tráfico de mulheres",
+          "tráfico de crianças",
+          "crime de tráfico de pessoas"
+        ],
+        "tetum": [
+          "tráfiku ema",
+          "trafiku ema",
+          "tráfiku ema nian",
+          "trafiku ema nian",
+          "tráfiku umanu",
+          "trafiku umanu",
+          "tráfiku ba ema",
+          "trafiku ba ema",
+          "tráfiku seksuál",
+          "trafiku seksual",
+          "vítima tráfiku",
+          "vitima trafiku",
+          "vítima tráfiku ema",
+          "vitima trafiku ema",
+          "tráfiku pesoa",
+          "trafiku pesoa",
+          "tráfico de seres humanos",
+          "trafico de seres humanos",
+          "tráfico humano",
+          "trafico humano",
+          "tráfico de pessoas",
+          "trafico de pessoas",
+          "vítimas de tráfico",
+          "vitimas de trafico",
+          "tráfico sexual",
+          "trafico sexual"
+        ],
+        "thai": [
+          "การค้ามนุษย์",
+          "ค้ามนุษย์",
+          "ขบวนการค้ามนุษย์",
+          "เหยื่อการค้ามนุษย์",
+          "ผู้เสียหายจากการค้ามนุษย์"
+        ],
+        "tok_pisin": [
+          "human trafficking",
+          "trafficking in persons",
+          "trafficking of persons",
+          "people trafficking",
+          "sex trafficking",
+          "labor trafficking",
+          "labour trafficking",
+          "trafficking victims",
+          "victims of trafficking",
+          "hyuman trafiking",
+          "human trafiking",
+          "trafiking long manmeri",
+          "trafiking bilong manmeri",
+          "seks trafiking",
+          "baim na salim manmeri"
         ]
       }
     },
@@ -242,6 +2899,174 @@
           "smuggling of migrants",
           "human smuggling",
           "human smugglers"
+        ],
+        "chinese_simplified": [
+          "偷渡",
+          "人口走私",
+          "偷运移民",
+          "移民走私",
+          "蛇头",
+          "组织偷渡",
+          "偷渡集团"
+        ],
+        "chinese_traditional": [
+          "人蛇",
+          "蛇頭",
+          "偷渡集團",
+          "人口走私",
+          "協助偷渡",
+          "偷運人口",
+          "偷渡船"
+        ],
+        "filipino": [
+          "people smuggling",
+          "people smuggler",
+          "people smugglers",
+          "migrant smuggling",
+          "smuggling of migrants",
+          "human smuggling",
+          "human smugglers"
+        ],
+        "fr": [
+          "trafic de migrants",
+          "passeurs de migrants",
+          "réseau de passeurs",
+          "réseaux de passeurs",
+          "filière d'immigration clandestine",
+          "filière d’immigration clandestine",
+          "filières d'immigration clandestine",
+          "filières d’immigration clandestine"
+        ],
+        "indo": [
+          "penyelundupan manusia",
+          "penyelundupan migran",
+          "penyelundupan orang",
+          "penyelundupan imigran",
+          "penyelundup manusia",
+          "people smuggling"
+        ],
+        "japanese": [
+          "密航",
+          "密航業者",
+          "密航船",
+          "密入国あっせん",
+          "密入国を手助け",
+          "移民の密入国",
+          "密入国業者",
+          "蛇頭"
+        ],
+        "km": [
+          "ការនាំមនុស្សឆ្លងដែនខុសច្បាប់",
+          "នាំមនុស្សឆ្លងដែនខុសច្បាប់",
+          "នាំមនុស្សឆ្លងដែន",
+          "ការរត់ពន្ធមនុស្ស",
+          "ឈ្មួញនាំមនុស្សឆ្លងដែន",
+          "people smuggling",
+          "human smuggling",
+          "migrant smuggling"
+        ],
+        "korean": [
+          "밀입국 알선",
+          "밀입국알선",
+          "밀입국 브로커",
+          "밀입국브로커",
+          "밀입국 조직",
+          "이민자 밀수",
+          "밀항 알선",
+          "밀입국 주선"
+        ],
+        "lao": [
+          "ການລັກລອບພາຄົນຂ້າມແດນ",
+          "ລັກລອບພາຄົນ",
+          "ລັກລອບນຳຄົນ",
+          "ລັກລອບຂົນຄົນ",
+          "ລັກລອບຂົນສົ່ງຄົນ",
+          "ລັກລອບຄົນເຂົ້າ",
+          "ພາຄົນຂ້າມແດນຜິດກົດໝາຍ",
+          "ພາຄົນຂ້າມແດນຜິດກົດຫມາຍ",
+          "ນາຍໜ້າພາຄົນຂ້າມແດນ",
+          "ນາຍຫນ້າພາຄົນຂ້າມແດນ",
+          "people smuggling"
+        ],
+        "malay": [
+          "penyeludupan manusia",
+          "penyeludupan migran",
+          "penyeludup manusia",
+          "penyeludup migran",
+          "sindiket penyeludupan manusia",
+          "sindiket penyeludupan migran",
+          "menyeludup masuk pati"
+        ],
+        "mn": [
+          {
+            "prefix": "хүн хууль бусаар хил"
+          },
+          {
+            "prefix": "хүмүүсийг хууль бусаар хил"
+          },
+          {
+            "prefix": "хууль бусаар хил нэвтрүүл"
+          },
+          {
+            "prefix": "цагаачдыг хууль бусаар"
+          },
+          {
+            "prefix": "хүн хилээр хууль бусаар"
+          }
+        ],
+        "my": [
+          "လူမှောင်ခိုကူး",
+          "လူမှောင်ခို",
+          "လူမှောင်ခိုသမား",
+          "people smuggling",
+          "human smuggling",
+          "migrant smuggling"
+        ],
+        "portuguese": [
+          "contrabando de pessoas",
+          "contrabando de migrantes",
+          "auxílio à imigração ilegal",
+          "auxílio à imigração clandestina",
+          "introdução clandestina de migrantes",
+          "rede de imigração ilegal",
+          "redes de imigração ilegal",
+          "passadores de migrantes",
+          "redes de passadores"
+        ],
+        "tetum": [
+          "kontrabandu ema",
+          "kontrabandu migrante",
+          "kontrabandu imigrante",
+          "kontrabandista ema",
+          "auxílio à imigração ilegal",
+          "auxilio a imigracao ilegal",
+          "contrabando de migrantes",
+          "contrabando de pessoas",
+          "introdução ilegal de pessoas",
+          "introducao ilegal de pessoas",
+          "passadores de migrantes"
+        ],
+        "thai": [
+          "ลักลอบขนคน",
+          "ขบวนการลักลอบขนคน",
+          "ขบวนการนำพาแรงงานต่างด้าว",
+          "นำพาแรงงานต่างด้าว",
+          "นำพาต่างด้าว",
+          "ลักลอบนำพา",
+          "นายหน้าเถื่อน"
+        ],
+        "tok_pisin": [
+          "people smuggling",
+          "people smuggler",
+          "people smugglers",
+          "migrant smuggling",
+          "smuggling of migrants",
+          "human smuggling",
+          "human smugglers",
+          "pipel smagling",
+          "smaglim manmeri",
+          "smaglim ol manmeri",
+          "ol smagla"
         ]
       }
     },
@@ -258,6 +3083,244 @@
           "border protection",
           "border enforcement",
           "border checkpoints"
+        ],
+        "chinese_simplified": [
+          "边境管理",
+          "边境管控",
+          "边境管制",
+          "边境安全",
+          "边境巡逻",
+          "边境检查站",
+          "出入境管理",
+          "边防检查"
+        ],
+        "chinese_traditional": [
+          "邊境管理",
+          "邊境管制",
+          "邊境管控",
+          "邊境安全",
+          "邊境巡邏",
+          "邊境檢查",
+          "邊境口岸",
+          "國境管理",
+          "邊檢"
+        ],
+        "filipino": [
+          "border management",
+          "border control",
+          "border controls",
+          "border security",
+          "border patrol",
+          "border protection",
+          "border enforcement",
+          "border checkpoints",
+          "port of entry",
+          "ports of entry"
+        ],
+        "fr": [
+          "contrôles aux frontières",
+          "contrôle aux frontières",
+          "contrôle des frontières",
+          "police aux frontières",
+          "sécurité des frontières",
+          "gardes-frontières",
+          "surveillance des frontières",
+          "gestion des frontières",
+          "fermeture des frontières",
+          "protection des frontières"
+        ],
+        "indo": [
+          "pengelolaan perbatasan",
+          "pengamanan perbatasan",
+          "pengawasan perbatasan",
+          "kontrol perbatasan",
+          "patroli perbatasan",
+          "keamanan perbatasan",
+          "penjagaan perbatasan",
+          "pos lintas batas negara",
+          "PLBN",
+          "Satgas Pamtas"
+        ],
+        "japanese": [
+          "国境管理",
+          "国境警備",
+          "国境警備隊",
+          "出入国管理",
+          "国境の管理",
+          "入国審査",
+          "国境の壁",
+          "国境検問"
+        ],
+        "km": [
+          "ការគ្រប់គ្រងព្រំដែន",
+          "សន្តិសុខព្រំដែន",
+          "សន្ដិសុខព្រំដែន",
+          "ការត្រួតពិនិត្យព្រំដែន",
+          "ប៉ុស្តិ៍ត្រួតពិនិត្យព្រំដែន",
+          "ប៉ុស្ដិ៍ត្រួតពិនិត្យព្រំដែន",
+          "ប៉ូលិសព្រំដែន",
+          "border control",
+          "border security"
+        ],
+        "korean": [
+          "국경 관리",
+          "국경관리",
+          "국경 통제",
+          "국경통제",
+          "국경 경비",
+          "국경경비",
+          "국경 보안",
+          "국경수비대",
+          "국경순찰대",
+          "국경 순찰",
+          "출입국 관리",
+          "출입국관리",
+          "국경검문소",
+          "국경 검문소"
+        ],
+        "lao": [
+          "ການຄຸ້ມຄອງຊາຍແດນ",
+          "ຄຸ້ມຄອງຊາຍແດນ",
+          "ການຄຸ້ມຄອງດ່ານຊາຍແດນ",
+          "ການກວດກາຊາຍແດນ",
+          "ປົກປັກຮັກສາຊາຍແດນ",
+          "ຄວາມໝັ້ນຄົງຕາມຊາຍແດນ",
+          "ຄວາມຫມັ້ນຄົງຕາມຊາຍແດນ",
+          "ລາດຕະເວນຊາຍແດນ",
+          "ລາດຕະເວນຕາມຊາຍແດນ",
+          "ຕຳຫຼວດກວດຄົນເຂົ້າເມືອງ",
+          "ຕຳຫລວດກວດຄົນເຂົ້າເມືອງ",
+          "ກວດຄົນເຂົ້າເມືອງ",
+          "ກວດຄົນເຂົ້າ-ອອກເມືອງ"
+        ],
+        "malay": [
+          "pengurusan sempadan",
+          "kawalan sempadan",
+          "keselamatan sempadan",
+          "rondaan sempadan",
+          "pengawalan sempadan",
+          "pos kawalan sempadan",
+          "penguatkuasaan sempadan",
+          "agensi kawalan dan perlindungan sempadan",
+          "akps",
+          "pintu masuk sempadan"
+        ],
+        "mn": [
+          {
+            "prefix": "хилийн хяналт"
+          },
+          {
+            "prefix": "хилийн менежмент"
+          },
+          {
+            "prefix": "хилийн аюулгүй байдал"
+          },
+          {
+            "prefix": "хилийн аюулгүй байдл"
+          },
+          {
+            "prefix": "хилийн манаа"
+          },
+          {
+            "prefix": "хил хамгаалах"
+          },
+          {
+            "prefix": "хил хамгаалалт"
+          },
+          {
+            "prefix": "хилийн цэрэг"
+          },
+          {
+            "prefix": "хилийн шалган нэвтрүүл"
+          }
+        ],
+        "my": [
+          "နယ်စပ်လုံခြုံရေး",
+          "နယ်စပ် လုံခြုံရေး",
+          "နယ်စပ်ထိန်းချုပ်",
+          "နယ်စပ် ထိန်းချုပ်",
+          "နယ်စပ်စီမံခန့်ခွဲ",
+          "နယ်စပ်ဂိတ်ပိတ်",
+          "နယ်စပ်ဂိတ် ပိတ်",
+          "border control",
+          "border security"
+        ],
+        "portuguese": [
+          "gestão de fronteiras",
+          "gestão das fronteiras",
+          "controlo fronteiriço",
+          "controlo das fronteiras",
+          "controlo de fronteiras",
+          "controle de fronteiras",
+          "controle fronteiriço",
+          "segurança fronteiriça",
+          "segurança das fronteiras",
+          "patrulha fronteiriça",
+          "polícia de fronteira",
+          "posto fronteiriço",
+          "postos fronteiriços",
+          "Serviço de Migração",
+          "Unidade de Patrulhamento de Fronteira"
+        ],
+        "tetum": [
+          "jestaun fronteira",
+          "kontrolu fronteira",
+          "seguransa fronteira",
+          "patrulla fronteira",
+          "postu fronteira",
+          "postu fronteiriza",
+          "Unidade Patrulhamentu Fronteira",
+          "Unidade Patrullamentu Fronteira",
+          "Unidade Patrulhamento Fronteira",
+          "Unidade Polísia Fronteira",
+          "Unidade Polisia Fronteira",
+          "UPF",
+          "protesaun fronteira",
+          "gestão de fronteiras",
+          "gestao de fronteiras",
+          "gestão das fronteiras",
+          "gestao das fronteiras",
+          "controlo fronteiriço",
+          "controlo fronteirico",
+          "controlo das fronteiras",
+          "controle de fronteiras",
+          "segurança das fronteiras",
+          "seguranca das fronteiras",
+          "posto fronteiriço",
+          "posto fronteirico",
+          "Unidade de Patrulhamento de Fronteira"
+        ],
+        "thai": [
+          "การบริหารจัดการชายแดน",
+          "การควบคุมชายแดน",
+          "ความมั่นคงชายแดน",
+          "ด่านตรวจคนเข้าเมือง",
+          "จุดผ่านแดน",
+          "ด่านพรมแดน",
+          "ลาดตระเวนชายแดน",
+          "ปิดด่านชายแดน",
+          "ปิดด่านพรมแดน",
+          "ปิดจุดผ่านแดน",
+          "ปิดชายแดน"
+        ],
+        "tok_pisin": [
+          "border management",
+          "border control",
+          "border controls",
+          "border security",
+          "border patrol",
+          "border protection",
+          "border enforcement",
+          "border checkpoints",
+          "Boda Menesmen",
+          "Boda Menesmen Sistem",
+          "boda kontrol",
+          "boda sekyuriti",
+          "sekyuriti bilong boda",
+          "lukautim boda",
+          "protektim boda",
+          "boda patrol",
+          "Boda Komanda"
         ]
       }
     },
@@ -274,6 +3337,215 @@
           "deportees",
           "expulsion of migrants",
           "expelled migrants"
+        ],
+        "chinese_simplified": [
+          "驱逐出境",
+          "遣返",
+          "遣送出境",
+          "递解出境",
+          "强制遣返",
+          "驱逐移民",
+          "被驱逐者"
+        ],
+        "chinese_traditional": [
+          "驅逐出境",
+          "遣送出境",
+          "強制出境",
+          "遞解出境",
+          "遣返回國"
+        ],
+        "filipino": [
+          "deportation",
+          "deportations",
+          "deport",
+          "deported",
+          "deportee",
+          "deportees",
+          "deportasyon",
+          "ipa-deport",
+          "ipapa-deport",
+          "ipina-deport",
+          "na-deport"
+        ],
+        "fr": [
+          "reconduite à la frontière",
+          "reconduites à la frontière",
+          "oqtf",
+          "obligation de quitter le territoire",
+          "expulsion des migrants",
+          "expulsions de migrants",
+          "migrants expulsés",
+          "expulsion d'étrangers",
+          "expulsion d’étrangers",
+          "éloignement des étrangers",
+          "expulsions massives"
+        ],
+        "indo": [
+          "deportasi",
+          "dideportasi",
+          "mendeportasi",
+          "deportan",
+          "pengusiran migran"
+        ],
+        "japanese": [
+          "強制送還",
+          "国外退去",
+          "退去強制",
+          "強制退去",
+          "国外追放",
+          "本国に送還",
+          "本国へ送還"
+        ],
+        "km": [
+          "និរទេសជនអន្តោប្រវេសន៍",
+          "និរទេសជនអន្ដោប្រវេសន៍",
+          "ការនិរទេសជនអន្តោប្រវេសន៍",
+          "ការនិរទេសជនអន្ដោប្រវេសន៍",
+          "និរទេសជនបរទេស",
+          "និរទេសចេញពីប្រទេស",
+          "និរទេសចេញពីព្រះរាជាណាចក្រកម្ពុជា",
+          "បណ្តេញចេញពីប្រទេស",
+          "បណ្ដេញចេញពីប្រទេស",
+          "បណ្តេញចេញពីព្រះរាជាណាចក្រកម្ពុជា",
+          "បណ្ដេញចេញពីព្រះរាជាណាចក្រកម្ពុជា",
+          "deportation",
+          "deported"
+        ],
+        "korean": [
+          "강제추방",
+          "강제 추방",
+          "강제퇴거",
+          "강제 퇴거",
+          "추방된",
+          "추방당",
+          "추방 조치",
+          "본국 송환",
+          "강제송환",
+          "강제 송환",
+          "추방자"
+        ],
+        "lao": [
+          "ສົ່ງກັບຄືນປະເທດ",
+          "ສົ່ງກັບປະເທດ",
+          "ສົ່ງກັບຄືນປະເທດຕົ້ນທາງ",
+          "ສົ່ງຄືນປະເທດ",
+          "ເນລະເທດ",
+          "ຂັບໄລ່ອອກນອກປະເທດ",
+          "ສົ່ງຕົວກັບຄືນ",
+          "deportation",
+          "deported"
+        ],
+        "malay": [
+          "deportasi",
+          "dideportasi",
+          "dihantar pulang ke negara asal",
+          "pengusiran migran",
+          "diusir ke negara asal",
+          "dihantar balik ke negara asal",
+          "pengusiran pati",
+          "pengusiran pendatang asing",
+          "dideport"
+        ],
+        "mn": [
+          {
+            "prefix": "албадан гарга"
+          },
+          {
+            "prefix": "албадан гаргагд"
+          },
+          {
+            "prefix": "албадан буцаа"
+          },
+          {
+            "prefix": "эх оронд нь албадан"
+          },
+          {
+            "prefix": "хөөн гарга"
+          },
+          {
+            "prefix": "нутаг буцааж"
+          },
+          {
+            "prefix": "нутаг буцаах"
+          },
+          {
+            "prefix": "нутаг буцаас"
+          },
+          {
+            "prefix": "албадан гаргалт"
+          }
+        ],
+        "my": [
+          "နိုင်ငံမှနှင်ထုတ်",
+          "နိုင်ငံမှ နှင်ထုတ်",
+          "ပြည်ပသို့နှင်ထုတ်",
+          "အတင်းအဓမ္မပြန်ပို့",
+          "အတင်းအဓမ္မ ပြန်ပို့",
+          "အဓမ္မပြန်ပို့",
+          "နေရပ်ပြန်ပို့ခံရ",
+          "ဖမ်းဆီးပြန်ပို့",
+          "deportation",
+          "deported"
+        ],
+        "portuguese": [
+          "deportação",
+          "deportações",
+          "deportado",
+          "deportados",
+          "deportada",
+          "deportadas",
+          "deportar",
+          "deportou",
+          "deportaram",
+          "expulsão de migrantes",
+          "expulsão de imigrantes",
+          "migrantes expulsos",
+          "imigrantes expulsos",
+          "repatriamento forçado",
+          "repatriação forçada"
+        ],
+        "tetum": [
+          "deportasaun",
+          "deporta",
+          "deportadu",
+          "deportadu sira",
+          "ema deportadu",
+          "espulsaun migrante",
+          "espulsaun estranjeiru",
+          "deportação",
+          "deportacao",
+          "deportações",
+          "deportacoes",
+          "deportado",
+          "deportados",
+          "deportar",
+          "expulsão de migrantes",
+          "expulsao de migrantes",
+          "expulsão de estrangeiros",
+          "expulsao de estrangeiros"
+        ],
+        "thai": [
+          "การเนรเทศ",
+          "เนรเทศ",
+          "ส่งกลับประเทศต้นทาง",
+          "ผลักดันกลับประเทศ",
+          "ผลักดันออกนอกราชอาณาจักร",
+          "ส่งตัวกลับประเทศ"
+        ],
+        "tok_pisin": [
+          "deportation",
+          "deportations",
+          "deport",
+          "deported",
+          "deportee",
+          "deportees",
+          "expulsion of migrants",
+          "expelled migrants",
+          "diportim",
+          "diportesen",
+          "rausim ol long kantri",
+          "salim ol i go bek long kantri bilong ol",
+          "rausim ol i go bek long kantri bilong ol"
         ]
       }
     },
@@ -290,6 +3562,202 @@
           "offshore detention",
           "offshore processing",
           "detained migrants"
+        ],
+        "chinese_simplified": [
+          "移民拘留",
+          "移民拘留中心",
+          "移民收容所",
+          "移民羁押",
+          "离岸拘留",
+          "离岸处理",
+          "拘留移民",
+          "被拘留移民"
+        ],
+        "chinese_traditional": [
+          "移民拘留",
+          "移民拘留中心",
+          "外國人收容所",
+          "青山灣入境事務中心",
+          "境外拘留",
+          "境外處理",
+          "移民羈留"
+        ],
+        "filipino": [
+          "migration detention",
+          "immigration detention",
+          "migrant detention",
+          "immigration detention centre",
+          "immigration detention center",
+          "BI detention facility",
+          "BI Warden Facility",
+          "offshore detention",
+          "detained migrants"
+        ],
+        "fr": [
+          "rétention administrative",
+          "centre de rétention",
+          "centres de rétention",
+          "centre de rétention administrative",
+          "migrants détenus",
+          "détention des migrants",
+          "centre de détention pour migrants"
+        ],
+        "indo": [
+          "rumah detensi imigrasi",
+          "detensi imigrasi",
+          "Rudenim",
+          "pusat detensi",
+          "penahanan migran",
+          "penahanan imigran",
+          "tahanan imigrasi",
+          "pemrosesan lepas pantai"
+        ],
+        "japanese": [
+          "入管施設",
+          "入管収容",
+          "入管の収容",
+          "入国管理センター",
+          "移民収容",
+          "移民収容施設",
+          "不法移民の収容",
+          "オフショア収容"
+        ],
+        "km": [
+          "ឃុំខ្លួនជនអន្តោប្រវេសន៍",
+          "ឃុំខ្លួនជនអន្ដោប្រវេសន៍",
+          "ឃុំខ្លួនពលករ",
+          "ឃុំខ្លួនជនចំណាកស្រុក",
+          "ការឃុំខ្លួនពលករចំណាកស្រុក",
+          "មណ្ឌលឃុំឃាំងអន្តោប្រវេសន៍",
+          "មណ្ឌលឃុំឃាំងអន្ដោប្រវេសន៍",
+          "មណ្ឌលឃុំខ្លួនជនអន្តោប្រវេសន៍",
+          "មណ្ឌលឃុំខ្លួនជនអន្ដោប្រវេសន៍",
+          "immigration detention"
+        ],
+        "korean": [
+          "외국인보호소",
+          "외국인 보호소",
+          "이민자 구금",
+          "이민 구금",
+          "이주민 구금",
+          "출입국 구금",
+          "역외 수용",
+          "역외 난민 수용",
+          "이민세관단속국 구금",
+          "구금된 이민자",
+          "구금된 이주민"
+        ],
+        "lao": [
+          "ສູນກັກຂັງຄົນເຂົ້າເມືອງ",
+          "ການກັກຂັງຄົນເຂົ້າເມືອງ",
+          "ການກັກຕົວຄົນເຂົ້າເມືອງ",
+          "ຫ້ອງກັກຂັງຄົນເຂົ້າເມືອງ",
+          "ສູນກັກຕົວຄົນຕ່າງດ້າວ",
+          "ກັກຂັງແຮງງານເຄື່ອນຍ້າຍ",
+          "ກັກຂັງຜູ້ເຂົ້າເມືອງຜິດກົດໝາຍ",
+          "ກັກຂັງຜູ້ເຂົ້າເມືອງຜິດກົດຫມາຍ",
+          "immigration detention"
+        ],
+        "malay": [
+          "tahanan imigresen",
+          "depot tahanan imigresen",
+          "pusat tahanan imigresen",
+          "depoh imigresen",
+          "tahanan migran",
+          "migran yang ditahan",
+          "pusat tahanan luar pesisir",
+          "tahanan luar pesisir",
+          "depot imigresen"
+        ],
+        "mn": [
+          {
+            "prefix": "цагаачдыг саатуул"
+          },
+          {
+            "prefix": "цагаачдын хорих"
+          },
+          {
+            "prefix": "цагаачлалын саатуулах"
+          },
+          {
+            "prefix": "цагаачлалын хорих төв"
+          },
+          {
+            "prefix": "гадаадын иргэнийг саатуул"
+          },
+          {
+            "prefix": "албадан гаргах хүртэл саатуул"
+          }
+        ],
+        "my": [
+          "လူဝင်မှုကြီးကြပ်ရေး အချုပ်",
+          "လူ၀င်မှုကြီးကြပ်ရေး အချုပ်",
+          "လူဝင်မှုကြီးကြပ်ရေးအချုပ်",
+          "လူ၀င်မှုကြီးကြပ်ရေးအချုပ်",
+          "လူဝင်မှုကြီးကြပ်ရေး ထိန်းသိမ်း",
+          "လူ၀င်မှုကြီးကြပ်ရေး ထိန်းသိမ်း",
+          "ရွှေ့ပြောင်းလုပ်သား ထိန်းသိမ်း",
+          "ရွှေ့ပြောင်းလုပ်သားများ ဖမ်းဆီး",
+          "ရွှေ့ပြောင်းအလုပ်သမားများ ဖမ်းဆီး",
+          "immigration detention"
+        ],
+        "portuguese": [
+          "detenção de migrantes",
+          "detenção de imigrantes",
+          "migrantes detidos",
+          "imigrantes detidos",
+          "centro de detenção de imigrantes",
+          "centros de detenção de imigrantes",
+          "centro de detenção de migrantes",
+          "centros de detenção de migrantes",
+          "centro de detenção para imigrantes",
+          "detenção offshore",
+          "processamento offshore"
+        ],
+        "tetum": [
+          "detensaun migrante",
+          "detensaun imigrasaun",
+          "detensaun imigrante",
+          "sentru detensaun imigrasaun",
+          "sentru detensaun migrante",
+          "prosesamentu offshore",
+          "detenção de migrantes",
+          "detencao de migrantes",
+          "detenção de imigrantes",
+          "detencao de imigrantes",
+          "centro de detenção de imigrantes",
+          "centro de detencao de imigrantes",
+          "centros de detenção de imigrantes",
+          "centros de detencao de imigrantes",
+          "migrantes detidos"
+        ],
+        "thai": [
+          "ห้องกักตรวจคนเข้าเมือง",
+          "ห้องกัก ตม.",
+          "ห้องกัก สตม.",
+          "ศูนย์กักตัวผู้ย้ายถิ่น",
+          "สถานกักตัวคนต่างด้าว",
+          "การกักตัวผู้ย้ายถิ่น",
+          "ถูกกักตัวในห้องกัก",
+          "immigration detention"
+        ],
+        "tok_pisin": [
+          "migration detention",
+          "immigration detention",
+          "migrant detention",
+          "immigration detention centre",
+          "immigration detention center",
+          "offshore detention",
+          "offshore processing",
+          "detained migrants",
+          "Manus prosesing senta",
+          "Regional Processing Centre",
+          "Manus Regional Processing Centre",
+          "Bomana Imigresen Senta",
+          "Bomana Immigration Centre",
+          "ofsoa prosesing",
+          "ofsoa detensen",
+          "imigresen detensen"
         ]
       }
     },
@@ -305,6 +3773,210 @@
           "migration governance",
           "migration management",
           "migration reform"
+        ],
+        "chinese_simplified": [
+          "移民政策",
+          "移民治理",
+          "迁移政策",
+          "移民法规",
+          "移民制度",
+          "户籍制度改革"
+        ],
+        "chinese_traditional": [
+          "遷徙政策",
+          "移民政策",
+          "移民法",
+          "移民治理",
+          "移民管理",
+          "移民改革",
+          "移民制度"
+        ],
+        "filipino": [
+          "migration policy",
+          "migration policies",
+          "migration law",
+          "migration laws",
+          "migration governance",
+          "migration management",
+          "migration reform",
+          "Migrant Workers Act",
+          "Magna Carta of Filipino Seafarers",
+          "Magna Carta for Seafarers"
+        ],
+        "fr": [
+          "politique migratoire",
+          "politiques migratoires",
+          "gestion des migrations",
+          "gouvernance des migrations",
+          "pacte sur la migration",
+          "pacte mondial sur les migrations",
+          "réforme migratoire"
+        ],
+        "indo": [
+          "kebijakan migrasi",
+          "tata kelola migrasi",
+          "pengelolaan migrasi",
+          "undang-undang migrasi",
+          "reformasi migrasi",
+          "UU Pelindungan Pekerja Migran Indonesia",
+          "UU PPMI"
+        ],
+        "japanese": [
+          "移民政策",
+          "移住政策",
+          "移民制度",
+          "移民法",
+          "移民管理",
+          "移民問題",
+          "移民受け入れ",
+          "移民の受け入れ"
+        ],
+        "km": [
+          "គោលនយោបាយចំណាកស្រុក",
+          "គោលនយោបាយស្តីពីចំណាកស្រុក",
+          "គោលនយោបាយស្ដីពីចំណាកស្រុក",
+          "ច្បាប់ស្តីពីចំណាកស្រុក",
+          "ច្បាប់ស្ដីពីចំណាកស្រុក",
+          "ការគ្រប់គ្រងចំណាកស្រុក",
+          "អភិបាលកិច្ចចំណាកស្រុក",
+          "គោលនយោបាយចំណាកស្រុកការងារ",
+          "migration policy",
+          "គោលនយោបាយទេសន្តរប្រវេសន៍",
+          "គោលនយោបាយទេសន្ដរប្រវេសន៍"
+        ],
+        "korean": [
+          "이주 정책",
+          "이주정책",
+          "이주민 정책",
+          "이주민정책",
+          "이주 관리",
+          "이주 거버넌스",
+          "이주 개혁",
+          "이주법"
+        ],
+        "lao": [
+          "ນະໂຍບາຍດ້ານການເຄື່ອນຍ້າຍຖິ່ນຖານ",
+          "ນະໂຍບາຍການເຄື່ອນຍ້າຍຖິ່ນຖານ",
+          "ນະໂຍບາຍການເຄື່ອນຍ້າຍແຮງງານ",
+          "ນະໂຍບາຍດ້ານການເຄື່ອນຍ້າຍແຮງງານ",
+          "ວ່າດ້ວຍການເຄື່ອນຍ້າຍແຮງງານ",
+          "ການຄຸ້ມຄອງການເຄື່ອນຍ້າຍຖິ່ນຖານ",
+          "ການຄຸ້ມຄອງແຮງງານເຄື່ອນຍ້າຍ",
+          "ວ່າດ້ວຍການຈັດສົ່ງແຮງງານ",
+          "migration policy"
+        ],
+        "malay": [
+          "dasar penghijrahan",
+          "dasar migrasi",
+          "undang-undang penghijrahan",
+          "tadbir urus migrasi",
+          "pengurusan migrasi",
+          "pengurusan penghijrahan",
+          "pembaharuan migrasi",
+          "dasar pekerja asing",
+          "pengurusan pekerja asing"
+        ],
+        "mn": [
+          {
+            "prefix": "шилжилт хөдөлгөөний бодлог"
+          },
+          {
+            "prefix": "шилжилт хөдөлгөөний тухай хууль"
+          },
+          {
+            "prefix": "шилжилт хөдөлгөөний тухай хуул"
+          },
+          {
+            "prefix": "шилжилт хөдөлгөөнийг зохицуул"
+          },
+          {
+            "prefix": "шилжилт хөдөлгөөнийг хязгаарла"
+          },
+          {
+            "prefix": "шилжилт хөдөлгөөнийг түр хязгаарла"
+          },
+          {
+            "prefix": "шилжин суурьших хөдөлгөөнийг"
+          },
+          {
+            "prefix": "шилжих хөдөлгөөнийг хязгаарла"
+          }
+        ],
+        "my": [
+          "ရွှေ့ပြောင်းနေထိုင်မှုမူဝါဒ",
+          "ရွှေ့ပြောင်းနေထိုင်မှုမူ၀ါဒ",
+          "ရွှေ့ပြောင်းမှုမူဝါဒ",
+          "ရွှေ့ပြောင်းမှုမူ၀ါဒ",
+          "ရွှေ့ပြောင်းလုပ်သားမူဝါဒ",
+          "ရွှေ့ပြောင်းလုပ်သားမူ၀ါဒ",
+          "ရွှေ့ပြောင်းအလုပ်သမားမူဝါဒ",
+          "ရွှေ့ပြောင်းအလုပ်သမားမူ၀ါဒ",
+          "ပြည်ပအလုပ်အကိုင်ဆိုင်ရာ ဥပဒေ",
+          "ပြည်ပအလုပ်အကိုင်ဆိုင်ရာဥပဒေ",
+          "migration policy"
+        ],
+        "portuguese": [
+          "política de migração",
+          "políticas de migração",
+          "política migratória",
+          "políticas migratórias",
+          "lei da migração",
+          "lei de migração",
+          "leis de migração",
+          "governação das migrações",
+          "governança migratória",
+          "gestão das migrações",
+          "gestão migratória",
+          "reforma migratória",
+          "Pacto Global para as Migrações"
+        ],
+        "tetum": [
+          "polítika migrasaun",
+          "politika migrasaun",
+          "polítika migratória",
+          "politika migratoria",
+          "lei migrasaun",
+          "lei migrasaun no asilu",
+          "governasaun migrasaun",
+          "jestaun migrasaun",
+          "reforma migrasaun",
+          "política migratória",
+          "politica migratoria",
+          "políticas migratórias",
+          "politicas migratorias",
+          "lei de migração",
+          "lei de migracao",
+          "lei da migração e asilo",
+          "lei da migracao e asilo",
+          "governação das migrações",
+          "governacao das migracoes",
+          "gestão da migração",
+          "gestao da migracao",
+          "gestão das migrações",
+          "gestao das migracoes"
+        ],
+        "thai": [
+          "นโยบายการย้ายถิ่น",
+          "นโยบายด้านการย้ายถิ่นฐาน",
+          "นโยบายแรงงานต่างด้าว",
+          "นโยบายแรงงานข้ามชาติ",
+          "การบริหารจัดการแรงงานต่างด้าว",
+          "การบริหารจัดการแรงงานข้ามชาติ",
+          "พ.ร.ก.การบริหารจัดการการทำงานของคนต่างด้าว"
+        ],
+        "tok_pisin": [
+          "migration policy",
+          "migration policies",
+          "migration law",
+          "migration laws",
+          "migration governance",
+          "migration management",
+          "migration reform",
+          "maigresen polisi",
+          "polisi bilong maigresen",
+          "lo bilong maigresen",
+          "Migration Act",
+          "Maigresen Ekt"
         ]
       }
     },
@@ -322,6 +3994,242 @@
           "immigration crackdown",
           "visa policy",
           "visa rules"
+        ],
+        "chinese_simplified": [
+          "移民政策",
+          "入境移民政策",
+          "移民法",
+          "移民新政",
+          "移民改革",
+          "签证政策",
+          "签证新规",
+          "收紧移民",
+          "打击非法移民"
+        ],
+        "chinese_traditional": [
+          "移民政策",
+          "入境政策",
+          "入出國及移民法",
+          "入境條例",
+          "移民法",
+          "移民改革",
+          "簽證政策",
+          "簽證規定",
+          "打擊非法移民"
+        ],
+        "filipino": [
+          "immigration policy",
+          "immigration policies",
+          "immigration law",
+          "immigration laws",
+          "immigration reform",
+          "immigration rules",
+          "immigration crackdown",
+          "visa policy",
+          "visa rules",
+          "Philippine Immigration Act",
+          "visa-free entry",
+          "e-visa"
+        ],
+        "fr": [
+          "politique d'immigration",
+          "politique d’immigration",
+          "politiques d'immigration",
+          "politiques d’immigration",
+          "loi immigration",
+          "loi sur l'immigration",
+          "loi sur l’immigration",
+          "projet de loi immigration",
+          "droit des étrangers",
+          "entrée et séjour des étrangers",
+          "politique des visas",
+          "régime des visas",
+          "exemption de visa"
+        ],
+        "indo": [
+          "kebijakan imigrasi",
+          "kebijakan keimigrasian",
+          "UU Keimigrasian",
+          "undang-undang keimigrasian",
+          "aturan imigrasi",
+          "aturan keimigrasian",
+          "kebijakan visa",
+          "aturan visa",
+          "reformasi imigrasi",
+          "kebijakan bebas visa"
+        ],
+        "japanese": [
+          "入管法",
+          "出入国管理法",
+          "出入国管理及び難民認定法",
+          "入管政策",
+          "入国管理政策",
+          "移民規制",
+          "ビザ免除",
+          "査証免除"
+        ],
+        "km": [
+          "គោលនយោបាយអន្តោប្រវេសន៍",
+          "គោលនយោបាយអន្ដោប្រវេសន៍",
+          "ច្បាប់អន្តោប្រវេសន៍",
+          "ច្បាប់អន្ដោប្រវេសន៍",
+          "ច្បាប់ស្តីពីអន្តោប្រវេសន៍",
+          "ច្បាប់ស្ដីពីអន្ដោប្រវេសន៍",
+          "ច្បាប់ស្ដីពីអន្តោប្រវេសន៍",
+          "ច្បាប់ស្តីពីអន្ដោប្រវេសន៍",
+          "គោលនយោបាយទិដ្ឋាការ",
+          "កំណែទម្រង់អន្តោប្រវេសន៍",
+          "កំណែទម្រង់អន្ដោប្រវេសន៍",
+          "immigration policy",
+          "immigration law"
+        ],
+        "korean": [
+          "이민 정책",
+          "이민정책",
+          "이민법",
+          "이민 개혁",
+          "이민개혁",
+          "이민 규제",
+          "이민 단속",
+          "출입국관리법",
+          "비자 정책",
+          "비자정책",
+          "비자 규정",
+          "이민청"
+        ],
+        "lao": [
+          "ນະໂຍບາຍຄົນເຂົ້າເມືອງ",
+          "ນະໂຍບາຍດ້ານຄົນເຂົ້າເມືອງ",
+          "ວ່າດ້ວຍການເຂົ້າ-ອອກ ແລະ ການຄຸ້ມຄອງຄົນຕ່າງປະເທດ",
+          "ການຄຸ້ມຄອງຄົນຕ່າງປະເທດ",
+          "ຄຸ້ມຄອງຄົນຕ່າງປະເທດ",
+          "ການຄຸ້ມຄອງຄົນຕ່າງດ້າວ",
+          "ລະບຽບການເຂົ້າເມືອງ",
+          "ກົດໝາຍຄົນເຂົ້າເມືອງ",
+          "ກົດຫມາຍຄົນເຂົ້າເມືອງ",
+          "immigration policy"
+        ],
+        "malay": [
+          "dasar imigresen",
+          "undang-undang imigresen",
+          "akta imigresen",
+          "peraturan imigresen",
+          "pembaharuan imigresen",
+          "dasar visa",
+          "peraturan visa",
+          "tindakan keras imigresen"
+        ],
+        "mn": [
+          {
+            "prefix": "цагаачлалын бодлог"
+          },
+          {
+            "prefix": "цагаачлалын хууль"
+          },
+          {
+            "prefix": "цагаачлалын тухай хууль"
+          },
+          {
+            "prefix": "цагаачлалын тухай хуул"
+          },
+          {
+            "prefix": "цагаачлалын шинэчлэл"
+          },
+          {
+            "prefix": "цагаачлалын журам"
+          },
+          {
+            "prefix": "гадаадын иргэний эрх зүйн байдлын тухай хуул"
+          },
+          {
+            "prefix": "цагаачлалын дүрэм"
+          }
+        ],
+        "my": [
+          "လူဝင်မှုကြီးကြပ်ရေးမူဝါဒ",
+          "လူ၀င်မှုကြီးကြပ်ရေးမူ၀ါဒ",
+          "လူဝင်မှုကြီးကြပ်ရေး မူဝါဒ",
+          "လူ၀င်မှုကြီးကြပ်ရေး မူ၀ါဒ",
+          "လူဝင်မှုကြီးကြပ်ရေးဥပဒေ",
+          "လူ၀င်မှုကြီးကြပ်ရေးဥပဒေ",
+          "လူဝင်မှုကြီးကြပ်ရေး ဥပဒေ",
+          "လူ၀င်မှုကြီးကြပ်ရေး ဥပဒေ",
+          "ဗီဇာမူဝါဒ",
+          "ဗီဇာမူ၀ါဒ",
+          "ဗီဇာ မူဝါဒ",
+          "ဗီဇာ မူ၀ါဒ",
+          "ဗီဇာစည်းမျဉ်း",
+          "immigration policy",
+          "immigration law"
+        ],
+        "portuguese": [
+          "política de imigração",
+          "políticas de imigração",
+          "lei da imigração",
+          "lei de imigração",
+          "leis de imigração",
+          "reforma da imigração",
+          "regras de imigração",
+          "política imigratória",
+          "repressão da imigração",
+          "política de vistos",
+          "regras de vistos",
+          "regime de vistos",
+          "lei do controlo de migração",
+          "Lei de Migração e Asilo"
+        ],
+        "tetum": [
+          "polítika imigrasaun",
+          "politika imigrasaun",
+          "lei imigrasaun",
+          "regra imigrasaun",
+          "reforma imigrasaun",
+          "polítika vistu",
+          "politika vistu",
+          "regra vistu",
+          "isensaun vistu",
+          "política de imigração",
+          "politica de imigracao",
+          "políticas de imigração",
+          "politicas de imigracao",
+          "lei de imigração",
+          "lei de imigracao",
+          "reforma da imigração",
+          "reforma da imigracao",
+          "política de vistos",
+          "politica de vistos",
+          "regras de vistos",
+          "isenção de vistos",
+          "isencao de vistos"
+        ],
+        "thai": [
+          "นโยบายคนเข้าเมือง",
+          "กฎหมายคนเข้าเมือง",
+          "พ.ร.บ.คนเข้าเมือง",
+          "นโยบายตรวจคนเข้าเมือง",
+          "นโยบายวีซ่า",
+          "กฎการตรวจคนเข้าเมือง",
+          "มาตรการวีซ่า",
+          "ฟรีวีซ่า"
+        ],
+        "tok_pisin": [
+          "immigration policy",
+          "immigration policies",
+          "immigration law",
+          "immigration laws",
+          "immigration reform",
+          "immigration rules",
+          "immigration crackdown",
+          "visa policy",
+          "visa rules",
+          "imigresen polisi",
+          "imaigresen polisi",
+          "polisi bilong imigresen",
+          "polisi bilong imaigresen",
+          "lo bilong imigresen",
+          "lo bilong imaigresen",
+          "visa polisi",
+          "polisi bilong visa"
         ]
       }
     },
@@ -335,6 +4243,158 @@
           "immigrant integration",
           "integration of immigrants",
           "migrant inclusion"
+        ],
+        "chinese_simplified": [
+          "移民融入",
+          "移民融合",
+          "移民社会融合",
+          "外来人口融入",
+          "新市民",
+          "农民工市民化",
+          "市民化"
+        ],
+        "chinese_traditional": [
+          "移民融入",
+          "移民融合",
+          "新住民融入",
+          "新移民融入",
+          "移民共融",
+          "新住民輔導",
+          "移民適應"
+        ],
+        "filipino": [
+          "migrant integration",
+          "integration of migrants",
+          "immigrant integration",
+          "integration of immigrants",
+          "migrant inclusion"
+        ],
+        "fr": [
+          "intégration des immigrés",
+          "intégration des migrants",
+          "intégration des étrangers",
+          "accueil des migrants",
+          "inclusion des migrants"
+        ],
+        "indo": [
+          "integrasi migran",
+          "integrasi imigran",
+          "inklusi migran",
+          "integrasi pendatang"
+        ],
+        "japanese": [
+          "移民の統合",
+          "移民の社会統合",
+          "外国人の社会統合",
+          "多文化共生",
+          "外国人との共生",
+          "外国人住民の支援",
+          "移民の受け入れ態勢"
+        ],
+        "km": [
+          "សមាហរណកម្មពលករចំណាកស្រុក",
+          "សមាហរណកម្មជនចំណាកស្រុក",
+          "សមាហរណកម្មឡើងវិញរបស់ពលករ",
+          "សមាហរណកម្មសង្គមរបស់ជនចំណាកស្រុក",
+          "migrant integration"
+        ],
+        "korean": [
+          "이주민 통합",
+          "이민자 통합",
+          "사회통합프로그램",
+          "다문화 통합",
+          "이주민의 사회 통합",
+          "이민자의 사회통합",
+          "이주민 포용",
+          "사회통합 프로그램",
+          "이주배경 주민 지원",
+          "외국인 주민 지원"
+        ],
+        "lao": [
+          "ການເຊື່ອມໂຍງຜູ້ເຄື່ອນຍ້າຍເຂົ້າສັງຄົມ",
+          "ການເຊື່ອມໂຍງແຮງງານເຄື່ອນຍ້າຍ",
+          "ການປະສົມກົມກຽວຂອງຜູ້ເຄື່ອນຍ້າຍ",
+          "ການໃຫ້ສັນຊາດ",
+          "ມອບສັນຊາດລາວ",
+          "migrant integration"
+        ],
+        "malay": [
+          "integrasi migran",
+          "integrasi pendatang",
+          "integrasi imigran",
+          "keterangkuman migran",
+          "penyepaduan migran"
+        ],
+        "mn": [
+          {
+            "prefix": "цагаачдын нийгэмшил"
+          },
+          {
+            "prefix": "цагаачдыг нийгэмд"
+          },
+          {
+            "prefix": "цагаачдын интеграц"
+          },
+          {
+            "prefix": "цагаачдын дасан зохицол"
+          },
+          {
+            "prefix": "шилжин ирэгсдийн нийгэмшил"
+          },
+          {
+            "prefix": "цагаачдыг нийгэмшүүл"
+          },
+          {
+            "prefix": "цагаачдын нийгмийн оролцоо"
+          }
+        ],
+        "my": [
+          "ရွှေ့ပြောင်းသူများ ပေါင်းစည်း",
+          "ရွှေ့ပြောင်းနေထိုင်သူများ ပေါင်းစည်း",
+          "ရွှေ့ပြောင်းသူများပေါင်းစည်းနေထိုင်",
+          "migrant integration"
+        ],
+        "portuguese": [
+          "integração de migrantes",
+          "integração dos migrantes",
+          "integração de imigrantes",
+          "integração dos imigrantes",
+          "inclusão de migrantes",
+          "inclusão dos migrantes",
+          "acolhimento de migrantes",
+          "acolhimento de imigrantes"
+        ],
+        "tetum": [
+          "integrasaun migrante",
+          "integrasaun imigrante",
+          "integrasaun migrante sira",
+          "inkluzaun migrante",
+          "integração de migrantes",
+          "integracao de migrantes",
+          "integração dos migrantes",
+          "integracao dos migrantes",
+          "integração de imigrantes",
+          "integracao de imigrantes",
+          "integração dos imigrantes",
+          "integracao dos imigrantes",
+          "inclusão de migrantes",
+          "inclusao de migrantes"
+        ],
+        "thai": [
+          "การบูรณาการผู้ย้ายถิ่น",
+          "การบูรณาการแรงงานข้ามชาติ",
+          "การผสมกลมกลืนของผู้ย้ายถิ่น",
+          "การอยู่ร่วมกันของแรงงานข้ามชาติ"
+        ],
+        "tok_pisin": [
+          "migrant integration",
+          "integration of migrants",
+          "immigrant integration",
+          "integration of immigrants",
+          "migrant inclusion",
+          "intagresen bilong ol maigren",
+          "intagresen bilong ol refuji",
+          "ol refuji i sindaun gut"
         ]
       }
     },
@@ -349,6 +4409,198 @@
           "remittances from abroad",
           "remittances sent home",
           "money sent home"
+        ],
+        "chinese_simplified": [
+          "侨汇",
+          "移民汇款",
+          "劳务汇款",
+          "劳工汇款",
+          "海外汇款",
+          "汇款回国",
+          "汇回国内"
+        ],
+        "chinese_traditional": [
+          "移民匯款",
+          "僑匯",
+          "移工匯款",
+          "匯款回鄉",
+          "匯款回國",
+          "寄錢回家",
+          "外勞匯款"
+        ],
+        "filipino": [
+          "migrant remittances",
+          "remittances from migrants",
+          "workers' remittances",
+          "workers’ remittances",
+          "remittances from abroad",
+          "remittances sent home",
+          "money sent home",
+          "OFW remittances",
+          "cash remittances",
+          "personal remittances",
+          "padala ng OFW",
+          "padala ng mga OFW",
+          "perang padala"
+        ],
+        "fr": [
+          "envois de fonds",
+          "envois d'argent",
+          "envois d’argent",
+          "transferts de fonds des migrants",
+          "transferts des migrants",
+          "fonds envoyés par la diaspora",
+          "argent envoyé au pays"
+        ],
+        "indo": [
+          "remitansi pekerja migran",
+          "remitansi PMI",
+          "remitansi TKI",
+          "kiriman uang pekerja migran",
+          "kiriman uang TKI",
+          "kiriman uang dari luar negeri",
+          "devisa pekerja migran",
+          "remitansi"
+        ],
+        "japanese": [
+          "移民送金",
+          "移民の送金",
+          "出稼ぎ送金",
+          "出稼ぎ労働者の送金",
+          "本国への送金",
+          "母国への送金",
+          "海外からの送金"
+        ],
+        "km": [
+          "ប្រាក់បញ្ជូនរបស់ពលករចំណាកស្រុក",
+          "ប្រាក់បញ្ញើរបស់ពលករ",
+          "ប្រាក់បញ្ញើពីពលករ",
+          "ផ្ញើប្រាក់មកក្រុមគ្រួសារ",
+          "ផ្ញើប្រាក់មកគ្រួសារ",
+          "ផ្ញើប្រាក់ទៅផ្ទះ",
+          "ផ្ញើប្រាក់មកកម្ពុជា",
+          "ផ្ញើប្រាក់មកស្រុកកំណើត",
+          "ប្រាក់ផ្ញើពីក្រៅ",
+          "remittance",
+          "remittances"
+        ],
+        "korean": [
+          "본국 송금",
+          "본국송금",
+          "이주노동자 송금",
+          "이주민 송금",
+          "근로자 송금",
+          "고향으로 송금"
+        ],
+        "lao": [
+          "ເງິນສົ່ງກັບຂອງແຮງງານ",
+          "ເງິນທີ່ແຮງງານສົ່ງກັບ",
+          "ສົ່ງເງິນກັບບ້ານ",
+          "ສົ່ງເງິນກັບມາປະເທດ",
+          "ເງິນໂອນຈາກແຮງງານ",
+          "ເງິນໂອນຈາກຕ່າງປະເທດ",
+          "ຮັບເງິນໂອນຈາກຕ່າງປະເທດ",
+          "remittances"
+        ],
+        "malay": [
+          "kiriman wang migran",
+          "kiriman wang pekerja asing",
+          "kiriman wang pekerja migran",
+          "kiriman wang dari luar negara",
+          "kiriman wang ke kampung halaman",
+          "wang yang dihantar pulang",
+          "pengiriman wang ke luar negara"
+        ],
+        "mn": [
+          {
+            "prefix": "гадаадаас ирэх мөнгөн гуйвуулг"
+          },
+          {
+            "prefix": "цагаачдын мөнгөн гуйвуулг"
+          },
+          {
+            "prefix": "гадаадад ажиллагсдын гуйвуулг"
+          },
+          {
+            "prefix": "гуйвуулгын орлого"
+          },
+          {
+            "prefix": "гадаадаас илгээ"
+          }
+        ],
+        "my": [
+          "ပြည်တွင်းသို့ ငွေလွှဲ",
+          "ပြည်တွင်းသို့ငွေလွှဲ",
+          "အိမ်သို့ ငွေပို့",
+          "အိမ်ကို ငွေပို့",
+          "ရွှေ့ပြောင်းလုပ်သား ငွေလွှဲ",
+          "ပြည်ပမှ ငွေလွှဲ",
+          "ပြည်ပမှငွေလွှဲ",
+          "ပြည်ပဝင်ငွေလွှဲ",
+          "ပြည်ပ၀င်ငွေလွှဲ",
+          "remittances",
+          "remittance"
+        ],
+        "portuguese": [
+          "remessas de migrantes",
+          "remessas dos migrantes",
+          "remessas de emigrantes",
+          "remessas dos emigrantes",
+          "remessas de trabalhadores",
+          "remessas dos trabalhadores",
+          "remessas do exterior",
+          "remessas do estrangeiro",
+          "dinheiro enviado para casa",
+          "dinheiro enviado para as famílias"
+        ],
+        "tetum": [
+          "remesa migrante",
+          "remesa traballadór",
+          "remesa traballador",
+          "remesa husi traballadór",
+          "remesa husi traballador",
+          "remesa husi rai-liur",
+          "remesa husi rai li'ur",
+          "remesa husi rai li’ur",
+          "osan haruka husi rai-liur",
+          "osan ne'ebé traballadór haruka",
+          "osan ne’ebé traballadór haruka",
+          "osan ne'ebe traballador haruka",
+          "osan ne’ebe traballador haruka",
+          "traballadór haruka osan",
+          "traballador haruka osan",
+          "remesa emigrante",
+          "remessas dos emigrantes",
+          "remessas de emigrantes",
+          "remessas dos trabalhadores",
+          "remessas dos migrantes",
+          "remessas do estrangeiro"
+        ],
+        "thai": [
+          "เงินโอนจากแรงงาน",
+          "เงินส่งกลับจากแรงงาน",
+          "เงินโอนกลับประเทศ",
+          "ส่งเงินกลับบ้าน",
+          "ส่งเงินกลับประเทศ",
+          "รายได้ส่งกลับของแรงงาน",
+          "เงินที่แรงงานส่งกลับ",
+          "remittance"
+        ],
+        "tok_pisin": [
+          "migrant remittances",
+          "remittances from migrants",
+          "workers' remittances",
+          "workers’ remittances",
+          "remittances from abroad",
+          "remittances sent home",
+          "money sent home",
+          "rimitens",
+          "remitens",
+          "salim mani i go bek long ples",
+          "salim mani i go long ples",
+          "salim mani i kam long ples",
+          "salim mani i go bek long famili",
+          "mani ol wokman i salim"
         ]
       }
     },
@@ -361,6 +4613,144 @@
           "demographic bonus",
           "demographic window",
           "demographic window of opportunity"
+        ],
+        "chinese_simplified": [
+          "人口红利",
+          "人口机会窗口",
+          "人口窗口期"
+        ],
+        "chinese_traditional": [
+          "人口紅利",
+          "人口機會窗口",
+          "人口機會之窗"
+        ],
+        "filipino": [
+          "demographic dividend",
+          "demographic bonus",
+          "demographic window",
+          "demographic window of opportunity",
+          "demographic sweet spot"
+        ],
+        "fr": [
+          "dividende démographique",
+          "bonus démographique",
+          "fenêtre démographique",
+          "aubaine démographique"
+        ],
+        "indo": [
+          "bonus demografi",
+          "dividen demografi",
+          "jendela peluang demografi",
+          "jendela demografi"
+        ],
+        "japanese": [
+          "人口ボーナス",
+          "人口の配当",
+          "人口ボーナス期"
+        ],
+        "km": [
+          "ភាគលាភប្រជាសាស្ត្រ",
+          "ភាគលាភប្រជាសាស្ដ្រ",
+          "ភាគលាភប្រជាសាស្រ្ដ",
+          "ភាគលាភប្រជាសាស្រ្ត",
+          "អត្ថប្រយោជន៍ប្រជាសាស្ត្រ",
+          "អត្ថប្រយោជន៍ប្រជាសាស្ដ្រ",
+          "អត្ថប្រយោជន៍ប្រជាសាស្រ្ដ",
+          "អត្ថប្រយោជន៍ប្រជាសាស្រ្ត",
+          "ឱកាសប្រជាសាស្ត្រ",
+          "ឱកាសប្រជាសាស្ដ្រ",
+          "ឱកាសប្រជាសាស្រ្ដ",
+          "ឱកាសប្រជាសាស្រ្ត",
+          "demographic dividend"
+        ],
+        "korean": [
+          "인구배당",
+          "인구 배당",
+          "인구 보너스",
+          "인구보너스",
+          "인구학적 배당",
+          "인구 기회의 창"
+        ],
+        "lao": [
+          "ຜົນປະໂຫຍດຈາກໂຄງສ້າງປະຊາກອນ",
+          "ປັນຜົນທາງປະຊາກອນ",
+          "ປັນຜົນດ້ານປະຊາກອນ",
+          "ໂອກາດທາງປະຊາກອນ",
+          "ໂອກາດທາງດ້ານປະຊາກອນ",
+          "ປ່ອງຢ້ຽມແຫ່ງໂອກາດທາງປະຊາກອນ",
+          "ໂບນັດທາງປະຊາກອນ",
+          "demographic dividend"
+        ],
+        "malay": [
+          "dividen demografi",
+          "bonus demografi",
+          "tetingkap demografi",
+          "jendela demografi",
+          "peluang demografi"
+        ],
+        "mn": [
+          {
+            "prefix": "хүн ам зүйн ногдол ашиг"
+          },
+          {
+            "prefix": "хүн ам зүйн давуу тал"
+          },
+          {
+            "prefix": "хүн ам зүйн боломж"
+          },
+          {
+            "prefix": "хүн ам зүйн бонус"
+          },
+          {
+            "prefix": "хүн ам зүйн цонх"
+          },
+          {
+            "prefix": "хүн ам зүйн ашиг"
+          }
+        ],
+        "my": [
+          "လူဦးရေဖွဲ့စည်းမှုအကျိုးအမြတ်",
+          "လူဦးရေဆိုင်ရာအကျိုးအမြတ်",
+          "လူဦးရေအကျိုးအမြတ်",
+          "demographic dividend"
+        ],
+        "portuguese": [
+          "dividendo demográfico",
+          "bónus demográfico",
+          "bônus demográfico",
+          "janela demográfica",
+          "janela de oportunidade demográfica"
+        ],
+        "tetum": [
+          "dividendu demográfiku",
+          "dividendu demografiku",
+          "bónus demográfiku",
+          "bonus demografiku",
+          "bonus demográfiku",
+          "janela demográfika",
+          "janela demografika",
+          "dividendo demográfico",
+          "dividendo demografico",
+          "bónus demográfico",
+          "bonus demografico",
+          "bônus demográfico",
+          "janela demográfica",
+          "janela demografica"
+        ],
+        "thai": [
+          "ปันผลทางประชากร",
+          "เงินปันผลทางประชากร",
+          "โบนัสทางประชากร",
+          "ช่องว่างโอกาสทางประชากร",
+          "demographic dividend"
+        ],
+        "tok_pisin": [
+          "demographic dividend",
+          "demographic bonus",
+          "demographic window",
+          "demographic window of opportunity",
+          "demografik dividen",
+          "demografik bonas"
         ]
       }
     },
@@ -375,6 +4765,149 @@
           "old age dependency ratio",
           "age dependency ratio",
           "youth dependency ratio"
+        ],
+        "chinese_simplified": [
+          "抚养比",
+          "老年抚养比",
+          "少儿抚养比",
+          "人口抚养比",
+          "老年人口抚养比"
+        ],
+        "chinese_traditional": [
+          "扶養比",
+          "撫養比",
+          "扶老比",
+          "老年扶養比",
+          "扶幼比",
+          "老年撫養比",
+          "依賴比率",
+          "撫養比率",
+          "扶養比率"
+        ],
+        "filipino": [
+          "dependency ratio",
+          "dependency ratios",
+          "old-age dependency ratio",
+          "old age dependency ratio",
+          "age dependency ratio",
+          "youth dependency ratio"
+        ],
+        "fr": [
+          "taux de dépendance",
+          "ratio de dépendance",
+          "rapport de dépendance",
+          "taux de dépendance démographique",
+          "ratio de dépendance des personnes âgées"
+        ],
+        "indo": [
+          "rasio ketergantungan",
+          "angka ketergantungan",
+          "rasio beban ketergantungan",
+          "rasio ketergantungan penduduk"
+        ],
+        "japanese": [
+          "従属人口指数",
+          "従属人口比率",
+          "老年人口指数",
+          "年少人口指数",
+          "従属人口",
+          "肩車型"
+        ],
+        "km": [
+          "អត្រាពឹងផ្អែក",
+          "អត្រាអ្នកនៅក្នុងបន្ទុក",
+          "សមាមាត្រអ្នកនៅក្នុងបន្ទុក",
+          "អត្រាពឹងផ្អែកតាមអាយុ",
+          "dependency ratio"
+        ],
+        "korean": [
+          "노년부양비",
+          "노년 부양비",
+          "유소년부양비",
+          "유소년 부양비",
+          "총부양비",
+          "부양 비율"
+        ],
+        "lao": [
+          "ອັດຕາການເພິ່ງພາ",
+          "ອັດຕາສ່ວນການເພິ່ງພາ",
+          "ອັດຕາສ່ວນຜູ້ເພິ່ງພາ",
+          "ອັດຕາສ່ວນຜູ້ຢູ່ໃນການອຸປະຖຳ",
+          "ອັດຕາພາລະເພິ່ງພາ",
+          "dependency ratio"
+        ],
+        "malay": [
+          "nisbah tanggungan",
+          "nisbah tanggungan warga tua",
+          "nisbah tanggungan tua",
+          "nisbah tanggungan umur",
+          "nisbah tanggungan belia",
+          "nisbah kebergantungan",
+          "nisbah tanggungan muda"
+        ],
+        "mn": [
+          {
+            "prefix": "хараат байдлын харьцаа"
+          },
+          {
+            "prefix": "хамааралтай хүн амын харьцаа"
+          },
+          {
+            "prefix": "хөдөлмөрийн насны хүн амд ногдох"
+          }
+        ],
+        "my": [
+          "မှီခိုသူအချိုး",
+          "မှီခိုမှုအချိုး",
+          "မှီခိုသူ အချိုး",
+          "dependency ratio"
+        ],
+        "portuguese": [
+          "taxa de dependência",
+          "taxas de dependência",
+          "rácio de dependência",
+          "índice de dependência",
+          "taxa de dependência de idosos",
+          "índice de dependência de idosos",
+          "taxa de dependência dos idosos",
+          "índice de dependência dos idosos",
+          "taxa de dependência de jovens",
+          "índice de dependência de jovens",
+          "índice de dependência total"
+        ],
+        "tetum": [
+          "rasiu dependénsia",
+          "rasiu dependensia",
+          "rásiu dependénsia",
+          "taxa dependénsia",
+          "taxa dependensia",
+          "índise dependénsia",
+          "indise dependensia",
+          "rácio de dependência",
+          "racio de dependencia",
+          "razão de dependência",
+          "razao de dependencia",
+          "taxa de dependência",
+          "taxa de dependencia",
+          "índice de dependência",
+          "indice de dependencia"
+        ],
+        "thai": [
+          "อัตราส่วนพึ่งพิง",
+          "อัตราส่วนการพึ่งพิง",
+          "อัตราพึ่งพิง",
+          "อัตราส่วนเกื้อหนุน",
+          "อัตราส่วนภาระพึ่งพิง"
+        ],
+        "tok_pisin": [
+          "dependency ratio",
+          "dependency ratios",
+          "old-age dependency ratio",
+          "old age dependency ratio",
+          "age dependency ratio",
+          "youth dependency ratio",
+          "dipendensi reshio",
+          "dipendensi reit"
         ]
       }
     },
@@ -388,6 +4921,161 @@
           "youthful population",
           "young population",
           "large youth population"
+        ],
+        "chinese_simplified": [
+          "青年人口膨胀",
+          "青年人口激增",
+          "年轻人口众多",
+          "人口年轻化",
+          "年轻型人口",
+          "青年人口比重"
+        ],
+        "chinese_traditional": [
+          "青年人口膨脹",
+          "青年人口激增",
+          "年輕人口眾多",
+          "人口結構年輕",
+          "年輕人口比例高"
+        ],
+        "filipino": [
+          "youth bulge",
+          "youth bulges",
+          "youthful population",
+          "young population",
+          "large youth population",
+          "batang populasyon"
+        ],
+        "fr": [
+          "population jeune",
+          "jeunesse de la population",
+          "population très jeune",
+          "poids des jeunes dans la population",
+          "forte proportion de jeunes",
+          "majorité de jeunes"
+        ],
+        "indo": [
+          "ledakan penduduk usia muda",
+          "ledakan penduduk muda"
+        ],
+        "japanese": [
+          "ユースバルジ",
+          "若年人口の急増",
+          "若年人口の増加",
+          "若年人口が多い",
+          "若い人口構成",
+          "若年層が多い"
+        ],
+        "km": [
+          "ប្រជាជនវ័យក្មេង",
+          "ប្រជាជនភាគច្រើនជាយុវជន",
+          "ប្រជាជនវ័យក្មេងភាគច្រើន",
+          "ការកើនឡើងចំនួនយុវជន",
+          "youth bulge"
+        ],
+        "korean": [
+          "청년층 급증",
+          "청년 인구 급증",
+          "청년 인구 비중",
+          "젊은 인구",
+          "젊은 인구 구조",
+          "청년 인구 과잉",
+          "유스 벌지"
+        ],
+        "lao": [
+          "ສັດສ່ວນໄວໜຸ່ມສູງ",
+          "ສັດສ່ວນໄວຫນຸ່ມສູງ",
+          "ປະຊາກອນໜຸ່ມ",
+          "ປະຊາກອນຫນຸ່ມ",
+          "ປະຊາກອນໄວໜຸ່ມ",
+          "ປະຊາກອນໄວຫນຸ່ມ",
+          "ພົນລະເມືອງໄວໜຸ່ມ",
+          "ພົນລະເມືອງໄວຫນຸ່ມ",
+          "ພົນລະເມືອງທີ່ຍັງໜຸ່ມ",
+          "ພົນລະເມືອງທີ່ຍັງຫນຸ່ມ",
+          "ປະຊາກອນສ່ວນໃຫຍ່ເປັນໄວໜຸ່ມ",
+          "ປະຊາກອນສ່ວນໃຫຍ່ເປັນໄວຫນຸ່ມ",
+          "ໂຄງສ້າງປະຊາກອນໜຸ່ມ",
+          "ໂຄງສ້າງປະຊາກອນຫນຸ່ມ",
+          "youth bulge"
+        ],
+        "malay": [
+          "lonjakan belia",
+          "lonjakan populasi belia",
+          "penduduk muda",
+          "populasi muda",
+          "populasi belia yang besar",
+          "golongan belia yang ramai"
+        ],
+        "mn": [
+          {
+            "prefix": "залуу хүн ам"
+          },
+          {
+            "prefix": "залуу насны хүн ам"
+          },
+          {
+            "prefix": "хүн амын дийлэнх нь залуу"
+          },
+          {
+            "prefix": "хүн амын ихэнх нь залуу"
+          },
+          {
+            "prefix": "хүн амын олонх нь залуу"
+          },
+          {
+            "prefix": "залуу хүн амтай"
+          }
+        ],
+        "my": [
+          "လူငယ်ဦးရေများပြား",
+          "လူငယ်လူဦးရေများပြား",
+          "လူငယ်ဦးရေ များပြား",
+          "youth bulge"
+        ],
+        "portuguese": [
+          "excedente demográfico jovem",
+          "explosão demográfica juvenil",
+          "população muito jovem",
+          "população maioritariamente jovem",
+          "grande população jovem",
+          "juventude da população",
+          "bojo juvenil"
+        ],
+        "tetum": [
+          "populasaun joven",
+          "populasaun joven barak",
+          "populasaun ne'ebé joven",
+          "populasaun ne’ebé joven",
+          "populasaun ne'ebe joven",
+          "populasaun ne’ebe joven",
+          "maioria populasaun joven",
+          "joven mak maioria",
+          "população jovem",
+          "populacao jovem",
+          "população maioritariamente jovem",
+          "populacao maioritariamente jovem",
+          "explosão juvenil",
+          "explosao juvenil",
+          "bolha juvenil"
+        ],
+        "thai": [
+          "ประชากรวัยหนุ่มสาวจำนวนมาก",
+          "ประชากรวัยหนุ่มสาวสูง",
+          "สัดส่วนประชากรวัยหนุ่มสาว",
+          "โครงสร้างประชากรวัยหนุ่มสาว",
+          "youth bulge"
+        ],
+        "tok_pisin": [
+          "youth bulge",
+          "youth bulges",
+          "youthful population",
+          "young population",
+          "large youth population",
+          "yut populesen",
+          "populesen bilong ol yangpela",
+          "yangpela populesen",
+          "bikpela namba bilong ol yangpela",
+          "namba bilong ol yangpela i go antap"
         ]
       }
     },
@@ -406,6 +5094,202 @@
           "super-aged society",
           "greying population",
           "graying population"
+        ],
+        "chinese_simplified": [
+          "人口老龄化",
+          "老龄化",
+          "老龄化社会",
+          "老龄社会",
+          "超老龄社会",
+          "深度老龄化",
+          "高龄化社会",
+          "超高龄社会"
+        ],
+        "chinese_traditional": [
+          "人口高齡化",
+          "人口老化",
+          "人口老齡化",
+          "高齡化社會",
+          "高齡社會",
+          "超高齡社會",
+          "老齡化社會",
+          "人口老齡化問題"
+        ],
+        "filipino": [
+          "population aging",
+          "population ageing",
+          "aging population",
+          "ageing population",
+          "aging society",
+          "ageing society",
+          "aged society",
+          "super-aged society",
+          "greying population",
+          "graying population",
+          "tumatandang populasyon",
+          "pagtanda ng populasyon"
+        ],
+        "fr": [
+          "vieillissement de la population",
+          "population vieillissante",
+          "vieillissement démographique",
+          "société vieillissante",
+          "vieillissement de la société",
+          "papy-boom",
+          "papy boom"
+        ],
+        "indo": [
+          "penuaan penduduk",
+          "penuaan populasi",
+          "populasi menua",
+          "penduduk menua",
+          "masyarakat menua",
+          "aging population",
+          "ageing population",
+          "aging society",
+          "ageing society"
+        ],
+        "japanese": [
+          "高齢化",
+          "少子高齢化",
+          "高齢社会",
+          "超高齢社会",
+          "超高齢化",
+          "人口の高齢化",
+          "高齢化率"
+        ],
+        "km": [
+          "ភាពចាស់ជរានៃប្រជាជន",
+          "ប្រជាជនវ័យចាស់",
+          "ប្រជាជនចាស់ជរា",
+          "សង្គមចាស់ជរា",
+          "សង្គមមនុស្សចាស់",
+          "ប្រជាជនកាន់តែចាស់",
+          "population ageing",
+          "population aging",
+          "ageing population",
+          "aging population"
+        ],
+        "korean": [
+          "고령화",
+          "인구 고령화",
+          "인구고령화",
+          "고령사회",
+          "초고령사회",
+          "초고령 사회",
+          "고령 사회",
+          "고령화 사회",
+          "노령화",
+          "늙어가는 사회"
+        ],
+        "lao": [
+          "ສັງຄົມຜູ້ສູງອາຍຸ",
+          "ສັງຄົມສູງອາຍຸ",
+          "ປະຊາກອນສູງອາຍຸ",
+          "ປະຊາກອນຜູ້ສູງອາຍຸ",
+          "ພົນລະເມືອງສູງອາຍຸ",
+          "ພົນລະເມືອງຜູ້ສູງອາຍຸ",
+          "ປະຊາກອນມີອາຍຸສູງຂຶ້ນ",
+          "ຜູ້ສູງອາຍຸເພີ່ມຂຶ້ນ",
+          "population ageing",
+          "population aging"
+        ],
+        "malay": [
+          "penuaan penduduk",
+          "populasi menua",
+          "penduduk menua",
+          "masyarakat menua",
+          "negara menua",
+          "negara tua",
+          "penuaan populasi",
+          "masyarakat tua",
+          "masyarakat super tua",
+          "populasi warga emas meningkat"
+        ],
+        "mn": [
+          {
+            "prefix": "хүн амын хөгшрөлт"
+          },
+          {
+            "prefix": "хүн амын насжилт"
+          },
+          {
+            "prefix": "хүн ам хөгшр"
+          },
+          {
+            "prefix": "хөгширч буй хүн ам"
+          },
+          {
+            "prefix": "нийгмийн хөгшрөлт"
+          },
+          {
+            "prefix": "өндөр насны хүн амын эзлэх хувь"
+          },
+          {
+            "prefix": "ахмад настны тоо нэмэгд"
+          }
+        ],
+        "my": [
+          "လူဦးရေအိုမင်း",
+          "လူဦးရေ အိုမင်း",
+          "သက်ကြီးရွယ်အိုလူဦးရေ",
+          "သက်ကြီးရွယ်အို လူဦးရေ",
+          "အိုမင်းသော လူ့အဖွဲ့အစည်း",
+          "သက်ကြီးရွယ်အိုများလာ",
+          "ageing population",
+          "aging population"
+        ],
+        "portuguese": [
+          "envelhecimento da população",
+          "envelhecimento populacional",
+          "envelhecimento demográfico",
+          "população envelhecida",
+          "sociedade envelhecida",
+          "sociedade super-envelhecida",
+          "sociedade superenvelhecida",
+          "sociedade em envelhecimento",
+          "população a envelhecer",
+          "população em envelhecimento",
+          "envelhecimento da sociedade",
+          "índice de envelhecimento"
+        ],
+        "tetum": [
+          "envellesimentu populasaun",
+          "populasaun sai katuas",
+          "populasaun katuas",
+          "populasaun idozu",
+          "sosiedade envellesida",
+          "envelhecimento da população",
+          "envelhecimento da populacao",
+          "envelhecimento populacional",
+          "população envelhecida",
+          "populacao envelhecida",
+          "sociedade envelhecida"
+        ],
+        "thai": [
+          "สังคมผู้สูงอายุ",
+          "สังคมสูงวัย",
+          "ประชากรสูงวัย",
+          "ประชากรสูงอายุ",
+          "สังคมผู้สูงอายุโดยสมบูรณ์",
+          "สังคมผู้สูงอายุระดับสุดยอด",
+          "สังคมสูงอายุ",
+          "ประชากรผู้สูงอายุเพิ่มขึ้น"
+        ],
+        "tok_pisin": [
+          "population aging",
+          "population ageing",
+          "aging population",
+          "ageing population",
+          "aging society",
+          "ageing society",
+          "aged society",
+          "super-aged society",
+          "greying population",
+          "graying population",
+          "populesen i kamap lapun",
+          "namba bilong ol lapun i go antap",
+          "populesen i lapun"
         ]
       }
     },
@@ -420,6 +5304,189 @@
           "falling population",
           "population shrinkage",
           "depopulation"
+        ],
+        "chinese_simplified": [
+          "人口下降",
+          "人口减少",
+          "人口负增长",
+          "人口萎缩",
+          "人口缩减",
+          "人口规模下降"
+        ],
+        "chinese_traditional": [
+          "人口減少",
+          "人口下降",
+          "人口萎縮",
+          "人口負成長",
+          "人口負增長",
+          "人口衰退",
+          "人口減少趨勢",
+          "人口縮減"
+        ],
+        "filipino": [
+          "population decline",
+          "declining population",
+          "shrinking population",
+          "falling population",
+          "population shrinkage",
+          "depopulation",
+          "pagbaba ng populasyon",
+          "pagliit ng populasyon",
+          "lumiliit na populasyon"
+        ],
+        "fr": [
+          "déclin démographique",
+          "baisse de la population",
+          "diminution de la population",
+          "décroissance démographique",
+          "dépopulation",
+          "dépeuplement",
+          "baisse démographique",
+          "recul démographique"
+        ],
+        "indo": [
+          "penurunan populasi",
+          "penurunan jumlah penduduk",
+          "penyusutan penduduk",
+          "penyusutan populasi",
+          "populasi menyusut",
+          "jumlah penduduk menyusut",
+          "depopulasi"
+        ],
+        "japanese": [
+          "人口減少",
+          "人口減",
+          "人口の減少",
+          "人口が減少",
+          "人口が減",
+          "人口縮小"
+        ],
+        "km": [
+          "ការថយចុះចំនួនប្រជាជន",
+          "ការថយចុះប្រជាជន",
+          "ចំនួនប្រជាជនថយចុះ",
+          "ចំនួនប្រជាជនធ្លាក់ចុះ",
+          "population decline",
+          "depopulation"
+        ],
+        "korean": [
+          "인구 감소",
+          "인구감소",
+          "인구 절벽",
+          "인구절벽",
+          "인구 소멸",
+          "인구소멸",
+          "인구 축소",
+          "인구가 줄",
+          "인구 자연감소",
+          "인구 위기"
+        ],
+        "lao": [
+          "ການຫຼຸດລົງຂອງປະຊາກອນ",
+          "ການຫລຸດລົງຂອງປະຊາກອນ",
+          "ປະຊາກອນຫຼຸດລົງ",
+          "ປະຊາກອນຫລຸດລົງ",
+          "ການຫຼຸດລົງຂອງພົນລະເມືອງ",
+          "ການຫລຸດລົງຂອງພົນລະເມືອງ",
+          "ພົນລະເມືອງຫຼຸດລົງ",
+          "ພົນລະເມືອງຫລຸດລົງ",
+          "ຈຳນວນປະຊາກອນຫຼຸດລົງ",
+          "ຈຳນວນປະຊາກອນຫລຸດລົງ",
+          "ຈຳນວນພົນລະເມືອງຫຼຸດລົງ",
+          "ຈຳນວນພົນລະເມືອງຫລຸດລົງ",
+          "ປະຊາກອນລົດລົງ",
+          "population decline"
+        ],
+        "malay": [
+          "penurunan penduduk",
+          "penurunan populasi",
+          "populasi menurun",
+          "jumlah penduduk menurun",
+          "penduduk berkurangan",
+          "pengurangan penduduk",
+          "penyusutan penduduk",
+          "penyusutan populasi",
+          "depopulasi"
+        ],
+        "mn": [
+          {
+            "prefix": "хүн ам цөөр"
+          },
+          {
+            "prefix": "хүн амын тоо буур"
+          },
+          {
+            "prefix": "хүн амын бууралт"
+          },
+          {
+            "prefix": "хүн ам буур"
+          },
+          {
+            "prefix": "хүн амын тоо цөөр"
+          },
+          {
+            "prefix": "хүн амын цөөрөлт"
+          }
+        ],
+        "my": [
+          "လူဦးရေကျဆင်း",
+          "လူဦးရေ ကျဆင်း",
+          "လူဦးရေလျော့ကျ",
+          "လူဦးရေ လျော့ကျ",
+          "လူဦးရေလျော့နည်း",
+          "လူဦးရေ လျော့နည်း",
+          "population decline"
+        ],
+        "portuguese": [
+          "declínio populacional",
+          "declínio da população",
+          "decréscimo populacional",
+          "decréscimo da população",
+          "diminuição da população",
+          "redução da população",
+          "população em declínio",
+          "população a diminuir",
+          "população diminuiu",
+          "população encolheu",
+          "encolhimento da população",
+          "despovoamento",
+          "queda da população"
+        ],
+        "tetum": [
+          "hamenus populasaun",
+          "populasaun tun",
+          "populasaun menus",
+          "dekliniu populasaun",
+          "despovoamentu",
+          "declínio populacional",
+          "declinio populacional",
+          "declínio da população",
+          "declinio da populacao",
+          "diminuição da população",
+          "diminuicao da populacao",
+          "despovoamento",
+          "redução da população",
+          "reducao da populacao"
+        ],
+        "thai": [
+          "ประชากรลดลง",
+          "การลดลงของประชากร",
+          "จำนวนประชากรลดลง",
+          "ประชากรหดตัว",
+          "วิกฤตประชากร",
+          "วิกฤติประชากร"
+        ],
+        "tok_pisin": [
+          "population decline",
+          "declining population",
+          "shrinking population",
+          "falling population",
+          "population shrinkage",
+          "depopulation",
+          "populesen i go daun",
+          "populesen i pundaun",
+          "namba bilong ol manmeri i go daun",
+          "namba bilong populesen i go daun"
         ]
       }
     },
@@ -432,6 +5499,142 @@
           "growth of the urban population",
           "urban population",
           "city population growth"
+        ],
+        "chinese_simplified": [
+          "城市人口增长",
+          "城镇人口增长",
+          "城市人口膨胀"
+        ],
+        "chinese_traditional": [
+          "都市人口成長",
+          "城市人口增長",
+          "都市人口增加",
+          "城市人口增加",
+          "都市人口",
+          "城市人口"
+        ],
+        "filipino": [
+          "urban population growth",
+          "growth of the urban population",
+          "city population growth",
+          "paglaki ng populasyon sa lungsod",
+          "pagdami ng tao sa lungsod"
+        ],
+        "fr": [
+          "croissance de la population urbaine",
+          "population urbaine",
+          "croissance urbaine",
+          "croissance démographique urbaine",
+          "explosion urbaine"
+        ],
+        "indo": [
+          "pertumbuhan penduduk kota",
+          "pertumbuhan penduduk perkotaan",
+          "pertumbuhan populasi perkotaan"
+        ],
+        "japanese": [
+          "都市人口",
+          "都市部の人口増",
+          "都市の人口増",
+          "都市人口の増加",
+          "都市部への人口集中",
+          "都市への人口集中"
+        ],
+        "km": [
+          "កំណើនប្រជាជននៅទីក្រុង",
+          "កំណើនប្រជាជនទីក្រុង",
+          "ចំនួនប្រជាជននៅទីក្រុង",
+          "urban population",
+          "ចំនួនប្រជាជនទីក្រុង",
+          "ប្រជាជនរស់នៅតាមទីក្រុង",
+          "urban population growth"
+        ],
+        "korean": [
+          "도시 인구 증가",
+          "도시인구 증가",
+          "도시화율",
+          "도시 인구 비중",
+          "도시 인구 팽창"
+        ],
+        "lao": [
+          "ການເພີ່ມຂຶ້ນຂອງປະຊາກອນຕົວເມືອງ",
+          "ປະຊາກອນຕົວເມືອງ",
+          "ປະຊາກອນໃນຕົວເມືອງ",
+          "ປະຊາກອນໃນເຂດຕົວເມືອງ",
+          "ພົນລະເມືອງໃນຕົວເມືອງ",
+          "ພົນລະເມືອງຕົວເມືອງ",
+          "ພົນລະເມືອງໃນເຂດຕົວເມືອງ",
+          "urban population"
+        ],
+        "malay": [
+          "pertumbuhan penduduk bandar",
+          "pertambahan penduduk bandar",
+          "penduduk bandar",
+          "populasi bandar",
+          "pertumbuhan populasi bandar",
+          "penduduk bandar meningkat"
+        ],
+        "mn": [
+          {
+            "prefix": "нийслэлийн хүн амын өсөлт"
+          },
+          {
+            "prefix": "нийслэлийн хүн ам өс"
+          },
+          {
+            "prefix": "нийслэлийн хүн ам нэмэгд"
+          },
+          {
+            "prefix": "хотын хүн ам нэмэгд"
+          },
+          {
+            "prefix": "хотын хүн ам өс"
+          }
+        ],
+        "my": [
+          "မြို့ပြလူဦးရေတိုး",
+          "မြို့ပြလူဦးရေ တိုး",
+          "မြို့ပြ လူဦးရေ",
+          "မြို့ပြလူဦးရေ",
+          "မြို့နေလူဦးရေ",
+          "urban population"
+        ],
+        "portuguese": [
+          "crescimento da população urbana",
+          "crescimento populacional urbano",
+          "aumento da população urbana",
+          "população urbana",
+          "crescimento da população nas cidades"
+        ],
+        "tetum": [
+          "kresimentu populasaun urbana",
+          "kresimentu populasaun urbanu",
+          "populasaun urbana",
+          "populasaun urbanu",
+          "kresimentu populasaun iha sidade",
+          "kresimentu populasaun Dili",
+          "crescimento da população urbana",
+          "crescimento da populacao urbana",
+          "população urbana",
+          "populacao urbana",
+          "crescimento populacional urbano"
+        ],
+        "thai": [
+          "ประชากรในเมือง",
+          "การเติบโตของประชากรเมือง",
+          "การขยายตัวของประชากรในเมือง",
+          "ประชากรในเขตเมือง"
+        ],
+        "tok_pisin": [
+          "urban population growth",
+          "growth of the urban population",
+          "urban population",
+          "city population growth",
+          "populesen bilong taun",
+          "populesen bilong ol taun",
+          "populesen bilong siti",
+          "populesen long taun i go antap",
+          "populesen long ol taun i go antap"
         ]
       }
     },
@@ -446,6 +5649,184 @@
           "rural flight",
           "rural population decline",
           "ghost villages"
+        ],
+        "chinese_simplified": [
+          "农村人口流失",
+          "农村人口减少",
+          "农村人口外流",
+          "农村空心化",
+          "乡村空心化",
+          "空心村"
+        ],
+        "chinese_traditional": [
+          "農村人口流失",
+          "鄉村人口流失",
+          "偏鄉人口流失",
+          "農村人口外流",
+          "鄉村人口外移",
+          "農村空洞化",
+          "鄉村空洞化",
+          "空心村"
+        ],
+        "filipino": [
+          "rural depopulation",
+          "depopulation of rural areas",
+          "rural exodus",
+          "rural flight",
+          "rural population decline",
+          "ghost villages"
+        ],
+        "fr": [
+          "dépeuplement rural",
+          "dépeuplement des campagnes",
+          "dépeuplement des îles",
+          "dépeuplement des archipels",
+          "exode rural",
+          "îles désertées"
+        ],
+        "indo": [
+          "depopulasi desa",
+          "depopulasi perdesaan",
+          "depopulasi pedesaan",
+          "desa ditinggalkan",
+          "desa hantu",
+          "penurunan penduduk desa",
+          "desa kehilangan penduduk"
+        ],
+        "japanese": [
+          "過疎",
+          "限界集落",
+          "消滅可能性自治体",
+          "集落の消滅",
+          "地方の人口減少",
+          "農村の人口減少",
+          "農村部の人口減少",
+          "離島の人口減少"
+        ],
+        "km": [
+          "ការថយចុះប្រជាជននៅជនបទ",
+          "ការថយចុះចំនួនប្រជាជននៅជនបទ",
+          "ភូមិខ្មោច",
+          "ភូមិទទេ",
+          "rural depopulation"
+        ],
+        "korean": [
+          "농촌 인구 감소",
+          "농어촌 인구 감소",
+          "지방 소멸",
+          "지방소멸",
+          "지역 소멸",
+          "지역소멸",
+          "농촌 공동화",
+          "인구감소지역",
+          "소멸위험지역",
+          "소멸 위험 지역",
+          "유령 마을",
+          "빈집 마을"
+        ],
+        "lao": [
+          "ການຫຼຸດລົງຂອງປະຊາກອນຊົນນະບົດ",
+          "ການຫລຸດລົງຂອງປະຊາກອນຊົນນະບົດ",
+          "ປະຊາກອນຊົນນະບົດຫຼຸດລົງ",
+          "ປະຊາກອນຊົນນະບົດຫລຸດລົງ",
+          "ພົນລະເມືອງຊົນນະບົດຫຼຸດລົງ",
+          "ພົນລະເມືອງຊົນນະບົດຫລຸດລົງ",
+          "ໄວໜຸ່ມອອກຈາກຊົນນະບົດ",
+          "ໄວຫນຸ່ມອອກຈາກຊົນນະບົດ",
+          "ການປະຖິ້ມຊົນນະບົດ",
+          "rural depopulation"
+        ],
+        "malay": [
+          "pendepopulasian luar bandar",
+          "pengosongan luar bandar",
+          "penghijrahan besar-besaran dari luar bandar",
+          "penurunan penduduk luar bandar",
+          "kampung ditinggalkan",
+          "kampung hantu"
+        ],
+        "mn": [
+          {
+            "prefix": "хөдөөгийн хүн ам цөөр"
+          },
+          {
+            "prefix": "хөдөө орон нутгийн хүн ам цөөр"
+          },
+          {
+            "prefix": "орон нутгийн хүн ам цөөр"
+          },
+          {
+            "prefix": "хөдөө эзгүйр"
+          },
+          {
+            "prefix": "сумын хүн ам цөөр"
+          },
+          {
+            "prefix": "хөдөөгийн хүн амын бууралт"
+          },
+          {
+            "prefix": "хөдөө орон нутаг эзгүйр"
+          },
+          {
+            "prefix": "орон нутаг эзгүйр"
+          }
+        ],
+        "my": [
+          "ကျေးလက်လူဦးရေလျော့",
+          "ကျေးလက်လူဦးရေ လျော့",
+          "ကျေးလက်လူဦးရေကျဆင်း",
+          "ကျေးရွာများ လူသူကင်းမဲ့",
+          "လူသူမဲ့ကျေးရွာ",
+          "rural depopulation"
+        ],
+        "portuguese": [
+          "despovoamento rural",
+          "despovoamento das zonas rurais",
+          "despovoamento das áreas rurais",
+          "despovoamento do interior",
+          "êxodo rural",
+          "abandono rural",
+          "desertificação humana",
+          "declínio da população rural",
+          "aldeias abandonadas",
+          "aldeias fantasma"
+        ],
+        "tetum": [
+          "despovoamentu rurál",
+          "despovoamentu rural",
+          "hamenus populasaun rurál",
+          "hamenus populasaun rural",
+          "populasaun rurál tun",
+          "populasaun rural tun",
+          "ezodu rurál",
+          "ezodu rural",
+          "despovoamento rural",
+          "êxodo rural",
+          "exodo rural",
+          "abandono rural",
+          "aldeias abandonadas",
+          "declínio da população rural",
+          "declinio da populacao rural"
+        ],
+        "thai": [
+          "การลดลงของประชากรชนบท",
+          "ประชากรในชนบทลดลง",
+          "ชนบทร้าง",
+          "หมู่บ้านร้าง",
+          "คนหนุ่มสาวทิ้งถิ่น",
+          "การทิ้งถิ่น",
+          "ทิ้งถิ่นฐาน"
+        ],
+        "tok_pisin": [
+          "rural depopulation",
+          "depopulation of rural areas",
+          "rural exodus",
+          "rural flight",
+          "rural population decline",
+          "ghost villages",
+          "ol yangpela i lusim ples",
+          "populesen bilong ples i go daun",
+          "ol ples i no gat manmeri",
+          "rurel depopulesen"
         ]
       }
     },
@@ -460,6 +5841,193 @@
           "household sizes",
           "household growth",
           "number of households"
+        ],
+        "chinese_simplified": [
+          "家庭形成",
+          "新增家庭",
+          "家庭规模",
+          "家庭户规模",
+          "户均人口",
+          "家庭户数",
+          "家庭数量",
+          "家庭小型化"
+        ],
+        "chinese_traditional": [
+          "家戶組成",
+          "家戶數",
+          "住戶數目",
+          "家庭住戶",
+          "家庭規模",
+          "住戶人數",
+          "家戶規模"
+        ],
+        "filipino": [
+          "household formation",
+          "new households",
+          "household size",
+          "household sizes",
+          "household growth",
+          "number of households",
+          "bilang ng sambahayan",
+          "laki ng sambahayan"
+        ],
+        "fr": [
+          "taille des ménages",
+          "nombre de ménages",
+          "décohabitation",
+          "formation des ménages",
+          "nouveaux ménages",
+          "taille moyenne des ménages"
+        ],
+        "indo": [
+          "pembentukan rumah tangga",
+          "rumah tangga baru",
+          "ukuran rumah tangga",
+          "jumlah rumah tangga",
+          "jumlah anggota rumah tangga",
+          "pertumbuhan rumah tangga"
+        ],
+        "japanese": [
+          "世帯数",
+          "世帯形成",
+          "世帯規模",
+          "世帯人員",
+          "世帯当たり人員",
+          "単身世帯",
+          "核家族化",
+          "新規世帯"
+        ],
+        "km": [
+          "ទំហំគ្រួសារ",
+          "ចំនួនក្រុមគ្រួសារ",
+          "ចំនួនសមាជិកគ្រួសារជាមធ្យម",
+          "household size"
+        ],
+        "korean": [
+          "신규 가구",
+          "가구 형성",
+          "1인 가구",
+          "1인가구",
+          "가구원 수",
+          "가구 증가",
+          "가구 분화",
+          "가구수 증가",
+          "가구 수 증가",
+          "세대 분리"
+        ],
+        "lao": [
+          "ການສ້າງຄົວເຮືອນໃໝ່",
+          "ການສ້າງຄົວເຮືອນໃຫມ່",
+          "ຄົວເຮືອນໃໝ່",
+          "ຄົວເຮືອນໃຫມ່",
+          "ຂະໜາດຄົວເຮືອນ",
+          "ຂະຫນາດຄົວເຮືອນ",
+          "ຂະໜາດຂອງຄົວເຮືອນ",
+          "ຂະຫນາດຂອງຄົວເຮືອນ",
+          "ຈຳນວນສະມາຊິກໃນຄົວເຮືອນ",
+          "ສະມາຊິກຄົວເຮືອນສະເລ່ຍ",
+          "ແຍກປຶ້ມສຳມະໂນຄົວ",
+          "household size"
+        ],
+        "malay": [
+          "pembentukan isi rumah",
+          "isi rumah baharu",
+          "isi rumah baru",
+          "saiz isi rumah",
+          "purata saiz isi rumah",
+          "bilangan isi rumah",
+          "pertambahan isi rumah",
+          "jumlah isi rumah"
+        ],
+        "mn": [
+          {
+            "prefix": "өрхийн тоо нэмэгд"
+          },
+          {
+            "prefix": "өрхийн тоо өс"
+          },
+          {
+            "prefix": "шинэ өрх"
+          },
+          {
+            "prefix": "өрхийн хэмжээ"
+          },
+          {
+            "prefix": "өрхийн дундаж хэмжээ"
+          },
+          {
+            "prefix": "өрхийн бүрэлдэхүүн"
+          },
+          {
+            "prefix": "өрхийн гишүүдийн дундаж тоо"
+          },
+          {
+            "prefix": "шинээр гэр бүл болсон"
+          },
+          {
+            "prefix": "өрхийн тооны өсөлт"
+          }
+        ],
+        "my": [
+          "အိမ်ထောင်စုအရွယ်အစား",
+          "အိမ်ထောင်စု အရွယ်အစား",
+          "အိမ်ထောင်စုဦးရေ",
+          "အိမ်ထောင်စု ဦးရေ",
+          "အိမ်ထောင်စုအရေအတွက်",
+          "အိမ်ထောင်စု အရေအတွက်",
+          "အိမ်ထောင်စုသစ်",
+          "household size"
+        ],
+        "portuguese": [
+          "formação de agregados familiares",
+          "novos agregados familiares",
+          "dimensão dos agregados familiares",
+          "dimensão média dos agregados familiares",
+          "tamanho dos agregados familiares",
+          "tamanho médio dos agregados familiares",
+          "número de agregados familiares",
+          "crescimento dos agregados familiares",
+          "formação de famílias",
+          "tamanho médio das famílias",
+          "número de domicílios"
+        ],
+        "tetum": [
+          "númeru uma-kain",
+          "numeru uma-kain",
+          "numeru uma kain",
+          "tamañu uma-kain",
+          "tamanu uma-kain",
+          "tamañu uma kain",
+          "tamanu uma kain",
+          "uma-kain foun",
+          "formasaun uma-kain",
+          "dimensaun uma-kain",
+          "número de agregados familiares",
+          "numero de agregados familiares",
+          "dimensão dos agregados familiares",
+          "dimensao dos agregados familiares",
+          "dimensão média do agregado familiar",
+          "dimensao media do agregado familiar",
+          "novos agregados familiares",
+          "formação de agregados familiares",
+          "formacao de agregados familiares"
+        ],
+        "thai": [
+          "การก่อตั้งครัวเรือน",
+          "ครัวเรือนใหม่",
+          "ขนาดครัวเรือน",
+          "ครัวเรือนเพิ่มขึ้น"
+        ],
+        "tok_pisin": [
+          "household formation",
+          "new households",
+          "household size",
+          "household sizes",
+          "household growth",
+          "number of households",
+          "saiz bilong famili",
+          "saiz bilong ol famili",
+          "namba bilong ol hausholt"
         ]
       }
     },
@@ -475,6 +6043,200 @@
           "censuses",
           "census enumeration",
           "census enumerators"
+        ],
+        "chinese_simplified": [
+          "人口普查",
+          "人口和住房普查",
+          "人口与住房普查",
+          "全国人口普查",
+          "人口普查员",
+          "七人普"
+        ],
+        "chinese_traditional": [
+          "人口普查",
+          "人口及住宅普查",
+          "人口及房屋普查",
+          "普查員"
+        ],
+        "filipino": [
+          "population census",
+          "population and housing census",
+          "Census of Population and Housing",
+          "Census of Population",
+          "POPCEN",
+          "national census",
+          "census",
+          "censuses",
+          "census enumeration",
+          "census enumerators",
+          "senso",
+          "senso ng populasyon"
+        ],
+        "fr": [
+          "recensement de la population",
+          "recensement général de la population",
+          "recensement général",
+          "recensements généraux",
+          "recensements de la population",
+          "dernier recensement",
+          "prochain recensement",
+          "agents recenseurs",
+          "agent recenseur",
+          "recensement quinquennal"
+        ],
+        "indo": [
+          "sensus penduduk",
+          "SP2020",
+          "SP2030",
+          "sensus penduduk dan perumahan",
+          "sensus kependudukan",
+          "long form sensus penduduk"
+        ],
+        "japanese": [
+          "国勢調査",
+          "人口センサス",
+          "人口・住宅センサス",
+          "人口住宅センサス",
+          "人口調査",
+          "国勢調査員"
+        ],
+        "km": [
+          "ជំរឿនប្រជាជន",
+          "ជំរឿនទូទៅប្រជាជន",
+          "ជំរឿនប្រជាជនទូទៅ",
+          "ការធ្វើជំរឿនប្រជាជន",
+          "ជំរឿនជាតិ",
+          "census"
+        ],
+        "korean": [
+          "인구주택총조사",
+          "인구 주택 총조사",
+          "인구총조사",
+          "인구 총조사",
+          "인구조사",
+          "인구일제조사",
+          "총조사 조사원",
+          "인구센서스",
+          "인구 센서스",
+          "등록센서스"
+        ],
+        "lao": [
+          "ການສຳຫຼວດພົນລະເມືອງ",
+          "ການສຳຫລວດພົນລະເມືອງ",
+          "ສຳຫຼວດພົນລະເມືອງ",
+          "ສຳຫລວດພົນລະເມືອງ",
+          "ການສຳຫຼວດປະຊາກອນ ແລະ ທີ່ຢູ່ອາໄສ",
+          "ການສຳຫລວດປະຊາກອນ ແລະ ທີ່ຢູ່ອາໄສ",
+          "ສຳມະໂນປະຊາກອນ",
+          "ສຳມະໂນຄົວປະຊາກອນ",
+          "ການສຳມະໂນປະຊາກອນ",
+          "population census",
+          "census"
+        ],
+        "malay": [
+          "banci penduduk",
+          "banci penduduk dan perumahan",
+          "banci",
+          "banci kebangsaan",
+          "banci negara",
+          "pembanci",
+          "enumerator banci",
+          "bancian penduduk"
+        ],
+        "mn": [
+          {
+            "prefix": "хүн амын тооллог"
+          },
+          {
+            "prefix": "хүн ам, орон сууцны тооллог"
+          },
+          {
+            "prefix": "хүн ам орон сууцны тооллог"
+          },
+          {
+            "prefix": "хүн ам, орон сууцны улсын тооллог"
+          },
+          {
+            "prefix": "хүн амын улсын тооллог"
+          },
+          "ХАОСТ",
+          {
+            "prefix": "хүн ам, орон сууцны улсын ээлжит тооллог"
+          }
+        ],
+        "my": [
+          "သန်းခေါင်စာရင်း",
+          "သန်းခေါင် စာရင်း",
+          "census"
+        ],
+        "portuguese": [
+          "recenseamento da população",
+          "recenseamento populacional",
+          "recenseamento geral da população",
+          "recenseamento geral da população e habitação",
+          "censo da população",
+          "censo populacional",
+          "censo demográfico",
+          "censo nacional",
+          "censo",
+          "censos",
+          "censos populacionais",
+          "recenseadores"
+        ],
+        "tetum": [
+          "sensu",
+          "sensu populasaun",
+          "sensu populasaun no uma-kain",
+          "Sensu Populasaun no Abitasaun",
+          "sensu nasionál",
+          "sensu nasional",
+          "senzu populasaun",
+          "rekolla dadus sensu",
+          "enumeradór sensu",
+          "enumerador sensu",
+          "censo",
+          "censos",
+          "censo da população",
+          "censo da populacao",
+          "censo populacional",
+          "Censo da População e Habitação",
+          "Censo da Populacao e Habitacao",
+          "recenseamento geral da população",
+          "recenseamento geral da populacao",
+          "recenseadores do censo"
+        ],
+        "thai": [
+          "สำมะโนประชากร",
+          "สำมะโนประชากรและเคหะ",
+          "การสำรวจสำมะโนประชากร",
+          "สำมะโน",
+          "census"
+        ],
+        "tok_pisin": [
+          "population census",
+          "population and housing census",
+          "national census",
+          "census",
+          "censuses",
+          "census enumeration",
+          "census enumerators",
+          "sensas",
+          "sensus",
+          "Nesenel Sensus",
+          "nesenel senses",
+          "Populesen na Hausing Sensus",
+          "Populesen na Hausing Senses",
+          "Hausing Sensus",
+          "Hausing Senses",
+          "sensas long populesen",
+          "sensas bilong populesen",
+          "senses bilong populesen",
+          "senses long populesen",
+          "holim senses",
+          "holim sensus",
+          "holim sensas",
+          "kaunim namba bilong ol manmeri",
+          "kaunim populesen"
         ]
       }
     }

@@ -56,6 +56,194 @@
           "economy grows",
           "economy expanded",
           "economies grew"
+        ],
+        "chinese_simplified": [
+          "经济增长",
+          "经济成长",
+          "经济增速",
+          "经济扩张",
+          "经济增幅"
+        ],
+        "chinese_traditional": [
+          "經濟成長",
+          "經濟增長",
+          "經濟擴張",
+          "經濟增速",
+          "經濟成長動能",
+          "經濟增長動力"
+        ],
+        "filipino": [
+          "economic growth",
+          "economic expansion",
+          "paglago ng ekonomiya",
+          "lago ng ekonomiya",
+          "pag-unlad ng ekonomiya",
+          "pagsulong ng ekonomiya",
+          "paglakas ng ekonomiya",
+          "lumago ang ekonomiya",
+          "lumalago ang ekonomiya",
+          "lalago ang ekonomiya",
+          "umunlad ang ekonomiya",
+          "paglago ng ekonomiya ng bansa",
+          "economy grew"
+        ],
+        "fr": [
+          "croissance économique",
+          "croissance de l'économie",
+          "croissance de l’économie",
+          "expansion économique",
+          "expansion de l'économie",
+          "expansion de l’économie",
+          "croissance de l'activité économique",
+          "croissance de l’activité économique",
+          "économie a progressé",
+          "économie progresse"
+        ],
+        "indo": [
+          "pertumbuhan ekonomi",
+          "pertumbuhan ekonominya",
+          "pertumbuhan perekonomian",
+          "laju pertumbuhan ekonomi",
+          "ekspansi ekonomi",
+          "ekonomi tumbuh",
+          "perekonomian tumbuh",
+          "ekonomi bertumbuh"
+        ],
+        "japanese": [
+          "経済成長",
+          "経済の成長",
+          "経済が成長",
+          "経済拡大",
+          "経済の拡大",
+          "景気拡大",
+          "景気の拡大"
+        ],
+        "km": [
+          "កំណើនសេដ្ឋកិច្ច",
+          "សេដ្ឋកិច្ចមានកំណើន",
+          "សេដ្ឋកិច្ចលូតលាស់",
+          "ការលូតលាស់សេដ្ឋកិច្ច",
+          "សេដ្ឋកិច្ចរីកលូតលាស់",
+          "សេដ្ឋកិច្ចបានកើនឡើង"
+        ],
+        "korean": [
+          "경제성장",
+          "경제 성장",
+          "경제가 성장",
+          "경기 확장",
+          "경기확장",
+          "경제 확장",
+          "경제확장"
+        ],
+        "lao": [
+          "ການຂະຫຍາຍຕົວທາງເສດຖະກິດ",
+          "ການຂະຫຍາຍຕົວທາງດ້ານເສດຖະກິດ",
+          "ການຂະຫຍາຍຕົວຂອງເສດຖະກິດ",
+          "ເສດຖະກິດຂະຫຍາຍຕົວ",
+          "ເສດຖະກິດ ຂະຫຍາຍຕົວ",
+          "ເສດຖະກິດຂະຫຍາຍໂຕ",
+          "ເສດຖະກິດມີການຂະຫຍາຍຕົວ",
+          "ເສດຖະກິດ ມີການຂະຫຍາຍຕົວ",
+          "ການເຕີບໂຕທາງເສດຖະກິດ",
+          "ການເຕີບໂຕທາງດ້ານເສດຖະກິດ",
+          "ການເຕີບໂຕຂອງເສດຖະກິດ",
+          "ເສດຖະກິດເຕີບໂຕ",
+          "ເສດຖະກິດມີການເຕີບໂຕ"
+        ],
+        "malay": [
+          "pertumbuhan ekonomi",
+          "kadar pertumbuhan ekonomi",
+          "pengembangan ekonomi",
+          "ekonomi tumbuh",
+          "ekonomi berkembang sebanyak",
+          "ekonomi berkembang pada kadar",
+          "ekonomi negara berkembang sebanyak"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн өсөлт"
+          },
+          {
+            "prefix": "эдийн засаг өс"
+          },
+          {
+            "prefix": "эдийн засгийн тэлэлт"
+          },
+          {
+            "prefix": "эдийн засаг тэл"
+          },
+          {
+            "prefix": "эдийн засгийн бодит өсөлт"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးတိုးတက်မှု",
+          "စီးပွားရေး တိုးတက်မှု",
+          "စီးပွားရေးကြီးထွား",
+          "စီးပွားရေး ကြီးထွား",
+          "စီးပွားရေးတိုးတက်လာ",
+          "economic growth",
+          "economic expansion"
+        ],
+        "portuguese": [
+          "crescimento económico",
+          "crescimento econômico",
+          "crescimentos económicos",
+          "crescimentos econômicos",
+          "expansão económica",
+          "expansão econômica",
+          "expansão da economia",
+          "crescimento da economia",
+          "economia cresceu",
+          "economia cresce",
+          "economia a crescer",
+          "economia crescendo",
+          "economias cresceram",
+          "economia expandiu-se",
+          "economia expandiu"
+        ],
+        "tetum": [
+          "kresimentu ekonómiku",
+          "kresimentu ekonomiku",
+          "kresimentu ekonómika",
+          "kresimentu ekonomika",
+          "kresimentu ekonomia",
+          "espansaun ekonómika",
+          "espansaun ekonomika",
+          "ekonomia kresi",
+          "ekonomia sa'e",
+          "ekonomia sa’e",
+          "crescimento económico",
+          "crescimento economico",
+          "crescimento econômico",
+          "expansão económica",
+          "expansao economica",
+          "a economia cresceu",
+          "economia cresce"
+        ],
+        "thai": [
+          "เติบโตทางเศรษฐกิจ",
+          "ขยายตัวทางเศรษฐกิจ",
+          "การเติบโตของเศรษฐกิจ",
+          "การขยายตัวของเศรษฐกิจ",
+          "เศรษฐกิจขยายตัว",
+          "เศรษฐกิจเติบโต",
+          "เศรษฐกิจโต",
+          "เศรษฐกิจไทยขยายตัว",
+          "เศรษฐกิจไทยเติบโต"
+        ],
+        "tok_pisin": [
+          "economic growth",
+          "economic expansion",
+          "growth of the economy",
+          "economy grew",
+          "economy grows",
+          "economy expanded",
+          "economies grew",
+          "ekonomi i gro",
+          "gro bilong ekonomi",
+          "ekonomi i go antap",
+          "ekonomi i kamap strong"
         ]
       }
     },
@@ -74,6 +262,265 @@
           "economic downturn",
           "economic downturns",
           "economic slowdown"
+        ],
+        "chinese_simplified": [
+          "经济收缩",
+          "经济萎缩",
+          "经济下滑",
+          "经济放缓",
+          "经济增长放缓",
+          "经济下行",
+          "GDP萎缩",
+          "经济负增长"
+        ],
+        "chinese_traditional": [
+          "經濟收縮",
+          "經濟萎縮",
+          "經濟負成長",
+          "經濟負增長",
+          "經濟放緩",
+          "經濟放慢",
+          "經濟減速",
+          "經濟下滑",
+          "經濟下行",
+          "GDP萎縮"
+        ],
+        "filipino": [
+          "economic contraction",
+          "economic slowdown",
+          "economic downturn",
+          "pag-urong ng ekonomiya",
+          "umurong ang ekonomiya",
+          "pagliit ng ekonomiya",
+          "lumiit ang ekonomiya",
+          "pagbagal ng ekonomiya",
+          "bumagal ang ekonomiya",
+          "bumabagal ang ekonomiya",
+          "babagal ang ekonomiya",
+          "paghina ng ekonomiya",
+          "humina ang ekonomiya",
+          "humihina ang ekonomiya",
+          "bumagal ang paglago",
+          "pagbagal ng paglago ng ekonomiya",
+          "contraction ng ekonomiya",
+          "economy contracted",
+          "GDP contracted"
+        ],
+        "fr": [
+          "contraction économique",
+          "contraction de l'économie",
+          "contraction de l’économie",
+          "contraction de l'activité",
+          "contraction de l’activité",
+          "contraction du PIB",
+          "ralentissement économique",
+          "ralentissement de l'économie",
+          "ralentissement de l’économie",
+          "ralentissement de la croissance",
+          "repli de l'activité",
+          "repli de l’activité",
+          "recul du PIB",
+          "repli du PIB",
+          "économie s'est contractée",
+          "économie s’est contractée"
+        ],
+        "indo": [
+          "kontraksi ekonomi",
+          "ekonomi terkontraksi",
+          "perekonomian terkontraksi",
+          "ekonomi mengalami kontraksi",
+          "PDB terkontraksi",
+          "perlambatan ekonomi",
+          "perlambatan pertumbuhan ekonomi",
+          "kemerosotan ekonomi",
+          "pelemahan ekonomi",
+          "ekonomi menyusut"
+        ],
+        "japanese": [
+          "経済収縮",
+          "経済の縮小",
+          "経済縮小",
+          "マイナス成長",
+          "景気減速",
+          "景気の減速",
+          "経済の減速",
+          "景気悪化",
+          "景気の悪化",
+          "景気低迷",
+          "景気の低迷",
+          "景気の落ち込み"
+        ],
+        "km": [
+          "ការធ្លាក់ចុះសេដ្ឋកិច្ច",
+          "សេដ្ឋកិច្ចធ្លាក់ចុះ",
+          "ការរួមតូចសេដ្ឋកិច្ច",
+          "ការរួមតូចនៃសេដ្ឋកិច្ច",
+          "សេដ្ឋកិច្ចរួមតូច",
+          "សេដ្ឋកិច្ចថយចុះ",
+          "ការថយចុះកំណើនសេដ្ឋកិច្ច",
+          "កំណើនសេដ្ឋកិច្ចយឺត",
+          "GDP ធ្លាក់ចុះ"
+        ],
+        "korean": [
+          "경기위축",
+          "경기 위축",
+          "경제위축",
+          "경제 위축",
+          "경제가 위축",
+          "경기둔화",
+          "경기 둔화",
+          "경제 둔화",
+          "경기하강",
+          "경기 하강",
+          "경제 역성장",
+          "경제가 역성장",
+          "GDP 역성장",
+          "경제성장 둔화",
+          "경제 성장 둔화"
+        ],
+        "lao": [
+          "ເສດຖະກິດຫົດຕົວ",
+          "ການຫົດຕົວທາງເສດຖະກິດ",
+          "ການຫົດຕົວຂອງເສດຖະກິດ",
+          "ເສດຖະກິດຊະລໍຕົວ",
+          "ການຊະລໍຕົວທາງເສດຖະກິດ",
+          "ການຊະລໍຕົວຂອງເສດຖະກິດ",
+          "ເສດຖະກິດຂະຫຍາຍຕົວຊ້າລົງ",
+          "ເສດຖະກິດຕົກຕ່ຳ",
+          "ເສດຖະກິດຕົກຕ່ໍາ",
+          "ເສດຖະກິດຕົກຕໍ່າ",
+          "ເສດຖະກິດຢຸດສະງັກ",
+          "GDP ຫົດຕົວ"
+        ],
+        "malay": [
+          "penguncupan ekonomi",
+          "pengecutan ekonomi",
+          "ekonomi menguncup",
+          "ekonomi mengecut",
+          "KDNK menguncup",
+          "KDNK mengecut",
+          "kemerosotan ekonomi",
+          "kelembapan ekonomi",
+          "perlambatan ekonomi",
+          "ekonomi merosot"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн агшилт"
+          },
+          {
+            "prefix": "эдийн засаг агши"
+          },
+          {
+            "prefix": "эдийн засгийн хумилт"
+          },
+          {
+            "prefix": "эдийн засгийн уналт"
+          },
+          {
+            "prefix": "эдийн засгийн удаашрал"
+          },
+          {
+            "prefix": "эдийн засгийн өсөлт удаашр"
+          },
+          {
+            "prefix": "эдийн засаг удаашр"
+          },
+          {
+            "prefix": "ДНБ буур"
+          },
+          {
+            "prefix": "ДНБ агши"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးကျုံ့",
+          "စီးပွားရေး ကျုံ့",
+          "စီးပွားရေးကျဆင်း",
+          "စီးပွားရေး ကျဆင်း",
+          "စီးပွားရေးနှေးကွေး",
+          "ဂျီဒီပီကျုံ့",
+          "economic contraction",
+          "economic slowdown",
+          "economic downturn"
+        ],
+        "portuguese": [
+          "contração económica",
+          "contracção económica",
+          "contração econômica",
+          "contrações económicas",
+          "contracções económicas",
+          "contrações econômicas",
+          "contração da economia",
+          "contracção da economia",
+          "retração económica",
+          "retracção económica",
+          "retração econômica",
+          "retração da economia",
+          "retracção da economia",
+          "economia contraiu",
+          "economia contraiu-se",
+          "economia encolheu",
+          "economia recuou",
+          "PIB contraiu",
+          "PIB contraiu-se",
+          "PIB encolheu",
+          "PIB recuou",
+          "queda do PIB",
+          "recuo do PIB",
+          "abrandamento económico",
+          "abrandamento econômico",
+          "abrandamento da economia",
+          "desaceleração económica",
+          "desaceleração econômica",
+          "desaceleração da economia",
+          "arrefecimento da economia"
+        ],
+        "tetum": [
+          "kontrasaun ekonómika",
+          "kontrasaun ekonomika",
+          "kontrasaun ekonomia",
+          "ekonomia kontrai",
+          "ekonomia tun",
+          "abrandamentu ekonómiku",
+          "abrandamentu ekonomiku",
+          "desaselerasaun ekonómika",
+          "desaselerasaun ekonomika",
+          "contração económica",
+          "contracao economica",
+          "contracção económica",
+          "contraccao economica",
+          "retração económica",
+          "retracao economica",
+          "abrandamento económico",
+          "abrandamento economico",
+          "desaceleração económica",
+          "desaceleracao economica",
+          "a economia contraiu"
+        ],
+        "thai": [
+          "เศรษฐกิจหดตัว",
+          "หดตัวทางเศรษฐกิจ",
+          "เศรษฐกิจไทยหดตัว",
+          "จีดีพีหดตัว",
+          "GDP หดตัว",
+          "เศรษฐกิจชะลอตัว",
+          "เศรษฐกิจขาลง",
+          "เศรษฐกิจซบเซา"
+        ],
+        "tok_pisin": [
+          "economic contraction",
+          "economic contractions",
+          "contraction of the economy",
+          "economy contracted",
+          "economy shrank",
+          "GDP contracted",
+          "GDP shrank",
+          "economic downturn",
+          "economic downturns",
+          "economic slowdown",
+          "ekonomi i go daun",
+          "ekonomi i slo daun"
         ]
       }
     },
@@ -89,6 +536,194 @@
           "economic rebound",
           "economy rebounded",
           "growth recovery"
+        ],
+        "chinese_simplified": [
+          "经济复苏",
+          "经济回暖",
+          "经济反弹",
+          "经济恢复",
+          "经济回升",
+          "增长复苏"
+        ],
+        "chinese_traditional": [
+          "經濟復甦",
+          "經濟復蘇",
+          "經濟回升",
+          "經濟反彈",
+          "經濟回穩",
+          "景氣復甦",
+          "景氣復蘇",
+          "景氣回溫"
+        ],
+        "filipino": [
+          "economic recovery",
+          "pagbangon ng ekonomiya",
+          "bumangon ang ekonomiya",
+          "bumabangon ang ekonomiya",
+          "babangon ang ekonomiya",
+          "pagbawi ng ekonomiya",
+          "pag-ahon ng ekonomiya",
+          "ahon ng ekonomiya",
+          "umahon ang ekonomiya",
+          "pag-recover ng ekonomiya",
+          "recovery ng ekonomiya",
+          "economic rebound"
+        ],
+        "fr": [
+          "reprise économique",
+          "reprise de l'économie",
+          "reprise de l’économie",
+          "redressement économique",
+          "redressement de l'économie",
+          "redressement de l’économie",
+          "rebond économique",
+          "rebond de l'économie",
+          "rebond de l’économie",
+          "reprise de l'activité",
+          "reprise de l’activité",
+          "reprise de la croissance",
+          "rebond de la croissance"
+        ],
+        "indo": [
+          "pemulihan ekonomi",
+          "pemulihan ekonominya",
+          "pemulihan perekonomian",
+          "Pemulihan Ekonomi Nasional",
+          "program PEN",
+          "ekonomi pulih",
+          "perekonomian pulih",
+          "kebangkitan ekonomi",
+          "rebound ekonomi"
+        ],
+        "japanese": [
+          "景気回復",
+          "景気の回復",
+          "経済回復",
+          "経済の回復",
+          "景気の持ち直し",
+          "景気持ち直し",
+          "経済の立て直し",
+          "成長の回復"
+        ],
+        "km": [
+          "ការស្តារសេដ្ឋកិច្ច",
+          "ការស្ដារសេដ្ឋកិច្ច",
+          "ស្តារសេដ្ឋកិច្ចឡើងវិញ",
+          "ស្ដារសេដ្ឋកិច្ចឡើងវិញ",
+          "ការងើបឡើងវិញនៃសេដ្ឋកិច្ច",
+          "ការងើបឡើងវិញផ្នែកសេដ្ឋកិច្ច",
+          "ការងើបឡើងវិញសេដ្ឋកិច្ច",
+          "សេដ្ឋកិច្ចងើបឡើងវិញ",
+          "សេដ្ឋកិច្ចបានងើបឡើងវិញ",
+          "ការងើបឡើងវិញនៃកំណើន"
+        ],
+        "korean": [
+          "경기회복",
+          "경기 회복",
+          "경제회복",
+          "경제 회복",
+          "경제가 회복",
+          "경기반등",
+          "경기 반등",
+          "경제 반등"
+        ],
+        "lao": [
+          "ການຟື້ນຟູເສດຖະກິດ",
+          "ຟື້ນຟູເສດຖະກິດ",
+          "ການຟື້ນຟູ ເສດຖະກິດ",
+          "ການຟື້ນຕົວທາງເສດຖະກິດ",
+          "ການຟື້ນຕົວຂອງເສດຖະກິດ",
+          "ເສດຖະກິດຟື້ນຕົວ",
+          "ເສດຖະກິດເລີ່ມຟື້ນຕົວ",
+          "ເສດຖະກິດຄ່ອຍໆຟື້ນຕົວ"
+        ],
+        "malay": [
+          "pemulihan ekonomi",
+          "ekonomi pulih",
+          "ekonomi kembali pulih",
+          "pemulihan pertumbuhan",
+          "ekonomi melantun semula",
+          "lantunan semula ekonomi",
+          "ekonomi bangkit semula"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн сэргэ"
+          },
+          {
+            "prefix": "эдийн засаг сэргэ"
+          },
+          {
+            "prefix": "эдийн засгийг сэргээ"
+          },
+          {
+            "prefix": "эдийн засгаа сэргээ"
+          },
+          {
+            "prefix": "эдийн засаг эргэн сэргэ"
+          },
+          {
+            "prefix": "өсөлт сэргэ"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးပြန်လည်ထူထောင်",
+          "စီးပွားရေးပြန်လည်နာလန်ထူ",
+          "စီးပွားရေးပြန်လည်ဦးမော့",
+          "စီးပွားရေးပြန်လည်ကောင်းမွန်",
+          "စီးပွားရေး ပြန်လည်ထူထောင်",
+          "စီးပွားရေးနာလန်ထူ",
+          "economic recovery",
+          "economic rebound"
+        ],
+        "portuguese": [
+          "recuperação económica",
+          "recuperação econômica",
+          "recuperações económicas",
+          "recuperações econômicas",
+          "recuperação da economia",
+          "retoma económica",
+          "retoma econômica",
+          "retoma da economia",
+          "economia recuperou",
+          "economia recupera",
+          "recuperação do crescimento",
+          "retoma do crescimento"
+        ],
+        "tetum": [
+          "rekuperasaun ekonómika",
+          "rekuperasaun ekonomika",
+          "rekuperasaun ekonomia",
+          "rekupera ekonomia",
+          "retoma ekonómika",
+          "retoma ekonomika",
+          "ekonomia rekupera",
+          "recuperação económica",
+          "recuperacao economica",
+          "recuperação da economia",
+          "recuperacao da economia",
+          "retoma económica",
+          "retoma economica",
+          "retoma da economia"
+        ],
+        "thai": [
+          "ฟื้นตัวทางเศรษฐกิจ",
+          "การฟื้นตัวของเศรษฐกิจ",
+          "เศรษฐกิจฟื้นตัว",
+          "เศรษฐกิจไทยฟื้นตัว",
+          "เศรษฐกิจกลับมาฟื้นตัว",
+          "ฟื้นฟูเศรษฐกิจ"
+        ],
+        "tok_pisin": [
+          "economic recovery",
+          "economic recoveries",
+          "recovery of the economy",
+          "economy recovered",
+          "economic rebound",
+          "economy rebounded",
+          "growth recovery",
+          "ekonomi i kirap gen",
+          "ekonomi i kamap strong gen"
         ]
       }
     },
@@ -102,6 +737,155 @@
           "recessionary",
           "technical recession",
           "economic depression"
+        ],
+        "chinese_simplified": [
+          "经济衰退",
+          "技术性衰退",
+          "陷入衰退",
+          "衰退风险",
+          "经济萧条"
+        ],
+        "chinese_traditional": [
+          "經濟衰退",
+          "景氣衰退",
+          "技術性衰退",
+          "陷入衰退",
+          "衰退風險",
+          "經濟蕭條",
+          "大蕭條"
+        ],
+        "filipino": [
+          "recession",
+          "recessions",
+          "resesyon",
+          "technical recession",
+          "economic depression",
+          "recessionary"
+        ],
+        "fr": [
+          "récession",
+          "récessions",
+          "récession technique",
+          "récessionniste",
+          "dépression économique"
+        ],
+        "indo": [
+          "resesi",
+          "resesi ekonomi",
+          "resesi teknikal",
+          "jurang resesi",
+          "depresi ekonomi"
+        ],
+        "japanese": [
+          "景気後退",
+          "リセッション",
+          "不況",
+          "不景気",
+          "テクニカル・リセッション",
+          "経済恐慌",
+          "世界恐慌",
+          "大恐慌"
+        ],
+        "km": [
+          "វិបត្តិធ្លាក់ចុះសេដ្ឋកិច្ច",
+          "វិបត្ដិធ្លាក់ចុះសេដ្ឋកិច្ច",
+          "ការធ្លាក់ចុះសេដ្ឋកិច្ចធ្ងន់ធ្ងរ",
+          "ការធ្លាក់ចុះសេដ្ឋកិច្ចបច្ចេកទេស"
+        ],
+        "korean": [
+          "경기침체",
+          "경기 침체",
+          "경제침체",
+          "경제 침체",
+          "불경기",
+          "불황",
+          "리세션",
+          "대공황"
+        ],
+        "lao": [
+          "ເສດຖະກິດຖົດຖອຍ",
+          "ພາວະເສດຖະກິດຖົດຖອຍ",
+          "ພາວະຖົດຖອຍທາງເສດຖະກິດ",
+          "ການຖົດຖອຍທາງເສດຖະກິດ",
+          "ການຖົດຖອຍຂອງເສດຖະກິດ",
+          "ພາວະເສດຖະກິດຕົກຕ່ຳ",
+          "ພາວະເສດຖະກິດຕົກຕ່ໍາ",
+          "ພາວະເສດຖະກິດຕົກຕໍ່າ"
+        ],
+        "malay": [
+          "kemelesetan",
+          "kemelesetan ekonomi",
+          "kemelesetan teknikal",
+          "kemelesetan global",
+          "zaman meleset",
+          "kegawatan ekonomi",
+          "resesi",
+          "resesi teknikal"
+        ],
+        "mn": [
+          {
+            "prefix": "рецесс"
+          },
+          {
+            "prefix": "эдийн засгийн их хямрал"
+          },
+          {
+            "prefix": "эдийн засгийн гүнзгий уналт"
+          },
+          {
+            "prefix": "эдийн засгийн гүнзгий хямрал"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးကျဆုတ်",
+          "စီးပွားရေး ကျဆုတ်",
+          "စီးပွားရေးဆုတ်ယုတ်",
+          "recession",
+          "recessions"
+        ],
+        "portuguese": [
+          "recessão",
+          "recessões",
+          "recessão técnica",
+          "recessão económica",
+          "recessão econômica",
+          "pressões recessivas",
+          "tendência recessiva",
+          "depressão económica",
+          "depressão econômica",
+          "depressão da economia"
+        ],
+        "tetum": [
+          "resesaun",
+          "resesaun ekonómika",
+          "resesaun ekonomika",
+          "resesaun téknika",
+          "resesaun teknika",
+          "depresaun ekonómika",
+          "depresaun ekonomika",
+          "recessão",
+          "recessao",
+          "recessões",
+          "recessoes",
+          "recessão técnica",
+          "recessao tecnica",
+          "depressão económica",
+          "depressao economica"
+        ],
+        "thai": [
+          "เศรษฐกิจถดถอย",
+          "ถดถอยทางเทคนิค",
+          "ภาวะเศรษฐกิจตกต่ำ",
+          "เศรษฐกิจตกต่ำครั้งใหญ่"
+        ],
+        "tok_pisin": [
+          "recession",
+          "recessions",
+          "recessionary",
+          "technical recession",
+          "economic depression",
+          "resesen",
+          "resesin"
         ]
       }
     },
@@ -114,6 +898,142 @@
           "GDP",
           "real GDP",
           "nominal GDP",
+          "national output",
+          "economic output"
+        ],
+        "chinese_simplified": [
+          "国内生产总值",
+          "GDP",
+          "实际GDP",
+          "名义GDP",
+          "经济产出",
+          "经济总量"
+        ],
+        "chinese_traditional": [
+          "國內生產毛額",
+          "國內生產總值",
+          "本地生產總值",
+          "GDP",
+          "實質GDP",
+          "名目GDP",
+          "經濟產出"
+        ],
+        "filipino": [
+          "gross domestic product",
+          "GDP",
+          "real GDP",
+          "nominal GDP",
+          "kabuuang produktong domestiko",
+          "economic output"
+        ],
+        "fr": [
+          "produit intérieur brut",
+          "PIB",
+          "PIB réel",
+          "PIB nominal",
+          "PIB en volume"
+        ],
+        "indo": [
+          "produk domestik bruto",
+          "PDB",
+          "PDB riil",
+          "PDB nominal",
+          "produk domestik regional bruto",
+          "PDRB",
+          "output ekonomi",
+          "GDP"
+        ],
+        "japanese": [
+          "国内総生産",
+          "GDP",
+          "実質GDP",
+          "名目GDP"
+        ],
+        "km": [
+          "ផលិតផលក្នុងស្រុកសរុប",
+          "ផ.ស.ស",
+          "GDP",
+          "ទិន្នផលសេដ្ឋកិច្ច"
+        ],
+        "korean": [
+          "국내총생산",
+          "국내 총생산",
+          "GDP"
+        ],
+        "lao": [
+          "ລວມຍອດຜະລິດຕະພັນພາຍໃນ",
+          "ຍອດຜະລິດຕະພັນພາຍໃນ",
+          "ຜະລິດຕະພັນລວມພາຍໃນ",
+          "ຜະລິດຕະພັນພາຍໃນລວມ",
+          "GDP",
+          "ຈີດີພີ"
+        ],
+        "malay": [
+          "keluaran dalam negeri kasar",
+          "keluaran dalam negara kasar",
+          "KDNK",
+          "KDNK benar",
+          "KDNK nominal",
+          "GDP",
+          "output ekonomi"
+        ],
+        "mn": [
+          "ДНБ",
+          {
+            "prefix": "дотоодын нийт бүтээгдэхүүн"
+          },
+          {
+            "prefix": "бодит ДНБ"
+          },
+          {
+            "prefix": "нэрлэсэн ДНБ"
+          }
+        ],
+        "my": [
+          "ပြည်တွင်းအသားတင်ထုတ်ကုန်",
+          "ပြည်တွင်း အသားတင်ထုတ်ကုန်",
+          "ပြည်တွင်းစုစုပေါင်းထုတ်ကုန်",
+          "ဂျီဒီပီ",
+          "GDP",
+          "gross domestic product"
+        ],
+        "portuguese": [
+          "produto interno bruto",
+          "PIB",
+          "PIB real",
+          "PIB nominal",
+          "produto interno bruto real"
+        ],
+        "tetum": [
+          "PIB",
+          "Produtu Internu Brutu",
+          "Produtu Doméstiku Brutu",
+          "Produtu Domestiku Brutu",
+          "PIB reál",
+          "PIB real",
+          "PIB nominál",
+          "PIB nominal",
+          "PIB la-petrolíferu",
+          "PIB la-petroliferu",
+          "PIB non-petrolíferu",
+          "PIB non-petroliferu",
+          "produto interno bruto",
+          "PIB não petrolífero",
+          "PIB nao petrolifero",
+          "GDP"
+        ],
+        "thai": [
+          "ผลิตภัณฑ์มวลรวมในประเทศ",
+          "ผลิตภัณฑ์มวลรวมภายในประเทศ",
+          "จีดีพี",
+          "GDP"
+        ],
+        "tok_pisin": [
+          "gross domestic product",
+          "GDP",
+          "real GDP",
+          "nominal GDP",
+          "non-resource GDP",
           "national output",
           "economic output"
         ]
@@ -131,6 +1051,183 @@
           "GDP grew",
           "GDP expanded",
           "GDP expansion"
+        ],
+        "chinese_simplified": [
+          "GDP增长",
+          "GDP同比增长",
+          "GDP增速",
+          "GDP增幅",
+          "国内生产总值增长",
+          "国内生产总值同比增长",
+          "实际GDP增长"
+        ],
+        "chinese_traditional": [
+          "GDP成長",
+          "GDP增長",
+          "GDP增幅",
+          "GDP年增",
+          "經濟成長率",
+          "經濟增長率",
+          "國內生產毛額成長",
+          "本地生產總值增長",
+          "國內生產總值增長"
+        ],
+        "filipino": [
+          "GDP growth",
+          "GDP growth rate",
+          "real GDP growth",
+          "paglago ng GDP",
+          "paglaki ng GDP",
+          "lumago ang GDP",
+          "lumaki ang GDP",
+          "GDP grew",
+          "GDP expanded"
+        ],
+        "fr": [
+          "croissance du PIB",
+          "croissance du produit intérieur brut",
+          "taux de croissance du PIB",
+          "croissance du PIB réel",
+          "hausse du PIB",
+          "progression du PIB",
+          "PIB a progressé",
+          "PIB a augmenté"
+        ],
+        "indo": [
+          "pertumbuhan PDB",
+          "pertumbuhan PDB riil",
+          "laju pertumbuhan PDB",
+          "PDB tumbuh",
+          "pertumbuhan PDRB",
+          "pertumbuhan produk domestik bruto"
+        ],
+        "japanese": [
+          "GDP成長率",
+          "経済成長率",
+          "実質成長率",
+          "名目成長率",
+          "GDPの伸び",
+          "GDP伸び率"
+        ],
+        "km": [
+          "កំណើន GDP",
+          "កំណើនGDP",
+          "កំណើនផលិតផលក្នុងស្រុកសរុប",
+          "កំណើន ផ.ស.ស",
+          "GDP កើនឡើង",
+          "GDP បានកើនឡើង"
+        ],
+        "korean": [
+          "GDP 성장률",
+          "GDP성장률",
+          "GDP 증가율",
+          "국내총생산 성장률",
+          "경제성장률",
+          "경제 성장률",
+          "실질성장률",
+          "실질 성장률"
+        ],
+        "lao": [
+          "GDP ຂະຫຍາຍຕົວ",
+          "GDP ເພີ່ມຂຶ້ນ",
+          "ການຂະຫຍາຍຕົວຂອງ GDP",
+          "ການເຕີບໂຕຂອງ GDP",
+          "ອັດຕາການຂະຫຍາຍຕົວຂອງ GDP",
+          "ອັດຕາການເຕີບໂຕຂອງ GDP",
+          "ການຂະຫຍາຍຕົວຂອງລວມຍອດຜະລິດຕະພັນພາຍໃນ",
+          "ລວມຍອດຜະລິດຕະພັນພາຍໃນຂະຫຍາຍຕົວ",
+          "ຈີດີພີ ຂະຫຍາຍຕົວ"
+        ],
+        "malay": [
+          "pertumbuhan KDNK",
+          "kadar pertumbuhan KDNK",
+          "KDNK berkembang",
+          "KDNK tumbuh",
+          "KDNK meningkat",
+          "pertumbuhan GDP",
+          "pertumbuhan keluaran dalam negeri kasar"
+        ],
+        "mn": [
+          {
+            "prefix": "ДНБ-ий өсөлт"
+          },
+          {
+            "prefix": "ДНБ-ийн өсөлт"
+          },
+          {
+            "prefix": "ДНБ-ний өсөлт"
+          },
+          {
+            "prefix": "ДНБ-ий бодит өсөлт"
+          },
+          {
+            "prefix": "бодит ДНБ-ий өсөлт"
+          },
+          {
+            "prefix": "дотоодын нийт бүтээгдэхүүний өсөлт"
+          },
+          {
+            "prefix": "дотоодын нийт бүтээгдэхүүний бодит өсөлт"
+          },
+          {
+            "prefix": "ДНБ өс"
+          }
+        ],
+        "my": [
+          "ဂျီဒီပီတိုးတက်",
+          "ဂျီဒီပီ တိုးတက်",
+          "ဂျီဒီပီကြီးထွား",
+          "ပြည်တွင်းအသားတင်ထုတ်ကုန်တိုးတက်",
+          "GDP growth",
+          "GDP grew"
+        ],
+        "portuguese": [
+          "crescimento do PIB",
+          "crescimento real do PIB",
+          "taxa de crescimento do PIB",
+          "crescimento do produto interno bruto",
+          "PIB cresceu",
+          "PIB aumentou",
+          "PIB subiu",
+          "aumento do PIB",
+          "expansão do PIB"
+        ],
+        "tetum": [
+          "kresimentu PIB",
+          "taxa kresimentu PIB",
+          "kresimentu Produtu Internu Brutu",
+          "kresimentu PIB reál",
+          "kresimentu PIB real",
+          "PIB kresi",
+          "PIB sa'e",
+          "PIB sa’e",
+          "crescimento do PIB",
+          "taxa de crescimento do PIB",
+          "crescimento real do PIB",
+          "o PIB cresceu"
+        ],
+        "thai": [
+          "จีดีพีขยายตัว",
+          "จีดีพีเติบโต",
+          "จีดีพีโต",
+          "GDP ขยายตัว",
+          "GDP เติบโต",
+          "GDP โต",
+          "อัตราการเติบโตของจีดีพี",
+          "อัตราการขยายตัวของจีดีพี",
+          "GDP growth"
+        ],
+        "tok_pisin": [
+          "GDP growth",
+          "real GDP growth",
+          "GDP growth rate",
+          "growth in GDP",
+          "GDP grew",
+          "GDP expanded",
+          "GDP expansion",
+          "non-resource GDP growth",
+          "GDP i gro",
+          "GDP i go antap"
         ]
       }
     },
@@ -139,6 +1236,126 @@
       "group": "income_levels",
       "forms": {
         "en": [
+          "GDP per capita",
+          "per capita GDP",
+          "per-capita GDP",
+          "GDP per head"
+        ],
+        "chinese_simplified": [
+          "人均GDP",
+          "人均国内生产总值",
+          "人均生产总值"
+        ],
+        "chinese_traditional": [
+          "人均GDP",
+          "每人GDP",
+          "人均國內生產毛額",
+          "每人國內生產毛額",
+          "人均國內生產總值",
+          "人均本地生產總值",
+          "人均生產總值"
+        ],
+        "filipino": [
+          "GDP per capita",
+          "per capita GDP",
+          "per-capita GDP"
+        ],
+        "fr": [
+          "PIB par habitant",
+          "PIB par tête",
+          "produit intérieur brut par habitant",
+          "PIB/habitant"
+        ],
+        "indo": [
+          "PDB per kapita",
+          "produk domestik bruto per kapita",
+          "PDRB per kapita",
+          "GDP per kapita"
+        ],
+        "japanese": [
+          "一人当たりGDP",
+          "1人当たりGDP",
+          "一人当たりのGDP",
+          "1人当たりのGDP",
+          "1人あたりGDP",
+          "一人当たり国内総生産",
+          "1人当たり国内総生産"
+        ],
+        "km": [
+          "ផលិតផលក្នុងស្រុកសរុបសម្រាប់មនុស្សម្នាក់",
+          "ផលិតផលក្នុងស្រុកសរុបក្នុងមនុស្សម្នាក់",
+          "ផលិតផលក្នុងស្រុកសរុបសម្រាប់ប្រជាជនម្នាក់",
+          "GDP សម្រាប់មនុស្សម្នាក់",
+          "GDP ក្នុងមនុស្សម្នាក់",
+          "GDP per capita"
+        ],
+        "korean": [
+          "1인당 GDP",
+          "1인당GDP",
+          "1인당 국내총생산",
+          "1인당 국내 총생산",
+          "일인당 GDP"
+        ],
+        "lao": [
+          "GDP ສະເລ່ຍຕໍ່ຫົວຄົນ",
+          "GDP ຕໍ່ຫົວຄົນ",
+          "GDP ຕໍ່ຫົວ",
+          "ລວມຍອດຜະລິດຕະພັນພາຍໃນສະເລ່ຍຕໍ່ຫົວຄົນ",
+          "ລວມຍອດຜະລິດຕະພັນພາຍໃນ ສະເລ່ຍຕໍ່ຫົວຄົນ",
+          "ລວມຍອດຜະລິດຕະພັນພາຍໃນຕໍ່ຫົວຄົນ",
+          "GDP per capita"
+        ],
+        "malay": [
+          "KDNK per kapita",
+          "KDNK per kepala",
+          "GDP per kapita",
+          "keluaran dalam negeri kasar per kapita"
+        ],
+        "mn": [
+          {
+            "prefix": "нэг хүнд ногдох ДНБ"
+          },
+          {
+            "prefix": "нэг хүнд оногдох ДНБ"
+          },
+          {
+            "prefix": "нэг хүнд ногдох дотоодын нийт бүтээгдэхүүн"
+          },
+          {
+            "prefix": "нэг хүнд оногдох дотоодын нийт бүтээгдэхүүн"
+          }
+        ],
+        "my": [
+          "တစ်ဦးကျဂျီဒီပီ",
+          "တစ်ဦးကျ ဂျီဒီပီ",
+          "တစ်ဦးချင်းဂျီဒီပီ",
+          "လူတစ်ဦးကျပြည်တွင်းအသားတင်ထုတ်ကုန်",
+          "GDP per capita",
+          "per capita GDP"
+        ],
+        "portuguese": [
+          "PIB per capita",
+          "PIB por habitante",
+          "PIB por pessoa",
+          "produto interno bruto per capita"
+        ],
+        "tetum": [
+          "PIB per kapita",
+          "PIB per capita",
+          "PIB kada ema",
+          "PIB por habitante",
+          "PIB per capita não petrolífero",
+          "PIB per capita nao petrolifero",
+          "GDP per capita"
+        ],
+        "thai": [
+          "จีดีพีต่อหัว",
+          "GDP ต่อหัว",
+          "ผลิตภัณฑ์มวลรวมในประเทศต่อหัว",
+          "ผลิตภัณฑ์มวลรวมต่อหัว",
+          "GDP per capita"
+        ],
+        "tok_pisin": [
           "GDP per capita",
           "per capita GDP",
           "per-capita GDP",
@@ -156,6 +1373,143 @@
           "GNI",
           "gross national product",
           "GNP"
+        ],
+        "chinese_simplified": [
+          "国民收入",
+          "国民总收入",
+          "国民生产总值",
+          "GNI",
+          "GNP"
+        ],
+        "chinese_traditional": [
+          "國民所得毛額",
+          "國民生產毛額",
+          "國民總收入",
+          "國民生產總值",
+          "國民收入",
+          "GNI",
+          "GNP"
+        ],
+        "filipino": [
+          "national income",
+          "gross national income",
+          "GNI",
+          "gross national product",
+          "GNP",
+          "pambansang kita"
+        ],
+        "fr": [
+          "revenu national",
+          "revenu national brut",
+          "produit national brut"
+        ],
+        "indo": [
+          "pendapatan nasional",
+          "pendapatan nasional bruto",
+          "produk nasional bruto",
+          "PNB",
+          "GNI",
+          "GNP"
+        ],
+        "japanese": [
+          "国民所得",
+          "国民総所得",
+          "GNI",
+          "国民総生産",
+          "GNP"
+        ],
+        "km": [
+          "ចំណូលជាតិសរុប",
+          "ផលិតផលជាតិសរុប",
+          "GNI",
+          "GNP"
+        ],
+        "korean": [
+          "국민소득",
+          "국민 소득",
+          "국민총소득",
+          "국민 총소득",
+          "GNI",
+          "국민총생산",
+          "GNP"
+        ],
+        "lao": [
+          "ລາຍຮັບແຫ່ງຊາດ",
+          "ລາຍໄດ້ແຫ່ງຊາດ",
+          "ລາຍຮັບປະຊາຊາດ",
+          "ລາຍໄດ້ປະຊາຊາດ",
+          "ລວມຍອດລາຍຮັບແຫ່ງຊາດ",
+          "ລວມຍອດຜະລິດຕະພັນແຫ່ງຊາດ",
+          "GNI",
+          "GNP"
+        ],
+        "malay": [
+          "pendapatan negara kasar",
+          "pendapatan nasional kasar",
+          "pendapatan nasional",
+          "keluaran negara kasar",
+          "GNI",
+          "GNP"
+        ],
+        "mn": [
+          {
+            "prefix": "үндэсний орлог"
+          },
+          {
+            "prefix": "үндэсний нийт орлог"
+          },
+          "ҮНО",
+          {
+            "prefix": "үндэсний нийт бүтээгдэхүүн"
+          }
+        ],
+        "my": [
+          "အမျိုးသားဝင်ငွေ",
+          "အမျိုးသား၀င်ငွေ",
+          "အမျိုးသား ဝင်ငွေ",
+          "အမျိုးသား ၀င်ငွေ",
+          "စုစုပေါင်းအမျိုးသားထုတ်ကုန်",
+          "GNI",
+          "GNP",
+          "national income"
+        ],
+        "portuguese": [
+          "rendimento nacional",
+          "rendimento nacional bruto",
+          "RNB",
+          "renda nacional",
+          "renda nacional bruta",
+          "produto nacional bruto",
+          "PNB"
+        ],
+        "tetum": [
+          "rendimentu nasionál",
+          "rendimentu nasional",
+          "rendimentu nasionál brutu",
+          "rendimentu nasional brutu",
+          "produtu nasionál brutu",
+          "produtu nasional brutu",
+          "RNB",
+          "PNB",
+          "rendimento nacional",
+          "rendimento nacional bruto",
+          "produto nacional bruto",
+          "GNI"
+        ],
+        "thai": [
+          "รายได้ประชาชาติ",
+          "ผลิตภัณฑ์มวลรวมประชาชาติ",
+          "รายได้มวลรวมประชาชาติ",
+          "GNI",
+          "GNP"
+        ],
+        "tok_pisin": [
+          "national income",
+          "gross national income",
+          "GNI",
+          "gross national product",
+          "GNP",
+          "nesenel inkam"
         ]
       }
     },
@@ -164,6 +1518,146 @@
       "group": "income_levels",
       "forms": {
         "en": [
+          "per capita income",
+          "per-capita income",
+          "income per capita",
+          "income per head",
+          "GNI per capita"
+        ],
+        "chinese_simplified": [
+          "人均收入",
+          "人均国民收入",
+          "人均国民总收入",
+          "人均可支配收入"
+        ],
+        "chinese_traditional": [
+          "人均所得",
+          "人均收入",
+          "每人所得",
+          "平均每人國民所得",
+          "人均國民所得",
+          "人均國民總收入",
+          "每人國民所得毛額"
+        ],
+        "filipino": [
+          "per capita income",
+          "per-capita income",
+          "income per capita",
+          "GNI per capita"
+        ],
+        "fr": [
+          "revenu par habitant",
+          "revenus par habitant",
+          "revenu par tête",
+          "revenu moyen par habitant",
+          "RNB par habitant",
+          "revenu national brut par habitant"
+        ],
+        "indo": [
+          "pendapatan per kapita",
+          "pendapatan per kapitanya",
+          "penghasilan per kapita",
+          "PNB per kapita",
+          "pendapatan nasional bruto per kapita",
+          "GNI per kapita"
+        ],
+        "japanese": [
+          "一人当たり所得",
+          "1人当たり所得",
+          "一人当たりの所得",
+          "1人当たりの所得",
+          "一人当たり国民所得",
+          "1人当たり国民所得",
+          "一人当たりGNI",
+          "1人当たりGNI"
+        ],
+        "km": [
+          "ចំណូលសម្រាប់មនុស្សម្នាក់",
+          "ចំណូលក្នុងមនុស្សម្នាក់",
+          "ចំណូលសម្រាប់ប្រជាជនម្នាក់",
+          "ចំណូលមធ្យមសម្រាប់មនុស្សម្នាក់",
+          "ចំណូលមធ្យមក្នុងមនុស្សម្នាក់",
+          "GNI per capita"
+        ],
+        "korean": [
+          "1인당 소득",
+          "1인당소득",
+          "1인당 국민소득",
+          "1인당 국민총소득",
+          "1인당 GNI",
+          "일인당 소득"
+        ],
+        "lao": [
+          "ລາຍຮັບສະເລ່ຍຕໍ່ຫົວຄົນ",
+          "ລາຍໄດ້ສະເລ່ຍຕໍ່ຫົວຄົນ",
+          "ລາຍຮັບ ສະເລ່ຍຕໍ່ຫົວຄົນ",
+          "ລາຍໄດ້ ສະເລ່ຍຕໍ່ຫົວຄົນ",
+          "ລາຍຮັບຕໍ່ຫົວຄົນ",
+          "ລາຍໄດ້ຕໍ່ຫົວຄົນ",
+          "GNI ສະເລ່ຍຕໍ່ຫົວຄົນ",
+          "GNI ຕໍ່ຫົວຄົນ"
+        ],
+        "malay": [
+          "pendapatan per kapita",
+          "pendapatan per kepala",
+          "PNK per kapita",
+          "pendapatan negara kasar per kapita",
+          "GNI per kapita"
+        ],
+        "mn": [
+          {
+            "prefix": "нэг хүнд ногдох орлог"
+          },
+          {
+            "prefix": "нэг хүнд оногдох орлог"
+          },
+          {
+            "prefix": "нэг хүнд ногдох үндэсний нийт орлог"
+          },
+          {
+            "prefix": "нэг хүнд ногдох ҮНО"
+          },
+          {
+            "prefix": "нэг хүнд оногдох ҮНО"
+          }
+        ],
+        "my": [
+          "တစ်ဦးကျဝင်ငွေ",
+          "တစ်ဦးကျ၀င်ငွေ",
+          "တစ်ဦးကျ ဝင်ငွေ",
+          "တစ်ဦးကျ ၀င်ငွေ",
+          "တစ်ဦးကျအမျိုးသားဝင်ငွေ",
+          "တစ်ဦးကျအမျိုးသား၀င်ငွေ",
+          "per capita income",
+          "income per capita",
+          "GNI per capita"
+        ],
+        "portuguese": [
+          "rendimento per capita",
+          "rendimento por habitante",
+          "renda per capita",
+          "renda por habitante",
+          "RNB per capita",
+          "rendimento nacional bruto per capita"
+        ],
+        "tetum": [
+          "rendimentu per kapita",
+          "rendimentu per capita",
+          "rendimentu kada ema",
+          "RNB per kapita",
+          "RNB per capita",
+          "rendimento per capita",
+          "rendimento por habitante",
+          "renda per capita"
+        ],
+        "thai": [
+          "รายได้ต่อหัว",
+          "รายได้เฉลี่ยต่อหัว",
+          "รายได้ประชาชาติต่อหัว",
+          "GNI ต่อหัว",
+          "GNI per capita"
+        ],
+        "tok_pisin": [
           "per capita income",
           "per-capita income",
           "income per capita",
@@ -180,6 +1674,122 @@
           "middle-income trap",
           "middle income trap",
           "middle-income country trap"
+        ],
+        "chinese_simplified": [
+          "中等收入陷阱"
+        ],
+        "chinese_traditional": [
+          "中等收入陷阱",
+          "中等所得陷阱",
+          "中所得陷阱",
+          "中等收入國家陷阱"
+        ],
+        "filipino": [
+          "middle-income trap",
+          "middle income trap"
+        ],
+        "fr": [
+          "piège du revenu intermédiaire",
+          "piège des revenus intermédiaires",
+          "piège du revenu moyen",
+          "trappe à revenu intermédiaire",
+          "piège des pays à revenu intermédiaire"
+        ],
+        "indo": [
+          "jebakan pendapatan menengah",
+          "jebakan negara berpendapatan menengah",
+          "perangkap pendapatan menengah",
+          "middle income trap",
+          "middle-income trap"
+        ],
+        "japanese": [
+          "中所得国の罠",
+          "中所得国のわな",
+          "中所得国のワナ",
+          "中所得の罠",
+          "中進国の罠"
+        ],
+        "km": [
+          "អន្ទាក់ចំណូលមធ្យម",
+          "អន្ទាក់ប្រាក់ចំណូលមធ្យម",
+          "អន្ទាក់ប្រទេសចំណូលមធ្យម",
+          "អន្ទាក់នៃប្រទេសមានចំណូលមធ្យម"
+        ],
+        "korean": [
+          "중진국 함정",
+          "중진국함정",
+          "중진국의 함정",
+          "중간소득 함정",
+          "중간소득국 함정",
+          "중간 소득 함정"
+        ],
+        "lao": [
+          "ກັບດັກລາຍໄດ້ປານກາງ",
+          "ກັບດັກລາຍຮັບປານກາງ",
+          "ກັບດັກປະເທດລາຍໄດ້ປານກາງ",
+          "ກັບດັກປະເທດທີ່ມີລາຍໄດ້ປານກາງ",
+          "ກັບດັກປະເທດທີ່ມີລາຍຮັບປານກາງ",
+          "ກັບດັກຂອງປະເທດລາຍໄດ້ປານກາງ"
+        ],
+        "malay": [
+          "perangkap pendapatan sederhana",
+          "perangkap pendapatan pertengahan",
+          "jerangkap pendapatan sederhana",
+          "perangkap negara berpendapatan sederhana"
+        ],
+        "mn": [
+          {
+            "prefix": "дундаж орлогын урх"
+          },
+          {
+            "prefix": "дунд орлогын урх"
+          },
+          {
+            "prefix": "дундаж орлоготой орны урх"
+          }
+        ],
+        "my": [
+          "အလယ်အလတ်ဝင်ငွေထောင်ချောက်",
+          "အလယ်အလတ်၀င်ငွေထောင်ချောက်",
+          "အလယ်အလတ်ဝင်ငွေ ထောင်ချောက်",
+          "အလယ်အလတ်၀င်ငွေ ထောင်ချောက်",
+          "ဝင်ငွေအလယ်အလတ်ထောင်ချောက်",
+          "၀င်ငွေအလယ်အလတ်ထောင်ချောက်",
+          "middle-income trap",
+          "middle income trap"
+        ],
+        "portuguese": [
+          "armadilha do rendimento médio",
+          "armadilha dos rendimentos médios",
+          "armadilha do rendimento intermédio",
+          "armadilha da renda média",
+          "armadilha dos países de rendimento médio",
+          "armadilha dos países de renda média"
+        ],
+        "tetum": [
+          "armadilla rendimentu médiu",
+          "armadilla rendimentu mediu",
+          "armadilha rendimentu médiu",
+          "armadilha rendimentu mediu",
+          "armadilha do rendimento médio",
+          "armadilha do rendimento medio",
+          "armadilha da renda média",
+          "armadilha da renda media",
+          "armadilha dos países de rendimento médio",
+          "armadilha dos paises de rendimento medio",
+          "middle-income trap",
+          "middle income trap"
+        ],
+        "thai": [
+          "กับดักรายได้ปานกลาง",
+          "กับดักประเทศรายได้ปานกลาง",
+          "middle-income trap",
+          "middle income trap"
+        ],
+        "tok_pisin": [
+          "middle-income trap",
+          "middle income trap",
+          "middle-income country trap"
         ]
       }
     },
@@ -188,6 +1798,142 @@
       "group": "income_levels",
       "forms": {
         "en": [
+          "economic convergence",
+          "income convergence",
+          "catch-up growth",
+          "real convergence",
+          "convergence with advanced economies"
+        ],
+        "chinese_simplified": [
+          "经济趋同",
+          "收入趋同",
+          "追赶型增长",
+          "追赶式增长",
+          "趋同增长"
+        ],
+        "chinese_traditional": [
+          "經濟趨同",
+          "經濟收斂",
+          "所得收斂",
+          "所得趨同",
+          "收入趨同",
+          "追趕型成長",
+          "追趕型增長"
+        ],
+        "filipino": [
+          "economic convergence",
+          "income convergence",
+          "catch-up growth"
+        ],
+        "fr": [
+          "convergence économique",
+          "convergence des revenus",
+          "convergence réelle",
+          "rattrapage économique",
+          "croissance de rattrapage"
+        ],
+        "indo": [
+          "konvergensi ekonomi",
+          "konvergensi pendapatan",
+          "konvergensi dengan negara maju",
+          "mengejar ketertinggalan dari negara maju"
+        ],
+        "japanese": [
+          "経済収斂",
+          "所得の収斂",
+          "所得水準の収斂",
+          "所得水準の収束",
+          "キャッチアップ型成長",
+          "先進国へのキャッチアップ"
+        ],
+        "km": [
+          "តាមទាន់ប្រទេសអភិវឌ្ឍន៍",
+          "តាមឱ្យទាន់ប្រទេសអភិវឌ្ឍន៍",
+          "តាមឲ្យទាន់ប្រទេសអភិវឌ្ឍន៍",
+          "ការរួមតម្រង់សេដ្ឋកិច្ច",
+          "ការរួមតម្រង់ប្រាក់ចំណូល",
+          "កំណើនតាមទាន់"
+        ],
+        "korean": [
+          "경제 수렴",
+          "경제수렴",
+          "소득 수렴",
+          "소득수렴",
+          "추격 성장",
+          "추격성장",
+          "선진국 따라잡기"
+        ],
+        "lao": [
+          "ການບັນຈົບກັນທາງເສດຖະກິດ",
+          "ການໄລ່ທັນທາງເສດຖະກິດ",
+          "ໄລ່ທັນປະເທດທີ່ພັດທະນາແລ້ວ"
+        ],
+        "malay": [
+          "konvergensi ekonomi",
+          "konvergensi pendapatan",
+          "pertumbuhan mengejar",
+          "mengejar ekonomi maju"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн ойртолт"
+          },
+          {
+            "prefix": "эдийн засгийн конвергенц"
+          },
+          {
+            "prefix": "орлогын конвергенц"
+          },
+          {
+            "prefix": "орлогын ойртолт"
+          },
+          {
+            "prefix": "хөгжингүй орнуудыг гүйцэ"
+          },
+          {
+            "prefix": "хөгжингүй орнуудтай ойрто"
+          }
+        ],
+        "my": [
+          "ဖွံ့ဖြိုးပြီးနိုင်ငံများကိုအမီလိုက်",
+          "ဖွံ့ဖြိုးပြီးနိုင်ငံများကို အမီလိုက်",
+          "စီးပွားရေးအမီလိုက်",
+          "economic convergence",
+          "income convergence",
+          "catch-up growth"
+        ],
+        "portuguese": [
+          "convergência económica",
+          "convergência econômica",
+          "convergência de rendimentos",
+          "convergência dos rendimentos",
+          "convergência real",
+          "convergência com as economias avançadas",
+          "convergência com a média europeia"
+        ],
+        "tetum": [
+          "konverjénsia ekonómika",
+          "konverjensia ekonomika",
+          "konverjénsia rendimentu",
+          "konverjensia rendimentu",
+          "konverjénsia reál",
+          "konverjensia real",
+          "convergência económica",
+          "convergencia economica",
+          "convergência real",
+          "convergencia real",
+          "convergência de rendimentos",
+          "convergencia de rendimentos",
+          "convergência com as economias avançadas",
+          "convergencia com as economias avancadas"
+        ],
+        "thai": [
+          "การบรรจบทางเศรษฐกิจ",
+          "การบรรจบกันทางเศรษฐกิจ",
+          "การลู่เข้าทางเศรษฐกิจ",
+          "ไล่ตามประเทศพัฒนาแล้ว"
+        ],
+        "tok_pisin": [
           "economic convergence",
           "income convergence",
           "catch-up growth",
@@ -208,6 +1954,166 @@
           "economic prospects",
           "growth prospects",
           "World Economic Outlook"
+        ],
+        "chinese_simplified": [
+          "经济展望",
+          "经济前景",
+          "增长前景",
+          "世界经济展望"
+        ],
+        "chinese_traditional": [
+          "經濟展望",
+          "經濟前景",
+          "成長前景",
+          "增長前景",
+          "景氣展望",
+          "景氣前景"
+        ],
+        "filipino": [
+          "economic outlook",
+          "growth outlook",
+          "economic prospects",
+          "growth prospects",
+          "World Economic Outlook",
+          "pananaw sa ekonomiya",
+          "pananaw sa paglago ng ekonomiya",
+          "outlook sa ekonomiya",
+          "outlook ng ekonomiya",
+          "hinaharap ng ekonomiya"
+        ],
+        "fr": [
+          "perspectives économiques",
+          "perspectives de croissance",
+          "perspectives de l'économie",
+          "perspectives de l’économie",
+          "perspectives pour l'économie",
+          "perspectives pour l’économie",
+          "Perspectives de l'économie mondiale",
+          "Perspectives de l’économie mondiale",
+          "perspectives économiques mondiales"
+        ],
+        "indo": [
+          "prospek ekonomi",
+          "prospek ekonominya",
+          "prospek perekonomian",
+          "prospek pertumbuhan",
+          "prospek pertumbuhan ekonomi",
+          "outlook ekonomi",
+          "World Economic Outlook"
+        ],
+        "japanese": [
+          "経済見通し",
+          "経済の見通し",
+          "景気見通し",
+          "景気の見通し",
+          "成長見通し",
+          "景気の先行き",
+          "経済の先行き",
+          "世界経済見通し"
+        ],
+        "km": [
+          "ទស្សនវិស័យសេដ្ឋកិច្ច",
+          "ទស្សនៈវិស័យសេដ្ឋកិច្ច",
+          "ទស្សនវិស័យកំណើន",
+          "ទស្សនៈវិស័យកំណើន",
+          "ទស្សនវិស័យនៃសេដ្ឋកិច្ច",
+          "World Economic Outlook"
+        ],
+        "korean": [
+          "경제전망",
+          "경제 전망",
+          "경기전망",
+          "경기 전망",
+          "성장전망",
+          "성장 전망",
+          "세계경제전망"
+        ],
+        "lao": [
+          "ແນວໂນ້ມເສດຖະກິດ",
+          "ແນວໂນ້ມທາງເສດຖະກິດ",
+          "ແນວໂນ້ມຂອງເສດຖະກິດ",
+          "ທ່າອ່ຽງເສດຖະກິດ",
+          "ທ່າອ່ຽງຂອງເສດຖະກິດ",
+          "ທ່າອ່ຽງທາງເສດຖະກິດ",
+          "ແນວໂນ້ມການຂະຫຍາຍຕົວ",
+          "ແນວໂນ້ມເສດຖະກິດໂລກ"
+        ],
+        "malay": [
+          "prospek ekonomi",
+          "tinjauan ekonomi",
+          "prospek pertumbuhan",
+          "tinjauan pertumbuhan",
+          "Tinjauan Ekonomi Dunia"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн хэтийн төл"
+          },
+          {
+            "prefix": "өсөлтийн хэтийн төл"
+          },
+          {
+            "prefix": "эдийн засгийн ирээдүйн төл"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးအလားအလာ",
+          "စီးပွားရေး အလားအလာ",
+          "စီးပွားရေးအနာဂတ်အလားအလာ",
+          "တိုးတက်မှုအလားအလာ",
+          "economic outlook",
+          "growth outlook",
+          "economic prospects"
+        ],
+        "portuguese": [
+          "perspetivas económicas",
+          "perspectivas económicas",
+          "perspectivas econômicas",
+          "perspetiva económica",
+          "perspectiva económica",
+          "perspectiva econômica",
+          "perspetivas de crescimento",
+          "perspectivas de crescimento",
+          "perspetivas para a economia",
+          "perspectivas para a economia",
+          "perspetivas da economia",
+          "perspectivas da economia",
+          "perspetivas económicas mundiais",
+          "perspectivas económicas mundiais",
+          "perspectivas econômicas mundiais",
+          "perspetivas da economia mundial",
+          "perspectivas da economia mundial"
+        ],
+        "tetum": [
+          "perspetiva ekonómika",
+          "perspetiva ekonomika",
+          "perspetiva ekonomia",
+          "perspetiva kresimentu",
+          "perspetivas económicas",
+          "perspetivas economicas",
+          "perspectivas económicas",
+          "perspectivas economicas",
+          "perspetivas de crescimento",
+          "perspectivas de crescimento",
+          "Perspetivas da Economia Mundial",
+          "World Economic Outlook"
+        ],
+        "thai": [
+          "แนวโน้มเศรษฐกิจ",
+          "แนวโน้มภาวะเศรษฐกิจ",
+          "แนวโน้มการเติบโตทางเศรษฐกิจ",
+          "ทิศทางเศรษฐกิจ",
+          "มุมมองเศรษฐกิจ"
+        ],
+        "tok_pisin": [
+          "economic outlook",
+          "economic outlooks",
+          "growth outlook",
+          "outlook for the economy",
+          "economic prospects",
+          "growth prospects",
+          "World Economic Outlook",
+          "ekonomik autluk"
         ]
       }
     },
@@ -216,6 +2122,195 @@
       "group": "outlook_and_sentiment",
       "forms": {
         "en": [
+          "economic forecast",
+          "economic forecasts",
+          "growth forecast",
+          "growth forecasts",
+          "GDP forecast",
+          "GDP forecasts",
+          "growth projection",
+          "growth projections"
+        ],
+        "chinese_simplified": [
+          "经济预测",
+          "增长预测",
+          "GDP预测",
+          "经济增长预期",
+          "增长预估"
+        ],
+        "chinese_traditional": [
+          "經濟預測",
+          "經濟成長預測",
+          "經濟增長預測",
+          "經濟成長預估",
+          "GDP預測",
+          "GDP預估",
+          "上修經濟成長率",
+          "下修經濟成長率"
+        ],
+        "filipino": [
+          "economic forecast",
+          "economic forecasts",
+          "growth forecast",
+          "growth forecasts",
+          "GDP forecast",
+          "growth projection",
+          "growth projections",
+          "forecast sa paglago",
+          "projection sa paglago",
+          "tinatayang paglago ng ekonomiya"
+        ],
+        "fr": [
+          "prévisions économiques",
+          "prévision économique",
+          "prévisions de croissance",
+          "prévision de croissance",
+          "prévisions du PIB",
+          "prévision de PIB",
+          "projections de croissance",
+          "projection de croissance"
+        ],
+        "indo": [
+          "proyeksi ekonomi",
+          "proyeksi pertumbuhan",
+          "proyeksi pertumbuhan ekonomi",
+          "proyeksi PDB",
+          "perkiraan pertumbuhan ekonomi",
+          "prakiraan pertumbuhan",
+          "prakiraan pertumbuhan ekonomi",
+          "perkiraan ekonomi"
+        ],
+        "japanese": [
+          "経済予測",
+          "景気予測",
+          "成長率予測",
+          "成長率見通し",
+          "GDP予測",
+          "成長率を下方修正",
+          "成長率を上方修正"
+        ],
+        "km": [
+          "ព្យាករណ៍កំណើនសេដ្ឋកិច្ច",
+          "ព្យាករកំណើនសេដ្ឋកិច្ច",
+          "ការព្យាករណ៍សេដ្ឋកិច្ច",
+          "ការព្យាករណ៍កំណើន",
+          "ព្យាករណ៍កំណើន GDP",
+          "ប៉ាន់ស្មានកំណើនសេដ្ឋកិច្ច",
+          "ប៉ាន់ប្រមាណកំណើនសេដ្ឋកិច្ច",
+          "ព្យាករណ៍ថាសេដ្ឋកិច្ច"
+        ],
+        "korean": [
+          "성장률 전망",
+          "성장률 예측",
+          "성장률 전망치",
+          "경제전망치",
+          "경제 전망치",
+          "GDP 전망",
+          "경기예측",
+          "경기 예측",
+          "성장률을 하향",
+          "성장률을 상향"
+        ],
+        "lao": [
+          "ການຄາດຄະເນທາງເສດຖະກິດ",
+          "ຄາດຄະເນການຂະຫຍາຍຕົວ",
+          "ຄາດຄະເນການເຕີບໂຕ",
+          "ຄາດຄະເນວ່າເສດຖະກິດ",
+          "ຄາດວ່າເສດຖະກິດ",
+          "ຄາດວ່າ GDP",
+          "ຄາດຄະເນ GDP",
+          "ຄາດການການຂະຫຍາຍຕົວ"
+        ],
+        "malay": [
+          "unjuran ekonomi",
+          "ramalan ekonomi",
+          "unjuran pertumbuhan",
+          "ramalan pertumbuhan",
+          "unjuran KDNK",
+          "ramalan KDNK",
+          "jangkaan pertumbuhan ekonomi"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн таамагл"
+          },
+          {
+            "prefix": "өсөлтийн таамагл"
+          },
+          {
+            "prefix": "эдийн засгийн төсөөл"
+          },
+          {
+            "prefix": "өсөлтийн төсөөл"
+          },
+          {
+            "prefix": "ДНБ-ий таамагл"
+          },
+          {
+            "prefix": "эдийн засгийн урьдчилсан таамагл"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးခန့်မှန်းချက်",
+          "စီးပွားရေး ခန့်မှန်းချက်",
+          "တိုးတက်မှုခန့်မှန်းချက်",
+          "တိုးတက်မှုနှုန်းခန့်မှန်း",
+          "ဂျီဒီပီခန့်မှန်း",
+          "economic forecast",
+          "growth forecast",
+          "GDP forecast"
+        ],
+        "portuguese": [
+          "previsão económica",
+          "previsão econômica",
+          "previsões económicas",
+          "previsões econômicas",
+          "previsão de crescimento",
+          "previsões de crescimento",
+          "previsão do PIB",
+          "previsões do PIB",
+          "previsões para o crescimento",
+          "projeção de crescimento",
+          "projecção de crescimento",
+          "projeções de crescimento",
+          "projecções de crescimento",
+          "projeções económicas",
+          "projecções económicas",
+          "projeções econômicas"
+        ],
+        "tetum": [
+          "previzaun ekonómika",
+          "previzaun ekonomika",
+          "previzaun kresimentu",
+          "previzaun PIB",
+          "projesaun kresimentu",
+          "projesaun ekonómika",
+          "projesaun ekonomika",
+          "previsão económica",
+          "previsao economica",
+          "previsões económicas",
+          "previsoes economicas",
+          "previsão de crescimento",
+          "previsao de crescimento",
+          "previsões de crescimento",
+          "previsoes de crescimento",
+          "projeção de crescimento",
+          "projecao de crescimento",
+          "projeções de crescimento",
+          "projecoes de crescimento"
+        ],
+        "thai": [
+          "คาดการณ์เศรษฐกิจ",
+          "ประมาณการเศรษฐกิจ",
+          "คาดการณ์การเติบโตทางเศรษฐกิจ",
+          "ประมาณการการเติบโตทางเศรษฐกิจ",
+          "คาดการณ์จีดีพี",
+          "ประมาณการจีดีพี",
+          "คาดการณ์ GDP",
+          "ประมาณการ GDP",
+          "คาดการณ์ว่าเศรษฐกิจ"
+        ],
+        "tok_pisin": [
           "economic forecast",
           "economic forecasts",
           "growth forecast",
@@ -237,6 +2332,184 @@
           "business confidence index",
           "business optimism",
           "investor confidence"
+        ],
+        "chinese_simplified": [
+          "商业信心",
+          "企业信心",
+          "企业家信心",
+          "投资者信心",
+          "商业景气",
+          "企业景气"
+        ],
+        "chinese_traditional": [
+          "企業信心",
+          "商業信心",
+          "營商信心",
+          "營業氣候",
+          "投資人信心",
+          "投資者信心"
+        ],
+        "filipino": [
+          "business confidence",
+          "business sentiment",
+          "business confidence index",
+          "investor confidence",
+          "kumpiyansa ng negosyo",
+          "kumpiyansa ng mga negosyante",
+          "kumpiyansa ng mga mamumuhunan",
+          "kumpiyansa ng mga investor",
+          "kumpiyansa ng investors",
+          "tiwala ng mga mamumuhunan",
+          "tiwala ng mga investor"
+        ],
+        "fr": [
+          "confiance des entreprises",
+          "confiance des chefs d'entreprise",
+          "confiance des chefs d’entreprise",
+          "moral des chefs d'entreprise",
+          "moral des chefs d’entreprise",
+          "moral des entrepreneurs",
+          "moral des entreprises",
+          "confiance des investisseurs",
+          "indicateur de confiance des entreprises",
+          "optimisme des entreprises"
+        ],
+        "indo": [
+          "kepercayaan bisnis",
+          "keyakinan pelaku usaha",
+          "kepercayaan pelaku usaha",
+          "kepercayaan dunia usaha",
+          "kepercayaan investor",
+          "keyakinan investor",
+          "indeks kepercayaan bisnis",
+          "sentimen bisnis",
+          "optimisme pelaku usaha"
+        ],
+        "japanese": [
+          "企業景況感",
+          "業況判断指数",
+          "業況判断DI",
+          "短観",
+          "企業マインド",
+          "投資家の信頼"
+        ],
+        "km": [
+          "ទំនុកចិត្តអាជីវកម្ម",
+          "ទំនុកចិត្ដអាជីវកម្ម",
+          "ទំនុកចិត្តធុរកិច្ច",
+          "ទំនុកចិត្ដធុរកិច្ច",
+          "ទំនុកចិត្តរបស់ធុរជន",
+          "ទំនុកចិត្ដរបស់ធុរជន",
+          "ទំនុកចិត្តវិនិយោគិន",
+          "ទំនុកចិត្ដវិនិយោគិន",
+          "ទំនុកចិត្តរបស់វិនិយោគិន",
+          "ទំនុកចិត្ដរបស់វិនិយោគិន",
+          "ទំនុកចិត្តរបស់អាជីវកម្ម",
+          "ទំនុកចិត្ដរបស់អាជីវកម្ម"
+        ],
+        "korean": [
+          "기업심리",
+          "기업 심리",
+          "기업경기실사지수",
+          "기업경기실사",
+          "BSI",
+          "기업 체감경기",
+          "기업신뢰",
+          "기업 신뢰",
+          "투자자 신뢰"
+        ],
+        "lao": [
+          "ຄວາມເຊື່ອໝັ້ນທາງທຸລະກິດ",
+          "ຄວາມເຊື່ອຫມັ້ນທາງທຸລະກິດ",
+          "ຄວາມເຊື່ອໝັ້ນຂອງທຸລະກິດ",
+          "ຄວາມເຊື່ອຫມັ້ນຂອງທຸລະກິດ",
+          "ຄວາມເຊື່ອໝັ້ນຂອງນັກທຸລະກິດ",
+          "ຄວາມເຊື່ອຫມັ້ນຂອງນັກທຸລະກິດ",
+          "ຄວາມເຊື່ອໝັ້ນຂອງນັກລົງທຶນ",
+          "ຄວາມເຊື່ອຫມັ້ນຂອງນັກລົງທຶນ",
+          "ຄວາມເຊື່ອໝັ້ນໃຫ້ແກ່ນັກລົງທຶນ",
+          "ຄວາມເຊື່ອຫມັ້ນໃຫ້ແກ່ນັກລົງທຶນ",
+          "ຄວາມໝັ້ນໃຈຂອງນັກລົງທຶນ",
+          "ຄວາມຫມັ້ນໃຈຂອງນັກລົງທຶນ",
+          "ດັດຊະນີຄວາມເຊື່ອໝັ້ນທາງທຸລະກິດ",
+          "ດັດຊະນີຄວາມເຊື່ອຫມັ້ນທາງທຸລະກິດ"
+        ],
+        "malay": [
+          "keyakinan perniagaan",
+          "sentimen perniagaan",
+          "indeks keyakinan perniagaan",
+          "keyakinan pelabur",
+          "keyakinan peniaga",
+          "optimisme perniagaan"
+        ],
+        "mn": [
+          {
+            "prefix": "бизнесийн итгэл"
+          },
+          {
+            "prefix": "бизнес эрхлэгчдийн итгэл"
+          },
+          {
+            "prefix": "хөрөнгө оруулагчдын итгэл"
+          },
+          {
+            "prefix": "хөрөнгө оруулагчийн итгэл"
+          },
+          {
+            "prefix": "бизнесийн хүлээлт"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးလုပ်ငန်းယုံကြည်မှု",
+          "လုပ်ငန်းရှင်များ၏ယုံကြည်မှု",
+          "ရင်းနှီးမြှုပ်နှံသူများ၏ယုံကြည်မှု",
+          "ရင်းနှီးမြှုပ်နှံသူ ယုံကြည်မှု",
+          "ရင်းနှီးမြှုပ်နှံသူယုံကြည်မှု",
+          "business confidence",
+          "investor confidence"
+        ],
+        "portuguese": [
+          "confiança empresarial",
+          "confiança das empresas",
+          "confiança dos empresários",
+          "índice de confiança empresarial",
+          "sentimento empresarial",
+          "otimismo empresarial",
+          "optimismo empresarial",
+          "confiança dos investidores",
+          "confiança do investidor"
+        ],
+        "tetum": [
+          "konfiansa negósiu",
+          "konfiansa negosiu",
+          "konfiansa emprezáriu",
+          "konfiansa emprezariu",
+          "konfiansa investidór",
+          "konfiansa investidor",
+          "konfiansa investidór sira",
+          "konfiansa investidor sira",
+          "confiança empresarial",
+          "confianca empresarial",
+          "confiança dos empresários",
+          "confianca dos empresarios",
+          "confiança dos investidores",
+          "confianca dos investidores",
+          "índice de confiança empresarial",
+          "indice de confianca empresarial"
+        ],
+        "thai": [
+          "ความเชื่อมั่นทางธุรกิจ",
+          "ความเชื่อมั่นภาคธุรกิจ",
+          "ความเชื่อมั่นภาคอุตสาหกรรม",
+          "ความเชื่อมั่นผู้ประกอบการ",
+          "ความเชื่อมั่นนักลงทุน"
+        ],
+        "tok_pisin": [
+          "business confidence",
+          "business sentiment",
+          "business confidence index",
+          "business optimism",
+          "investor confidence"
         ]
       }
     },
@@ -250,6 +2523,145 @@
           "consumer confidence index",
           "consumer optimism",
           "consumer pessimism"
+        ],
+        "chinese_simplified": [
+          "消费者信心",
+          "消费信心",
+          "消费者情绪",
+          "消费者悲观"
+        ],
+        "chinese_traditional": [
+          "消費者信心",
+          "消費信心",
+          "消費者情緒",
+          "消費者悲觀"
+        ],
+        "filipino": [
+          "consumer confidence",
+          "consumer sentiment",
+          "consumer confidence index",
+          "kumpiyansa ng mamimili",
+          "kumpiyansa ng mga mamimili",
+          "kumpiyansa ng mga konsyumer",
+          "kumpiyansa ng mga consumer"
+        ],
+        "fr": [
+          "confiance des consommateurs",
+          "confiance des ménages",
+          "moral des ménages",
+          "moral des consommateurs",
+          "indice de confiance des consommateurs",
+          "pessimisme des ménages",
+          "optimisme des ménages"
+        ],
+        "indo": [
+          "kepercayaan konsumen",
+          "keyakinan konsumen",
+          "indeks keyakinan konsumen",
+          "indeks kepercayaan konsumen",
+          "sentimen konsumen",
+          "optimisme konsumen",
+          "pesimisme konsumen"
+        ],
+        "japanese": [
+          "消費者信頼感",
+          "消費者態度指数",
+          "消費者マインド",
+          "消費マインド",
+          "消費者心理",
+          "消費者景況感"
+        ],
+        "km": [
+          "ទំនុកចិត្តអ្នកប្រើប្រាស់",
+          "ទំនុកចិត្ដអ្នកប្រើប្រាស់",
+          "ទំនុកចិត្តរបស់អ្នកប្រើប្រាស់",
+          "ទំនុកចិត្ដរបស់អ្នកប្រើប្រាស់",
+          "មនោសញ្ចេតនាអ្នកប្រើប្រាស់",
+          "សន្ទស្សន៍ទំនុកចិត្តអ្នកប្រើប្រាស់",
+          "សន្ទស្សន៍ទំនុកចិត្ដអ្នកប្រើប្រាស់"
+        ],
+        "korean": [
+          "소비자심리",
+          "소비자 심리",
+          "소비심리",
+          "소비 심리",
+          "CCSI",
+          "소비자신뢰",
+          "소비자 신뢰"
+        ],
+        "lao": [
+          "ຄວາມເຊື່ອໝັ້ນຂອງຜູ້ບໍລິໂພກ",
+          "ຄວາມເຊື່ອຫມັ້ນຂອງຜູ້ບໍລິໂພກ",
+          "ດັດຊະນີຄວາມເຊື່ອໝັ້ນຜູ້ບໍລິໂພກ",
+          "ດັດຊະນີຄວາມເຊື່ອຫມັ້ນຜູ້ບໍລິໂພກ",
+          "ດັດຊະນີຄວາມເຊື່ອໝັ້ນຂອງຜູ້ບໍລິໂພກ",
+          "ດັດຊະນີຄວາມເຊື່ອຫມັ້ນຂອງຜູ້ບໍລິໂພກ",
+          "ຄວາມໝັ້ນໃຈຂອງຜູ້ບໍລິໂພກ",
+          "ຄວາມຫມັ້ນໃຈຂອງຜູ້ບໍລິໂພກ"
+        ],
+        "malay": [
+          "keyakinan pengguna",
+          "sentimen pengguna",
+          "indeks sentimen pengguna",
+          "indeks keyakinan pengguna",
+          "optimisme pengguna"
+        ],
+        "mn": [
+          {
+            "prefix": "хэрэглэгчийн итгэл"
+          },
+          {
+            "prefix": "хэрэглэгчдийн итгэл"
+          },
+          {
+            "prefix": "хэрэглэгчийн хүлээлт"
+          },
+          {
+            "prefix": "хэрэглэгчдийн хүлээлт"
+          }
+        ],
+        "my": [
+          "စားသုံးသူယုံကြည်မှု",
+          "စားသုံးသူ ယုံကြည်မှု",
+          "စားသုံးသူများ၏ယုံကြည်မှု",
+          "consumer confidence",
+          "consumer sentiment"
+        ],
+        "portuguese": [
+          "confiança dos consumidores",
+          "confiança do consumidor",
+          "índice de confiança dos consumidores",
+          "índice de confiança do consumidor",
+          "sentimento dos consumidores",
+          "sentimento do consumidor",
+          "otimismo dos consumidores",
+          "optimismo dos consumidores",
+          "pessimismo dos consumidores"
+        ],
+        "tetum": [
+          "konfiansa konsumidór",
+          "konfiansa konsumidor",
+          "konfiansa konsumidór sira",
+          "konfiansa konsumidor sira",
+          "índise konfiansa konsumidór",
+          "indise konfiansa konsumidor",
+          "confiança dos consumidores",
+          "confianca dos consumidores",
+          "confiança do consumidor",
+          "confianca do consumidor",
+          "índice de confiança do consumidor",
+          "indice de confianca do consumidor"
+        ],
+        "thai": [
+          "ความเชื่อมั่นผู้บริโภค",
+          "ความเชื่อมั่นของผู้บริโภค"
+        ],
+        "tok_pisin": [
+          "consumer confidence",
+          "consumer sentiment",
+          "consumer confidence index",
+          "consumer optimism",
+          "consumer pessimism"
         ]
       }
     },
@@ -258,6 +2670,167 @@
       "group": "outlook_and_sentiment",
       "forms": {
         "en": [
+          "economic sentiment",
+          "economic sentiment indicator",
+          "economic mood",
+          "economic confidence",
+          "investor sentiment",
+          "market sentiment"
+        ],
+        "chinese_simplified": [
+          "经济情绪",
+          "经济信心",
+          "投资者情绪",
+          "市场情绪",
+          "经济景气"
+        ],
+        "chinese_traditional": [
+          "經濟信心",
+          "經濟氣氛",
+          "市場情緒",
+          "市場信心",
+          "投資情緒",
+          "投資氣氛"
+        ],
+        "filipino": [
+          "economic sentiment",
+          "market sentiment",
+          "investor sentiment",
+          "economic confidence",
+          "sentimyento ng merkado",
+          "sentimyento sa merkado",
+          "kumpiyansa sa ekonomiya"
+        ],
+        "fr": [
+          "sentiment économique",
+          "indicateur du sentiment économique",
+          "climat économique",
+          "confiance économique",
+          "sentiment des investisseurs",
+          "sentiment du marché",
+          "sentiment des marchés"
+        ],
+        "indo": [
+          "sentimen ekonomi",
+          "sentimen perekonomian",
+          "sentimen pasar",
+          "sentimen investor",
+          "indikator sentimen ekonomi"
+        ],
+        "japanese": [
+          "景気マインド",
+          "景気ウォッチャー調査",
+          "街角景気",
+          "景気の現状判断",
+          "景気センチメント",
+          "市場心理",
+          "投資家心理",
+          "市場のセンチメント"
+        ],
+        "km": [
+          "ទំនុកចិត្តលើសេដ្ឋកិច្ច",
+          "ទំនុកចិត្ដលើសេដ្ឋកិច្ច",
+          "ទំនុកចិត្តផ្នែកសេដ្ឋកិច្ច",
+          "ទំនុកចិត្ដផ្នែកសេដ្ឋកិច្ច",
+          "មនោសញ្ចេតនាសេដ្ឋកិច្ច",
+          "មនោសញ្ចេតនាទីផ្សារ",
+          "មនោសញ្ចេតនាវិនិយោគិន",
+          "ទំនុកចិត្តទីផ្សារ",
+          "ទំនុកចិត្ដទីផ្សារ"
+        ],
+        "korean": [
+          "경제심리",
+          "경제 심리",
+          "체감경기",
+          "체감 경기",
+          "투자심리",
+          "투자 심리",
+          "시장심리",
+          "시장 심리"
+        ],
+        "lao": [
+          "ຄວາມເຊື່ອໝັ້ນທາງເສດຖະກິດ",
+          "ຄວາມເຊື່ອຫມັ້ນທາງເສດຖະກິດ",
+          "ຄວາມເຊື່ອໝັ້ນຕໍ່ເສດຖະກິດ",
+          "ຄວາມເຊື່ອຫມັ້ນຕໍ່ເສດຖະກິດ",
+          "ຄວາມຮູ້ສຶກທາງເສດຖະກິດ",
+          "ຄວາມເຊື່ອໝັ້ນຂອງຕະຫຼາດ",
+          "ຄວາມເຊື່ອຫມັ້ນຂອງຕະຫລາດ",
+          "ຄວາມເຊື່ອຫມັ້ນຂອງຕະຫຼາດ",
+          "ຄວາມເຊື່ອໝັ້ນຕໍ່ຕະຫຼາດ",
+          "ຄວາມເຊື່ອຫມັ້ນຕໍ່ຕະຫລາດ",
+          "ຄວາມເຊື່ອຫມັ້ນຕໍ່ຕະຫຼາດ"
+        ],
+        "malay": [
+          "sentimen ekonomi",
+          "keyakinan ekonomi",
+          "indeks sentimen ekonomi",
+          "sentimen pelabur",
+          "sentimen pasaran"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн итгэл"
+          },
+          {
+            "prefix": "зах зээлийн сэтгэл зүй"
+          },
+          {
+            "prefix": "зах зээлийн сэтгэл санаа"
+          },
+          {
+            "prefix": "хөрөнгө оруулагчдын сэтгэл зүй"
+          },
+          {
+            "prefix": "хөрөнгө оруулагчдын сэтгэл санаа"
+          },
+          {
+            "prefix": "эдийн засгийн сэтгэл зүй"
+          }
+        ],
+        "my": [
+          "ဈေးကွက်ခံစားချက်",
+          "စျေးကွက်ခံစားချက်",
+          "စီးပွားရေးအပေါ်ယုံကြည်မှု",
+          "economic sentiment",
+          "market sentiment",
+          "investor sentiment"
+        ],
+        "portuguese": [
+          "sentimento económico",
+          "sentimento econômico",
+          "indicador de sentimento económico",
+          "indicador de sentimento econômico",
+          "clima económico",
+          "clima econômico",
+          "indicador de clima económico",
+          "indicador de clima econômico",
+          "confiança económica",
+          "confiança econômica",
+          "sentimento dos investidores",
+          "sentimento do mercado",
+          "sentimento dos mercados"
+        ],
+        "tetum": [
+          "sentimentu ekonómiku",
+          "sentimentu ekonomiku",
+          "sentimentu merkadu",
+          "sentimentu investidór",
+          "sentimentu investidor",
+          "sentimento económico",
+          "sentimento economico",
+          "indicador de sentimento económico",
+          "indicador de sentimento economico",
+          "sentimento do mercado",
+          "sentimento dos investidores"
+        ],
+        "thai": [
+          "ความเชื่อมั่นทางเศรษฐกิจ",
+          "ความเชื่อมั่นต่อเศรษฐกิจ",
+          "ความเชื่อมั่นของตลาด",
+          "บรรยากาศทางเศรษฐกิจ"
+        ],
+        "tok_pisin": [
           "economic sentiment",
           "economic sentiment indicator",
           "economic mood",
@@ -279,6 +2852,150 @@
           "boom and bust",
           "boom-and-bust",
           "boom-bust"
+        ],
+        "chinese_simplified": [
+          "经济周期",
+          "商业周期",
+          "景气循环",
+          "繁荣与萧条",
+          "繁荣萧条"
+        ],
+        "chinese_traditional": [
+          "景氣循環",
+          "景氣週期",
+          "景氣周期",
+          "經濟週期",
+          "經濟周期",
+          "經濟循環",
+          "繁榮與蕭條"
+        ],
+        "filipino": [
+          "business cycle",
+          "business cycles",
+          "economic cycle",
+          "economic cycles",
+          "boom and bust",
+          "boom-and-bust",
+          "siklo ng ekonomiya"
+        ],
+        "fr": [
+          "cycle économique",
+          "cycles économiques",
+          "cycle conjoncturel",
+          "cycles conjoncturels",
+          "cycle des affaires"
+        ],
+        "indo": [
+          "siklus bisnis",
+          "siklus usaha",
+          "siklus ekonomi",
+          "siklus perekonomian",
+          "boom and bust"
+        ],
+        "japanese": [
+          "景気循環",
+          "景気の循環",
+          "景気サイクル",
+          "好不況の波",
+          "景気の山",
+          "景気の谷",
+          "景気拡張期"
+        ],
+        "km": [
+          "វដ្តអាជីវកម្ម",
+          "វដ្ដអាជីវកម្ម",
+          "វដ្តសេដ្ឋកិច្ច",
+          "វដ្ដសេដ្ឋកិច្ច",
+          "វដ្តនៃសេដ្ឋកិច្ច",
+          "វដ្ដនៃសេដ្ឋកិច្ច",
+          "វដ្តធុរកិច្ច",
+          "វដ្ដធុរកិច្ច"
+        ],
+        "korean": [
+          "경기순환",
+          "경기 순환",
+          "경기사이클",
+          "경기 사이클",
+          "경제 사이클",
+          "경기변동",
+          "경기 변동",
+          "호황과 불황"
+        ],
+        "lao": [
+          "ວົງຈອນທຸລະກິດ",
+          "ວົງຈອນເສດຖະກິດ",
+          "ວົງຈອນທາງເສດຖະກິດ",
+          "ວັດຈັກເສດຖະກິດ"
+        ],
+        "malay": [
+          "kitaran perniagaan",
+          "kitaran ekonomi"
+        ],
+        "mn": [
+          {
+            "prefix": "бизнесийн мөчлөг"
+          },
+          {
+            "prefix": "эдийн засгийн мөчлөг"
+          },
+          {
+            "prefix": "бизнесийн цикл"
+          },
+          {
+            "prefix": "эдийн засгийн цикл"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးသံသရာ",
+          "စီးပွားရေးစက်ဝန်း",
+          "စီးပွားရေးစက်၀န်း",
+          "စီးပွားရေး သံသရာ",
+          "business cycle",
+          "economic cycle",
+          "boom and bust"
+        ],
+        "portuguese": [
+          "ciclo económico",
+          "ciclo econômico",
+          "ciclos económicos",
+          "ciclos econômicos",
+          "ciclo de negócios",
+          "ciclos de negócios",
+          "ciclo conjuntural",
+          "ciclos de expansão e recessão",
+          "ciclo de expansão e contração",
+          "ciclo de expansão e contracção"
+        ],
+        "tetum": [
+          "siklu ekonómiku",
+          "siklu ekonomiku",
+          "siklu ekonomia",
+          "siklu negósiu",
+          "siklu negosiu",
+          "ciclo económico",
+          "ciclo economico",
+          "ciclos económicos",
+          "ciclos economicos",
+          "ciclo econômico",
+          "ciclo de negócios",
+          "ciclo de negocios",
+          "ciclos de expansão e recessão",
+          "ciclos de expansao e recessao"
+        ],
+        "thai": [
+          "วัฏจักรธุรกิจ",
+          "วัฏจักรเศรษฐกิจ",
+          "วงจรเศรษฐกิจ",
+          "วงจรธุรกิจ"
+        ],
+        "tok_pisin": [
+          "business cycle",
+          "business cycles",
+          "economic cycle",
+          "economic cycles",
+          "boom and bust",
+          "boom-and-bust",
+          "boom-bust"
         ]
       }
     },
@@ -287,6 +3004,155 @@
       "group": "cycle_and_capacity",
       "forms": {
         "en": [
+          "output gap",
+          "output gaps",
+          "potential output",
+          "potential GDP",
+          "potential growth"
+        ],
+        "chinese_simplified": [
+          "产出缺口",
+          "潜在产出",
+          "潜在GDP",
+          "潜在增长率",
+          "潜在经济增长"
+        ],
+        "chinese_traditional": [
+          "產出缺口",
+          "產出差距",
+          "潛在產出",
+          "潛在GDP",
+          "潛在成長率",
+          "潛在增長率"
+        ],
+        "filipino": [
+          "output gap",
+          "output gaps",
+          "potential output",
+          "potential GDP",
+          "potential growth"
+        ],
+        "fr": [
+          "écart de production",
+          "écarts de production",
+          "production potentielle",
+          "PIB potentiel",
+          "croissance potentielle"
+        ],
+        "indo": [
+          "kesenjangan output",
+          "celah output",
+          "output gap",
+          "output potensial",
+          "PDB potensial",
+          "pertumbuhan potensial"
+        ],
+        "japanese": [
+          "需給ギャップ",
+          "GDPギャップ",
+          "デフレギャップ",
+          "潜在成長率",
+          "潜在GDP",
+          "潜在産出量",
+          "潜在的な成長率"
+        ],
+        "km": [
+          "គម្លាតទិន្នផល",
+          "ទិន្នផលសក្តានុពល",
+          "ទិន្នផលសក្ដានុពល",
+          "ទិន្នផលដែលមានសក្តានុពល",
+          "ទិន្នផលដែលមានសក្ដានុពល",
+          "GDP សក្តានុពល",
+          "GDP សក្ដានុពល",
+          "កំណើនសក្តានុពល",
+          "កំណើនសក្ដានុពល"
+        ],
+        "korean": [
+          "GDP갭",
+          "GDP 갭",
+          "산출갭",
+          "산출 갭",
+          "생산갭",
+          "생산 갭",
+          "잠재성장률",
+          "잠재 성장률",
+          "잠재GDP",
+          "잠재 GDP",
+          "잠재산출"
+        ],
+        "lao": [
+          "ຊ່ອງຫວ່າງຜົນຜະລິດ",
+          "ຊ່ອງຫວ່າງຂອງຜົນຜະລິດ",
+          "ຜົນຜະລິດທີ່ມີທ່າແຮງ",
+          "GDP ທີ່ມີທ່າແຮງ",
+          "ການຂະຫຍາຍຕົວທີ່ມີທ່າແຮງ"
+        ],
+        "malay": [
+          "jurang output",
+          "jurang keluaran",
+          "output berpotensi",
+          "keluaran berpotensi",
+          "KDNK berpotensi",
+          "pertumbuhan berpotensi"
+        ],
+        "mn": [
+          {
+            "prefix": "үйлдвэрлэлийн зөрүү"
+          },
+          {
+            "prefix": "боломжит ДНБ"
+          },
+          {
+            "prefix": "потенциал ДНБ"
+          },
+          {
+            "prefix": "боломжит үйлдвэрлэл"
+          },
+          {
+            "prefix": "ДНБ-ий зөрүү"
+          },
+          {
+            "prefix": "эдийн засгийн боломжит өсөлт"
+          }
+        ],
+        "my": [
+          "ထုတ်လုပ်မှုကွာဟချက်",
+          "ဖြစ်နိုင်ချေထုတ်လုပ်မှု",
+          "output gap",
+          "potential output",
+          "potential GDP"
+        ],
+        "portuguese": [
+          "hiato do produto",
+          "hiato do PIB",
+          "hiato negativo do produto",
+          "hiato positivo do produto",
+          "produto potencial",
+          "PIB potencial",
+          "crescimento potencial"
+        ],
+        "tetum": [
+          "hiatu produtu",
+          "produtu potensiál",
+          "produtu potensial",
+          "PIB potensiál",
+          "PIB potensial",
+          "kresimentu potensiál",
+          "kresimentu potensial",
+          "hiato do produto",
+          "produto potencial",
+          "PIB potencial",
+          "crescimento potencial"
+        ],
+        "thai": [
+          "ช่องว่างผลผลิต",
+          "ช่องว่างการผลิต",
+          "ผลผลิตศักยภาพ",
+          "อัตราการเติบโตศักยภาพ",
+          "ศักยภาพการเติบโตทางเศรษฐกิจ",
+          "output gap"
+        ],
+        "tok_pisin": [
           "output gap",
           "output gaps",
           "potential output",
@@ -306,6 +3172,166 @@
           "spare capacity",
           "excess capacity",
           "overcapacity"
+        ],
+        "chinese_simplified": [
+          "产能利用率",
+          "闲置产能",
+          "产能过剩",
+          "过剩产能",
+          "剩余产能"
+        ],
+        "chinese_traditional": [
+          "產能利用率",
+          "產能使用率",
+          "閒置產能",
+          "剩餘產能",
+          "過剩產能",
+          "產能過剩"
+        ],
+        "filipino": [
+          "capacity utilization",
+          "capacity utilisation",
+          "idle capacity",
+          "spare capacity",
+          "excess capacity",
+          "overcapacity"
+        ],
+        "fr": [
+          "taux d'utilisation des capacités",
+          "taux d’utilisation des capacités",
+          "utilisation des capacités",
+          "capacités inutilisées",
+          "capacités de production inutilisées",
+          "capacités excédentaires",
+          "surcapacité",
+          "surcapacités"
+        ],
+        "indo": [
+          "utilisasi kapasitas",
+          "utilisasi kapasitas produksi",
+          "pemanfaatan kapasitas",
+          "pemanfaatan kapasitas produksi",
+          "kapasitas menganggur",
+          "kelebihan kapasitas",
+          "kelebihan kapasitas produksi",
+          "overkapasitas",
+          "overcapacity"
+        ],
+        "japanese": [
+          "設備稼働率",
+          "工場稼働率",
+          "操業度",
+          "過剰設備",
+          "設備過剰",
+          "過剰生産能力",
+          "生産能力過剰",
+          "余剰生産能力",
+          "遊休設備"
+        ],
+        "km": [
+          "ការប្រើប្រាស់សមត្ថភាពផលិត",
+          "អត្រាប្រើប្រាស់សមត្ថភាពផលិត",
+          "សមត្ថភាពផលិតលើស",
+          "សមត្ថភាពផលិតកម្មលើស",
+          "សមត្ថភាពផលិតទំនេរ",
+          "សមត្ថភាពផលិតនៅទំនេរ"
+        ],
+        "korean": [
+          "가동률",
+          "유휴설비",
+          "유휴 설비",
+          "과잉설비",
+          "과잉 설비",
+          "설비 과잉",
+          "생산능력 과잉"
+        ],
+        "lao": [
+          "ການນຳໃຊ້ກຳລັງການຜະລິດ",
+          "ການນໍາໃຊ້ກໍາລັງການຜະລິດ",
+          "ອັດຕາການນຳໃຊ້ກຳລັງການຜະລິດ",
+          "ອັດຕາການນໍາໃຊ້ກໍາລັງການຜະລິດ",
+          "ກຳລັງການຜະລິດເກີນ",
+          "ກໍາລັງການຜະລິດເກີນ",
+          "ກຳລັງການຜະລິດທີ່ບໍ່ໄດ້ນຳໃຊ້",
+          "ກໍາລັງການຜະລິດທີ່ບໍ່ໄດ້ນໍາໃຊ້",
+          "ກຳລັງການຜະລິດລົ້ນ",
+          "ກໍາລັງການຜະລິດລົ້ນ"
+        ],
+        "malay": [
+          "penggunaan kapasiti",
+          "kadar penggunaan kapasiti",
+          "kapasiti terbiar",
+          "kapasiti berlebihan",
+          "lebihan kapasiti",
+          "kapasiti lebihan"
+        ],
+        "mn": [
+          {
+            "prefix": "хүчин чадлын ашиглал"
+          },
+          {
+            "prefix": "сул хүчин чад"
+          },
+          {
+            "prefix": "илүүдэл хүчин чад"
+          },
+          {
+            "prefix": "ашиглагдаагүй хүчин чад"
+          },
+          {
+            "prefix": "хэт их хүчин чад"
+          },
+          {
+            "prefix": "хүчин чадлын илүүдэл"
+          }
+        ],
+        "my": [
+          "ထုတ်လုပ်နိုင်စွမ်းအသုံးချ",
+          "ထုတ်လုပ်နိုင်စွမ်းပိုလျှံ",
+          "ပိုလျှံထုတ်လုပ်နိုင်စွမ်း",
+          "ထုတ်လုပ်နိုင်စွမ်းအပြည့်",
+          "capacity utilization",
+          "capacity utilisation",
+          "overcapacity"
+        ],
+        "portuguese": [
+          "utilização da capacidade instalada",
+          "utilização da capacidade produtiva",
+          "taxa de utilização da capacidade",
+          "uso da capacidade instalada",
+          "capacidade ociosa",
+          "capacidade produtiva ociosa",
+          "capacidade excedentária",
+          "capacidade excedente",
+          "excesso de capacidade",
+          "sobrecapacidade"
+        ],
+        "tetum": [
+          "utilizasaun kapasidade",
+          "utilizasaun kapasidade produtiva",
+          "kapasidade eksesiva",
+          "ezesu kapasidade",
+          "utilização da capacidade",
+          "utilizacao da capacidade",
+          "utilização da capacidade instalada",
+          "utilizacao da capacidade instalada",
+          "capacidade ociosa",
+          "excesso de capacidade",
+          "sobrecapacidade"
+        ],
+        "thai": [
+          "ใช้กำลังการผลิต",
+          "กำลังการผลิตส่วนเกิน",
+          "กำลังการผลิตล้นเกิน",
+          "กำลังการผลิตที่ไม่ได้ใช้"
+        ],
+        "tok_pisin": [
+          "capacity utilization",
+          "capacity utilisation",
+          "idle capacity",
+          "spare capacity",
+          "excess capacity",
+          "overcapacity"
         ]
       }
     },
@@ -314,6 +3340,185 @@
       "group": "cycle_and_capacity",
       "forms": {
         "en": [
+          "supply constraints",
+          "supply constraint",
+          "supply-side constraints",
+          "supply bottlenecks",
+          "supply bottleneck",
+          "capacity constraints",
+          "input shortages"
+        ],
+        "chinese_simplified": [
+          "供应限制",
+          "供给约束",
+          "供应约束",
+          "供应瓶颈",
+          "供给侧约束",
+          "产能约束",
+          "原材料短缺"
+        ],
+        "chinese_traditional": [
+          "供給限制",
+          "供應限制",
+          "供給瓶頸",
+          "供應瓶頸",
+          "產能限制",
+          "產能瓶頸",
+          "原料短缺",
+          "原物料短缺"
+        ],
+        "filipino": [
+          "supply constraints",
+          "supply constraint",
+          "supply bottlenecks",
+          "supply bottleneck",
+          "capacity constraints",
+          "input shortages"
+        ],
+        "fr": [
+          "contraintes d'offre",
+          "contraintes d’offre",
+          "contraintes de l'offre",
+          "contraintes de l’offre",
+          "contraintes du côté de l'offre",
+          "contraintes du côté de l’offre",
+          "contraintes de capacité",
+          "contraintes de capacités",
+          "pénuries d'intrants",
+          "pénuries d’intrants",
+          "pénurie d'intrants",
+          "pénurie d’intrants",
+          "pénurie de matières premières",
+          "pénuries de matières premières"
+        ],
+        "indo": [
+          "keterbatasan pasokan",
+          "kendala pasokan",
+          "hambatan pasokan",
+          "kendala sisi penawaran",
+          "hambatan sisi pasokan",
+          "kekurangan bahan baku",
+          "kelangkaan bahan baku",
+          "keterbatasan kapasitas produksi"
+        ],
+        "japanese": [
+          "供給制約",
+          "供給面の制約",
+          "供給のボトルネック",
+          "生産能力の制約",
+          "部品不足",
+          "半導体不足",
+          "資材不足"
+        ],
+        "km": [
+          "កង្វះការផ្គត់ផ្គង់",
+          "ឧបសគ្គផ្នែកផ្គត់ផ្គង់",
+          "ឧបសគ្គនៃការផ្គត់ផ្គង់",
+          "ការផ្គត់ផ្គង់មិនគ្រប់គ្រាន់",
+          "ការកកស្ទះការផ្គត់ផ្គង់",
+          "កង្វះវត្ថុធាតុដើម",
+          "កង្វះធាតុចូល"
+        ],
+        "korean": [
+          "공급제약",
+          "공급 제약",
+          "공급병목",
+          "공급 병목",
+          "공급차질",
+          "공급 차질",
+          "공급난",
+          "부품 부족",
+          "원자재 부족"
+        ],
+        "lao": [
+          "ຂໍ້ຈຳກັດດ້ານການສະໜອງ",
+          "ຂໍ້ຈໍາກັດດ້ານການສະຫນອງ",
+          "ຂໍ້ຈຳກັດທາງດ້ານການສະໜອງ",
+          "ຂໍ້ຈໍາກັດທາງດ້ານການສະຫນອງ",
+          "ການສະໜອງບໍ່ພຽງພໍ",
+          "ການສະຫນອງບໍ່ພຽງພໍ",
+          "ການຂາດແຄນວັດຖຸດິບ",
+          "ຂາດແຄນວັດຖຸດິບ",
+          "ຄໍຂວດດ້ານການສະໜອງ",
+          "ຄໍຂວດດ້ານການສະຫນອງ"
+        ],
+        "malay": [
+          "kekangan bekalan",
+          "kekangan dari segi bekalan",
+          "kekangan sisi penawaran",
+          "kesesakan bekalan",
+          "kekangan kapasiti",
+          "kekurangan input",
+          "kekurangan bahan mentah"
+        ],
+        "mn": [
+          {
+            "prefix": "нийлүүлэлтийн хязгаарлал"
+          },
+          {
+            "prefix": "нийлүүлэлтийн саад"
+          },
+          {
+            "prefix": "нийлүүлэлтийн хүндрэл"
+          },
+          {
+            "prefix": "нийлүүлэлтийн хомсдол"
+          },
+          {
+            "prefix": "орцын хомсдол"
+          },
+          {
+            "prefix": "түүхий эдийн хомсдол"
+          },
+          {
+            "prefix": "хүчин чадлын хязгаарлал"
+          }
+        ],
+        "my": [
+          "ထောက်ပံ့မှုကန့်သတ်ချက်",
+          "ထောက်ပံ့မှုဆိုင်ရာကန့်သတ်ချက်",
+          "ရောင်းလိုအားကန့်သတ်",
+          "ထောက်ပံ့ရေးပိတ်ဆို့",
+          "supply constraints",
+          "supply bottlenecks"
+        ],
+        "portuguese": [
+          "restrições de oferta",
+          "restrições do lado da oferta",
+          "constrangimentos de oferta",
+          "constrangimentos do lado da oferta",
+          "estrangulamentos na oferta",
+          "estrangulamentos do lado da oferta",
+          "gargalos de oferta",
+          "gargalos na oferta",
+          "escassez de fatores de produção",
+          "escassez de factores de produção",
+          "escassez de insumos"
+        ],
+        "tetum": [
+          "restrisaun oferta",
+          "limitasaun oferta",
+          "estrangulamentu oferta",
+          "falta matéria-prima",
+          "falta materia-prima",
+          "restrições da oferta",
+          "restricoes da oferta",
+          "restrições do lado da oferta",
+          "restricoes do lado da oferta",
+          "constrangimentos do lado da oferta",
+          "estrangulamentos na oferta",
+          "escassez de matérias-primas",
+          "escassez de materias-primas"
+        ],
+        "thai": [
+          "ข้อจำกัดด้านอุปทาน",
+          "ข้อจำกัดทางด้านอุปทาน",
+          "คอขวดด้านอุปทาน",
+          "คอขวดการผลิต",
+          "อุปทานตึงตัว",
+          "ข้อจำกัดด้านกำลังการผลิต"
+        ],
+        "tok_pisin": [
           "supply constraints",
           "supply constraint",
           "supply-side constraints",
@@ -339,6 +3544,208 @@
           "production stoppages",
           "factory shutdowns",
           "plant shutdowns"
+        ],
+        "chinese_simplified": [
+          "生产中断",
+          "工厂停产",
+          "被迫停产",
+          "停工停产",
+          "工厂停工",
+          "生产停顿",
+          "生产受阻",
+          "工厂关闭"
+        ],
+        "chinese_traditional": [
+          "生產中斷",
+          "生產停頓",
+          "暫停生產",
+          "停止生產",
+          "工廠停工",
+          "工廠停產",
+          "停工停產",
+          "產線停擺",
+          "生產線停擺"
+        ],
+        "filipino": [
+          "production disruptions",
+          "production disruption",
+          "production halt",
+          "production stoppage",
+          "factory shutdowns",
+          "plant shutdowns",
+          "pagkaantala ng produksyon",
+          "paghinto ng produksyon",
+          "pagtigil ng produksyon",
+          "tumigil ang produksyon",
+          "natigil ang produksyon"
+        ],
+        "fr": [
+          "perturbations de la production",
+          "perturbation de la production",
+          "arrêt de la production",
+          "arrêt de production",
+          "arrêts de production",
+          "interruption de la production",
+          "interruptions de production",
+          "fermeture d'usine",
+          "fermeture d’usine",
+          "fermetures d'usines",
+          "fermetures d’usines",
+          "usine à l'arrêt",
+          "usine à l’arrêt",
+          "usines à l'arrêt",
+          "usines à l’arrêt"
+        ],
+        "indo": [
+          "gangguan produksi",
+          "terganggunya produksi",
+          "penghentian produksi",
+          "produksi terhenti",
+          "berhenti berproduksi",
+          "penutupan pabrik",
+          "pabrik berhenti beroperasi"
+        ],
+        "japanese": [
+          "生産停止",
+          "生産の停止",
+          "生産を停止",
+          "操業停止",
+          "操業を停止",
+          "生産中断",
+          "生産ラインの停止",
+          "工場の稼働停止",
+          "生産に支障",
+          "生産活動の混乱"
+        ],
+        "km": [
+          "ការរំខានដល់ផលិតកម្ម",
+          "ការរំខានផលិតកម្ម",
+          "ការផ្អាកផលិតកម្ម",
+          "ផ្អាកការផលិត",
+          "ការបញ្ឈប់ផលិតកម្ម",
+          "បញ្ឈប់ការផលិត",
+          "រោងចក្របិទទ្វារ",
+          "ការបិទរោងចក្រ",
+          "រោងចក្រផ្អាកដំណើរការ",
+          "ផ្អាកដំណើរការរោងចក្រ"
+        ],
+        "korean": [
+          "생산차질",
+          "생산 차질",
+          "생산중단",
+          "생산 중단",
+          "가동중단",
+          "가동 중단",
+          "조업중단",
+          "조업 중단",
+          "공장 폐쇄"
+        ],
+        "lao": [
+          "ການຂັດຂ້ອງດ້ານການຜະລິດ",
+          "ການຜະລິດຢຸດສະງັກ",
+          "ການຜະລິດຢຸດຊະງັກ",
+          "ຢຸດການຜະລິດ",
+          "ການຢຸດຜະລິດ",
+          "ໂຮງງານຢຸດການຜະລິດ",
+          "ການຜະລິດຂາດຕອນ",
+          "ການຜະລິດຊະງັກງັນ"
+        ],
+        "malay": [
+          "gangguan pengeluaran",
+          "gangguan terhadap pengeluaran",
+          "pengeluaran terganggu",
+          "penghentian pengeluaran",
+          "pengeluaran dihentikan",
+          "penutupan kilang",
+          "operasi kilang dihentikan"
+        ],
+        "mn": [
+          {
+            "prefix": "үйлдвэрлэлийн тасалд"
+          },
+          {
+            "prefix": "үйлдвэрлэл тасалд"
+          },
+          {
+            "prefix": "үйлдвэрлэл зогс"
+          },
+          {
+            "prefix": "үйлдвэрлэлээ зогс"
+          },
+          {
+            "prefix": "үйлдвэрлэлийг зогсоо"
+          },
+          {
+            "prefix": "үйлдвэрлэлийн доголдол"
+          },
+          {
+            "prefix": "үйлдвэрүүд хаагд"
+          },
+          {
+            "prefix": "үйлдвэрийн үйл ажиллагаа зогс"
+          }
+        ],
+        "my": [
+          "ထုတ်လုပ်မှုပြတ်တောက်",
+          "ထုတ်လုပ်မှုရပ်ဆိုင်း",
+          "ထုတ်လုပ်မှု ရပ်ဆိုင်း",
+          "ထုတ်လုပ်မှုရပ်တန့်",
+          "ထုတ်လုပ်မှုအနှောင့်အယှက်",
+          "production disruption",
+          "production disruptions",
+          "production halt"
+        ],
+        "portuguese": [
+          "disrupções na produção",
+          "disrupção da produção",
+          "disrupção na produção",
+          "interrupções na produção",
+          "interrupção da produção",
+          "perturbações na produção",
+          "paragem da produção",
+          "paralisação da produção",
+          "suspensão da produção",
+          "encerramento de fábricas",
+          "fecho de fábricas",
+          "paralisação das fábricas"
+        ],
+        "tetum": [
+          "interrupsaun produsaun",
+          "paralizasaun produsaun",
+          "suspensaun produsaun",
+          "fábrika taka",
+          "fabrika taka",
+          "interrupção da produção",
+          "interrupcao da producao",
+          "paralisação da produção",
+          "paralisacao da producao",
+          "suspensão da produção",
+          "suspensao da producao",
+          "encerramento de fábricas",
+          "encerramento de fabricas"
+        ],
+        "thai": [
+          "การผลิตหยุดชะงัก",
+          "หยุดชะงักของการผลิต",
+          "สายการผลิตหยุดชะงัก",
+          "หยุดการผลิต",
+          "หยุดสายการผลิต",
+          "ระงับการผลิต",
+          "ต้องหยุดผลิต"
+        ],
+        "tok_pisin": [
+          "production disruptions",
+          "production disruption",
+          "disruption to production",
+          "disruptions to production",
+          "production halt",
+          "production halts",
+          "production stoppage",
+          "production stoppages",
+          "factory shutdowns",
+          "plant shutdowns",
+          "mine shutdown",
+          "shutdown of the mine"
         ]
       }
     },
@@ -350,6 +3757,101 @@
           "productivity",
           "productivity growth",
           "productive capacity"
+        ],
+        "chinese_simplified": [
+          "生产率",
+          "生产力",
+          "生产效率"
+        ],
+        "chinese_traditional": [
+          "生產力",
+          "生產率"
+        ],
+        "filipino": [
+          "productivity",
+          "productivity growth",
+          "productive capacity",
+          "produktibidad",
+          "pagiging produktibo",
+          "pagtaas ng produktibidad"
+        ],
+        "fr": [
+          "productivité",
+          "gains de productivité",
+          "croissance de la productivité",
+          "capacité productive",
+          "capacités productives"
+        ],
+        "indo": [
+          "produktivitas",
+          "produktivitasnya",
+          "pertumbuhan produktivitas",
+          "kapasitas produktif"
+        ],
+        "japanese": [
+          "生産性",
+          "生産効率"
+        ],
+        "km": [
+          "ផលិតភាព"
+        ],
+        "korean": [
+          "생산성",
+          "생산능력",
+          "생산 능력",
+          "생산능률"
+        ],
+        "lao": [
+          "ຜະລິດຕະພາບ",
+          "ການເພີ່ມຜະລິດຕະພາບ",
+          "ຍົກສູງຜະລິດຕະພາບ"
+        ],
+        "malay": [
+          "produktiviti",
+          "pertumbuhan produktiviti",
+          "kapasiti produktif"
+        ],
+        "mn": [
+          {
+            "prefix": "бүтээмж"
+          },
+          {
+            "prefix": "бүтээх чадвар"
+          }
+        ],
+        "my": [
+          "ကုန်ထုတ်စွမ်းအား",
+          "ကုန်ထုတ်စွမ်းရည်",
+          "ကုန်ထုတ်စွမ်းအား တိုးတက်",
+          "productivity"
+        ],
+        "portuguese": [
+          "produtividade",
+          "crescimento da produtividade",
+          "ganhos de produtividade",
+          "capacidade produtiva"
+        ],
+        "tetum": [
+          "produtividade",
+          "kresimentu produtividade",
+          "kapasidade produtiva",
+          "crescimento da produtividade",
+          "capacidade produtiva"
+        ],
+        "thai": [
+          "เพิ่มผลิตภาพ",
+          "ยกระดับผลิตภาพ",
+          "ผลิตภาพการผลิต",
+          "การเติบโตของผลิตภาพ",
+          "ผลิตภาพของประเทศ",
+          "ผลิตภาพต่ำ",
+          "ประสิทธิภาพการผลิต",
+          "ศักยภาพการผลิต"
+        ],
+        "tok_pisin": [
+          "productivity",
+          "productivity growth",
+          "productive capacity"
         ]
       }
     },
@@ -358,6 +3860,154 @@
       "group": "productivity_and_competitiveness",
       "forms": {
         "en": [
+          "labor productivity",
+          "labour productivity",
+          "worker productivity",
+          "workforce productivity",
+          "output per worker",
+          "output per hour"
+        ],
+        "chinese_simplified": [
+          "劳动生产率",
+          "劳动力生产率",
+          "工人生产率",
+          "每小时产出"
+        ],
+        "chinese_traditional": [
+          "勞動生產力",
+          "勞動生產率",
+          "勞工生產力",
+          "每工時產出",
+          "每小時產出"
+        ],
+        "filipino": [
+          "labor productivity",
+          "labour productivity",
+          "worker productivity",
+          "workforce productivity",
+          "output per worker",
+          "produktibidad ng mga manggagawa",
+          "produktibidad ng manggagawa"
+        ],
+        "fr": [
+          "productivité du travail",
+          "productivité des travailleurs",
+          "productivité de la main-d'œuvre",
+          "productivité de la main-d’œuvre",
+          "productivité de la main-d'oeuvre",
+          "productivité de la main-d’oeuvre",
+          "production par travailleur",
+          "productivité horaire",
+          "productivité par salarié"
+        ],
+        "indo": [
+          "produktivitas tenaga kerja",
+          "produktivitas pekerja",
+          "produktivitas buruh",
+          "produktivitas karyawan",
+          "output per pekerja",
+          "produktivitas per pekerja"
+        ],
+        "japanese": [
+          "労働生産性",
+          "労働者の生産性",
+          "一人当たりの生産性",
+          "1人当たりの生産性",
+          "時間当たり生産性",
+          "時間当たりの生産性"
+        ],
+        "km": [
+          "ផលិតភាពការងារ",
+          "ផលិតភាពកម្លាំងពលកម្ម",
+          "ផលិតភាពពលកម្ម",
+          "ផលិតភាពកម្មករ",
+          "ផលិតភាពរបស់កម្មករ",
+          "ទិន្នផលក្នុងកម្មករម្នាក់"
+        ],
+        "korean": [
+          "노동생산성",
+          "노동 생산성",
+          "근로자 생산성",
+          "시간당 생산성",
+          "1인당 생산성",
+          "로동생산능률",
+          "노동생산능률"
+        ],
+        "lao": [
+          "ຜະລິດຕະພາບແຮງງານ",
+          "ຜະລິດຕະພາບຂອງແຮງງານ",
+          "ຜະລິດຕະພາບຂອງຜູ້ອອກແຮງງານ",
+          "ຜະລິດຕະພາບໃນການອອກແຮງງານ",
+          "ຜົນຜະລິດຕໍ່ແຮງງານ"
+        ],
+        "malay": [
+          "produktiviti buruh",
+          "produktiviti tenaga kerja",
+          "produktiviti tenaga buruh",
+          "produktiviti pekerja",
+          "produktiviti setiap pekerja",
+          "output setiap pekerja",
+          "output sejam"
+        ],
+        "mn": [
+          {
+            "prefix": "хөдөлмөрийн бүтээмж"
+          },
+          {
+            "prefix": "ажилчдын бүтээмж"
+          },
+          {
+            "prefix": "ажиллагчдын бүтээмж"
+          },
+          {
+            "prefix": "ажилтны бүтээмж"
+          },
+          {
+            "prefix": "нэг ажилтанд ногдох бүтээгдэхүүн"
+          },
+          {
+            "prefix": "нэг ажиллагчид ногдох бүтээгдэхүүн"
+          }
+        ],
+        "my": [
+          "လုပ်သားကုန်ထုတ်စွမ်းအား",
+          "အလုပ်သမားကုန်ထုတ်စွမ်းအား",
+          "လုပ်အားကုန်ထုတ်စွမ်းအား",
+          "လုပ်သားတစ်ဦးကျထုတ်လုပ်မှု",
+          "labor productivity",
+          "labour productivity"
+        ],
+        "portuguese": [
+          "produtividade laboral",
+          "produtividade do trabalho",
+          "produtividade dos trabalhadores",
+          "produtividade da mão de obra",
+          "produtividade da mão-de-obra",
+          "produtividade por trabalhador",
+          "produção por trabalhador",
+          "produtividade por hora",
+          "produtividade horária"
+        ],
+        "tetum": [
+          "produtividade traballu",
+          "produtividade traballadór",
+          "produtividade traballador",
+          "produtividade traballadór sira",
+          "produtividade traballador sira",
+          "produtividade forsa traballu",
+          "produtividade do trabalho",
+          "produtividade laboral",
+          "produtividade da mão de obra",
+          "produtividade da mao de obra",
+          "produtividade dos trabalhadores"
+        ],
+        "thai": [
+          "ผลิตภาพแรงงาน",
+          "ผลิตภาพของแรงงาน",
+          "ผลผลิตต่อแรงงาน",
+          "ประสิทธิภาพแรงงาน"
+        ],
+        "tok_pisin": [
           "labor productivity",
           "labour productivity",
           "worker productivity",
@@ -377,6 +4027,116 @@
           "TFP",
           "multifactor productivity",
           "multi-factor productivity"
+        ],
+        "chinese_simplified": [
+          "全要素生产率",
+          "TFP",
+          "多要素生产率"
+        ],
+        "chinese_traditional": [
+          "全要素生產力",
+          "全要素生產率",
+          "總要素生產力",
+          "多因素生產力",
+          "TFP"
+        ],
+        "filipino": [
+          "total factor productivity",
+          "total-factor productivity",
+          "TFP",
+          "multifactor productivity"
+        ],
+        "fr": [
+          "productivité totale des facteurs",
+          "productivité globale des facteurs",
+          "productivité multifactorielle"
+        ],
+        "indo": [
+          "produktivitas faktor total",
+          "total factor productivity",
+          "TFP",
+          "produktivitas multifaktor"
+        ],
+        "japanese": [
+          "全要素生産性",
+          "TFP",
+          "多要素生産性"
+        ],
+        "km": [
+          "ផលិតភាពកត្តាសរុប",
+          "ផលិតភាពកត្ដាសរុប",
+          "ផលិតភាពកត្តាផលិតកម្មសរុប",
+          "ផលិតភាពកត្ដាផលិតកម្មសរុប",
+          "ផលិតភាពពហុកត្តា",
+          "ផលិតភាពពហុកត្ដា",
+          "TFP"
+        ],
+        "korean": [
+          "총요소생산성",
+          "총요소 생산성",
+          "TFP",
+          "다요소생산성"
+        ],
+        "lao": [
+          "ຜະລິດຕະພາບປັດໄຈການຜະລິດລວມ",
+          "ຜະລິດຕະພາບການຜະລິດລວມ",
+          "ຜະລິດຕະພາບປັດໄຈລວມ",
+          "ຜະລິດຕະພາບລວມຂອງປັດໄຈ",
+          "TFP"
+        ],
+        "malay": [
+          "produktiviti faktor keseluruhan",
+          "produktiviti jumlah faktor",
+          "produktiviti pelbagai faktor",
+          "TFP"
+        ],
+        "mn": [
+          {
+            "prefix": "нийт хүчин зүйлийн бүтээмж"
+          },
+          {
+            "prefix": "хүчин зүйлсийн нийт бүтээмж"
+          },
+          {
+            "prefix": "нийт хүчин зүйлсийн бүтээмж"
+          },
+          "TFP"
+        ],
+        "my": [
+          "စုစုပေါင်းအချက်အလက်ကုန်ထုတ်စွမ်းအား",
+          "စုစုပေါင်းထုတ်လုပ်မှုအချက်များ၏ကုန်ထုတ်စွမ်းအား",
+          "total factor productivity",
+          "total-factor productivity",
+          "TFP"
+        ],
+        "portuguese": [
+          "produtividade total dos fatores",
+          "produtividade total dos factores",
+          "produtividade total de fatores",
+          "produtividade total de factores",
+          "produtividade multifatorial"
+        ],
+        "tetum": [
+          "produtividade totál fatór",
+          "produtividade total fator",
+          "produtividade totál fatór sira",
+          "produtividade total fator sira",
+          "produtividade total dos fatores",
+          "produtividade total dos factores",
+          "produtividade multifatorial",
+          "TFP"
+        ],
+        "thai": [
+          "ผลิตภาพปัจจัยการผลิตรวม",
+          "TFP",
+          "total factor productivity"
+        ],
+        "tok_pisin": [
+          "total factor productivity",
+          "total-factor productivity",
+          "TFP",
+          "multifactor productivity",
+          "multi-factor productivity"
         ]
       }
     },
@@ -390,6 +4150,145 @@
           "global competitiveness",
           "competitiveness index",
           "uncompetitive"
+        ],
+        "chinese_simplified": [
+          "经济竞争力",
+          "国际竞争力",
+          "全球竞争力",
+          "国家竞争力",
+          "竞争力指数",
+          "产业竞争力",
+          "缺乏竞争力"
+        ],
+        "chinese_traditional": [
+          "經濟競爭力",
+          "國家競爭力",
+          "國際競爭力",
+          "全球競爭力",
+          "世界競爭力",
+          "競爭力排名",
+          "競爭力指數",
+          "缺乏競爭力"
+        ],
+        "filipino": [
+          "competitiveness",
+          "economic competitiveness",
+          "global competitiveness",
+          "competitiveness index",
+          "uncompetitive",
+          "pagiging kompetitibo",
+          "kakayahang makipagkumpitensya",
+          "kakayahang makipagkompetensya"
+        ],
+        "fr": [
+          "compétitivité",
+          "compétitivité économique",
+          "compétitivité de l'économie",
+          "compétitivité de l’économie",
+          "indice de compétitivité",
+          "manque de compétitivité",
+          "compétitivité-prix"
+        ],
+        "indo": [
+          "daya saing",
+          "daya saingnya",
+          "daya saing ekonomi",
+          "daya saing global",
+          "indeks daya saing",
+          "berdaya saing",
+          "kurang berdaya saing",
+          "tidak berdaya saing"
+        ],
+        "japanese": [
+          "競争力",
+          "国際競争力",
+          "世界競争力",
+          "競争力ランキング"
+        ],
+        "km": [
+          "ភាពប្រកួតប្រជែងសេដ្ឋកិច្ច",
+          "ភាពប្រកួតប្រជែងផ្នែកសេដ្ឋកិច្ច",
+          "ភាពប្រកួតប្រជែងនៃសេដ្ឋកិច្ច",
+          "សន្ទស្សន៍ភាពប្រកួតប្រជែង",
+          "ភាពប្រកួតប្រជែងរបស់ប្រទេស",
+          "ភាពប្រកួតប្រជែងជាតិ",
+          "ភាពប្រកួតប្រជែងសកល",
+          "ភាពប្រកួតប្រជែងលើទីផ្សារ"
+        ],
+        "korean": [
+          "국가경쟁력",
+          "국가 경쟁력",
+          "경제경쟁력",
+          "경제 경쟁력",
+          "산업경쟁력",
+          "산업 경쟁력",
+          "국제경쟁력",
+          "국제 경쟁력",
+          "경쟁력 지수",
+          "경쟁력지수"
+        ],
+        "lao": [
+          "ຄວາມສາມາດໃນການແຂ່ງຂັນ",
+          "ຄວາມສາມາດແຂ່ງຂັນ",
+          "ດັດຊະນີຄວາມສາມາດໃນການແຂ່ງຂັນ",
+          "ບໍ່ສາມາດແຂ່ງຂັນໄດ້"
+        ],
+        "malay": [
+          "daya saing",
+          "daya saing ekonomi",
+          "daya saing global",
+          "indeks daya saing",
+          "tidak berdaya saing"
+        ],
+        "mn": [
+          {
+            "prefix": "өрсөлдөх чадвар"
+          },
+          {
+            "prefix": "эдийн засгийн өрсөлдөх чадвар"
+          }
+        ],
+        "my": [
+          "ယှဉ်ပြိုင်နိုင်စွမ်း",
+          "ယှဉ်ပြိုင်နိုင်မှု",
+          "ယှဉ်ပြိုင်နိုင်စွမ်းရည်",
+          "competitiveness",
+          "competitiveness index"
+        ],
+        "portuguese": [
+          "competitividade",
+          "competitividade económica",
+          "competitividade econômica",
+          "competitividade global",
+          "índice de competitividade",
+          "pouco competitivo",
+          "pouco competitiva",
+          "pouco competitivos",
+          "pouco competitivas"
+        ],
+        "tetum": [
+          "kompetitividade",
+          "kompetitividade ekonómika",
+          "kompetitividade ekonomika",
+          "índise kompetitividade",
+          "indise kompetitividade",
+          "la kompetitivu",
+          "competitividade",
+          "índice de competitividade",
+          "indice de competitividade",
+          "pouco competitivo"
+        ],
+        "thai": [
+          "ความสามารถในการแข่งขัน",
+          "ความสามารถทางการแข่งขัน",
+          "ขีดความสามารถทางการแข่งขัน",
+          "ศักยภาพการแข่งขัน"
+        ],
+        "tok_pisin": [
+          "competitiveness",
+          "economic competitiveness",
+          "global competitiveness",
+          "competitiveness index"
         ]
       }
     },
@@ -398,6 +4297,158 @@
       "group": "structural_change",
       "forms": {
         "en": [
+          "structural transformation",
+          "structural change",
+          "economic transformation",
+          "structural shift"
+        ],
+        "chinese_simplified": [
+          "结构转型",
+          "结构性转型",
+          "结构性转变",
+          "经济转型",
+          "经济结构调整",
+          "产业结构调整"
+        ],
+        "chinese_traditional": [
+          "結構轉型",
+          "結構性轉型",
+          "結構轉變",
+          "結構性轉變",
+          "經濟轉型",
+          "經濟結構調整",
+          "產業結構調整"
+        ],
+        "filipino": [
+          "structural transformation",
+          "economic transformation",
+          "structural change",
+          "pagbabagong-anyo ng ekonomiya",
+          "transpormasyon ng ekonomiya"
+        ],
+        "fr": [
+          "transformation structurelle",
+          "transformations structurelles",
+          "changement structurel",
+          "changements structurels",
+          "transformation économique",
+          "transformation de l'économie",
+          "transformation de l’économie",
+          "mutation structurelle",
+          "mutations structurelles"
+        ],
+        "indo": [
+          "transformasi struktural",
+          "perubahan struktural",
+          "transformasi ekonomi",
+          "transformasi struktur ekonomi",
+          "perubahan struktur ekonomi",
+          "pergeseran struktural"
+        ],
+        "japanese": [
+          "構造転換",
+          "経済構造の転換",
+          "産業構造の転換",
+          "経済の構造変化",
+          "産業構造の変化",
+          "構造変化"
+        ],
+        "km": [
+          "ការប្រែក្លាយរចនាសម្ព័ន្ធ",
+          "ការផ្លាស់ប្តូររចនាសម្ព័ន្ធសេដ្ឋកិច្ច",
+          "ការផ្លាស់ប្ដូររចនាសម្ព័ន្ធសេដ្ឋកិច្ច",
+          "ការផ្លាស់ប្តូររចនាសម្ព័ន្ធផ្នែកសេដ្ឋកិច្ច",
+          "ការផ្លាស់ប្ដូររចនាសម្ព័ន្ធផ្នែកសេដ្ឋកិច្ច",
+          "ការបំលែងរចនាសម្ព័ន្ធសេដ្ឋកិច្ច",
+          "ការប្រែក្លាយសេដ្ឋកិច្ច",
+          "ការផ្លាស់ប្តូររចនាសម្ព័ន្ធនៃសេដ្ឋកិច្ច",
+          "ការផ្លាស់ប្ដូររចនាសម្ព័ន្ធនៃសេដ្ឋកិច្ច"
+        ],
+        "korean": [
+          "구조전환",
+          "구조 전환",
+          "구조적 전환",
+          "경제구조 전환",
+          "산업구조 전환",
+          "산업구조 고도화",
+          "경제구조 개편",
+          "경제 체질 개선"
+        ],
+        "lao": [
+          "ການປ່ຽນແປງໂຄງສ້າງເສດຖະກິດ",
+          "ການຫັນປ່ຽນໂຄງສ້າງເສດຖະກິດ",
+          "ການປັບໂຄງສ້າງເສດຖະກິດ",
+          "ຫັນປ່ຽນໂຄງສ້າງເສດຖະກິດ",
+          "ການຫັນປ່ຽນເສດຖະກິດ"
+        ],
+        "malay": [
+          "transformasi struktur",
+          "transformasi struktural",
+          "perubahan struktur ekonomi",
+          "perubahan struktural",
+          "transformasi ekonomi",
+          "peralihan struktur ekonomi"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн бүтцийн өөрчлөлт"
+          },
+          {
+            "prefix": "эдийн засгийн бүтцийн шилжилт"
+          },
+          {
+            "prefix": "бүтцийн шилжилт"
+          },
+          {
+            "prefix": "эдийн засгийн бүтцийн шинэчлэл"
+          },
+          {
+            "prefix": "эдийн засгийн трансформац"
+          },
+          {
+            "prefix": "эдийн засгийн бүтцийг өөрчл"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးဖွဲ့စည်းပုံပြောင်းလဲ",
+          "စီးပွားရေးဖွဲ့စည်းပုံ ပြောင်းလဲ",
+          "ဖွဲ့စည်းပုံဆိုင်ရာပြောင်းလဲ",
+          "စီးပွားရေးအသွင်ကူးပြောင်း",
+          "structural transformation",
+          "structural change"
+        ],
+        "portuguese": [
+          "transformação estrutural",
+          "transformações estruturais",
+          "mudança estrutural",
+          "mudanças estruturais",
+          "transformação económica",
+          "transformação econômica",
+          "alteração estrutural"
+        ],
+        "tetum": [
+          "transformasaun estruturál",
+          "transformasaun estrutural",
+          "mudansa estruturál",
+          "mudansa estrutural",
+          "transformasaun ekonómika",
+          "transformasaun ekonomika",
+          "transformasaun ekonomia",
+          "transformação estrutural",
+          "transformacao estrutural",
+          "mudança estrutural",
+          "mudanca estrutural",
+          "transformação económica",
+          "transformacao economica"
+        ],
+        "thai": [
+          "เปลี่ยนแปลงเชิงโครงสร้าง",
+          "เปลี่ยนแปลงโครงสร้างเศรษฐกิจ",
+          "ปรับโครงสร้างเศรษฐกิจ",
+          "ปฏิรูปโครงสร้างเศรษฐกิจ",
+          "เปลี่ยนผ่านโครงสร้างเศรษฐกิจ"
+        ],
+        "tok_pisin": [
           "structural transformation",
           "structural change",
           "economic transformation",
@@ -417,6 +4468,174 @@
           "diversify its economy",
           "diversified economy",
           "diversify their economies"
+        ],
+        "chinese_simplified": [
+          "经济多元化",
+          "经济多样化",
+          "多元化经济",
+          "经济结构多元化"
+        ],
+        "chinese_traditional": [
+          "經濟多元化",
+          "經濟多樣化",
+          "經濟多元發展",
+          "經濟適度多元",
+          "多元化經濟",
+          "產業多元化"
+        ],
+        "filipino": [
+          "economic diversification",
+          "diversification of the economy",
+          "diversify the economy",
+          "diversified economy",
+          "diversipikasyon ng ekonomiya"
+        ],
+        "fr": [
+          "diversification économique",
+          "diversification de l'économie",
+          "diversification de l’économie",
+          "diversifier l'économie",
+          "diversifier l’économie",
+          "diversifier son économie",
+          "diversifier notre économie",
+          "diversifier leurs économies",
+          "économie diversifiée"
+        ],
+        "indo": [
+          "diversifikasi ekonomi",
+          "diversifikasi perekonomian",
+          "mendiversifikasi ekonomi",
+          "mendiversifikasi perekonomian",
+          "diversifikasi sumber pertumbuhan",
+          "ekonomi yang terdiversifikasi"
+        ],
+        "japanese": [
+          "経済多角化",
+          "経済の多角化",
+          "経済多様化",
+          "経済の多様化",
+          "産業の多角化",
+          "産業多角化",
+          "産業の多様化"
+        ],
+        "km": [
+          "ពិពិធកម្មសេដ្ឋកិច្ច",
+          "ពិពិធកម្មនៃសេដ្ឋកិច្ច",
+          "ពិពិធកម្មលើសេដ្ឋកិច្ច",
+          "សេដ្ឋកិច្ចចម្រុះ",
+          "ពិពិធកម្មប្រភពកំណើន",
+          "ពិពិធកម្មមូលដ្ឋានកំណើន"
+        ],
+        "korean": [
+          "경제다각화",
+          "경제 다각화",
+          "산업다각화",
+          "산업 다각화",
+          "경제다변화",
+          "경제 다변화",
+          "산업 다변화"
+        ],
+        "lao": [
+          "ການຫຼາກຫຼາຍທາງເສດຖະກິດ",
+          "ການຫລາກຫລາຍທາງເສດຖະກິດ",
+          "ຄວາມຫຼາກຫຼາຍທາງເສດຖະກິດ",
+          "ຄວາມຫລາກຫລາຍທາງເສດຖະກິດ",
+          "ເສດຖະກິດມີຄວາມຫຼາກຫຼາຍ",
+          "ເສດຖະກິດມີຄວາມຫລາກຫລາຍ",
+          "ເສດຖະກິດທີ່ຫຼາກຫຼາຍ",
+          "ເສດຖະກິດທີ່ຫລາກຫລາຍ",
+          "ເຮັດໃຫ້ເສດຖະກິດຫຼາກຫຼາຍ",
+          "ເຮັດໃຫ້ເສດຖະກິດຫລາກຫລາຍ",
+          "ການຫັນເສດຖະກິດໃຫ້ຫຼາກຫຼາຍ",
+          "ການຫັນເສດຖະກິດໃຫ້ຫລາກຫລາຍ",
+          "ການກະຈາຍຖານເສດຖະກິດ"
+        ],
+        "malay": [
+          "pempelbagaian ekonomi",
+          "mempelbagaikan ekonomi",
+          "kepelbagaian ekonomi",
+          "diversifikasi ekonomi",
+          "mempelbagaikan asas ekonomi",
+          "pempelbagaian asas ekonomi",
+          "ekonomi yang pelbagai"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн төрөлж"
+          },
+          {
+            "prefix": "эдийн засгийг төрөлжүүл"
+          },
+          {
+            "prefix": "эдийн засгаа төрөлжүүл"
+          },
+          {
+            "prefix": "төрөлжсөн эдийн засаг"
+          },
+          {
+            "prefix": "төрөлжсөн эдийн засг"
+          },
+          {
+            "prefix": "олон тулгуурт эдийн засаг"
+          },
+          {
+            "prefix": "олон тулгуурт эдийн засг"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးကဏ္ဍစုံလင်",
+          "စီးပွားရေးကွဲပြားစုံလင်",
+          "စီးပွားရေးကိုမျိုးစုံ",
+          "စီးပွားရေးကို မျိုးစုံ",
+          "economic diversification",
+          "diversify the economy"
+        ],
+        "portuguese": [
+          "diversificação económica",
+          "diversificação econômica",
+          "diversificação da economia",
+          "diversificação adequada da economia",
+          "desenvolvimento diversificado da economia",
+          "diversificar a economia",
+          "diversificar a sua economia",
+          "diversificar as economias",
+          "economia diversificada",
+          "diversificação económica adequada",
+          "diversificação econômica adequada"
+        ],
+        "tetum": [
+          "diversifikasaun ekonómika",
+          "diversifikasaun ekonomika",
+          "diversifikasaun ekonomia",
+          "diversifika ekonomia",
+          "diversifika ita-nia ekonomia",
+          "diversifika ita nia ekonomia",
+          "ekonomia diversifikada",
+          "diversificação económica",
+          "diversificacao economica",
+          "diversificação da economia",
+          "diversificacao da economia",
+          "diversificar a economia",
+          "economia diversificada"
+        ],
+        "thai": [
+          "ความหลากหลายทางเศรษฐกิจ",
+          "กระจายฐานเศรษฐกิจ",
+          "กระจายโครงสร้างเศรษฐกิจ",
+          "เศรษฐกิจที่หลากหลาย",
+          "สร้างความหลากหลายให้กับเศรษฐกิจ"
+        ],
+        "tok_pisin": [
+          "economic diversification",
+          "diversification of the economy",
+          "diversify the economy",
+          "diversifying the economy",
+          "diversify its economy",
+          "diversified economy",
+          "diversify their economies",
+          "diversify our economy",
+          "diversifying our economy",
+          "diversify the PNG economy"
         ]
       }
     },
@@ -431,6 +4650,143 @@
           "industrialising",
           "reindustrialization",
           "re-industrialization"
+        ],
+        "chinese_simplified": [
+          "工业化进程",
+          "推进工业化",
+          "加快工业化",
+          "实现工业化",
+          "新型工业化",
+          "再工业化",
+          "工业化战略"
+        ],
+        "chinese_traditional": [
+          "推動工業化",
+          "加速工業化",
+          "工業化進程",
+          "工業化發展",
+          "再工業化",
+          "新型工業化",
+          "邁向工業化"
+        ],
+        "filipino": [
+          "industrialization",
+          "industrialisation",
+          "industrializing",
+          "reindustrialization",
+          "industriyalisasyon"
+        ],
+        "fr": [
+          "industrialisation",
+          "réindustrialisation",
+          "industrialiser",
+          "réindustrialiser",
+          "s'industrialiser",
+          "s’industrialiser"
+        ],
+        "indo": [
+          "industrialisasi",
+          "industrialisasinya",
+          "reindustrialisasi",
+          "re-industrialisasi"
+        ],
+        "japanese": [
+          "工業化政策",
+          "工業化の推進",
+          "工業化を推進",
+          "工業化を進",
+          "工業化戦略",
+          "工業国化",
+          "再工業化",
+          "新興工業国"
+        ],
+        "km": [
+          "ឧស្សាហូបនីយកម្ម",
+          "ឧស្សាហកម្មូបនីយកម្ម",
+          "ឧស្សាហកម្មភាវូបនីយកម្ម"
+        ],
+        "korean": [
+          "산업화",
+          "공업화",
+          "재산업화",
+          "재공업화"
+        ],
+        "lao": [
+          "ການຫັນເປັນອຸດສາຫະກຳ",
+          "ການຫັນເປັນອຸດສາຫະກໍາ",
+          "ຫັນເປັນອຸດສາຫະກຳ",
+          "ຫັນເປັນອຸດສາຫະກໍາ",
+          "ປະເທດອຸດສາຫະກຳໃໝ່",
+          "ປະເທດອຸດສາຫະກໍາໃຫມ່"
+        ],
+        "malay": [
+          "pengindustrian",
+          "industrialisasi",
+          "proses perindustrian",
+          "perindustrian semula",
+          "pengindustrian semula",
+          "reindustrialisasi"
+        ],
+        "mn": [
+          {
+            "prefix": "үйлдвэржилт"
+          },
+          {
+            "prefix": "үйлдвэржүүл"
+          },
+          {
+            "prefix": "үйлдвэржих"
+          },
+          {
+            "prefix": "аж үйлдвэржилт"
+          },
+          {
+            "prefix": "аж үйлдвэржүүл"
+          },
+          {
+            "prefix": "аж үйлдвэржих"
+          }
+        ],
+        "my": [
+          "စက်မှုထွန်းကား",
+          "စက်မှုလုပ်ငန်းထွန်းကား",
+          "စက်မှုနိုင်ငံထူထောင်",
+          "စက်မှုနိုင်ငံအဖြစ်",
+          "industrialization",
+          "industrialisation"
+        ],
+        "portuguese": [
+          "industrialização",
+          "reindustrialização",
+          "re-industrialização",
+          "industrializar",
+          "industrializar-se"
+        ],
+        "tetum": [
+          "industrializasaun",
+          "reindustrializasaun",
+          "industrializa nasaun",
+          "industrialização",
+          "industrializacao",
+          "reindustrialização",
+          "reindustrializacao"
+        ],
+        "thai": [
+          "อุตสาหกรรมภิวัตน์",
+          "เป็นประเทศอุตสาหกรรม",
+          "ประเทศอุตสาหกรรมใหม่",
+          "ทำให้เป็นอุตสาหกรรม",
+          "industrialization",
+          "industrialisation"
+        ],
+        "tok_pisin": [
+          "industrialization",
+          "industrialisation",
+          "industrializing",
+          "industrialising",
+          "reindustrialization",
+          "re-industrialization",
+          "industrialaisesen"
         ]
       }
     },
@@ -444,6 +4800,125 @@
           "de-industrialization",
           "de-industrialisation",
           "premature deindustrialization"
+        ],
+        "chinese_simplified": [
+          "去工业化",
+          "非工业化",
+          "产业空心化",
+          "制造业空心化"
+        ],
+        "chinese_traditional": [
+          "去工業化",
+          "產業空洞化",
+          "製造業空洞化"
+        ],
+        "filipino": [
+          "deindustrialization",
+          "deindustrialisation",
+          "de-industrialization",
+          "premature deindustrialization",
+          "deindustriyalisasyon"
+        ],
+        "fr": [
+          "désindustrialisation",
+          "désindustrialisation prématurée",
+          "désindustrialiser"
+        ],
+        "indo": [
+          "deindustrialisasi",
+          "de-industrialisasi",
+          "deindustrialisasi dini",
+          "deindustrialisasi prematur"
+        ],
+        "japanese": [
+          "脱工業化",
+          "脱産業化",
+          "産業空洞化",
+          "産業の空洞化",
+          "製造業の空洞化",
+          "早すぎる脱工業化"
+        ],
+        "km": [
+          "វិឧស្សាហូបនីយកម្ម",
+          "ការថយចុះវិស័យឧស្សាហកម្ម",
+          "ការធ្លាក់ចុះវិស័យឧស្សាហកម្ម",
+          "ការថយចុះនៃវិស័យឧស្សាហកម្ម"
+        ],
+        "korean": [
+          "탈산업화",
+          "탈공업화",
+          "산업공동화",
+          "산업 공동화",
+          "제조업 공동화"
+        ],
+        "lao": [
+          "ການຫຼຸດຜ່ອນຂະແໜງອຸດສາຫະກຳ",
+          "ການຫລຸດຜ່ອນຂະແຫນງອຸດສາຫະກໍາ",
+          "ການຫຼຸດຜ່ອນຂະແຫນງອຸດສາຫະກໍາ",
+          "ການຫຼຸດລົງຂອງຂະແໜງອຸດສາຫະກຳ",
+          "ການຫລຸດລົງຂອງຂະແຫນງອຸດສາຫະກໍາ",
+          "ການຫຼຸດລົງຂອງຂະແຫນງອຸດສາຫະກໍາ",
+          "ການຖົດຖອຍຂອງອຸດສາຫະກຳ",
+          "ການຖົດຖອຍຂອງອຸດສາຫະກໍາ",
+          "ອຸດສາຫະກຳຖົດຖອຍ",
+          "ອຸດສາຫະກໍາຖົດຖອຍ"
+        ],
+        "malay": [
+          "penyahindustrian",
+          "deindustrialisasi",
+          "penyahindustrian pramatang"
+        ],
+        "mn": [
+          {
+            "prefix": "деиндустриализац"
+          },
+          {
+            "prefix": "аж үйлдвэрийн уналт"
+          },
+          {
+            "prefix": "аж үйлдвэрийн салбарын уналт"
+          },
+          {
+            "prefix": "үйлдвэржилтийн бууралт"
+          },
+          {
+            "prefix": "үйлдвэржилт буур"
+          }
+        ],
+        "my": [
+          "စက်မှုလုပ်ငန်းဆုတ်ယုတ်",
+          "စက်မှုကဏ္ဍဆုတ်ယုတ်",
+          "စက်မှုကဏ္ဍကျဆင်း",
+          "deindustrialization",
+          "deindustrialisation",
+          "de-industrialization"
+        ],
+        "portuguese": [
+          "desindustrialização",
+          "desindustrialização prematura",
+          "desindustrializar"
+        ],
+        "tetum": [
+          "desindustrializasaun",
+          "deindustrializasaun",
+          "desindustrialização",
+          "desindustrializacao",
+          "desindustrialização prematura",
+          "desindustrializacao prematura"
+        ],
+        "thai": [
+          "ถดถอยของภาคอุตสาหกรรม",
+          "ลดบทบาทของภาคอุตสาหกรรม",
+          "ลดความเป็นอุตสาหกรรม",
+          "deindustrialization",
+          "deindustrialisation"
+        ],
+        "tok_pisin": [
+          "deindustrialization",
+          "deindustrialisation",
+          "de-industrialization",
+          "de-industrialisation",
+          "premature deindustrialization"
         ]
       }
     },
@@ -452,6 +4927,194 @@
       "group": "sectoral_output",
       "forms": {
         "en": [
+          "manufacturing output",
+          "industrial output",
+          "industrial production",
+          "manufacturing production",
+          "factory output",
+          "manufacturing activity",
+          "manufacturing PMI"
+        ],
+        "chinese_simplified": [
+          "制造业产出",
+          "工业产出",
+          "工业生产指数",
+          "工业增加值",
+          "制造业PMI",
+          "工厂产出",
+          "制造业活动",
+          "工业生产增长"
+        ],
+        "chinese_traditional": [
+          "製造業產出",
+          "製造業生產",
+          "製造業活動",
+          "工業生產",
+          "工業產出",
+          "工業增加值",
+          "工廠產出",
+          "製造業PMI",
+          "製造業採購經理人指數",
+          "製造業採購經理指數"
+        ],
+        "filipino": [
+          "manufacturing output",
+          "industrial output",
+          "industrial production",
+          "factory output",
+          "manufacturing activity",
+          "manufacturing PMI",
+          "produksyon ng pabrika",
+          "produksyon ng mga pabrika",
+          "produksyon sa pagmamanupaktura",
+          "output ng manufacturing"
+        ],
+        "fr": [
+          "production manufacturière",
+          "production industrielle",
+          "activité manufacturière",
+          "production des usines",
+          "PMI manufacturier",
+          "indice de la production industrielle"
+        ],
+        "indo": [
+          "output manufaktur",
+          "produksi manufaktur",
+          "produksi industri",
+          "output industri",
+          "produksi pabrik",
+          "aktivitas manufaktur",
+          "PMI manufaktur",
+          "pertumbuhan industri pengolahan"
+        ],
+        "japanese": [
+          "鉱工業生産",
+          "工業生産",
+          "製造業生産",
+          "製造業の生産",
+          "工業生産高",
+          "製造業生産高",
+          "製造業PMI",
+          "製造業購買担当者景気指数"
+        ],
+        "km": [
+          "ទិន្នផលឧស្សាហកម្ម",
+          "ផលិតកម្មឧស្សាហកម្ម",
+          "ទិន្នផលរោងចក្រ",
+          "ផលិតកម្មរោងចក្រ",
+          "សកម្មភាពឧស្សាហកម្មកែច្នៃ",
+          "PMI ផលិតកម្ម",
+          "PMI វិស័យផលិតកម្ម"
+        ],
+        "korean": [
+          "산업생산",
+          "광공업생산",
+          "광공업 생산",
+          "제조업생산",
+          "제조업 생산지수",
+          "공업생산",
+          "제조업 PMI",
+          "제조업 구매관리자지수"
+        ],
+        "lao": [
+          "ຜົນຜະລິດອຸດສາຫະກຳ",
+          "ຜົນຜະລິດອຸດສາຫະກໍາ",
+          "ການຜະລິດອຸດສາຫະກຳ",
+          "ການຜະລິດອຸດສາຫະກໍາ",
+          "ອຸດສາຫະກຳປຸງແຕ່ງຂະຫຍາຍຕົວ",
+          "ອຸດສາຫະກໍາປຸງແຕ່ງຂະຫຍາຍຕົວ",
+          "ມູນຄ່າການຜະລິດອຸດສາຫະກຳ",
+          "ມູນຄ່າການຜະລິດອຸດສາຫະກໍາ",
+          "ດັດຊະນີການຜະລິດອຸດສາຫະກຳ",
+          "ດັດຊະນີການຜະລິດອຸດສາຫະກໍາ",
+          "ຂະແໜງອຸດສາຫະກຳຂະຫຍາຍຕົວ",
+          "ຂະແຫນງອຸດສາຫະກໍາຂະຫຍາຍຕົວ",
+          "ຂະແໜງອຸດສາຫະກຳ ຂະຫຍາຍຕົວ",
+          "ຂະແຫນງອຸດສາຫະກໍາ ຂະຫຍາຍຕົວ"
+        ],
+        "malay": [
+          "pengeluaran perkilangan",
+          "output pembuatan",
+          "keluaran pembuatan",
+          "output perkilangan",
+          "pengeluaran perindustrian",
+          "indeks pengeluaran perindustrian",
+          "output sektor pembuatan",
+          "aktiviti pembuatan",
+          "PMI pembuatan"
+        ],
+        "mn": [
+          {
+            "prefix": "аж үйлдвэрийн үйлдвэрлэл"
+          },
+          {
+            "prefix": "аж үйлдвэрийн нийт үйлдвэрлэл"
+          },
+          {
+            "prefix": "аж үйлдвэрийн бүтээгдэхүүн"
+          },
+          {
+            "prefix": "боловсруулах үйлдвэрлэлийн гарц"
+          },
+          {
+            "prefix": "боловсруулах үйлдвэрлэлийн салбарын бүтээгдэхүүн"
+          },
+          {
+            "prefix": "боловсруулах үйлдвэрийн үйлдвэрлэл"
+          },
+          {
+            "prefix": "үйлдвэрлэлийн PMI"
+          }
+        ],
+        "my": [
+          "စက်မှုထုတ်လုပ်မှု",
+          "ကုန်ထုတ်လုပ်ငန်းထုတ်လုပ်မှု",
+          "စက်ရုံထုတ်လုပ်မှု",
+          "ကုန်ထုတ်လုပ်မှုကဏ္ဍ",
+          "manufacturing output",
+          "industrial production",
+          "industrial output",
+          "manufacturing PMI"
+        ],
+        "portuguese": [
+          "produção industrial",
+          "índice de produção industrial",
+          "produção manufatureira",
+          "produção manufactureira",
+          "produção fabril",
+          "produção da indústria transformadora",
+          "atividade industrial",
+          "actividade industrial",
+          "atividade manufatureira",
+          "actividade manufactureira",
+          "atividade da indústria transformadora",
+          "actividade da indústria transformadora",
+          "PMI industrial",
+          "PMI da indústria transformadora"
+        ],
+        "tetum": [
+          "produsaun industriál",
+          "produsaun industrial",
+          "produsaun manufatura",
+          "produsaun fábrika",
+          "produsaun fabrika",
+          "atividade manufatura",
+          "produção industrial",
+          "producao industrial",
+          "produção manufatureira",
+          "producao manufatureira",
+          "atividade industrial",
+          "atividade transformadora"
+        ],
+        "thai": [
+          "ผลผลิตภาคอุตสาหกรรม",
+          "ผลผลิตอุตสาหกรรม",
+          "การผลิตภาคอุตสาหกรรม",
+          "ดัชนีการผลิตอุตสาหกรรม",
+          "การผลิตสินค้าอุตสาหกรรม",
+          "ภาคการผลิต"
+        ],
+        "tok_pisin": [
           "manufacturing output",
           "industrial output",
           "industrial production",
@@ -473,6 +5136,171 @@
           "services output",
           "growth in services",
           "services PMI"
+        ],
+        "chinese_simplified": [
+          "服务业增长",
+          "服务业产出",
+          "服务业增加值",
+          "服务业PMI",
+          "服务业扩张",
+          "服务业活动"
+        ],
+        "chinese_traditional": [
+          "服務業成長",
+          "服務業增長",
+          "服務業產出",
+          "服務業擴張",
+          "服務業PMI",
+          "非製造業經理人指數",
+          "服務業採購經理人指數"
+        ],
+        "filipino": [
+          "services growth",
+          "services sector growth",
+          "service sector growth",
+          "services output",
+          "services PMI",
+          "paglago ng sektor ng serbisyo"
+        ],
+        "fr": [
+          "croissance des services",
+          "croissance du secteur des services",
+          "croissance du secteur tertiaire",
+          "croissance du tertiaire",
+          "activité dans les services",
+          "PMI des services"
+        ],
+        "indo": [
+          "pertumbuhan sektor jasa",
+          "pertumbuhan jasa",
+          "output sektor jasa",
+          "PMI jasa",
+          "sektor jasa tumbuh"
+        ],
+        "japanese": [
+          "サービス業の成長",
+          "サービス部門の成長",
+          "サービス産業の成長",
+          "サービス業PMI",
+          "非製造業PMI",
+          "サービス業購買担当者景気指数",
+          "第3次産業活動指数",
+          "第三次産業活動指数"
+        ],
+        "km": [
+          "កំណើនវិស័យសេវាកម្ម",
+          "កំណើនសេវាកម្ម",
+          "ទិន្នផលវិស័យសេវាកម្ម",
+          "វិស័យសេវាកម្មកើនឡើង",
+          "PMI វិស័យសេវាកម្ម",
+          "PMI សេវាកម្ម"
+        ],
+        "korean": [
+          "서비스업생산",
+          "서비스업 생산",
+          "서비스업성장",
+          "서비스업 성장",
+          "서비스산업 성장",
+          "서비스업 PMI",
+          "서비스업 구매관리자지수"
+        ],
+        "lao": [
+          "ການເຕີບໂຕຂອງຂະແໜງບໍລິການ",
+          "ການເຕີບໂຕຂອງຂະແຫນງບໍລິການ",
+          "ການຂະຫຍາຍຕົວຂອງຂະແໜງບໍລິການ",
+          "ການຂະຫຍາຍຕົວຂອງຂະແຫນງບໍລິການ",
+          "ຂະແໜງບໍລິການຂະຫຍາຍຕົວ",
+          "ຂະແຫນງບໍລິການຂະຫຍາຍຕົວ",
+          "ຂະແໜງການບໍລິການຂະຫຍາຍຕົວ",
+          "ຂະແຫນງການບໍລິການຂະຫຍາຍຕົວ",
+          "ຂະແໜງບໍລິການ ຂະຫຍາຍຕົວ",
+          "ຂະແຫນງບໍລິການ ຂະຫຍາຍຕົວ",
+          "ຂະແໜງການບໍລິການ ຂະຫຍາຍຕົວ",
+          "ຂະແຫນງການບໍລິການ ຂະຫຍາຍຕົວ",
+          "ຂະແໜງບໍລິການເພີ່ມຂຶ້ນ",
+          "ຂະແຫນງບໍລິການເພີ່ມຂຶ້ນ"
+        ],
+        "malay": [
+          "pertumbuhan sektor perkhidmatan",
+          "sektor perkhidmatan berkembang",
+          "pertumbuhan perkhidmatan",
+          "output perkhidmatan",
+          "keluaran sektor perkhidmatan",
+          "PMI perkhidmatan"
+        ],
+        "mn": [
+          {
+            "prefix": "үйлчилгээний салбарын өсөлт"
+          },
+          {
+            "prefix": "үйлчилгээний салбар өс"
+          },
+          {
+            "prefix": "үйлчилгээний салбарын нэмэгдсэн өртөг"
+          },
+          {
+            "prefix": "үйлчилгээний салбарын нэмэгдсэн өртг"
+          },
+          {
+            "prefix": "үйлчилгээний PMI"
+          }
+        ],
+        "my": [
+          "ဝန်ဆောင်မှုကဏ္ဍတိုးတက်",
+          "၀န်ဆောင်မှုကဏ္ဍတိုးတက်",
+          "ဝန်ဆောင်မှုကဏ္ဍကြီးထွား",
+          "၀န်ဆောင်မှုကဏ္ဍကြီးထွား",
+          "ဝန်ဆောင်မှုကဏ္ဍ တိုးတက်",
+          "၀န်ဆောင်မှုကဏ္ဍ တိုးတက်",
+          "ဝန်ဆောင်မှုလုပ်ငန်းကဏ္ဍတိုးတက်",
+          "၀န်ဆောင်မှုလုပ်ငန်းကဏ္ဍတိုးတက်",
+          "services growth",
+          "services PMI"
+        ],
+        "portuguese": [
+          "crescimento dos serviços",
+          "crescimento do setor dos serviços",
+          "crescimento do sector dos serviços",
+          "crescimento do setor de serviços",
+          "crescimento do sector de serviços",
+          "produção dos serviços",
+          "atividade dos serviços",
+          "actividade dos serviços",
+          "atividade no setor dos serviços",
+          "actividade no sector dos serviços",
+          "PMI dos serviços",
+          "PMI de serviços"
+        ],
+        "tetum": [
+          "kresimentu setór servisu",
+          "kresimentu setor servisu",
+          "kresimentu setór terseiru",
+          "kresimentu setor terseiru",
+          "kresimentu servisu sira",
+          "crescimento dos serviços",
+          "crescimento dos servicos",
+          "crescimento do setor dos serviços",
+          "crescimento do setor dos servicos",
+          "crescimento do setor terciário",
+          "crescimento do setor terciario",
+          "crescimento do sector dos serviços",
+          "crescimento do sector dos servicos"
+        ],
+        "thai": [
+          "ภาคบริการขยายตัว",
+          "ภาคบริการเติบโต",
+          "การเติบโตภาคบริการ",
+          "การเติบโตของภาคบริการ",
+          "การขยายตัวของภาคบริการ",
+          "PMI ภาคบริการ"
+        ],
+        "tok_pisin": [
+          "services growth",
+          "services sector growth",
+          "service sector growth",
+          "services output",
+          "growth in services",
+          "services PMI"
         ]
       }
     },
@@ -487,6 +5315,170 @@
           "farm output",
           "agricultural GDP",
           "agricultural sector growth"
+        ],
+        "chinese_simplified": [
+          "农业增长",
+          "农业产出",
+          "农业产值",
+          "农业增加值",
+          "农业总产值"
+        ],
+        "chinese_traditional": [
+          "農業成長",
+          "農業增長",
+          "農業產出",
+          "農業產值",
+          "農業生產總值",
+          "農業GDP"
+        ],
+        "filipino": [
+          "agricultural growth",
+          "agricultural output",
+          "farm output",
+          "agricultural sector growth",
+          "paglago ng agrikultura",
+          "paglago ng sektor ng agrikultura",
+          "produksyon ng agrikultura"
+        ],
+        "fr": [
+          "croissance agricole",
+          "production agricole",
+          "croissance du secteur agricole",
+          "PIB agricole",
+          "valeur ajoutée agricole"
+        ],
+        "indo": [
+          "pertumbuhan sektor pertanian",
+          "pertumbuhan pertanian",
+          "produksi pertanian",
+          "output pertanian",
+          "PDB pertanian",
+          "PDB sektor pertanian"
+        ],
+        "japanese": [
+          "農業成長",
+          "農業の成長",
+          "農業部門の成長",
+          "農業生産高",
+          "農業生産額",
+          "農業産出額",
+          "農業GDP"
+        ],
+        "km": [
+          "កំណើនវិស័យកសិកម្ម",
+          "កំណើនកសិកម្ម",
+          "កំណើនផលិតកម្មកសិកម្ម",
+          "ទិន្នផលវិស័យកសិកម្ម",
+          "វិស័យកសិកម្មមានកំណើន",
+          "GDP កសិកម្ម"
+        ],
+        "korean": [
+          "농업성장",
+          "농업 성장",
+          "농업생산",
+          "농업 생산",
+          "농업 생산량",
+          "농업 GDP",
+          "농업생산액"
+        ],
+        "lao": [
+          "ການເຕີບໂຕຂອງຂະແໜງກະສິກຳ",
+          "ການເຕີບໂຕຂອງຂະແຫນງກະສິກໍາ",
+          "ການຂະຫຍາຍຕົວຂອງຂະແໜງກະສິກຳ",
+          "ການຂະຫຍາຍຕົວຂອງຂະແຫນງກະສິກໍາ",
+          "ຂະແໜງກະສິກຳຂະຫຍາຍຕົວ",
+          "ຂະແຫນງກະສິກໍາຂະຫຍາຍຕົວ",
+          "ຂະແໜງກະສິກຳ ຂະຫຍາຍຕົວ",
+          "ຂະແຫນງກະສິກໍາ ຂະຫຍາຍຕົວ",
+          "ຂະແໜງກະສິກຳ-ປ່າໄມ້ຂະຫຍາຍຕົວ",
+          "ຂະແຫນງກະສິກໍາ-ປ່າໄມ້ຂະຫຍາຍຕົວ",
+          "ຂະແໜງກະສິກຳ-ປ່າໄມ້ ຂະຫຍາຍຕົວ",
+          "ຂະແຫນງກະສິກໍາ-ປ່າໄມ້ ຂະຫຍາຍຕົວ",
+          "ມູນຄ່າການຜະລິດກະສິກຳ",
+          "ມູນຄ່າການຜະລິດກະສິກໍາ"
+        ],
+        "malay": [
+          "pertumbuhan sektor pertanian",
+          "pertumbuhan pertanian",
+          "output pertanian",
+          "pengeluaran pertanian",
+          "KDNK pertanian",
+          "sektor pertanian berkembang"
+        ],
+        "mn": [
+          {
+            "prefix": "хөдөө аж ахуйн өсөлт"
+          },
+          {
+            "prefix": "хөдөө аж ахуйн салбарын өсөлт"
+          },
+          {
+            "prefix": "хөдөө аж ахуйн үйлдвэрлэл"
+          },
+          {
+            "prefix": "хөдөө аж ахуйн нийт бүтээгдэхүүн"
+          },
+          {
+            "prefix": "хөдөө аж ахуйн салбарын нэмэгдсэн өртөг"
+          },
+          {
+            "prefix": "хөдөө аж ахуйн салбарын нэмэгдсэн өртг"
+          },
+          {
+            "prefix": "хөдөө аж ахуйн бүтээгдэхүүний үйлдвэрлэл"
+          }
+        ],
+        "my": [
+          "စိုက်ပျိုးရေးကဏ္ဍတိုးတက်",
+          "စိုက်ပျိုးရေးကဏ္ဍ တိုးတက်",
+          "စိုက်ပျိုးရေးထုတ်လုပ်မှု",
+          "လယ်ယာထုတ်လုပ်မှု",
+          "agricultural growth",
+          "agricultural output"
+        ],
+        "portuguese": [
+          "crescimento agrícola",
+          "crescimento da agricultura",
+          "crescimento do setor agrícola",
+          "crescimento do sector agrícola",
+          "produção agrícola",
+          "PIB agrícola"
+        ],
+        "tetum": [
+          "kresimentu agríkola",
+          "kresimentu agrikola",
+          "kresimentu setór agrikultura",
+          "kresimentu setor agrikultura",
+          "kresimentu agrikultura",
+          "produsaun agríkola",
+          "produsaun agrikola",
+          "crescimento agrícola",
+          "crescimento agricola",
+          "crescimento do setor agrícola",
+          "crescimento do setor agricola",
+          "produção agrícola",
+          "producao agricola",
+          "PIB agrícola",
+          "PIB agricola"
+        ],
+        "thai": [
+          "การเติบโตภาคเกษตร",
+          "การเติบโตของภาคเกษตร",
+          "การขยายตัวของภาคเกษตร",
+          "ภาคเกษตรขยายตัว",
+          "ภาคเกษตรเติบโต",
+          "ผลผลิตภาคเกษตร",
+          "จีดีพีภาคเกษตร",
+          "ดัชนีผลผลิตสินค้าเกษตร"
+        ],
+        "tok_pisin": [
+          "agricultural growth",
+          "agriculture growth",
+          "agricultural output",
+          "farm output",
+          "agricultural GDP",
+          "agricultural sector growth",
+          "agriculture sector growth"
         ]
       }
     },
@@ -501,6 +5493,165 @@
           "shadow economy",
           "underground economy",
           "informality"
+        ],
+        "chinese_simplified": [
+          "非正规经济",
+          "非正式经济",
+          "非正规部门",
+          "影子经济",
+          "地下经济"
+        ],
+        "chinese_traditional": [
+          "非正式經濟",
+          "非正規經濟",
+          "非正式部門",
+          "非正規部門",
+          "地下經濟",
+          "影子經濟"
+        ],
+        "filipino": [
+          "informal economy",
+          "informal sector",
+          "shadow economy",
+          "underground economy",
+          "informality",
+          "impormal na ekonomiya",
+          "impormal na sektor"
+        ],
+        "fr": [
+          "économie informelle",
+          "économies informelles",
+          "secteur informel",
+          "économie souterraine",
+          "économie parallèle",
+          "informalité"
+        ],
+        "indo": [
+          "ekonomi informal",
+          "sektor informal",
+          "ekonomi bayangan",
+          "ekonomi bawah tanah",
+          "informalitas"
+        ],
+        "japanese": [
+          "インフォーマル経済",
+          "インフォーマルセクター",
+          "インフォーマル・セクター",
+          "インフォーマル部門",
+          "非公式経済",
+          "地下経済",
+          "闇経済",
+          "シャドーエコノミー"
+        ],
+        "km": [
+          "សេដ្ឋកិច្ចក្រៅប្រព័ន្ធ",
+          "សេដ្ឋកិច្ចក្រៅផ្លូវការ",
+          "វិស័យក្រៅប្រព័ន្ធ",
+          "វិស័យក្រៅផ្លូវការ",
+          "សេដ្ឋកិច្ចក្រោមដី",
+          "សេដ្ឋកិច្ចងងឹត",
+          "ភាពក្រៅផ្លូវការ"
+        ],
+        "korean": [
+          "비공식경제",
+          "비공식 경제",
+          "비공식부문",
+          "비공식 부문",
+          "지하경제",
+          "지하 경제",
+          "그림자 경제",
+          "장마당 경제"
+        ],
+        "lao": [
+          "ເສດຖະກິດນອກລະບົບ",
+          "ຂະແໜງນອກລະບົບ",
+          "ຂະແຫນງນອກລະບົບ",
+          "ວິສາຫະກິດນອກລະບົບ",
+          "ທຸລະກິດນອກລະບົບ",
+          "ເສດຖະກິດໃຕ້ດິນ",
+          "ເສດຖະກິດເງົາ"
+        ],
+        "malay": [
+          "ekonomi tidak formal",
+          "sektor tidak formal",
+          "ekonomi informal",
+          "sektor informal",
+          "ekonomi bayangan",
+          "ekonomi bawah tanah",
+          "ketidakformalan"
+        ],
+        "mn": [
+          {
+            "prefix": "албан бус эдийн засаг"
+          },
+          {
+            "prefix": "албан бус эдийн засг"
+          },
+          {
+            "prefix": "албан бус сектор"
+          },
+          {
+            "prefix": "албан бус салбар"
+          },
+          {
+            "prefix": "сүүдрийн эдийн засаг"
+          },
+          {
+            "prefix": "сүүдрийн эдийн засг"
+          },
+          {
+            "prefix": "далд эдийн засаг"
+          },
+          {
+            "prefix": "далд эдийн засг"
+          }
+        ],
+        "my": [
+          "အလွတ်သဘောစီးပွားရေး",
+          "အလွတ်သဘောကဏ္ဍ",
+          "အလွတ်တန်းစီးပွားရေး",
+          "တရားဝင်မဟုတ်သောစီးပွားရေး",
+          "တရား၀င်မဟုတ်သောစီးပွားရေး",
+          "ပုံမှန်မဟုတ်သောစီးပွားရေးကဏ္ဍ",
+          "informal economy",
+          "informal sector",
+          "shadow economy"
+        ],
+        "portuguese": [
+          "economia informal",
+          "economias informais",
+          "setor informal",
+          "sector informal",
+          "economia paralela",
+          "economia subterrânea"
+        ],
+        "tetum": [
+          "ekonomia informál",
+          "ekonomia informal",
+          "setór informál",
+          "setor informal",
+          "ekonomia paralela",
+          "economia informal",
+          "sector informal",
+          "economia paralela",
+          "economia subterrânea",
+          "economia subterranea"
+        ],
+        "thai": [
+          "เศรษฐกิจนอกระบบ",
+          "ภาคนอกระบบ",
+          "ธุรกิจนอกระบบ",
+          "เศรษฐกิจใต้ดิน"
+        ],
+        "tok_pisin": [
+          "informal economy",
+          "informal economies",
+          "informal sector",
+          "shadow economy",
+          "underground economy",
+          "informality",
+          "informel sekta",
+          "informal sekta"
         ]
       }
     },
@@ -516,6 +5667,146 @@
           "business formalization",
           "business formalisation",
           "formalization of informal businesses"
+        ],
+        "chinese_simplified": [
+          "经济正规化",
+          "企业正规化",
+          "纳入正规经济",
+          "转为正规企业"
+        ],
+        "chinese_traditional": [
+          "經濟正式化",
+          "經濟正規化",
+          "企業正式化",
+          "企業正規化",
+          "納入正規經濟",
+          "納入正式經濟"
+        ],
+        "filipino": [
+          "economic formalization",
+          "formalization of the economy",
+          "business formalization",
+          "formalization of informal businesses",
+          "pormalisasyon ng mga negosyo",
+          "pormalisasyon ng impormal na sektor"
+        ],
+        "fr": [
+          "formalisation de l'économie",
+          "formalisation de l’économie",
+          "formalisation économique",
+          "formalisation des entreprises",
+          "formalisation du secteur informel",
+          "formaliser leur activité"
+        ],
+        "indo": [
+          "formalisasi ekonomi",
+          "formalisasi usaha",
+          "formalisasi UMKM",
+          "formalisasi sektor informal",
+          "formalisasi pelaku usaha"
+        ],
+        "japanese": [
+          "経済のフォーマル化",
+          "フォーマル経済への移行",
+          "フォーマルセクターへの移行",
+          "公式経済への移行"
+        ],
+        "km": [
+          "ផ្លូវការូបនីយកម្ម",
+          "ការធ្វើផ្លូវការភាវូបនីយកម្ម"
+        ],
+        "korean": [
+          "경제공식화",
+          "경제 공식화",
+          "지하경제 양성화",
+          "지하 경제 양성화",
+          "공식 부문 편입",
+          "공식부문 편입"
+        ],
+        "lao": [
+          "ການຫັນເສດຖະກິດເຂົ້າລະບົບ",
+          "ຫັນເສດຖະກິດນອກລະບົບເຂົ້າສູ່ລະບົບ",
+          "ຫັນທຸລະກິດນອກລະບົບເຂົ້າສູ່ລະບົບ",
+          "ນຳທຸລະກິດເຂົ້າສູ່ລະບົບ",
+          "ນໍາທຸລະກິດເຂົ້າສູ່ລະບົບ",
+          "ເຂົ້າສູ່ລະບົບເສດຖະກິດທາງການ"
+        ],
+        "malay": [
+          "pemformalan ekonomi",
+          "formalisasi ekonomi",
+          "pemformalan perniagaan",
+          "formalisasi perniagaan",
+          "memformalkan perniagaan",
+          "pemformalan sektor tidak formal"
+        ],
+        "mn": [
+          {
+            "prefix": "албажуулалт"
+          },
+          {
+            "prefix": "эдийн засгийг албажуул"
+          },
+          {
+            "prefix": "албан бус салбарыг албажуул"
+          },
+          {
+            "prefix": "бизнесийг албажуул"
+          },
+          {
+            "prefix": "аж ахуйн нэгжүүдийг албажуул"
+          },
+          {
+            "prefix": "албан бус хэвшлийг албажуул"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးတရားဝင်ဖြစ်စေရေး",
+          "စီးပွားရေးတရား၀င်ဖြစ်စေရေး",
+          "တရားဝင်ကဏ္ဍသို့ကူးပြောင်း",
+          "တရား၀င်ကဏ္ဍသို့ကူးပြောင်း",
+          "တရားဝင်ကဏ္ဍသို့ ကူးပြောင်း",
+          "တရား၀င်ကဏ္ဍသို့ ကူးပြောင်း",
+          "လုပ်ငန်းများတရားဝင်မှတ်ပုံတင်",
+          "လုပ်ငန်းများတရား၀င်မှတ်ပုံတင်",
+          "economic formalization",
+          "business formalization"
+        ],
+        "portuguese": [
+          "formalização da economia",
+          "formalização económica",
+          "formalização econômica",
+          "formalização de empresas",
+          "formalização das empresas",
+          "formalização dos negócios",
+          "formalização de negócios"
+        ],
+        "tetum": [
+          "formalizasaun ekonomia",
+          "formalizasaun negósiu",
+          "formalizasaun negosiu",
+          "formalizasaun empreza",
+          "formalização da economia",
+          "formalizacao da economia",
+          "formalização de empresas",
+          "formalizacao de empresas",
+          "formalização dos negócios",
+          "formalizacao dos negocios"
+        ],
+        "thai": [
+          "เศรษฐกิจนอกระบบเข้าสู่ระบบ",
+          "ธุรกิจนอกระบบเข้าสู่ระบบ",
+          "นำเข้าสู่ระบบเศรษฐกิจ",
+          "ดึงเศรษฐกิจนอกระบบ"
+        ],
+        "tok_pisin": [
+          "economic formalization",
+          "economic formalisation",
+          "formalization of the economy",
+          "formalisation of the economy",
+          "business formalization",
+          "business formalisation",
+          "formalization of informal businesses",
+          "formalisation of informal businesses"
         ]
       }
     },
@@ -524,6 +5815,151 @@
       "group": "demand_and_investment",
       "forms": {
         "en": [
+          "domestic demand",
+          "internal demand",
+          "aggregate demand",
+          "domestic consumption"
+        ],
+        "chinese_simplified": [
+          "国内需求",
+          "总需求",
+          "扩大内需",
+          "提振内需",
+          "拉动内需",
+          "刺激内需",
+          "内需不足",
+          "内需疲软"
+        ],
+        "chinese_traditional": [
+          "國內需求",
+          "內部需求",
+          "總需求",
+          "內需市場",
+          "擴大內需",
+          "提振內需",
+          "刺激內需",
+          "內需不振",
+          "內需疲弱",
+          "內需動能"
+        ],
+        "filipino": [
+          "domestic demand",
+          "aggregate demand",
+          "domestic consumption",
+          "lokal na demand",
+          "demand sa loob ng bansa",
+          "lokal na konsumo"
+        ],
+        "fr": [
+          "demande intérieure",
+          "demande interne",
+          "demande globale",
+          "demande agrégée",
+          "consommation intérieure"
+        ],
+        "indo": [
+          "permintaan domestik",
+          "permintaan domestiknya",
+          "permintaan dalam negeri",
+          "permintaan agregat",
+          "konsumsi domestik",
+          "konsumsi dalam negeri"
+        ],
+        "japanese": [
+          "内需",
+          "国内需要",
+          "総需要"
+        ],
+        "km": [
+          "តម្រូវការក្នុងស្រុក",
+          "តម្រូវការក្នុងប្រទេស",
+          "តម្រូវការសរុប",
+          "ការប្រើប្រាស់ក្នុងស្រុក"
+        ],
+        "korean": [
+          "내수 부진",
+          "내수부진",
+          "내수 회복",
+          "내수경기",
+          "내수 경기",
+          "내수 침체",
+          "내수 활성화",
+          "내수시장",
+          "내수 시장",
+          "국내수요",
+          "국내 수요",
+          "총수요"
+        ],
+        "lao": [
+          "ຄວາມຕ້ອງການພາຍໃນ",
+          "ຄວາມຕ້ອງການພາຍໃນປະເທດ",
+          "ການບໍລິໂພກພາຍໃນ",
+          "ການຊົມໃຊ້ພາຍໃນປະເທດ",
+          "ອຸປະສົງລວມ",
+          "ອຸປະສົງພາຍໃນ"
+        ],
+        "malay": [
+          "permintaan domestik",
+          "permintaan dalam negeri",
+          "permintaan agregat",
+          "penggunaan domestik",
+          "penggunaan dalam negeri"
+        ],
+        "mn": [
+          {
+            "prefix": "дотоодын эрэлт"
+          },
+          {
+            "prefix": "дотоод эрэлт"
+          },
+          {
+            "prefix": "нийт эрэлт"
+          },
+          {
+            "prefix": "дотоодын нийт эрэлт"
+          }
+        ],
+        "my": [
+          "ပြည်တွင်းဝယ်လိုအား",
+          "ပြည်တွင်း၀ယ်လိုအား",
+          "ပြည်တွင်း ဝယ်လိုအား",
+          "ပြည်တွင်း ၀ယ်လိုအား",
+          "ပြည်တွင်းစားသုံးမှု",
+          "စုစုပေါင်းဝယ်လိုအား",
+          "စုစုပေါင်း၀ယ်လိုအား",
+          "domestic demand",
+          "aggregate demand"
+        ],
+        "portuguese": [
+          "procura interna",
+          "procura doméstica",
+          "procura agregada",
+          "demanda interna",
+          "demanda doméstica",
+          "demanda agregada",
+          "consumo interno"
+        ],
+        "tetum": [
+          "prokura doméstika",
+          "prokura domestika",
+          "prokura interna",
+          "prokura agregada",
+          "konsumu doméstiku",
+          "konsumu domestiku",
+          "procura interna",
+          "procura agregada",
+          "demanda interna",
+          "consumo interno"
+        ],
+        "thai": [
+          "อุปสงค์ภายในประเทศ",
+          "อุปสงค์ในประเทศ",
+          "อุปสงค์รวม",
+          "การใช้จ่ายภายในประเทศ",
+          "การบริโภคภายในประเทศ",
+          "กำลังซื้อในประเทศ"
+        ],
+        "tok_pisin": [
           "domestic demand",
           "internal demand",
           "aggregate demand",
@@ -540,6 +5976,151 @@
           "household spending",
           "consumer spending",
           "household consumption expenditure"
+        ],
+        "chinese_simplified": [
+          "家庭消费",
+          "居民消费",
+          "家庭支出",
+          "消费者支出",
+          "消费者开支"
+        ],
+        "chinese_traditional": [
+          "家庭消費",
+          "家戶消費",
+          "住戶消費",
+          "消費者支出",
+          "消費者開支"
+        ],
+        "filipino": [
+          "household consumption",
+          "household spending",
+          "consumer spending",
+          "household final consumption expenditure",
+          "gastusin ng mga sambahayan",
+          "paggastos ng mga sambahayan",
+          "paggastos ng mga pamilya",
+          "paggastos ng mga konsyumer",
+          "paggastos ng mga mamimili",
+          "konsumo ng mga sambahayan"
+        ],
+        "fr": [
+          "consommation des ménages",
+          "dépenses des ménages",
+          "dépenses de consommation",
+          "dépenses de consommation des ménages",
+          "consommation finale des ménages"
+        ],
+        "indo": [
+          "konsumsi rumah tangga",
+          "belanja rumah tangga",
+          "pengeluaran rumah tangga",
+          "pengeluaran konsumsi rumah tangga",
+          "belanja konsumen",
+          "konsumsi masyarakat"
+        ],
+        "japanese": [
+          "家計消費",
+          "家計の消費",
+          "家計支出",
+          "消費支出",
+          "消費者支出"
+        ],
+        "km": [
+          "ការប្រើប្រាស់របស់គ្រួសារ",
+          "ការប្រើប្រាស់គ្រួសារ",
+          "ការចំណាយរបស់គ្រួសារ",
+          "ការចាយវាយរបស់គ្រួសារ",
+          "ការចាយវាយរបស់អ្នកប្រើប្រាស់",
+          "ការចំណាយរបស់អ្នកប្រើប្រាស់",
+          "ការចំណាយប្រើប្រាស់របស់គ្រួសារ"
+        ],
+        "korean": [
+          "가계소비",
+          "가계 소비",
+          "가계지출",
+          "가계 지출",
+          "소비지출",
+          "소비 지출"
+        ],
+        "lao": [
+          "ການບໍລິໂພກຂອງຄົວເຮືອນ",
+          "ການບໍລິໂພກຄົວເຮືອນ",
+          "ລາຍຈ່າຍຂອງຄົວເຮືອນ",
+          "ລາຍຈ່າຍຄົວເຮືອນ",
+          "ການໃຊ້ຈ່າຍຂອງຄົວເຮືອນ",
+          "ການໃຊ້ຈ່າຍຂອງຜູ້ບໍລິໂພກ"
+        ],
+        "malay": [
+          "penggunaan isi rumah",
+          "perbelanjaan isi rumah",
+          "perbelanjaan pengguna",
+          "perbelanjaan penggunaan isi rumah"
+        ],
+        "mn": [
+          {
+            "prefix": "өрхийн хэрэглээ"
+          },
+          {
+            "prefix": "өрхийн зарлага"
+          },
+          {
+            "prefix": "хэрэглэгчдийн зарцуулалт"
+          },
+          {
+            "prefix": "хэрэглээний зарцуулалт"
+          },
+          {
+            "prefix": "иргэдийн хэрэглээ"
+          }
+        ],
+        "my": [
+          "အိမ်ထောင်စုသုံးစွဲမှု",
+          "အိမ်ထောင်စုစားသုံးမှု",
+          "အိမ်ထောင်စု သုံးစွဲမှု",
+          "စားသုံးသူသုံးစွဲမှု",
+          "household consumption",
+          "household spending",
+          "consumer spending"
+        ],
+        "portuguese": [
+          "consumo das famílias",
+          "consumo dos agregados familiares",
+          "despesa de consumo das famílias",
+          "gastos das famílias",
+          "despesas das famílias",
+          "despesa das famílias",
+          "gastos dos consumidores"
+        ],
+        "tetum": [
+          "konsumu uma-kain",
+          "konsumu uma kain",
+          "gastu uma-kain",
+          "gastu uma kain",
+          "konsumu família",
+          "konsumu familia",
+          "consumo das famílias",
+          "consumo das familias",
+          "despesas das famílias",
+          "despesas das familias",
+          "gastos das famílias",
+          "gastos das familias",
+          "despesa de consumo das famílias",
+          "despesa de consumo das familias"
+        ],
+        "thai": [
+          "การบริโภคของครัวเรือน",
+          "การบริโภคครัวเรือน",
+          "การบริโภคภาคครัวเรือน",
+          "การใช้จ่ายของครัวเรือน",
+          "การใช้จ่ายภาคครัวเรือน",
+          "การใช้จ่ายของผู้บริโภค",
+          "การใช้จ่ายผู้บริโภค"
+        ],
+        "tok_pisin": [
+          "household consumption",
+          "household spending",
+          "consumer spending",
+          "household consumption expenditure"
         ]
       }
     },
@@ -548,6 +6129,110 @@
       "group": "demand_and_investment",
       "forms": {
         "en": [
+          "private consumption",
+          "private consumption expenditure",
+          "private final consumption",
+          "private spending"
+        ],
+        "chinese_simplified": [
+          "私人消费",
+          "民间消费",
+          "私人消费支出"
+        ],
+        "chinese_traditional": [
+          "民間消費",
+          "私人消費",
+          "民間最終消費",
+          "私人最終消費"
+        ],
+        "filipino": [
+          "private consumption",
+          "private consumption expenditure",
+          "private final consumption",
+          "private spending",
+          "pribadong konsumo",
+          "pribadong paggastos"
+        ],
+        "fr": [
+          "consommation privée",
+          "dépenses de consommation privée",
+          "consommation finale privée",
+          "dépenses privées"
+        ],
+        "indo": [
+          "konsumsi swasta",
+          "konsumsi privat",
+          "pengeluaran konsumsi swasta",
+          "konsumsi akhir swasta",
+          "belanja swasta"
+        ],
+        "japanese": [
+          "個人消費",
+          "民間消費",
+          "民間最終消費支出",
+          "民間消費支出"
+        ],
+        "km": [
+          "ការប្រើប្រាស់ឯកជន",
+          "ការចំណាយប្រើប្រាស់ឯកជន"
+        ],
+        "korean": [
+          "민간소비",
+          "민간 소비",
+          "민간 최종소비",
+          "민간최종소비"
+        ],
+        "lao": [
+          "ການບໍລິໂພກຂອງພາກເອກະຊົນ",
+          "ການບໍລິໂພກພາກເອກະຊົນ",
+          "ການບໍລິໂພກຂອງເອກະຊົນ",
+          "ລາຍຈ່າຍບໍລິໂພກພາກເອກະຊົນ",
+          "ການໃຊ້ຈ່າຍຂອງພາກເອກະຊົນ"
+        ],
+        "malay": [
+          "penggunaan swasta",
+          "perbelanjaan penggunaan swasta",
+          "penggunaan akhir swasta",
+          "perbelanjaan swasta"
+        ],
+        "mn": [
+          {
+            "prefix": "хувийн хэрэглээ"
+          },
+          {
+            "prefix": "хувийн хэвшлийн хэрэглээ"
+          },
+          {
+            "prefix": "хувийн эцсийн хэрэглээ"
+          }
+        ],
+        "my": [
+          "ပုဂ္ဂလိကသုံးစွဲမှု",
+          "ပုဂ္ဂလိကစားသုံးမှု",
+          "ပုဂ္ဂလိက သုံးစွဲမှု",
+          "private consumption"
+        ],
+        "portuguese": [
+          "consumo privado",
+          "despesa de consumo privado",
+          "consumo final privado",
+          "gastos privados",
+          "despesa privada"
+        ],
+        "tetum": [
+          "konsumu privadu",
+          "gastu privadu",
+          "despeza konsumu privadu",
+          "consumo privado",
+          "despesa de consumo privado",
+          "consumo final privado"
+        ],
+        "thai": [
+          "บริโภคภาคเอกชน",
+          "การบริโภคของภาคเอกชน",
+          "การใช้จ่ายภาคเอกชน"
+        ],
+        "tok_pisin": [
           "private consumption",
           "private consumption expenditure",
           "private final consumption",
@@ -565,6 +6250,150 @@
           "private investment",
           "business investment",
           "investment spending"
+        ],
+        "chinese_simplified": [
+          "投资增长",
+          "投资增速",
+          "私人投资",
+          "民间投资",
+          "企业投资",
+          "投资支出"
+        ],
+        "chinese_traditional": [
+          "投資成長",
+          "投資增長",
+          "民間投資",
+          "私人投資",
+          "企業投資",
+          "投資支出"
+        ],
+        "filipino": [
+          "investment growth",
+          "private investment",
+          "private investments",
+          "business investment",
+          "paglago ng pamumuhunan",
+          "pagtaas ng pamumuhunan",
+          "pribadong pamumuhunan"
+        ],
+        "fr": [
+          "croissance de l'investissement",
+          "croissance de l’investissement",
+          "croissance des investissements",
+          "investissement privé",
+          "investissements privés",
+          "investissement des entreprises",
+          "investissements des entreprises",
+          "hausse des investissements"
+        ],
+        "indo": [
+          "pertumbuhan investasi",
+          "investasi swasta",
+          "investasi bisnis",
+          "investasi dunia usaha",
+          "realisasi investasi"
+        ],
+        "japanese": [
+          "設備投資",
+          "民間投資",
+          "企業投資",
+          "投資の伸び",
+          "投資の拡大"
+        ],
+        "km": [
+          "កំណើនវិនិយោគ",
+          "វិនិយោគឯកជន",
+          "វិនិយោគរបស់វិស័យឯកជន",
+          "ការវិនិយោគកើនឡើង",
+          "វិនិយោគអាជីវកម្ម",
+          "ការចំណាយលើវិនិយោគ"
+        ],
+        "korean": [
+          "투자증가",
+          "투자 증가",
+          "민간투자",
+          "민간 투자",
+          "기업투자",
+          "기업 투자",
+          "설비투자",
+          "설비 투자"
+        ],
+        "lao": [
+          "ການເຕີບໂຕຂອງການລົງທຶນ",
+          "ການຂະຫຍາຍຕົວຂອງການລົງທຶນ",
+          "ການລົງທຶນເພີ່ມຂຶ້ນ",
+          "ການລົງທຶນຂອງພາກເອກະຊົນ",
+          "ການລົງທຶນຂອງເອກະຊົນ",
+          "ການລົງທຶນພາກເອກະຊົນ",
+          "ການລົງທຶນທາງທຸລະກິດ"
+        ],
+        "malay": [
+          "pertumbuhan pelaburan",
+          "pelaburan swasta",
+          "pelaburan sektor swasta",
+          "pelaburan perniagaan",
+          "perbelanjaan pelaburan"
+        ],
+        "mn": [
+          {
+            "prefix": "хөрөнгө оруулалтын өсөлт"
+          },
+          {
+            "prefix": "хөрөнгө оруулалт нэмэгд"
+          },
+          {
+            "prefix": "хөрөнгө оруулалт өс"
+          },
+          {
+            "prefix": "хувийн хөрөнгө оруулалт"
+          },
+          {
+            "prefix": "хувийн хэвшлийн хөрөнгө оруулалт"
+          },
+          {
+            "prefix": "бизнесийн хөрөнгө оруулалт"
+          }
+        ],
+        "my": [
+          "ရင်းနှီးမြှုပ်နှံမှုတိုးတက်",
+          "ရင်းနှီးမြှုပ်နှံမှု တိုးတက်",
+          "ရင်းနှီးမြှုပ်နှံမှုတိုးလာ",
+          "ရင်းနှီးမြှုပ်နှံမှုမြင့်တက်",
+          "ပုဂ္ဂလိကရင်းနှီးမြှုပ်နှံမှု",
+          "investment growth",
+          "private investment"
+        ],
+        "portuguese": [
+          "crescimento do investimento",
+          "aumento do investimento",
+          "investimento privado",
+          "investimento empresarial",
+          "investimento das empresas",
+          "despesas de investimento"
+        ],
+        "tetum": [
+          "kresimentu investimentu",
+          "investimentu privadu",
+          "investimentu emprezariál",
+          "investimentu emprezarial",
+          "crescimento do investimento",
+          "investimento privado",
+          "investimento empresarial"
+        ],
+        "thai": [
+          "การลงทุนภาคเอกชน",
+          "การลงทุนของภาคเอกชน",
+          "การลงทุนของเอกชน",
+          "การลงทุนภาคธุรกิจ",
+          "การเติบโตของการลงทุน",
+          "การลงทุนขยายตัว"
+        ],
+        "tok_pisin": [
+          "investment growth",
+          "growth in investment",
+          "private investment",
+          "business investment",
+          "investment spending"
         ]
       }
     },
@@ -573,6 +6402,149 @@
       "group": "demand_and_investment",
       "forms": {
         "en": [
+          "gross fixed capital formation",
+          "fixed capital formation",
+          "capital formation",
+          "GFCF",
+          "fixed investment",
+          "fixed-asset investment",
+          "fixed asset investment"
+        ],
+        "chinese_simplified": [
+          "资本形成",
+          "固定资产投资",
+          "固定投资",
+          "GFCF"
+        ],
+        "chinese_traditional": [
+          "資本形成",
+          "固定資產投資",
+          "固定投資",
+          "GFCF"
+        ],
+        "filipino": [
+          "gross fixed capital formation",
+          "fixed capital formation",
+          "capital formation",
+          "GFCF",
+          "fixed investment",
+          "fixed investments"
+        ],
+        "fr": [
+          "formation brute de capital fixe",
+          "FBCF",
+          "formation de capital fixe",
+          "formation de capital",
+          "investissement fixe",
+          "investissements fixes",
+          "investissement en capital fixe"
+        ],
+        "indo": [
+          "pembentukan modal tetap bruto",
+          "PMTB",
+          "pembentukan modal tetap",
+          "pembentukan modal",
+          "investasi aset tetap",
+          "investasi tetap"
+        ],
+        "japanese": [
+          "総固定資本形成",
+          "固定資本形成",
+          "資本形成",
+          "固定資産投資",
+          "固定資産への投資"
+        ],
+        "km": [
+          "ការបង្កើតទុនថេរ",
+          "ការបង្កើតមូលធនថេរ",
+          "ការបង្កើតមូលធន",
+          "វិនិយោគលើទ្រព្យសកម្មថេរ",
+          "វិនិយោគទ្រព្យសកម្មថេរ",
+          "GFCF"
+        ],
+        "korean": [
+          "총고정자본형성",
+          "고정자본형성",
+          "총자본형성",
+          "자본형성",
+          "고정투자",
+          "고정자산투자",
+          "고정자산 투자"
+        ],
+        "lao": [
+          "ການສ້າງທຶນຄົງທີ່ລວມ",
+          "ການສ້າງທຶນຄົງທີ່",
+          "ການສະສົມທຶນຄົງທີ່",
+          "ການລົງທຶນໃນຊັບສົມບັດຄົງທີ່",
+          "ການລົງທຶນຊັບສິນຄົງທີ່",
+          "GFCF"
+        ],
+        "malay": [
+          "pembentukan modal tetap kasar",
+          "pembentukan modal tetap",
+          "pembentukan modal",
+          "PMTK",
+          "pelaburan tetap",
+          "pelaburan aset tetap"
+        ],
+        "mn": [
+          {
+            "prefix": "үндсэн хөрөнгийн нийт хуримтл"
+          },
+          {
+            "prefix": "нийт үндсэн хөрөнгийн хуримтл"
+          },
+          {
+            "prefix": "үндсэн хөрөнгийн хуримтл"
+          },
+          {
+            "prefix": "үндсэн хөрөнгийн хөрөнгө оруулалт"
+          },
+          {
+            "prefix": "капиталын хуримтл"
+          }
+        ],
+        "my": [
+          "ပုံသေအရင်းအနှီးဖွဲ့စည်း",
+          "အရင်းအနှီးဖွဲ့စည်းမှု",
+          "ပုံသေပိုင်ဆိုင်မှုရင်းနှီးမြှုပ်နှံ",
+          "gross fixed capital formation",
+          "GFCF",
+          "fixed-asset investment"
+        ],
+        "portuguese": [
+          "formação bruta de capital fixo",
+          "FBCF",
+          "formação de capital fixo",
+          "formação de capital",
+          "investimento em capital fixo",
+          "investimento em ativos fixos",
+          "investimento em activos fixos",
+          "investimento fixo"
+        ],
+        "tetum": [
+          "formasaun brutu kapitál fixu",
+          "formasaun brutu kapital fixu",
+          "formasaun kapitál fixu",
+          "formasaun kapital fixu",
+          "formasaun kapitál",
+          "formasaun kapital",
+          "formação bruta de capital fixo",
+          "formacao bruta de capital fixo",
+          "formação de capital fixo",
+          "formacao de capital fixo",
+          "formação de capital",
+          "formacao de capital",
+          "FBCF",
+          "investimento em capital fixo"
+        ],
+        "thai": [
+          "สะสมทุนถาวร",
+          "การลงทุนในสินทรัพย์ถาวร",
+          "การลงทุนในทรัพย์สินถาวร",
+          "GFCF"
+        ],
+        "tok_pisin": [
           "gross fixed capital formation",
           "fixed capital formation",
           "capital formation",
@@ -595,6 +6567,170 @@
           "national savings",
           "domestic savings",
           "gross savings"
+        ],
+        "chinese_simplified": [
+          "储蓄率",
+          "家庭储蓄",
+          "居民储蓄",
+          "国民储蓄",
+          "国内储蓄",
+          "总储蓄"
+        ],
+        "chinese_traditional": [
+          "儲蓄率",
+          "國民儲蓄",
+          "國內儲蓄",
+          "家庭儲蓄",
+          "住戶儲蓄",
+          "超額儲蓄",
+          "儲蓄毛額",
+          "總儲蓄"
+        ],
+        "filipino": [
+          "savings rate",
+          "saving rate",
+          "household savings",
+          "national savings",
+          "domestic savings",
+          "gross savings",
+          "antas ng pag-iipon"
+        ],
+        "fr": [
+          "taux d'épargne",
+          "taux d’épargne",
+          "taux d'épargne des ménages",
+          "taux d’épargne des ménages",
+          "épargne des ménages",
+          "épargne nationale",
+          "épargne intérieure",
+          "épargne brute"
+        ],
+        "indo": [
+          "tingkat tabungan",
+          "rasio tabungan",
+          "tabungan rumah tangga",
+          "tabungan nasional",
+          "tabungan domestik",
+          "tabungan bruto",
+          "tingkat menabung"
+        ],
+        "japanese": [
+          "貯蓄率",
+          "家計貯蓄",
+          "家計の貯蓄",
+          "国内貯蓄",
+          "国民貯蓄",
+          "総貯蓄"
+        ],
+        "km": [
+          "អត្រាសន្សំ",
+          "ការសន្សំរបស់គ្រួសារ",
+          "ការសន្សំប្រាក់របស់គ្រួសារ",
+          "ការសន្សំជាតិ",
+          "ការសន្សំក្នុងស្រុក",
+          "ការសន្សំសរុប"
+        ],
+        "korean": [
+          "저축률",
+          "저축율",
+          "가계저축",
+          "가계 저축",
+          "국민저축",
+          "총저축"
+        ],
+        "lao": [
+          "ອັດຕາການປະຢັດ",
+          "ອັດຕາການອອມ",
+          "ອັດຕາເງິນອອມ",
+          "ເງິນອອມຂອງຄົວເຮືອນ",
+          "ການອອມຂອງຄົວເຮືອນ",
+          "ເງິນອອມພາຍໃນປະເທດ",
+          "ເງິນອອມແຫ່ງຊາດ"
+        ],
+        "malay": [
+          "kadar simpanan negara",
+          "kadar simpanan isi rumah",
+          "simpanan isi rumah",
+          "simpanan negara",
+          "simpanan domestik",
+          "simpanan dalam negeri",
+          "simpanan kasar",
+          "kadar tabungan"
+        ],
+        "mn": [
+          {
+            "prefix": "хуримтлалын түвшин"
+          },
+          {
+            "prefix": "хуримтлалын түвшн"
+          },
+          {
+            "prefix": "хуримтлалын хувь"
+          },
+          {
+            "prefix": "өрхийн хадгаламж"
+          },
+          {
+            "prefix": "өрхийн хуримтл"
+          },
+          {
+            "prefix": "үндэсний хуримтл"
+          },
+          {
+            "prefix": "дотоодын хуримтл"
+          }
+        ],
+        "my": [
+          "စုဆောင်းငွေနှုန်း",
+          "စုဆောင်းမှုနှုန်း",
+          "ငွေစုနှုန်း",
+          "ပြည်တွင်းစုဆောင်းငွေ",
+          "အမျိုးသားစုဆောင်းငွေ",
+          "အိမ်ထောင်စုစုဆောင်းငွေ",
+          "savings rate"
+        ],
+        "portuguese": [
+          "taxa de poupança",
+          "taxas de poupança",
+          "taxa de poupança das famílias",
+          "poupança das famílias",
+          "poupança nacional",
+          "poupança interna",
+          "poupança bruta"
+        ],
+        "tetum": [
+          "taxa poupansa",
+          "poupansa nasionál",
+          "poupansa nasional",
+          "poupansa uma-kain",
+          "poupansa doméstika",
+          "poupansa domestika",
+          "taxa de poupança",
+          "taxa de poupanca",
+          "poupança nacional",
+          "poupanca nacional",
+          "poupança das famílias",
+          "poupanca das familias",
+          "poupança interna",
+          "poupanca interna"
+        ],
+        "thai": [
+          "อัตราการออม",
+          "การออมของครัวเรือน",
+          "การออมภาคครัวเรือน",
+          "เงินออมภาคครัวเรือน",
+          "เงินออมของครัวเรือน",
+          "การออมในประเทศ",
+          "การออมของประเทศ"
+        ],
+        "tok_pisin": [
+          "savings rate",
+          "saving rate",
+          "savings rates",
+          "household savings",
+          "national savings",
+          "domestic savings",
+          "gross savings"
         ]
       }
     },
@@ -608,6 +6744,159 @@
           "green economies",
           "green recovery",
           "low-carbon growth"
+        ],
+        "chinese_simplified": [
+          "绿色增长",
+          "绿色经济",
+          "绿色复苏",
+          "低碳增长",
+          "绿色发展",
+          "低碳经济"
+        ],
+        "chinese_traditional": [
+          "綠色成長",
+          "綠色增長",
+          "綠色經濟",
+          "綠色復甦",
+          "綠色復蘇",
+          "低碳成長",
+          "低碳增長",
+          "低碳經濟"
+        ],
+        "filipino": [
+          "green growth",
+          "green economy",
+          "green recovery",
+          "low-carbon growth",
+          "berdeng ekonomiya",
+          "luntiang ekonomiya"
+        ],
+        "fr": [
+          "croissance verte",
+          "économie verte",
+          "économies vertes",
+          "reprise verte",
+          "relance verte",
+          "croissance bas carbone",
+          "croissance sobre en carbone",
+          "économie bas carbone"
+        ],
+        "indo": [
+          "pertumbuhan hijau",
+          "ekonomi hijau",
+          "pemulihan hijau",
+          "pertumbuhan rendah karbon",
+          "ekonomi rendah karbon",
+          "green economy",
+          "green growth"
+        ],
+        "japanese": [
+          "グリーン成長",
+          "グリーン経済",
+          "グリーンリカバリー",
+          "グリーン・リカバリー",
+          "緑の回復",
+          "低炭素成長"
+        ],
+        "km": [
+          "កំណើនបៃតង",
+          "សេដ្ឋកិច្ចបៃតង",
+          "ការស្តារឡើងវិញបៃតង",
+          "ការស្ដារឡើងវិញបៃតង",
+          "កំណើនកាបូនទាប",
+          "សេដ្ឋកិច្ចកាបូនទាប"
+        ],
+        "korean": [
+          "녹색성장",
+          "녹색 성장",
+          "녹색경제",
+          "녹색 경제",
+          "저탄소 성장",
+          "저탄소성장",
+          "그린뉴딜",
+          "그린 뉴딜",
+          "녹색 회복"
+        ],
+        "lao": [
+          "ການເຕີບໂຕສີຂຽວ",
+          "ການຂະຫຍາຍຕົວສີຂຽວ",
+          "ການເຕີບໂຕແບບສີຂຽວ",
+          "ເສດຖະກິດສີຂຽວ",
+          "ການພັດທະນາສີຂຽວ",
+          "ການຟື້ນຟູສີຂຽວ",
+          "ເສດຖະກິດຄາບອນຕ່ຳ",
+          "ເສດຖະກິດຄາບອນຕ່ໍາ",
+          "ເສດຖະກິດຄາບອນຕໍ່າ"
+        ],
+        "malay": [
+          "pertumbuhan hijau",
+          "ekonomi hijau",
+          "pemulihan hijau",
+          "pertumbuhan rendah karbon",
+          "ekonomi rendah karbon"
+        ],
+        "mn": [
+          {
+            "prefix": "ногоон өсөлт"
+          },
+          {
+            "prefix": "ногоон сэргэлт"
+          },
+          {
+            "prefix": "нүүрстөрөгч багатай өсөлт"
+          },
+          {
+            "prefix": "нүүрстөрөгч багатай хөгж"
+          },
+          {
+            "prefix": "ногоон эдийн засаг"
+          },
+          {
+            "prefix": "ногоон эдийн засг"
+          }
+        ],
+        "my": [
+          "စိမ်းလန်းသောစီးပွားရေး",
+          "စိမ်းလန်းစီးပွားရေး",
+          "စိမ်းလန်းသော စီးပွားရေး",
+          "စိမ်းလန်းသောတိုးတက်မှု",
+          "ကာဗွန်နည်းတိုးတက်မှု",
+          "green growth",
+          "green economy"
+        ],
+        "portuguese": [
+          "crescimento verde",
+          "economia verde",
+          "economias verdes",
+          "recuperação verde",
+          "crescimento de baixo carbono",
+          "economia de baixo carbono",
+          "desenvolvimento verde"
+        ],
+        "tetum": [
+          "kresimentu verde",
+          "ekonomia verde",
+          "rekuperasaun verde",
+          "kresimentu karbonu baixu",
+          "crescimento verde",
+          "economia verde",
+          "recuperação verde",
+          "recuperacao verde",
+          "economia de baixo carbono"
+        ],
+        "thai": [
+          "เติบโตสีเขียว",
+          "เศรษฐกิจสีเขียว",
+          "การฟื้นฟูสีเขียว",
+          "เศรษฐกิจคาร์บอนต่ำ"
+        ],
+        "tok_pisin": [
+          "green growth",
+          "green economy",
+          "green economies",
+          "green recovery",
+          "low-carbon growth",
+          "grin ekonomi"
         ]
       }
     },
@@ -621,6 +6910,144 @@
           "ocean economy",
           "blue growth",
           "maritime economy"
+        ],
+        "chinese_simplified": [
+          "蓝色经济",
+          "海洋经济",
+          "蓝色增长"
+        ],
+        "chinese_traditional": [
+          "藍色經濟",
+          "海洋經濟",
+          "藍色成長",
+          "藍色增長"
+        ],
+        "filipino": [
+          "blue economy",
+          "ocean economy",
+          "blue growth",
+          "maritime economy",
+          "asul na ekonomiya",
+          "ekonomiyang pandagat"
+        ],
+        "fr": [
+          "économie bleue",
+          "économies bleues",
+          "économie océanique",
+          "économie de la mer",
+          "croissance bleue",
+          "économie maritime"
+        ],
+        "indo": [
+          "ekonomi biru",
+          "ekonomi kelautan",
+          "ekonomi maritim",
+          "pertumbuhan biru",
+          "blue economy"
+        ],
+        "japanese": [
+          "ブルーエコノミー",
+          "ブルー・エコノミー",
+          "海洋経済",
+          "ブルー成長"
+        ],
+        "km": [
+          "សេដ្ឋកិច្ចខៀវ",
+          "សេដ្ឋកិច្ចពណ៌ខៀវ",
+          "សេដ្ឋកិច្ចមហាសមុទ្រ",
+          "សេដ្ឋកិច្ចសមុទ្រ",
+          "កំណើនខៀវ"
+        ],
+        "korean": [
+          "블루이코노미",
+          "블루 이코노미",
+          "해양경제",
+          "해양 경제",
+          "청색경제",
+          "청색 경제",
+          "블루 경제"
+        ],
+        "lao": [
+          "ເສດຖະກິດສີຟ້າ",
+          "ເສດຖະກິດສີຄາມ",
+          "ເສດຖະກິດທາງທະເລ",
+          "ເສດຖະກິດມະຫາສະໝຸດ",
+          "ເສດຖະກິດມະຫາສະຫມຸດ",
+          "ການເຕີບໂຕສີຟ້າ"
+        ],
+        "malay": [
+          "ekonomi biru",
+          "ekonomi lautan",
+          "ekonomi laut",
+          "ekonomi maritim",
+          "pertumbuhan biru"
+        ],
+        "mn": [
+          {
+            "prefix": "хөх эдийн засаг"
+          },
+          {
+            "prefix": "хөх эдийн засг"
+          },
+          {
+            "prefix": "цэнхэр эдийн засаг"
+          },
+          {
+            "prefix": "цэнхэр эдийн засг"
+          },
+          {
+            "prefix": "далайн эдийн засаг"
+          },
+          {
+            "prefix": "далайн эдийн засг"
+          }
+        ],
+        "my": [
+          "အပြာရောင်စီးပွားရေး",
+          "အပြာရောင် စီးပွားရေး",
+          "ပင်လယ်စီးပွားရေး",
+          "သမုဒ္ဒရာစီးပွားရေး",
+          "blue economy"
+        ],
+        "portuguese": [
+          "economia azul",
+          "economias azuis",
+          "economia do mar",
+          "economia oceânica",
+          "economia marítima",
+          "crescimento azul"
+        ],
+        "tetum": [
+          "ekonomia azúl",
+          "ekonomia azul",
+          "ekonomia tasi",
+          "ekonomia marítima",
+          "ekonomia maritima",
+          "ekonomia oseánika",
+          "ekonomia oseanika",
+          "kresimentu azúl",
+          "kresimentu azul",
+          "economia azul",
+          "economia do mar",
+          "economia oceânica",
+          "economia oceanica",
+          "economia marítima",
+          "economia maritima"
+        ],
+        "thai": [
+          "เศรษฐกิจสีน้ำเงิน",
+          "เศรษฐกิจภาคทะเล",
+          "เศรษฐกิจทางทะเล",
+          "เศรษฐกิจมหาสมุทร",
+          "การเติบโตสีน้ำเงิน"
+        ],
+        "tok_pisin": [
+          "blue economy",
+          "blue economies",
+          "ocean economy",
+          "blue growth",
+          "maritime economy",
+          "blu ekonomi"
         ]
       }
     },
@@ -632,6 +7059,102 @@
           "circular economy",
           "circular economies",
           "circularity"
+        ],
+        "chinese_simplified": [
+          "循环经济"
+        ],
+        "chinese_traditional": [
+          "循環經濟",
+          "循環型經濟"
+        ],
+        "filipino": [
+          "circular economy",
+          "circular economies",
+          "circularity",
+          "sirkular na ekonomiya",
+          "circular na ekonomiya"
+        ],
+        "fr": [
+          "économie circulaire",
+          "économies circulaires",
+          "circularité"
+        ],
+        "indo": [
+          "ekonomi sirkular",
+          "ekonomi melingkar",
+          "circular economy",
+          "sirkularitas"
+        ],
+        "japanese": [
+          "循環経済",
+          "循環型経済",
+          "サーキュラーエコノミー",
+          "サーキュラー・エコノミー",
+          "循環型社会"
+        ],
+        "km": [
+          "សេដ្ឋកិច្ចរាងជារង្វង់",
+          "សេដ្ឋកិច្ចរាងរង្វង់",
+          "សេដ្ឋកិច្ចរង្វង់",
+          "សេដ្ឋកិច្ចបែបរង្វង់",
+          "សេដ្ឋកិច្ចវិលជុំ"
+        ],
+        "korean": [
+          "순환경제",
+          "순환 경제",
+          "자원순환경제"
+        ],
+        "lao": [
+          "ເສດຖະກິດໝູນວຽນ",
+          "ເສດຖະກິດຫມູນວຽນ",
+          "ເສດຖະກິດແບບໝູນວຽນ",
+          "ເສດຖະກິດແບບຫມູນວຽນ",
+          "ເສດຖະກິດໝູນວຽນຄືນ",
+          "ເສດຖະກິດຫມູນວຽນຄືນ"
+        ],
+        "malay": [
+          "ekonomi kitaran",
+          "ekonomi kitaran semula",
+          "ekonomi sirkular"
+        ],
+        "mn": [
+          {
+            "prefix": "эргэлтийн эдийн засаг"
+          },
+          {
+            "prefix": "эргэлтийн эдийн засг"
+          },
+          {
+            "prefix": "тойрог эдийн засаг"
+          },
+          {
+            "prefix": "тойрог эдийн засг"
+          }
+        ],
+        "my": [
+          "စက်ဝိုင်းပုံစီးပွားရေး",
+          "စက်၀ိုင်းပုံစီးပွားရေး",
+          "စက်ဝိုင်းစီးပွားရေး",
+          "စက်၀ိုင်းစီးပွားရေး",
+          "ပတ်လည်စီးပွားရေး",
+          "circular economy"
+        ],
+        "portuguese": [
+          "economia circular",
+          "economias circulares"
+        ],
+        "tetum": [
+          "ekonomia sirkulár",
+          "ekonomia sirkular",
+          "economia circular"
+        ],
+        "thai": [
+          "เศรษฐกิจหมุนเวียน",
+          "circular economy"
+        ],
+        "tok_pisin": [
+          "circular economy",
+          "circular economies"
         ]
       }
     },
@@ -649,6 +7172,231 @@
           "tourist arrivals",
           "visitor arrivals",
           "international arrivals"
+        ],
+        "chinese_simplified": [
+          "旅游经济",
+          "旅游业",
+          "旅游产业",
+          "旅游收入",
+          "游客人数",
+          "入境游客",
+          "国际游客",
+          "访客人数"
+        ],
+        "chinese_traditional": [
+          "觀光經濟",
+          "旅遊經濟",
+          "觀光產業",
+          "觀光業",
+          "旅遊業",
+          "觀光收入",
+          "旅遊收入",
+          "訪港旅客",
+          "訪澳旅客",
+          "來台旅客",
+          "入境旅客"
+        ],
+        "filipino": [
+          "tourism economy",
+          "tourism sector",
+          "tourism industry",
+          "tourism receipts",
+          "tourism revenue",
+          "tourism revenues",
+          "tourist arrivals",
+          "visitor arrivals",
+          "international arrivals",
+          "sektor ng turismo",
+          "industriya ng turismo",
+          "kita sa turismo",
+          "kita ng turismo",
+          "pagdating ng mga turista",
+          "dumating na turista",
+          "dumating na mga turista"
+        ],
+        "fr": [
+          "économie touristique",
+          "secteur touristique",
+          "secteur du tourisme",
+          "industrie touristique",
+          "industrie du tourisme",
+          "recettes touristiques",
+          "fréquentation touristique",
+          "arrivées de touristes",
+          "arrivées touristiques"
+        ],
+        "indo": [
+          "sektor pariwisata",
+          "industri pariwisata",
+          "ekonomi pariwisata",
+          "penerimaan pariwisata",
+          "devisa pariwisata",
+          "pendapatan pariwisata",
+          "kunjungan wisatawan mancanegara",
+          "kunjungan wisman",
+          "kedatangan wisatawan"
+        ],
+        "japanese": [
+          "観光業",
+          "観光産業",
+          "観光経済",
+          "観光部門",
+          "観光収入",
+          "外国人観光客",
+          "外国人旅行者",
+          "訪日客",
+          "訪日外国人",
+          "インバウンド需要",
+          "インバウンド消費"
+        ],
+        "km": [
+          "វិស័យទេសចរណ៍",
+          "ឧស្សាហកម្មទេសចរណ៍",
+          "សេដ្ឋកិច្ចទេសចរណ៍",
+          "ចំណូលពីទេសចរណ៍",
+          "ចំណូលទេសចរណ៍",
+          "ភ្ញៀវទេសចរអន្តរជាតិ",
+          "ភ្ញៀវទេសចរអន្ដរជាតិ",
+          "ភ្ញៀវទេសចរបរទេស",
+          "ចំនួនភ្ញៀវទេសចរ"
+        ],
+        "korean": [
+          "관광산업",
+          "관광 산업",
+          "관광업",
+          "관광수입",
+          "관광 수입",
+          "관광수지",
+          "관광 수지",
+          "외래관광객",
+          "외국인 관광객",
+          "방한 관광객"
+        ],
+        "lao": [
+          "ຂະແໜງການທ່ອງທ່ຽວ",
+          "ຂະແຫນງການທ່ອງທ່ຽວ",
+          "ຂະແໜງທ່ອງທ່ຽວ",
+          "ຂະແຫນງທ່ອງທ່ຽວ",
+          "ອຸດສາຫະກຳການທ່ອງທ່ຽວ",
+          "ອຸດສາຫະກໍາການທ່ອງທ່ຽວ",
+          "ອຸດສາຫະກຳທ່ອງທ່ຽວ",
+          "ອຸດສາຫະກໍາທ່ອງທ່ຽວ",
+          "ລາຍຮັບຈາກການທ່ອງທ່ຽວ",
+          "ລາຍຮັບຈາກນັກທ່ອງທ່ຽວ",
+          "ຈຳນວນນັກທ່ອງທ່ຽວ",
+          "ຈໍານວນນັກທ່ອງທ່ຽວ",
+          "ນັກທ່ອງທ່ຽວຕ່າງປະເທດ",
+          "ນັກທ່ອງທ່ຽວເຂົ້າມາ",
+          "ເສດຖະກິດການທ່ອງທ່ຽວ"
+        ],
+        "malay": [
+          "ekonomi pelancongan",
+          "sektor pelancongan",
+          "industri pelancongan",
+          "pendapatan pelancongan",
+          "hasil pelancongan",
+          "penerimaan pelancongan",
+          "ketibaan pelancong",
+          "kedatangan pelancong",
+          "ketibaan pelawat"
+        ],
+        "mn": [
+          {
+            "prefix": "аялал жуулчлалын салбар"
+          },
+          {
+            "prefix": "аялал жуулчлалын орлог"
+          },
+          {
+            "prefix": "аялал жуулчлалын үйлдвэрлэл"
+          },
+          {
+            "prefix": "жуулчдын тоо"
+          },
+          {
+            "prefix": "жуулчдын урсгал"
+          },
+          {
+            "prefix": "ирсэн жуулчдын тоо"
+          },
+          {
+            "prefix": "аялал жуулчлалын эдийн засаг"
+          },
+          {
+            "prefix": "аялал жуулчлалын эдийн засг"
+          }
+        ],
+        "my": [
+          "ခရီးသွားလုပ်ငန်းကဏ္ဍ",
+          "ခရီးသွားကဏ္ဍ",
+          "ခရီးသွားလုပ်ငန်းဝင်ငွေ",
+          "ခရီးသွားလုပ်ငန်း၀င်ငွေ",
+          "ခရီးသွားဝင်ငွေ",
+          "ခရီးသွား၀င်ငွေ",
+          "ခရီးသွားလုပ်ငန်းစီးပွားရေး",
+          "tourism sector",
+          "tourism industry",
+          "tourism revenue"
+        ],
+        "portuguese": [
+          "economia do turismo",
+          "setor do turismo",
+          "sector do turismo",
+          "setor turístico",
+          "sector turístico",
+          "indústria do turismo",
+          "indústria turística",
+          "receitas do turismo",
+          "receitas turísticas",
+          "chegadas de turistas",
+          "chegadas de visitantes",
+          "entrada de visitantes",
+          "entradas de visitantes",
+          "chegadas internacionais"
+        ],
+        "tetum": [
+          "setór turizmu",
+          "setor turizmu",
+          "indústria turizmu",
+          "industria turizmu",
+          "ekonomia turizmu",
+          "reseita turizmu",
+          "rendimentu turizmu",
+          "chegada turista",
+          "setor do turismo",
+          "sector do turismo",
+          "indústria do turismo",
+          "industria do turismo",
+          "indústria turística",
+          "industria turistica",
+          "receitas do turismo",
+          "receitas turísticas",
+          "receitas turisticas",
+          "chegadas de turistas"
+        ],
+        "thai": [
+          "ภาคการท่องเที่ยว",
+          "อุตสาหกรรมการท่องเที่ยว",
+          "อุตสาหกรรมท่องเที่ยว",
+          "รายได้จากการท่องเที่ยว",
+          "รายได้การท่องเที่ยว",
+          "รายได้จากนักท่องเที่ยว",
+          "เศรษฐกิจการท่องเที่ยว",
+          "ธุรกิจท่องเที่ยว"
+        ],
+        "tok_pisin": [
+          "tourism economy",
+          "tourism sector",
+          "tourism industry",
+          "tourism receipts",
+          "tourism revenue",
+          "tourism revenues",
+          "tourist arrivals",
+          "visitor arrivals",
+          "international arrivals",
+          "bisnis bilong turis",
+          "turis bisnis",
+          "turisim sekta"
         ]
       }
     },
@@ -663,6 +7411,154 @@
           "creative sector",
           "orange economy",
           "cultural industries"
+        ],
+        "chinese_simplified": [
+          "创意经济",
+          "创意产业",
+          "文化产业",
+          "橙色经济"
+        ],
+        "chinese_traditional": [
+          "創意經濟",
+          "創意產業",
+          "文創產業",
+          "文化產業",
+          "文化及創意產業",
+          "文化創意產業"
+        ],
+        "filipino": [
+          "creative economy",
+          "creative industries",
+          "creative industry",
+          "creative sector",
+          "orange economy",
+          "malikhaing industriya",
+          "malikhaing ekonomiya"
+        ],
+        "fr": [
+          "économie créative",
+          "industries créatives",
+          "industrie créative",
+          "secteur créatif",
+          "industries culturelles",
+          "industries culturelles et créatives",
+          "économie orange"
+        ],
+        "indo": [
+          "ekonomi kreatif",
+          "industri kreatif",
+          "sektor ekonomi kreatif",
+          "ekraf",
+          "industri budaya",
+          "ekonomi oranye"
+        ],
+        "japanese": [
+          "クリエイティブ経済",
+          "創造経済",
+          "クリエイティブ産業",
+          "創造産業",
+          "コンテンツ産業",
+          "文化産業",
+          "オレンジエコノミー"
+        ],
+        "km": [
+          "សេដ្ឋកិច្ចច្នៃប្រឌិត",
+          "ឧស្សាហកម្មច្នៃប្រឌិត",
+          "ឧស្សាហកម្មវប្បធម៌",
+          "វិស័យច្នៃប្រឌិត"
+        ],
+        "korean": [
+          "창조경제",
+          "창조 경제",
+          "창조산업",
+          "창의산업",
+          "문화산업",
+          "문화 산업",
+          "콘텐츠산업",
+          "콘텐츠 산업"
+        ],
+        "lao": [
+          "ເສດຖະກິດສ້າງສັນ",
+          "ເສດຖະກິດເຊີງສ້າງສັນ",
+          "ອຸດສາຫະກຳສ້າງສັນ",
+          "ອຸດສາຫະກໍາສ້າງສັນ",
+          "ອຸດສາຫະກຳເຊີງສ້າງສັນ",
+          "ອຸດສາຫະກໍາເຊີງສ້າງສັນ",
+          "ອຸດສາຫະກຳວັດທະນະທຳ",
+          "ອຸດສາຫະກໍາວັດທະນະທໍາ"
+        ],
+        "malay": [
+          "ekonomi kreatif",
+          "industri kreatif",
+          "sektor kreatif",
+          "ekonomi oren",
+          "industri budaya"
+        ],
+        "mn": [
+          {
+            "prefix": "бүтээлч эдийн засаг"
+          },
+          {
+            "prefix": "бүтээлч эдийн засг"
+          },
+          {
+            "prefix": "бүтээлч үйлдвэрлэл"
+          },
+          {
+            "prefix": "бүтээлч салбар"
+          },
+          {
+            "prefix": "соёлын үйлдвэрлэл"
+          }
+        ],
+        "my": [
+          "ဖန်တီးမှုစီးပွားရေး",
+          "ဖန်တီးမှုလုပ်ငန်း",
+          "ယဉ်ကျေးမှုဆိုင်ရာလုပ်ငန်း",
+          "creative economy",
+          "creative industries"
+        ],
+        "portuguese": [
+          "economia criativa",
+          "indústrias criativas",
+          "indústria criativa",
+          "setor criativo",
+          "sector criativo",
+          "indústrias culturais",
+          "indústrias culturais e criativas",
+          "economia laranja"
+        ],
+        "tetum": [
+          "ekonomia kriativa",
+          "ekonomia kriativu",
+          "indústria kriativa",
+          "industria kriativa",
+          "setór kriativu",
+          "setor kriativu",
+          "indústria kulturál",
+          "industria kultural",
+          "economia criativa",
+          "indústrias criativas",
+          "industrias criativas",
+          "indústrias culturais",
+          "industrias culturais",
+          "setor criativo",
+          "economia laranja"
+        ],
+        "thai": [
+          "เศรษฐกิจสร้างสรรค์",
+          "เศรษฐกิจเชิงสร้างสรรค์",
+          "อุตสาหกรรมสร้างสรรค์",
+          "อุตสาหกรรมวัฒนธรรม",
+          "ธุรกิจสร้างสรรค์"
+        ],
+        "tok_pisin": [
+          "creative economy",
+          "creative industries",
+          "creative industry",
+          "creative sector",
+          "orange economy",
+          "cultural industries"
         ]
       }
     },
@@ -671,6 +7567,128 @@
       "group": "thematic_economies",
       "forms": {
         "en": [
+          "care economy",
+          "care economies",
+          "care sector",
+          "care industry"
+        ],
+        "chinese_simplified": [
+          "照护经济",
+          "护理经济",
+          "照顾经济",
+          "照护产业",
+          "照护行业"
+        ],
+        "chinese_traditional": [
+          "照護經濟",
+          "照顧經濟",
+          "照護產業",
+          "照顧產業",
+          "長照產業",
+          "照顧服務產業"
+        ],
+        "filipino": [
+          "care economy",
+          "care economies",
+          "care sector",
+          "care industry"
+        ],
+        "fr": [
+          "économie du soin",
+          "économie des soins",
+          "économie du care",
+          "secteur du care"
+        ],
+        "indo": [
+          "ekonomi perawatan",
+          "ekonomi pengasuhan",
+          "ekonomi layanan perawatan",
+          "sektor perawatan",
+          "care economy"
+        ],
+        "japanese": [
+          "ケア経済",
+          "ケアエコノミー",
+          "ケア産業",
+          "介護産業",
+          "ケア労働"
+        ],
+        "km": [
+          "សេដ្ឋកិច្ចថែទាំ",
+          "សេដ្ឋកិច្ចនៃការថែទាំ",
+          "សេដ្ឋកិច្ចការថែទាំ"
+        ],
+        "korean": [
+          "돌봄경제",
+          "돌봄 경제",
+          "돌봄산업",
+          "돌봄 산업",
+          "돌봄 부문"
+        ],
+        "lao": [
+          "ເສດຖະກິດການດູແລ",
+          "ເສດຖະກິດດ້ານການດູແລ",
+          "ວຽກງານດູແລທີ່ບໍ່ໄດ້ຮັບຄ່າຕອບແທນ",
+          "ວຽກງານເບິ່ງແຍງທີ່ບໍ່ໄດ້ຮັບຄ່າຕອບແທນ"
+        ],
+        "malay": [
+          "ekonomi penjagaan",
+          "ekonomi jagaan",
+          "sektor penjagaan",
+          "industri penjagaan"
+        ],
+        "mn": [
+          {
+            "prefix": "асаргааны эдийн засаг"
+          },
+          {
+            "prefix": "асаргааны эдийн засг"
+          },
+          {
+            "prefix": "асрамжийн эдийн засаг"
+          },
+          {
+            "prefix": "асрамжийн эдийн засг"
+          },
+          {
+            "prefix": "асаргааны салбар"
+          },
+          {
+            "prefix": "асаргаа халамжийн салбар"
+          }
+        ],
+        "my": [
+          "စောင့်ရှောက်မှုစီးပွားရေး",
+          "ပြုစုစောင့်ရှောက်မှုကဏ္ဍ",
+          "ပြုစုစောင့်ရှောက်ရေးလုပ်ငန်း",
+          "care economy"
+        ],
+        "portuguese": [
+          "economia dos cuidados",
+          "economia do cuidado",
+          "economia de cuidados",
+          "setor dos cuidados",
+          "sector dos cuidados",
+          "setor de cuidados",
+          "sector de cuidados"
+        ],
+        "tetum": [
+          "ekonomia kuidadu",
+          "setór kuidadu",
+          "setor kuidadu",
+          "ekonomia prestasaun kuidadu",
+          "economia do cuidado",
+          "economia dos cuidados",
+          "setor dos cuidados"
+        ],
+        "thai": [
+          "เศรษฐกิจการดูแล",
+          "เศรษฐกิจดูแล",
+          "อุตสาหกรรมการดูแลผู้สูงอายุ",
+          "ธุรกิจการดูแลผู้สูงอายุ",
+          "care economy"
+        ],
+        "tok_pisin": [
           "care economy",
           "care economies",
           "care sector",

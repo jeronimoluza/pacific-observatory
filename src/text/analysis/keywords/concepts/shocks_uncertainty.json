@@ -51,6 +51,212 @@
           "global financial crisis",
           "GFC",
           "worldwide crisis"
+        ],
+        "chinese_simplified": [
+          "全球危机",
+          "全球性危机",
+          "全球经济危机",
+          "全球金融危机",
+          "国际金融危机",
+          "世界经济危机",
+          "世界性危机"
+        ],
+        "chinese_traditional": [
+          "全球危機",
+          "全球經濟危機",
+          "全球金融危機",
+          "環球金融危機",
+          "環球經濟危機",
+          "全球金融海嘯",
+          "世界性危機",
+          "GFC"
+        ],
+        "filipino": [
+          "global crisis",
+          "global crises",
+          "global economic crisis",
+          "global financial crisis",
+          "worldwide crisis",
+          "pandaigdigang krisis",
+          "krisis sa buong mundo",
+          "global na krisis"
+        ],
+        "fr": [
+          "crise mondiale",
+          "crises mondiales",
+          "crise économique mondiale",
+          "crise financière mondiale",
+          "crise financière de 2008",
+          "crise de 2008",
+          "crise des subprimes",
+          "crise internationale"
+        ],
+        "indo": [
+          "krisis global",
+          "krisis ekonomi global",
+          "krisis keuangan global",
+          "krisis finansial global",
+          "krisis dunia",
+          "krisis ekonomi dunia"
+        ],
+        "japanese": [
+          "世界的危機",
+          "世界的な危機",
+          "世界経済危機",
+          "世界的な経済危機",
+          "世界金融危機",
+          "リーマン・ショック",
+          "リーマンショック",
+          "世界同時不況"
+        ],
+        "km": [
+          "វិបត្តិសកល",
+          "វិបត្ដិសកល",
+          "វិបត្តិពិភពលោក",
+          "វិបត្ដិពិភពលោក",
+          "វិបត្តិសេដ្ឋកិច្ចសកល",
+          "វិបត្ដិសេដ្ឋកិច្ចសកល",
+          "វិបត្តិសេដ្ឋកិច្ចពិភពលោក",
+          "វិបត្ដិសេដ្ឋកិច្ចពិភពលោក",
+          "វិបត្តិហិរញ្ញវត្ថុសកល",
+          "វិបត្ដិហិរញ្ញវត្ថុសកល",
+          "វិបត្តិហិរញ្ញវត្ថុពិភពលោក",
+          "វិបត្ដិហិរញ្ញវត្ថុពិភពលោក",
+          "global crisis",
+          "global financial crisis"
+        ],
+        "korean": [
+          "글로벌 위기",
+          "글로벌위기",
+          "세계적 위기",
+          "전 세계적 위기",
+          "세계 경제위기",
+          "세계경제위기",
+          "세계 경제 위기",
+          "글로벌 금융위기",
+          "글로벌금융위기",
+          "세계 금융위기",
+          "세계금융위기",
+          "세계적인 경제위기"
+        ],
+        "lao": [
+          "ວິກິດການໂລກ",
+          "ວິກິດການທົ່ວໂລກ",
+          "ວິກິດການເສດຖະກິດໂລກ",
+          "ວິກິດເສດຖະກິດໂລກ",
+          "ວິກິດການການເງິນໂລກ",
+          "ວິກິດການເງິນໂລກ",
+          "ວິກິດການທາງການເງິນໂລກ",
+          "ວິກິດການສາກົນ",
+          "ວິກິດການຕ່າງໆຂອງສາກົນ",
+          "global crisis",
+          "global financial crisis"
+        ],
+        "malay": [
+          "krisis global",
+          "krisis sejagat",
+          "krisis dunia",
+          "krisis ekonomi global",
+          "krisis ekonomi dunia",
+          "krisis kewangan global",
+          "krisis kewangan sejagat",
+          "krisis kewangan dunia",
+          "gfc",
+          "krisis kewangan global 2008"
+        ],
+        "mn": [
+          {
+            "prefix": "дэлхийн хямрал"
+          },
+          {
+            "prefix": "дэлхийн эдийн засгийн хямрал"
+          },
+          {
+            "prefix": "дэлхийн санхүүгийн хямрал"
+          },
+          {
+            "prefix": "дэлхий нийтийн хямрал"
+          },
+          {
+            "prefix": "олон улсын санхүүгийн хямрал"
+          },
+          {
+            "prefix": "дэлхийн эдийн засгийн их хямрал"
+          },
+          {
+            "prefix": "дэлхий нийтийг хамарсан хямрал"
+          }
+        ],
+        "my": [
+          "ကမ္ဘာ့အကျပ်အတည်း",
+          "ကမ္ဘာ့ စီးပွားရေးအကျပ်အတည်း",
+          "ကမ္ဘာ့စီးပွားရေးအကျပ်အတည်း",
+          "ကမ္ဘာ့ငွေကြေးအကျပ်အတည်း",
+          "ကမ္ဘာ့ဘဏ္ဍာရေးအကျပ်အတည်း",
+          "ကမ္ဘာလုံးဆိုင်ရာအကျပ်အတည်း",
+          "ကမ္ဘာလုံးဆိုင်ရာ အကျပ်အတည်း",
+          "global financial crisis",
+          "global crisis"
+        ],
+        "portuguese": [
+          "crise global",
+          "crises globais",
+          "crise mundial",
+          "crises mundiais",
+          "crise económica global",
+          "crise económica mundial",
+          "crise econômica global",
+          "crise econômica mundial",
+          "crise financeira global",
+          "crise financeira mundial",
+          "crise financeira internacional"
+        ],
+        "tetum": [
+          "krize globál",
+          "krize global",
+          "krize mundiál",
+          "krize mundial",
+          "krize ekonómika globál",
+          "krize ekonomika global",
+          "krize ekonomia globál",
+          "krize ekonomia global",
+          "krize ekonomia mundiál",
+          "krize ekonomia mundial",
+          "krize finanseira globál",
+          "krize finanseira global",
+          "krize finanseira mundiál",
+          "krize finanseira mundial",
+          "crise global",
+          "crise mundial",
+          "crise económica global",
+          "crise economica global",
+          "crise económica mundial",
+          "crise economica mundial",
+          "crise financeira global",
+          "crise financeira mundial",
+          "crise financeira internacional"
+        ],
+        "thai": [
+          "วิกฤตเศรษฐกิจโลก",
+          "วิกฤติเศรษฐกิจโลก",
+          "วิกฤตการเงินโลก",
+          "วิกฤติการเงินโลก",
+          "วิกฤตแฮมเบอร์เกอร์",
+          "วิกฤติแฮมเบอร์เกอร์",
+          "วิกฤตซับไพรม์",
+          "วิกฤติซับไพรม์"
+        ],
+        "tok_pisin": [
+          "global crisis",
+          "global crises",
+          "global economic crisis",
+          "global financial crisis",
+          "GFC",
+          "worldwide crisis",
+          "krisis bilong wol",
+          "globel krisis",
+          "glowbel krisis",
+          "wol krisis"
         ]
       }
     },
@@ -65,6 +271,203 @@
           "economic collapse",
           "economic turmoil",
           "crisis-hit economy"
+        ],
+        "chinese_simplified": [
+          "经济危机",
+          "经济崩溃",
+          "经济崩盘",
+          "经济动荡",
+          "经济乱局",
+          "陷入经济危机"
+        ],
+        "chinese_traditional": [
+          "經濟危機",
+          "經濟崩潰",
+          "經濟崩盤",
+          "經濟動盪",
+          "經濟危局"
+        ],
+        "filipino": [
+          "economic crisis",
+          "economic crises",
+          "economic meltdown",
+          "economic collapse",
+          "economic turmoil",
+          "krisis sa ekonomiya",
+          "krisis pang-ekonomiya",
+          "krisis pangkabuhayan",
+          "krisis ekonomiko",
+          "pagbagsak ng ekonomiya"
+        ],
+        "fr": [
+          "crise économique",
+          "crises économiques",
+          "crise économique et sociale",
+          "effondrement économique",
+          "effondrement de l'économie",
+          "effondrement de l’économie",
+          "marasme économique",
+          "économie sinistrée"
+        ],
+        "indo": [
+          "krisis ekonomi",
+          "krisis moneter",
+          "krismon",
+          "keruntuhan ekonomi",
+          "kolaps ekonomi",
+          "ekonomi kolaps",
+          "gejolak ekonomi",
+          "krisis 1998",
+          "krisis 1997-1998",
+          "krisis 1997/1998",
+          "krisis 98"
+        ],
+        "japanese": [
+          "経済危機",
+          "経済破綻",
+          "経済崩壊",
+          "経済が崩壊",
+          "経済の混乱",
+          "経済的混乱",
+          "経済的な混乱"
+        ],
+        "km": [
+          "វិបត្តិសេដ្ឋកិច្ច",
+          "វិបត្ដិសេដ្ឋកិច្ច",
+          "ការដួលរលំសេដ្ឋកិច្ច",
+          "ការដួលរលំនៃសេដ្ឋកិច្ច",
+          "វិបត្តិផ្នែកសេដ្ឋកិច្ច",
+          "វិបត្ដិផ្នែកសេដ្ឋកិច្ច",
+          "economic crisis"
+        ],
+        "korean": [
+          "경제위기",
+          "경제 위기",
+          "경제 붕괴",
+          "경제붕괴",
+          "경제 파탄",
+          "경제파탄",
+          "경제 혼란",
+          "경제난",
+          "경제 대란",
+          "외환위기",
+          "IMF 사태",
+          "IMF 외환위기"
+        ],
+        "lao": [
+          "ວິກິດເສດຖະກິດ",
+          "ວິກິດການເສດຖະກິດ",
+          "ວິກິດການທາງເສດຖະກິດ",
+          "ວິກິດການດ້ານເສດຖະກິດ",
+          "ວິກິດການທາງດ້ານເສດຖະກິດ",
+          "ວິກິດທາງເສດຖະກິດ",
+          "ວິກິດທາງດ້ານເສດຖະກິດ",
+          "ວິກິດດ້ານເສດຖະກິດ",
+          "ເສດຖະກິດພັງທະລາຍ",
+          "economic crisis"
+        ],
+        "malay": [
+          "krisis ekonomi",
+          "kegawatan ekonomi",
+          "kemelut ekonomi",
+          "keruntuhan ekonomi",
+          "kejatuhan ekonomi",
+          "krisis ekonomi 1997",
+          "ekonomi dilanda krisis",
+          "gawat ekonomi"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн хямрал"
+          },
+          {
+            "prefix": "эдийн засаг хямр"
+          },
+          {
+            "prefix": "эдийн засгийн хүнд байдал"
+          },
+          {
+            "prefix": "эдийн засгийн хүнд байдл"
+          },
+          {
+            "prefix": "эдийн засгийн хүнд үе"
+          },
+          {
+            "prefix": "эдийн засгийн сүйрэл"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးအကျပ်အတည်း",
+          "စီးပွားရေး အကျပ်အတည်း",
+          "စီးပွားရေးပြိုလဲ",
+          "စီးပွားရေး ပြိုလဲ",
+          "စီးပွားရေးပြိုကျ",
+          "စီးပွားရေး ပြိုကျ",
+          "economic crisis"
+        ],
+        "portuguese": [
+          "crise económica",
+          "crise econômica",
+          "crises económicas",
+          "crises econômicas",
+          "crise da economia",
+          "colapso económico",
+          "colapso econômico",
+          "colapso da economia",
+          "turbulência económica",
+          "turbulência econômica",
+          "economia em crise",
+          "depressão económica",
+          "depressão econômica"
+        ],
+        "tetum": [
+          "krize ekonómika",
+          "krize ekonomika",
+          "krize ekonomia",
+          "krize ekonómiku",
+          "krize ekonomiku",
+          "kolapsu ekonómiku",
+          "kolapsu ekonomiku",
+          "kolapsu ekonomia",
+          "ekonomia monu",
+          "crise económica",
+          "crise economica",
+          "crise econômica",
+          "crises económicas",
+          "crises economicas",
+          "colapso económico",
+          "colapso economico",
+          "colapso da economia",
+          "crise económica profunda",
+          "crise economica profunda"
+        ],
+        "thai": [
+          "วิกฤตเศรษฐกิจ",
+          "วิกฤติเศรษฐกิจ",
+          "วิกฤตทางเศรษฐกิจ",
+          "วิกฤติทางเศรษฐกิจ",
+          "เศรษฐกิจล่มสลาย",
+          "เศรษฐกิจพังทลาย",
+          "วิกฤตต้มยำกุ้ง",
+          "วิกฤติต้มยำกุ้ง",
+          "วิกฤตการณ์เศรษฐกิจ",
+          "วิกฤติการณ์เศรษฐกิจ",
+          "วิกฤตการณ์ทางเศรษฐกิจ",
+          "วิกฤติการณ์ทางเศรษฐกิจ"
+        ],
+        "tok_pisin": [
+          "economic crisis",
+          "economic crises",
+          "economic meltdown",
+          "economic collapse",
+          "economic turmoil",
+          "crisis-hit economy",
+          "ikonomik krisis",
+          "ekonomik krisis",
+          "krisis bilong ikonomi",
+          "ikonomi i bagarap",
+          "ikonomi i pundaun",
+          "ikonomi i bruk"
         ]
       }
     },
@@ -78,6 +481,173 @@
           "financial meltdown",
           "financial turmoil",
           "financial panic"
+        ],
+        "chinese_simplified": [
+          "金融危机",
+          "金融风暴",
+          "金融海啸",
+          "金融动荡",
+          "金融恐慌",
+          "金融崩溃"
+        ],
+        "chinese_traditional": [
+          "金融危機",
+          "金融海嘯",
+          "金融風暴",
+          "金融動盪",
+          "金融恐慌",
+          "金融崩潰"
+        ],
+        "filipino": [
+          "financial crisis",
+          "financial crises",
+          "financial meltdown",
+          "financial turmoil",
+          "financial panic",
+          "Asian financial crisis",
+          "krisis sa pananalapi",
+          "krisis pinansyal",
+          "krisis pampinansyal"
+        ],
+        "fr": [
+          "crise financière",
+          "crises financières",
+          "tourmente financière",
+          "turbulences financières",
+          "krach financier",
+          "panique financière"
+        ],
+        "indo": [
+          "krisis keuangan",
+          "krisis finansial",
+          "gejolak keuangan",
+          "gejolak finansial",
+          "kepanikan finansial",
+          "krisis sektor keuangan"
+        ],
+        "japanese": [
+          "金融危機",
+          "金融不安",
+          "金融混乱",
+          "金融パニック",
+          "金融恐慌",
+          "金融システム不安"
+        ],
+        "km": [
+          "វិបត្តិហិរញ្ញវត្ថុ",
+          "វិបត្ដិហិរញ្ញវត្ថុ",
+          "វិបត្តិផ្នែកហិរញ្ញវត្ថុ",
+          "វិបត្ដិផ្នែកហិរញ្ញវត្ថុ",
+          "ភាពចលាចលហិរញ្ញវត្ថុ",
+          "ភាពចលាចលផ្នែកហិរញ្ញវត្ថុ",
+          "financial crisis"
+        ],
+        "korean": [
+          "금융위기",
+          "금융 위기",
+          "금융 대란",
+          "금융 혼란",
+          "금융 공황",
+          "금융공황",
+          "금융 불안",
+          "금융위기설"
+        ],
+        "lao": [
+          "ວິກິດການເງິນ",
+          "ວິກິດການການເງິນ",
+          "ວິກິດການທາງການເງິນ",
+          "ວິກິດການດ້ານການເງິນ",
+          "ວິກິດການທາງດ້ານການເງິນ",
+          "ວິກິດທາງການເງິນ",
+          "ວິກິດດ້ານການເງິນ",
+          "ວິກິດການເສດຖະກິດ-ການເງິນ",
+          "financial crisis"
+        ],
+        "malay": [
+          "krisis kewangan",
+          "kegawatan kewangan",
+          "kemelut kewangan",
+          "krisis kewangan asia",
+          "krisis kewangan 1997",
+          "krisis kewangan 2008",
+          "keruntuhan kewangan",
+          "panik kewangan"
+        ],
+        "mn": [
+          {
+            "prefix": "санхүүгийн хямрал"
+          },
+          {
+            "prefix": "санхүүгийн зах зээлийн хямрал"
+          },
+          {
+            "prefix": "санхүүгийн сүйрэл"
+          },
+          {
+            "prefix": "санхүүгийн салбарын хямрал"
+          },
+          {
+            "prefix": "санхүүгийн системийн хямрал"
+          }
+        ],
+        "my": [
+          "ဘဏ္ဍာရေးအကျပ်အတည်း",
+          "ဘဏ္ဍာရေး အကျပ်အတည်း",
+          "ငွေကြေးအကျပ်အတည်း",
+          "ငွေကြေး အကျပ်အတည်း",
+          "ငွေရေးကြေးရေးအကျပ်အတည်း",
+          "financial crisis"
+        ],
+        "portuguese": [
+          "crise financeira",
+          "crises financeiras",
+          "colapso financeiro",
+          "turbulência financeira",
+          "turbulências financeiras",
+          "pânico financeiro",
+          "crise do subprime",
+          "crise dos mercados financeiros"
+        ],
+        "tetum": [
+          "krize finanseira",
+          "krize finansiál",
+          "krize finansial",
+          "krize setór finanseiru",
+          "krize setor finanseiru",
+          "pániku finanseiru",
+          "paniku finanseiru",
+          "turbulénsia finanseira",
+          "turbulensia finanseira",
+          "crise financeira",
+          "crises financeiras",
+          "turbulência financeira",
+          "turbulencia financeira",
+          "pânico financeiro",
+          "panico financeiro",
+          "colapso financeiro"
+        ],
+        "thai": [
+          "วิกฤตการเงิน",
+          "วิกฤติการเงิน",
+          "วิกฤตทางการเงิน",
+          "วิกฤติทางการเงิน",
+          "ความปั่นป่วนทางการเงิน",
+          "ตื่นตระหนกทางการเงิน",
+          "วิกฤตการณ์การเงิน",
+          "วิกฤติการณ์การเงิน",
+          "วิกฤตการณ์ทางการเงิน",
+          "วิกฤติการณ์ทางการเงิน"
+        ],
+        "tok_pisin": [
+          "financial crisis",
+          "financial crises",
+          "financial meltdown",
+          "financial turmoil",
+          "financial panic",
+          "fainensel krisis",
+          "finansel krisis",
+          "fainens krisis",
+          "krisis bilong mani"
         ]
       }
     },
@@ -91,6 +661,184 @@
           "sovereign debt crisis",
           "external debt crisis",
           "debt meltdown"
+        ],
+        "chinese_simplified": [
+          "债务危机",
+          "主权债务危机",
+          "外债危机",
+          "欧债危机",
+          "债务崩溃"
+        ],
+        "chinese_traditional": [
+          "債務危機",
+          "主權債務危機",
+          "外債危機",
+          "債務違約危機",
+          "歐債危機",
+          "債務風暴"
+        ],
+        "filipino": [
+          "debt crisis",
+          "debt crises",
+          "sovereign debt crisis",
+          "external debt crisis",
+          "krisis sa utang",
+          "krisis ng utang"
+        ],
+        "fr": [
+          "crise de la dette",
+          "crises de la dette",
+          "crise de la dette souveraine",
+          "crise des dettes souveraines",
+          "crise de la dette publique",
+          "crise de l'endettement",
+          "crise de l’endettement"
+        ],
+        "indo": [
+          "krisis utang",
+          "krisis hutang",
+          "krisis utang negara",
+          "krisis utang luar negeri",
+          "krisis utang pemerintah",
+          "krisis utang negara berdaulat"
+        ],
+        "japanese": [
+          "債務危機",
+          "政府債務危機",
+          "ソブリン危機",
+          "欧州債務危機",
+          "累積債務危機",
+          "債務問題の深刻化"
+        ],
+        "km": [
+          "វិបត្តិបំណុល",
+          "វិបត្ដិបំណុល",
+          "វិបត្តិបំណុលសាធារណៈ",
+          "វិបត្ដិបំណុលសាធារណៈ",
+          "វិបត្តិបំណុលអធិបតេយ្យ",
+          "វិបត្ដិបំណុលអធិបតេយ្យ",
+          "វិបត្តិបំណុលបរទេស",
+          "វិបត្ដិបំណុលបរទេស",
+          "debt crisis"
+        ],
+        "korean": [
+          "부채위기",
+          "부채 위기",
+          "채무위기",
+          "채무 위기",
+          "국가부채 위기",
+          "재정위기",
+          "재정 위기",
+          "국가부도",
+          "디폴트 위기",
+          "외채위기",
+          "외채 위기"
+        ],
+        "lao": [
+          "ວິກິດໜີ້",
+          "ວິກິດຫນີ້",
+          "ວິກິດການໜີ້",
+          "ວິກິດການຫນີ້",
+          "ວິກິດການດ້ານໜີ້ສິນ",
+          "ວິກິດການດ້ານຫນີ້ສິນ",
+          "ວິກິດການທາງດ້ານໜີ້ສິນ",
+          "ວິກິດການທາງດ້ານຫນີ້ສິນ",
+          "ວິກິດດ້ານໜີ້ສິນ",
+          "ວິກິດດ້ານຫນີ້ສິນ",
+          "ວິກິດການໜີ້ສາທາລະນະ",
+          "ວິກິດການຫນີ້ສາທາລະນະ",
+          "ບໍ່ສາມາດຊຳລະໜີ້ຕ່າງປະເທດ",
+          "ບໍ່ສາມາດຊຳລະຫນີ້ຕ່າງປະເທດ",
+          "debt crisis"
+        ],
+        "malay": [
+          "krisis hutang",
+          "krisis hutang negara",
+          "krisis hutang berdaulat",
+          "krisis hutang luar negeri",
+          "krisis hutang kerajaan"
+        ],
+        "mn": [
+          {
+            "prefix": "өрийн хямрал"
+          },
+          {
+            "prefix": "өрийн хүнд байдал"
+          },
+          {
+            "prefix": "өрийн хүнд байдл"
+          },
+          {
+            "prefix": "өр төлбөрийн хямрал"
+          },
+          {
+            "prefix": "өрийн хямралд"
+          },
+          {
+            "prefix": "гадаад өрийн хямрал"
+          },
+          {
+            "prefix": "өрийн дефолт"
+          },
+          {
+            "prefix": "дефолт зарла"
+          }
+        ],
+        "my": [
+          "ကြွေးမြီအကျပ်အတည်း",
+          "ကြွေးမြီ အကျပ်အတည်း",
+          "အကြွေးအကျပ်အတည်း",
+          "နိုင်ငံ့ကြွေးမြီအကျပ်အတည်း",
+          "debt crisis"
+        ],
+        "portuguese": [
+          "crise da dívida",
+          "crises da dívida",
+          "crise de dívida",
+          "crise da dívida soberana",
+          "crise de dívida soberana",
+          "crise da dívida externa",
+          "crise de endividamento",
+          "crise do endividamento"
+        ],
+        "tetum": [
+          "krize dívida",
+          "krize divida",
+          "krize dívida soberana",
+          "krize divida soberana",
+          "krize dívida esterna",
+          "krize divida esterna",
+          "krize dívida públika",
+          "krize divida publika",
+          "crise da dívida",
+          "crise da divida",
+          "crise de dívida",
+          "crise de divida",
+          "crise da dívida soberana",
+          "crise da divida soberana",
+          "crise da dívida externa",
+          "crise da divida externa",
+          "crise da dívida pública",
+          "crise da divida publica"
+        ],
+        "thai": [
+          "วิกฤตหนี้",
+          "วิกฤติหนี้",
+          "วิกฤตหนี้สาธารณะ",
+          "วิกฤติหนี้สาธารณะ",
+          "วิกฤตหนี้ต่างประเทศ",
+          "วิกฤติหนี้ต่างประเทศ",
+          "วิกฤตหนี้สิน",
+          "วิกฤติหนี้สิน"
+        ],
+        "tok_pisin": [
+          "debt crisis",
+          "debt crises",
+          "sovereign debt crisis",
+          "external debt crisis",
+          "debt meltdown",
+          "dinau krisis",
+          "krisis bilong dinau"
         ]
       }
     },
@@ -105,6 +853,184 @@
           "banking sector crisis",
           "banking panic",
           "systemic banking crisis"
+        ],
+        "chinese_simplified": [
+          "银行危机",
+          "银行业危机",
+          "银行挤兑",
+          "挤兑潮",
+          "系统性银行危机",
+          "银行倒闭潮"
+        ],
+        "chinese_traditional": [
+          "銀行業危機",
+          "銀行危機",
+          "銀行業風暴",
+          "擠兌潮",
+          "銀行擠兌",
+          "系統性銀行危機",
+          "銀行倒閉潮"
+        ],
+        "filipino": [
+          "banking crisis",
+          "banking crises",
+          "bank crisis",
+          "banking sector crisis",
+          "banking panic",
+          "systemic banking crisis",
+          "bank run",
+          "bank runs",
+          "krisis sa bangko",
+          "krisis sa mga bangko"
+        ],
+        "fr": [
+          "crise bancaire",
+          "crises bancaires",
+          "panique bancaire",
+          "faillites bancaires",
+          "crise du secteur bancaire",
+          "ruée sur les banques",
+          "crise bancaire systémique"
+        ],
+        "indo": [
+          "krisis perbankan",
+          "krisis bank",
+          "krisis sistem perbankan",
+          "krisis sektor perbankan",
+          "kepanikan perbankan"
+        ],
+        "japanese": [
+          "銀行危機",
+          "銀行破綻",
+          "銀行の破綻",
+          "金融機関の破綻",
+          "取り付け騒ぎ",
+          "銀行不安",
+          "銀行の経営危機"
+        ],
+        "km": [
+          "វិបត្តិធនាគារ",
+          "វិបត្ដិធនាគារ",
+          "វិបត្តិវិស័យធនាគារ",
+          "វិបត្ដិវិស័យធនាគារ",
+          "វិបត្តិប្រព័ន្ធធនាគារ",
+          "វិបត្ដិប្រព័ន្ធធនាគារ",
+          "ការដួលរលំធនាគារ",
+          "banking crisis"
+        ],
+        "korean": [
+          "은행위기",
+          "은행 위기",
+          "은행 파산",
+          "뱅크런",
+          "예금 인출 사태",
+          "은행권 위기",
+          "은행 부실 사태"
+        ],
+        "lao": [
+          "ວິກິດການທະນາຄານ",
+          "ວິກິດທະນາຄານ",
+          "ວິກິດການລະບົບທະນາຄານ",
+          "ວິກິດການດ້ານການທະນາຄານ",
+          "ທະນາຄານລົ້ມລະລາຍ",
+          "ການແຫ່ຖອນເງິນ",
+          "ແຫ່ຖອນເງິນ",
+          "banking crisis"
+        ],
+        "malay": [
+          "krisis perbankan",
+          "krisis bank",
+          "krisis sektor perbankan",
+          "krisis perbankan sistemik",
+          "panik perbankan"
+        ],
+        "mn": [
+          {
+            "prefix": "банкны хямрал"
+          },
+          {
+            "prefix": "банкны салбарын хямрал"
+          },
+          {
+            "prefix": "банкны системийн хямрал"
+          },
+          {
+            "prefix": "банк дампуур"
+          },
+          {
+            "prefix": "банкууд дампуур"
+          },
+          {
+            "prefix": "банкны дампуурал"
+          },
+          {
+            "prefix": "банкны дампуурл"
+          }
+        ],
+        "my": [
+          "ဘဏ်လုပ်ငန်းအကျပ်အတည်း",
+          "ဘဏ်လုပ်ငန်း အကျပ်အတည်း",
+          "ဘဏ်အကျပ်အတည်း",
+          "ဘဏ်ကဏ္ဍအကျပ်အတည်း",
+          "ဘဏ်များ ပြိုလဲ",
+          "ဘဏ်ပြိုလဲ",
+          "banking crisis"
+        ],
+        "portuguese": [
+          "crise bancária",
+          "crises bancárias",
+          "crise dos bancos",
+          "crise no sector bancário",
+          "crise no setor bancário",
+          "crise do sector bancário",
+          "crise do setor bancário",
+          "pânico bancário",
+          "corrida aos bancos",
+          "colapso bancário",
+          "falência bancária",
+          "falências bancárias"
+        ],
+        "tetum": [
+          "krize bankária",
+          "krize bankaria",
+          "krize banku",
+          "krize setór bankáriu",
+          "krize setor bankariu",
+          "banku monu",
+          "kolapsu banku",
+          "crise bancária",
+          "crise bancaria",
+          "crises bancárias",
+          "crises bancarias",
+          "crise do sistema bancário",
+          "crise do sistema bancario",
+          "crise do setor bancário",
+          "crise do setor bancario",
+          "colapso bancário",
+          "colapso bancario",
+          "corrida aos bancos"
+        ],
+        "thai": [
+          "วิกฤตธนาคาร",
+          "วิกฤติธนาคาร",
+          "วิกฤตภาคธนาคาร",
+          "วิกฤติภาคธนาคาร",
+          "วิกฤตสถาบันการเงิน",
+          "วิกฤติสถาบันการเงิน",
+          "แห่ถอนเงิน",
+          "ธนาคารล้ม"
+        ],
+        "tok_pisin": [
+          "banking crisis",
+          "banking crises",
+          "bank crisis",
+          "banking sector crisis",
+          "banking panic",
+          "systemic banking crisis",
+          "benk krisis",
+          "krisis bilong benk",
+          "krisis bilong ol benk",
+          "ol benk i pundaun"
         ]
       }
     },
@@ -122,6 +1048,216 @@
           "compound shocks",
           "overlapping shocks",
           "multiple shocks"
+        ],
+        "chinese_simplified": [
+          "复合危机",
+          "多重危机",
+          "叠加危机",
+          "危机叠加",
+          "多重冲击",
+          "叠加冲击",
+          "复合冲击",
+          "连锁危机"
+        ],
+        "chinese_traditional": [
+          "複合型危機",
+          "複合式危機",
+          "複合危機",
+          "多重危機",
+          "多重衝擊",
+          "連鎖危機",
+          "危機疊加",
+          "複合衝擊"
+        ],
+        "filipino": [
+          "compound crisis",
+          "compound crises",
+          "compounding crises",
+          "multiple crises",
+          "overlapping crises",
+          "cascading crises",
+          "compound shocks",
+          "overlapping shocks",
+          "multiple shocks",
+          "sunud-sunod na krisis",
+          "sunod-sunod na krisis"
+        ],
+        "fr": [
+          "crises multiples",
+          "multiplication des crises",
+          "crises successives",
+          "succession de crises",
+          "cumul des crises",
+          "chocs multiples",
+          "chocs successifs",
+          "crises en cascade",
+          "enchaînement des crises",
+          "superposition des crises"
+        ],
+        "indo": [
+          "krisis berlapis",
+          "krisis ganda",
+          "krisis majemuk",
+          "multikrisis",
+          "krisis beruntun",
+          "guncangan berlapis",
+          "krisis yang saling bertumpuk"
+        ],
+        "japanese": [
+          "複合危機",
+          "複合的な危機",
+          "複数の危機",
+          "危機の連鎖",
+          "重なる危機",
+          "複合的なショック"
+        ],
+        "km": [
+          "វិបត្តិច្រើនជាន់",
+          "វិបត្ដិច្រើនជាន់",
+          "វិបត្តិច្រើនស្រទាប់",
+          "វិបត្ដិច្រើនស្រទាប់",
+          "វិបត្តិផ្សំគ្នា",
+          "វិបត្ដិផ្សំគ្នា",
+          "វិបត្តិត្រួតស៊ីគ្នា",
+          "វិបត្ដិត្រួតស៊ីគ្នា",
+          "វិបត្តិជាច្រើនក្នុងពេលតែមួយ",
+          "វិបត្ដិជាច្រើនក្នុងពេលតែមួយ",
+          "compound crises",
+          "multiple crises"
+        ],
+        "korean": [
+          "복합위기",
+          "복합 위기",
+          "복합적 위기",
+          "다중위기",
+          "다중 위기",
+          "겹친 위기",
+          "겹쳐진 위기",
+          "복합 충격",
+          "복합충격",
+          "다중 충격",
+          "연쇄 위기"
+        ],
+        "lao": [
+          "ວິກິດການທີ່ຊ້ອນທັບກັນ",
+          "ວິກິດການຊ້ອນທັບ",
+          "ວິກິດການຊ້ຳຊ້ອນ",
+          "ວິກິດການຊໍ້າຊ້ອນ",
+          "ວິກິດການຫຼາຍຢ່າງ",
+          "ວິກິດການຫລາຍຢ່າງ",
+          "ວິກິດການຫຼາຍດ້ານ",
+          "ວິກິດການຫລາຍດ້ານ",
+          "ວິກິດການຕ່າງໆທີ່ເກີດຂຶ້ນພ້ອມກັນ",
+          "ວິກິດການຊ້ຳເຕີມ",
+          "ວິກິດການຊໍ້າເຕີມ",
+          "multiple crises"
+        ],
+        "malay": [
+          "krisis bertindih",
+          "krisis berganda",
+          "pelbagai krisis",
+          "krisis bertimpa-timpa",
+          "krisis yang bertindih",
+          "kejutan berganda",
+          "pelbagai kejutan",
+          "kejutan bertindih"
+        ],
+        "mn": [
+          {
+            "prefix": "давхар хямрал"
+          },
+          {
+            "prefix": "олон давхар хямрал"
+          },
+          {
+            "prefix": "нийлмэл хямрал"
+          },
+          {
+            "prefix": "давхацсан хямрал"
+          },
+          {
+            "prefix": "хямралууд давхац"
+          },
+          {
+            "prefix": "давхардсан хямрал"
+          },
+          {
+            "prefix": "олон хямрал"
+          }
+        ],
+        "my": [
+          "ထပ်ဆင့်အကျပ်အတည်း",
+          "ထပ်ဆင့် အကျပ်အတည်း",
+          "အကျပ်အတည်းပေါင်းစုံ",
+          "အကျပ်အတည်းမျိုးစုံ",
+          "အကျပ်အတည်း မျိုးစုံ",
+          "ထပ်ဆင့်ရိုက်ခတ်မှု",
+          "ထပ်ဆင့် ရိုက်ခတ်မှု",
+          "multiple crises",
+          "compound crisis"
+        ],
+        "portuguese": [
+          "crise composta",
+          "crises compostas",
+          "crises múltiplas",
+          "múltiplas crises",
+          "crises sobrepostas",
+          "crises em cascata",
+          "crises simultâneas",
+          "sucessão de crises",
+          "choques múltiplos",
+          "múltiplos choques",
+          "choques sobrepostos",
+          "choques simultâneos",
+          "choques compostos"
+        ],
+        "tetum": [
+          "krize múltipla",
+          "krize multipla",
+          "krize oioin",
+          "krize barak iha tempu hanesan",
+          "krize kompostu",
+          "xoke múltiplu",
+          "xoke multiplu",
+          "krize ne'ebé sobrepoin",
+          "krize ne’ebé sobrepoin",
+          "krize ne'ebe sobrepoin",
+          "krize ne’ebe sobrepoin",
+          "crise múltipla",
+          "crise multipla",
+          "crises múltiplas",
+          "crises multiplas",
+          "múltiplas crises",
+          "multiplas crises",
+          "crises sobrepostas",
+          "crises em cascata",
+          "choques múltiplos",
+          "choques multiplos",
+          "múltiplos choques",
+          "multiplos choques"
+        ],
+        "thai": [
+          "วิกฤตซ้อนวิกฤต",
+          "วิกฤติซ้อนวิกฤติ",
+          "วิกฤตซ้อน",
+          "วิกฤติซ้อน",
+          "หลายวิกฤตพร้อมกัน",
+          "หลายวิกฤติพร้อมกัน",
+          "วิกฤตซ้ำซ้อน",
+          "วิกฤติซ้ำซ้อน"
+        ],
+        "tok_pisin": [
+          "compound crisis",
+          "compound crises",
+          "compounding crises",
+          "multiple crises",
+          "overlapping crises",
+          "cascading crises",
+          "compound shocks",
+          "overlapping shocks",
+          "multiple shocks",
+          "planti krisis wantaim",
+          "ol krisis i kamap wantaim"
         ]
       }
     },
@@ -134,6 +1270,131 @@
           "poly-crisis",
           "polycrises",
           "permacrisis"
+        ],
+        "chinese_simplified": [
+          "多元危机",
+          "复合型危机",
+          "聚合危机",
+          "永续危机",
+          "polycrisis",
+          "permacrisis"
+        ],
+        "chinese_traditional": [
+          "polycrisis",
+          "permacrisis",
+          "多元危機",
+          "永久危機"
+        ],
+        "filipino": [
+          "polycrisis",
+          "poly-crisis",
+          "polycrises",
+          "permacrisis"
+        ],
+        "fr": [
+          "polycrise",
+          "polycrises",
+          "poly-crise",
+          "permacrise"
+        ],
+        "indo": [
+          "polikrisis",
+          "polycrisis",
+          "permacrisis",
+          "permakrisis"
+        ],
+        "japanese": [
+          "ポリクライシス",
+          "ポリ・クライシス",
+          "多重危機",
+          "パーマクライシス"
+        ],
+        "km": [
+          "វិបត្តិពហុ",
+          "វិបត្ដិពហុ",
+          "ពហុវិបត្តិ",
+          "ពហុវិបត្ដិ",
+          "polycrisis",
+          "permacrisis"
+        ],
+        "korean": [
+          "폴리크라이시스",
+          "퍼마크라이시스",
+          "영구적 위기",
+          "복합 다중위기"
+        ],
+        "lao": [
+          "ວິກິດການຫຼາຍດ້ານ",
+          "ວິກິດການຫລາຍດ້ານ",
+          "ວິກິດການຫຼາຍມິຕິ",
+          "ວິກິດການຫລາຍມິຕິ",
+          "ພະຫຸວິກິດ",
+          "ວິກິດການຖາວອນ",
+          "polycrisis",
+          "permacrisis"
+        ],
+        "malay": [
+          "polikrisis",
+          "poli-krisis",
+          "polycrisis",
+          "permakrisis",
+          "permacrisis"
+        ],
+        "mn": [
+          {
+            "prefix": "поликризис"
+          },
+          {
+            "prefix": "поли хямрал"
+          },
+          {
+            "prefix": "олон талт хямрал"
+          },
+          {
+            "prefix": "байнгын хямрал"
+          },
+          {
+            "prefix": "пермакризис"
+          }
+        ],
+        "my": [
+          "polycrisis",
+          "poly-crisis",
+          "permacrisis",
+          "ဘက်ပေါင်းစုံအကျပ်အတည်း",
+          "ဘက်စုံအကျပ်အတည်း"
+        ],
+        "portuguese": [
+          "policrise",
+          "poli-crise",
+          "policrises",
+          "permacrise",
+          "permacrisis",
+          "polycrisis"
+        ],
+        "tetum": [
+          "polikrize",
+          "poli-krize",
+          "permakrize",
+          "policrise",
+          "poli-crise",
+          "permacrise",
+          "polycrisis"
+        ],
+        "thai": [
+          "polycrisis",
+          "permacrisis",
+          "วิกฤตหลายมิติ",
+          "วิกฤติหลายมิติ",
+          "พหุวิกฤต",
+          "พหุวิกฤติ"
+        ],
+        "tok_pisin": [
+          "polycrisis",
+          "poly-crisis",
+          "polycrises",
+          "permacrisis",
+          "polikrisis"
         ]
       }
     },
@@ -149,6 +1410,194 @@
           "commodity price collapse",
           "commodity price slump",
           "commodity price swings"
+        ],
+        "chinese_simplified": [
+          "大宗商品冲击",
+          "大宗商品价格冲击",
+          "大宗商品价格暴跌",
+          "大宗商品价格暴涨",
+          "大宗商品价格剧烈波动",
+          "大宗商品价格大幅波动"
+        ],
+        "chinese_traditional": [
+          "大宗商品衝擊",
+          "原物料衝擊",
+          "原物料價格衝擊",
+          "大宗商品價格衝擊",
+          "原物料價格崩跌",
+          "大宗商品價格暴跌",
+          "原物料價格劇烈波動"
+        ],
+        "filipino": [
+          "commodity shock",
+          "commodity shocks",
+          "commodity price shock",
+          "commodity price shocks",
+          "commodity price collapse",
+          "commodity price slump",
+          "commodity price swings"
+        ],
+        "fr": [
+          "choc des matières premières",
+          "choc sur les matières premières",
+          "flambée des matières premières",
+          "flambée des cours des matières premières",
+          "effondrement des cours des matières premières",
+          "chute des cours des matières premières",
+          "volatilité des cours des matières premières",
+          "crise du nickel",
+          "effondrement des cours du nickel",
+          "chute des cours du nickel"
+        ],
+        "indo": [
+          "guncangan komoditas",
+          "goncangan komoditas",
+          "guncangan harga komoditas",
+          "anjloknya harga komoditas",
+          "jatuhnya harga komoditas",
+          "kejatuhan harga komoditas",
+          "gejolak harga komoditas",
+          "volatilitas harga komoditas"
+        ],
+        "japanese": [
+          "コモディティショック",
+          "商品価格ショック",
+          "資源価格の急落",
+          "資源価格の急騰",
+          "資源価格の高騰",
+          "資源高",
+          "国際商品価格の急騰",
+          "商品市況の急落"
+        ],
+        "km": [
+          "ការតក់ស្លុតតម្លៃទំនិញ",
+          "ភាពតក់ស្លុតតម្លៃទំនិញ",
+          "ការប៉ះទង្គិចតម្លៃទំនិញ",
+          "commodity shock",
+          "commodity price shock"
+        ],
+        "korean": [
+          "원자재 충격",
+          "원자재충격",
+          "원자재 가격 충격",
+          "원자재 가격 급등",
+          "원자재값 급등",
+          "원자재 가격 폭등",
+          "원자재 가격 급락",
+          "원자재 가격 폭락",
+          "원자재 파동"
+        ],
+        "lao": [
+          "ລາຄາສິນຄ້າໂພກະພັນ",
+          "ຄວາມຜັນຜວນຂອງລາຄາສິນຄ້າໂພກະພັນ",
+          "ລາຄາສິນຄ້າໃນຕະຫຼາດໂລກຜັນຜວນ",
+          "ລາຄາສິນຄ້າໃນຕະຫລາດໂລກຜັນຜວນ",
+          "ລາຄາວັດຖຸດິບໃນຕະຫຼາດໂລກ",
+          "ລາຄາວັດຖຸດິບໃນຕະຫລາດໂລກ",
+          "ລາຄາແຮ່ທາດໃນຕະຫຼາດໂລກຫຼຸດລົງ",
+          "ລາຄາແຮ່ທາດໃນຕະຫລາດໂລກຫລຸດລົງ",
+          "ລາຄາສິນຄ້າກະສິກຳໃນຕະຫຼາດໂລກຫຼຸດລົງ",
+          "ລາຄາສິນຄ້າກະສິກຳໃນຕະຫລາດໂລກຫລຸດລົງ",
+          "commodity shock",
+          "commodity price shock"
+        ],
+        "malay": [
+          "kejutan komoditi",
+          "kejutan harga komoditi",
+          "kejatuhan harga komoditi",
+          "kemerosotan harga komoditi",
+          "harga komoditi menjunam",
+          "turun naik harga komoditi",
+          "harga komoditi merudum"
+        ],
+        "mn": [
+          {
+            "prefix": "түүхий эдийн цочрол"
+          },
+          {
+            "prefix": "түүхий эдийн үнийн цочрол"
+          },
+          {
+            "prefix": "түүхий эдийн үнийн уналт"
+          },
+          {
+            "prefix": "түүхий эдийн үнэ унас"
+          },
+          {
+            "prefix": "түүхий эдийн үнийн огцом"
+          },
+          {
+            "prefix": "түүхий эдийн үнэ огцом"
+          },
+          {
+            "prefix": "түүхий эдийн зах зээлийн уналт"
+          }
+        ],
+        "my": [
+          "ကုန်စည်စျေးနှုန်းရိုက်ခတ်မှု",
+          "ကုန်စည်ဈေးနှုန်းရိုက်ခတ်မှု",
+          "ကုန်ကြမ်းစျေးနှုန်းထိုးကျ",
+          "ကုန်ကြမ်းဈေးနှုန်းထိုးကျ",
+          "commodity price shock",
+          "commodity shock",
+          "ကုန်စည်စျေးနှုန်း အတက်အကျကြမ်း",
+          "ကုန်စည်ဈေးနှုန်း အတက်အကျကြမ်း"
+        ],
+        "portuguese": [
+          "choque das matérias-primas",
+          "choque de matérias-primas",
+          "choques de matérias-primas",
+          "choque dos preços das matérias-primas",
+          "choque nos preços das matérias-primas",
+          "choques nos preços das matérias-primas",
+          "colapso dos preços das matérias-primas",
+          "queda dos preços das matérias-primas",
+          "volatilidade dos preços das matérias-primas",
+          "choque das commodities",
+          "choque de commodities",
+          "queda dos preços das commodities",
+          "volatilidade dos preços das commodities"
+        ],
+        "tetum": [
+          "xoke komodidade",
+          "xoke presu komodidade",
+          "xoke folin komodidade",
+          "presu komodidade monu",
+          "volatilidade presu komodidade",
+          "choque das matérias-primas",
+          "choque das materias-primas",
+          "choque dos preços das matérias-primas",
+          "choque dos precos das materias-primas",
+          "choque dos preços das commodities",
+          "choque dos precos das commodities",
+          "queda dos preços das matérias-primas",
+          "queda dos precos das materias-primas",
+          "volatilidade dos preços das matérias-primas",
+          "volatilidade dos precos das materias-primas"
+        ],
+        "thai": [
+          "ราคาสินค้าโภคภัณฑ์ผันผวน",
+          "ราคาสินค้าโภคภัณฑ์ดิ่ง",
+          "ราคาสินค้าโภคภัณฑ์ร่วง",
+          "ราคาสินค้าโภคภัณฑ์พุ่ง",
+          "ช็อกราคาสินค้าโภคภัณฑ์",
+          "ช็อคราคาสินค้าโภคภัณฑ์",
+          "ความผันผวนของราคาสินค้าโภคภัณฑ์",
+          "ราคาโภคภัณฑ์ผันผวน"
+        ],
+        "tok_pisin": [
+          "commodity shock",
+          "commodity shocks",
+          "commodity price shock",
+          "commodity price shocks",
+          "commodity price collapse",
+          "commodity price slump",
+          "commodity price swings",
+          "prais bilong komoditi i pundaun",
+          "prais bilong ol komoditi i pundaun",
+          "prais bilong komoditi i go daun",
+          "prais bilong ol komoditi i go daun",
+          "komoditi prais i pundaun"
         ]
       }
     },
@@ -166,6 +1615,246 @@
           "oil price surge",
           "oil price collapse",
           "oil price crash"
+        ],
+        "chinese_simplified": [
+          "油价冲击",
+          "石油危机",
+          "石油冲击",
+          "油价暴涨",
+          "油价飙升",
+          "油价暴跌",
+          "油价崩盘",
+          "油价大跌"
+        ],
+        "chinese_traditional": [
+          "油價衝擊",
+          "石油危機",
+          "石油衝擊",
+          "油價暴漲",
+          "油價飆升",
+          "油價暴跌",
+          "油價崩跌",
+          "油價狂飆"
+        ],
+        "filipino": [
+          "oil-price shock",
+          "oil price shock",
+          "oil price shocks",
+          "oil shock",
+          "oil shocks",
+          "oil price spike",
+          "oil price surge",
+          "oil price collapse",
+          "oil price crash",
+          "pagsirit ng presyo ng langis",
+          "pagsirit ng presyo ng petrolyo",
+          "shock sa presyo ng langis"
+        ],
+        "fr": [
+          "choc pétrolier",
+          "chocs pétroliers",
+          "flambée du prix du pétrole",
+          "flambée des prix du pétrole",
+          "flambée des cours du pétrole",
+          "envolée des cours du pétrole",
+          "envolée du prix du baril",
+          "flambée du baril",
+          "chute des cours du pétrole",
+          "effondrement du prix du pétrole",
+          "effondrement des cours du pétrole"
+        ],
+        "indo": [
+          "guncangan harga minyak",
+          "goncangan harga minyak",
+          "lonjakan harga minyak dunia",
+          "lonjakan harga minyak mentah",
+          "anjloknya harga minyak dunia",
+          "anjloknya harga minyak mentah",
+          "gejolak harga minyak dunia",
+          "gejolak harga minyak mentah",
+          "krisis minyak dunia",
+          "kejatuhan harga minyak dunia"
+        ],
+        "japanese": [
+          "石油価格ショック",
+          "オイルショック",
+          "石油ショック",
+          "石油危機",
+          "原油価格の急騰",
+          "原油価格急騰",
+          "原油価格の高騰",
+          "原油高騰",
+          "原油価格の急落",
+          "原油安"
+        ],
+        "km": [
+          "វិបត្តិប្រេង",
+          "វិបត្ដិប្រេង",
+          "តម្លៃប្រេងហក់ឡើង",
+          "តម្លៃប្រេងឡើងខ្ពស់",
+          "តម្លៃប្រេងកើនឡើងខ្លាំង",
+          "តម្លៃប្រេងធ្លាក់ចុះខ្លាំង",
+          "ការតក់ស្លុតតម្លៃប្រេង",
+          "ការប៉ះទង្គិចតម្លៃប្រេង",
+          "oil price shock",
+          "oil shock"
+        ],
+        "korean": [
+          "유가 충격",
+          "유가충격",
+          "오일쇼크",
+          "오일 쇼크",
+          "석유파동",
+          "석유 파동",
+          "석유위기",
+          "석유 위기",
+          "유가 급등",
+          "유가 폭등",
+          "유가 급락",
+          "유가 폭락"
+        ],
+        "lao": [
+          "ວິກິດການນ້ຳມັນ",
+          "ວິກິດການນໍ້າມັນ",
+          "ວິກິດນ້ຳມັນ",
+          "ວິກິດນໍ້າມັນ",
+          "ລາຄານ້ຳມັນພຸ່ງສູງ",
+          "ລາຄານໍ້າມັນພຸ່ງສູງ",
+          "ລາຄານ້ຳມັນເຊື້ອໄຟພຸ່ງສູງ",
+          "ລາຄານໍ້າມັນເຊື້ອໄຟພຸ່ງສູງ",
+          "ລາຄານ້ຳມັນສູງຂຶ້ນຢ່າງຫຼວງຫຼາຍ",
+          "ລາຄານໍ້າມັນສູງຂຶ້ນຢ່າງຫຼວງຫຼາຍ",
+          "ລາຄານ້ຳມັນສູງຂຶ້ນຢ່າງຫລວງຫລາຍ",
+          "ລາຄານໍ້າມັນສູງຂຶ້ນຢ່າງຫລວງຫລາຍ",
+          "ລາຄານ້ຳມັນຂຶ້ນແຮງ",
+          "ລາຄານໍ້າມັນຂຶ້ນແຮງ",
+          "ຄວາມຜັນຜວນຂອງລາຄານ້ຳມັນ",
+          "ຄວາມຜັນຜວນຂອງລາຄານໍ້າມັນ",
+          "ລາຄານ້ຳມັນຜັນຜວນ",
+          "ລາຄານໍ້າມັນຜັນຜວນ",
+          "ຜົນກະທົບຈາກລາຄານ້ຳມັນ",
+          "ຜົນກະທົບຈາກລາຄານໍ້າມັນ",
+          "oil price shock",
+          "oil shock"
+        ],
+        "malay": [
+          "kejutan harga minyak",
+          "kejutan minyak",
+          "lonjakan harga minyak",
+          "kejatuhan harga minyak",
+          "harga minyak melonjak",
+          "harga minyak menjunam",
+          "harga minyak merudum",
+          "kemerosotan harga minyak"
+        ],
+        "mn": [
+          {
+            "prefix": "газрын тосны үнийн цочрол"
+          },
+          {
+            "prefix": "нефтийн үнийн цочрол"
+          },
+          {
+            "prefix": "газрын тосны цочрол"
+          },
+          {
+            "prefix": "газрын тосны үнийн огцом"
+          },
+          {
+            "prefix": "газрын тосны үнэ огцом"
+          },
+          {
+            "prefix": "шатахууны үнийн огцом"
+          },
+          {
+            "prefix": "шатахууны үнэ огцом"
+          }
+        ],
+        "my": [
+          "ရေနံဈေးနှုန်းရိုက်ခတ်မှု",
+          "ရေနံစျေးနှုန်းရိုက်ခတ်မှု",
+          "ရေနံဈေးနှုန်းထိုးတက်",
+          "ရေနံစျေးနှုန်းထိုးတက်",
+          "ရေနံစျေးနှုန်း ထိုးတက်",
+          "ရေနံဈေးနှုန်း ထိုးတက်",
+          "ရေနံဈေးနှုန်းထိုးကျ",
+          "ရေနံစျေးနှုန်းထိုးကျ",
+          "oil price shock",
+          "oil shock",
+          "ရေနံအကျပ်အတည်း",
+          "ရေနံ အကျပ်အတည်း"
+        ],
+        "portuguese": [
+          "choque petrolífero",
+          "choques petrolíferos",
+          "choque do petróleo",
+          "choques do petróleo",
+          "choque do preço do petróleo",
+          "choque dos preços do petróleo",
+          "choque nos preços do petróleo",
+          "disparada do preço do petróleo",
+          "disparo do preço do petróleo",
+          "subida em flecha do preço do petróleo",
+          "colapso do preço do petróleo",
+          "colapso dos preços do petróleo",
+          "queda abrupta do preço do petróleo",
+          "queda abrupta dos preços do petróleo",
+          "crise do petróleo",
+          "crise petrolífera"
+        ],
+        "tetum": [
+          "xoke presu mina",
+          "xoke folin mina",
+          "xoke mina",
+          "presu mina monu",
+          "folin mina monu",
+          "presu mina sa'e makaas",
+          "presu mina sa’e makaas",
+          "folin mina sa'e makaas",
+          "folin mina sa’e makaas",
+          "presu mina tun makaas",
+          "choque petrolífero",
+          "choque petrolifero",
+          "choque do preço do petróleo",
+          "choque do preco do petroleo",
+          "choques petrolíferos",
+          "choques petroliferos",
+          "queda do preço do petróleo",
+          "queda do preco do petroleo",
+          "colapso do preço do petróleo",
+          "colapso do preco do petroleo",
+          "subida do preço do petróleo",
+          "subida do preco do petroleo",
+          "disparo do preço do petróleo",
+          "disparo do preco do petroleo"
+        ],
+        "thai": [
+          "ราคาน้ำมันพุ่ง",
+          "ราคาน้ำมันพุ่งสูง",
+          "ราคาน้ำมันพุ่งขึ้น",
+          "ราคาน้ำมันดิ่ง",
+          "ราคาน้ำมันร่วง",
+          "ราคาน้ำมันทะยาน",
+          "วิกฤตน้ำมัน",
+          "วิกฤติน้ำมัน",
+          "ช็อกราคาน้ำมัน",
+          "ช็อคราคาน้ำมัน"
+        ],
+        "tok_pisin": [
+          "oil-price shock",
+          "oil price shock",
+          "oil price shocks",
+          "oil shock",
+          "oil shocks",
+          "oil price spike",
+          "oil price surge",
+          "oil price collapse",
+          "oil price crash",
+          "prais bilong wel i go antap",
+          "prais bilong wel i pundaun",
+          "prais bilong oil i go antap",
+          "prais bilong oil i pundaun",
+          "prais bilong ol wel i go antap"
         ]
       }
     },
@@ -182,6 +1871,199 @@
           "energy price spike",
           "energy price surge",
           "energy crisis"
+        ],
+        "chinese_simplified": [
+          "能源价格冲击",
+          "能源冲击",
+          "能源危机",
+          "能源价格飙升",
+          "能源价格暴涨",
+          "能源价格大涨"
+        ],
+        "chinese_traditional": [
+          "能源價格衝擊",
+          "能源衝擊",
+          "能源危機",
+          "能源價格飆升",
+          "能源價格暴漲",
+          "能源價格飆漲",
+          "能源價格上漲衝擊"
+        ],
+        "filipino": [
+          "energy-price shock",
+          "energy price shock",
+          "energy price shocks",
+          "energy shock",
+          "energy shocks",
+          "energy price spike",
+          "energy price surge",
+          "energy crisis",
+          "krisis sa enerhiya"
+        ],
+        "fr": [
+          "choc énergétique",
+          "chocs énergétiques",
+          "crise énergétique",
+          "flambée des prix de l'énergie",
+          "flambée des prix de l’énergie",
+          "envolée des prix de l'énergie",
+          "envolée des prix de l’énergie",
+          "choc sur les prix de l'énergie",
+          "choc sur les prix de l’énergie"
+        ],
+        "indo": [
+          "guncangan harga energi",
+          "goncangan harga energi",
+          "guncangan energi",
+          "lonjakan harga energi",
+          "gejolak harga energi"
+        ],
+        "japanese": [
+          "エネルギー価格ショック",
+          "エネルギー危機",
+          "エネルギー価格の急騰",
+          "エネルギー価格の高騰",
+          "エネルギー価格高騰",
+          "エネルギー高騰",
+          "燃料価格の高騰",
+          "燃料高騰",
+          "電気代高騰"
+        ],
+        "km": [
+          "វិបត្តិថាមពល",
+          "វិបត្ដិថាមពល",
+          "តម្លៃថាមពលហក់ឡើង",
+          "តម្លៃថាមពលកើនឡើងខ្លាំង",
+          "តម្លៃថាមពលឡើងខ្ពស់",
+          "ការតក់ស្លុតតម្លៃថាមពល",
+          "ការប៉ះទង្គិចតម្លៃថាមពល",
+          "energy crisis",
+          "energy price shock"
+        ],
+        "korean": [
+          "에너지 가격 충격",
+          "에너지가격 충격",
+          "에너지 충격",
+          "에너지 위기",
+          "에너지위기",
+          "에너지 대란",
+          "에너지 가격 급등",
+          "에너지값 급등",
+          "에너지 가격 폭등",
+          "에네르기위기"
+        ],
+        "lao": [
+          "ວິກິດການດ້ານລາຄາພະລັງງານ",
+          "ວິກິດພະລັງງານ",
+          "ວິກິດການພະລັງງານ",
+          "ວິກິດການດ້ານພະລັງງານ",
+          "ລາຄາພະລັງງານພຸ່ງສູງ",
+          "ລາຄາພະລັງງານສູງຂຶ້ນຢ່າງຫຼວງຫຼາຍ",
+          "ລາຄາພະລັງງານສູງຂຶ້ນຢ່າງຫລວງຫລາຍ",
+          "ລາຄາພະລັງງານມີຄວາມຜັນຜວນ",
+          "ຄວາມຜັນຜວນຂອງລາຄາພະລັງງານ",
+          "ຜົນກະທົບຈາກລາຄາພະລັງງານ",
+          "energy crisis",
+          "energy price shock"
+        ],
+        "malay": [
+          "kejutan harga tenaga",
+          "kejutan tenaga",
+          "lonjakan harga tenaga",
+          "harga tenaga melonjak",
+          "krisis tenaga",
+          "kenaikan mendadak harga tenaga"
+        ],
+        "mn": [
+          {
+            "prefix": "эрчим хүчний үнийн цочрол"
+          },
+          {
+            "prefix": "эрчим хүчний цочрол"
+          },
+          {
+            "prefix": "эрчим хүчний үнийн огцом"
+          },
+          {
+            "prefix": "эрчим хүчний үнэ огцом"
+          },
+          {
+            "prefix": "эрчим хүчний хямрал"
+          }
+        ],
+        "my": [
+          "စွမ်းအင်အကျပ်အတည်း",
+          "စွမ်းအင် အကျပ်အတည်း",
+          "စွမ်းအင်ဈေးနှုန်းရိုက်ခတ်မှု",
+          "စွမ်းအင်စျေးနှုန်းရိုက်ခတ်မှု",
+          "စွမ်းအင်ဈေးနှုန်းထိုးတက်",
+          "စွမ်းအင်စျေးနှုန်းထိုးတက်",
+          "လောင်စာဆီအကျပ်အတည်း",
+          "စက်သုံးဆီအကျပ်အတည်း",
+          "energy crisis",
+          "energy price shock"
+        ],
+        "portuguese": [
+          "choque energético",
+          "choques energéticos",
+          "choque do preço da energia",
+          "choque dos preços da energia",
+          "choque nos preços da energia",
+          "disparada dos preços da energia",
+          "disparo dos preços da energia",
+          "subida em flecha dos preços da energia",
+          "crise energética",
+          "crise da energia",
+          "crises energéticas"
+        ],
+        "tetum": [
+          "xoke presu enerjia",
+          "xoke folin enerjia",
+          "xoke enerjétiku",
+          "xoke enerjetiku",
+          "xoke enerjia",
+          "krize enerjia",
+          "krize enerjétika",
+          "krize enerjetika",
+          "presu enerjia sa'e makaas",
+          "presu enerjia sa’e makaas",
+          "choque energético",
+          "choque energetico",
+          "choques energéticos",
+          "choques energeticos",
+          "choque dos preços da energia",
+          "choque dos precos da energia",
+          "crise energética",
+          "crise energetica",
+          "subida dos preços da energia",
+          "subida dos precos da energia"
+        ],
+        "thai": [
+          "วิกฤตพลังงาน",
+          "วิกฤติพลังงาน",
+          "ราคาพลังงานพุ่ง",
+          "ราคาพลังงานพุ่งสูง",
+          "ราคาพลังงานสูงขึ้นอย่างรวดเร็ว",
+          "ค่าไฟพุ่ง",
+          "ราคาก๊าซพุ่ง",
+          "ช็อกราคาพลังงาน",
+          "ช็อคราคาพลังงาน"
+        ],
+        "tok_pisin": [
+          "energy-price shock",
+          "energy price shock",
+          "energy price shocks",
+          "energy shock",
+          "energy shocks",
+          "energy price spike",
+          "energy price surge",
+          "energy crisis",
+          "energi krisis",
+          "krisis bilong energi",
+          "prais bilong energi i go antap",
+          "prais bilong fuel i go antap",
+          "prais bilong ol fuel i go antap",
+          "prais bilong pawa i go antap"
         ]
       }
     },
@@ -190,6 +2072,159 @@
       "group": "commodity_and_trade_shocks",
       "forms": {
         "en": [
+          "terms-of-trade shock",
+          "terms of trade shock",
+          "terms-of-trade shocks",
+          "terms of trade shocks",
+          "terms of trade deterioration",
+          "deterioration in the terms of trade",
+          "worsening terms of trade"
+        ],
+        "chinese_simplified": [
+          "贸易条件冲击",
+          "贸易条件恶化",
+          "贸易条件下降",
+          "贸易条件变差",
+          "贸易条件不利变化"
+        ],
+        "chinese_traditional": [
+          "貿易條件衝擊",
+          "貿易條件惡化",
+          "貿易條件轉差",
+          "交易條件惡化",
+          "交易條件衝擊"
+        ],
+        "filipino": [
+          "terms-of-trade shock",
+          "terms of trade shock",
+          "terms-of-trade shocks",
+          "terms of trade shocks",
+          "terms of trade deterioration",
+          "deterioration in the terms of trade",
+          "worsening terms of trade"
+        ],
+        "fr": [
+          "choc des termes de l'échange",
+          "choc des termes de l’échange",
+          "chocs des termes de l'échange",
+          "chocs des termes de l’échange",
+          "dégradation des termes de l'échange",
+          "dégradation des termes de l’échange",
+          "détérioration des termes de l'échange",
+          "détérioration des termes de l’échange"
+        ],
+        "indo": [
+          "guncangan nilai tukar perdagangan",
+          "guncangan syarat perdagangan",
+          "guncangan terms of trade",
+          "memburuknya nilai tukar perdagangan",
+          "penurunan nilai tukar perdagangan",
+          "terms of trade shock"
+        ],
+        "japanese": [
+          "交易条件ショック",
+          "交易条件の悪化",
+          "交易条件が悪化",
+          "交易損失",
+          "交易条件の変動"
+        ],
+        "km": [
+          "ការតក់ស្លុតលក្ខខណ្ឌពាណិជ្ជកម្ម",
+          "ការប៉ះទង្គិចលក្ខខណ្ឌពាណិជ្ជកម្ម",
+          "ការធ្លាក់ចុះលក្ខខណ្ឌពាណិជ្ជកម្ម",
+          "លក្ខខណ្ឌពាណិជ្ជកម្មធ្លាក់ចុះ",
+          "terms of trade shock"
+        ],
+        "korean": [
+          "교역조건 충격",
+          "교역조건충격",
+          "교역조건 악화",
+          "교역조건이 악화",
+          "교역조건 급변",
+          "교역조건 약화"
+        ],
+        "lao": [
+          "ຜົນກະທົບຈາກເງື່ອນໄຂການຄ້າ",
+          "ເງື່ອນໄຂການຄ້າຊຸດໂຊມ",
+          "ເງື່ອນໄຂການຄ້າຫຼຸດລົງ",
+          "ເງື່ອນໄຂການຄ້າຫລຸດລົງ",
+          "ອັດຕາການຄ້າຊຸດໂຊມ",
+          "ອັດຕາສ່ວນລາຄາສົ່ງອອກຕໍ່ລາຄານຳເຂົ້າ",
+          "terms of trade",
+          "terms-of-trade"
+        ],
+        "malay": [
+          "kejutan terma perdagangan",
+          "kemerosotan terma perdagangan",
+          "terma perdagangan merosot",
+          "terma perdagangan yang merosot",
+          "kejutan syarat perdagangan"
+        ],
+        "mn": [
+          {
+            "prefix": "худалдааны нөхцөлийн цочрол"
+          },
+          {
+            "prefix": "худалдааны нөхцөл муудс"
+          },
+          {
+            "prefix": "худалдааны нөхцөлийн муудал"
+          },
+          {
+            "prefix": "худалдааны нөхцөлийн доройтол"
+          },
+          {
+            "prefix": "худалдааны нөхцөл дорой"
+          },
+          {
+            "prefix": "худалдааны нөхцөлийн сулрал"
+          },
+          {
+            "prefix": "худалдааны нөхцөл сулар"
+          }
+        ],
+        "my": [
+          "ကုန်သွယ်မှုအခြေအနေရိုက်ခတ်မှု",
+          "ကုန်သွယ်ဖလှယ်မှုအချိုး",
+          "ကုန်သွယ်ရေးအချိုးအစား ဆိုးရွား",
+          "ကုန်သွယ်မှုအချိုး ကျဆင်း",
+          "terms of trade",
+          "terms-of-trade"
+        ],
+        "portuguese": [
+          "choque dos termos de troca",
+          "choque nos termos de troca",
+          "choques dos termos de troca",
+          "choques nos termos de troca",
+          "choque de termos de troca",
+          "deterioração dos termos de troca",
+          "deterioração nos termos de troca",
+          "agravamento dos termos de troca",
+          "degradação dos termos de troca"
+        ],
+        "tetum": [
+          "xoke termu komérsiu",
+          "xoke termu komersiu",
+          "xoke termus troka",
+          "deteriorasaun termu komérsiu",
+          "deteriorasaun termu komersiu",
+          "deteriorasaun termus troka",
+          "choque dos termos de troca",
+          "choques dos termos de troca",
+          "deterioração dos termos de troca",
+          "deterioracao dos termos de troca",
+          "agravamento dos termos de troca"
+        ],
+        "thai": [
+          "อัตราการค้าแย่ลง",
+          "อัตราการค้าลดลง",
+          "อัตราการค้าปรับตัวลดลง",
+          "อัตราการค้าที่แย่ลง",
+          "อัตราการค้าเสื่อมลง",
+          "ช็อกอัตราการค้า",
+          "ช็อคอัตราการค้า"
+        ],
+        "tok_pisin": [
           "terms-of-trade shock",
           "terms of trade shock",
           "terms-of-trade shocks",
@@ -211,6 +2246,200 @@
           "weak external demand",
           "falling external demand",
           "export demand shock"
+        ],
+        "chinese_simplified": [
+          "外部需求冲击",
+          "外需冲击",
+          "外需疲弱",
+          "外需走弱",
+          "外需下滑",
+          "外需萎缩",
+          "外部需求下降",
+          "外部需求疲软",
+          "出口需求冲击"
+        ],
+        "chinese_traditional": [
+          "外部需求衝擊",
+          "外需疲弱",
+          "外需疲軟",
+          "外需減弱",
+          "外需放緩",
+          "外需下滑",
+          "外部需求疲弱",
+          "出口需求衝擊"
+        ],
+        "filipino": [
+          "external demand shock",
+          "external demand shocks",
+          "drop in external demand",
+          "weak external demand",
+          "falling external demand",
+          "export demand shock",
+          "weak global demand",
+          "mahinang demand sa export"
+        ],
+        "fr": [
+          "choc de demande extérieure",
+          "choc de la demande extérieure",
+          "baisse de la demande extérieure",
+          "chute de la demande extérieure",
+          "effondrement de la demande extérieure",
+          "demande extérieure atone",
+          "ralentissement de la demande mondiale"
+        ],
+        "indo": [
+          "guncangan permintaan eksternal",
+          "melemahnya permintaan eksternal",
+          "pelemahan permintaan eksternal",
+          "penurunan permintaan eksternal",
+          "permintaan eksternal yang lemah",
+          "melemahnya permintaan global",
+          "pelemahan permintaan global",
+          "penurunan permintaan ekspor"
+        ],
+        "japanese": [
+          "外需ショック",
+          "外需の急減",
+          "外需の減少",
+          "外需の低迷",
+          "外需の落ち込み",
+          "輸出需要の減少",
+          "海外需要の減少",
+          "海外需要の落ち込み"
+        ],
+        "km": [
+          "តម្រូវការខាងក្រៅធ្លាក់ចុះ",
+          "តម្រូវការខាងក្រៅខ្សោយ",
+          "ការធ្លាក់ចុះតម្រូវការខាងក្រៅ",
+          "តម្រូវការពីក្រៅប្រទេសធ្លាក់ចុះ",
+          "ការប៉ះទង្គិចតម្រូវការពីក្រៅប្រទេស",
+          "ភាពតក់ស្លុតខាងក្រៅ",
+          "external demand shock"
+        ],
+        "korean": [
+          "외부 수요 충격",
+          "대외 수요 충격",
+          "대외수요 충격",
+          "외수 부진",
+          "외수 급감",
+          "대외 수요 위축",
+          "대외수요 위축",
+          "해외 수요 감소",
+          "해외수요 감소",
+          "수출 수요 급감",
+          "대외 수요 감소"
+        ],
+        "lao": [
+          "ຄວາມຕ້ອງການຈາກຕ່າງປະເທດຫຼຸດລົງ",
+          "ຄວາມຕ້ອງການຈາກຕ່າງປະເທດຫລຸດລົງ",
+          "ຄວາມຕ້ອງການພາຍນອກຫຼຸດລົງ",
+          "ຄວາມຕ້ອງການພາຍນອກຫລຸດລົງ",
+          "ຄວາມຕ້ອງການພາຍນອກອ່ອນແອ",
+          "ຄວາມຕ້ອງການຂອງຕະຫຼາດໂລກຫຼຸດລົງ",
+          "ຄວາມຕ້ອງການຂອງຕະຫລາດໂລກຫລຸດລົງ",
+          "ຄວາມຕ້ອງການຂອງຕະຫຼາດຕ່າງປະເທດຫຼຸດລົງ",
+          "ຄວາມຕ້ອງການຂອງຕະຫລາດຕ່າງປະເທດຫລຸດລົງ",
+          "ຜົນກະທົບຈາກຄວາມຕ້ອງການພາຍນອກ",
+          "ການສັ່ງຊື້ຈາກຕ່າງປະເທດຫຼຸດລົງ",
+          "ການສັ່ງຊື້ຈາກຕ່າງປະເທດຫລຸດລົງ",
+          "external demand"
+        ],
+        "malay": [
+          "kejutan permintaan luaran",
+          "permintaan luaran yang lemah",
+          "kelemahan permintaan luaran",
+          "penurunan permintaan luaran",
+          "permintaan luar yang lemah",
+          "kejutan permintaan eksport",
+          "permintaan luaran lemah",
+          "kemerosotan permintaan luaran"
+        ],
+        "mn": [
+          {
+            "prefix": "гадаад эрэлтийн цочрол"
+          },
+          {
+            "prefix": "гадаад эрэлт буур"
+          },
+          {
+            "prefix": "гадаад эрэлт сул"
+          },
+          {
+            "prefix": "гадаад эрэлтийн бууралт"
+          },
+          {
+            "prefix": "гадаад эрэлт муудс"
+          },
+          {
+            "prefix": "гадаад эрэлтийн сулрал"
+          },
+          {
+            "prefix": "Хятадын эрэлт буур"
+          },
+          {
+            "prefix": "экспортын эрэлт буур"
+          }
+        ],
+        "my": [
+          "ပြင်ပဝယ်လိုအားကျဆင်း",
+          "ပြင်ပ၀ယ်လိုအားကျဆင်း",
+          "ပြင်ပဝယ်လိုအား ကျဆင်း",
+          "ပြင်ပ၀ယ်လိုအား ကျဆင်း",
+          "ပြင်ပဝယ်လိုအားရိုက်ခတ်မှု",
+          "ပြင်ပ၀ယ်လိုအားရိုက်ခတ်မှု",
+          "ပြည်ပဝယ်လိုအားကျဆင်း",
+          "ပြည်ပ၀ယ်လိုအားကျဆင်း",
+          "ပြည်ပဝယ်လိုအား ကျဆင်း",
+          "ပြည်ပ၀ယ်လိုအား ကျဆင်း",
+          "ပို့ကုန်ဝယ်လိုအားကျဆင်း",
+          "ပို့ကုန်၀ယ်လိုအားကျဆင်း",
+          "ပို့ကုန်ဝယ်လိုအား ကျဆင်း",
+          "ပို့ကုန်၀ယ်လိုအား ကျဆင်း",
+          "external demand"
+        ],
+        "portuguese": [
+          "choque da procura externa",
+          "choque na procura externa",
+          "choque de procura externa",
+          "choque da demanda externa",
+          "choque de demanda externa",
+          "queda da procura externa",
+          "procura externa fraca",
+          "fraca procura externa",
+          "enfraquecimento da procura externa",
+          "queda da demanda externa",
+          "demanda externa fraca",
+          "fraca demanda externa",
+          "choque da procura de exportações"
+        ],
+        "tetum": [
+          "xoke prokura esterna",
+          "prokura esterna fraku",
+          "prokura esterna tun",
+          "prokura esternu tun",
+          "choque da procura externa",
+          "choque de procura externa",
+          "procura externa fraca",
+          "queda da procura externa",
+          "abrandamento da procura externa"
+        ],
+        "thai": [
+          "อุปสงค์จากต่างประเทศลดลง",
+          "อุปสงค์ต่างประเทศชะลอตัว",
+          "อุปสงค์จากต่างประเทศชะลอตัว",
+          "ความต้องการสินค้าจากต่างประเทศลดลง",
+          "อุปสงค์ภายนอกอ่อนแอ",
+          "อุปสงค์ภายนอกลดลง",
+          "ช็อกอุปสงค์จากภายนอก",
+          "ช็อคอุปสงค์จากภายนอก"
+        ],
+        "tok_pisin": [
+          "external demand shock",
+          "external demand shocks",
+          "drop in external demand",
+          "weak external demand",
+          "falling external demand",
+          "export demand shock"
         ]
       }
     },
@@ -225,6 +2454,214 @@
           "supply chain shock",
           "supply-chain shocks",
           "supply chain shocks"
+        ],
+        "chinese_simplified": [
+          "全球供应链冲击",
+          "供应链冲击",
+          "供应链中断",
+          "供应链断裂",
+          "供应链断链",
+          "供应链危机",
+          "供应链紊乱",
+          "供应链受阻"
+        ],
+        "chinese_traditional": [
+          "供應鏈衝擊",
+          "供應鏈斷裂",
+          "供應鏈中斷",
+          "供應鏈斷鏈",
+          "斷鏈危機",
+          "全球供應鏈衝擊",
+          "供應鏈危機"
+        ],
+        "filipino": [
+          "global supply-chain shock",
+          "global supply chain shock",
+          "supply-chain shock",
+          "supply chain shock",
+          "supply-chain shocks",
+          "supply chain shocks",
+          "supply chain disruption",
+          "supply chain disruptions",
+          "supply-chain disruptions",
+          "pagkaantala ng supply chain"
+        ],
+        "fr": [
+          "perturbation des chaînes d'approvisionnement",
+          "perturbation des chaînes d’approvisionnement",
+          "perturbations des chaînes d'approvisionnement",
+          "perturbations des chaînes d’approvisionnement",
+          "rupture des chaînes d'approvisionnement",
+          "rupture des chaînes d’approvisionnement",
+          "crise des chaînes d'approvisionnement",
+          "crise des chaînes d’approvisionnement",
+          "choc sur les chaînes d'approvisionnement",
+          "choc sur les chaînes d’approvisionnement",
+          "pénurie de conteneurs",
+          "crise du fret maritime"
+        ],
+        "indo": [
+          "guncangan rantai pasok",
+          "guncangan rantai pasokan",
+          "gangguan rantai pasok",
+          "gangguan rantai pasokan",
+          "gangguan rantai pasok global",
+          "disrupsi rantai pasok",
+          "disrupsi rantai pasokan",
+          "supply chain disruption"
+        ],
+        "japanese": [
+          "サプライチェーンの混乱",
+          "供給網の混乱",
+          "サプライチェーンの寸断",
+          "供給網の寸断",
+          "供給網寸断",
+          "サプライチェーンの分断",
+          "供給網の分断",
+          "サプライチェーンショック",
+          "物流の混乱"
+        ],
+        "km": [
+          "ការរំខានដល់ខ្សែសង្វាក់ផ្គត់ផ្គង់",
+          "ការរំខានខ្សែសង្វាក់ផ្គត់ផ្គង់",
+          "ការរអាក់រអួលខ្សែសង្វាក់ផ្គត់ផ្គង់",
+          "ការដាច់ខ្សែសង្វាក់ផ្គត់ផ្គង់",
+          "វិបត្តិខ្សែសង្វាក់ផ្គត់ផ្គង់",
+          "វិបត្ដិខ្សែសង្វាក់ផ្គត់ផ្គង់",
+          "ការប៉ះទង្គិចខ្សែសង្វាក់ផ្គត់ផ្គង់សកល",
+          "supply chain disruption",
+          "supply chain shock"
+        ],
+        "korean": [
+          "공급망 충격",
+          "공급망충격",
+          "공급망 위기",
+          "공급망위기",
+          "공급망 대란",
+          "공급망 붕괴",
+          "공급망 교란",
+          "공급망 차질",
+          "공급망 혼란"
+        ],
+        "lao": [
+          "ຕ່ອງໂສ້ການສະໜອງຂາດຕອນ",
+          "ຕ່ອງໂສ້ການສະຫນອງຂາດຕອນ",
+          "ການຂາດຕອນຂອງຕ່ອງໂສ້ການສະໜອງ",
+          "ການຂາດຕອນຂອງຕ່ອງໂສ້ການສະຫນອງ",
+          "ການຢຸດສະງັກຂອງຕ່ອງໂສ້ການສະໜອງ",
+          "ການຢຸດສະງັກຂອງຕ່ອງໂສ້ການສະຫນອງ",
+          "ຕ່ອງໂສ້ການສະໜອງຢຸດສະງັກ",
+          "ຕ່ອງໂສ້ການສະຫນອງຢຸດສະງັກ",
+          "ການຂັດຂ້ອງຂອງຕ່ອງໂສ້ການສະໜອງ",
+          "ການຂັດຂ້ອງຂອງຕ່ອງໂສ້ການສະຫນອງ",
+          "ຕ່ອງໂສ້ການສະໜອງຖືກຂັດຂວາງ",
+          "ຕ່ອງໂສ້ການສະຫນອງຖືກຂັດຂວາງ",
+          "ການຫຍຸ້ງຍາກຂອງຕ່ອງໂສ້ການສະໜອງ",
+          "ການຫຍຸ້ງຍາກຂອງຕ່ອງໂສ້ການສະຫນອງ",
+          "ຜົນກະທົບຈາກຕ່ອງໂສ້ການສະໜອງໂລກ",
+          "ຜົນກະທົບຈາກຕ່ອງໂສ້ການສະຫນອງໂລກ",
+          "supply chain disruption",
+          "supply-chain disruption"
+        ],
+        "malay": [
+          "kejutan rantaian bekalan global",
+          "kejutan rantaian bekalan",
+          "kejutan kepada rantaian bekalan",
+          "kejutan rantaian bekalan dunia"
+        ],
+        "mn": [
+          {
+            "prefix": "нийлүүлэлтийн сүлжээний тасалд"
+          },
+          {
+            "prefix": "нийлүүлэлтийн сүлжээ тасалд"
+          },
+          {
+            "prefix": "нийлүүлэлтийн гинжин хэлхээ тасалд"
+          },
+          {
+            "prefix": "нийлүүлэлтийн гинжин хэлхээний тасалд"
+          },
+          {
+            "prefix": "нийлүүлэлтийн сүлжээний доголд"
+          },
+          {
+            "prefix": "нийлүүлэлтийн гинжин хэлхээний доголд"
+          },
+          {
+            "prefix": "нийлүүлэлтийн сүлжээний цочрол"
+          },
+          {
+            "prefix": "дэлхийн нийлүүлэлтийн сүлжээ"
+          }
+        ],
+        "my": [
+          "ထောက်ပံ့ရေးကွင်းဆက်ပြတ်တောက်",
+          "ထောက်ပံ့ရေးကွင်းဆက် ပြတ်တောက်",
+          "ထောက်ပံ့ရေးကွင်းဆက်ရိုက်ခတ်မှု",
+          "ထောက်ပံ့မှုကွင်းဆက်ပြတ်တောက်",
+          "ထောက်ပံ့မှုကွင်းဆက် ပြတ်တောက်",
+          "supply chain shock",
+          "supply chain disruption",
+          "supply chain disruptions"
+        ],
+        "portuguese": [
+          "choque nas cadeias de abastecimento globais",
+          "choque nas cadeias de abastecimento",
+          "choques nas cadeias de abastecimento",
+          "choque na cadeia de abastecimento",
+          "choque nas cadeias de fornecimento",
+          "choque nas cadeias de suprimentos",
+          "perturbação das cadeias de abastecimento",
+          "perturbações nas cadeias de abastecimento",
+          "perturbações das cadeias de abastecimento",
+          "disrupção das cadeias de abastecimento",
+          "disrupções nas cadeias de abastecimento",
+          "rutura das cadeias de abastecimento",
+          "ruptura das cadeias de abastecimento",
+          "ruptura nas cadeias de suprimentos",
+          "crise das cadeias de abastecimento"
+        ],
+        "tetum": [
+          "xoke kadeia fornesimentu",
+          "xoke kadeia abastesimentu",
+          "disrupsaun kadeia fornesimentu",
+          "disrupsaun kadeia abastesimentu",
+          "interrupsaun kadeia fornesimentu",
+          "interrupsaun kadeia abastesimentu",
+          "kadeia fornesimentu globál",
+          "kadeia fornesimentu global",
+          "choque nas cadeias de abastecimento",
+          "perturbação das cadeias de abastecimento",
+          "perturbacao das cadeias de abastecimento",
+          "perturbações nas cadeias de abastecimento",
+          "perturbacoes nas cadeias de abastecimento",
+          "disrupção das cadeias de abastecimento",
+          "disrupcao das cadeias de abastecimento",
+          "rutura das cadeias de abastecimento",
+          "interrupção das cadeias de abastecimento",
+          "interrupcao das cadeias de abastecimento"
+        ],
+        "thai": [
+          "ห่วงโซ่อุปทานหยุดชะงัก",
+          "ห่วงโซ่อุปทานสะดุด",
+          "ห่วงโซ่อุปทานโลกหยุดชะงัก",
+          "ห่วงโซ่อุปทานโลกสะดุด",
+          "การหยุดชะงักของห่วงโซ่อุปทาน",
+          "ซัพพลายเชนหยุดชะงัก",
+          "ซัพพลายเชนสะดุด"
+        ],
+        "tok_pisin": [
+          "global supply-chain shock",
+          "global supply chain shock",
+          "supply-chain shock",
+          "supply chain shock",
+          "supply-chain shocks",
+          "supply chain shocks",
+          "sapla sen i bruk",
+          "sapla sen i bagarap",
+          "hevi bilong sapla sen",
+          "supply chain i bruk"
         ]
       }
     },
@@ -233,6 +2670,160 @@
       "group": "macro_household_shocks",
       "forms": {
         "en": [
+          "supply shock",
+          "supply shocks",
+          "supply-side shock",
+          "supply-side shocks",
+          "supply side shock"
+        ],
+        "chinese_simplified": [
+          "供给冲击",
+          "供应冲击",
+          "供给侧冲击",
+          "供应侧冲击",
+          "供给端冲击"
+        ],
+        "chinese_traditional": [
+          "供給衝擊",
+          "供給面衝擊",
+          "供應衝擊",
+          "供應面衝擊",
+          "供給側衝擊"
+        ],
+        "filipino": [
+          "supply shock",
+          "supply shocks",
+          "supply-side shock",
+          "supply-side shocks",
+          "supply side shock"
+        ],
+        "fr": [
+          "choc d'offre",
+          "choc d’offre",
+          "chocs d'offre",
+          "chocs d’offre",
+          "choc de l'offre",
+          "choc de l’offre",
+          "rupture d'approvisionnement",
+          "rupture d’approvisionnement",
+          "ruptures d'approvisionnement",
+          "ruptures d’approvisionnement"
+        ],
+        "indo": [
+          "guncangan pasokan",
+          "goncangan pasokan",
+          "guncangan penawaran",
+          "guncangan sisi penawaran",
+          "guncangan dari sisi penawaran",
+          "supply shock"
+        ],
+        "japanese": [
+          "供給ショック",
+          "供給側ショック",
+          "供給制約",
+          "供給の途絶",
+          "供給途絶"
+        ],
+        "km": [
+          "ការតក់ស្លុតផ្នែកផ្គត់ផ្គង់",
+          "ភាពតក់ស្លុតផ្នែកផ្គត់ផ្គង់",
+          "ការប៉ះទង្គិចផ្នែកផ្គត់ផ្គង់",
+          "ការរំខានដល់ការផ្គត់ផ្គង់",
+          "កង្វះការផ្គត់ផ្គង់",
+          "supply shock"
+        ],
+        "korean": [
+          "공급 충격",
+          "공급충격",
+          "공급측 충격",
+          "공급 측 충격",
+          "공급 쇼크",
+          "공급 부문 충격"
+        ],
+        "lao": [
+          "ການສະໜອງຂາດຕອນ",
+          "ການສະຫນອງຂາດຕອນ",
+          "ການສະໜອງສະດຸດ",
+          "ການສະຫນອງສະດຸດ",
+          "ການສະໜອງຢຸດສະງັກ",
+          "ການສະຫນອງຢຸດສະງັກ",
+          "ການສະໜອງຫຼຸດລົງຢ່າງກະທັນຫັນ",
+          "ການສະຫນອງຫລຸດລົງຢ່າງກະທັນຫັນ",
+          "ການສະຫນອງຫຼຸດລົງຢ່າງກະທັນຫັນ",
+          "ຜົນກະທົບດ້ານການສະໜອງ",
+          "ຜົນກະທົບດ້ານການສະຫນອງ",
+          "ການຂາດແຄນການສະໜອງ",
+          "ການຂາດແຄນການສະຫນອງ",
+          "supply shock"
+        ],
+        "malay": [
+          "kejutan bekalan",
+          "kejutan penawaran",
+          "kejutan dari segi bekalan",
+          "kejutan sisi bekalan",
+          "kejutan sisi penawaran"
+        ],
+        "mn": [
+          {
+            "prefix": "нийлүүлэлтийн цочрол"
+          },
+          {
+            "prefix": "нийлүүлэлт тасалд"
+          },
+          {
+            "prefix": "нийлүүлэлтийн тасалд"
+          },
+          {
+            "prefix": "нийлүүлэлтийн доголд"
+          },
+          {
+            "prefix": "нийлүүлэлт доголд"
+          },
+          {
+            "prefix": "нийлүүлэлт зогсо"
+          },
+          {
+            "prefix": "нийлүүлэлтийн хомсд"
+          }
+        ],
+        "my": [
+          "ထောက်ပံ့မှုရိုက်ခတ်မှု",
+          "ထောက်ပံ့ရေးရိုက်ခတ်မှု",
+          "ရောင်းလိုအားရိုက်ခတ်မှု",
+          "ထောက်ပံ့မှုဘက်ဆိုင်ရာရိုက်ခတ်မှု",
+          "supply shock",
+          "supply shocks"
+        ],
+        "portuguese": [
+          "choque de oferta",
+          "choques de oferta",
+          "choque do lado da oferta",
+          "choques do lado da oferta",
+          "choque na oferta",
+          "choque negativo de oferta"
+        ],
+        "tetum": [
+          "xoke oferta",
+          "xoke ba oferta",
+          "xoke husi parte oferta",
+          "choque da oferta",
+          "choque de oferta",
+          "choques de oferta",
+          "choque do lado da oferta"
+        ],
+        "thai": [
+          "ช็อกด้านอุปทาน",
+          "ช็อคด้านอุปทาน",
+          "ภาวะช็อกด้านอุปทาน",
+          "ภาวะช็อคด้านอุปทาน",
+          "ปัจจัยช็อกด้านอุปทาน",
+          "ปัจจัยช็อคด้านอุปทาน",
+          "ซัพพลายช็อก",
+          "ซัพพลายช็อค",
+          "supply shock",
+          "อุปทานหยุดชะงัก"
+        ],
+        "tok_pisin": [
           "supply shock",
           "supply shocks",
           "supply-side shock",
@@ -252,6 +2843,180 @@
           "demand-side shocks",
           "collapse in demand",
           "demand collapse"
+        ],
+        "chinese_simplified": [
+          "需求冲击",
+          "需求侧冲击",
+          "需求端冲击",
+          "需求收缩",
+          "需求骤降",
+          "需求崩塌",
+          "需求急剧萎缩"
+        ],
+        "chinese_traditional": [
+          "需求衝擊",
+          "需求面衝擊",
+          "需求側衝擊",
+          "需求崩跌",
+          "需求急凍",
+          "需求驟降"
+        ],
+        "filipino": [
+          "demand shock",
+          "demand shocks",
+          "demand-side shock",
+          "demand-side shocks",
+          "collapse in demand",
+          "demand collapse"
+        ],
+        "fr": [
+          "choc de demande",
+          "chocs de demande",
+          "choc de la demande",
+          "effondrement de la demande",
+          "chute de la demande",
+          "effondrement de la consommation",
+          "chute de la consommation"
+        ],
+        "indo": [
+          "guncangan permintaan",
+          "goncangan permintaan",
+          "guncangan sisi permintaan",
+          "guncangan dari sisi permintaan",
+          "anjloknya permintaan",
+          "kejatuhan permintaan",
+          "demand shock"
+        ],
+        "japanese": [
+          "需要ショック",
+          "需要の急減",
+          "需要の蒸発",
+          "需要が蒸発",
+          "需要の急落",
+          "需要の落ち込み",
+          "需要崩壊"
+        ],
+        "km": [
+          "ការតក់ស្លុតផ្នែកតម្រូវការ",
+          "ភាពតក់ស្លុតផ្នែកតម្រូវការ",
+          "ការប៉ះទង្គិចផ្នែកតម្រូវការ",
+          "ការធ្លាក់ចុះតម្រូវការយ៉ាងខ្លាំង",
+          "តម្រូវការធ្លាក់ចុះខ្លាំង",
+          "demand shock"
+        ],
+        "korean": [
+          "수요 충격",
+          "수요충격",
+          "수요측 충격",
+          "수요 측 충격",
+          "수요 절벽",
+          "수요 급감",
+          "수요 붕괴",
+          "수요 쇼크"
+        ],
+        "lao": [
+          "ຄວາມຕ້ອງການຫຼຸດລົງຢ່າງກະທັນຫັນ",
+          "ຄວາມຕ້ອງການຫລຸດລົງຢ່າງກະທັນຫັນ",
+          "ຄວາມຕ້ອງການຊົມໃຊ້ຫຼຸດລົງ",
+          "ຄວາມຕ້ອງການຊົມໃຊ້ຫລຸດລົງ",
+          "ຄວາມຕ້ອງການຊົມໃຊ້ຫຼຸດລົງຢ່າງຫຼວງຫຼາຍ",
+          "ຄວາມຕ້ອງການຊົມໃຊ້ຫລຸດລົງຢ່າງຫລວງຫລາຍ",
+          "ການບໍລິໂພກຫຼຸດລົງຢ່າງຫຼວງຫຼາຍ",
+          "ການບໍລິໂພກຫລຸດລົງຢ່າງຫລວງຫລາຍ",
+          "ຜົນກະທົບດ້ານຄວາມຕ້ອງການ",
+          "ຄວາມຕ້ອງການໃນຕະຫຼາດຫຼຸດລົງ",
+          "ຄວາມຕ້ອງການໃນຕະຫລາດຫລຸດລົງ",
+          "demand shock"
+        ],
+        "malay": [
+          "kejutan permintaan",
+          "kejutan sisi permintaan",
+          "kejatuhan permintaan",
+          "permintaan merudum",
+          "keruntuhan permintaan",
+          "permintaan menjunam"
+        ],
+        "mn": [
+          {
+            "prefix": "эрэлтийн цочрол"
+          },
+          {
+            "prefix": "эрэлт огцом буур"
+          },
+          {
+            "prefix": "эрэлт унас"
+          },
+          {
+            "prefix": "эрэлтийн огцом бууралт"
+          },
+          {
+            "prefix": "эрэлт эрс буур"
+          },
+          {
+            "prefix": "эрэлт эрс унас"
+          },
+          {
+            "prefix": "эрэлтийн уналт"
+          }
+        ],
+        "my": [
+          "ဝယ်လိုအားရိုက်ခတ်မှု",
+          "၀ယ်လိုအားရိုက်ခတ်မှု",
+          "ဝယ်လိုအား ရိုက်ခတ်မှု",
+          "၀ယ်လိုအား ရိုက်ခတ်မှု",
+          "ဝယ်လိုအားပြိုလဲ",
+          "၀ယ်လိုအားပြိုလဲ",
+          "ဝယ်လိုအား ပြိုလဲ",
+          "၀ယ်လိုအား ပြိုလဲ",
+          "ဝယ်လိုအား ရုတ်တရက်ကျဆင်း",
+          "၀ယ်လိုအား ရုတ်တရက်ကျဆင်း",
+          "ဝယ်လိုအားရုတ်တရက်ကျဆင်း",
+          "၀ယ်လိုအားရုတ်တရက်ကျဆင်း",
+          "demand shock"
+        ],
+        "portuguese": [
+          "choque de procura",
+          "choques de procura",
+          "choque de demanda",
+          "choques de demanda",
+          "choque do lado da procura",
+          "choque do lado da demanda",
+          "colapso da procura",
+          "colapso da demanda",
+          "quebra abrupta da procura",
+          "choque na procura"
+        ],
+        "tetum": [
+          "xoke prokura",
+          "xoke ba prokura",
+          "prokura monu",
+          "kolapsu prokura",
+          "choque da procura",
+          "choque de procura",
+          "choques de procura",
+          "colapso da procura",
+          "queda abrupta da procura"
+        ],
+        "thai": [
+          "ช็อกด้านอุปสงค์",
+          "ช็อคด้านอุปสงค์",
+          "ภาวะช็อกด้านอุปสงค์",
+          "ภาวะช็อคด้านอุปสงค์",
+          "ดีมานด์ช็อก",
+          "ดีมานด์ช็อค",
+          "demand shock",
+          "อุปสงค์หดตัวรุนแรง",
+          "อุปสงค์ทรุดตัว",
+          "กำลังซื้อหายไป"
+        ],
+        "tok_pisin": [
+          "demand shock",
+          "demand shocks",
+          "demand-side shock",
+          "demand-side shocks",
+          "collapse in demand",
+          "demand collapse",
+          "dimand i pundaun"
         ]
       }
     },
@@ -266,6 +3031,203 @@
           "income loss",
           "income losses",
           "lost income"
+        ],
+        "chinese_simplified": [
+          "收入冲击",
+          "收入损失",
+          "失去收入来源",
+          "收入锐减",
+          "收入骤降",
+          "家庭收入减少",
+          "居民收入下降",
+          "失去生计"
+        ],
+        "chinese_traditional": [
+          "所得衝擊",
+          "收入衝擊",
+          "所得損失",
+          "失去收入",
+          "家庭收入銳減",
+          "家庭收入減少",
+          "家庭所得減少",
+          "收入來源中斷",
+          "失去生計"
+        ],
+        "filipino": [
+          "income shock",
+          "income shocks",
+          "loss of income",
+          "income loss",
+          "income losses",
+          "lost income",
+          "nawalan ng kita",
+          "pagkawala ng kita",
+          "nawalan ng kabuhayan",
+          "pagkawala ng kabuhayan"
+        ],
+        "fr": [
+          "choc de revenu",
+          "chocs de revenu",
+          "perte de revenus",
+          "pertes de revenus",
+          "perte de revenu",
+          "baisse des revenus",
+          "chute des revenus"
+        ],
+        "indo": [
+          "guncangan pendapatan",
+          "goncangan pendapatan",
+          "kehilangan pendapatan",
+          "kehilangan penghasilan",
+          "hilangnya pendapatan",
+          "hilangnya penghasilan",
+          "kehilangan mata pencaharian"
+        ],
+        "japanese": [
+          "所得ショック",
+          "所得の急減",
+          "収入の急減",
+          "収入減",
+          "収入の減少",
+          "収入が減",
+          "所得減",
+          "所得の減少",
+          "収入を失"
+        ],
+        "km": [
+          "ការបាត់បង់ប្រាក់ចំណូល",
+          "បាត់បង់ប្រាក់ចំណូល",
+          "ការបាត់បង់ចំណូល",
+          "បាត់បង់ចំណូល",
+          "ប្រាក់ចំណូលធ្លាក់ចុះខ្លាំង",
+          "ការប៉ះទង្គិចប្រាក់ចំណូល",
+          "income shock",
+          "loss of income"
+        ],
+        "korean": [
+          "소득 충격",
+          "소득충격",
+          "소득 손실",
+          "소득이 줄",
+          "소득 급감"
+        ],
+        "lao": [
+          "ການສູນເສຍລາຍໄດ້",
+          "ສູນເສຍລາຍໄດ້",
+          "ລາຍໄດ້ຂອງຄົວເຮືອນຫຼຸດລົງ",
+          "ລາຍໄດ້ຂອງຄົວເຮືອນຫລຸດລົງ",
+          "ລາຍຮັບຂອງຄົວເຮືອນຫຼຸດລົງ",
+          "ລາຍຮັບຂອງຄົວເຮືອນຫລຸດລົງ",
+          "ຜົນກະທົບຕໍ່ລາຍໄດ້ຂອງຄົວເຮືອນ",
+          "ຜົນກະທົບຕໍ່ລາຍໄດ້ຂອງປະຊາຊົນ",
+          "ລາຍໄດ້ຂອງປະຊາຊົນຫຼຸດລົງ",
+          "ລາຍໄດ້ຂອງປະຊາຊົນຫລຸດລົງ",
+          "income shock",
+          "income loss"
+        ],
+        "malay": [
+          "kejutan pendapatan",
+          "kehilangan pendapatan",
+          "hilang pendapatan",
+          "kehilangan punca pendapatan",
+          "hilang punca pendapatan",
+          "pendapatan terjejas",
+          "kehilangan sumber pendapatan"
+        ],
+        "mn": [
+          {
+            "prefix": "орлогын цочрол"
+          },
+          {
+            "prefix": "орлогоо алд"
+          },
+          {
+            "prefix": "орлого алдс"
+          },
+          {
+            "prefix": "орлогогүй бол"
+          },
+          {
+            "prefix": "өрхийн орлого буур"
+          },
+          {
+            "prefix": "өрхийн орлогын бууралт"
+          },
+          {
+            "prefix": "орлого тасар"
+          },
+          {
+            "prefix": "орлогын эх үүсвэргүй бол"
+          }
+        ],
+        "my": [
+          "ဝင်ငွေဆုံးရှုံး",
+          "၀င်ငွေဆုံးရှုံး",
+          "ဝင်ငွေ ဆုံးရှုံး",
+          "၀င်ငွေ ဆုံးရှုံး",
+          "ဝင်ငွေပြတ်တောက်",
+          "၀င်ငွေပြတ်တောက်",
+          "ဝင်ငွေ ပြတ်တောက်",
+          "၀င်ငွေ ပြတ်တောက်",
+          "ဝင်ငွေလမ်းကြောင်းပြတ်",
+          "၀င်ငွေလမ်းကြောင်းပြတ်",
+          "ဝင်ငွေရိုက်ခတ်မှု",
+          "၀င်ငွေရိုက်ခတ်မှု",
+          "ဝင်ငွေမရှိတော့",
+          "၀င်ငွေမရှိတော့",
+          "income shock",
+          "loss of income"
+        ],
+        "portuguese": [
+          "choque de rendimento",
+          "choques de rendimento",
+          "choque de renda",
+          "choques de renda",
+          "perda de rendimento",
+          "perda de rendimentos",
+          "perdas de rendimento",
+          "perdas de rendimentos",
+          "perda de renda",
+          "perdas de renda",
+          "rendimentos perdidos",
+          "quebra de rendimentos",
+          "quebra nos rendimentos"
+        ],
+        "tetum": [
+          "xoke rendimentu",
+          "lakon rendimentu",
+          "rendimentu lakon",
+          "lakon rendimentu família",
+          "lakon rendimentu familia",
+          "lakon fonte rendimentu",
+          "hamenus rendimentu",
+          "choque de rendimento",
+          "choques de rendimento",
+          "perda de rendimento",
+          "perda de rendimentos",
+          "perda de receitas familiares"
+        ],
+        "thai": [
+          "สูญเสียรายได้",
+          "รายได้หายไป",
+          "ขาดรายได้",
+          "รายได้ลดลงอย่างฉับพลัน",
+          "ขาดรายได้กะทันหัน",
+          "ช็อกด้านรายได้",
+          "ช็อคด้านรายได้"
+        ],
+        "tok_pisin": [
+          "income shock",
+          "income shocks",
+          "loss of income",
+          "income loss",
+          "income losses",
+          "lost income",
+          "lusim inkam",
+          "lusim ol inkam",
+          "inkam i go daun",
+          "inkam i pundaun",
+          "lus bilong inkam"
         ]
       }
     },
@@ -281,6 +3243,177 @@
           "labor market shocks",
           "labour market shocks",
           "jobs shock"
+        ],
+        "chinese_simplified": [
+          "就业冲击",
+          "劳动力市场冲击",
+          "就业市场冲击",
+          "失业潮",
+          "裁员潮",
+          "大规模失业",
+          "就业岗位大量流失"
+        ],
+        "chinese_traditional": [
+          "就業衝擊",
+          "勞動市場衝擊",
+          "勞動力市場衝擊",
+          "就業市場衝擊",
+          "裁員潮",
+          "失業潮"
+        ],
+        "filipino": [
+          "employment shock",
+          "employment shocks",
+          "labor market shock",
+          "labour market shock",
+          "labor market shocks",
+          "labour market shocks",
+          "jobs shock"
+        ],
+        "fr": [
+          "choc sur l'emploi",
+          "choc sur l’emploi",
+          "choc sur le marché du travail",
+          "pertes d'emplois",
+          "pertes d’emplois",
+          "perte d'emplois",
+          "perte d’emplois",
+          "destructions d'emplois",
+          "destructions d’emplois",
+          "destruction d'emplois",
+          "destruction d’emplois",
+          "licenciements massifs",
+          "vague de licenciements"
+        ],
+        "indo": [
+          "guncangan lapangan kerja",
+          "guncangan pasar tenaga kerja",
+          "guncangan pasar kerja",
+          "guncangan ketenagakerjaan",
+          "goncangan ketenagakerjaan"
+        ],
+        "japanese": [
+          "雇用ショック",
+          "雇用の急減",
+          "雇用悪化",
+          "雇用の悪化",
+          "雇用情勢の悪化",
+          "大量解雇",
+          "失業の急増",
+          "失業者の急増",
+          "派遣切り"
+        ],
+        "km": [
+          "ការបាត់បង់ការងារយ៉ាងច្រើន",
+          "ការបាត់បង់ការងារ",
+          "ការប៉ះទង្គិចផ្នែកការងារ",
+          "ការតក់ស្លុតទីផ្សារការងារ",
+          "ភាពតក់ស្លុតទីផ្សារការងារ",
+          "labour market shock",
+          "labor market shock"
+        ],
+        "korean": [
+          "고용 충격",
+          "고용충격",
+          "고용 쇼크",
+          "고용 한파",
+          "고용한파",
+          "노동시장 충격",
+          "일자리 충격",
+          "실업 대란",
+          "고용 대란",
+          "고용위기"
+        ],
+        "lao": [
+          "ຜົນກະທົບຕໍ່ການຈ້າງງານ",
+          "ຜົນກະທົບຕໍ່ຕະຫຼາດແຮງງານ",
+          "ຜົນກະທົບຕໍ່ຕະຫລາດແຮງງານ",
+          "ສູນເສຍວຽກເຮັດງານທຳ",
+          "ການສູນເສຍວຽກ",
+          "ຕົກງານຈຳນວນຫຼາຍ",
+          "ຕົກງານຈຳນວນຫລາຍ",
+          "ຖືກເລີກຈ້າງຈຳນວນຫຼາຍ",
+          "ຖືກເລີກຈ້າງຈຳນວນຫລາຍ",
+          "ການເລີກຈ້າງງານຈຳນວນຫຼາຍ",
+          "ການເລີກຈ້າງງານຈຳນວນຫລາຍ",
+          "employment shock",
+          "labor market shock",
+          "labour market shock"
+        ],
+        "malay": [
+          "kejutan pekerjaan",
+          "kejutan pasaran buruh",
+          "kejutan pasaran pekerjaan",
+          "kejutan guna tenaga",
+          "kejutan kepada pasaran buruh"
+        ],
+        "mn": [
+          {
+            "prefix": "хөдөлмөр эрхлэлтийн цочрол"
+          },
+          {
+            "prefix": "хөдөлмөрийн зах зээлийн цочрол"
+          },
+          {
+            "prefix": "ажлын байрны цочрол"
+          },
+          {
+            "prefix": "ажил эрхлэлтийн цочрол"
+          },
+          {
+            "prefix": "хөдөлмөрийн зах зээлд үзүүлэх цочрол"
+          }
+        ],
+        "my": [
+          "အလုပ်အကိုင်ရိုက်ခတ်မှု",
+          "အလုပ်အကိုင် ရိုက်ခတ်မှု",
+          "အလုပ်သမားစျေးကွက်ရိုက်ခတ်မှု",
+          "အလုပ်သမားဈေးကွက်ရိုက်ခတ်မှု",
+          "လုပ်သားဈေးကွက်ရိုက်ခတ်မှု",
+          "လုပ်သားစျေးကွက်ရိုက်ခတ်မှု",
+          "labour market shock",
+          "labor market shock"
+        ],
+        "portuguese": [
+          "choque no emprego",
+          "choques no emprego",
+          "choque de emprego",
+          "choque no mercado de trabalho",
+          "choques no mercado de trabalho",
+          "choque do mercado de trabalho",
+          "choque laboral"
+        ],
+        "tetum": [
+          "xoke empregu",
+          "xoke merkadu traballu",
+          "xoke ba merkadu traballu",
+          "choque de emprego",
+          "choque no mercado de trabalho",
+          "choques no mercado de trabalho",
+          "destruição de empregos",
+          "destruicao de empregos"
+        ],
+        "thai": [
+          "ตกงานจำนวนมาก",
+          "เลิกจ้างจำนวนมาก",
+          "เลิกจ้างครั้งใหญ่",
+          "ปลดพนักงานจำนวนมาก",
+          "ตลาดแรงงานได้รับผลกระทบรุนแรง",
+          "ช็อกด้านการจ้างงาน",
+          "ช็อคด้านการจ้างงาน",
+          "คลื่นการเลิกจ้าง"
+        ],
+        "tok_pisin": [
+          "employment shock",
+          "employment shocks",
+          "labor market shock",
+          "labour market shock",
+          "labor market shocks",
+          "labour market shocks",
+          "jobs shock",
+          "planti wokman i lusim wok",
+          "planti manmeri i lusim wok mani",
+          "planti wokman i lusim wok mani"
         ]
       }
     },
@@ -297,6 +3430,229 @@
           "market crash",
           "market rout",
           "disrupted markets"
+        ],
+        "chinese_simplified": [
+          "市场动荡",
+          "市场混乱",
+          "市场崩盘",
+          "股市崩盘",
+          "股灾",
+          "市场暴跌",
+          "市场剧烈波动",
+          "市场恐慌",
+          "市场中断"
+        ],
+        "chinese_traditional": [
+          "市場動盪",
+          "市場混亂",
+          "市場崩盤",
+          "股災",
+          "股市崩盤",
+          "市場震盪",
+          "股市暴跌",
+          "市場恐慌"
+        ],
+        "filipino": [
+          "market disruption",
+          "market disruptions",
+          "market turmoil",
+          "market turbulence",
+          "market meltdown",
+          "market crash",
+          "market rout",
+          "stock market crash",
+          "pagbagsak ng stock market"
+        ],
+        "fr": [
+          "krach",
+          "krach boursier",
+          "turbulences sur les marchés",
+          "turbulences des marchés",
+          "chute des bourses",
+          "tourmente boursière",
+          "effondrement des marchés",
+          "panique sur les marchés",
+          "déroute boursière"
+        ],
+        "indo": [
+          "gejolak pasar",
+          "gejolak pasar keuangan",
+          "gejolak pasar saham",
+          "kepanikan pasar",
+          "turbulensi pasar",
+          "pasar bergejolak",
+          "kejatuhan pasar saham",
+          "gangguan pasar"
+        ],
+        "japanese": [
+          "市場の混乱",
+          "市場混乱",
+          "金融市場の混乱",
+          "市場の動揺",
+          "相場の急落",
+          "株価暴落",
+          "株価急落",
+          "世界同時株安",
+          "ブラックマンデー"
+        ],
+        "km": [
+          "ការរំខានដល់ទីផ្សារ",
+          "ភាពចលាចលទីផ្សារ",
+          "ភាពចលាចលក្នុងទីផ្សារ",
+          "ការដួលរលំទីផ្សារ",
+          "ទីផ្សារភាគហ៊ុនធ្លាក់ចុះខ្លាំង",
+          "វិបត្តិទីផ្សារ",
+          "វិបត្ដិទីផ្សារ",
+          "market turmoil",
+          "market crash"
+        ],
+        "korean": [
+          "시장 혼란",
+          "시장혼란",
+          "시장 불안",
+          "시장 붕괴",
+          "시장 폭락",
+          "증시 폭락",
+          "증시 급락",
+          "금융시장 불안",
+          "금융시장 혼란",
+          "블랙 먼데이",
+          "패닉 셀링",
+          "패닉셀"
+        ],
+        "lao": [
+          "ການຂັດຂ້ອງຂອງຕະຫຼາດ",
+          "ການຂັດຂ້ອງຂອງຕະຫລາດ",
+          "ຕະຫຼາດປັ່ນປ່ວນ",
+          "ຕະຫລາດປັ່ນປ່ວນ",
+          "ຄວາມປັ່ນປ່ວນຂອງຕະຫຼາດ",
+          "ຄວາມປັ່ນປ່ວນຂອງຕະຫລາດ",
+          "ຄວາມປັ່ນປ່ວນໃນຕະຫຼາດ",
+          "ຄວາມປັ່ນປ່ວນໃນຕະຫລາດ",
+          "ຄວາມຜັນຜວນຂອງຕະຫຼາດ",
+          "ຄວາມຜັນຜວນຂອງຕະຫລາດ",
+          "ຕະຫຼາດມີຄວາມຜັນຜວນ",
+          "ຕະຫລາດມີຄວາມຜັນຜວນ",
+          "ຕະຫຼາດຫຸ້ນຕົກ",
+          "ຕະຫລາດຫຸ້ນຕົກ",
+          "ຕະຫຼາດຫຸ້ນຮ່ວງ",
+          "ຕະຫລາດຫຸ້ນຮ່ວງ",
+          "market turmoil",
+          "market disruption"
+        ],
+        "malay": [
+          "gangguan pasaran",
+          "pergolakan pasaran",
+          "kegawatan pasaran",
+          "kejatuhan pasaran",
+          "pasaran bergolak",
+          "kejatuhan pasaran saham",
+          "pasaran saham menjunam",
+          "kemelut pasaran"
+        ],
+        "mn": [
+          {
+            "prefix": "зах зээлийн тасалд"
+          },
+          {
+            "prefix": "зах зээлийн савлагаа"
+          },
+          {
+            "prefix": "зах зээлийн хямрал"
+          },
+          {
+            "prefix": "зах зээлийн уналт"
+          },
+          {
+            "prefix": "зах зээлийн тогтворгүй байдал"
+          },
+          {
+            "prefix": "зах зээлийн тогтворгүй байдл"
+          },
+          {
+            "prefix": "зах зээлд үймээн"
+          },
+          {
+            "prefix": "хөрөнгийн зах зээлийн уналт"
+          },
+          {
+            "prefix": "зах зээлийн үймээн"
+          }
+        ],
+        "my": [
+          "စျေးကွက်ပြတ်တောက်",
+          "ဈေးကွက်ပြတ်တောက်",
+          "ဈေးကွက်မငြိမ်မသက်",
+          "စျေးကွက်မငြိမ်မသက်",
+          "စျေးကွက်ပြိုလဲ",
+          "ဈေးကွက်ပြိုလဲ",
+          "စတော့ဈေးကွက်ပြိုလဲ",
+          "စတော့စျေးကွက်ပြိုလဲ",
+          "ဈေးကွက်ဂယက်",
+          "စျေးကွက်ဂယက်",
+          "market turmoil",
+          "market crash"
+        ],
+        "portuguese": [
+          "disrupção de mercado",
+          "disrupção do mercado",
+          "disrupções de mercado",
+          "perturbação dos mercados",
+          "perturbações nos mercados",
+          "turbulência nos mercados",
+          "turbulência dos mercados",
+          "turbulência no mercado",
+          "turbulência do mercado",
+          "crash bolsista",
+          "crash da bolsa",
+          "colapso do mercado",
+          "colapso dos mercados",
+          "derrocada bolsista",
+          "derrocada dos mercados",
+          "queda abrupta das bolsas",
+          "pânico nos mercados"
+        ],
+        "tetum": [
+          "disrupsaun merkadu",
+          "disturbiu merkadu",
+          "turbulénsia merkadu",
+          "turbulensia merkadu",
+          "merkadu monu",
+          "kolapsu merkadu",
+          "perturbação dos mercados",
+          "perturbacao dos mercados",
+          "perturbação do mercado",
+          "perturbacao do mercado",
+          "turbulência nos mercados",
+          "turbulencia nos mercados",
+          "turbulência dos mercados",
+          "turbulencia dos mercados",
+          "colapso dos mercados",
+          "queda dos mercados",
+          "crash bolsista"
+        ],
+        "thai": [
+          "ตลาดปั่นป่วน",
+          "ความปั่นป่วนของตลาด",
+          "ตลาดผันผวนรุนแรง",
+          "ตลาดหุ้นดิ่ง",
+          "หุ้นดิ่งหนัก",
+          "ตลาดหุ้นร่วงหนัก",
+          "ตลาดหุ้นพังทลาย",
+          "หุ้นร่วงหนัก",
+          "แบล็กมันเดย์"
+        ],
+        "tok_pisin": [
+          "market disruption",
+          "market disruptions",
+          "market turmoil",
+          "market turbulence",
+          "market meltdown",
+          "market crash",
+          "market rout",
+          "disrupted markets",
+          "stok maket i pundaun",
+          "sea maket i pundaun"
         ]
       }
     },
@@ -310,6 +3666,193 @@
           "health emergency",
           "health emergencies",
           "public health emergency"
+        ],
+        "chinese_simplified": [
+          "健康冲击",
+          "突发公共卫生事件",
+          "公共卫生事件",
+          "公共卫生紧急事件",
+          "公共卫生紧急状态",
+          "公共卫生危机",
+          "卫生紧急情况"
+        ],
+        "chinese_traditional": [
+          "健康衝擊",
+          "衛生緊急事件",
+          "公共衛生緊急事件",
+          "公共衛生危機",
+          "國際關注公共衛生緊急事件",
+          "衛生緊急狀態"
+        ],
+        "filipino": [
+          "health shock",
+          "health shocks",
+          "health emergency",
+          "health emergencies",
+          "public health emergency",
+          "state of public health emergency",
+          "krisis sa kalusugan",
+          "emerhensiyang pangkalusugan"
+        ],
+        "fr": [
+          "choc sanitaire",
+          "crise sanitaire",
+          "urgence sanitaire",
+          "état d'urgence sanitaire",
+          "état d’urgence sanitaire",
+          "urgence de santé publique",
+          "urgences sanitaires"
+        ],
+        "indo": [
+          "guncangan kesehatan",
+          "goncangan kesehatan",
+          "darurat kesehatan",
+          "kedaruratan kesehatan",
+          "kedaruratan kesehatan masyarakat",
+          "darurat kesehatan masyarakat",
+          "krisis kesehatan"
+        ],
+        "japanese": [
+          "健康ショック",
+          "公衆衛生上の緊急事態",
+          "保健上の緊急事態",
+          "医療危機",
+          "医療崩壊",
+          "健康上の緊急事態"
+        ],
+        "km": [
+          "គ្រាអាសន្នសុខភាព",
+          "អាសន្នសុខភាពសាធារណៈ",
+          "ភាពអាសន្នផ្នែកសុខភាព",
+          "ភាពអាសន្នសុខភាពសាធារណៈ",
+          "វិបត្តិសុខភាព",
+          "វិបត្ដិសុខភាព",
+          "វិបត្តិសុខភាពសាធារណៈ",
+          "វិបត្ដិសុខភាពសាធារណៈ",
+          "health emergency",
+          "health shock"
+        ],
+        "korean": [
+          "보건 충격",
+          "보건충격",
+          "보건 위기",
+          "보건위기",
+          "보건 비상사태",
+          "공중보건 비상사태",
+          "공중보건 위기",
+          "국제적 공중보건 비상사태",
+          "보건비상사태"
+        ],
+        "lao": [
+          "ພາວະສຸກເສີນດ້ານສາທາລະນະສຸກ",
+          "ພາວະສຸກເສີນທາງດ້ານສາທາລະນະສຸກ",
+          "ພາວະສຸກເສີນດ້ານສຸຂະພາບ",
+          "ສຸກເສີນດ້ານສາທາລະນະສຸກ",
+          "ສຸກເສີນທາງດ້ານສາທາລະນະສຸກ",
+          "ວິກິດການດ້ານສາທາລະນະສຸກ",
+          "ວິກິດການດ້ານສຸຂະພາບ",
+          "ວິກິດສາທາລະນະສຸກ",
+          "health emergency",
+          "health shock"
+        ],
+        "malay": [
+          "kejutan kesihatan",
+          "kecemasan kesihatan",
+          "kecemasan kesihatan awam",
+          "darurat kesihatan"
+        ],
+        "mn": [
+          {
+            "prefix": "эрүүл мэндийн цочрол"
+          },
+          {
+            "prefix": "эрүүл мэндийн онцгой байдал"
+          },
+          {
+            "prefix": "эрүүл мэндийн онцгой байдл"
+          },
+          {
+            "prefix": "нийгмийн эрүүл мэндийн онцгой байдал"
+          },
+          {
+            "prefix": "нийгмийн эрүүл мэндийн онцгой байдл"
+          },
+          {
+            "prefix": "эрүүл мэндийн хямрал"
+          },
+          {
+            "prefix": "эрүүл мэндийн гэнэтийн"
+          }
+        ],
+        "my": [
+          "ကျန်းမာရေးရိုက်ခတ်မှု",
+          "ကျန်းမာရေး ရိုက်ခတ်မှု",
+          "ကျန်းမာရေးအရေးပေါ်အခြေအနေ",
+          "ကျန်းမာရေး အရေးပေါ်အခြေအနေ",
+          "ပြည်သူ့ကျန်းမာရေးအရေးပေါ်",
+          "ပြည်သူ့ကျန်းမာရေး အရေးပေါ်",
+          "health emergency",
+          "public health emergency"
+        ],
+        "portuguese": [
+          "choque de saúde",
+          "choques de saúde",
+          "choque sanitário",
+          "choques sanitários",
+          "emergência sanitária",
+          "emergências sanitárias",
+          "emergência de saúde",
+          "emergências de saúde",
+          "emergência de saúde pública",
+          "emergências de saúde pública",
+          "crise sanitária",
+          "crise de saúde pública"
+        ],
+        "tetum": [
+          "xoke saúde",
+          "xoke saude",
+          "emerjénsia saúde",
+          "emerjensia saude",
+          "emerjénsia saúde públika",
+          "emerjensia saude publika",
+          "krize saúde",
+          "krize saude",
+          "krize saúde públika",
+          "krize saude publika",
+          "choque de saúde",
+          "choque de saude",
+          "choques de saúde",
+          "choques de saude",
+          "emergência de saúde pública",
+          "emergencia de saude publica",
+          "emergência sanitária",
+          "emergencia sanitaria",
+          "crise sanitária",
+          "crise sanitaria",
+          "crise de saúde pública",
+          "crise de saude publica"
+        ],
+        "thai": [
+          "ภาวะฉุกเฉินด้านสาธารณสุข",
+          "ภาวะฉุกเฉินทางสาธารณสุข",
+          "ภาวะฉุกเฉินทางสาธารณสุขระหว่างประเทศ",
+          "ภาวะฉุกเฉินด้านสุขภาพ",
+          "วิกฤตสาธารณสุข",
+          "วิกฤติสาธารณสุข",
+          "ช็อกด้านสุขภาพ",
+          "ช็อคด้านสุขภาพ"
+        ],
+        "tok_pisin": [
+          "health shock",
+          "health shocks",
+          "health emergency",
+          "health emergencies",
+          "public health emergency",
+          "helt emejensi",
+          "emejensi bilong helt",
+          "pablik helt emejensi",
+          "helt krisis",
+          "krisis bilong helt"
         ]
       }
     },
@@ -325,6 +3868,204 @@
           "shock of the pandemic",
           "COVID shock",
           "COVID-19 shock"
+        ],
+        "chinese_simplified": [
+          "大流行冲击",
+          "疫情冲击",
+          "新冠冲击",
+          "疫情带来的冲击",
+          "疫情造成的冲击",
+          "大流行病冲击"
+        ],
+        "chinese_traditional": [
+          "大流行病衝擊",
+          "疫情衝擊",
+          "疫情打擊",
+          "新冠疫情衝擊",
+          "COVID-19衝擊",
+          "疫情重創"
+        ],
+        "filipino": [
+          "pandemic shock",
+          "pandemic shocks",
+          "pandemic-induced shock",
+          "pandemic-related shock",
+          "shock of the pandemic",
+          "COVID shock",
+          "COVID-19 shock",
+          "shock sa pandemya",
+          "epekto ng pandemya sa ekonomiya",
+          "pandemic-induced recession"
+        ],
+        "fr": [
+          "choc pandémique",
+          "choc de la pandémie",
+          "crise du covid",
+          "crise du covid-19",
+          "crise covid",
+          "crise de la covid",
+          "crise pandémique",
+          "impact de la pandémie",
+          "choc du covid"
+        ],
+        "indo": [
+          "guncangan pandemi",
+          "goncangan pandemi",
+          "guncangan akibat pandemi",
+          "guncangan COVID-19",
+          "guncangan Covid",
+          "hantaman pandemi",
+          "syok pandemi"
+        ],
+        "japanese": [
+          "パンデミックショック",
+          "コロナショック",
+          "コロナ禍",
+          "新型コロナの影響",
+          "新型コロナウイルスの影響",
+          "パンデミックの影響",
+          "感染拡大の影響"
+        ],
+        "km": [
+          "វិបត្តិកូវីដ",
+          "វិបត្ដិកូវីដ",
+          "វិបត្តិជំងឺកូវីដ",
+          "វិបត្ដិជំងឺកូវីដ",
+          "វិបត្តិនៃជំងឺកូវីដ",
+          "វិបត្ដិនៃជំងឺកូវីដ",
+          "វិបត្តិជំងឺរាតត្បាត",
+          "វិបត្ដិជំងឺរាតត្បាត",
+          "ផលប៉ះពាល់នៃជំងឺរាតត្បាត",
+          "ផលប៉ះពាល់នៃជំងឺកូវីដ",
+          "ផលប៉ះពាល់នៃកូវីដ",
+          "ការប៉ះទង្គិចដោយជំងឺរាតត្បាត",
+          "COVID shock",
+          "pandemic shock"
+        ],
+        "korean": [
+          "팬데믹 충격",
+          "팬데믹충격",
+          "코로나 충격",
+          "코로나19 충격",
+          "코로나 쇼크",
+          "팬데믹 쇼크",
+          "코로나19 사태",
+          "코로나 사태",
+          "팬데믹 사태",
+          "대류행 충격",
+          "대류행전염병난"
+        ],
+        "lao": [
+          "ຜົນກະທົບຈາກການລະບາດໃຫຍ່",
+          "ຜົນກະທົບຂອງການລະບາດໃຫຍ່",
+          "ຜົນກະທົບຈາກການລະບາດຂອງພະຍາດໂຄວິດ",
+          "ຜົນກະທົບຈາກການແຜ່ລະບາດຂອງພະຍາດໂຄວິດ",
+          "ຜົນກະທົບຈາກພະຍາດໂຄວິດ",
+          "ຜົນກະທົບຈາກໂຄວິດ",
+          "ຜົນກະທົບຂອງໂຄວິດ",
+          "ຜົນກະທົບຂອງພະຍາດໂຄວິດ",
+          "ວິກິດການໂຄວິດ",
+          "pandemic shock"
+        ],
+        "malay": [
+          "kejutan pandemik",
+          "kejutan akibat pandemik",
+          "kejutan covid-19",
+          "kejutan covid",
+          "kejutan pandemik covid-19",
+          "kejutan wabak covid-19"
+        ],
+        "mn": [
+          {
+            "prefix": "цар тахлын цочрол"
+          },
+          {
+            "prefix": "цар тахлын хямрал"
+          },
+          {
+            "prefix": "цар тахлаас үүдсэн хямрал"
+          },
+          {
+            "prefix": "цар тахлаас үүдэлтэй хямрал"
+          },
+          {
+            "prefix": "цар тахлын сөрөг нөлөө"
+          },
+          {
+            "prefix": "цар тахлын үеийн хямрал"
+          },
+          {
+            "prefix": "цар тахлын нөлөөгөөр"
+          },
+          {
+            "prefix": "ковидын цочрол"
+          }
+        ],
+        "my": [
+          "ကပ်ရောဂါရိုက်ခတ်မှု",
+          "ကပ်ရောဂါ ရိုက်ခတ်မှု",
+          "ကပ်ရောဂါဒဏ်",
+          "ကိုဗစ်ရိုက်ခတ်မှု",
+          "ကိုဗစ်ဒဏ်",
+          "ကိုဗစ်-၁၉ ရိုက်ခတ်မှု",
+          "ကိုဗစ်ကပ်ရောဂါဒဏ်",
+          "COVID shock",
+          "pandemic shock"
+        ],
+        "portuguese": [
+          "choque pandémico",
+          "choque pandêmico",
+          "choques pandémicos",
+          "choque da pandemia",
+          "choque provocado pela pandemia",
+          "choque causado pela pandemia",
+          "choque da COVID",
+          "choque da Covid-19",
+          "impacto económico da pandemia",
+          "impacto econômico da pandemia"
+        ],
+        "tetum": [
+          "xoke pandemia",
+          "xoke COVID-19",
+          "xoke COVID",
+          "impaktu pandemia",
+          "impaktu COVID-19",
+          "impaktu Covid-19 ba ekonomia",
+          "impaktu pandemia ba ekonomia",
+          "krize pandemia",
+          "choque pandémico",
+          "choque pandemico",
+          "choque da pandemia",
+          "choque da COVID-19",
+          "impacto da pandemia",
+          "impacto da COVID-19",
+          "crise pandémica",
+          "crise pandemica"
+        ],
+        "thai": [
+          "ผลกระทบจากการระบาดของโควิด",
+          "ผลกระทบจากโควิด",
+          "ผลกระทบของโควิด",
+          "วิกฤตโควิด",
+          "วิกฤติโควิด",
+          "ผลกระทบจากโรคระบาดใหญ่",
+          "ช็อกจากโรคระบาดใหญ่",
+          "ช็อคจากโรคระบาดใหญ่"
+        ],
+        "tok_pisin": [
+          "pandemic shock",
+          "pandemic shocks",
+          "pandemic-induced shock",
+          "pandemic-related shock",
+          "shock of the pandemic",
+          "COVID shock",
+          "COVID-19 shock",
+          "hevi bilong COVID",
+          "hevi bilong kovid",
+          "hevi bilong pandemik",
+          "bagarap bilong COVID",
+          "hevi bilong sik COVID",
+          "hevi bilong sik koronavairus"
         ]
       }
     },
@@ -338,6 +4079,155 @@
           "epidemic-related shock",
           "shock of the epidemic",
           "outbreak shock"
+        ],
+        "chinese_simplified": [
+          "流行病冲击",
+          "传染病冲击",
+          "疫病冲击",
+          "疫情暴发冲击",
+          "流行病相关冲击"
+        ],
+        "chinese_traditional": [
+          "流行病衝擊",
+          "傳染病衝擊",
+          "疫症衝擊",
+          "疫病衝擊",
+          "疫情爆發衝擊",
+          "禽流感衝擊",
+          "非洲豬瘟衝擊"
+        ],
+        "filipino": [
+          "epidemic shock",
+          "epidemic shocks",
+          "epidemic-related shock",
+          "shock of the epidemic",
+          "outbreak shock"
+        ],
+        "fr": [
+          "choc épidémique",
+          "crise épidémique",
+          "choc de l'épidémie",
+          "choc de l’épidémie",
+          "crise épidémique majeure"
+        ],
+        "indo": [
+          "guncangan wabah",
+          "goncangan wabah",
+          "guncangan epidemi",
+          "guncangan akibat wabah",
+          "hantaman wabah"
+        ],
+        "japanese": [
+          "疫病ショック",
+          "感染症危機",
+          "感染症の流行による",
+          "伝染病の流行",
+          "疫病の流行",
+          "エボラ危機"
+        ],
+        "km": [
+          "វិបត្តិជំងឺឆ្លង",
+          "វិបត្ដិជំងឺឆ្លង",
+          "ផលប៉ះពាល់នៃការរាតត្បាតជំងឺ",
+          "ផលប៉ះពាល់នៃការផ្ទុះជំងឺ",
+          "ការប៉ះទង្គិចដោយការផ្ទុះជំងឺ",
+          "epidemic shock"
+        ],
+        "korean": [
+          "전염병 충격",
+          "감염병 충격",
+          "역병 충격",
+          "전염병 사태",
+          "감염병 사태",
+          "메르스 사태",
+          "메르스 충격",
+          "사스 충격",
+          "전염병 대류행"
+        ],
+        "lao": [
+          "ຜົນກະທົບຈາກພະຍາດລະບາດ",
+          "ຜົນກະທົບຈາກການລະບາດຂອງພະຍາດ",
+          "ຜົນກະທົບຈາກການແຜ່ລະບາດຂອງພະຍາດ",
+          "ຜົນກະທົບຈາກການລະບາດຂອງພະຍາດໄຂ້ເລືອດອອກ",
+          "ຜົນກະທົບຈາກພະຍາດອະຫິວາໝູ",
+          "ຜົນກະທົບຈາກພະຍາດອະຫິວາຫມູ",
+          "ຜົນກະທົບຈາກພະຍາດລະບາດສັດ",
+          "epidemic shock"
+        ],
+        "malay": [
+          "kejutan wabak",
+          "kejutan epidemik",
+          "kejutan akibat wabak",
+          "kejutan penularan wabak"
+        ],
+        "mn": [
+          {
+            "prefix": "халдварт өвчний дэгдэлтийн цочрол"
+          },
+          {
+            "prefix": "дэгдэлтийн цочрол"
+          },
+          {
+            "prefix": "тахал дэгдэлтийн нөлөө"
+          },
+          {
+            "prefix": "халдварт өвчний дэгдэлтийн нөлөө"
+          },
+          {
+            "prefix": "эпидемийн цочрол"
+          },
+          {
+            "prefix": "халдварт өвчний дэгдэлтээс үүдсэн"
+          },
+          {
+            "prefix": "тахлын дэгдэлтийн нөлөө"
+          }
+        ],
+        "my": [
+          "ကူးစက်ရောဂါရိုက်ခတ်မှု",
+          "ကူးစက်ရောဂါ ရိုက်ခတ်မှု",
+          "ကူးစက်ရောဂါဒဏ်",
+          "ကူးစက်ရောဂါ ဒဏ်",
+          "ရောဂါဖြစ်ပွားမှုရိုက်ခတ်မှု",
+          "epidemic shock"
+        ],
+        "portuguese": [
+          "choque epidémico",
+          "choque epidêmico",
+          "choques epidémicos",
+          "choque da epidemia",
+          "choque do surto",
+          "choque provocado pela epidemia",
+          "impacto económico da epidemia",
+          "impacto econômico da epidemia"
+        ],
+        "tetum": [
+          "xoke epidemia",
+          "impaktu epidemia",
+          "impaktu surtu",
+          "krize epidemia",
+          "choque epidémico",
+          "choque epidemico",
+          "choque da epidemia",
+          "impacto da epidemia",
+          "impacto do surto"
+        ],
+        "thai": [
+          "ผลกระทบจากโรคระบาด",
+          "ผลกระทบของโรคระบาด",
+          "วิกฤตโรคระบาด",
+          "วิกฤติโรคระบาด",
+          "ผลกระทบจากการระบาดของโรค",
+          "ช็อกจากการระบาด",
+          "ช็อคจากการระบาด"
+        ],
+        "tok_pisin": [
+          "epidemic shock",
+          "epidemic shocks",
+          "epidemic-related shock",
+          "shock of the epidemic",
+          "outbreak shock",
+          "hevi bilong epidemik"
         ]
       }
     },
@@ -346,6 +4236,177 @@
       "group": "non_economic_shocks",
       "forms": {
         "en": [
+          "climate shock",
+          "climate shocks",
+          "climate-related shock",
+          "climate-related shocks",
+          "climatic shock",
+          "climatic shocks",
+          "weather shock",
+          "weather shocks"
+        ],
+        "chinese_simplified": [
+          "气候冲击",
+          "气候相关冲击",
+          "气候性冲击",
+          "天气冲击",
+          "极端天气冲击",
+          "气候灾害冲击"
+        ],
+        "chinese_traditional": [
+          "氣候衝擊",
+          "氣候相關衝擊",
+          "極端氣候衝擊",
+          "天氣衝擊",
+          "氣候變遷衝擊",
+          "氣候變化衝擊"
+        ],
+        "filipino": [
+          "climate shock",
+          "climate shocks",
+          "climate-related shock",
+          "climate-related shocks",
+          "climatic shock",
+          "climatic shocks",
+          "weather shock",
+          "weather shocks"
+        ],
+        "fr": [
+          "choc climatique",
+          "chocs climatiques",
+          "aléas climatiques",
+          "aléa climatique",
+          "chocs météorologiques",
+          "choc météorologique"
+        ],
+        "indo": [
+          "guncangan iklim",
+          "goncangan iklim",
+          "guncangan cuaca",
+          "guncangan terkait iklim",
+          "guncangan akibat iklim",
+          "guncangan akibat cuaca"
+        ],
+        "japanese": [
+          "気候ショック",
+          "気象ショック",
+          "天候ショック",
+          "異常気象",
+          "気象災害"
+        ],
+        "km": [
+          "ការតក់ស្លុតអាកាសធាតុ",
+          "ការប៉ះទង្គិចដោយអាកាសធាតុ",
+          "ព្រឹត្តិការណ៍អាកាសធាតុខ្លាំង",
+          "ព្រឹត្ដិការណ៍អាកាសធាតុខ្លាំង",
+          "ព្រឹត្តិការណ៍អាកាសធាតុធ្ងន់ធ្ងរ",
+          "ព្រឹត្ដិការណ៍អាកាសធាតុធ្ងន់ធ្ងរ",
+          "អាកាសធាតុខ្លាំង",
+          "climate shock",
+          "climate shocks",
+          "weather shock"
+        ],
+        "korean": [
+          "기후 충격",
+          "기후충격",
+          "기후 관련 충격",
+          "기상 충격",
+          "이상기후 충격",
+          "기후 쇼크",
+          "기후위기 충격"
+        ],
+        "lao": [
+          "ຜົນກະທົບຈາກການປ່ຽນແປງດິນຟ້າອາກາດ",
+          "ຜົນກະທົບຂອງການປ່ຽນແປງດິນຟ້າອາກາດ",
+          "ຜົນກະທົບຈາກສະພາບດິນຟ້າອາກາດ",
+          "ຜົນກະທົບຈາກສະພາບອາກາດທີ່ຮຸນແຮງ",
+          "ສະພາບອາກາດທີ່ຮຸນແຮງ",
+          "ສະພາບດິນຟ້າອາກາດທີ່ຮຸນແຮງ",
+          "ສະພາບອາກາດຮຸນແຮງ",
+          "ຜົນກະທົບຈາກສະພາບອາກາດ",
+          "climate shock",
+          "climate shocks"
+        ],
+        "malay": [
+          "kejutan iklim",
+          "kejutan cuaca",
+          "kejutan berkaitan iklim",
+          "kejutan akibat iklim",
+          "kejutan cuaca ekstrem"
+        ],
+        "mn": [
+          {
+            "prefix": "уур амьсгалын цочрол"
+          },
+          {
+            "prefix": "цаг агаарын цочрол"
+          },
+          {
+            "prefix": "цаг уурын цочрол"
+          },
+          {
+            "prefix": "уур амьсгалтай холбоотой цочрол"
+          },
+          {
+            "prefix": "цаг агаарын хүнд нөхцөл"
+          },
+          {
+            "prefix": "цаг агаарын эрс тэс үзэгдэл"
+          }
+        ],
+        "my": [
+          "ရာသီဥတုရိုက်ခတ်မှု",
+          "ရာသီဥတု ရိုက်ခတ်မှု",
+          "ရာသီဥတုဆိုင်ရာရိုက်ခတ်မှု",
+          "ရာသီဥတုဆိုင်ရာ ရိုက်ခတ်မှု",
+          "ရာသီဥတုဒဏ်",
+          "ရာသီဥတု ဒဏ်",
+          "မိုးလေဝသဒဏ်",
+          "မိုးလေ၀သဒဏ်",
+          "climate shock",
+          "climate shocks"
+        ],
+        "portuguese": [
+          "choque climático",
+          "choques climáticos",
+          "choque relacionado com o clima",
+          "choques relacionados com o clima",
+          "choques relacionados ao clima",
+          "choque meteorológico",
+          "choques meteorológicos",
+          "choques climatéricos",
+          "choque climatérico"
+        ],
+        "tetum": [
+          "xoke klima",
+          "xoke klimátiku",
+          "xoke klimatiku",
+          "xoke tempu",
+          "xoke ne'ebé relasiona ho klima",
+          "xoke ne’ebé relasiona ho klima",
+          "xoke ne'ebe relasiona ho klima",
+          "xoke ne’ebe relasiona ho klima",
+          "choque climático",
+          "choque climatico",
+          "choques climáticos",
+          "choques climaticos",
+          "choque meteorológico",
+          "choque meteorologico",
+          "choques meteorológicos",
+          "choques meteorologicos",
+          "choques relacionados com o clima"
+        ],
+        "thai": [
+          "ช็อกด้านสภาพภูมิอากาศ",
+          "ช็อคด้านสภาพภูมิอากาศ",
+          "ภาวะช็อกจากสภาพภูมิอากาศ",
+          "ภาวะช็อคจากสภาพภูมิอากาศ",
+          "ผลกระทบจากสภาพอากาศแปรปรวน",
+          "ภัยสภาพอากาศสุดขั้ว",
+          "ความแปรปรวนของสภาพภูมิอากาศ",
+          "ผลกระทบจากสภาพภูมิอากาศ"
+        ],
+        "tok_pisin": [
           "climate shock",
           "climate shocks",
           "climate-related shock",
@@ -367,6 +4428,161 @@
           "conflict-related shock",
           "conflict-related shocks",
           "war shock"
+        ],
+        "chinese_simplified": [
+          "冲突冲击",
+          "冲突带来的冲击",
+          "冲突相关冲击",
+          "战争冲击",
+          "战争带来的冲击"
+        ],
+        "chinese_traditional": [
+          "衝突衝擊",
+          "戰爭衝擊",
+          "戰事衝擊",
+          "俄烏戰爭衝擊",
+          "戰火衝擊"
+        ],
+        "filipino": [
+          "conflict shock",
+          "conflict shocks",
+          "conflict-related shock",
+          "conflict-related shocks",
+          "war shock",
+          "war-driven shock",
+          "epekto ng giyera sa ekonomiya"
+        ],
+        "fr": [
+          "choc lié au conflit",
+          "chocs liés aux conflits",
+          "choc de la guerre",
+          "conséquences économiques de la guerre",
+          "conséquences de la guerre en ukraine",
+          "impact de la guerre en ukraine",
+          "crise insurrectionnelle",
+          "crise de mai 2024",
+          "conséquences des émeutes",
+          "impact des émeutes"
+        ],
+        "indo": [
+          "guncangan konflik",
+          "guncangan perang",
+          "goncangan perang",
+          "guncangan akibat perang",
+          "guncangan akibat konflik"
+        ],
+        "japanese": [
+          "紛争ショック",
+          "戦争ショック",
+          "戦争の影響",
+          "紛争の影響",
+          "侵攻の影響",
+          "戦争による打撃"
+        ],
+        "km": [
+          "ផលប៉ះពាល់នៃសង្គ្រាម",
+          "ផលប៉ះពាល់នៃជម្លោះ",
+          "ផលប៉ះពាល់ពីសង្គ្រាម",
+          "ការប៉ះទង្គិចដោយជម្លោះ",
+          "conflict shock"
+        ],
+        "korean": [
+          "분쟁 충격",
+          "전쟁 충격",
+          "전쟁 쇼크",
+          "분쟁 관련 충격",
+          "전쟁 여파",
+          "지정학적 충격"
+        ],
+        "lao": [
+          "ຜົນກະທົບຈາກຂໍ້ຂັດແຍ່ງ",
+          "ຜົນກະທົບຈາກຂໍ້ຂັດແຍ້ງ",
+          "ຜົນກະທົບຈາກຄວາມຂັດແຍ່ງ",
+          "ຜົນກະທົບຈາກຄວາມຂັດແຍ້ງ",
+          "ຜົນກະທົບຈາກການສູ້ຮົບ",
+          "ຜົນກະທົບຈາກສົງຄາມຣັດເຊຍ",
+          "ຜົນກະທົບຈາກສົງຄາມລັດເຊຍ",
+          "ຜົນກະທົບຈາກສົງຄາມຢູເຄຣນ",
+          "ຜົນກະທົບຈາກສົງຄາມໃນຢູເຄຣນ",
+          "ຜົນກະທົບຈາກສົງຄາມໃນຕາເວັນອອກກາງ",
+          "ຜົນກະທົບຈາກສົງຄາມລະຫວ່າງ",
+          "conflict shock"
+        ],
+        "malay": [
+          "kejutan konflik",
+          "kejutan perang",
+          "kejutan berkaitan konflik",
+          "kejutan akibat perang",
+          "kejutan geopolitik"
+        ],
+        "mn": [
+          {
+            "prefix": "мөргөлдөөний цочрол"
+          },
+          {
+            "prefix": "дайны цочрол"
+          },
+          {
+            "prefix": "дайнаас үүдсэн"
+          },
+          {
+            "prefix": "дайны нөлөө"
+          },
+          {
+            "prefix": "дайны сөрөг нөлөө"
+          },
+          {
+            "prefix": "дайнаас үүдэлтэй"
+          },
+          {
+            "prefix": "мөргөлдөөнөөс үүдсэн"
+          }
+        ],
+        "my": [
+          "ပဋိပက္ခရိုက်ခတ်မှု",
+          "ပဋိပက္ခ ရိုက်ခတ်မှု",
+          "ပဋိပက္ခဒဏ်",
+          "ပဋိပက္ခ ဒဏ်",
+          "စစ်ပွဲရိုက်ခတ်မှု",
+          "စစ်ပွဲဒဏ်",
+          "စစ်ပွဲ ဒဏ်",
+          "conflict shock"
+        ],
+        "portuguese": [
+          "choque de conflito",
+          "choques de conflito",
+          "choque do conflito",
+          "choque da guerra",
+          "choques da guerra",
+          "choque provocado pela guerra",
+          "choque relacionado com conflitos",
+          "choque bélico"
+        ],
+        "tetum": [
+          "xoke konflitu",
+          "xoke funu",
+          "impaktu funu",
+          "impaktu konflitu ba ekonomia",
+          "choque de conflito",
+          "choques de conflito",
+          "choque da guerra",
+          "impacto da guerra"
+        ],
+        "thai": [
+          "ผลกระทบจากสงคราม",
+          "ผลกระทบของสงคราม",
+          "ผลกระทบจากความขัดแย้ง",
+          "ผลกระทบจากการสู้รบ",
+          "ผลกระทบจากความขัดแย้งทางอาวุธ",
+          "ช็อกจากความขัดแย้ง",
+          "ช็อคจากความขัดแย้ง"
+        ],
+        "tok_pisin": [
+          "conflict shock",
+          "conflict shocks",
+          "conflict-related shock",
+          "conflict-related shocks",
+          "war shock"
         ]
       }
     },
@@ -375,6 +4591,171 @@
       "group": "non_economic_shocks",
       "forms": {
         "en": [
+          "political shock",
+          "political shocks",
+          "political upheaval",
+          "political upheavals"
+        ],
+        "chinese_simplified": [
+          "政治冲击",
+          "政治动荡",
+          "政治剧变",
+          "政坛动荡",
+          "政局动荡",
+          "政治震荡",
+          "政坛地震"
+        ],
+        "chinese_traditional": [
+          "政治衝擊",
+          "政治動盪",
+          "政治風暴",
+          "政局動盪",
+          "政治震盪"
+        ],
+        "filipino": [
+          "political shock",
+          "political shocks",
+          "political upheaval",
+          "political upheavals",
+          "political crisis",
+          "krisis pampulitika",
+          "krisis sa pulitika",
+          "kaguluhan sa pulitika"
+        ],
+        "fr": [
+          "choc politique",
+          "chocs politiques",
+          "séisme politique",
+          "bouleversement politique",
+          "bouleversements politiques",
+          "tremblement de terre politique",
+          "coup de tonnerre politique"
+        ],
+        "indo": [
+          "guncangan politik",
+          "goncangan politik",
+          "gejolak politik",
+          "pergolakan politik",
+          "prahara politik"
+        ],
+        "japanese": [
+          "政治的ショック",
+          "政治的激変",
+          "政治の激変",
+          "政治的動乱",
+          "政変の影響",
+          "政変後",
+          "政変が起き",
+          "政治の混乱",
+          "政治混乱"
+        ],
+        "km": [
+          "វិបត្តិនយោបាយ",
+          "វិបត្ដិនយោបាយ",
+          "ភាពតក់ស្លុតផ្នែកនយោបាយ",
+          "ភាពចលាចលនយោបាយ",
+          "ការប៉ះទង្គិចផ្នែកនយោបាយ",
+          "political upheaval",
+          "political shock"
+        ],
+        "korean": [
+          "정치적 충격",
+          "정치 충격",
+          "정치적 격변",
+          "정치 격변",
+          "정치적 대격변",
+          "정치 쇼크",
+          "정국 격변"
+        ],
+        "lao": [
+          "ຄວາມປັ່ນປ່ວນທາງການເມືອງ",
+          "ຄວາມປັ່ນປ່ວນທາງດ້ານການເມືອງ",
+          "ຄວາມວຸ້ນວາຍທາງການເມືອງ",
+          "ວິກິດການທາງການເມືອງ",
+          "ວິກິດການເມືອງ",
+          "ວິກິດທາງການເມືອງ",
+          "ລັດຖະປະຫານ",
+          "ຄວາມບໍ່ສະຫງົບທາງການເມືອງ",
+          "political upheaval",
+          "political shock"
+        ],
+        "malay": [
+          "kejutan politik",
+          "pergolakan politik",
+          "gegaran politik",
+          "tsunami politik",
+          "kemelut politik"
+        ],
+        "mn": [
+          {
+            "prefix": "улс төрийн цочрол"
+          },
+          {
+            "prefix": "улс төрийн үймээн"
+          },
+          {
+            "prefix": "улс төрийн хямрал"
+          },
+          {
+            "prefix": "улс төрийн самуун"
+          },
+          {
+            "prefix": "улс төрийн хямралд"
+          }
+        ],
+        "my": [
+          "နိုင်ငံရေးရိုက်ခတ်မှု",
+          "နိုင်ငံရေး ရိုက်ခတ်မှု",
+          "နိုင်ငံရေးဂယက်",
+          "နိုင်ငံရေး ဂယက်",
+          "နိုင်ငံရေးလှုပ်ခတ်",
+          "နိုင်ငံရေး လှုပ်ခတ်",
+          "political shock",
+          "political upheaval"
+        ],
+        "portuguese": [
+          "choque político",
+          "choques políticos",
+          "convulsão política",
+          "convulsões políticas",
+          "reviravolta política",
+          "terramoto político",
+          "terremoto político",
+          "sismo político"
+        ],
+        "tetum": [
+          "xoke polítiku",
+          "xoke politiku",
+          "xoke polítika",
+          "xoke politika",
+          "konvulsaun polítika",
+          "konvulsaun politika",
+          "reviravolta polítika",
+          "reviravolta politika",
+          "choque político",
+          "choque politico",
+          "choques políticos",
+          "choques politicos",
+          "convulsão política",
+          "convulsao politica",
+          "convulsões políticas",
+          "convulsoes politicas",
+          "reviravolta política",
+          "reviravolta politica",
+          "terramoto político",
+          "terramoto politico"
+        ],
+        "thai": [
+          "ความปั่นป่วนทางการเมือง",
+          "วิกฤตการเมือง",
+          "วิกฤติการเมือง",
+          "วิกฤตทางการเมือง",
+          "วิกฤติทางการเมือง",
+          "การเมืองพลิกผัน",
+          "ช็อกทางการเมือง",
+          "ช็อคทางการเมือง"
+        ],
+        "tok_pisin": [
           "political shock",
           "political shocks",
           "political upheaval",
@@ -394,6 +4775,199 @@
           "policy volatility",
           "policy flip-flop",
           "policy flip-flops"
+        ],
+        "chinese_simplified": [
+          "政策不确定性",
+          "政策不确定",
+          "政策多变",
+          "政策反复",
+          "政策摇摆",
+          "朝令夕改",
+          "政策难以预测",
+          "政策变数"
+        ],
+        "chinese_traditional": [
+          "政策不確定性",
+          "政策不確定",
+          "政策不明朗",
+          "政策反覆",
+          "政策多變",
+          "朝令夕改",
+          "政策急轉彎",
+          "政策轉彎"
+        ],
+        "filipino": [
+          "policy uncertainty",
+          "policy uncertainties",
+          "policy unpredictability",
+          "unpredictable policy",
+          "policy volatility",
+          "policy flip-flop",
+          "policy flip-flops",
+          "kawalan ng katiyakan sa patakaran",
+          "pabago-bagong patakaran",
+          "pabago-bagong polisiya"
+        ],
+        "fr": [
+          "incertitude sur les politiques",
+          "incertitudes sur les politiques",
+          "imprévisibilité des politiques",
+          "revirements politiques",
+          "instabilité des politiques publiques"
+        ],
+        "indo": [
+          "ketidakpastian kebijakan",
+          "ketidakpastian arah kebijakan",
+          "inkonsistensi kebijakan",
+          "kebijakan yang tidak konsisten",
+          "kebijakan yang berubah-ubah",
+          "kebijakan berubah-ubah",
+          "kebijakan maju mundur",
+          "bongkar pasang kebijakan",
+          "kebijakan plin-plan"
+        ],
+        "japanese": [
+          "政策の不確実性",
+          "政策の不透明感",
+          "政策の迷走",
+          "政策の急変",
+          "朝令暮改"
+        ],
+        "km": [
+          "ភាពមិនច្បាស់លាស់នៃគោលនយោបាយ",
+          "ភាពមិនច្បាស់លាស់ខាងគោលនយោបាយ",
+          "ភាពមិនច្បាស់លាស់ផ្នែកគោលនយោបាយ",
+          "ភាពមិនប្រាកដប្រជានៃគោលនយោបាយ",
+          "ភាពមិនប្រាកដប្រជាផ្នែកគោលនយោបាយ",
+          "គោលនយោបាយមិនច្បាស់លាស់",
+          "policy uncertainty"
+        ],
+        "korean": [
+          "정책 불확실성",
+          "정책불확실성",
+          "정책의 불확실성",
+          "정책 일관성 부족",
+          "오락가락 정책",
+          "정책 혼선",
+          "정책 번복",
+          "갈지자 정책"
+        ],
+        "lao": [
+          "ຄວາມບໍ່ແນ່ນອນຂອງນະໂຍບາຍ",
+          "ຄວາມບໍ່ແນ່ນອນດ້ານນະໂຍບາຍ",
+          "ຄວາມບໍ່ແນ່ນອນທາງດ້ານນະໂຍບາຍ",
+          "ຄວາມບໍ່ແນ່ນອນທາງນະໂຍບາຍ",
+          "ນະໂຍບາຍທີ່ບໍ່ແນ່ນອນ",
+          "ນະໂຍບາຍບໍ່ແນ່ນອນ",
+          "ນະໂຍບາຍບໍ່ຄົງທີ່",
+          "ຄວາມບໍ່ຄົງທີ່ຂອງນະໂຍບາຍ",
+          "ນະໂຍບາຍທີ່ຄາດເດົາບໍ່ໄດ້",
+          "policy uncertainty"
+        ],
+        "malay": [
+          "ketidakpastian dasar",
+          "ketidaktentuan dasar",
+          "dasar yang tidak menentu",
+          "dasar tidak menentu",
+          "dasar berubah-ubah",
+          "dasar yang berubah-ubah",
+          "dasar flip-flop",
+          "flip-flop dasar"
+        ],
+        "mn": [
+          {
+            "prefix": "бодлогын тодорхойгүй байдал"
+          },
+          {
+            "prefix": "бодлогын тодорхойгүй байдл"
+          },
+          {
+            "prefix": "бодлогын тогтворгүй байдал"
+          },
+          {
+            "prefix": "бодлогын тогтворгүй байдл"
+          },
+          {
+            "prefix": "бодлогын тогтворгүй"
+          },
+          {
+            "prefix": "бодлого тогтворгүй"
+          },
+          {
+            "prefix": "бодлогын тодорхой бус"
+          },
+          {
+            "prefix": "бодлогын залгамж чанаргүй"
+          }
+        ],
+        "my": [
+          "မူဝါဒမရေရာ",
+          "မူ၀ါဒမရေရာ",
+          "မူဝါဒ မရေရာ",
+          "မူ၀ါဒ မရေရာ",
+          "မူဝါဒမသေချာမရေရာ",
+          "မူ၀ါဒမသေချာမရေရာ",
+          "မူဝါဒ မသေချာမရေရာ",
+          "မူ၀ါဒ မသေချာမရေရာ",
+          "မူဝါဒမတည်ငြိမ်",
+          "မူ၀ါဒမတည်ငြိမ်",
+          "မူဝါဒ မတည်ငြိမ်",
+          "မူ၀ါဒ မတည်ငြိမ်",
+          "မူဝါဒများ မကြာခဏပြောင်းလဲ",
+          "မူ၀ါဒများ မကြာခဏပြောင်းလဲ",
+          "policy uncertainty"
+        ],
+        "portuguese": [
+          "incerteza quanto às políticas",
+          "incerteza das políticas",
+          "imprevisibilidade das políticas",
+          "políticas imprevisíveis",
+          "volatilidade das políticas",
+          "incerteza sobre as políticas",
+          "incerteza em torno das políticas",
+          "incerteza quanto à política",
+          "imprevisibilidade das políticas públicas"
+        ],
+        "tetum": [
+          "inserteza iha polítika",
+          "inserteza iha politika",
+          "inserteza polítika públika",
+          "inserteza politika publika",
+          "polítika muda beibeik",
+          "politika muda beibeik",
+          "polítika muda-muda",
+          "politika muda-muda",
+          "inserteza kona-ba polítika governu",
+          "inserteza kona-ba politika governu",
+          "imprevisibilidade política",
+          "imprevisibilidade politica",
+          "instabilidade das políticas",
+          "instabilidade das politicas",
+          "políticas imprevisíveis",
+          "politicas imprevisiveis"
+        ],
+        "thai": [
+          "ความไม่แน่นอนเชิงนโยบาย",
+          "ความไม่แน่นอนของนโยบาย",
+          "ความไม่แน่นอนด้านนโยบาย",
+          "ความไม่ชัดเจนของนโยบาย",
+          "ความไม่ชัดเจนด้านนโยบาย",
+          "นโยบายไม่ชัดเจน",
+          "นโยบายกลับไปกลับมา",
+          "นโยบายไม่แน่นอน"
+        ],
+        "tok_pisin": [
+          "policy uncertainty",
+          "policy uncertainties",
+          "policy unpredictability",
+          "unpredictable policy",
+          "policy volatility",
+          "policy flip-flop",
+          "policy flip-flops",
+          "polisi i no klia",
+          "polisi i no klia gut",
+          "polisi i senis senis",
+          "senisim polisi oltaim"
         ]
       }
     },
@@ -409,6 +4983,207 @@
           "monetary policy uncertainty",
           "trade policy uncertainty",
           "tax policy uncertainty"
+        ],
+        "chinese_simplified": [
+          "经济政策不确定性",
+          "财政政策不确定性",
+          "货币政策不确定性",
+          "贸易政策不确定性",
+          "税收政策不确定性",
+          "关税政策不确定性",
+          "关税不确定性"
+        ],
+        "chinese_traditional": [
+          "經濟政策不確定性",
+          "經濟政策不確定",
+          "貿易政策不確定性",
+          "關稅不確定性",
+          "財政政策不確定性",
+          "貨幣政策不確定性",
+          "稅務政策不確定性",
+          "經濟政策不明朗"
+        ],
+        "filipino": [
+          "economic policy uncertainty",
+          "uncertainty about economic policy",
+          "uncertainty over economic policy",
+          "fiscal policy uncertainty",
+          "monetary policy uncertainty",
+          "trade policy uncertainty",
+          "tax policy uncertainty",
+          "tariff uncertainty"
+        ],
+        "fr": [
+          "incertitude fiscale",
+          "incertitudes fiscales",
+          "incertitude budgétaire",
+          "incertitude commerciale",
+          "instabilité fiscale",
+          "incertitude sur la politique économique",
+          "incertitude de la politique économique",
+          "incertitude monétaire"
+        ],
+        "indo": [
+          "ketidakpastian kebijakan ekonomi",
+          "ketidakpastian kebijakan fiskal",
+          "ketidakpastian kebijakan moneter",
+          "ketidakpastian kebijakan perdagangan",
+          "ketidakpastian kebijakan pajak",
+          "ketidakpastian kebijakan tarif",
+          "ketidakpastian akibat tarif"
+        ],
+        "japanese": [
+          "経済政策の不確実性",
+          "経済政策の不透明感",
+          "通商政策の不確実性",
+          "関税政策の不確実性",
+          "金融政策の不確実性",
+          "財政政策の不確実性",
+          "通商政策の先行き不透明"
+        ],
+        "km": [
+          "ភាពមិនច្បាស់លាស់នៃគោលនយោបាយសេដ្ឋកិច្ច",
+          "ភាពមិនប្រាកដប្រជានៃគោលនយោបាយសេដ្ឋកិច្ច",
+          "ភាពមិនច្បាស់លាស់នៃគោលនយោបាយពាណិជ្ជកម្ម",
+          "ភាពមិនប្រាកដប្រជាផ្នែកពាណិជ្ជកម្ម",
+          "ភាពមិនច្បាស់លាស់ផ្នែកពាណិជ្ជកម្ម",
+          "ភាពមិនច្បាស់លាស់នៃពន្ធគយ",
+          "ភាពមិនប្រាកដប្រជានៃពន្ធគយ",
+          "economic policy uncertainty",
+          "trade policy uncertainty"
+        ],
+        "korean": [
+          "경제정책 불확실성",
+          "경제 정책 불확실성",
+          "경제정책불확실성",
+          "통화정책 불확실성",
+          "재정정책 불확실성",
+          "무역정책 불확실성",
+          "통상정책 불확실성",
+          "관세 불확실성",
+          "세제 불확실성",
+          "EPU"
+        ],
+        "lao": [
+          "ຄວາມບໍ່ແນ່ນອນຂອງນະໂຍບາຍເສດຖະກິດ",
+          "ຄວາມບໍ່ແນ່ນອນດ້ານນະໂຍບາຍເສດຖະກິດ",
+          "ຄວາມບໍ່ແນ່ນອນຂອງນະໂຍບາຍການເງິນ",
+          "ຄວາມບໍ່ແນ່ນອນດ້ານນະໂຍບາຍການເງິນ",
+          "ຄວາມບໍ່ແນ່ນອນຂອງນະໂຍບາຍການຄັງ",
+          "ຄວາມບໍ່ແນ່ນອນດ້ານນະໂຍບາຍການຄ້າ",
+          "ຄວາມບໍ່ແນ່ນອນຂອງນະໂຍບາຍພາສີ",
+          "ຄວາມບໍ່ແນ່ນອນດ້ານອັດຕາພາສີ",
+          "ຄວາມບໍ່ແນ່ນອນຂອງສົງຄາມການຄ້າ",
+          "economic policy uncertainty"
+        ],
+        "malay": [
+          "ketidakpastian dasar ekonomi",
+          "ketidakpastian dasar fiskal",
+          "ketidakpastian dasar monetari",
+          "ketidakpastian dasar perdagangan",
+          "ketidakpastian dasar cukai",
+          "ketidakpastian tarif",
+          "ketidaktentuan dasar ekonomi",
+          "ketidakpastian dasar tarif",
+          "ketidaktentuan tarif",
+          "ketidaktentuan dasar perdagangan"
+        ],
+        "mn": [
+          {
+            "prefix": "эдийн засгийн бодлогын тодорхойгүй"
+          },
+          {
+            "prefix": "татварын бодлогын тодорхойгүй"
+          },
+          {
+            "prefix": "мөнгөний бодлогын тодорхойгүй"
+          },
+          {
+            "prefix": "төсвийн бодлогын тодорхойгүй"
+          }
+        ],
+        "my": [
+          "စီးပွားရေးမူဝါဒမရေရာ",
+          "စီးပွားရေးမူ၀ါဒမရေရာ",
+          "စီးပွားရေးမူဝါဒ မရေရာ",
+          "စီးပွားရေးမူ၀ါဒ မရေရာ",
+          "ကုန်သွယ်ရေးမူဝါဒမရေရာ",
+          "ကုန်သွယ်ရေးမူ၀ါဒမရေရာ",
+          "ကုန်သွယ်ရေးမူဝါဒ မရေရာ",
+          "ကုန်သွယ်ရေးမူ၀ါဒ မရေရာ",
+          "ငွေကြေးမူဝါဒမရေရာ",
+          "ငွေကြေးမူ၀ါဒမရေရာ",
+          "ဘဏ္ဍာရေးမူဝါဒမရေရာ",
+          "ဘဏ္ဍာရေးမူ၀ါဒမရေရာ",
+          "အခွန်မူဝါဒမရေရာ",
+          "အခွန်မူ၀ါဒမရေရာ",
+          "economic policy uncertainty",
+          "trade policy uncertainty"
+        ],
+        "portuguese": [
+          "incerteza da política económica",
+          "incerteza da política econômica",
+          "incerteza sobre a política económica",
+          "incerteza sobre a política econômica",
+          "incerteza quanto à política económica",
+          "incerteza em torno da política económica",
+          "incerteza da política orçamental",
+          "incerteza da política fiscal",
+          "incerteza da política monetária",
+          "incerteza sobre a política monetária",
+          "incerteza da política comercial",
+          "incerteza sobre a política comercial",
+          "incerteza comercial",
+          "incerteza tarifária",
+          "incerteza sobre as tarifas",
+          "incerteza fiscal"
+        ],
+        "tetum": [
+          "inserteza polítika ekonómika",
+          "inserteza politika ekonomika",
+          "inserteza polítika ekonomia",
+          "inserteza politika ekonomia",
+          "inserteza polítika fiskál",
+          "inserteza politika fiskal",
+          "inserteza polítika monetária",
+          "inserteza politika monetaria",
+          "inserteza polítika komérsiu",
+          "inserteza politika komersiu",
+          "incerteza da política económica",
+          "incerteza da politica economica",
+          "incerteza sobre a política económica",
+          "incerteza sobre a politica economica",
+          "incerteza da política fiscal",
+          "incerteza da politica fiscal",
+          "incerteza da política monetária",
+          "incerteza da politica monetaria",
+          "incerteza da política comercial",
+          "incerteza da politica comercial",
+          "incerteza quanto à política económica",
+          "incerteza quanto a politica economica"
+        ],
+        "thai": [
+          "ความไม่แน่นอนของนโยบายเศรษฐกิจ",
+          "ความไม่แน่นอนด้านนโยบายเศรษฐกิจ",
+          "ความไม่แน่นอนของนโยบายการค้า",
+          "ความไม่แน่นอนด้านนโยบายการค้า",
+          "ความไม่แน่นอนของนโยบายการเงิน",
+          "ความไม่แน่นอนของนโยบายการคลัง",
+          "ความไม่แน่นอนของนโยบายภาษี",
+          "ความไม่แน่นอนของนโยบายภาษีศุลกากร"
+        ],
+        "tok_pisin": [
+          "economic policy uncertainty",
+          "uncertainty about economic policy",
+          "uncertainty over economic policy",
+          "fiscal policy uncertainty",
+          "monetary policy uncertainty",
+          "trade policy uncertainty",
+          "tax policy uncertainty",
+          "ikonomik polisi i no klia",
+          "polisi bilong ikonomi i no klia",
+          "takis polisi i no klia",
+          "tred polisi i no klia"
         ]
       }
     },
@@ -423,6 +5198,173 @@
           "uncertain regulatory environment",
           "regulatory ambiguity",
           "legal uncertainty"
+        ],
+        "chinese_simplified": [
+          "监管不确定性",
+          "监管政策不确定性",
+          "监管环境不确定",
+          "法律不确定性",
+          "监管模糊",
+          "监管规则不明确"
+        ],
+        "chinese_traditional": [
+          "法規不確定性",
+          "監管不確定性",
+          "監管不明朗",
+          "法規不明確",
+          "法律不確定性",
+          "法規模糊",
+          "監管環境不明朗"
+        ],
+        "filipino": [
+          "regulatory uncertainty",
+          "regulatory uncertainties",
+          "regulatory unpredictability",
+          "uncertain regulatory environment",
+          "regulatory ambiguity",
+          "legal uncertainty"
+        ],
+        "fr": [
+          "incertitude réglementaire",
+          "incertitudes réglementaires",
+          "instabilité réglementaire",
+          "incertitude juridique",
+          "incertitudes juridiques",
+          "insécurité juridique",
+          "flou juridique"
+        ],
+        "indo": [
+          "ketidakpastian regulasi",
+          "ketidakpastian hukum",
+          "ketidakpastian peraturan",
+          "ketidakpastian aturan",
+          "ketidakjelasan regulasi",
+          "regulasi yang berubah-ubah",
+          "aturan yang berubah-ubah"
+        ],
+        "japanese": [
+          "規制の不確実性",
+          "規制の不透明感",
+          "規制の先行き不透明",
+          "規制環境の不透明",
+          "法的不確実性",
+          "法的な不確実性"
+        ],
+        "km": [
+          "ភាពមិនច្បាស់លាស់នៃបទប្បញ្ញត្តិ",
+          "ភាពមិនច្បាស់លាស់នៃបទប្បញ្ញត្ដិ",
+          "ភាពមិនច្បាស់លាស់ផ្នែកបទប្បញ្ញត្តិ",
+          "ភាពមិនច្បាស់លាស់ផ្នែកបទប្បញ្ញត្ដិ",
+          "ភាពមិនប្រាកដប្រជានៃបទប្បញ្ញត្តិ",
+          "ភាពមិនប្រាកដប្រជានៃបទប្បញ្ញត្ដិ",
+          "ភាពមិនច្បាស់លាស់ផ្នែកច្បាប់",
+          "ភាពមិនច្បាស់លាស់ខាងច្បាប់",
+          "regulatory uncertainty",
+          "legal uncertainty"
+        ],
+        "korean": [
+          "규제 불확실성",
+          "규제불확실성",
+          "규제의 불확실성",
+          "규제 리스크",
+          "법적 불확실성",
+          "법적불확실성",
+          "제도적 불확실성"
+        ],
+        "lao": [
+          "ຄວາມບໍ່ແນ່ນອນດ້ານລະບຽບການ",
+          "ຄວາມບໍ່ແນ່ນອນຂອງລະບຽບການ",
+          "ຄວາມບໍ່ແນ່ນອນທາງດ້ານກົດໝາຍ",
+          "ຄວາມບໍ່ແນ່ນອນທາງດ້ານກົດຫມາຍ",
+          "ຄວາມບໍ່ແນ່ນອນຂອງກົດໝາຍ",
+          "ຄວາມບໍ່ແນ່ນອນຂອງກົດຫມາຍ",
+          "ລະບຽບການບໍ່ຈະແຈ້ງ",
+          "ລະບຽບການບໍ່ຊັດເຈນ",
+          "ລະບຽບການປ່ຽນແປງເລື້ອຍໆ",
+          "ລະບຽບການທີ່ບໍ່ຈະແຈ້ງ",
+          "regulatory uncertainty"
+        ],
+        "malay": [
+          "ketidakpastian regulatori",
+          "ketidakpastian peraturan",
+          "ketidakpastian kawal selia",
+          "ketidakpastian pengawalseliaan",
+          "ketidakpastian undang-undang",
+          "ketidakjelasan peraturan",
+          "ketidaktentuan peraturan",
+          "ketidaktentuan regulatori"
+        ],
+        "mn": [
+          {
+            "prefix": "зохицуулалтын тодорхойгүй"
+          },
+          {
+            "prefix": "хууль эрх зүйн тодорхойгүй"
+          }
+        ],
+        "my": [
+          "စည်းမျဉ်းဆိုင်ရာမရေရာ",
+          "စည်းမျဉ်းဆိုင်ရာ မရေရာ",
+          "စည်းမျဉ်းမရေရာ",
+          "ဥပဒေဆိုင်ရာမရေရာ",
+          "ဥပဒေဆိုင်ရာ မရေရာ",
+          "ဥပဒေမရေရာ",
+          "ဥပဒေ မရေရာ",
+          "regulatory uncertainty",
+          "legal uncertainty"
+        ],
+        "portuguese": [
+          "incerteza regulatória",
+          "incerteza regulamentar",
+          "incertezas regulatórias",
+          "incertezas regulamentares",
+          "imprevisibilidade regulatória",
+          "ambiente regulatório incerto",
+          "ambiguidade regulatória",
+          "incerteza jurídica",
+          "insegurança jurídica",
+          "incerteza legal"
+        ],
+        "tetum": [
+          "inserteza regulatória",
+          "inserteza regulatoria",
+          "inserteza regulamentár",
+          "inserteza regulamentar",
+          "inserteza legál",
+          "inserteza legal",
+          "inserteza jurídika",
+          "inserteza juridika",
+          "kuadru legál la klaru",
+          "kuadru legal la klaru",
+          "incerteza regulatória",
+          "incerteza regulatoria",
+          "incerteza regulamentar",
+          "incerteza jurídica",
+          "incerteza juridica",
+          "insegurança jurídica",
+          "inseguranca juridica",
+          "incerteza legal"
+        ],
+        "thai": [
+          "ความไม่แน่นอนด้านกฎระเบียบ",
+          "ความไม่แน่นอนของกฎระเบียบ",
+          "ความไม่แน่นอนทางกฎหมาย",
+          "ความไม่แน่นอนด้านกฎหมาย",
+          "ความไม่ชัดเจนของกฎระเบียบ",
+          "ความไม่ชัดเจนของกฎหมาย",
+          "กฎระเบียบไม่ชัดเจน"
+        ],
+        "tok_pisin": [
+          "regulatory uncertainty",
+          "regulatory uncertainties",
+          "regulatory unpredictability",
+          "uncertain regulatory environment",
+          "regulatory ambiguity",
+          "legal uncertainty",
+          "lo i no klia",
+          "ol lo i no klia",
+          "rul i no klia",
+          "ol rul i no klia"
         ]
       }
     },
@@ -438,6 +5380,180 @@
           "political limbo",
           "electoral uncertainty",
           "election uncertainty"
+        ],
+        "chinese_simplified": [
+          "政治不确定性",
+          "政局不明朗",
+          "政局不确定",
+          "政治前景不明",
+          "选举不确定性",
+          "大选不确定性",
+          "政治僵局"
+        ],
+        "chinese_traditional": [
+          "政治不確定性",
+          "政治不確定",
+          "政局不明朗",
+          "政治前景不明",
+          "選舉不確定性",
+          "大選不確定性",
+          "政治僵局"
+        ],
+        "filipino": [
+          "political uncertainty",
+          "political uncertainties",
+          "uncertain political climate",
+          "uncertain political situation",
+          "political limbo",
+          "electoral uncertainty",
+          "election uncertainty",
+          "political instability",
+          "kawalan ng katiyakan sa pulitika"
+        ],
+        "fr": [
+          "incertitude politique",
+          "incertitudes politiques",
+          "incertitude institutionnelle",
+          "incertitudes institutionnelles",
+          "flou institutionnel",
+          "incertitude électorale",
+          "incertitude sur l'avenir institutionnel",
+          "incertitude sur l’avenir institutionnel",
+          "climat politique incertain"
+        ],
+        "indo": [
+          "ketidakpastian politik",
+          "ketidakpastian situasi politik",
+          "situasi politik yang tidak menentu",
+          "situasi politik tidak menentu",
+          "ketidakpastian pemilu",
+          "ketidakpastian pilkada",
+          "ketidakpastian politik dalam negeri"
+        ],
+        "japanese": [
+          "政治的不確実性",
+          "政治の不確実性",
+          "政治の先行き不透明",
+          "政局の不透明",
+          "政局の混迷",
+          "政局不安",
+          "政情不安",
+          "政治空白"
+        ],
+        "km": [
+          "ភាពមិនច្បាស់លាស់ខាងនយោបាយ",
+          "ភាពមិនច្បាស់លាស់ផ្នែកនយោបាយ",
+          "ភាពមិនប្រាកដប្រជាខាងនយោបាយ",
+          "ភាពមិនប្រាកដប្រជាផ្នែកនយោបាយ",
+          "ស្ថានភាពនយោបាយមិនច្បាស់លាស់",
+          "political uncertainty"
+        ],
+        "korean": [
+          "정치적 불확실성",
+          "정치 불확실성",
+          "정치적불확실성",
+          "정국 불확실성",
+          "정국 불안",
+          "정치 불안",
+          "정치적 불안",
+          "선거 불확실성",
+          "정치적 혼돈",
+          "정국 혼란"
+        ],
+        "lao": [
+          "ຄວາມບໍ່ແນ່ນອນທາງການເມືອງ",
+          "ຄວາມບໍ່ແນ່ນອນທາງດ້ານການເມືອງ",
+          "ຄວາມບໍ່ແນ່ນອນດ້ານການເມືອງ",
+          "ສະພາບການເມືອງບໍ່ແນ່ນອນ",
+          "ສະພາບການເມືອງທີ່ບໍ່ແນ່ນອນ",
+          "ສະຖານະການການເມືອງບໍ່ແນ່ນອນ",
+          "ສະຖານະການທາງການເມືອງທີ່ບໍ່ແນ່ນອນ",
+          "political uncertainty"
+        ],
+        "malay": [
+          "ketidakpastian politik",
+          "ketidaktentuan politik",
+          "politik tidak menentu",
+          "senario politik tidak menentu",
+          "suasana politik tidak menentu",
+          "landskap politik tidak menentu",
+          "ketidakpastian pilihan raya"
+        ],
+        "mn": [
+          {
+            "prefix": "улс төрийн тодорхойгүй"
+          },
+          {
+            "prefix": "улс төрийн нөхцөл байдал тодорхойгүй"
+          }
+        ],
+        "my": [
+          "နိုင်ငံရေးမရေရာ",
+          "နိုင်ငံရေး မရေရာ",
+          "နိုင်ငံရေးမသေချာမရေရာ",
+          "နိုင်ငံရေး မသေချာမရေရာ",
+          "နိုင်ငံရေးအခြေအနေမရေရာ",
+          "နိုင်ငံရေးအခြေအနေ မရေရာ",
+          "နိုင်ငံရေးအနာဂတ်မရေရာ",
+          "political uncertainty"
+        ],
+        "portuguese": [
+          "incerteza política",
+          "incertezas políticas",
+          "clima político incerto",
+          "situação política incerta",
+          "impasse político",
+          "limbo político",
+          "incerteza eleitoral",
+          "incerteza pós-eleitoral",
+          "imprevisibilidade política"
+        ],
+        "tetum": [
+          "inserteza polítika",
+          "inserteza politika",
+          "inserteza situasaun polítika",
+          "inserteza situasaun politika",
+          "situasaun polítika la klaru",
+          "situasaun politika la klaru",
+          "situasaun inserteza polítika",
+          "situasaun inserteza politika",
+          "impase polítiku",
+          "impase politiku",
+          "impase polítika",
+          "impase politika",
+          "inserteza eleitorál",
+          "inserteza eleitoral",
+          "incerteza política",
+          "incerteza politica",
+          "situação política incerta",
+          "situacao politica incerta",
+          "impasse político",
+          "impasse politico",
+          "incerteza eleitoral"
+        ],
+        "thai": [
+          "ความไม่แน่นอนทางการเมือง",
+          "ความไม่แน่นอนด้านการเมือง",
+          "ความไม่แน่นอนของการเมือง",
+          "การเมืองไม่แน่นอน",
+          "การเมืองยังไม่นิ่ง",
+          "สุญญากาศทางการเมือง",
+          "ความไม่แน่นอนของการเลือกตั้ง",
+          "ความไม่ชัดเจนทางการเมือง"
+        ],
+        "tok_pisin": [
+          "political uncertainty",
+          "political uncertainties",
+          "uncertain political climate",
+          "uncertain political situation",
+          "political limbo",
+          "electoral uncertainty",
+          "election uncertainty",
+          "politik i no klia",
+          "politikel sindaun i no klia",
+          "politikel ansetenti",
+          "ansetenti long politik",
+          "politik i no stedi"
         ]
       }
     },
@@ -452,6 +5568,218 @@
           "geopolitical tensions",
           "geopolitical uncertainty",
           "geopolitical instability"
+        ],
+        "chinese_simplified": [
+          "地缘政治风险",
+          "地缘政治紧张",
+          "地缘政治局势紧张",
+          "地缘政治不确定性",
+          "地缘政治动荡",
+          "地缘冲突",
+          "地缘风险"
+        ],
+        "chinese_traditional": [
+          "地緣政治風險",
+          "地緣政治緊張",
+          "地緣政治不確定性",
+          "地緣風險",
+          "地緣政治動盪"
+        ],
+        "filipino": [
+          "geopolitical risk",
+          "geopolitical risks",
+          "geopolitical tension",
+          "geopolitical tensions",
+          "geopolitical uncertainty",
+          "geopolitical instability",
+          "geopolitical conflict",
+          "geopolitical conflicts",
+          "panganib heopolitikal",
+          "tensyong geopolitikal",
+          "geopolitical na tensyon"
+        ],
+        "fr": [
+          "risque géopolitique",
+          "risques géopolitiques",
+          "tensions géopolitiques",
+          "tension géopolitique",
+          "instabilité géopolitique",
+          "incertitudes géopolitiques",
+          "incertitude géopolitique"
+        ],
+        "indo": [
+          "risiko geopolitik",
+          "ketegangan geopolitik",
+          "ketidakpastian geopolitik",
+          "instabilitas geopolitik",
+          "ketidakstabilan geopolitik",
+          "gejolak geopolitik",
+          "tensi geopolitik",
+          "eskalasi geopolitik",
+          "konflik geopolitik"
+        ],
+        "japanese": [
+          "地政学的リスク",
+          "地政学リスク",
+          "地政学上のリスク",
+          "地政学的緊張",
+          "地政学的な緊張",
+          "地政学的な不確実性",
+          "地政学的な不安定"
+        ],
+        "km": [
+          "ហានិភ័យភូមិសាស្ត្រនយោបាយ",
+          "ហានិភ័យភូមិសាស្ដ្រនយោបាយ",
+          "ហានិភ័យភូមិសាស្រ្ដនយោបាយ",
+          "ហានិភ័យភូមិសាស្រ្តនយោបាយ",
+          "ភាពតានតឹងភូមិសាស្ត្រនយោបាយ",
+          "ភាពតានតឹងភូមិសាស្ដ្រនយោបាយ",
+          "ភាពតានតឹងភូមិសាស្រ្ដនយោបាយ",
+          "ភាពតានតឹងភូមិសាស្រ្តនយោបាយ",
+          "ភាពតានតឹងផ្នែកភូមិសាស្ត្រនយោបាយ",
+          "ភាពតានតឹងផ្នែកភូមិសាស្ដ្រនយោបាយ",
+          "ភាពតានតឹងផ្នែកភូមិសាស្រ្ដនយោបាយ",
+          "ភាពតានតឹងផ្នែកភូមិសាស្រ្តនយោបាយ",
+          "អស្ថិរភាពភូមិសាស្ត្រនយោបាយ",
+          "អស្ថិរភាពភូមិសាស្ដ្រនយោបាយ",
+          "អស្ថិរភាពភូមិសាស្រ្ដនយោបាយ",
+          "អស្ថិរភាពភូមិសាស្រ្តនយោបាយ",
+          "ភាពមិនប្រាកដប្រជាភូមិសាស្ត្រនយោបាយ",
+          "ភាពមិនប្រាកដប្រជាភូមិសាស្ដ្រនយោបាយ",
+          "ភាពមិនប្រាកដប្រជាភូមិសាស្រ្ដនយោបាយ",
+          "ភាពមិនប្រាកដប្រជាភូមិសាស្រ្តនយោបាយ",
+          "geopolitical tension",
+          "geopolitical tensions",
+          "geopolitical risk"
+        ],
+        "korean": [
+          "지정학적 리스크",
+          "지정학 리스크",
+          "지정학적리스크",
+          "지정학적 위험",
+          "지정학적 긴장",
+          "지정학 긴장",
+          "지정학적 불확실성",
+          "지정학적 불안",
+          "지정학적 갈등",
+          "지정학적 위기"
+        ],
+        "lao": [
+          "ຄວາມສ່ຽງທາງພູມສາດການເມືອງ",
+          "ຄວາມສ່ຽງດ້ານພູມສາດການເມືອງ",
+          "ຄວາມເຄັ່ງຕຶງທາງພູມສາດ",
+          "ຄວາມເຄັ່ງຕຶງດ້ານພູມສາດ",
+          "ພູມິລັດຖະສາດ",
+          "geopolitical"
+        ],
+        "malay": [
+          "risiko geopolitik",
+          "ketegangan geopolitik",
+          "ketidakpastian geopolitik",
+          "ketidaktentuan geopolitik",
+          "ketidakstabilan geopolitik",
+          "konflik geopolitik",
+          "pergolakan geopolitik"
+        ],
+        "mn": [
+          {
+            "prefix": "геополитикийн эрсдэл"
+          },
+          {
+            "prefix": "геополитикийн хурцад"
+          },
+          {
+            "prefix": "геополитикийн тодорхойгүй"
+          },
+          {
+            "prefix": "геополитикийн сөргөлд"
+          },
+          {
+            "prefix": "геополитикийн хямрал"
+          },
+          {
+            "prefix": "геополитикийн зөрчил"
+          },
+          {
+            "prefix": "геополитикийн тогтворгүй"
+          }
+        ],
+        "my": [
+          "ဘူမိနိုင်ငံရေးတင်းမာ",
+          "ဘူမိနိုင်ငံရေး တင်းမာ",
+          "ဘူမိနိုင်ငံရေးအန္တရာယ်",
+          "ဘူမိနိုင်ငံရေးဆိုင်ရာ တင်းမာ",
+          "ဘူမိနိုင်ငံရေးဆိုင်ရာတင်းမာ",
+          "ဘူမိနိုင်ငံရေး မတည်ငြိမ်",
+          "ပထဝီနိုင်ငံရေးတင်းမာ",
+          "ပထ၀ီနိုင်ငံရေးတင်းမာ",
+          "geopolitical tension",
+          "geopolitical tensions",
+          "geopolitical risk",
+          "geopolitical risks"
+        ],
+        "portuguese": [
+          "risco geopolítico",
+          "riscos geopolíticos",
+          "tensão geopolítica",
+          "tensões geopolíticas",
+          "incerteza geopolítica",
+          "incertezas geopolíticas",
+          "instabilidade geopolítica",
+          "conflitos geopolíticos",
+          "rivalidade geopolítica"
+        ],
+        "tetum": [
+          "risku jeopolítiku",
+          "risku jeopolitiku",
+          "risku jeopolítika",
+          "risku jeopolitika",
+          "tensaun jeopolítika",
+          "tensaun jeopolitika",
+          "tensaun jeopolítiku",
+          "tensaun jeopolitiku",
+          "inserteza jeopolítika",
+          "inserteza jeopolitika",
+          "instabilidade jeopolítika",
+          "instabilidade jeopolitika",
+          "situasaun jeopolítika",
+          "situasaun jeopolitika",
+          "konflitu jeopolítiku",
+          "konflitu jeopolitiku",
+          "risco geopolítico",
+          "risco geopolitico",
+          "riscos geopolíticos",
+          "riscos geopoliticos",
+          "tensão geopolítica",
+          "tensao geopolitica",
+          "tensões geopolíticas",
+          "tensoes geopoliticas",
+          "incerteza geopolítica",
+          "incerteza geopolitica",
+          "instabilidade geopolítica",
+          "instabilidade geopolitica"
+        ],
+        "thai": [
+          "ความเสี่ยงทางภูมิรัฐศาสตร์",
+          "ความเสี่ยงด้านภูมิรัฐศาสตร์",
+          "ความตึงเครียดทางภูมิรัฐศาสตร์",
+          "ความขัดแย้งทางภูมิรัฐศาสตร์",
+          "ความไม่แน่นอนทางภูมิรัฐศาสตร์",
+          "ปัญหาภูมิรัฐศาสตร์",
+          "geopolitical risk"
+        ],
+        "tok_pisin": [
+          "geopolitical risk",
+          "geopolitical risks",
+          "geopolitical tension",
+          "geopolitical tensions",
+          "geopolitical uncertainty",
+          "geopolitical instability",
+          "jiopolitikel tensen",
+          "jiopolitikel risk",
+          "geopolitikel tensen",
+          "tensen namel long Amerika na Saina",
+          "tensen namel long Saina na Amerika"
         ]
       }
     },
@@ -466,6 +5794,220 @@
           "emergency economic measures",
           "emergency relief package",
           "crisis response"
+        ],
+        "chinese_simplified": [
+          "应急政策",
+          "紧急应对措施",
+          "紧急经济措施",
+          "纾困措施",
+          "纾困政策",
+          "纾困方案",
+          "紧急救助计划",
+          "紧急救助方案",
+          "危机应对"
+        ],
+        "chinese_traditional": [
+          "緊急政策回應",
+          "緊急應變措施",
+          "緊急措施",
+          "緊急經濟措施",
+          "紓困方案",
+          "紓困措施",
+          "緊急紓困",
+          "防疫抗疫基金",
+          "危機應對"
+        ],
+        "filipino": [
+          "emergency policy response",
+          "emergency response measures",
+          "emergency measures",
+          "emergency economic measures",
+          "emergency relief package",
+          "crisis response",
+          "Bayanihan to Heal as One Act",
+          "Bayanihan to Heal as One",
+          "emergency powers",
+          "tugon sa krisis"
+        ],
+        "fr": [
+          "mesures d'urgence",
+          "mesures d’urgence",
+          "plan d'urgence",
+          "plan d’urgence",
+          "plan de sauvegarde économique",
+          "ps2r",
+          "plan de sauvegarde, de refondation et de reconstruction",
+          "réponse à la crise",
+          "mesures exceptionnelles de soutien",
+          "plan de soutien d'urgence",
+          "plan de soutien d’urgence"
+        ],
+        "indo": [
+          "langkah darurat",
+          "langkah-langkah darurat",
+          "kebijakan darurat",
+          "paket kebijakan darurat",
+          "stimulus darurat",
+          "respons krisis",
+          "respons terhadap krisis",
+          "tanggap krisis"
+        ],
+        "japanese": [
+          "緊急経済対策",
+          "緊急の経済対策",
+          "緊急支援策",
+          "緊急政策対応",
+          "危機対応策",
+          "緊急対策パッケージ",
+          "緊急経済措置"
+        ],
+        "km": [
+          "ការឆ្លើយតបគោលនយោបាយបន្ទាន់",
+          "វិធានការសង្គ្រោះបន្ទាន់",
+          "វិធានការឆ្លើយតបបន្ទាន់",
+          "កញ្ចប់ជំនួយបន្ទាន់",
+          "ការឆ្លើយតបនឹងវិបត្តិ",
+          "ការឆ្លើយតបនឹងវិបត្ដិ",
+          "វិធានការអន្តរាគមន៍បន្ទាន់",
+          "វិធានការអន្ដរាគមន៍បន្ទាន់",
+          "emergency measures",
+          "crisis response"
+        ],
+        "korean": [
+          "긴급 대책",
+          "긴급대책",
+          "비상 대책",
+          "비상 경제 대책",
+          "비상경제대책",
+          "긴급 경제 대책",
+          "긴급 구제 패키지",
+          "위기 대응 조치",
+          "비상 조치",
+          "비상경제회의",
+          "긴급경제대책",
+          "비상방역",
+          "최대비상방역체계",
+          "긴급대책회의"
+        ],
+        "lao": [
+          "ມາດຕະການຮັບມືສຸກເສີນ",
+          "ມາດຕະການສຸກເສີນ",
+          "ມາດຕະການແກ້ໄຂສຸກເສີນ",
+          "ມາດຕະການແກ້ໄຂຮີບດ່ວນ",
+          "ມາດຕະການຮີບດ່ວນ",
+          "ມາດຕະການແກ້ໄຂຄວາມຫຍຸ້ງຍາກທາງດ້ານເສດຖະກິດ",
+          "ແກ້ໄຂຄວາມຫຍຸ້ງຍາກທາງດ້ານເສດຖະກິດ-ການເງິນ",
+          "ແກ້ໄຂຄວາມຫຍຸ້ງຍາກດ້ານເສດຖະກິດ-ການເງິນ",
+          "emergency measures"
+        ],
+        "malay": [
+          "tindak balas dasar kecemasan",
+          "langkah kecemasan",
+          "langkah-langkah kecemasan",
+          "langkah ekonomi kecemasan",
+          "pakej bantuan kecemasan",
+          "pakej rangsangan kecemasan",
+          "tindak balas krisis",
+          "tindak balas terhadap krisis"
+        ],
+        "mn": [
+          {
+            "prefix": "онцгой арга хэмжээ"
+          },
+          {
+            "prefix": "онцгой байдлын үеийн арга хэмжээ"
+          },
+          {
+            "prefix": "хямралын эсрэг арга хэмжээ"
+          },
+          {
+            "prefix": "хямралын эсрэг хөтөлбөр"
+          },
+          {
+            "prefix": "яаралтай тусламжийн багц"
+          },
+          {
+            "prefix": "онц арга хэмжээ"
+          },
+          {
+            "prefix": "хямралыг даван туулах арга хэмжээ"
+          }
+        ],
+        "my": [
+          "အရေးပေါ်အစီအမံ",
+          "အရေးပေါ် အစီအမံ",
+          "အရေးပေါ်စီးပွားရေးအစီအမံ",
+          "အရေးပေါ်မူဝါဒ",
+          "အရေးပေါ်မူ၀ါဒ",
+          "အကျပ်အတည်းတုံ့ပြန်ရေး",
+          "အကျပ်အတည်း တုံ့ပြန်ရေး",
+          "emergency measures",
+          "crisis response"
+        ],
+        "portuguese": [
+          "resposta política de emergência",
+          "medidas de emergência",
+          "medida de emergência",
+          "medidas económicas de emergência",
+          "medidas econômicas de emergência",
+          "pacote de emergência",
+          "pacote de apoio de emergência",
+          "pacote de ajuda de emergência",
+          "resposta à crise",
+          "respostas à crise",
+          "medidas de resposta à crise",
+          "medidas extraordinárias de apoio",
+          "plano de emergência económica",
+          "plano de emergência económico",
+          "medidas de apoio de emergência"
+        ],
+        "tetum": [
+          "resposta polítika emerjénsia",
+          "resposta politika emerjensia",
+          "medida emerjénsia",
+          "medida emerjensia",
+          "medida emerjénsia sira",
+          "medida emerjensia sira",
+          "medida ekonómika emerjénsia",
+          "medida ekonomika emerjensia",
+          "pakote emerjénsia",
+          "pakote emerjensia",
+          "resposta ba krize",
+          "resposta krize",
+          "resposta política de emergência",
+          "resposta politica de emergencia",
+          "medidas de emergência",
+          "medidas de emergencia",
+          "medidas económicas de emergência",
+          "medidas economicas de emergencia",
+          "pacote de emergência",
+          "pacote de emergencia",
+          "resposta à crise",
+          "resposta a crise",
+          "medidas extraordinárias",
+          "medidas extraordinarias"
+        ],
+        "thai": [
+          "มาตรการฉุกเฉิน",
+          "มาตรการเร่งด่วน",
+          "มาตรการเยียวยาฉุกเฉิน",
+          "มาตรการนโยบายฉุกเฉิน",
+          "มาตรการรับมือวิกฤต",
+          "มาตรการรับมือวิกฤติ",
+          "มาตรการบรรเทาผลกระทบ"
+        ],
+        "tok_pisin": [
+          "emergency policy response",
+          "emergency response measures",
+          "emergency measures",
+          "emergency economic measures",
+          "emergency relief package",
+          "crisis response",
+          "emejensi mesa",
+          "ol emejensi mesa",
+          "emejensi rispons",
+          "emejensi pekij",
+          "krisis rispons"
         ]
       }
     },
@@ -481,6 +6023,209 @@
           "crisis task force",
           "crisis committee",
           "emergency task force"
+        ],
+        "chinese_simplified": [
+          "危机协调",
+          "危机管理",
+          "危机处置",
+          "应急指挥部",
+          "危机应对小组",
+          "联防联控",
+          "协调应对危机",
+          "应急联动机制"
+        ],
+        "chinese_traditional": [
+          "危機協調",
+          "危機處理",
+          "危機管理",
+          "應變小組",
+          "應變中心",
+          "中央流行疫情指揮中心",
+          "聯合應變",
+          "危機應變小組"
+        ],
+        "filipino": [
+          "crisis coordination",
+          "coordinated crisis response",
+          "crisis management",
+          "crisis task force",
+          "crisis committee",
+          "emergency task force",
+          "IATF-EID",
+          "Inter-Agency Task Force on Emerging Infectious Diseases",
+          "crisis management committee"
+        ],
+        "fr": [
+          "cellule de crise",
+          "gestion de crise",
+          "gestion de la crise",
+          "comité de crise",
+          "cellule interministérielle de crise",
+          "centre opérationnel de crise",
+          "réponse coordonnée",
+          "coordination de crise"
+        ],
+        "indo": [
+          "manajemen krisis",
+          "koordinasi krisis",
+          "penanganan krisis",
+          "respons terkoordinasi",
+          "satgas krisis",
+          "gugus tugas krisis",
+          "komite krisis",
+          "tim penanganan krisis",
+          "crisis center"
+        ],
+        "japanese": [
+          "危機管理",
+          "危機対応の調整",
+          "緊急対策本部",
+          "危機対策本部",
+          "危機管理センター",
+          "関係省庁連絡会議"
+        ],
+        "km": [
+          "ការគ្រប់គ្រងវិបត្តិ",
+          "ការគ្រប់គ្រងវិបត្ដិ",
+          "ការសម្របសម្រួលក្នុងវិបត្តិ",
+          "ការសម្របសម្រួលក្នុងវិបត្ដិ",
+          "គណៈកម្មការគ្រប់គ្រងវិបត្តិ",
+          "គណៈកម្មការគ្រប់គ្រងវិបត្ដិ",
+          "ក្រុមការងារគ្រប់គ្រងវិបត្តិ",
+          "ក្រុមការងារគ្រប់គ្រងវិបត្ដិ",
+          "ការសម្របសម្រួលការឆ្លើយតប",
+          "crisis management"
+        ],
+        "korean": [
+          "위기 대응 공조",
+          "공조 대응",
+          "범정부 대응",
+          "중앙재난안전대책본부",
+          "중대본",
+          "위기관리위원회",
+          "비상 태스크포스",
+          "비상대응반",
+          "국가위기관리센터",
+          "위기관리체계"
+        ],
+        "lao": [
+          "ການປະສານງານໃນພາວະວິກິດ",
+          "ການຄຸ້ມຄອງວິກິດການ",
+          "ການຄຸ້ມຄອງວິກິດ",
+          "ການບໍລິຫານວິກິດການ",
+          "ການບໍລິຫານຈັດການວິກິດ",
+          "ການຕອບໂຕ້ແບບປະສານງານ",
+          "ສູນບັນຊາການສຸກເສີນ",
+          "ສູນປະຕິບັດການສຸກເສີນ",
+          "crisis management"
+        ],
+        "malay": [
+          "penyelarasan krisis",
+          "pengurusan krisis",
+          "tindak balas bersepadu",
+          "tindak balas yang diselaraskan",
+          "pasukan petugas krisis",
+          "jawatankuasa krisis",
+          "jawatankuasa pengurusan krisis",
+          "pasukan petugas kecemasan"
+        ],
+        "mn": [
+          {
+            "prefix": "хямралын менежмент"
+          },
+          {
+            "prefix": "хямралыг зохицуул"
+          },
+          {
+            "prefix": "хямралын удирдлаг"
+          },
+          {
+            "prefix": "хямралын үеийн зохицуул"
+          },
+          {
+            "prefix": "онцгой комисс"
+          },
+          {
+            "prefix": "хямралын штаб"
+          },
+          {
+            "prefix": "хямралыг удирд"
+          }
+        ],
+        "my": [
+          "အကျပ်အတည်းစီမံခန့်ခွဲ",
+          "အကျပ်အတည်း စီမံခန့်ခွဲ",
+          "အကျပ်အတည်းဆိုင်ရာကော်မတီ",
+          "အကျပ်အတည်းဆိုင်ရာ ကော်မတီ",
+          "အရေးပေါ်လုပ်ငန်းအဖွဲ့",
+          "အရေးပေါ် လုပ်ငန်းအဖွဲ့",
+          "crisis management",
+          "crisis task force"
+        ],
+        "portuguese": [
+          "coordenação de crise",
+          "coordenação da crise",
+          "resposta coordenada",
+          "resposta concertada",
+          "gestão de crise",
+          "gestão de crises",
+          "gestão da crise",
+          "gabinete de crise",
+          "célula de crise",
+          "comité de crise",
+          "comissão de crise",
+          "grupo de trabalho de emergência",
+          "centro de coordenação de emergência",
+          "Centro de Coordenação de Contingência"
+        ],
+        "tetum": [
+          "koordenasaun krize",
+          "jestaun krize",
+          "Sentru Integradu Jestaun Krize",
+          "SIJK",
+          "forsa-tarefa krize",
+          "komisaun krize",
+          "ekipa jestaun krize",
+          "resposta koordenada",
+          "coordenação da crise",
+          "coordenacao da crise",
+          "gestão de crise",
+          "gestao de crise",
+          "gestão da crise",
+          "gestao da crise",
+          "gestão de crises",
+          "gestao de crises",
+          "Centro Integrado de Gestão de Crise",
+          "Centro Integrado de Gestao de Crise",
+          "gabinete de crise",
+          "célula de crise",
+          "celula de crise"
+        ],
+        "thai": [
+          "การบริหารจัดการวิกฤต",
+          "การบริหารจัดการวิกฤติ",
+          "การบริหารวิกฤต",
+          "การบริหารวิกฤติ",
+          "ศูนย์บริหารสถานการณ์",
+          "ศูนย์ปฏิบัติการฉุกเฉิน",
+          "วอร์รูม",
+          "การประสานงานภาวะวิกฤต",
+          "การประสานงานภาวะวิกฤติ"
+        ],
+        "tok_pisin": [
+          "crisis coordination",
+          "coordinated crisis response",
+          "coordinated response",
+          "crisis management",
+          "crisis task force",
+          "crisis committee",
+          "emergency task force",
+          "krisis menesmen",
+          "menesim krisis",
+          "Emergency Controller",
+          "Emejensi Kontrola",
+          "National Control Centre",
+          "Nesenel Kontrol Senta"
         ]
       }
     },
@@ -494,6 +6239,168 @@
           "emergency communication",
           "emergency communications",
           "risk communication"
+        ],
+        "chinese_simplified": [
+          "危机沟通",
+          "危机公关",
+          "应急沟通",
+          "风险沟通",
+          "风险交流"
+        ],
+        "chinese_traditional": [
+          "危機溝通",
+          "危機傳播",
+          "風險溝通",
+          "緊急通訊",
+          "應急通訊",
+          "危機公關"
+        ],
+        "filipino": [
+          "crisis communication",
+          "crisis communications",
+          "emergency communication",
+          "emergency communications",
+          "risk communication"
+        ],
+        "fr": [
+          "communication de crise",
+          "communication d'urgence",
+          "communication d’urgence",
+          "communication sur les risques",
+          "communication des risques"
+        ],
+        "indo": [
+          "komunikasi krisis",
+          "komunikasi darurat",
+          "komunikasi risiko",
+          "komunikasi kedaruratan",
+          "komunikasi saat krisis"
+        ],
+        "japanese": [
+          "リスクコミュニケーション",
+          "クライシスコミュニケーション",
+          "危機時の情報発信",
+          "緊急時の情報発信",
+          "危機管理広報",
+          "緊急情報の発信"
+        ],
+        "km": [
+          "ការទំនាក់ទំនងក្នុងវិបត្តិ",
+          "ការទំនាក់ទំនងក្នុងវិបត្ដិ",
+          "ការទំនាក់ទំនងវិបត្តិ",
+          "ការទំនាក់ទំនងវិបត្ដិ",
+          "ការទំនាក់ទំនងហានិភ័យ",
+          "ការទំនាក់ទំនងក្នុងគ្រាអាសន្ន",
+          "crisis communication",
+          "risk communication"
+        ],
+        "korean": [
+          "위기 소통",
+          "위기소통",
+          "위기 커뮤니케이션",
+          "위기커뮤니케이션",
+          "재난 소통",
+          "위험 소통",
+          "위험소통",
+          "위험 커뮤니케이션",
+          "재난문자",
+          "긴급재난문자"
+        ],
+        "lao": [
+          "ການສື່ສານໃນພາວະວິກິດ",
+          "ການສື່ສານໃນພາວະສຸກເສີນ",
+          "ການສື່ສານໃນສະຖານະການສຸກເສີນ",
+          "ການສື່ສານຄວາມສ່ຽງ",
+          "ການສື່ສານດ້ານຄວາມສ່ຽງ",
+          "ການສື່ສານສຸກເສີນ",
+          "ການສື່ສານໃນພາວະວິກິດການ",
+          "risk communication",
+          "crisis communication"
+        ],
+        "malay": [
+          "komunikasi krisis",
+          "komunikasi kecemasan",
+          "komunikasi risiko",
+          "komunikasi semasa krisis"
+        ],
+        "mn": [
+          {
+            "prefix": "хямралын үеийн харилцаа"
+          },
+          {
+            "prefix": "хямралын үеийн мэдээлэл"
+          },
+          {
+            "prefix": "хямралын үеийн мэдээлл"
+          },
+          {
+            "prefix": "эрсдэлийн харилцаа"
+          },
+          {
+            "prefix": "онцгой байдлын үеийн мэдээлэл"
+          },
+          {
+            "prefix": "онцгой байдлын үеийн мэдээлл"
+          },
+          {
+            "prefix": "эрсдэлийн тухай мэдээлэл"
+          },
+          {
+            "prefix": "хямралын харилцаа"
+          }
+        ],
+        "my": [
+          "အကျပ်အတည်းဆက်သွယ်ပြောဆို",
+          "အကျပ်အတည်းဆိုင်ရာ ဆက်သွယ်ပြောဆို",
+          "အရေးပေါ်ဆက်သွယ်ရေး",
+          "အရေးပေါ် ဆက်သွယ်ရေး",
+          "အန္တရာယ်ဆိုင်ရာ ဆက်သွယ်ပြောဆို",
+          "crisis communication",
+          "risk communication"
+        ],
+        "portuguese": [
+          "comunicação de crise",
+          "comunicação em situação de crise",
+          "comunicação de emergência",
+          "comunicações de emergência",
+          "comunicação de risco",
+          "comunicação de riscos",
+          "comunicação em crise"
+        ],
+        "tetum": [
+          "komunikasaun krize",
+          "komunikasaun risku",
+          "komunikasaun emerjénsia",
+          "komunikasaun emerjensia",
+          "komunikasaun iha tempu krize",
+          "comunicação de crise",
+          "comunicacao de crise",
+          "comunicação de risco",
+          "comunicacao de risco",
+          "comunicação de riscos",
+          "comunicacao de riscos",
+          "comunicação de emergência",
+          "comunicacao de emergencia"
+        ],
+        "thai": [
+          "การสื่อสารภาวะวิกฤต",
+          "การสื่อสารภาวะวิกฤติ",
+          "การสื่อสารในภาวะวิกฤต",
+          "การสื่อสารในภาวะวิกฤติ",
+          "การสื่อสารความเสี่ยง",
+          "การสื่อสารในภาวะฉุกเฉิน",
+          "การแจ้งเตือนภัยฉุกเฉิน"
+        ],
+        "tok_pisin": [
+          "crisis communication",
+          "crisis communications",
+          "emergency communication",
+          "emergency communications",
+          "risk communication",
+          "emejensi toksave",
+          "krisis komyunikesen",
+          "risk komyunikesen",
+          "toksave long taim bilong krisis"
         ]
       }
     },
@@ -509,6 +6416,211 @@
           "emergency credit",
           "rapid financing instrument",
           "rapid credit facility"
+        ],
+        "chinese_simplified": [
+          "紧急融资",
+          "应急融资",
+          "紧急贷款",
+          "应急贷款",
+          "紧急援助贷款",
+          "紧急资金",
+          "应急资金",
+          "快速融资工具",
+          "快速信贷机制",
+          "紧急信贷"
+        ],
+        "chinese_traditional": [
+          "緊急融資",
+          "緊急貸款",
+          "緊急資金",
+          "緊急撥款",
+          "緊急信貸",
+          "快速融資工具",
+          "快速信貸機制",
+          "緊急援助貸款"
+        ],
+        "filipino": [
+          "emergency financing",
+          "emergency funding",
+          "emergency loan",
+          "emergency loans",
+          "emergency credit",
+          "rapid financing instrument",
+          "rapid credit facility",
+          "pondong pang-emerhensiya",
+          "pondo para sa emerhensiya"
+        ],
+        "fr": [
+          "financement d'urgence",
+          "financement d’urgence",
+          "prêt d'urgence",
+          "prêt d’urgence",
+          "prêts d'urgence",
+          "prêts d’urgence",
+          "prêt garanti par l'état",
+          "prêt garanti par l’état",
+          "prêts garantis par l'état",
+          "prêts garantis par l’état",
+          "pge",
+          "fonds d'urgence",
+          "fonds d’urgence",
+          "aide financière d'urgence",
+          "aide financière d’urgence"
+        ],
+        "indo": [
+          "pembiayaan darurat",
+          "pendanaan darurat",
+          "pinjaman darurat",
+          "kredit darurat",
+          "fasilitas pembiayaan darurat",
+          "bantuan keuangan darurat",
+          "rapid financing instrument"
+        ],
+        "japanese": [
+          "緊急融資",
+          "緊急貸付",
+          "緊急資金",
+          "緊急金融支援",
+          "緊急小口資金",
+          "緊急支援融資",
+          "ラピッド・ファイナンシング"
+        ],
+        "km": [
+          "ហិរញ្ញប្បទានបន្ទាន់",
+          "ហិរញ្ញប្បទានសង្គ្រោះបន្ទាន់",
+          "ប្រាក់កម្ចីបន្ទាន់",
+          "ឥណទានបន្ទាន់",
+          "មូលនិធិបន្ទាន់",
+          "emergency financing",
+          "emergency loan"
+        ],
+        "korean": [
+          "긴급 융자",
+          "긴급 유동성",
+          "긴급 구제금융",
+          "구제금융",
+          "긴급 신속 금융",
+          "신속금융제도",
+          "긴급 자금 지원",
+          "긴급 재정 지원"
+        ],
+        "lao": [
+          "ການສະໜອງທຶນສຸກເສີນ",
+          "ການສະຫນອງທຶນສຸກເສີນ",
+          "ທຶນສຸກເສີນ",
+          "ເງິນກູ້ສຸກເສີນ",
+          "ງົບປະມານສຸກເສີນ",
+          "ສິນເຊື່ອສຸກເສີນ",
+          "ທຶນສຳຮອງສຸກເສີນ",
+          "ເງິນສຳຮອງສຸກເສີນ",
+          "emergency financing",
+          "emergency loan"
+        ],
+        "malay": [
+          "pembiayaan kecemasan",
+          "pinjaman kecemasan",
+          "kredit kecemasan",
+          "bantuan kewangan kecemasan",
+          "instrumen pembiayaan pantas",
+          "kemudahan kredit pantas",
+          "peruntukan kecemasan",
+          "dana kecemasan kerajaan"
+        ],
+        "mn": [
+          {
+            "prefix": "яаралтай санхүүжилт"
+          },
+          {
+            "prefix": "яаралтай зээл"
+          },
+          {
+            "prefix": "яаралтай тусламжийн санхүүжилт"
+          },
+          {
+            "prefix": "онцгой санхүүжилт"
+          },
+          {
+            "prefix": "яаралтай санхүүгийн тусламж"
+          },
+          {
+            "prefix": "шуурхай санхүүжилт"
+          },
+          {
+            "prefix": "яаралтай тусламжийн зээл"
+          }
+        ],
+        "my": [
+          "အရေးပေါ်ချေးငွေ",
+          "အရေးပေါ် ချေးငွေ",
+          "အရေးပေါ်ရန်ပုံငွေ",
+          "အရေးပေါ် ရန်ပုံငွေ",
+          "အရေးပေါ်ငွေကြေးထောက်ပံ့",
+          "အရေးပေါ် ငွေကြေးထောက်ပံ့",
+          "အရေးပေါ်ဘဏ္ဍာငွေ",
+          "Rapid Financing Instrument",
+          "Rapid Credit Facility",
+          "emergency financing"
+        ],
+        "portuguese": [
+          "financiamento de emergência",
+          "financiamentos de emergência",
+          "fundos de emergência",
+          "fundo de emergência",
+          "empréstimo de emergência",
+          "empréstimos de emergência",
+          "crédito de emergência",
+          "linha de crédito de emergência",
+          "ajuda financeira de emergência",
+          "instrumento de financiamento rápido",
+          "facilidade de crédito rápido"
+        ],
+        "tetum": [
+          "finansiamentu emerjénsia",
+          "finansiamentu emerjensia",
+          "fundu emerjénsia",
+          "fundu emerjensia",
+          "empréstimu emerjénsia",
+          "emprestimu emerjensia",
+          "kréditu emerjénsia",
+          "kreditu emerjensia",
+          "apoiu orsamentál emerjénsia",
+          "apoiu orsamental emerjensia",
+          "financiamento de emergência",
+          "financiamento de emergencia",
+          "fundo de emergência",
+          "fundo de emergencia",
+          "empréstimo de emergência",
+          "emprestimo de emergencia",
+          "empréstimos de emergência",
+          "emprestimos de emergencia",
+          "crédito de emergência",
+          "credito de emergencia",
+          "instrumento de financiamento rápido",
+          "instrumento de financiamento rapido"
+        ],
+        "thai": [
+          "เงินกู้ฉุกเฉิน",
+          "สินเชื่อฉุกเฉิน",
+          "เงินทุนฉุกเฉิน",
+          "งบกลางกรณีฉุกเฉิน",
+          "งบฉุกเฉิน",
+          "พ.ร.ก.กู้เงิน",
+          "rapid financing instrument"
+        ],
+        "tok_pisin": [
+          "emergency financing",
+          "emergency funding",
+          "emergency loan",
+          "emergency loans",
+          "emergency credit",
+          "rapid financing instrument",
+          "rapid credit facility",
+          "emejensi mani",
+          "emejensi fanding",
+          "emejensi dinau",
+          "emejensi lon",
+          "mani bilong emejensi",
+          "emejensi fan"
         ]
       }
     },
@@ -524,6 +6636,213 @@
           "contingency planning",
           "contingency plan",
           "contingency plans"
+        ],
+        "chinese_simplified": [
+          "冲击防备",
+          "应急准备",
+          "危机准备",
+          "危机防范",
+          "应急预案",
+          "应急计划",
+          "应急储备"
+        ],
+        "chinese_traditional": [
+          "衝擊整備",
+          "危機整備",
+          "緊急應變準備",
+          "應變準備",
+          "應急準備",
+          "應變計畫",
+          "應變計劃",
+          "應急預案"
+        ],
+        "filipino": [
+          "shock preparedness",
+          "crisis preparedness",
+          "preparedness for shocks",
+          "emergency preparedness",
+          "contingency planning",
+          "contingency plan",
+          "contingency plans",
+          "kahandaan sa krisis",
+          "kahandaan sa emerhensiya"
+        ],
+        "fr": [
+          "préparation aux crises",
+          "préparation aux chocs",
+          "préparation aux situations d'urgence",
+          "préparation aux situations d’urgence",
+          "plan de continuité",
+          "plans de continuité",
+          "plan de continuité d'activité",
+          "plan de continuité d’activité",
+          "plan de contingence",
+          "plans de contingence"
+        ],
+        "indo": [
+          "kesiapsiagaan krisis",
+          "kesiapsiagaan menghadapi krisis",
+          "kesiapsiagaan menghadapi guncangan",
+          "kesiapan menghadapi krisis",
+          "rencana kontingensi",
+          "perencanaan kontingensi",
+          "protokol manajemen krisis",
+          "kesiapsiagaan darurat"
+        ],
+        "japanese": [
+          "危機への備え",
+          "ショックへの備え",
+          "緊急事態への備え",
+          "不測の事態への備え",
+          "危機管理計画",
+          "事業継続計画",
+          "BCP",
+          "ＢＣＰ",
+          "緊急時対応計画"
+        ],
+        "km": [
+          "ការត្រៀមខ្លួនប្រឈមវិបត្តិ",
+          "ការត្រៀមខ្លួនប្រឈមវិបត្ដិ",
+          "ការត្រៀមខ្លួនសម្រាប់វិបត្តិ",
+          "ការត្រៀមខ្លួនសម្រាប់វិបត្ដិ",
+          "ការត្រៀមលក្ខណៈសម្រាប់វិបត្តិ",
+          "ការត្រៀមលក្ខណៈសម្រាប់វិបត្ដិ",
+          "ផែនការសង្គ្រោះបន្ទាន់",
+          "ផែនការបម្រុង",
+          "ផែនការគ្រាអាសន្ន",
+          "contingency plan",
+          "crisis preparedness"
+        ],
+        "korean": [
+          "위기 대비",
+          "위기대비",
+          "충격 대비",
+          "비상 대비",
+          "비상대비",
+          "비상계획",
+          "비상 계획",
+          "컨틴전시 플랜",
+          "컨틴전시플랜",
+          "비상 대응 계획",
+          "비상대응계획",
+          "위기 대응 매뉴얼"
+        ],
+        "lao": [
+          "ການກຽມພ້ອມຮັບມືວິກິດ",
+          "ການກຽມພ້ອມຮັບມືກັບວິກິດ",
+          "ການກະກຽມຮັບມືກັບວິກິດ",
+          "ກະກຽມຮັບມືວິກິດ",
+          "ການກຽມພ້ອມຮັບມືສຸກເສີນ",
+          "ການກຽມພ້ອມຮັບມືກັບພາວະສຸກເສີນ",
+          "ແຜນຮັບມືສຸກເສີນ",
+          "ແຜນການຮັບມືສຸກເສີນ",
+          "ແຜນສຸກເສີນ",
+          "emergency preparedness"
+        ],
+        "malay": [
+          "kesediaan menghadapi kejutan",
+          "kesiapsiagaan krisis",
+          "kesediaan menghadapi krisis",
+          "kesiapsiagaan kecemasan",
+          "persediaan kecemasan",
+          "pelan kontingensi",
+          "perancangan kontingensi",
+          "pelan luar jangka"
+        ],
+        "mn": [
+          {
+            "prefix": "хямралд бэлэн"
+          },
+          {
+            "prefix": "цочролд бэлэн"
+          },
+          {
+            "prefix": "онцгой байдалд бэлэн"
+          },
+          {
+            "prefix": "онцгой байдлын бэлэн байдал"
+          },
+          {
+            "prefix": "онцгой байдлын бэлэн байдл"
+          },
+          {
+            "prefix": "нөөц төлөвлөгөө"
+          },
+          {
+            "prefix": "хямралд бэлтгэ"
+          },
+          {
+            "prefix": "хямралын үеийн төлөвлөгөө"
+          }
+        ],
+        "my": [
+          "အကျပ်အတည်းအတွက် ကြိုတင်ပြင်ဆင်",
+          "အရေးပေါ်အခြေအနေအတွက် ကြိုတင်ပြင်ဆင်",
+          "အရေးပေါ်ကြိုတင်ပြင်ဆင်",
+          "အရေးပေါ် ကြိုတင်ပြင်ဆင်",
+          "ကြိုတင်ပြင်ဆင်ထားရှိရေး အစီအစဉ်",
+          "contingency plan",
+          "emergency preparedness"
+        ],
+        "portuguese": [
+          "preparação para choques",
+          "preparação para crises",
+          "preparação para emergências",
+          "preparação para situações de emergência",
+          "capacidade de resposta a emergências",
+          "planeamento de contingência",
+          "planejamento de contingência",
+          "plano de contingência",
+          "planos de contingência"
+        ],
+        "tetum": [
+          "preparasaun ba xoke",
+          "preparasaun ba krize",
+          "preparasaun emerjénsia",
+          "preparasaun emerjensia",
+          "planu kontinjénsia",
+          "planu kontinjensia",
+          "planu kontinjénsia sira",
+          "planu kontinjensia sira",
+          "planeamentu kontinjénsia",
+          "planeamentu kontinjensia",
+          "preparação para crises",
+          "preparacao para crises",
+          "preparação para choques",
+          "preparacao para choques",
+          "preparação para emergências",
+          "preparacao para emergencias",
+          "plano de contingência",
+          "plano de contingencia",
+          "planos de contingência",
+          "planos de contingencia",
+          "planeamento de contingência",
+          "planeamento de contingencia"
+        ],
+        "thai": [
+          "การเตรียมความพร้อมรับมือ",
+          "เตรียมความพร้อมรับมือ",
+          "การเตรียมพร้อมรับมือวิกฤต",
+          "การเตรียมพร้อมรับมือวิกฤติ",
+          "แผนเผชิญเหตุ",
+          "แผนรองรับฉุกเฉิน",
+          "แผนฉุกเฉิน",
+          "ความพร้อมรับมือภาวะฉุกเฉิน"
+        ],
+        "tok_pisin": [
+          "shock preparedness",
+          "crisis preparedness",
+          "preparedness for shocks",
+          "emergency preparedness",
+          "contingency planning",
+          "contingency plan",
+          "contingency plans",
+          "redi long krisis",
+          "redi long emejensi",
+          "stap redi long ol emejensi",
+          "emejensi redines",
+          "kontinjensi plen",
+          "kontinjensi plan"
         ]
       }
     },
@@ -540,6 +6859,242 @@
           "post-pandemic recovery",
           "recovery plan",
           "recovery package"
+        ],
+        "chinese_simplified": [
+          "冲击后恢复",
+          "危机后复苏",
+          "危机后恢复",
+          "从危机中复苏",
+          "疫后复苏",
+          "疫情后复苏",
+          "复苏计划",
+          "复苏方案"
+        ],
+        "chinese_traditional": [
+          "危機後復甦",
+          "危機後復原",
+          "衝擊後復原",
+          "疫後復甦",
+          "疫後復蘇",
+          "疫後重建",
+          "經濟振興方案",
+          "復甦計畫",
+          "復蘇計劃",
+          "振興方案",
+          "復甦方案",
+          "復蘇方案",
+          "危機後復蘇"
+        ],
+        "filipino": [
+          "shock recovery",
+          "crisis recovery",
+          "post-crisis recovery",
+          "recovery from the crisis",
+          "post-pandemic recovery",
+          "recovery plan",
+          "recovery package",
+          "economic recovery plan",
+          "pagbangon mula sa krisis",
+          "pagbangon mula sa pandemya"
+        ],
+        "fr": [
+          "sortie de crise",
+          "plan de relance",
+          "plans de relance",
+          "plan de relance économique",
+          "relance post-covid",
+          "reprise post-covid",
+          "reconstruction économique",
+          "plan de reconstruction",
+          "après-crise",
+          "relèvement après la crise"
+        ],
+        "indo": [
+          "pemulihan krisis",
+          "pemulihan pascakrisis",
+          "pemulihan pasca krisis",
+          "pemulihan pasca-krisis",
+          "pemulihan dari krisis",
+          "pemulihan pascapandemi",
+          "pemulihan pasca pandemi",
+          "pemulihan ekonomi nasional",
+          "program PEN",
+          "paket pemulihan",
+          "pemulihan dari guncangan"
+        ],
+        "japanese": [
+          "ショックからの回復",
+          "危機からの回復",
+          "コロナからの回復",
+          "経済再生計画",
+          "景気回復策"
+        ],
+        "km": [
+          "ការស្តារឡើងវិញក្រោយវិបត្តិ",
+          "ការស្ដារឡើងវិញក្រោយវិបត្ដិ",
+          "ការស្ដារឡើងវិញក្រោយវិបត្តិ",
+          "ការស្តារឡើងវិញក្រោយវិបត្ដិ",
+          "ការស្តារសេដ្ឋកិច្ចក្រោយវិបត្តិ",
+          "ការស្ដារសេដ្ឋកិច្ចក្រោយវិបត្ដិ",
+          "ការស្ដារសេដ្ឋកិច្ចក្រោយវិបត្តិ",
+          "ការស្តារសេដ្ឋកិច្ចក្រោយវិបត្ដិ",
+          "ការស្តារសេដ្ឋកិច្ចឡើងវិញ",
+          "ការស្ដារសេដ្ឋកិច្ចឡើងវិញ",
+          "ផែនការស្តារសេដ្ឋកិច្ច",
+          "ផែនការស្ដារសេដ្ឋកិច្ច",
+          "ការស្តារឡើងវិញក្រោយកូវីដ",
+          "ការស្ដារឡើងវិញក្រោយកូវីដ",
+          "ការងើបឡើងវិញក្រោយវិបត្តិ",
+          "ការងើបឡើងវិញក្រោយវិបត្ដិ",
+          "recovery plan",
+          "post-crisis recovery"
+        ],
+        "korean": [
+          "위기 극복",
+          "위기극복",
+          "위기 회복",
+          "위기 이후 회복",
+          "포스트 코로나 회복",
+          "코로나 이후 회복",
+          "회복 계획",
+          "경제 회복 계획",
+          "회복 패키지",
+          "경기 회복 대책",
+          "충격 회복",
+          "복구 계획"
+        ],
+        "lao": [
+          "ການຟື້ນຕົວຈາກວິກິດ",
+          "ຟື້ນຕົວຈາກວິກິດ",
+          "ການຟື້ນຟູຫຼັງວິກິດ",
+          "ການຟື້ນຟູຫລັງວິກິດ",
+          "ການຟື້ນຕົວຫຼັງວິກິດ",
+          "ການຟື້ນຕົວຫລັງວິກິດ",
+          "ຟື້ນຕົວຈາກຜົນກະທົບ",
+          "ຟື້ນຕົວຈາກການແຜ່ລະບາດ",
+          "ຟື້ນຕົວຈາກການລະບາດ",
+          "ຟື້ນຕົວຈາກພະຍາດໂຄວິດ",
+          "ການຟື້ນຕົວຫຼັງໂຄວິດ",
+          "ການຟື້ນຕົວຫລັງໂຄວິດ",
+          "ຜ່ານຜ່າວິກິດ",
+          "crisis recovery"
+        ],
+        "malay": [
+          "pemulihan daripada kejutan",
+          "pemulihan krisis",
+          "pemulihan selepas krisis",
+          "pemulihan pasca krisis",
+          "pemulihan daripada krisis",
+          "pemulihan pasca pandemik",
+          "pemulihan selepas pandemik",
+          "pelan pemulihan",
+          "pakej pemulihan",
+          "pelan pemulihan negara"
+        ],
+        "mn": [
+          {
+            "prefix": "хямралаас гар"
+          },
+          {
+            "prefix": "хямралын дараах"
+          },
+          {
+            "prefix": "хямралаас сэргэ"
+          },
+          {
+            "prefix": "цочролоос сэргэ"
+          },
+          {
+            "prefix": "цар тахлын дараах сэргэлт"
+          },
+          {
+            "prefix": "хямралын дараа сэргэ"
+          },
+          {
+            "prefix": "цар тахлаас сэргэ"
+          }
+        ],
+        "my": [
+          "အကျပ်အတည်းမှ ပြန်လည်နာလန်ထူ",
+          "အကျပ်အတည်းမှပြန်လည်နာလန်ထူ",
+          "ပြန်လည်နာလန်ထူရေးအစီအစဉ်",
+          "ပြန်လည်နာလန်ထူရေး အစီအစဉ်",
+          "ကပ်ရောဂါအလွန် ပြန်လည်နာလန်ထူ",
+          "ကိုဗစ်အလွန် ပြန်လည်နာလန်ထူ",
+          "recovery plan",
+          "post-pandemic recovery"
+        ],
+        "portuguese": [
+          "recuperação de choques",
+          "recuperação pós-crise",
+          "recuperação da crise",
+          "recuperação após a crise",
+          "recuperação depois da crise",
+          "recuperação do choque",
+          "recuperação pós-pandemia",
+          "recuperação pós-pandémica",
+          "recuperação pós-pandêmica",
+          "recuperação após a pandemia",
+          "plano de recuperação",
+          "planos de recuperação",
+          "pacote de recuperação",
+          "plano de recuperação económica",
+          "plano de recuperação econômica"
+        ],
+        "tetum": [
+          "rekuperasaun husi krize",
+          "rekuperasaun pós-krize",
+          "rekuperasaun pos-krize",
+          "rekuperasaun depois krize",
+          "rekuperasaun pós-pandemia",
+          "rekuperasaun pos-pandemia",
+          "rekuperasaun depois pandemia",
+          "planu rekuperasaun",
+          "planu rekuperasaun ekonómika",
+          "planu rekuperasaun ekonomika",
+          "planu rekuperasaun ekonomia",
+          "pakote rekuperasaun",
+          "recuperação pós-crise",
+          "recuperacao pos-crise",
+          "recuperação da crise",
+          "recuperacao da crise",
+          "recuperação pós-pandemia",
+          "recuperacao pos-pandemia",
+          "plano de recuperação",
+          "plano de recuperacao",
+          "plano de recuperação económica",
+          "plano de recuperacao economica",
+          "pacote de recuperação",
+          "pacote de recuperacao"
+        ],
+        "thai": [
+          "การฟื้นตัวจากวิกฤต",
+          "การฟื้นตัวจากวิกฤติ",
+          "ฟื้นตัวจากวิกฤต",
+          "ฟื้นตัวจากวิกฤติ",
+          "ฟื้นฟูหลังวิกฤต",
+          "ฟื้นฟูหลังวิกฤติ",
+          "ฟื้นตัวหลังโควิด",
+          "การฟื้นฟูหลังโควิด",
+          "แผนฟื้นฟูเศรษฐกิจ",
+          "มาตรการฟื้นฟูเศรษฐกิจ"
+        ],
+        "tok_pisin": [
+          "shock recovery",
+          "crisis recovery",
+          "post-crisis recovery",
+          "recovery from the crisis",
+          "recovery from the shock",
+          "post-pandemic recovery",
+          "recovery plan",
+          "recovery package",
+          "ikonomik rikaveri",
+          "rikaveri plen",
+          "rikaveri pekij",
+          "ikonomi i kirap gen",
+          "kirapim ikonomi gen",
+          "kirapim gen ikonomi",
+          "rikaveri bihain long COVID"
         ]
       }
     }
