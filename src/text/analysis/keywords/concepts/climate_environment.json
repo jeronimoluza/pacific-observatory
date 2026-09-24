@@ -1,0 +1,990 @@
+{
+  "heading": "climate_environment",
+  "label": "Climate change, environment, and natural resources",
+  "groups": {
+    "climate_change_policy": {
+      "label": "Climate change and policy",
+      "parent": null
+    },
+    "mitigation_adaptation": {
+      "label": "Mitigation, adaptation, and resilience",
+      "parent": "climate_change_policy"
+    },
+    "climate_risks": {
+      "label": "Climate risk",
+      "parent": "climate_change_policy"
+    },
+    "emissions_carbon": {
+      "label": "Emissions and carbon",
+      "parent": null
+    },
+    "carbon_pricing_markets": {
+      "label": "Carbon markets",
+      "parent": "emissions_carbon"
+    },
+    "pollution_waste": {
+      "label": "Pollution and waste",
+      "parent": null
+    },
+    "pollution_types": {
+      "label": "Pollution",
+      "parent": "pollution_waste"
+    },
+    "waste_toxics": {
+      "label": "Waste and toxic substances",
+      "parent": "pollution_waste"
+    },
+    "environmental_governance": {
+      "label": "Environmental governance and justice",
+      "parent": null
+    },
+    "biodiversity_ecosystems": {
+      "label": "Biodiversity and ecosystems",
+      "parent": null
+    },
+    "coastal_wetland_ecosystems": {
+      "label": "Coastal and wetland ecosystems",
+      "parent": "biodiversity_ecosystems"
+    },
+    "forests_and_deforestation": {
+      "label": "Forests",
+      "parent": null
+    },
+    "mining_and_minerals": {
+      "label": "Mining and minerals",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "climate_change": {
+      "label": "Climate Change",
+      "group": "climate_change_policy",
+      "forms": {
+        "en": [
+          "climate change",
+          "climate crisis",
+          "climate emergency",
+          "changing climate",
+          "climate breakdown"
+        ]
+      }
+    },
+    "global_warming": {
+      "label": "Global Warming",
+      "group": "climate_change_policy",
+      "forms": {
+        "en": [
+          "global warming",
+          "global heating",
+          "rising global temperatures",
+          "warming planet"
+        ]
+      }
+    },
+    "climate_policy": {
+      "label": "Climate Policy",
+      "group": "climate_change_policy",
+      "forms": {
+        "en": [
+          "climate policy",
+          "climate policies",
+          "climate action",
+          "climate legislation",
+          "climate law",
+          "climate targets",
+          "climate commitments",
+          "climate summit",
+          "climate negotiations",
+          "UN climate talks",
+          "UNFCCC",
+          "Paris Agreement"
+        ]
+      }
+    },
+    "nationally_determined_contributions": {
+      "label": "Nationally Determined Contributions",
+      "group": "climate_change_policy",
+      "forms": {
+        "en": [
+          "nationally determined contributions",
+          "nationally determined contribution",
+          "NDCs",
+          "NDC targets",
+          "updated NDC"
+        ]
+      }
+    },
+    "net_zero_target": {
+      "label": "Net-Zero Target",
+      "group": "climate_change_policy",
+      "forms": {
+        "en": [
+          "net-zero target",
+          "net zero target",
+          "net-zero targets",
+          "net-zero",
+          "net zero",
+          "net-zero emissions",
+          "carbon neutrality",
+          "carbon neutral",
+          "carbon-neutral"
+        ]
+      }
+    },
+    "climate_finance": {
+      "label": "Climate Finance",
+      "group": "climate_change_policy",
+      "forms": {
+        "en": [
+          "climate finance",
+          "climate financing",
+          "climate funding",
+          "climate fund",
+          "climate funds",
+          "Green Climate Fund",
+          "adaptation finance",
+          "climate bonds"
+        ]
+      }
+    },
+    "loss_and_damage": {
+      "label": "Loss and Damage",
+      "group": "climate_change_policy",
+      "forms": {
+        "en": [
+          "loss and damage",
+          "loss and damage fund",
+          "loss-and-damage"
+        ]
+      }
+    },
+    "just_transition": {
+      "label": "Just Transition",
+      "group": "climate_change_policy",
+      "forms": {
+        "en": [
+          "just transition",
+          "just energy transition",
+          "Just Energy Transition Partnership",
+          "JETP",
+          "fair transition"
+        ]
+      }
+    },
+    "climate_mitigation": {
+      "label": "Climate Mitigation",
+      "group": "mitigation_adaptation",
+      "forms": {
+        "en": [
+          "climate mitigation",
+          "climate change mitigation",
+          "mitigation of climate change",
+          "emissions reduction",
+          "emissions reductions",
+          "emission reductions",
+          "decarbonization",
+          "decarbonisation",
+          "decarbonize",
+          "decarbonise"
+        ]
+      }
+    },
+    "climate_adaptation": {
+      "label": "Climate Adaptation",
+      "group": "mitigation_adaptation",
+      "forms": {
+        "en": [
+          "climate adaptation",
+          "climate change adaptation",
+          "adaptation to climate change",
+          "national adaptation plan",
+          "adaptation measures"
+        ]
+      }
+    },
+    "climate_resilience": {
+      "label": "Climate Resilience",
+      "group": "mitigation_adaptation",
+      "forms": {
+        "en": [
+          "climate resilience",
+          "climate-resilient",
+          "climate resilient",
+          "climate-proofing",
+          "climate proofing",
+          "resilience to climate change"
+        ]
+      }
+    },
+    "climate_risk": {
+      "label": "Climate Risk",
+      "group": "climate_risks",
+      "forms": {
+        "en": [
+          "climate risk",
+          "climate risks",
+          "climate-related risks",
+          "climate-related financial risks",
+          "climate risk assessment"
+        ]
+      }
+    },
+    "physical_climate_risk": {
+      "label": "Physical Climate Risk",
+      "group": "climate_risks",
+      "forms": {
+        "en": [
+          "physical climate risk",
+          "physical climate risks",
+          "acute physical risk",
+          "chronic physical risk",
+          "physical risks from climate change"
+        ]
+      }
+    },
+    "transition_risk": {
+      "label": "Transition Risk",
+      "group": "climate_risks",
+      "forms": {
+        "en": [
+          "transition risk",
+          "transition risks",
+          "climate transition risk",
+          "stranded assets"
+        ]
+      }
+    },
+    "carbon_emissions": {
+      "label": "Carbon Emissions",
+      "group": "emissions_carbon",
+      "forms": {
+        "en": [
+          "carbon emissions",
+          "carbon dioxide emissions",
+          "CO2 emissions",
+          "carbon footprint",
+          "carbon pollution"
+        ]
+      }
+    },
+    "greenhouse_gas_emissions": {
+      "label": "Greenhouse-Gas Emissions",
+      "group": "emissions_carbon",
+      "forms": {
+        "en": [
+          "greenhouse-gas emissions",
+          "greenhouse gas emissions",
+          "greenhouse gases",
+          "greenhouse gas",
+          "GHG emissions",
+          "GHG"
+        ]
+      }
+    },
+    "methane_emissions": {
+      "label": "Methane Emissions",
+      "group": "emissions_carbon",
+      "forms": {
+        "en": [
+          "methane emissions",
+          "methane",
+          "methane leaks",
+          "methane pledge"
+        ]
+      }
+    },
+    "carbon_capture": {
+      "label": "Carbon Capture",
+      "group": "emissions_carbon",
+      "forms": {
+        "en": [
+          "carbon capture",
+          "carbon capture and storage",
+          "CCUS",
+          "carbon sequestration",
+          "direct air capture",
+          "carbon removal"
+        ]
+      }
+    },
+    "carbon_markets": {
+      "label": "Carbon Markets",
+      "group": "carbon_pricing_markets",
+      "forms": {
+        "en": [
+          "carbon markets",
+          "carbon market",
+          "carbon pricing",
+          "carbon price",
+          "carbon prices"
+        ]
+      }
+    },
+    "carbon_credits": {
+      "label": "Carbon Credits",
+      "group": "carbon_pricing_markets",
+      "forms": {
+        "en": [
+          "carbon credits",
+          "carbon credit",
+          "carbon offsets",
+          "carbon offset",
+          "carbon offsetting",
+          "REDD+"
+        ]
+      }
+    },
+    "emissions_trading": {
+      "label": "Emissions Trading",
+      "group": "carbon_pricing_markets",
+      "forms": {
+        "en": [
+          "emissions trading",
+          "emission trading",
+          "emissions trading scheme",
+          "emissions trading system",
+          "ETS",
+          "cap-and-trade",
+          "cap and trade",
+          "carbon trading"
+        ]
+      }
+    },
+    "pollution": {
+      "label": "Pollution",
+      "group": "pollution_types",
+      "forms": {
+        "en": [
+          "pollution",
+          "polluted",
+          "pollutants",
+          "polluting",
+          "polluters"
+        ]
+      }
+    },
+    "air_pollution": {
+      "label": "Air Pollution",
+      "group": "pollution_types",
+      "forms": {
+        "en": [
+          "air pollution",
+          "air quality",
+          "smog",
+          "haze",
+          "PM2.5",
+          "air pollutants",
+          "toxic air"
+        ]
+      }
+    },
+    "water_pollution": {
+      "label": "Water Pollution",
+      "group": "pollution_types",
+      "forms": {
+        "en": [
+          "water pollution",
+          "polluted water",
+          "river pollution",
+          "polluted rivers",
+          "polluted river"
+        ]
+      }
+    },
+    "soil_pollution": {
+      "label": "Soil Pollution",
+      "group": "pollution_types",
+      "forms": {
+        "en": [
+          "soil pollution",
+          "soil contamination",
+          "contaminated soil",
+          "contaminated land",
+          "land contamination"
+        ]
+      }
+    },
+    "plastic_pollution": {
+      "label": "Plastic Pollution",
+      "group": "pollution_types",
+      "forms": {
+        "en": [
+          "plastic pollution",
+          "plastic waste",
+          "single-use plastic",
+          "single-use plastics",
+          "plastic ban",
+          "microplastics",
+          "plastic litter"
+        ]
+      }
+    },
+    "marine_pollution": {
+      "label": "Marine Pollution",
+      "group": "pollution_types",
+      "forms": {
+        "en": [
+          "marine pollution",
+          "ocean pollution",
+          "marine debris",
+          "marine litter",
+          "sea pollution",
+          "ocean plastic"
+        ]
+      }
+    },
+    "industrial_pollution": {
+      "label": "Industrial Pollution",
+      "group": "pollution_types",
+      "forms": {
+        "en": [
+          "industrial pollution",
+          "factory pollution",
+          "industrial emissions",
+          "industrial effluent",
+          "industrial effluents",
+          "industrial waste",
+          "toxic effluent"
+        ]
+      }
+    },
+    "oil_spills": {
+      "label": "Oil Spills",
+      "group": "pollution_types",
+      "forms": {
+        "en": [
+          "oil spills",
+          "oil spill",
+          "oil leak",
+          "oil leaks",
+          "oil slick",
+          "oil slicks",
+          "crude spill",
+          "pipeline spill"
+        ]
+      }
+    },
+    "hazardous_waste": {
+      "label": "Hazardous Waste",
+      "group": "waste_toxics",
+      "forms": {
+        "en": [
+          "hazardous waste",
+          "hazardous wastes",
+          "toxic waste",
+          "medical waste",
+          "chemical waste",
+          "radioactive waste",
+          "nuclear waste"
+        ]
+      }
+    },
+    "solid_waste": {
+      "label": "Solid Waste",
+      "group": "waste_toxics",
+      "forms": {
+        "en": [
+          "solid waste",
+          "municipal solid waste",
+          "municipal waste",
+          "household waste",
+          "landfill",
+          "landfills",
+          "dumpsite",
+          "dumpsites",
+          "garbage dump",
+          "open dumping"
+        ]
+      }
+    },
+    "waste_management": {
+      "label": "Waste Management",
+      "group": "waste_toxics",
+      "forms": {
+        "en": [
+          "waste management",
+          "waste collection",
+          "garbage collection",
+          "refuse collection",
+          "waste disposal",
+          "waste treatment",
+          "waste-to-energy"
+        ]
+      }
+    },
+    "recycling": {
+      "label": "Recycling",
+      "group": "waste_toxics",
+      "forms": {
+        "en": [
+          "recycling",
+          "recycled",
+          "recycle",
+          "recyclable",
+          "recyclables"
+        ]
+      }
+    },
+    "e_waste": {
+      "label": "E-Waste",
+      "group": "waste_toxics",
+      "forms": {
+        "en": [
+          "e-waste",
+          "electronic waste",
+          "e-scrap",
+          "waste electrical and electronic equipment"
+        ]
+      }
+    },
+    "toxic_chemicals": {
+      "label": "Toxic Chemicals",
+      "group": "waste_toxics",
+      "forms": {
+        "en": [
+          "toxic chemicals",
+          "toxic chemical",
+          "hazardous chemicals",
+          "chemical contamination",
+          "persistent organic pollutants",
+          "PFAS",
+          "forever chemicals"
+        ]
+      }
+    },
+    "heavy_metal_contamination": {
+      "label": "Heavy-Metal Contamination",
+      "group": "waste_toxics",
+      "forms": {
+        "en": [
+          "heavy-metal contamination",
+          "heavy metal contamination",
+          "heavy metals",
+          "lead poisoning",
+          "lead contamination",
+          "mercury poisoning",
+          "mercury contamination",
+          "arsenic contamination",
+          "cadmium contamination"
+        ]
+      }
+    },
+    "environmental_regulation": {
+      "label": "Environmental Regulation",
+      "group": "environmental_governance",
+      "forms": {
+        "en": [
+          "environmental regulation",
+          "environmental regulations",
+          "environmental law",
+          "environmental laws",
+          "environmental standards",
+          "environmental protection law",
+          "environmental compliance",
+          "environmental permit",
+          "environmental permits"
+        ]
+      }
+    },
+    "environmental_impact_assessment": {
+      "label": "Environmental Impact Assessment",
+      "group": "environmental_governance",
+      "forms": {
+        "en": [
+          "environmental impact assessment",
+          "environmental impact assessments",
+          "environmental and social impact assessment",
+          "ESIA",
+          "environmental assessment"
+        ]
+      }
+    },
+    "environmental_justice": {
+      "label": "Environmental Justice",
+      "group": "environmental_governance",
+      "forms": {
+        "en": [
+          "environmental justice",
+          "environmental injustice",
+          "environmental racism",
+          "climate justice",
+          "environmental defenders",
+          "environmental rights"
+        ]
+      }
+    },
+    "community_resource_rights": {
+      "label": "Community Resource Rights",
+      "group": "environmental_governance",
+      "forms": {
+        "en": [
+          "community resource rights",
+          "community land rights",
+          "community forest rights",
+          "customary land rights",
+          "community forestry",
+          "resource rights",
+          "customary rights"
+        ]
+      }
+    },
+    "indigenous_land_stewardship": {
+      "label": "Indigenous Land Stewardship",
+      "group": "environmental_governance",
+      "forms": {
+        "en": [
+          "indigenous land stewardship",
+          "indigenous stewardship",
+          "indigenous land rights",
+          "indigenous territories",
+          "indigenous lands",
+          "ancestral lands",
+          "ancestral domain",
+          "ancestral domains"
+        ]
+      }
+    },
+    "biodiversity": {
+      "label": "Biodiversity",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "biodiversity",
+          "biological diversity",
+          "species diversity",
+          "Convention on Biological Diversity"
+        ]
+      }
+    },
+    "biodiversity_loss": {
+      "label": "Biodiversity Loss",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "biodiversity loss",
+          "loss of biodiversity",
+          "species extinction",
+          "extinction crisis",
+          "endangered species",
+          "threatened species"
+        ]
+      }
+    },
+    "ecosystem_restoration": {
+      "label": "Ecosystem Restoration",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "ecosystem restoration",
+          "restoration of ecosystems",
+          "landscape restoration",
+          "land restoration",
+          "habitat restoration",
+          "nature restoration",
+          "rewilding"
+        ]
+      }
+    },
+    "habitat_loss": {
+      "label": "Habitat Loss",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "habitat loss",
+          "loss of habitat",
+          "habitat destruction",
+          "habitat degradation",
+          "habitat fragmentation"
+        ]
+      }
+    },
+    "conservation": {
+      "label": "Conservation",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "nature conservation",
+          "biodiversity conservation",
+          "wildlife conservation",
+          "marine conservation",
+          "forest conservation",
+          "conservation area",
+          "conservation areas",
+          "conservationists",
+          "conservation groups"
+        ]
+      }
+    },
+    "protected_areas": {
+      "label": "Protected Areas",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "protected areas",
+          "protected area",
+          "national park",
+          "national parks",
+          "nature reserve",
+          "nature reserves",
+          "marine protected area",
+          "marine protected areas",
+          "wildlife sanctuary"
+        ]
+      }
+    },
+    "wildlife_protection": {
+      "label": "Wildlife Protection",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "wildlife protection",
+          "wildlife conservation",
+          "anti-poaching",
+          "poaching",
+          "poachers",
+          "endangered wildlife"
+        ]
+      }
+    },
+    "wildlife_trafficking": {
+      "label": "Wildlife Trafficking",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "wildlife trafficking",
+          "illegal wildlife trade",
+          "wildlife trade",
+          "wildlife smuggling",
+          "ivory trade",
+          "ivory smuggling",
+          "pangolin trafficking",
+          "rhino horn"
+        ]
+      }
+    },
+    "natural_capital": {
+      "label": "Natural Capital",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "natural capital",
+          "natural capital accounting",
+          "natural wealth",
+          "natural assets"
+        ]
+      }
+    },
+    "ecosystem_services": {
+      "label": "Ecosystem Services",
+      "group": "biodiversity_ecosystems",
+      "forms": {
+        "en": [
+          "ecosystem services",
+          "ecosystem service",
+          "payment for ecosystem services",
+          "payments for ecosystem services"
+        ]
+      }
+    },
+    "mangroves": {
+      "label": "Mangroves",
+      "group": "coastal_wetland_ecosystems",
+      "forms": {
+        "en": [
+          "mangroves",
+          "mangrove",
+          "mangrove forests",
+          "mangrove forest"
+        ]
+      }
+    },
+    "wetlands": {
+      "label": "Wetlands",
+      "group": "coastal_wetland_ecosystems",
+      "forms": {
+        "en": [
+          "wetlands",
+          "wetland",
+          "peatland",
+          "peatlands",
+          "marshes",
+          "Ramsar"
+        ]
+      }
+    },
+    "coastal_ecosystems": {
+      "label": "Coastal Ecosystems",
+      "group": "coastal_wetland_ecosystems",
+      "forms": {
+        "en": [
+          "coastal ecosystems",
+          "coastal ecosystem",
+          "coastal habitats",
+          "seagrass",
+          "seagrass meadows",
+          "estuaries",
+          "blue carbon"
+        ]
+      }
+    },
+    "coral_reefs": {
+      "label": "Coral Reefs",
+      "group": "coastal_wetland_ecosystems",
+      "forms": {
+        "en": [
+          "coral reefs",
+          "coral reef",
+          "coral bleaching",
+          "reef ecosystems",
+          "Great Barrier Reef"
+        ]
+      }
+    },
+    "deforestation": {
+      "label": "Deforestation",
+      "group": "forests_and_deforestation",
+      "forms": {
+        "en": [
+          "deforestation",
+          "forest loss",
+          "forest clearing",
+          "illegal logging",
+          "land clearing",
+          "tree cover loss",
+          "deforested"
+        ]
+      }
+    },
+    "forest_degradation": {
+      "label": "Forest Degradation",
+      "group": "forests_and_deforestation",
+      "forms": {
+        "en": [
+          "forest degradation",
+          "degraded forests",
+          "degraded forest"
+        ]
+      }
+    },
+    "reforestation": {
+      "label": "Reforestation",
+      "group": "forests_and_deforestation",
+      "forms": {
+        "en": [
+          "reforestation",
+          "afforestation",
+          "tree planting",
+          "reforest",
+          "reforesting",
+          "reforested"
+        ]
+      }
+    },
+    "forest_fires": {
+      "label": "Forest Fires",
+      "group": "forests_and_deforestation",
+      "forms": {
+        "en": [
+          "forest fires",
+          "forest fire",
+          "peatland fires",
+          "peat fires",
+          "land and forest fires",
+          "forest burning"
+        ]
+      }
+    },
+    "mining": {
+      "label": "Mining",
+      "group": "mining_and_minerals",
+      "forms": {
+        "en": [
+          "mining",
+          "mining sector",
+          "mining industry",
+          "mining company",
+          "mining companies",
+          "mining operations",
+          "mining concession",
+          "mining concessions"
+        ]
+      }
+    },
+    "artisanal_mining": {
+      "label": "Artisanal Mining",
+      "group": "mining_and_minerals",
+      "forms": {
+        "en": [
+          "artisanal mining",
+          "artisanal and small-scale mining",
+          "small-scale mining",
+          "artisanal miners",
+          "artisanal gold mining"
+        ]
+      }
+    },
+    "illegal_mining": {
+      "label": "Illegal Mining",
+      "group": "mining_and_minerals",
+      "forms": {
+        "en": [
+          "illegal mining",
+          "illegal miners",
+          "illicit mining",
+          "unlicensed mining",
+          "galamsey",
+          "wildcat mining"
+        ]
+      }
+    },
+    "critical_minerals": {
+      "label": "Critical Minerals",
+      "group": "mining_and_minerals",
+      "forms": {
+        "en": [
+          "critical minerals",
+          "critical mineral",
+          "strategic minerals",
+          "rare earths",
+          "rare earth elements",
+          "rare-earth",
+          "energy transition minerals",
+          "battery minerals",
+          "lithium",
+          "cobalt",
+          "nickel"
+        ]
+      }
+    },
+    "extractive_industries": {
+      "label": "Extractive Industries",
+      "group": "mining_and_minerals",
+      "forms": {
+        "en": [
+          "extractive industries",
+          "extractive industry",
+          "extractive sector",
+          "extractives",
+          "EITI",
+          "Extractive Industries Transparency Initiative"
+        ]
+      }
+    },
+    "mining_pollution": {
+      "label": "Mining Pollution",
+      "group": "mining_and_minerals",
+      "forms": {
+        "en": [
+          "mining pollution",
+          "mine tailings",
+          "tailings",
+          "tailings dam",
+          "acid mine drainage",
+          "mining waste",
+          "mine waste",
+          "mine spill"
+        ]
+      }
+    }
+  }
+}

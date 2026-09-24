@@ -1,0 +1,960 @@
+{
+  "heading": "education_skills",
+  "label": "Education, skills and human capital",
+  "groups": {
+    "schooling_levels": {
+      "label": "Levels of schooling",
+      "parent": null
+    },
+    "universities_tertiary": {
+      "label": "Higher education",
+      "parent": null
+    },
+    "learning_outcomes": {
+      "label": "Learning outcomes and assessment",
+      "parent": null
+    },
+    "access_participation": {
+      "label": "Access and participation",
+      "parent": null
+    },
+    "education_equity": {
+      "label": "Equity and inclusion in education",
+      "parent": "access_participation"
+    },
+    "teachers_schools": {
+      "label": "Teachers and schools",
+      "parent": null
+    },
+    "teaching_workforce": {
+      "label": "Teachers",
+      "parent": "teachers_schools"
+    },
+    "school_facilities_safety": {
+      "label": "School facilities and safety",
+      "parent": "teachers_schools"
+    },
+    "closures_remote_learning": {
+      "label": "Closures and digital learning",
+      "parent": null
+    },
+    "education_policy_finance": {
+      "label": "Education policy and financing",
+      "parent": null
+    },
+    "skills_human_capital": {
+      "label": "Skills and human capital",
+      "parent": null
+    },
+    "technical_vocational": {
+      "label": "Technical and vocational training",
+      "parent": "skills_human_capital"
+    },
+    "workforce_skill_types": {
+      "label": "Workforce skills",
+      "parent": "skills_human_capital"
+    },
+    "talent_mobility": {
+      "label": "Brain drain and skilled migration",
+      "parent": "skills_human_capital"
+    }
+  },
+  "concepts": {
+    "education": {
+      "label": "Education",
+      "group": "schooling_levels",
+      "forms": {
+        "en": [
+          "education",
+          "educational",
+          "education sector",
+          "education system",
+          "ministry of education",
+          "education ministry",
+          "education minister",
+          "schooling"
+        ]
+      }
+    },
+    "early_childhood_development": {
+      "label": "Early Childhood Development",
+      "group": "schooling_levels",
+      "forms": {
+        "en": [
+          "early childhood development",
+          "ECD",
+          "early childhood care",
+          "early years development",
+          "early childhood care and development"
+        ]
+      }
+    },
+    "preschool_education": {
+      "label": "Preschool Education",
+      "group": "schooling_levels",
+      "forms": {
+        "en": [
+          "preschool education",
+          "preschool",
+          "preschools",
+          "pre-school",
+          "kindergarten",
+          "kindergartens",
+          "pre-primary education",
+          "early childhood education",
+          "nursery school",
+          "nursery schools"
+        ]
+      }
+    },
+    "primary_education": {
+      "label": "Primary Education",
+      "group": "schooling_levels",
+      "forms": {
+        "en": [
+          "primary education",
+          "primary school",
+          "primary schools",
+          "primary schooling",
+          "elementary school",
+          "elementary schools",
+          "elementary education",
+          "primary school students"
+        ]
+      }
+    },
+    "secondary_education": {
+      "label": "Secondary Education",
+      "group": "schooling_levels",
+      "forms": {
+        "en": [
+          "secondary education",
+          "secondary school",
+          "secondary schools",
+          "secondary schooling",
+          "high school",
+          "high schools",
+          "junior high school",
+          "senior high school",
+          "lower secondary",
+          "upper secondary"
+        ]
+      }
+    },
+    "tertiary_education": {
+      "label": "Tertiary Education",
+      "group": "universities_tertiary",
+      "forms": {
+        "en": [
+          "tertiary education",
+          "tertiary institution",
+          "tertiary institutions",
+          "tertiary students",
+          "post-secondary education",
+          "tertiary enrolment",
+          "tertiary enrollment"
+        ]
+      }
+    },
+    "higher_education": {
+      "label": "Higher Education",
+      "group": "universities_tertiary",
+      "forms": {
+        "en": [
+          "higher education",
+          "university",
+          "universities",
+          "university students",
+          "higher education institutions",
+          "higher learning institutions",
+          "colleges and universities"
+        ]
+      }
+    },
+    "technical_education": {
+      "label": "Technical Education",
+      "group": "technical_vocational",
+      "forms": {
+        "en": [
+          "technical education",
+          "technical and vocational education",
+          "TVET",
+          "technical school",
+          "technical schools",
+          "technical college",
+          "technical colleges",
+          "polytechnic",
+          "polytechnics"
+        ]
+      }
+    },
+    "vocational_education": {
+      "label": "Vocational Education",
+      "group": "technical_vocational",
+      "forms": {
+        "en": [
+          "vocational education",
+          "technical and vocational education",
+          "TVET",
+          "vocational school",
+          "vocational schools",
+          "vocational college",
+          "vocational colleges",
+          "vocational skills"
+        ]
+      }
+    },
+    "adult_education": {
+      "label": "Adult Education",
+      "group": "schooling_levels",
+      "forms": {
+        "en": [
+          "adult education",
+          "adult learning",
+          "lifelong learning",
+          "continuing education",
+          "second-chance education"
+        ]
+      }
+    },
+    "literacy": {
+      "label": "Literacy",
+      "group": "learning_outcomes",
+      "forms": {
+        "en": [
+          "literacy rate",
+          "literacy rates",
+          "literacy levels",
+          "literacy skills",
+          "adult literacy",
+          "youth literacy",
+          "functional literacy",
+          "illiteracy",
+          "illiterate",
+          "literacy programme",
+          "literacy program"
+        ]
+      }
+    },
+    "numeracy": {
+      "label": "Numeracy",
+      "group": "learning_outcomes",
+      "forms": {
+        "en": [
+          "numeracy",
+          "numeracy skills",
+          "innumeracy",
+          "basic math skills",
+          "basic mathematics skills"
+        ]
+      }
+    },
+    "foundational_learning": {
+      "label": "Foundational Learning",
+      "group": "learning_outcomes",
+      "forms": {
+        "en": [
+          "foundational learning",
+          "foundational literacy",
+          "foundational numeracy",
+          "foundational skills",
+          "basic reading and math"
+        ]
+      }
+    },
+    "learning_poverty": {
+      "label": "Learning Poverty",
+      "group": "learning_outcomes",
+      "forms": {
+        "en": [
+          "learning poverty",
+          "learning crisis",
+          "unable to read a simple text",
+          "cannot read a simple text"
+        ]
+      }
+    },
+    "learning_loss": {
+      "label": "Learning Loss",
+      "group": "learning_outcomes",
+      "forms": {
+        "en": [
+          "learning loss",
+          "learning losses",
+          "lost learning",
+          "learning setbacks"
+        ]
+      }
+    },
+    "student_achievement": {
+      "label": "Student Achievement",
+      "group": "learning_outcomes",
+      "forms": {
+        "en": [
+          "student achievement",
+          "student performance",
+          "learning outcomes",
+          "academic performance",
+          "test scores",
+          "exam results",
+          "examination results",
+          "PISA"
+        ]
+      }
+    },
+    "school_enrollment": {
+      "label": "School Enrollment",
+      "group": "access_participation",
+      "forms": {
+        "en": [
+          "school enrollment",
+          "school enrolment",
+          "student enrollment",
+          "student enrolment",
+          "enrollment rate",
+          "enrolment rate",
+          "gross enrollment",
+          "net enrollment",
+          "enrolled in school"
+        ]
+      }
+    },
+    "school_attendance": {
+      "label": "School Attendance",
+      "group": "access_participation",
+      "forms": {
+        "en": [
+          "school attendance",
+          "attending school",
+          "student absenteeism",
+          "chronic absenteeism",
+          "pupil absenteeism"
+        ]
+      }
+    },
+    "school_dropout": {
+      "label": "School Dropout",
+      "group": "access_participation",
+      "forms": {
+        "en": [
+          "school dropout",
+          "school dropouts",
+          "school drop-outs",
+          "dropout rate",
+          "dropout rates",
+          "drop-out rate",
+          "drop out of school",
+          "dropped out of school",
+          "dropping out of school"
+        ]
+      }
+    },
+    "out_of_school_children": {
+      "label": "Out-of-School Children",
+      "group": "access_participation",
+      "forms": {
+        "en": [
+          "out-of-school children",
+          "out of school children",
+          "out-of-school youth",
+          "children out of school"
+        ]
+      }
+    },
+    "grade_repetition": {
+      "label": "Grade Repetition",
+      "group": "access_participation",
+      "forms": {
+        "en": [
+          "grade repetition",
+          "repeat a grade",
+          "repeated a grade",
+          "repeating a grade",
+          "repetition rate",
+          "repetition rates",
+          "held back a grade"
+        ]
+      }
+    },
+    "education_completion": {
+      "label": "Education Completion",
+      "group": "access_participation",
+      "forms": {
+        "en": [
+          "education completion",
+          "school completion",
+          "school completion rate",
+          "primary completion rate",
+          "completion rate for primary",
+          "completed primary school",
+          "completed secondary school"
+        ]
+      }
+    },
+    "education_quality": {
+      "label": "Education Quality",
+      "group": "learning_outcomes",
+      "forms": {
+        "en": [
+          "education quality",
+          "quality of education",
+          "quality education",
+          "educational quality",
+          "quality of schooling"
+        ]
+      }
+    },
+    "teacher_quality": {
+      "label": "Teacher Quality",
+      "group": "teaching_workforce",
+      "forms": {
+        "en": [
+          "teacher quality",
+          "quality of teachers",
+          "teacher competence",
+          "teacher competency",
+          "qualified teachers",
+          "unqualified teachers",
+          "teacher performance"
+        ]
+      }
+    },
+    "teacher_shortage": {
+      "label": "Teacher Shortage",
+      "group": "teaching_workforce",
+      "forms": {
+        "en": [
+          "teacher shortage",
+          "teacher shortages",
+          "teachers shortage",
+          "shortage of teachers",
+          "lack of teachers"
+        ]
+      }
+    },
+    "teacher_absenteeism": {
+      "label": "Teacher Absenteeism",
+      "group": "teaching_workforce",
+      "forms": {
+        "en": [
+          "teacher absenteeism",
+          "teacher absence",
+          "teacher absences",
+          "absent teachers",
+          "absentee teachers"
+        ]
+      }
+    },
+    "teacher_training": {
+      "label": "Teacher Training",
+      "group": "teaching_workforce",
+      "forms": {
+        "en": [
+          "teacher training",
+          "teacher education",
+          "teacher professional development",
+          "training of teachers",
+          "teachers' training",
+          "teacher training college",
+          "teacher training colleges"
+        ]
+      }
+    },
+    "school_infrastructure": {
+      "label": "School Infrastructure",
+      "group": "school_facilities_safety",
+      "forms": {
+        "en": [
+          "school infrastructure",
+          "school buildings",
+          "school facilities",
+          "school toilets",
+          "dilapidated schools",
+          "damaged schools"
+        ]
+      }
+    },
+    "classroom_shortage": {
+      "label": "Classroom Shortage",
+      "group": "school_facilities_safety",
+      "forms": {
+        "en": [
+          "classroom shortage",
+          "classroom shortages",
+          "shortage of classrooms",
+          "lack of classrooms",
+          "overcrowded classrooms",
+          "classroom overcrowding",
+          "double-shift schools"
+        ]
+      }
+    },
+    "school_construction": {
+      "label": "School Construction",
+      "group": "school_facilities_safety",
+      "forms": {
+        "en": [
+          "school construction",
+          "construction of schools",
+          "building schools",
+          "build schools",
+          "new schools",
+          "new classrooms"
+        ]
+      }
+    },
+    "school_closure": {
+      "label": "School Closure",
+      "group": "closures_remote_learning",
+      "forms": {
+        "en": [
+          "school closure",
+          "school closures",
+          "closure of schools",
+          "schools closed",
+          "schools shut",
+          "school reopening",
+          "schools reopen",
+          "reopening of schools"
+        ]
+      }
+    },
+    "remote_learning": {
+      "label": "Remote Learning",
+      "group": "closures_remote_learning",
+      "forms": {
+        "en": [
+          "remote learning",
+          "distance learning",
+          "distance education",
+          "online learning",
+          "online classes",
+          "home learning",
+          "learning from home",
+          "remote schooling"
+        ]
+      }
+    },
+    "digital_learning": {
+      "label": "Digital Learning",
+      "group": "closures_remote_learning",
+      "forms": {
+        "en": [
+          "digital learning",
+          "e-learning",
+          "elearning",
+          "online education",
+          "digital education",
+          "blended learning",
+          "online courses"
+        ]
+      }
+    },
+    "education_technology": {
+      "label": "Education Technology",
+      "group": "closures_remote_learning",
+      "forms": {
+        "en": [
+          "education technology",
+          "educational technology",
+          "edtech",
+          "ed-tech",
+          "learning platforms",
+          "learning management system"
+        ]
+      }
+    },
+    "textbook_shortage": {
+      "label": "Textbook Shortage",
+      "group": "school_facilities_safety",
+      "forms": {
+        "en": [
+          "textbook shortage",
+          "textbook shortages",
+          "textbooks shortage",
+          "shortage of textbooks",
+          "lack of textbooks"
+        ]
+      }
+    },
+    "curriculum_reform": {
+      "label": "Curriculum Reform",
+      "group": "education_policy_finance",
+      "forms": {
+        "en": [
+          "curriculum reform",
+          "curriculum reforms",
+          "new curriculum",
+          "curriculum changes",
+          "curriculum overhaul",
+          "curriculum review",
+          "curriculum revision"
+        ]
+      }
+    },
+    "examination_reform": {
+      "label": "Examination Reform",
+      "group": "education_policy_finance",
+      "forms": {
+        "en": [
+          "examination reform",
+          "examination reforms",
+          "exam reform",
+          "exam reforms",
+          "reform of examinations",
+          "exam system reform",
+          "assessment reform"
+        ]
+      }
+    },
+    "student_assessment": {
+      "label": "Student Assessment",
+      "group": "learning_outcomes",
+      "forms": {
+        "en": [
+          "student assessment",
+          "student assessments",
+          "learning assessment",
+          "learning assessments",
+          "national assessment",
+          "national exam",
+          "national exams",
+          "national examination",
+          "national examinations",
+          "standardized tests",
+          "standardised tests"
+        ]
+      }
+    },
+    "education_financing": {
+      "label": "Education Financing",
+      "group": "education_policy_finance",
+      "forms": {
+        "en": [
+          "education financing",
+          "education spending",
+          "education budget",
+          "education funding",
+          "education expenditure",
+          "spending on education",
+          "funding for education",
+          "school funding",
+          "school grants",
+          "capitation grant",
+          "capitation grants"
+        ]
+      }
+    },
+    "school_fees": {
+      "label": "School Fees",
+      "group": "education_policy_finance",
+      "forms": {
+        "en": [
+          "school fees",
+          "school fee",
+          "tuition fees",
+          "tuition fee",
+          "tuition",
+          "free education",
+          "free schooling",
+          "fee-free education",
+          "free tuition"
+        ]
+      }
+    },
+    "education_inequality": {
+      "label": "Education Inequality",
+      "group": "education_equity",
+      "forms": {
+        "en": [
+          "education inequality",
+          "education inequalities",
+          "educational inequality",
+          "inequality in education",
+          "education gap",
+          "achievement gap",
+          "learning gap",
+          "learning gaps",
+          "education disparities",
+          "educational disparities",
+          "unequal access to education"
+        ]
+      }
+    },
+    "girls_education": {
+      "label": "Girls' Education",
+      "group": "education_equity",
+      "forms": {
+        "en": [
+          "girls' education",
+          "girls education",
+          "girl's education",
+          "education of girls",
+          "girls' schooling",
+          "girl child education",
+          "female education"
+        ]
+      }
+    },
+    "inclusive_education": {
+      "label": "Inclusive Education",
+      "group": "education_equity",
+      "forms": {
+        "en": [
+          "inclusive education",
+          "inclusive schools",
+          "inclusive schooling",
+          "education for all"
+        ]
+      }
+    },
+    "special_education": {
+      "label": "Special Education",
+      "group": "education_equity",
+      "forms": {
+        "en": [
+          "special education",
+          "special needs education",
+          "special educational needs",
+          "special schools",
+          "special needs students"
+        ]
+      }
+    },
+    "language_of_instruction": {
+      "label": "Language of Instruction",
+      "group": "education_equity",
+      "forms": {
+        "en": [
+          "language of instruction",
+          "medium of instruction",
+          "mother-tongue education",
+          "mother tongue education",
+          "mother tongue-based",
+          "mother-tongue instruction",
+          "bilingual education",
+          "English-medium"
+        ]
+      }
+    },
+    "school_violence": {
+      "label": "School Violence",
+      "group": "school_facilities_safety",
+      "forms": {
+        "en": [
+          "school violence",
+          "violence in schools",
+          "school bullying",
+          "bullying in schools",
+          "school shooting",
+          "school shootings",
+          "corporal punishment"
+        ]
+      }
+    },
+    "school_safety": {
+      "label": "School Safety",
+      "group": "school_facilities_safety",
+      "forms": {
+        "en": [
+          "school safety",
+          "safe schools",
+          "school security",
+          "safety of students",
+          "safe schools declaration"
+        ]
+      }
+    },
+    "university_access": {
+      "label": "University Access",
+      "group": "universities_tertiary",
+      "forms": {
+        "en": [
+          "university access",
+          "access to university",
+          "access to higher education",
+          "university admission",
+          "university admissions",
+          "university entrance",
+          "university entrance exam",
+          "university places",
+          "college admissions",
+          "gaokao"
+        ]
+      }
+    },
+    "student_loans": {
+      "label": "Student Loans",
+      "group": "universities_tertiary",
+      "forms": {
+        "en": [
+          "student loans",
+          "student loan",
+          "student debt",
+          "education loan",
+          "education loans"
+        ]
+      }
+    },
+    "scholarships": {
+      "label": "Scholarships",
+      "group": "universities_tertiary",
+      "forms": {
+        "en": [
+          "scholarships",
+          "scholarship",
+          "bursary",
+          "bursaries",
+          "study grant",
+          "study grants"
+        ]
+      }
+    },
+    "research_universities": {
+      "label": "Research Universities",
+      "group": "universities_tertiary",
+      "forms": {
+        "en": [
+          "research universities",
+          "research university",
+          "university research",
+          "university rankings",
+          "world-class universities",
+          "world-class university"
+        ]
+      }
+    },
+    "workforce_skills": {
+      "label": "Workforce Skills",
+      "group": "workforce_skill_types",
+      "forms": {
+        "en": [
+          "workforce skills",
+          "skills development",
+          "skills training",
+          "upskilling",
+          "reskilling",
+          "skilled workers",
+          "skilled labour",
+          "skilled labor",
+          "skills gap",
+          "skills gaps"
+        ]
+      }
+    },
+    "digital_skills": {
+      "label": "Digital Skills",
+      "group": "workforce_skill_types",
+      "forms": {
+        "en": [
+          "digital skills",
+          "ICT skills",
+          "computer skills",
+          "coding skills",
+          "digital competencies",
+          "digital talent"
+        ]
+      }
+    },
+    "green_skills": {
+      "label": "Green Skills",
+      "group": "workforce_skill_types",
+      "forms": {
+        "en": [
+          "green skills",
+          "skills for green jobs",
+          "green skilling",
+          "green talent"
+        ]
+      }
+    },
+    "science_and_technology_education": {
+      "label": "Science and Technology Education",
+      "group": "workforce_skill_types",
+      "forms": {
+        "en": [
+          "science and technology education",
+          "STEM education",
+          "STEM subjects",
+          "STEM fields",
+          "STEM graduates",
+          "STEM skills",
+          "science education",
+          "science, technology, engineering and mathematics"
+        ]
+      }
+    },
+    "human_capital": {
+      "label": "Human Capital",
+      "group": "skills_human_capital",
+      "forms": {
+        "en": [
+          "human capital",
+          "human capital index",
+          "human capital development",
+          "human resource development",
+          "human resources development"
+        ]
+      }
+    },
+    "brain_drain": {
+      "label": "Brain Drain",
+      "group": "talent_mobility",
+      "forms": {
+        "en": [
+          "brain drain",
+          "talent drain",
+          "exodus of professionals",
+          "brain gain",
+          "brain circulation"
+        ]
+      }
+    },
+    "skilled_migration": {
+      "label": "Skilled Migration",
+      "group": "talent_mobility",
+      "forms": {
+        "en": [
+          "skilled migration",
+          "skilled migrants",
+          "skilled immigrants",
+          "skilled immigration",
+          "skilled emigration",
+          "highly skilled migrants",
+          "skilled worker visa",
+          "skilled worker visas"
+        ]
+      }
+    },
+    "youth_training": {
+      "label": "Youth Training",
+      "group": "technical_vocational",
+      "forms": {
+        "en": [
+          "youth training",
+          "training for young people",
+          "training for youth",
+          "youth skills",
+          "youth skills training",
+          "youth training programme",
+          "youth training programmes"
+        ]
+      }
+    },
+    "apprenticeships": {
+      "label": "Apprenticeships",
+      "group": "technical_vocational",
+      "forms": {
+        "en": [
+          "apprenticeships",
+          "apprenticeship",
+          "apprentices",
+          "apprentice",
+          "work-based learning",
+          "on-the-job training",
+          "dual training"
+        ]
+      }
+    }
+  }
+}

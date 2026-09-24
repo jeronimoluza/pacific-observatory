@@ -1,0 +1,882 @@
+{
+  "heading": "fragility_conflict",
+  "label": "Fragility, conflict, violence, and displacement",
+  "groups": {
+    "armed_conflict_war": {
+      "label": "Armed conflict and war",
+      "parent": null
+    },
+    "territorial_resource_conflict": {
+      "label": "Territorial and resource conflict",
+      "parent": "armed_conflict_war"
+    },
+    "conflict_casualties_hazards": {
+      "label": "Casualties and explosive hazards",
+      "parent": "armed_conflict_war"
+    },
+    "violence_and_extremism": {
+      "label": "Violence and extremism",
+      "parent": null
+    },
+    "terrorism_extremism": {
+      "label": "Terrorism and extremism",
+      "parent": "violence_and_extremism"
+    },
+    "crime_community_security": {
+      "label": "Crime and community security",
+      "parent": null
+    },
+    "fragility_conflict_impacts": {
+      "label": "Fragility and conflict impacts",
+      "parent": null
+    },
+    "peace_and_recovery": {
+      "label": "Peace and recovery",
+      "parent": null
+    },
+    "peace_process": {
+      "label": "Peace process",
+      "parent": "peace_and_recovery"
+    },
+    "ddr_programs": {
+      "label": "Disarmament, demobilization, and reintegration",
+      "parent": "peace_and_recovery"
+    },
+    "displacement_refugees": {
+      "label": "Displacement and refugees",
+      "parent": null
+    },
+    "humanitarian_response": {
+      "label": "Humanitarian response",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "armed_conflict": {
+      "label": "Armed Conflict",
+      "group": "armed_conflict_war",
+      "forms": {
+        "en": [
+          "wars",
+          "war",
+          "armed conflict",
+          "armed conflicts",
+          "military conflict",
+          "military conflicts",
+          "hostilities",
+          "warfare",
+          "armed clashes",
+          "war-torn",
+          "war-ravaged",
+          "wartime",
+          "militia",
+          "militias",
+          "armed groups"
+        ]
+      }
+    },
+    "civil_war": {
+      "label": "Civil War",
+      "group": "armed_conflict_war",
+      "forms": {
+        "en": [
+          "civil war",
+          "civil wars",
+          "civil conflict",
+          "internal armed conflict"
+        ]
+      }
+    },
+    "interstate_war": {
+      "label": "Interstate War",
+      "group": "armed_conflict_war",
+      "forms": {
+        "en": [
+          "interstate war",
+          "inter-state war",
+          "interstate conflict",
+          "inter-state conflict",
+          "war between states",
+          "military invasion",
+          "invasion"
+        ]
+      }
+    },
+    "insurgency": {
+      "label": "Insurgency",
+      "group": "armed_conflict_war",
+      "forms": {
+        "en": [
+          "insurgency",
+          "insurgencies",
+          "insurgent",
+          "insurgents",
+          "rebellion",
+          "rebel forces",
+          "rebel groups",
+          "armed rebels",
+          "counterinsurgency",
+          "counter-insurgency"
+        ]
+      }
+    },
+    "military_operations": {
+      "label": "Military Operations",
+      "group": "armed_conflict_war",
+      "forms": {
+        "en": [
+          "military operation",
+          "military operations",
+          "military offensive",
+          "ground offensive",
+          "airstrike",
+          "airstrikes",
+          "air strike",
+          "air strikes",
+          "shelling",
+          "bombardment"
+        ]
+      }
+    },
+    "siege": {
+      "label": "Siege",
+      "group": "armed_conflict_war",
+      "forms": {
+        "en": [
+          "siege",
+          "sieges",
+          "besieged",
+          "military siege",
+          "under siege"
+        ]
+      }
+    },
+    "blockade": {
+      "label": "Blockade",
+      "group": "armed_conflict_war",
+      "forms": {
+        "en": [
+          "naval blockade",
+          "military blockade",
+          "economic blockade",
+          "blockades",
+          "blockade of"
+        ]
+      }
+    },
+    "border_conflict": {
+      "label": "Border Conflict",
+      "group": "territorial_resource_conflict",
+      "forms": {
+        "en": [
+          "border conflict",
+          "border conflicts",
+          "border dispute",
+          "border disputes",
+          "border clash",
+          "border clashes",
+          "border skirmish",
+          "border skirmishes",
+          "border war"
+        ]
+      }
+    },
+    "maritime_conflict": {
+      "label": "Maritime Conflict",
+      "group": "territorial_resource_conflict",
+      "forms": {
+        "en": [
+          "maritime conflict",
+          "maritime conflicts",
+          "maritime dispute",
+          "maritime disputes",
+          "maritime boundary dispute",
+          "maritime tensions",
+          "maritime standoff",
+          "South China Sea dispute"
+        ]
+      }
+    },
+    "resource_conflict": {
+      "label": "Resource Conflict",
+      "group": "territorial_resource_conflict",
+      "forms": {
+        "en": [
+          "resource conflict",
+          "resource conflicts",
+          "conflict over resources",
+          "conflicts over resources",
+          "resource-based conflict",
+          "natural resource conflict",
+          "resource wars"
+        ]
+      }
+    },
+    "farmer_herder_conflict": {
+      "label": "Farmer-Herder Conflict",
+      "group": "territorial_resource_conflict",
+      "forms": {
+        "en": [
+          "farmer-herder conflict",
+          "farmer-herder conflicts",
+          "farmer herder conflict",
+          "herder-farmer conflict",
+          "farmer-herder clashes",
+          "herder-farmer clashes",
+          "herders and farmers",
+          "pastoralist conflict"
+        ]
+      }
+    },
+    "conflict_fatalities": {
+      "label": "Conflict Fatalities",
+      "group": "conflict_casualties_hazards",
+      "forms": {
+        "en": [
+          "conflict fatalities",
+          "conflict deaths",
+          "conflict-related deaths",
+          "battle deaths",
+          "killed in fighting",
+          "killed in clashes",
+          "death toll from fighting"
+        ]
+      }
+    },
+    "civilian_casualties": {
+      "label": "Civilian Casualties",
+      "group": "conflict_casualties_hazards",
+      "forms": {
+        "en": [
+          "civilian casualties",
+          "civilian casualty",
+          "civilian deaths",
+          "civilians killed",
+          "civilian death toll"
+        ]
+      }
+    },
+    "landmines": {
+      "label": "Landmines",
+      "group": "conflict_casualties_hazards",
+      "forms": {
+        "en": [
+          "landmine",
+          "landmines",
+          "land mine",
+          "land mines",
+          "anti-personnel mines",
+          "minefield",
+          "minefields",
+          "demining",
+          "mine clearance"
+        ]
+      }
+    },
+    "explosive_remnants": {
+      "label": "Explosive Remnants",
+      "group": "conflict_casualties_hazards",
+      "forms": {
+        "en": [
+          "explosive remnants",
+          "explosive remnants of war",
+          "unexploded ordnance",
+          "UXO",
+          "unexploded bomb",
+          "unexploded bombs",
+          "cluster munitions"
+        ]
+      }
+    },
+    "terrorism": {
+      "label": "Terrorism",
+      "group": "terrorism_extremism",
+      "forms": {
+        "en": [
+          "terrorism",
+          "terrorist",
+          "terrorists",
+          "terror attack",
+          "terror attacks",
+          "terrorist attack",
+          "terrorist attacks",
+          "counterterrorism",
+          "counter-terrorism",
+          "suicide bombing",
+          "suicide bombings"
+        ]
+      }
+    },
+    "violent_extremism": {
+      "label": "Violent Extremism",
+      "group": "terrorism_extremism",
+      "forms": {
+        "en": [
+          "violent extremism",
+          "violent extremist",
+          "violent extremists",
+          "radicalization",
+          "radicalisation",
+          "jihadist",
+          "jihadists",
+          "countering violent extremism",
+          "preventing violent extremism"
+        ]
+      }
+    },
+    "political_violence": {
+      "label": "Political Violence",
+      "group": "violence_and_extremism",
+      "forms": {
+        "en": [
+          "political violence",
+          "politically motivated violence",
+          "political killings",
+          "political assassination",
+          "political assassinations"
+        ]
+      }
+    },
+    "communal_violence": {
+      "label": "Communal Violence",
+      "group": "violence_and_extremism",
+      "forms": {
+        "en": [
+          "communal violence",
+          "communal clashes",
+          "communal conflict",
+          "intercommunal violence",
+          "inter-communal violence",
+          "tribal clashes",
+          "tribal fighting",
+          "tribal violence"
+        ]
+      }
+    },
+    "ethnic_violence": {
+      "label": "Ethnic Violence",
+      "group": "violence_and_extremism",
+      "forms": {
+        "en": [
+          "ethnic violence",
+          "ethnic clashes",
+          "ethnic conflict",
+          "ethnic conflicts",
+          "interethnic violence",
+          "inter-ethnic violence",
+          "ethnic cleansing"
+        ]
+      }
+    },
+    "religious_violence": {
+      "label": "Religious Violence",
+      "group": "violence_and_extremism",
+      "forms": {
+        "en": [
+          "religious violence",
+          "sectarian violence",
+          "sectarian clashes",
+          "religious conflict",
+          "interreligious violence",
+          "inter-religious violence"
+        ]
+      }
+    },
+    "social_unrest": {
+      "label": "Social Unrest",
+      "group": "violence_and_extremism",
+      "forms": {
+        "en": [
+          "social unrest",
+          "civil unrest",
+          "unrest",
+          "riot",
+          "riots",
+          "rioting",
+          "violent protests",
+          "mass protests"
+        ]
+      }
+    },
+    "gang_violence": {
+      "label": "Gang Violence",
+      "group": "crime_community_security",
+      "forms": {
+        "en": [
+          "gang violence",
+          "gang-related violence",
+          "gangs",
+          "gang members",
+          "armed gangs",
+          "gang warfare",
+          "gang wars"
+        ]
+      }
+    },
+    "organized_crime": {
+      "label": "Organized Crime",
+      "group": "crime_community_security",
+      "forms": {
+        "en": [
+          "organized crime",
+          "organised crime",
+          "criminal organization",
+          "criminal organizations",
+          "criminal organisations",
+          "crime syndicate",
+          "crime syndicates",
+          "drug cartel",
+          "drug cartels",
+          "transnational crime",
+          "mafia"
+        ]
+      }
+    },
+    "homicide": {
+      "label": "Homicide",
+      "group": "crime_community_security",
+      "forms": {
+        "en": [
+          "homicide",
+          "homicides",
+          "homicide rate",
+          "murder",
+          "murders",
+          "murder rate"
+        ]
+      }
+    },
+    "kidnapping": {
+      "label": "Kidnapping",
+      "group": "crime_community_security",
+      "forms": {
+        "en": [
+          "kidnapping",
+          "kidnappings",
+          "kidnapped",
+          "kidnappers",
+          "abduction",
+          "abductions",
+          "abducted"
+        ]
+      }
+    },
+    "community_security": {
+      "label": "Community Security",
+      "group": "crime_community_security",
+      "forms": {
+        "en": [
+          "community security",
+          "community safety",
+          "community policing",
+          "neighborhood watch",
+          "neighbourhood watch"
+        ]
+      }
+    },
+    "crime_prevention": {
+      "label": "Crime Prevention",
+      "group": "crime_community_security",
+      "forms": {
+        "en": [
+          "crime prevention",
+          "crime-prevention",
+          "preventing crime",
+          "crime reduction",
+          "anti-crime"
+        ]
+      }
+    },
+    "fragility": {
+      "label": "Fragility",
+      "group": "fragility_conflict_impacts",
+      "forms": {
+        "en": [
+          "fragility",
+          "fragile and conflict-affected",
+          "fragility, conflict and violence",
+          "fragility, conflict, and violence",
+          "fragility and conflict",
+          "fragile contexts",
+          "fragile settings"
+        ]
+      }
+    },
+    "state_fragility": {
+      "label": "State Fragility",
+      "group": "fragility_conflict_impacts",
+      "forms": {
+        "en": [
+          "state fragility",
+          "fragile state",
+          "fragile states",
+          "failed state",
+          "failed states",
+          "state failure",
+          "state collapse"
+        ]
+      }
+    },
+    "gendered_conflict_impacts": {
+      "label": "Gendered Conflict Impacts",
+      "group": "fragility_conflict_impacts",
+      "forms": {
+        "en": [
+          "gendered conflict impacts",
+          "gendered impacts of conflict",
+          "conflict-related sexual violence",
+          "sexual violence in conflict",
+          "rape as a weapon of war",
+          "women, peace and security",
+          "women, peace, and security"
+        ]
+      }
+    },
+    "conflict_affected_services": {
+      "label": "Conflict-Affected Services",
+      "group": "fragility_conflict_impacts",
+      "forms": {
+        "en": [
+          "conflict-affected services",
+          "attacks on health facilities",
+          "attacks on hospitals",
+          "attacks on schools",
+          "services disrupted by conflict",
+          "services disrupted by fighting"
+        ]
+      }
+    },
+    "conflict_induced_poverty": {
+      "label": "Conflict-Induced Poverty",
+      "group": "fragility_conflict_impacts",
+      "forms": {
+        "en": [
+          "conflict-induced poverty",
+          "conflict-driven poverty",
+          "war-induced poverty",
+          "poverty caused by conflict",
+          "poverty caused by war"
+        ]
+      }
+    },
+    "conflict_induced_hunger": {
+      "label": "Conflict-Induced Hunger",
+      "group": "fragility_conflict_impacts",
+      "forms": {
+        "en": [
+          "conflict-induced hunger",
+          "conflict-driven hunger",
+          "conflict-induced food insecurity",
+          "conflict-driven food insecurity",
+          "starvation as a weapon",
+          "starvation as a method of warfare",
+          "hunger as a weapon of war"
+        ]
+      }
+    },
+    "ceasefire": {
+      "label": "Ceasefire",
+      "group": "peace_process",
+      "forms": {
+        "en": [
+          "ceasefire",
+          "ceasefires",
+          "cease-fire",
+          "cease-fires",
+          "truce",
+          "truces",
+          "armistice",
+          "cessation of hostilities"
+        ]
+      }
+    },
+    "peace_agreement": {
+      "label": "Peace Agreement",
+      "group": "peace_process",
+      "forms": {
+        "en": [
+          "peace agreement",
+          "peace agreements",
+          "peace deal",
+          "peace deals",
+          "peace accord",
+          "peace accords",
+          "peace treaty",
+          "peace treaties"
+        ]
+      }
+    },
+    "peace_negotiations": {
+      "label": "Peace Negotiations",
+      "group": "peace_process",
+      "forms": {
+        "en": [
+          "peace negotiations",
+          "peace negotiation",
+          "peace talks",
+          "peace process",
+          "peace processes",
+          "peace dialogue"
+        ]
+      }
+    },
+    "mediation": {
+      "label": "Mediation",
+      "group": "peace_process",
+      "forms": {
+        "en": [
+          "peace mediation",
+          "conflict mediation",
+          "international mediation",
+          "mediation efforts",
+          "mediated talks"
+        ]
+      }
+    },
+    "peacekeeping": {
+      "label": "Peacekeeping",
+      "group": "peace_process",
+      "forms": {
+        "en": [
+          "peacekeeping",
+          "peace-keeping",
+          "peacekeeper",
+          "peacekeepers",
+          "peacekeeping mission",
+          "peacekeeping missions",
+          "peacekeeping force",
+          "blue helmets"
+        ]
+      }
+    },
+    "demobilization": {
+      "label": "Demobilization",
+      "group": "ddr_programs",
+      "forms": {
+        "en": [
+          "demobilization",
+          "demobilisation",
+          "demobilized combatants",
+          "demobilised combatants",
+          "DDR"
+        ]
+      }
+    },
+    "disarmament": {
+      "label": "Disarmament",
+      "group": "ddr_programs",
+      "forms": {
+        "en": [
+          "disarmament",
+          "disarming combatants",
+          "weapons handover",
+          "surrender of weapons",
+          "DDR"
+        ]
+      }
+    },
+    "reintegration": {
+      "label": "Reintegration",
+      "group": "ddr_programs",
+      "forms": {
+        "en": [
+          "reintegration of former combatants",
+          "reintegration of ex-combatants",
+          "ex-combatant reintegration",
+          "combatant reintegration",
+          "reintegration of fighters",
+          "DDR"
+        ]
+      }
+    },
+    "peacebuilding": {
+      "label": "Peacebuilding",
+      "group": "peace_and_recovery",
+      "forms": {
+        "en": [
+          "peacebuilding",
+          "peace-building",
+          "peace building",
+          "conflict prevention",
+          "national reconciliation",
+          "sustaining peace"
+        ]
+      }
+    },
+    "post_conflict_reconstruction": {
+      "label": "Post-Conflict Reconstruction",
+      "group": "peace_and_recovery",
+      "forms": {
+        "en": [
+          "post-conflict reconstruction",
+          "postconflict reconstruction",
+          "post-war reconstruction",
+          "postwar reconstruction",
+          "post-conflict recovery",
+          "post-war recovery"
+        ]
+      }
+    },
+    "internally_displaced_persons": {
+      "label": "Internally Displaced Persons",
+      "group": "displacement_refugees",
+      "forms": {
+        "en": [
+          "internally displaced persons",
+          "internally displaced people",
+          "internally displaced",
+          "IDP",
+          "IDPs",
+          "IDP camp",
+          "IDP camps"
+        ]
+      }
+    },
+    "forced_displacement": {
+      "label": "Forced Displacement",
+      "group": "displacement_refugees",
+      "forms": {
+        "en": [
+          "forced displacement",
+          "forcibly displaced",
+          "displaced people",
+          "displaced persons",
+          "displaced families",
+          "displacement crisis",
+          "fled their homes"
+        ]
+      }
+    },
+    "refugees": {
+      "label": "Refugees",
+      "group": "displacement_refugees",
+      "forms": {
+        "en": [
+          "refugee",
+          "refugees",
+          "refugee camp",
+          "refugee camps",
+          "refugee crisis",
+          "refugee influx",
+          "UNHCR"
+        ]
+      }
+    },
+    "asylum_seekers": {
+      "label": "Asylum Seekers",
+      "group": "displacement_refugees",
+      "forms": {
+        "en": [
+          "asylum seekers",
+          "asylum seeker",
+          "asylum-seekers",
+          "asylum-seeker",
+          "asylum claims",
+          "asylum applications",
+          "seeking asylum"
+        ]
+      }
+    },
+    "refugee_returns": {
+      "label": "Refugee Returns",
+      "group": "displacement_refugees",
+      "forms": {
+        "en": [
+          "refugee returns",
+          "refugee return",
+          "returning refugees",
+          "refugee repatriation",
+          "repatriation of refugees",
+          "voluntary repatriation"
+        ]
+      }
+    },
+    "population_return": {
+      "label": "Population Return",
+      "group": "displacement_refugees",
+      "forms": {
+        "en": [
+          "population return",
+          "returnees",
+          "return of displaced",
+          "return of the displaced",
+          "IDP returns",
+          "returning displaced"
+        ]
+      }
+    },
+    "statelessness": {
+      "label": "Statelessness",
+      "group": "displacement_refugees",
+      "forms": {
+        "en": [
+          "statelessness",
+          "stateless",
+          "stateless people",
+          "stateless persons"
+        ]
+      }
+    },
+    "conflict_induced_migration": {
+      "label": "Conflict-Induced Migration",
+      "group": "displacement_refugees",
+      "forms": {
+        "en": [
+          "conflict-induced migration",
+          "conflict-driven migration",
+          "fleeing conflict",
+          "fleeing violence",
+          "fleeing war",
+          "fled the fighting",
+          "fled the war"
+        ]
+      }
+    },
+    "humanitarian_crisis": {
+      "label": "Humanitarian Crisis",
+      "group": "humanitarian_response",
+      "forms": {
+        "en": [
+          "humanitarian crisis",
+          "humanitarian crises",
+          "humanitarian catastrophe",
+          "humanitarian disaster",
+          "humanitarian situation"
+        ]
+      }
+    },
+    "humanitarian_access": {
+      "label": "Humanitarian Access",
+      "group": "humanitarian_response",
+      "forms": {
+        "en": [
+          "humanitarian access",
+          "humanitarian corridor",
+          "humanitarian corridors",
+          "humanitarian pause",
+          "aid access",
+          "aid convoy",
+          "aid convoys",
+          "blocked aid"
+        ]
+      }
+    },
+    "humanitarian_assistance": {
+      "label": "Humanitarian Assistance",
+      "group": "humanitarian_response",
+      "forms": {
+        "en": [
+          "humanitarian assistance",
+          "humanitarian aid",
+          "humanitarian relief",
+          "emergency aid",
+          "emergency relief",
+          "relief aid",
+          "humanitarian agencies",
+          "aid agencies",
+          "humanitarian response"
+        ]
+      }
+    }
+  }
+}

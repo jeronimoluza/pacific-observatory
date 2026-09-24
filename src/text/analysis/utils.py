@@ -566,7 +566,7 @@ def load_all_groups(
 # inline. A form is a plain string or ``{"prefix": str}``; a prefix form keeps
 # the left word boundary and drops the right one, so it is allowed only where
 # suffixes carry case and number.
-PREFIX_LANGUAGES = frozenset({"turkish"})
+PREFIX_LANGUAGES = frozenset({"turkish", "mn"})
 CONCEPTS_DIR = Path(__file__).parent / "keywords" / "concepts"
 
 

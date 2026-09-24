@@ -1,0 +1,1142 @@
+{
+  "heading": "energy_extractives",
+  "label": "Energy and extractives",
+  "groups": {
+    "energy_security_demand": {
+      "label": "Energy security and demand",
+      "parent": null
+    },
+    "efficiency_and_conservation": {
+      "label": "Efficiency and conservation",
+      "parent": "energy_security_demand"
+    },
+    "fossil_fuels": {
+      "label": "Fossil fuels",
+      "parent": null
+    },
+    "oil_gas_upstream": {
+      "label": "Oil and gas",
+      "parent": "fossil_fuels"
+    },
+    "petroleum_products": {
+      "label": "Petroleum products",
+      "parent": "fossil_fuels"
+    },
+    "fuel_supply_security": {
+      "label": "Fuel supply and shortages",
+      "parent": null
+    },
+    "fuel_prices_subsidies": {
+      "label": "Fuel prices and subsidies",
+      "parent": null
+    },
+    "energy_subsidy_policy": {
+      "label": "Energy subsidies",
+      "parent": "fuel_prices_subsidies"
+    },
+    "electricity_power": {
+      "label": "Electricity and power",
+      "parent": null
+    },
+    "power_supply_reliability": {
+      "label": "Supply and reliability",
+      "parent": "electricity_power"
+    },
+    "generation_and_grid": {
+      "label": "Generation and grid",
+      "parent": "electricity_power"
+    },
+    "power_sector_governance": {
+      "label": "Power-sector reform and markets",
+      "parent": "electricity_power"
+    },
+    "access_to_energy": {
+      "label": "Energy access",
+      "parent": null
+    },
+    "clean_energy_transition": {
+      "label": "Energy transition",
+      "parent": null
+    },
+    "renewable_sources": {
+      "label": "Renewables",
+      "parent": "clean_energy_transition"
+    },
+    "storage_and_emobility": {
+      "label": "Storage and e-mobility",
+      "parent": "clean_energy_transition"
+    }
+  },
+  "concepts": {
+    "energy": {
+      "label": "Energy",
+      "group": "energy_security_demand",
+      "forms": {
+        "en": [
+          "energy",
+          "energy sector",
+          "energy industry",
+          "energy policy",
+          "energy crisis",
+          "energy prices",
+          "energy costs",
+          "energy supply",
+          "energy shortage",
+          "energy shortages",
+          "energy market",
+          "energy markets",
+          "energy bills"
+        ]
+      }
+    },
+    "energy_security": {
+      "label": "Energy Security",
+      "group": "energy_security_demand",
+      "forms": {
+        "en": [
+          "energy security",
+          "energy insecurity",
+          "energy independence",
+          "energy self-sufficiency",
+          "security of energy supply",
+          "energy sovereignty"
+        ]
+      }
+    },
+    "energy_demand": {
+      "label": "Energy Demand",
+      "group": "energy_security_demand",
+      "forms": {
+        "en": [
+          "energy demand",
+          "energy consumption",
+          "electricity demand",
+          "power demand",
+          "demand for electricity",
+          "demand for energy",
+          "electricity consumption",
+          "power consumption"
+        ]
+      }
+    },
+    "energy_conservation": {
+      "label": "Energy Conservation",
+      "group": "efficiency_and_conservation",
+      "forms": {
+        "en": [
+          "energy conservation",
+          "energy saving",
+          "energy-saving",
+          "energy savings",
+          "saving energy",
+          "conserve energy",
+          "conserving energy",
+          "electricity saving"
+        ]
+      }
+    },
+    "energy_efficiency": {
+      "label": "Energy Efficiency",
+      "group": "efficiency_and_conservation",
+      "forms": {
+        "en": [
+          "energy efficiency",
+          "energy-efficient",
+          "energy efficient",
+          "energy intensity",
+          "efficient appliances",
+          "energy performance standards"
+        ]
+      }
+    },
+    "coal": {
+      "label": "Coal",
+      "group": "fossil_fuels",
+      "forms": {
+        "en": [
+          "coal",
+          "coal-fired",
+          "coal power",
+          "coal plants",
+          "coal mining",
+          "coal mines",
+          "thermal coal",
+          "coal exports",
+          "coal production"
+        ]
+      }
+    },
+    "oil": {
+      "label": "Oil",
+      "group": "oil_gas_upstream",
+      "forms": {
+        "en": [
+          "oil",
+          "petroleum",
+          "OPEC",
+          "OPEC+",
+          "oil and gas",
+          "oil sector",
+          "oil industry",
+          "oil company",
+          "oil companies",
+          "oil majors",
+          "oilfield",
+          "oilfields",
+          "oil field",
+          "oil fields",
+          "oil prices",
+          "oil price",
+          "oil exports",
+          "oil reserves",
+          "barrel of oil"
+        ]
+      }
+    },
+    "crude_oil": {
+      "label": "Crude Oil",
+      "group": "oil_gas_upstream",
+      "forms": {
+        "en": [
+          "crude oil",
+          "crude oil prices",
+          "Brent crude",
+          "West Texas Intermediate",
+          "WTI crude",
+          "crude prices",
+          "crude exports",
+          "crude imports",
+          "barrels of crude"
+        ]
+      }
+    },
+    "oil_production": {
+      "label": "Oil Production",
+      "group": "oil_gas_upstream",
+      "forms": {
+        "en": [
+          "oil production",
+          "oil output",
+          "crude production",
+          "crude output",
+          "oil drilling",
+          "oil exploration",
+          "barrels per day",
+          "production cuts"
+        ]
+      }
+    },
+    "oil_refining": {
+      "label": "Oil Refining",
+      "group": "oil_gas_upstream",
+      "forms": {
+        "en": [
+          "oil refining",
+          "oil refinery",
+          "oil refineries",
+          "refinery",
+          "refineries",
+          "refining capacity",
+          "refined products",
+          "petroleum refining"
+        ]
+      }
+    },
+    "natural_gas": {
+      "label": "Natural Gas",
+      "group": "oil_gas_upstream",
+      "forms": {
+        "en": [
+          "natural gas",
+          "LNG",
+          "liquefied natural gas",
+          "compressed natural gas",
+          "CNG",
+          "gas field",
+          "gas fields",
+          "gas pipeline",
+          "gas pipelines",
+          "gas production",
+          "gas exports",
+          "gas reserves",
+          "piped gas"
+        ]
+      }
+    },
+    "diesel": {
+      "label": "Diesel",
+      "group": "petroleum_products",
+      "forms": {
+        "en": [
+          "diesel",
+          "diesel fuel",
+          "gasoil",
+          "gas oil",
+          "automotive diesel",
+          "marine diesel",
+          "fuel oil",
+          "heavy fuel oil",
+          "bunker fuel",
+          "diesel generator",
+          "diesel generators"
+        ]
+      }
+    },
+    "gasoline": {
+      "label": "Gasoline",
+      "group": "petroleum_products",
+      "forms": {
+        "en": [
+          "gasoline",
+          "petrol",
+          "unleaded petrol",
+          "unleaded gasoline",
+          "motor gasoline",
+          "motor fuel"
+        ]
+      }
+    },
+    "liquefied_petroleum_gas": {
+      "label": "Liquefied Petroleum Gas",
+      "group": "petroleum_products",
+      "forms": {
+        "en": [
+          "liquefied petroleum gas",
+          "LPG",
+          "LP gas",
+          "cooking gas",
+          "LPG cylinder",
+          "LPG cylinders",
+          "gas cylinders",
+          "autogas"
+        ]
+      }
+    },
+    "kerosene": {
+      "label": "Kerosene",
+      "group": "petroleum_products",
+      "forms": {
+        "en": [
+          "kerosene",
+          "kerosine",
+          "kerosene oil"
+        ]
+      }
+    },
+    "fuel_supply": {
+      "label": "Fuel Supply",
+      "group": "fuel_supply_security",
+      "forms": {
+        "en": [
+          "fuel supply",
+          "fuel supplies",
+          "supply of fuel",
+          "fuel deliveries",
+          "fuel distribution",
+          "fuel supply disruption",
+          "fuel supply disruptions",
+          "fuel shipments"
+        ]
+      }
+    },
+    "fuel_imports": {
+      "label": "Fuel Imports",
+      "group": "fuel_supply_security",
+      "forms": {
+        "en": [
+          "fuel imports",
+          "fuel import",
+          "fuel import bill",
+          "oil imports",
+          "oil import bill",
+          "petroleum imports",
+          "imported fuel",
+          "diesel imports",
+          "petrol imports",
+          "LNG imports"
+        ]
+      }
+    },
+    "fuel_reserves": {
+      "label": "Fuel Reserves",
+      "group": "fuel_supply_security",
+      "forms": {
+        "en": [
+          "fuel reserves",
+          "fuel stocks",
+          "fuel stockpile",
+          "fuel stockpiles",
+          "fuel inventories",
+          "fuel storage",
+          "petroleum stocks",
+          "days of fuel"
+        ]
+      }
+    },
+    "strategic_petroleum_reserves": {
+      "label": "Strategic Petroleum Reserves",
+      "group": "fuel_supply_security",
+      "forms": {
+        "en": [
+          "strategic petroleum reserves",
+          "strategic petroleum reserve",
+          "strategic oil reserve",
+          "strategic oil reserves",
+          "strategic fuel reserve",
+          "strategic fuel reserves",
+          "SPR",
+          "emergency oil stocks",
+          "emergency oil reserves"
+        ]
+      }
+    },
+    "fuel_shortage": {
+      "label": "Fuel Shortage",
+      "group": "fuel_supply_security",
+      "forms": {
+        "en": [
+          "fuel shortage",
+          "fuel shortages",
+          "fuel scarcity",
+          "fuel crisis",
+          "petrol shortage",
+          "petrol shortages",
+          "diesel shortage",
+          "diesel shortages",
+          "gasoline shortage",
+          "gasoline shortages",
+          "LPG shortage",
+          "fuel queue",
+          "fuel queues"
+        ]
+      }
+    },
+    "fuel_rationing": {
+      "label": "Fuel Rationing",
+      "group": "fuel_supply_security",
+      "forms": {
+        "en": [
+          "fuel rationing",
+          "petrol rationing",
+          "gasoline rationing",
+          "diesel rationing",
+          "LPG rationing",
+          "gas rationing",
+          "fuel quota",
+          "fuel quotas",
+          "fuel purchase limits"
+        ]
+      }
+    },
+    "fuel_smuggling": {
+      "label": "Fuel Smuggling",
+      "group": "fuel_supply_security",
+      "forms": {
+        "en": [
+          "fuel smuggling",
+          "smuggled fuel",
+          "fuel smugglers",
+          "oil smuggling",
+          "petrol smuggling",
+          "diesel smuggling",
+          "illegal fuel trade",
+          "oil bunkering",
+          "illegal bunkering",
+          "fuel theft",
+          "oil theft"
+        ]
+      }
+    },
+    "fuel_prices": {
+      "label": "Fuel Prices",
+      "group": "fuel_prices_subsidies",
+      "forms": {
+        "en": [
+          "fuel prices",
+          "fuel price",
+          "fuel costs",
+          "pump prices",
+          "pump price",
+          "price of fuel",
+          "fuel price hike",
+          "fuel price increase",
+          "fuel levy"
+        ]
+      }
+    },
+    "petrol_prices": {
+      "label": "Petrol Prices",
+      "group": "fuel_prices_subsidies",
+      "forms": {
+        "en": [
+          "petrol prices",
+          "petrol price",
+          "gasoline prices",
+          "gasoline price",
+          "price of petrol",
+          "price of gasoline"
+        ]
+      }
+    },
+    "diesel_prices": {
+      "label": "Diesel Prices",
+      "group": "fuel_prices_subsidies",
+      "forms": {
+        "en": [
+          "diesel prices",
+          "diesel price",
+          "price of diesel",
+          "diesel costs",
+          "diesel price hike"
+        ]
+      }
+    },
+    "energy_subsidies": {
+      "label": "Energy Subsidies",
+      "group": "energy_subsidy_policy",
+      "forms": {
+        "en": [
+          "energy subsidies",
+          "energy subsidy",
+          "electricity subsidies",
+          "electricity subsidy",
+          "power subsidies",
+          "power subsidy",
+          "subsidized electricity",
+          "subsidised electricity"
+        ]
+      }
+    },
+    "fuel_subsidies": {
+      "label": "Fuel Subsidies",
+      "group": "energy_subsidy_policy",
+      "forms": {
+        "en": [
+          "fuel subsidies",
+          "fuel subsidy",
+          "fuel subsidy removal",
+          "petrol subsidy",
+          "petrol subsidies",
+          "diesel subsidy",
+          "diesel subsidies",
+          "gasoline subsidy",
+          "gasoline subsidies",
+          "LPG subsidy",
+          "LPG subsidies",
+          "kerosene subsidy",
+          "subsidized fuel",
+          "subsidised fuel"
+        ]
+      }
+    },
+    "fossil_fuel_subsidies": {
+      "label": "Fossil-Fuel Subsidies",
+      "group": "energy_subsidy_policy",
+      "forms": {
+        "en": [
+          "fossil-fuel subsidies",
+          "fossil fuel subsidies",
+          "fossil-fuel subsidy",
+          "fossil fuel subsidy",
+          "fossil fuel subsidy reform",
+          "subsidies for fossil fuels",
+          "coal subsidies"
+        ]
+      }
+    },
+    "electricity_supply": {
+      "label": "Electricity Supply",
+      "group": "power_supply_reliability",
+      "forms": {
+        "en": [
+          "electricity supply",
+          "power supply",
+          "supply of electricity",
+          "electricity shortage",
+          "electricity shortages",
+          "power shortage",
+          "power shortages",
+          "power deficit",
+          "electricity deficit"
+        ]
+      }
+    },
+    "power_outage": {
+      "label": "Power Outage",
+      "group": "power_supply_reliability",
+      "forms": {
+        "en": [
+          "power outage",
+          "power outages",
+          "power cut",
+          "power cuts",
+          "electricity outage",
+          "electricity outages",
+          "power failure",
+          "power failures",
+          "power interruption",
+          "power interruptions",
+          "brownout",
+          "brownouts",
+          "power blackout",
+          "power blackouts",
+          "rolling blackouts"
+        ]
+      }
+    },
+    "load_shedding": {
+      "label": "Load Shedding",
+      "group": "power_supply_reliability",
+      "forms": {
+        "en": [
+          "load shedding",
+          "load-shedding",
+          "loadshedding",
+          "rotational power cuts",
+          "rolling blackouts",
+          "power rationing",
+          "electricity rationing",
+          "scheduled outages",
+          "rotating outages"
+        ]
+      }
+    },
+    "grid_reliability": {
+      "label": "Grid Reliability",
+      "group": "power_supply_reliability",
+      "forms": {
+        "en": [
+          "grid reliability",
+          "grid stability",
+          "grid instability",
+          "grid failure",
+          "grid failures",
+          "grid collapse",
+          "grid resilience",
+          "unreliable power",
+          "unreliable electricity",
+          "power reliability"
+        ]
+      }
+    },
+    "electricity_generation": {
+      "label": "Electricity Generation",
+      "group": "generation_and_grid",
+      "forms": {
+        "en": [
+          "electricity generation",
+          "power generation",
+          "electricity production",
+          "generating capacity",
+          "generation capacity",
+          "power plant",
+          "power plants",
+          "power station",
+          "power stations",
+          "megawatts",
+          "gigawatts"
+        ]
+      }
+    },
+    "power_transmission": {
+      "label": "Power Transmission",
+      "group": "generation_and_grid",
+      "forms": {
+        "en": [
+          "power transmission",
+          "electricity transmission",
+          "transmission line",
+          "transmission lines",
+          "transmission network",
+          "transmission grid",
+          "high-voltage lines",
+          "substation",
+          "substations"
+        ]
+      }
+    },
+    "power_distribution": {
+      "label": "Power Distribution",
+      "group": "generation_and_grid",
+      "forms": {
+        "en": [
+          "power distribution",
+          "electricity distribution",
+          "distribution grid",
+          "power distribution network",
+          "electricity distribution network",
+          "distribution utilities",
+          "distribution companies",
+          "DisCos",
+          "distribution transformers"
+        ]
+      }
+    },
+    "electricity_losses": {
+      "label": "Electricity Losses",
+      "group": "generation_and_grid",
+      "forms": {
+        "en": [
+          "electricity losses",
+          "power losses",
+          "transmission losses",
+          "distribution losses",
+          "transmission and distribution losses",
+          "technical losses",
+          "line losses",
+          "grid losses"
+        ]
+      }
+    },
+    "electricity_theft": {
+      "label": "Electricity Theft",
+      "group": "generation_and_grid",
+      "forms": {
+        "en": [
+          "electricity theft",
+          "power theft",
+          "energy theft",
+          "illegal connections",
+          "illegal electricity connections",
+          "electricity pilferage",
+          "power pilferage",
+          "meter tampering",
+          "stealing electricity"
+        ]
+      }
+    },
+    "regional_power_trade": {
+      "label": "Regional Power Trade",
+      "group": "generation_and_grid",
+      "forms": {
+        "en": [
+          "regional power trade",
+          "cross-border electricity trade",
+          "cross-border power trade",
+          "electricity exports",
+          "electricity imports",
+          "power imports",
+          "power exports",
+          "power pool",
+          "regional power pool",
+          "ASEAN Power Grid",
+          "grid interconnection",
+          "cross-border interconnection"
+        ]
+      }
+    },
+    "power_sector_reform": {
+      "label": "Power-Sector Reform",
+      "group": "power_sector_governance",
+      "forms": {
+        "en": [
+          "power-sector reform",
+          "power sector reform",
+          "power sector reforms",
+          "electricity sector reform",
+          "energy sector reform",
+          "power sector restructuring",
+          "electricity reform",
+          "unbundling"
+        ]
+      }
+    },
+    "electricity_market_reform": {
+      "label": "Electricity-Market Reform",
+      "group": "power_sector_governance",
+      "forms": {
+        "en": [
+          "electricity-market reform",
+          "electricity market reform",
+          "electricity market",
+          "power market",
+          "wholesale electricity market",
+          "power exchange",
+          "energy market reform"
+        ]
+      }
+    },
+    "independent_power_producers": {
+      "label": "Independent Power Producers",
+      "group": "power_sector_governance",
+      "forms": {
+        "en": [
+          "independent power producers",
+          "independent power producer",
+          "IPP",
+          "IPPs",
+          "private power producers",
+          "private power plants"
+        ]
+      }
+    },
+    "utility_reform": {
+      "label": "Utility Reform",
+      "group": "power_sector_governance",
+      "forms": {
+        "en": [
+          "utility reform",
+          "utility reforms",
+          "utility restructuring",
+          "utility privatization",
+          "utility privatisation",
+          "utility turnaround",
+          "utility commercialization"
+        ]
+      }
+    },
+    "power_purchase_agreements": {
+      "label": "Power Purchase Agreements",
+      "group": "power_sector_governance",
+      "forms": {
+        "en": [
+          "power purchase agreements",
+          "power purchase agreement",
+          "PPA",
+          "PPAs",
+          "offtake agreement",
+          "offtake agreements",
+          "electricity purchase agreement",
+          "energy purchase agreement"
+        ]
+      }
+    },
+    "energy_access": {
+      "label": "Energy Access",
+      "group": "access_to_energy",
+      "forms": {
+        "en": [
+          "energy access",
+          "access to energy",
+          "access to modern energy",
+          "universal energy access",
+          "SDG7",
+          "SDG 7"
+        ]
+      }
+    },
+    "electricity_access": {
+      "label": "Electricity Access",
+      "group": "access_to_energy",
+      "forms": {
+        "en": [
+          "electricity access",
+          "access to electricity",
+          "electrification",
+          "rural electrification",
+          "electrification rate",
+          "grid connection",
+          "grid connections",
+          "connected to the grid",
+          "unelectrified",
+          "without electricity"
+        ]
+      }
+    },
+    "energy_poverty": {
+      "label": "Energy Poverty",
+      "group": "access_to_energy",
+      "forms": {
+        "en": [
+          "energy poverty",
+          "fuel poverty",
+          "energy-poor",
+          "energy poor households",
+          "energy burden"
+        ]
+      }
+    },
+    "mini_grids": {
+      "label": "Mini-Grids",
+      "group": "access_to_energy",
+      "forms": {
+        "en": [
+          "mini-grids",
+          "mini-grid",
+          "mini grids",
+          "mini grid",
+          "minigrid",
+          "minigrids",
+          "microgrid",
+          "microgrids",
+          "micro-grid",
+          "micro-grids"
+        ]
+      }
+    },
+    "off_grid_energy": {
+      "label": "Off-Grid Energy",
+      "group": "access_to_energy",
+      "forms": {
+        "en": [
+          "off-grid energy",
+          "off-grid",
+          "off grid",
+          "off-grid solar",
+          "solar home system",
+          "solar home systems",
+          "standalone solar",
+          "stand-alone solar",
+          "solar lanterns"
+        ]
+      }
+    },
+    "clean_cooking": {
+      "label": "Clean Cooking",
+      "group": "access_to_energy",
+      "forms": {
+        "en": [
+          "clean cooking",
+          "clean cookstoves",
+          "improved cookstoves",
+          "improved cooking stoves",
+          "cookstove",
+          "cookstoves",
+          "cook stoves",
+          "clean cooking fuels",
+          "cooking fuel",
+          "cooking fuels"
+        ]
+      }
+    },
+    "energy_transition": {
+      "label": "Energy Transition",
+      "group": "clean_energy_transition",
+      "forms": {
+        "en": [
+          "energy transition",
+          "clean energy transition",
+          "green transition",
+          "energy transformation",
+          "transition to clean energy"
+        ]
+      }
+    },
+    "fossil_fuel_phaseout": {
+      "label": "Fossil-Fuel Phaseout",
+      "group": "clean_energy_transition",
+      "forms": {
+        "en": [
+          "fossil-fuel phaseout",
+          "fossil fuel phaseout",
+          "fossil fuel phase-out",
+          "fossil-fuel phase-out",
+          "phase out fossil fuels",
+          "phasing out fossil fuels",
+          "transition away from fossil fuels",
+          "coal phaseout",
+          "coal phase-out",
+          "phase out coal",
+          "phasing out coal",
+          "coal phase-down",
+          "early coal retirement"
+        ]
+      }
+    },
+    "green_hydrogen": {
+      "label": "Green Hydrogen",
+      "group": "clean_energy_transition",
+      "forms": {
+        "en": [
+          "green hydrogen",
+          "renewable hydrogen",
+          "clean hydrogen",
+          "low-carbon hydrogen",
+          "hydrogen economy",
+          "electrolyzer",
+          "electrolyzers",
+          "electrolyser",
+          "electrolysers",
+          "green ammonia"
+        ]
+      }
+    },
+    "nuclear_energy": {
+      "label": "Nuclear Energy",
+      "group": "clean_energy_transition",
+      "forms": {
+        "en": [
+          "nuclear energy",
+          "nuclear power",
+          "nuclear power plant",
+          "nuclear power plants",
+          "nuclear plant",
+          "nuclear plants",
+          "nuclear reactor",
+          "nuclear reactors",
+          "small modular reactor",
+          "small modular reactors"
+        ]
+      }
+    },
+    "renewable_energy": {
+      "label": "Renewable Energy",
+      "group": "renewable_sources",
+      "forms": {
+        "en": [
+          "renewable energy",
+          "renewables",
+          "renewable power",
+          "renewable electricity",
+          "clean energy",
+          "green energy",
+          "renewable energy sources",
+          "renewable capacity"
+        ]
+      }
+    },
+    "solar_energy": {
+      "label": "Solar Energy",
+      "group": "renewable_sources",
+      "forms": {
+        "en": [
+          "solar energy",
+          "solar power",
+          "solar panel",
+          "solar panels",
+          "solar farm",
+          "solar farms",
+          "solar PV",
+          "photovoltaic",
+          "solar plant",
+          "solar plants",
+          "rooftop solar",
+          "solar capacity"
+        ]
+      }
+    },
+    "wind_energy": {
+      "label": "Wind Energy",
+      "group": "renewable_sources",
+      "forms": {
+        "en": [
+          "wind energy",
+          "wind power",
+          "wind farm",
+          "wind farms",
+          "wind turbine",
+          "wind turbines",
+          "offshore wind",
+          "onshore wind"
+        ]
+      }
+    },
+    "hydropower": {
+      "label": "Hydropower",
+      "group": "renewable_sources",
+      "forms": {
+        "en": [
+          "hydropower",
+          "hydroelectric",
+          "hydroelectricity",
+          "hydro power",
+          "hydro-electric",
+          "hydropower dam",
+          "hydropower dams",
+          "hydroelectric dam",
+          "hydroelectric dams",
+          "hydropower plant",
+          "hydropower project",
+          "hydropower projects"
+        ]
+      }
+    },
+    "geothermal_energy": {
+      "label": "Geothermal Energy",
+      "group": "renewable_sources",
+      "forms": {
+        "en": [
+          "geothermal energy",
+          "geothermal power",
+          "geothermal",
+          "geothermal plant",
+          "geothermal plants"
+        ]
+      }
+    },
+    "bioenergy": {
+      "label": "Bioenergy",
+      "group": "renewable_sources",
+      "forms": {
+        "en": [
+          "bioenergy",
+          "bio-energy",
+          "biofuel",
+          "biofuels",
+          "biodiesel",
+          "bioethanol",
+          "ethanol blending",
+          "biogas",
+          "biomass energy",
+          "biomass power"
+        ]
+      }
+    },
+    "energy_storage": {
+      "label": "Energy Storage",
+      "group": "storage_and_emobility",
+      "forms": {
+        "en": [
+          "energy storage",
+          "energy storage systems",
+          "pumped hydro",
+          "pumped storage",
+          "pumped-storage",
+          "grid storage",
+          "grid-scale storage",
+          "long-duration storage"
+        ]
+      }
+    },
+    "battery_storage": {
+      "label": "Battery Storage",
+      "group": "storage_and_emobility",
+      "forms": {
+        "en": [
+          "battery storage",
+          "battery energy storage",
+          "battery energy storage system",
+          "BESS",
+          "grid batteries",
+          "grid-scale batteries",
+          "utility-scale batteries"
+        ]
+      }
+    },
+    "electric_vehicles": {
+      "label": "Electric Vehicles",
+      "group": "storage_and_emobility",
+      "forms": {
+        "en": [
+          "electric vehicles",
+          "electric vehicle",
+          "EVs",
+          "electric car",
+          "electric cars",
+          "e-mobility",
+          "electric motorcycles",
+          "electric buses",
+          "electric bus",
+          "battery electric vehicles"
+        ]
+      }
+    },
+    "charging_infrastructure": {
+      "label": "Charging Infrastructure",
+      "group": "storage_and_emobility",
+      "forms": {
+        "en": [
+          "charging infrastructure",
+          "charging station",
+          "charging stations",
+          "EV charging",
+          "charging point",
+          "charging points",
+          "charging network",
+          "charging networks",
+          "fast chargers"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1264 @@
+{
+  "heading": "trade_private_sector",
+  "label": "Trade, markets and private-sector development",
+  "groups": {
+    "trade_flows": {
+      "label": "Trade flows",
+      "parent": null
+    },
+    "trade_balance": {
+      "label": "Trade balance and dependence",
+      "parent": "trade_flows"
+    },
+    "export_performance": {
+      "label": "Export performance",
+      "parent": "trade_flows"
+    },
+    "trade_agreements_integration": {
+      "label": "Trade agreements and integration",
+      "parent": null
+    },
+    "trade_barriers": {
+      "label": "Trade barriers and restrictions",
+      "parent": null
+    },
+    "tariffs_and_duties": {
+      "label": "Tariffs and duties",
+      "parent": "trade_barriers"
+    },
+    "import_export_restrictions": {
+      "label": "Import and export restrictions",
+      "parent": "trade_barriers"
+    },
+    "trade_conflict": {
+      "label": "Trade conflict, sanctions and external shocks",
+      "parent": null
+    },
+    "customs_and_supply_chains": {
+      "label": "Customs, logistics and supply chains",
+      "parent": null
+    },
+    "value_and_supply_chains": {
+      "label": "Value and supply chains",
+      "parent": "customs_and_supply_chains"
+    },
+    "informal_and_illicit_trade": {
+      "label": "Informal and illicit trade",
+      "parent": "customs_and_supply_chains"
+    },
+    "business_climate": {
+      "label": "Business environment and regulation",
+      "parent": null
+    },
+    "competition_state_and_industry": {
+      "label": "Competition, state enterprises and industrial policy",
+      "parent": null
+    },
+    "competition_and_market_power": {
+      "label": "Competition and market power",
+      "parent": "competition_state_and_industry"
+    },
+    "state_enterprises_and_ppps": {
+      "label": "State enterprises and PPPs",
+      "parent": "competition_state_and_industry"
+    },
+    "industrial_and_zone_policy": {
+      "label": "Industrial and zone policy",
+      "parent": "competition_state_and_industry"
+    },
+    "firms_and_innovation": {
+      "label": "Firms, entrepreneurship and innovation",
+      "parent": null
+    },
+    "msmes_and_entrepreneurship": {
+      "label": "MSMEs and entrepreneurship",
+      "parent": "firms_and_innovation"
+    },
+    "firm_exit_and_insolvency": {
+      "label": "Firm exit and insolvency",
+      "parent": "firms_and_innovation"
+    },
+    "innovation_and_technology": {
+      "label": "Innovation and technology",
+      "parent": "firms_and_innovation"
+    }
+  },
+  "concepts": {
+    "trade": {
+      "label": "Trade",
+      "group": "trade_flows",
+      "forms": {
+        "en": [
+          "trade",
+          "trade flows",
+          "trade volumes",
+          "trade volume",
+          "trade policy",
+          "trade policies",
+          "trade minister",
+          "trade ministry",
+          "trade talks",
+          "trade negotiations",
+          "trade ties"
+        ]
+      }
+    },
+    "international_trade": {
+      "label": "International Trade",
+      "group": "trade_flows",
+      "forms": {
+        "en": [
+          "international trade",
+          "global trade",
+          "world trade",
+          "foreign trade",
+          "external trade",
+          "World Trade Organization",
+          "WTO"
+        ]
+      }
+    },
+    "regional_trade": {
+      "label": "Regional Trade",
+      "group": "trade_flows",
+      "forms": {
+        "en": [
+          "regional trade",
+          "regional trading",
+          "regional integration",
+          "regional economic integration",
+          "regional trade integration"
+        ]
+      }
+    },
+    "intraregional_trade": {
+      "label": "Intraregional Trade",
+      "group": "trade_flows",
+      "forms": {
+        "en": [
+          "intraregional trade",
+          "intra-regional trade",
+          "intra-ASEAN trade",
+          "intra-African trade",
+          "intraregional exports",
+          "intra-regional exports"
+        ]
+      }
+    },
+    "trade_deficit": {
+      "label": "Trade Deficit",
+      "group": "trade_balance",
+      "forms": {
+        "en": [
+          "trade deficit",
+          "trade deficits",
+          "merchandise trade deficit",
+          "trade gap",
+          "trade imbalance",
+          "trade imbalances"
+        ]
+      }
+    },
+    "trade_surplus": {
+      "label": "Trade Surplus",
+      "group": "trade_balance",
+      "forms": {
+        "en": [
+          "trade surplus",
+          "trade surpluses",
+          "merchandise trade surplus",
+          "export surplus"
+        ]
+      }
+    },
+    "terms_of_trade": {
+      "label": "Terms of Trade",
+      "group": "trade_balance",
+      "forms": {
+        "en": [
+          "terms of trade",
+          "terms-of-trade"
+        ]
+      }
+    },
+    "import_dependence": {
+      "label": "Import Dependence",
+      "group": "trade_balance",
+      "forms": {
+        "en": [
+          "import dependence",
+          "import dependency",
+          "import-dependent",
+          "dependence on imports",
+          "dependency on imports",
+          "reliance on imports",
+          "import reliance",
+          "import substitution"
+        ]
+      }
+    },
+    "export_diversification": {
+      "label": "Export Diversification",
+      "group": "export_performance",
+      "forms": {
+        "en": [
+          "export diversification",
+          "diversification of exports",
+          "diversify exports",
+          "diversifying exports",
+          "diversify its exports",
+          "export basket",
+          "export base"
+        ]
+      }
+    },
+    "export_competitiveness": {
+      "label": "Export Competitiveness",
+      "group": "export_performance",
+      "forms": {
+        "en": [
+          "export competitiveness",
+          "competitiveness of exports",
+          "export performance",
+          "export market share"
+        ]
+      }
+    },
+    "trade_agreement": {
+      "label": "Trade Agreement",
+      "group": "trade_agreements_integration",
+      "forms": {
+        "en": [
+          "trade agreement",
+          "trade agreements",
+          "trade deal",
+          "trade deals",
+          "trade pact",
+          "trade pacts",
+          "economic partnership agreement",
+          "economic partnership agreements",
+          "RCEP",
+          "CPTPP",
+          "PACER Plus"
+        ]
+      }
+    },
+    "free_trade_agreement": {
+      "label": "Free Trade Agreement",
+      "group": "trade_agreements_integration",
+      "forms": {
+        "en": [
+          "free trade agreement",
+          "free-trade agreement",
+          "free trade agreements",
+          "free-trade agreements",
+          "FTA",
+          "FTAs",
+          "free trade area",
+          "free-trade area",
+          "ASEAN Free Trade Area",
+          "AfCFTA"
+        ]
+      }
+    },
+    "customs_union": {
+      "label": "Customs Union",
+      "group": "trade_agreements_integration",
+      "forms": {
+        "en": [
+          "customs union",
+          "customs unions",
+          "common external tariff",
+          "Southern African Customs Union",
+          "SACU"
+        ]
+      }
+    },
+    "common_market": {
+      "label": "Common Market",
+      "group": "trade_agreements_integration",
+      "forms": {
+        "en": [
+          "common market",
+          "common markets",
+          "single market",
+          "single markets",
+          "ASEAN Economic Community",
+          "COMESA",
+          "Mercosur"
+        ]
+      }
+    },
+    "market_access": {
+      "label": "Market Access",
+      "group": "trade_agreements_integration",
+      "forms": {
+        "en": [
+          "market access",
+          "access to markets",
+          "access to foreign markets",
+          "access to export markets",
+          "duty-free access",
+          "duty-free quota-free",
+          "preferential access",
+          "Generalized System of Preferences",
+          "Generalised System of Preferences"
+        ]
+      }
+    },
+    "rules_of_origin": {
+      "label": "Rules of Origin",
+      "group": "trade_agreements_integration",
+      "forms": {
+        "en": [
+          "rules of origin",
+          "rule of origin",
+          "origin rules",
+          "certificate of origin",
+          "certificates of origin"
+        ]
+      }
+    },
+    "protectionism": {
+      "label": "Protectionism",
+      "group": "trade_barriers",
+      "forms": {
+        "en": [
+          "protectionism",
+          "protectionist",
+          "protectionist measures",
+          "trade protectionism",
+          "trade protection",
+          "economic nationalism"
+        ]
+      }
+    },
+    "nontariff_barriers": {
+      "label": "Nontariff Barriers",
+      "group": "trade_barriers",
+      "forms": {
+        "en": [
+          "nontariff barriers",
+          "non-tariff barriers",
+          "nontariff barrier",
+          "non-tariff barrier",
+          "non-tariff measures",
+          "nontariff measures",
+          "NTBs",
+          "NTMs",
+          "technical barriers to trade",
+          "sanitary and phytosanitary"
+        ]
+      }
+    },
+    "tariffs": {
+      "label": "Tariffs",
+      "group": "tariffs_and_duties",
+      "forms": {
+        "en": [
+          "tariffs",
+          "tariff",
+          "import tariff",
+          "import tariffs",
+          "trade tariffs",
+          "tariff barriers",
+          "reciprocal tariffs",
+          "punitive tariffs",
+          "customs tariff",
+          "customs tariffs",
+          "tariff war",
+          "tariff wars"
+        ]
+      }
+    },
+    "import_duties": {
+      "label": "Import Duties",
+      "group": "tariffs_and_duties",
+      "forms": {
+        "en": [
+          "import duties",
+          "import duty",
+          "customs duties",
+          "customs duty",
+          "duties on imports",
+          "import levy",
+          "import levies",
+          "import tax",
+          "import taxes"
+        ]
+      }
+    },
+    "export_taxes": {
+      "label": "Export Taxes",
+      "group": "tariffs_and_duties",
+      "forms": {
+        "en": [
+          "export taxes",
+          "export tax",
+          "export duty",
+          "export duties",
+          "export levy",
+          "export levies",
+          "tax on exports",
+          "duties on exports"
+        ]
+      }
+    },
+    "import_restrictions": {
+      "label": "Import Restrictions",
+      "group": "import_export_restrictions",
+      "forms": {
+        "en": [
+          "import restrictions",
+          "import restriction",
+          "restrictions on imports",
+          "import curbs",
+          "import controls",
+          "import quota",
+          "import quotas",
+          "curb imports"
+        ]
+      }
+    },
+    "export_restrictions": {
+      "label": "Export Restrictions",
+      "group": "import_export_restrictions",
+      "forms": {
+        "en": [
+          "export restrictions",
+          "export restriction",
+          "restrictions on exports",
+          "export curbs",
+          "export controls",
+          "export quota",
+          "export quotas",
+          "curb exports"
+        ]
+      }
+    },
+    "import_ban": {
+      "label": "Import Ban",
+      "group": "import_export_restrictions",
+      "forms": {
+        "en": [
+          "import ban",
+          "import bans",
+          "ban on imports",
+          "ban imports",
+          "banning imports",
+          "banned imports",
+          "import prohibition",
+          "import prohibitions"
+        ]
+      }
+    },
+    "export_ban": {
+      "label": "Export Ban",
+      "group": "import_export_restrictions",
+      "forms": {
+        "en": [
+          "export ban",
+          "export bans",
+          "ban on exports",
+          "ban exports",
+          "banning exports",
+          "banned exports",
+          "export prohibition",
+          "export prohibitions"
+        ]
+      }
+    },
+    "import_licensing": {
+      "label": "Import Licensing",
+      "group": "import_export_restrictions",
+      "forms": {
+        "en": [
+          "import licensing",
+          "import licence",
+          "import licences",
+          "import license",
+          "import licenses",
+          "import permit",
+          "import permits"
+        ]
+      }
+    },
+    "export_licensing": {
+      "label": "Export Licensing",
+      "group": "import_export_restrictions",
+      "forms": {
+        "en": [
+          "export licensing",
+          "export licence",
+          "export licences",
+          "export license",
+          "export licenses",
+          "export permit",
+          "export permits"
+        ]
+      }
+    },
+    "us_china_trade_war": {
+      "label": "US-China Trade War",
+      "group": "trade_conflict",
+      "forms": {
+        "en": [
+          "US-China trade war",
+          "U.S.-China trade war",
+          "US China trade war",
+          "China-US trade war",
+          "Sino-US trade war",
+          "Sino-American trade war",
+          "US-China trade tensions",
+          "US-China trade dispute"
+        ]
+      }
+    },
+    "trade_retaliation": {
+      "label": "Trade Retaliation",
+      "group": "trade_conflict",
+      "forms": {
+        "en": [
+          "trade retaliation",
+          "retaliatory tariffs",
+          "retaliatory duties",
+          "retaliatory trade measures",
+          "tit-for-tat tariffs",
+          "counter-tariffs",
+          "trade war",
+          "trade wars"
+        ]
+      }
+    },
+    "trade_sanctions": {
+      "label": "Trade Sanctions",
+      "group": "trade_conflict",
+      "forms": {
+        "en": [
+          "trade sanctions",
+          "trade sanction",
+          "trade embargo",
+          "trade embargoes",
+          "entity list",
+          "trade blacklist"
+        ]
+      }
+    },
+    "economic_sanctions": {
+      "label": "Economic Sanctions",
+      "group": "trade_conflict",
+      "forms": {
+        "en": [
+          "sanctions",
+          "economic sanctions",
+          "economic sanction",
+          "financial sanctions",
+          "international sanctions",
+          "Western sanctions",
+          "US sanctions",
+          "UN sanctions",
+          "EU sanctions",
+          "sanctions regime",
+          "sanctions relief"
+        ]
+      }
+    },
+    "external_shocks": {
+      "label": "External Shocks",
+      "group": "trade_conflict",
+      "forms": {
+        "en": [
+          "external shocks",
+          "external shock",
+          "external headwinds",
+          "global headwinds",
+          "global spillovers",
+          "external vulnerabilities",
+          "external risks"
+        ]
+      }
+    },
+    "trade_facilitation": {
+      "label": "Trade Facilitation",
+      "group": "customs_and_supply_chains",
+      "forms": {
+        "en": [
+          "trade facilitation",
+          "trade facilitation agreement",
+          "single window",
+          "national single window",
+          "ASEAN single window",
+          "paperless trade"
+        ]
+      }
+    },
+    "customs_procedures": {
+      "label": "Customs Procedures",
+      "group": "customs_and_supply_chains",
+      "forms": {
+        "en": [
+          "customs procedures",
+          "customs procedure",
+          "customs clearance",
+          "customs formalities",
+          "customs inspections",
+          "customs declaration",
+          "customs declarations",
+          "customs modernization",
+          "customs reform"
+        ]
+      }
+    },
+    "border_delays": {
+      "label": "Border Delays",
+      "group": "customs_and_supply_chains",
+      "forms": {
+        "en": [
+          "border delays",
+          "border delay",
+          "delays at the border",
+          "border congestion",
+          "border queues",
+          "clearance delays",
+          "port congestion",
+          "dwell time",
+          "dwell times"
+        ]
+      }
+    },
+    "trade_logistics": {
+      "label": "Trade Logistics",
+      "group": "customs_and_supply_chains",
+      "forms": {
+        "en": [
+          "trade logistics",
+          "logistics costs",
+          "logistics performance",
+          "logistics performance index",
+          "freight costs",
+          "freight rates",
+          "shipping costs",
+          "shipping rates",
+          "container shipping"
+        ]
+      }
+    },
+    "cross_border_commerce": {
+      "label": "Cross-Border Commerce",
+      "group": "customs_and_supply_chains",
+      "forms": {
+        "en": [
+          "cross-border commerce",
+          "cross border commerce",
+          "cross-border trade",
+          "cross border trade",
+          "cross-border e-commerce",
+          "cross border e-commerce",
+          "border trade"
+        ]
+      }
+    },
+    "global_value_chains": {
+      "label": "Global Value Chains",
+      "group": "value_and_supply_chains",
+      "forms": {
+        "en": [
+          "global value chains",
+          "global value chain",
+          "GVCs",
+          "GVC",
+          "regional value chains",
+          "regional value chain",
+          "production networks"
+        ]
+      }
+    },
+    "supply_chains": {
+      "label": "Supply Chains",
+      "group": "value_and_supply_chains",
+      "forms": {
+        "en": [
+          "supply chains",
+          "supply chain",
+          "supply-chain",
+          "supply networks"
+        ]
+      }
+    },
+    "supply_chain_disruptions": {
+      "label": "Supply-Chain Disruptions",
+      "group": "value_and_supply_chains",
+      "forms": {
+        "en": [
+          "supply-chain disruptions",
+          "supply chain disruptions",
+          "supply-chain disruption",
+          "supply chain disruption",
+          "supply chain bottlenecks",
+          "supply chain crisis",
+          "supply chain problems",
+          "disrupted supply chains"
+        ]
+      }
+    },
+    "nearshoring": {
+      "label": "Nearshoring",
+      "group": "value_and_supply_chains",
+      "forms": {
+        "en": [
+          "nearshoring",
+          "near-shoring",
+          "nearshored"
+        ]
+      }
+    },
+    "friend_shoring": {
+      "label": "Friend-Shoring",
+      "group": "value_and_supply_chains",
+      "forms": {
+        "en": [
+          "friend-shoring",
+          "friendshoring",
+          "friend shoring",
+          "ally-shoring",
+          "allyshoring"
+        ]
+      }
+    },
+    "reshoring": {
+      "label": "Reshoring",
+      "group": "value_and_supply_chains",
+      "forms": {
+        "en": [
+          "reshoring",
+          "re-shoring",
+          "onshoring",
+          "on-shoring",
+          "reshored"
+        ]
+      }
+    },
+    "informal_cross_border_trade": {
+      "label": "Informal Cross-Border Trade",
+      "group": "informal_and_illicit_trade",
+      "forms": {
+        "en": [
+          "informal cross-border trade",
+          "informal cross border trade",
+          "ICBT",
+          "informal border trade",
+          "cross-border traders",
+          "small-scale cross-border traders"
+        ]
+      }
+    },
+    "smuggling": {
+      "label": "Smuggling",
+      "group": "informal_and_illicit_trade",
+      "forms": {
+        "en": [
+          "smuggling",
+          "smuggled",
+          "smugglers",
+          "smuggler",
+          "smuggle"
+        ]
+      }
+    },
+    "contraband": {
+      "label": "Contraband",
+      "group": "informal_and_illicit_trade",
+      "forms": {
+        "en": [
+          "contraband",
+          "contraband goods",
+          "illicit trade",
+          "illegal imports",
+          "illegally imported"
+        ]
+      }
+    },
+    "private_sector_development": {
+      "label": "Private-Sector Development",
+      "group": "business_climate",
+      "forms": {
+        "en": [
+          "private-sector development",
+          "private sector development",
+          "private sector growth",
+          "private-sector growth",
+          "private sector-led growth",
+          "private-sector-led growth"
+        ]
+      }
+    },
+    "business_environment": {
+      "label": "Business Environment",
+      "group": "business_climate",
+      "forms": {
+        "en": [
+          "business environment",
+          "business climate",
+          "ease of doing business",
+          "Doing Business report",
+          "Doing Business index",
+          "business-friendly",
+          "B-READY",
+          "Business Ready report"
+        ]
+      }
+    },
+    "investment_climate": {
+      "label": "Investment Climate",
+      "group": "business_climate",
+      "forms": {
+        "en": [
+          "investment climate",
+          "investment environment",
+          "investor-friendly",
+          "investment regime",
+          "investment law",
+          "investment laws",
+          "foreign investment law",
+          "investment facilitation"
+        ]
+      }
+    },
+    "business_regulation": {
+      "label": "Business Regulation",
+      "group": "business_climate",
+      "forms": {
+        "en": [
+          "business regulation",
+          "business regulations",
+          "regulations on businesses",
+          "business laws",
+          "company law",
+          "companies act",
+          "commercial law"
+        ]
+      }
+    },
+    "business_licensing": {
+      "label": "Business Licensing",
+      "group": "business_climate",
+      "forms": {
+        "en": [
+          "business licensing",
+          "business licence",
+          "business licences",
+          "business license",
+          "business licenses",
+          "business permit",
+          "business permits",
+          "trading licence",
+          "trading licences",
+          "Online Single Submission"
+        ]
+      }
+    },
+    "business_registration": {
+      "label": "Business Registration",
+      "group": "business_climate",
+      "forms": {
+        "en": [
+          "business registration",
+          "company registration",
+          "business registry",
+          "company registry",
+          "companies registry",
+          "registrar of companies",
+          "registering a business",
+          "starting a business"
+        ]
+      }
+    },
+    "regulatory_burden": {
+      "label": "Regulatory Burden",
+      "group": "business_climate",
+      "forms": {
+        "en": [
+          "regulatory burden",
+          "regulatory burdens",
+          "red tape",
+          "bureaucratic hurdles",
+          "compliance costs",
+          "compliance burden",
+          "cost of compliance",
+          "overregulation",
+          "over-regulation",
+          "deregulation"
+        ]
+      }
+    },
+    "competition_policy": {
+      "label": "Competition Policy",
+      "group": "competition_and_market_power",
+      "forms": {
+        "en": [
+          "competition policy",
+          "competition law",
+          "competition laws",
+          "competition commission",
+          "competition authority",
+          "fair competition",
+          "unfair competition",
+          "anti-competitive",
+          "anticompetitive"
+        ]
+      }
+    },
+    "antitrust": {
+      "label": "Antitrust",
+      "group": "competition_and_market_power",
+      "forms": {
+        "en": [
+          "antitrust",
+          "anti-trust",
+          "antitrust law",
+          "price-fixing",
+          "price fixing",
+          "bid rigging",
+          "bid-rigging",
+          "competition watchdog"
+        ]
+      }
+    },
+    "market_concentration": {
+      "label": "Market Concentration",
+      "group": "competition_and_market_power",
+      "forms": {
+        "en": [
+          "market concentration",
+          "concentrated markets",
+          "market dominance",
+          "dominant market position",
+          "abuse of dominance",
+          "abuse of dominant position",
+          "market power",
+          "oligopoly",
+          "oligopolies",
+          "duopoly"
+        ]
+      }
+    },
+    "monopoly": {
+      "label": "Monopoly",
+      "group": "competition_and_market_power",
+      "forms": {
+        "en": [
+          "monopoly",
+          "monopolies",
+          "monopolistic",
+          "monopolize",
+          "monopolise",
+          "monopolized",
+          "monopolised",
+          "monopsony"
+        ]
+      }
+    },
+    "state_owned_enterprises": {
+      "label": "State-Owned Enterprises",
+      "group": "state_enterprises_and_ppps",
+      "forms": {
+        "en": [
+          "state-owned enterprises",
+          "state-owned enterprise",
+          "state owned enterprises",
+          "state owned enterprise",
+          "SOEs",
+          "SOE",
+          "state enterprises",
+          "state-owned companies",
+          "public enterprises",
+          "parastatals",
+          "BUMN"
+        ]
+      }
+    },
+    "privatization": {
+      "label": "Privatization",
+      "group": "state_enterprises_and_ppps",
+      "forms": {
+        "en": [
+          "privatization",
+          "privatisation",
+          "privatize",
+          "privatise",
+          "privatized",
+          "privatised",
+          "privatizing",
+          "privatising",
+          "sale of state assets"
+        ]
+      }
+    },
+    "public_private_partnerships": {
+      "label": "Public-Private Partnerships",
+      "group": "state_enterprises_and_ppps",
+      "forms": {
+        "en": [
+          "public-private partnerships",
+          "public-private partnership",
+          "public private partnerships",
+          "public private partnership",
+          "PPP project",
+          "PPP projects",
+          "PPP scheme",
+          "PPP model",
+          "PPP framework"
+        ]
+      }
+    },
+    "industrial_policy": {
+      "label": "Industrial Policy",
+      "group": "industrial_and_zone_policy",
+      "forms": {
+        "en": [
+          "industrial policy",
+          "industrial policies",
+          "industrial strategy",
+          "downstreaming",
+          "downstream industrialization",
+          "hilirisasi",
+          "Made in China 2025",
+          "Make in India"
+        ]
+      }
+    },
+    "special_economic_zones": {
+      "label": "Special Economic Zones",
+      "group": "industrial_and_zone_policy",
+      "forms": {
+        "en": [
+          "special economic zones",
+          "special economic zone",
+          "SEZ",
+          "SEZs",
+          "export processing zone",
+          "export processing zones",
+          "EPZ",
+          "EPZs",
+          "free trade zone",
+          "free trade zones"
+        ]
+      }
+    },
+    "local_content_requirements": {
+      "label": "Local Content Requirements",
+      "group": "industrial_and_zone_policy",
+      "forms": {
+        "en": [
+          "local content requirements",
+          "local content requirement",
+          "local-content requirements",
+          "local content rules",
+          "local content policy",
+          "local content regulations",
+          "domestic content requirements",
+          "TKDN"
+        ]
+      }
+    },
+    "tourism_development": {
+      "label": "Tourism Development",
+      "group": "industrial_and_zone_policy",
+      "forms": {
+        "en": [
+          "tourism development",
+          "tourism infrastructure",
+          "tourism investment",
+          "tourism promotion",
+          "tourism master plan",
+          "tourism strategy",
+          "tourism policy",
+          "tourism projects"
+        ]
+      }
+    },
+    "small_and_medium_enterprises": {
+      "label": "Small and Medium Enterprises",
+      "group": "msmes_and_entrepreneurship",
+      "forms": {
+        "en": [
+          "small and medium enterprises",
+          "small and medium-sized enterprises",
+          "small and medium sized enterprises",
+          "SMEs",
+          "SME",
+          "MSMEs",
+          "MSME",
+          "UMKM",
+          "small businesses",
+          "small business"
+        ]
+      }
+    },
+    "microenterprises": {
+      "label": "Microenterprises",
+      "group": "msmes_and_entrepreneurship",
+      "forms": {
+        "en": [
+          "microenterprises",
+          "microenterprise",
+          "micro-enterprises",
+          "micro-enterprise",
+          "micro enterprises",
+          "micro businesses",
+          "micro-businesses",
+          "microbusinesses",
+          "micro and small enterprises"
+        ]
+      }
+    },
+    "entrepreneurship": {
+      "label": "Entrepreneurship",
+      "group": "msmes_and_entrepreneurship",
+      "forms": {
+        "en": [
+          "entrepreneurship",
+          "entrepreneur",
+          "entrepreneurs",
+          "entrepreneurial",
+          "entrepreneurial ecosystem"
+        ]
+      }
+    },
+    "startups": {
+      "label": "Startups",
+      "group": "msmes_and_entrepreneurship",
+      "forms": {
+        "en": [
+          "startups",
+          "startup",
+          "start-ups",
+          "start-up",
+          "startup ecosystem",
+          "tech startups"
+        ]
+      }
+    },
+    "firm_entry": {
+      "label": "Firm Entry",
+      "group": "msmes_and_entrepreneurship",
+      "forms": {
+        "en": [
+          "firm entry",
+          "business entry",
+          "new business formation",
+          "business creation",
+          "firm creation",
+          "new business registrations",
+          "new firms"
+        ]
+      }
+    },
+    "firm_exit": {
+      "label": "Firm Exit",
+      "group": "firm_exit_and_insolvency",
+      "forms": {
+        "en": [
+          "firm exit",
+          "business exit",
+          "exit of firms",
+          "firm closure",
+          "firm closures",
+          "business deaths",
+          "firm deaths"
+        ]
+      }
+    },
+    "business_closure": {
+      "label": "Business Closure",
+      "group": "firm_exit_and_insolvency",
+      "forms": {
+        "en": [
+          "business closure",
+          "business closures",
+          "business shutdowns",
+          "shop closures",
+          "store closures",
+          "company closures",
+          "businesses closed",
+          "businesses shut down"
+        ]
+      }
+    },
+    "bankruptcy": {
+      "label": "Bankruptcy",
+      "group": "firm_exit_and_insolvency",
+      "forms": {
+        "en": [
+          "bankruptcy",
+          "bankruptcies",
+          "bankrupt",
+          "bankruptcy filing",
+          "bankruptcy protection",
+          "Chapter 11",
+          "went bankrupt"
+        ]
+      }
+    },
+    "insolvency": {
+      "label": "Insolvency",
+      "group": "firm_exit_and_insolvency",
+      "forms": {
+        "en": [
+          "insolvency",
+          "insolvencies",
+          "insolvent",
+          "insolvency law",
+          "insolvency proceedings",
+          "receivership",
+          "PKPU"
+        ]
+      }
+    },
+    "innovation": {
+      "label": "Innovation",
+      "group": "innovation_and_technology",
+      "forms": {
+        "en": [
+          "innovation",
+          "innovations",
+          "innovation ecosystem",
+          "national innovation system",
+          "innovation hub",
+          "innovation hubs"
+        ]
+      }
+    },
+    "technology_adoption": {
+      "label": "Technology Adoption",
+      "group": "innovation_and_technology",
+      "forms": {
+        "en": [
+          "technology adoption",
+          "adoption of technology",
+          "adoption of new technologies",
+          "technology diffusion",
+          "technology transfer",
+          "technology uptake",
+          "technology upgrading",
+          "tech adoption"
+        ]
+      }
+    },
+    "research_and_development": {
+      "label": "Research and Development",
+      "group": "innovation_and_technology",
+      "forms": {
+        "en": [
+          "research and development",
+          "R&D",
+          "research & development",
+          "R and D",
+          "research-and-development",
+          "R&D spending",
+          "R&D investment"
+        ]
+      }
+    }
+  }
+}

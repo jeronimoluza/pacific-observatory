@@ -1,0 +1,1389 @@
+{
+  "heading": "health_nutrition",
+  "label": "Health, nutrition and population",
+  "groups": {
+    "health_systems": {
+      "label": "Health systems",
+      "parent": null
+    },
+    "health_financing_access": {
+      "label": "Health financing and access",
+      "parent": "health_systems"
+    },
+    "health_service_capacity": {
+      "label": "Health service capacity",
+      "parent": "health_systems"
+    },
+    "health_workforce_supplies": {
+      "label": "Health workforce and supplies",
+      "parent": "health_systems"
+    },
+    "disease_epidemics": {
+      "label": "Diseases and epidemics",
+      "parent": null
+    },
+    "outbreaks_preparedness": {
+      "label": "Outbreaks and preparedness",
+      "parent": "disease_epidemics"
+    },
+    "infectious_diseases": {
+      "label": "Infectious diseases",
+      "parent": "disease_epidemics"
+    },
+    "vaccines_immunization": {
+      "label": "Vaccines and immunization",
+      "parent": "disease_epidemics"
+    },
+    "ncd_environmental_health": {
+      "label": "Noncommunicable and environmental health",
+      "parent": "disease_epidemics"
+    },
+    "maternal_child_health": {
+      "label": "Maternal, child and reproductive health",
+      "parent": null
+    },
+    "maternal_child_mortality": {
+      "label": "Maternal and child mortality",
+      "parent": "maternal_child_health"
+    },
+    "mental_health_disability": {
+      "label": "Mental health and disability",
+      "parent": null
+    },
+    "mental_health_conditions": {
+      "label": "Mental health conditions",
+      "parent": "mental_health_disability"
+    },
+    "disability_rehabilitation": {
+      "label": "Disability and rehabilitation",
+      "parent": "mental_health_disability"
+    },
+    "nutrition_diet": {
+      "label": "Nutrition",
+      "parent": null
+    },
+    "undernutrition": {
+      "label": "Undernutrition",
+      "parent": "nutrition_diet"
+    },
+    "micronutrients_fortification": {
+      "label": "Micronutrients and fortification",
+      "parent": "nutrition_diet"
+    },
+    "overweight_obesity": {
+      "label": "Overweight and obesity",
+      "parent": "nutrition_diet"
+    },
+    "feeding_nutrition_programs": {
+      "label": "Feeding and nutrition programs",
+      "parent": "nutrition_diet"
+    },
+    "population_vital_stats": {
+      "label": "Population and vital registration",
+      "parent": null
+    },
+    "population_dynamics": {
+      "label": "Population dynamics",
+      "parent": "population_vital_stats"
+    },
+    "vital_registration": {
+      "label": "Civil and vital registration",
+      "parent": "population_vital_stats"
+    }
+  },
+  "concepts": {
+    "health": {
+      "label": "Health",
+      "group": "health_systems",
+      "forms": {
+        "en": [
+          "health",
+          "healthcare",
+          "health care",
+          "health-care",
+          "health sector",
+          "health services",
+          "ministry of health",
+          "health ministry",
+          "health minister",
+          "hospital",
+          "hospitals",
+          "medical care"
+        ]
+      }
+    },
+    "public_health": {
+      "label": "Public Health",
+      "group": "health_systems",
+      "forms": {
+        "en": [
+          "public health",
+          "public-health",
+          "public health emergency",
+          "public health crisis",
+          "public health measures",
+          "public health system"
+        ]
+      }
+    },
+    "primary_health_care": {
+      "label": "Primary Health Care",
+      "group": "health_service_capacity",
+      "forms": {
+        "en": [
+          "primary health care",
+          "primary healthcare",
+          "primary care",
+          "health centre",
+          "health centres",
+          "health center",
+          "health centers",
+          "community health centre",
+          "community health centres",
+          "community health workers"
+        ]
+      }
+    },
+    "universal_health_coverage": {
+      "label": "Universal Health Coverage",
+      "group": "health_financing_access",
+      "forms": {
+        "en": [
+          "universal health coverage",
+          "UHC",
+          "universal health care",
+          "universal healthcare",
+          "universal coverage scheme",
+          "health for all"
+        ]
+      }
+    },
+    "health_insurance": {
+      "label": "Health Insurance",
+      "group": "health_financing_access",
+      "forms": {
+        "en": [
+          "health insurance",
+          "medical insurance",
+          "national health insurance",
+          "health insurance scheme",
+          "PhilHealth",
+          "BPJS Kesehatan"
+        ]
+      }
+    },
+    "health_financing": {
+      "label": "Health Financing",
+      "group": "health_financing_access",
+      "forms": {
+        "en": [
+          "health financing",
+          "health spending",
+          "health expenditure",
+          "health expenditures",
+          "healthcare spending",
+          "health care spending",
+          "health budget",
+          "spending on health",
+          "health funding"
+        ]
+      }
+    },
+    "out_of_pocket_health_spending": {
+      "label": "Out-of-Pocket Health Spending",
+      "group": "health_financing_access",
+      "forms": {
+        "en": [
+          "out-of-pocket health spending",
+          "out-of-pocket health expenditure",
+          "out-of-pocket medical expenses",
+          "out-of-pocket medical costs",
+          "out-of-pocket payments for health",
+          "catastrophic health expenditure",
+          "catastrophic health spending"
+        ]
+      }
+    },
+    "health_care_access": {
+      "label": "Health-Care Access",
+      "group": "health_financing_access",
+      "forms": {
+        "en": [
+          "health-care access",
+          "healthcare access",
+          "health care access",
+          "access to health care",
+          "access to healthcare",
+          "access to health services",
+          "access to medical care"
+        ]
+      }
+    },
+    "health_care_affordability": {
+      "label": "Health-Care Affordability",
+      "group": "health_financing_access",
+      "forms": {
+        "en": [
+          "health-care affordability",
+          "healthcare affordability",
+          "affordable healthcare",
+          "affordable health care",
+          "cost of healthcare",
+          "cost of health care",
+          "healthcare costs",
+          "health care costs",
+          "medical costs",
+          "medical bills"
+        ]
+      }
+    },
+    "health_service_quality": {
+      "label": "Health Service Quality",
+      "group": "health_service_capacity",
+      "forms": {
+        "en": [
+          "health service quality",
+          "quality of health services",
+          "quality of healthcare",
+          "quality of health care",
+          "healthcare quality",
+          "medical negligence",
+          "medical malpractice"
+        ]
+      }
+    },
+    "health_system_capacity": {
+      "label": "Health-System Capacity",
+      "group": "health_service_capacity",
+      "forms": {
+        "en": [
+          "health-system capacity",
+          "health system capacity",
+          "health system",
+          "health systems",
+          "healthcare system",
+          "healthcare systems",
+          "health care system",
+          "health system strengthening"
+        ]
+      }
+    },
+    "health_workforce": {
+      "label": "Health Workforce",
+      "group": "health_workforce_supplies",
+      "forms": {
+        "en": [
+          "health workforce",
+          "health worker",
+          "health workers",
+          "healthcare workers",
+          "health care workers",
+          "medical staff",
+          "medical personnel",
+          "health personnel",
+          "doctors and nurses"
+        ]
+      }
+    },
+    "doctor_shortage": {
+      "label": "Doctor Shortage",
+      "group": "health_workforce_supplies",
+      "forms": {
+        "en": [
+          "doctor shortage",
+          "doctor shortages",
+          "doctors shortage",
+          "shortage of doctors",
+          "lack of doctors",
+          "physician shortage",
+          "shortage of physicians"
+        ]
+      }
+    },
+    "nurse_shortage": {
+      "label": "Nurse Shortage",
+      "group": "health_workforce_supplies",
+      "forms": {
+        "en": [
+          "nurse shortage",
+          "nurse shortages",
+          "nursing shortage",
+          "nurses shortage",
+          "shortage of nurses",
+          "lack of nurses"
+        ]
+      }
+    },
+    "medicine_shortage": {
+      "label": "Medicine Shortage",
+      "group": "health_workforce_supplies",
+      "forms": {
+        "en": [
+          "medicine shortage",
+          "medicine shortages",
+          "medicines shortage",
+          "drug shortage",
+          "drug shortages",
+          "shortage of medicines",
+          "shortage of drugs",
+          "medication shortage",
+          "medication shortages",
+          "shortage of medication"
+        ]
+      }
+    },
+    "medical_supply_shortage": {
+      "label": "Medical Supply Shortage",
+      "group": "health_workforce_supplies",
+      "forms": {
+        "en": [
+          "medical supply shortage",
+          "medical supply shortages",
+          "medical supplies shortage",
+          "shortage of medical supplies",
+          "shortage of medical equipment",
+          "PPE shortage",
+          "shortage of PPE",
+          "medical oxygen shortage"
+        ]
+      }
+    },
+    "hospital_capacity": {
+      "label": "Hospital Capacity",
+      "group": "health_service_capacity",
+      "forms": {
+        "en": [
+          "hospital capacity",
+          "hospital beds",
+          "hospital bed",
+          "ICU beds",
+          "ICU capacity",
+          "intensive care beds",
+          "hospital occupancy",
+          "bed occupancy rate"
+        ]
+      }
+    },
+    "hospital_overcrowding": {
+      "label": "Hospital Overcrowding",
+      "group": "health_service_capacity",
+      "forms": {
+        "en": [
+          "hospital overcrowding",
+          "overcrowded hospital",
+          "overcrowded hospitals",
+          "overwhelmed hospitals",
+          "hospitals overwhelmed",
+          "hospitals are overwhelmed"
+        ]
+      }
+    },
+    "diagnostic_capacity": {
+      "label": "Diagnostic Capacity",
+      "group": "health_service_capacity",
+      "forms": {
+        "en": [
+          "diagnostic capacity",
+          "diagnostic capacities",
+          "diagnostic services",
+          "diagnostic equipment",
+          "testing capacity"
+        ]
+      }
+    },
+    "laboratory_capacity": {
+      "label": "Laboratory Capacity",
+      "group": "health_service_capacity",
+      "forms": {
+        "en": [
+          "laboratory capacity",
+          "laboratory capacities",
+          "lab capacity",
+          "public health laboratory",
+          "public health laboratories",
+          "reference laboratory",
+          "laboratory testing"
+        ]
+      }
+    },
+    "disease_surveillance": {
+      "label": "Disease Surveillance",
+      "group": "outbreaks_preparedness",
+      "forms": {
+        "en": [
+          "disease surveillance",
+          "epidemiological surveillance",
+          "genomic surveillance",
+          "outbreak surveillance",
+          "sentinel surveillance",
+          "contact tracing"
+        ]
+      }
+    },
+    "pandemic_preparedness": {
+      "label": "Pandemic Preparedness",
+      "group": "outbreaks_preparedness",
+      "forms": {
+        "en": [
+          "pandemic preparedness",
+          "epidemic preparedness",
+          "outbreak preparedness",
+          "health emergency preparedness",
+          "pandemic prevention",
+          "pandemic treaty",
+          "pandemic fund"
+        ]
+      }
+    },
+    "covid_19_pandemic": {
+      "label": "COVID-19 Pandemic",
+      "group": "outbreaks_preparedness",
+      "forms": {
+        "en": [
+          "COVID-19",
+          "COVID",
+          "COVID19",
+          "COVID-19 pandemic",
+          "covid pandemic",
+          "coronavirus",
+          "coronavirus pandemic",
+          "SARS-CoV-2",
+          "covid cases"
+        ]
+      }
+    },
+    "epidemic": {
+      "label": "Epidemic",
+      "group": "outbreaks_preparedness",
+      "forms": {
+        "en": [
+          "epidemic",
+          "epidemics",
+          "pandemic",
+          "pandemics"
+        ]
+      }
+    },
+    "disease_outbreak": {
+      "label": "Disease Outbreak",
+      "group": "outbreaks_preparedness",
+      "forms": {
+        "en": [
+          "disease outbreak",
+          "disease outbreaks",
+          "outbreak of disease",
+          "outbreak of the disease",
+          "infectious disease outbreak",
+          "viral outbreak",
+          "virus outbreak"
+        ]
+      }
+    },
+    "communicable_diseases": {
+      "label": "Communicable Diseases",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "communicable diseases",
+          "communicable disease",
+          "infectious diseases",
+          "infectious disease"
+        ]
+      }
+    },
+    "noncommunicable_diseases": {
+      "label": "Noncommunicable Diseases",
+      "group": "ncd_environmental_health",
+      "forms": {
+        "en": [
+          "noncommunicable diseases",
+          "noncommunicable disease",
+          "non-communicable diseases",
+          "non-communicable disease",
+          "NCD",
+          "NCDs",
+          "chronic disease",
+          "chronic diseases",
+          "diabetes",
+          "hypertension",
+          "heart disease",
+          "cardiovascular disease"
+        ]
+      }
+    },
+    "maternal_health": {
+      "label": "Maternal Health",
+      "group": "maternal_child_health",
+      "forms": {
+        "en": [
+          "maternal health",
+          "maternal healthcare",
+          "maternal health care",
+          "maternal care",
+          "safe motherhood",
+          "maternal and child health"
+        ]
+      }
+    },
+    "maternal_mortality": {
+      "label": "Maternal Mortality",
+      "group": "maternal_child_mortality",
+      "forms": {
+        "en": [
+          "maternal mortality",
+          "maternal death",
+          "maternal deaths",
+          "maternal mortality rate",
+          "maternal mortality ratio",
+          "death in childbirth",
+          "deaths in childbirth"
+        ]
+      }
+    },
+    "child_health": {
+      "label": "Child Health",
+      "group": "maternal_child_health",
+      "forms": {
+        "en": [
+          "child health",
+          "children's health",
+          "child healthcare",
+          "pediatric care",
+          "paediatric care",
+          "childhood illness",
+          "childhood illnesses",
+          "maternal and child health"
+        ]
+      }
+    },
+    "child_mortality": {
+      "label": "Child Mortality",
+      "group": "maternal_child_mortality",
+      "forms": {
+        "en": [
+          "child mortality",
+          "childhood mortality",
+          "under-five mortality",
+          "under-5 mortality",
+          "child deaths",
+          "deaths of children under five"
+        ]
+      }
+    },
+    "infant_mortality": {
+      "label": "Infant Mortality",
+      "group": "maternal_child_mortality",
+      "forms": {
+        "en": [
+          "infant mortality",
+          "infant mortality rate",
+          "infant death",
+          "infant deaths"
+        ]
+      }
+    },
+    "neonatal_mortality": {
+      "label": "Neonatal Mortality",
+      "group": "maternal_child_mortality",
+      "forms": {
+        "en": [
+          "neonatal mortality",
+          "neonatal death",
+          "neonatal deaths",
+          "newborn death",
+          "newborn deaths",
+          "newborn mortality",
+          "perinatal mortality"
+        ]
+      }
+    },
+    "reproductive_health": {
+      "label": "Reproductive Health",
+      "group": "maternal_child_health",
+      "forms": {
+        "en": [
+          "reproductive health",
+          "sexual and reproductive health",
+          "reproductive rights",
+          "family planning",
+          "contraception",
+          "contraceptive",
+          "contraceptives",
+          "SRHR"
+        ]
+      }
+    },
+    "antenatal_care": {
+      "label": "Antenatal Care",
+      "group": "maternal_child_health",
+      "forms": {
+        "en": [
+          "antenatal care",
+          "prenatal care",
+          "antenatal visits",
+          "antenatal clinic",
+          "antenatal clinics",
+          "prenatal checkups"
+        ]
+      }
+    },
+    "vaccination": {
+      "label": "Vaccination",
+      "group": "vaccines_immunization",
+      "forms": {
+        "en": [
+          "vaccination",
+          "vaccinations",
+          "vaccinate",
+          "vaccinated",
+          "vaccinating",
+          "vaccine",
+          "vaccines",
+          "vaccine rollout",
+          "vaccination campaign",
+          "vaccination rate"
+        ]
+      }
+    },
+    "immunization": {
+      "label": "Immunization",
+      "group": "vaccines_immunization",
+      "forms": {
+        "en": [
+          "immunization",
+          "immunisation",
+          "immunizations",
+          "immunisations",
+          "routine immunization",
+          "routine immunisation",
+          "childhood immunization",
+          "immunization coverage"
+        ]
+      }
+    },
+    "vaccine_shortage": {
+      "label": "Vaccine Shortage",
+      "group": "vaccines_immunization",
+      "forms": {
+        "en": [
+          "vaccine shortage",
+          "vaccine shortages",
+          "shortage of vaccines",
+          "vaccine supply shortage",
+          "vaccine stockout",
+          "vaccine stockouts"
+        ]
+      }
+    },
+    "vaccine_hesitancy": {
+      "label": "Vaccine Hesitancy",
+      "group": "vaccines_immunization",
+      "forms": {
+        "en": [
+          "vaccine hesitancy",
+          "vaccine-hesitant",
+          "vaccine hesitant",
+          "anti-vaccine",
+          "anti-vax",
+          "anti-vaxxers",
+          "vaccine skepticism",
+          "vaccine scepticism"
+        ]
+      }
+    },
+    "tuberculosis": {
+      "label": "Tuberculosis",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "tuberculosis",
+          "multidrug-resistant tuberculosis",
+          "MDR-TB",
+          "TB cases",
+          "TB patients"
+        ]
+      }
+    },
+    "malaria": {
+      "label": "Malaria",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "malaria",
+          "malarial",
+          "antimalarial",
+          "anti-malaria"
+        ]
+      }
+    },
+    "hiv_aids": {
+      "label": "HIV/AIDS",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "HIV/AIDS",
+          "HIV",
+          "HIV and AIDS",
+          "HIV-AIDS",
+          "AIDS epidemic",
+          "antiretroviral",
+          "antiretrovirals",
+          "people living with HIV"
+        ]
+      }
+    },
+    "cholera": {
+      "label": "Cholera",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "cholera",
+          "cholera outbreak",
+          "cholera outbreaks"
+        ]
+      }
+    },
+    "ebola": {
+      "label": "Ebola",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "ebola",
+          "ebola virus",
+          "ebola outbreak"
+        ]
+      }
+    },
+    "dengue": {
+      "label": "Dengue",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "dengue",
+          "dengue fever",
+          "dengue cases",
+          "dengue outbreak"
+        ]
+      }
+    },
+    "measles": {
+      "label": "Measles",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "measles",
+          "measles outbreak",
+          "measles cases"
+        ]
+      }
+    },
+    "polio": {
+      "label": "Polio",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "polio",
+          "poliomyelitis",
+          "poliovirus",
+          "polio vaccine"
+        ]
+      }
+    },
+    "respiratory_disease": {
+      "label": "Respiratory Disease",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "respiratory disease",
+          "respiratory diseases",
+          "respiratory illness",
+          "respiratory illnesses",
+          "respiratory infection",
+          "respiratory infections",
+          "pneumonia"
+        ]
+      }
+    },
+    "diarrheal_disease": {
+      "label": "Diarrheal Disease",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "diarrheal disease",
+          "diarrheal diseases",
+          "diarrhoeal disease",
+          "diarrhoeal diseases",
+          "diarrhea",
+          "diarrhoea"
+        ]
+      }
+    },
+    "antimicrobial_resistance": {
+      "label": "Antimicrobial Resistance",
+      "group": "infectious_diseases",
+      "forms": {
+        "en": [
+          "antimicrobial resistance",
+          "antibiotic resistance",
+          "drug-resistant infections",
+          "superbug",
+          "superbugs"
+        ]
+      }
+    },
+    "mental_health": {
+      "label": "Mental Health",
+      "group": "mental_health_conditions",
+      "forms": {
+        "en": [
+          "mental health",
+          "mental illness",
+          "mental illnesses",
+          "mental disorder",
+          "mental disorders",
+          "psychosocial support",
+          "mental well-being",
+          "mental wellbeing",
+          "PTSD"
+        ]
+      }
+    },
+    "depression": {
+      "label": "Depression",
+      "group": "mental_health_conditions",
+      "forms": {
+        "en": [
+          "clinical depression",
+          "major depression",
+          "depressive disorder",
+          "depressive disorders",
+          "postpartum depression",
+          "postnatal depression",
+          "depression and anxiety",
+          "anxiety and depression"
+        ]
+      }
+    },
+    "anxiety_disorders": {
+      "label": "Anxiety Disorders",
+      "group": "mental_health_conditions",
+      "forms": {
+        "en": [
+          "anxiety disorders",
+          "anxiety disorder",
+          "generalized anxiety disorder",
+          "generalised anxiety disorder",
+          "panic disorder",
+          "panic attacks"
+        ]
+      }
+    },
+    "suicide_prevention": {
+      "label": "Suicide Prevention",
+      "group": "mental_health_conditions",
+      "forms": {
+        "en": [
+          "suicide prevention",
+          "suicide rate",
+          "suicide rates",
+          "suicides",
+          "suicide attempt",
+          "suicide attempts",
+          "suicidal ideation",
+          "self-harm"
+        ]
+      }
+    },
+    "substance_abuse": {
+      "label": "Substance Abuse",
+      "group": "mental_health_conditions",
+      "forms": {
+        "en": [
+          "substance abuse",
+          "substance use disorder",
+          "substance use disorders",
+          "drug abuse",
+          "drug addiction",
+          "alcohol abuse",
+          "alcoholism",
+          "addiction"
+        ]
+      }
+    },
+    "road_traffic_injuries": {
+      "label": "Road-Traffic Injuries",
+      "group": "ncd_environmental_health",
+      "forms": {
+        "en": [
+          "road-traffic injuries",
+          "road traffic injuries",
+          "road traffic accident",
+          "road traffic accidents",
+          "road accident",
+          "road accidents",
+          "traffic accidents",
+          "road deaths",
+          "road fatalities",
+          "traffic fatalities"
+        ]
+      }
+    },
+    "disability": {
+      "label": "Disability",
+      "group": "disability_rehabilitation",
+      "forms": {
+        "en": [
+          "disability",
+          "disabilities",
+          "persons with disabilities",
+          "people with disabilities",
+          "disabled people",
+          "disabled persons"
+        ]
+      }
+    },
+    "rehabilitation_services": {
+      "label": "Rehabilitation Services",
+      "group": "disability_rehabilitation",
+      "forms": {
+        "en": [
+          "rehabilitation services",
+          "physical rehabilitation",
+          "physiotherapy",
+          "physical therapy",
+          "rehabilitation centre",
+          "rehabilitation center",
+          "rehabilitation centres",
+          "rehabilitation centers"
+        ]
+      }
+    },
+    "assistive_technologies": {
+      "label": "Assistive Technologies",
+      "group": "disability_rehabilitation",
+      "forms": {
+        "en": [
+          "assistive technologies",
+          "assistive technology",
+          "assistive device",
+          "assistive devices",
+          "wheelchair",
+          "wheelchairs",
+          "hearing aid",
+          "hearing aids",
+          "prosthetic limbs"
+        ]
+      }
+    },
+    "nutrition": {
+      "label": "Nutrition",
+      "group": "nutrition_diet",
+      "forms": {
+        "en": [
+          "nutrition",
+          "nutritional",
+          "nutritional status",
+          "nutrition program",
+          "nutrition programme",
+          "healthy diets"
+        ]
+      }
+    },
+    "child_malnutrition": {
+      "label": "Child Malnutrition",
+      "group": "undernutrition",
+      "forms": {
+        "en": [
+          "child malnutrition",
+          "childhood malnutrition",
+          "malnourished children",
+          "malnutrition among children",
+          "malnutrition in children",
+          "child undernutrition",
+          "undernourished children"
+        ]
+      }
+    },
+    "stunting": {
+      "label": "Stunting",
+      "group": "undernutrition",
+      "forms": {
+        "en": [
+          "stunting",
+          "stunted children",
+          "child stunting",
+          "stunting rate",
+          "stunting rates",
+          "stunting prevalence",
+          "chronic malnutrition"
+        ]
+      }
+    },
+    "wasting": {
+      "label": "Wasting",
+      "group": "undernutrition",
+      "forms": {
+        "en": [
+          "child wasting",
+          "acute malnutrition",
+          "severe acute malnutrition",
+          "moderate acute malnutrition",
+          "wasted children",
+          "wasting among children"
+        ]
+      }
+    },
+    "underweight": {
+      "label": "Underweight",
+      "group": "undernutrition",
+      "forms": {
+        "en": [
+          "underweight children",
+          "underweight child",
+          "child underweight",
+          "underweight prevalence",
+          "low birth weight",
+          "low birthweight"
+        ]
+      }
+    },
+    "micronutrient_deficiency": {
+      "label": "Micronutrient Deficiency",
+      "group": "micronutrients_fortification",
+      "forms": {
+        "en": [
+          "micronutrient deficiency",
+          "micronutrient deficiencies",
+          "micronutrient malnutrition",
+          "hidden hunger",
+          "iodine deficiency",
+          "zinc deficiency"
+        ]
+      }
+    },
+    "anemia": {
+      "label": "Anemia",
+      "group": "micronutrients_fortification",
+      "forms": {
+        "en": [
+          "anemia",
+          "anaemia",
+          "iron deficiency",
+          "iron-deficiency anemia",
+          "iron deficiency anaemia"
+        ]
+      }
+    },
+    "vitamin_deficiency": {
+      "label": "Vitamin Deficiency",
+      "group": "micronutrients_fortification",
+      "forms": {
+        "en": [
+          "vitamin deficiency",
+          "vitamin deficiencies",
+          "vitamin A deficiency",
+          "vitamin D deficiency",
+          "vitamin B12 deficiency"
+        ]
+      }
+    },
+    "obesity": {
+      "label": "Obesity",
+      "group": "overweight_obesity",
+      "forms": {
+        "en": [
+          "obesity",
+          "obese",
+          "childhood obesity",
+          "obesity rate",
+          "obesity rates"
+        ]
+      }
+    },
+    "overweight": {
+      "label": "Overweight",
+      "group": "overweight_obesity",
+      "forms": {
+        "en": [
+          "overweight and obesity",
+          "overweight or obese",
+          "overweight children",
+          "overweight adults",
+          "overweight people"
+        ]
+      }
+    },
+    "breastfeeding": {
+      "label": "Breastfeeding",
+      "group": "feeding_nutrition_programs",
+      "forms": {
+        "en": [
+          "breastfeeding",
+          "breast-feeding",
+          "breastfeed",
+          "breastfed",
+          "breast milk",
+          "exclusive breastfeeding"
+        ]
+      }
+    },
+    "infant_feeding": {
+      "label": "Infant Feeding",
+      "group": "feeding_nutrition_programs",
+      "forms": {
+        "en": [
+          "infant feeding",
+          "infant and young child feeding",
+          "complementary feeding",
+          "infant formula",
+          "baby formula"
+        ]
+      }
+    },
+    "maternal_nutrition": {
+      "label": "Maternal Nutrition",
+      "group": "feeding_nutrition_programs",
+      "forms": {
+        "en": [
+          "maternal nutrition",
+          "maternal malnutrition",
+          "nutrition during pregnancy",
+          "prenatal nutrition",
+          "pregnant and lactating women"
+        ]
+      }
+    },
+    "school_nutrition": {
+      "label": "School Nutrition",
+      "group": "feeding_nutrition_programs",
+      "forms": {
+        "en": [
+          "school nutrition",
+          "school meals",
+          "school meal",
+          "school feeding",
+          "school lunch",
+          "school lunches",
+          "free school meals",
+          "free nutritious meals",
+          "free nutritious meal"
+        ]
+      }
+    },
+    "nutrition_sensitive_programs": {
+      "label": "Nutrition-Sensitive Programs",
+      "group": "feeding_nutrition_programs",
+      "forms": {
+        "en": [
+          "nutrition-sensitive programs",
+          "nutrition-sensitive programmes",
+          "nutrition-sensitive",
+          "nutrition sensitive",
+          "nutrition-specific interventions"
+        ]
+      }
+    },
+    "food_fortification": {
+      "label": "Food Fortification",
+      "group": "micronutrients_fortification",
+      "forms": {
+        "en": [
+          "food fortification",
+          "fortified food",
+          "fortified foods",
+          "fortified rice",
+          "fortified flour",
+          "flour fortification",
+          "salt iodization",
+          "iodized salt",
+          "iodised salt",
+          "biofortification",
+          "biofortified"
+        ]
+      }
+    },
+    "lead_exposure": {
+      "label": "Lead Exposure",
+      "group": "ncd_environmental_health",
+      "forms": {
+        "en": [
+          "lead exposure",
+          "exposure to lead",
+          "lead contamination",
+          "lead-contaminated",
+          "blood lead levels",
+          "blood lead",
+          "lead-based paint",
+          "leaded petrol",
+          "leaded gasoline"
+        ]
+      }
+    },
+    "lead_poisoning": {
+      "label": "Lead Poisoning",
+      "group": "ncd_environmental_health",
+      "forms": {
+        "en": [
+          "lead poisoning",
+          "lead toxicity",
+          "lead-poisoned",
+          "poisoned by lead"
+        ]
+      }
+    },
+    "air_pollution_related_disease": {
+      "label": "Air-Pollution-Related Disease",
+      "group": "ncd_environmental_health",
+      "forms": {
+        "en": [
+          "air-pollution-related disease",
+          "air-pollution-related diseases",
+          "air pollution-related disease",
+          "air pollution-related diseases",
+          "air pollution-related illnesses",
+          "air pollution deaths",
+          "deaths from air pollution",
+          "health effects of air pollution",
+          "health impacts of air pollution",
+          "haze-related illnesses",
+          "haze-related diseases"
+        ]
+      }
+    },
+    "occupational_health": {
+      "label": "Occupational Health",
+      "group": "ncd_environmental_health",
+      "forms": {
+        "en": [
+          "occupational health",
+          "occupational disease",
+          "occupational diseases",
+          "occupational illness",
+          "occupational illnesses",
+          "work-related illness",
+          "work-related illnesses"
+        ]
+      }
+    },
+    "population_growth": {
+      "label": "Population Growth",
+      "group": "population_dynamics",
+      "forms": {
+        "en": [
+          "population growth",
+          "population increase",
+          "population boom",
+          "population explosion",
+          "population expansion",
+          "demographic growth",
+          "growing population"
+        ]
+      }
+    },
+    "fertility": {
+      "label": "Fertility",
+      "group": "population_dynamics",
+      "forms": {
+        "en": [
+          "fertility rate",
+          "fertility rates",
+          "total fertility rate",
+          "birth rate",
+          "birth rates",
+          "birthrate",
+          "low fertility",
+          "declining fertility",
+          "falling birth rate"
+        ]
+      }
+    },
+    "adolescent_pregnancy": {
+      "label": "Adolescent Pregnancy",
+      "group": "maternal_child_health",
+      "forms": {
+        "en": [
+          "adolescent pregnancy",
+          "adolescent pregnancies",
+          "teenage pregnancy",
+          "teenage pregnancies",
+          "teen pregnancy",
+          "teen pregnancies",
+          "teenage mothers",
+          "adolescent mothers",
+          "adolescent birth rate"
+        ]
+      }
+    },
+    "aging_population": {
+      "label": "Aging Population",
+      "group": "population_dynamics",
+      "forms": {
+        "en": [
+          "aging population",
+          "ageing population",
+          "population aging",
+          "population ageing",
+          "aging society",
+          "ageing society",
+          "aged society",
+          "super-aged society",
+          "greying population",
+          "graying population"
+        ]
+      }
+    },
+    "life_expectancy": {
+      "label": "Life Expectancy",
+      "group": "population_dynamics",
+      "forms": {
+        "en": [
+          "life expectancy",
+          "life expectancies",
+          "healthy life expectancy"
+        ]
+      }
+    },
+    "civil_registration": {
+      "label": "Civil Registration",
+      "group": "vital_registration",
+      "forms": {
+        "en": [
+          "civil registration",
+          "civil registry",
+          "civil registries",
+          "CRVS",
+          "vital statistics",
+          "vital registration",
+          "civil registration and vital statistics"
+        ]
+      }
+    },
+    "birth_registration": {
+      "label": "Birth Registration",
+      "group": "vital_registration",
+      "forms": {
+        "en": [
+          "birth registration",
+          "birth registrations",
+          "registration of births",
+          "birth certificate",
+          "birth certificates",
+          "unregistered births"
+        ]
+      }
+    },
+    "death_registration": {
+      "label": "Death Registration",
+      "group": "vital_registration",
+      "forms": {
+        "en": [
+          "death registration",
+          "death registrations",
+          "registration of deaths",
+          "death certificate",
+          "death certificates"
+        ]
+      }
+    }
+  }
+}

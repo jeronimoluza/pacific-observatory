@@ -1,0 +1,602 @@
+{
+  "heading": "inflation_cost_of_living",
+  "label": "Inflation, prices and cost of living",
+  "groups": {
+    "inflation_measures": {
+      "label": "Inflation measures",
+      "parent": null
+    },
+    "inflation_dynamics": {
+      "label": "Inflation dynamics",
+      "parent": null
+    },
+    "price_movements": {
+      "label": "Price movements",
+      "parent": null
+    },
+    "living_costs": {
+      "label": "Cost of living",
+      "parent": null
+    },
+    "essentials_costs": {
+      "label": "Cost of essentials",
+      "parent": "living_costs"
+    },
+    "price_policy": {
+      "label": "Price policy",
+      "parent": null
+    },
+    "price_limits": {
+      "label": "Price controls and caps",
+      "parent": "price_policy"
+    },
+    "market_abuse": {
+      "label": "Market abuse and illicit pricing",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "headline_inflation": {
+      "label": "Headline Inflation",
+      "group": "inflation_measures",
+      "forms": {
+        "en": [
+          "headline inflation",
+          "inflation",
+          "inflation rate",
+          "inflation rates",
+          "annual inflation",
+          "inflationary",
+          "inflationary pressures",
+          "consumer price inflation",
+          "CPI inflation"
+        ]
+      }
+    },
+    "core_inflation": {
+      "label": "Core Inflation",
+      "group": "inflation_measures",
+      "forms": {
+        "en": [
+          "core inflation",
+          "underlying inflation",
+          "core CPI",
+          "core consumer prices",
+          "core PCE",
+          "trimmed-mean inflation",
+          "trimmed mean inflation"
+        ]
+      }
+    },
+    "consumer_price_index": {
+      "label": "Consumer Price Index",
+      "group": "inflation_measures",
+      "forms": {
+        "en": [
+          "consumer price index",
+          "consumer price indices",
+          "consumer price indexes",
+          "consumer prices",
+          "CPI basket",
+          "CPI data",
+          "CPI figures"
+        ]
+      }
+    },
+    "producer_price_index": {
+      "label": "Producer Price Index",
+      "group": "inflation_measures",
+      "forms": {
+        "en": [
+          "producer price index",
+          "producer price indices",
+          "producer prices",
+          "producer price inflation",
+          "factory-gate prices",
+          "factory gate prices",
+          "factory-gate inflation"
+        ]
+      }
+    },
+    "imported_inflation": {
+      "label": "Imported Inflation",
+      "group": "inflation_dynamics",
+      "forms": {
+        "en": [
+          "imported inflation",
+          "import price inflation",
+          "exchange rate pass-through",
+          "exchange-rate pass-through",
+          "import prices"
+        ]
+      }
+    },
+    "inflation_expectations": {
+      "label": "Inflation Expectations",
+      "group": "inflation_dynamics",
+      "forms": {
+        "en": [
+          "inflation expectations",
+          "inflation expectation",
+          "inflationary expectations",
+          "expected inflation",
+          "inflation outlook"
+        ]
+      }
+    },
+    "wage_price_spiral": {
+      "label": "Wage-Price Spiral",
+      "group": "inflation_dynamics",
+      "forms": {
+        "en": [
+          "wage-price spiral",
+          "wage price spiral",
+          "wage-price spirals",
+          "price-wage spiral",
+          "second-round effects",
+          "second round effects"
+        ]
+      }
+    },
+    "input_cost_inflation": {
+      "label": "Input Cost Inflation",
+      "group": "inflation_dynamics",
+      "forms": {
+        "en": [
+          "input cost inflation",
+          "input costs",
+          "input cost",
+          "input prices",
+          "production costs",
+          "cost of production",
+          "costs of production",
+          "raw material costs"
+        ]
+      }
+    },
+    "deflation": {
+      "label": "Deflation",
+      "group": "inflation_dynamics",
+      "forms": {
+        "en": [
+          "deflation",
+          "deflationary",
+          "deflationary pressures",
+          "falling consumer prices"
+        ]
+      }
+    },
+    "disinflation": {
+      "label": "Disinflation",
+      "group": "inflation_dynamics",
+      "forms": {
+        "en": [
+          "disinflation",
+          "disinflationary",
+          "easing inflation",
+          "slowing inflation",
+          "inflation eased",
+          "inflation slowed",
+          "inflation moderated",
+          "moderating inflation",
+          "cooling inflation"
+        ]
+      }
+    },
+    "hyperinflation": {
+      "label": "Hyperinflation",
+      "group": "inflation_dynamics",
+      "forms": {
+        "en": [
+          "hyperinflation",
+          "hyper-inflation",
+          "hyperinflationary",
+          "runaway inflation",
+          "galloping inflation"
+        ]
+      }
+    },
+    "price_increases": {
+      "label": "Price Increases",
+      "group": "price_movements",
+      "forms": {
+        "en": [
+          "price increases",
+          "price increase",
+          "price hike",
+          "price hikes",
+          "price rise",
+          "price rises",
+          "rising prices",
+          "higher prices",
+          "soaring prices",
+          "price surge"
+        ]
+      }
+    },
+    "price_declines": {
+      "label": "Price Declines",
+      "group": "price_movements",
+      "forms": {
+        "en": [
+          "price declines",
+          "price decline",
+          "price drop",
+          "price drops",
+          "price fall",
+          "price falls",
+          "falling prices",
+          "lower prices",
+          "price reduction",
+          "price reductions"
+        ]
+      }
+    },
+    "price_volatility": {
+      "label": "Price Volatility",
+      "group": "price_movements",
+      "forms": {
+        "en": [
+          "price volatility",
+          "volatile prices",
+          "price fluctuations",
+          "price fluctuation",
+          "fluctuating prices",
+          "price swings",
+          "price instability"
+        ]
+      }
+    },
+    "wholesale_prices": {
+      "label": "Wholesale Prices",
+      "group": "price_movements",
+      "forms": {
+        "en": [
+          "wholesale prices",
+          "wholesale price",
+          "wholesale price index",
+          "WPI",
+          "wholesale inflation",
+          "wholesale market prices"
+        ]
+      }
+    },
+    "retail_prices": {
+      "label": "Retail Prices",
+      "group": "price_movements",
+      "forms": {
+        "en": [
+          "retail prices",
+          "retail price",
+          "retail price index",
+          "RPI",
+          "retail inflation",
+          "shelf prices"
+        ]
+      }
+    },
+    "commodity_prices": {
+      "label": "Commodity Prices",
+      "group": "price_movements",
+      "forms": {
+        "en": [
+          "commodity prices",
+          "commodity price",
+          "commodity price index",
+          "commodity markets",
+          "raw material prices",
+          "raw materials prices"
+        ]
+      }
+    },
+    "cost_of_living": {
+      "label": "Cost of Living",
+      "group": "living_costs",
+      "forms": {
+        "en": [
+          "cost of living",
+          "cost-of-living",
+          "costs of living",
+          "living costs",
+          "cost of living crisis"
+        ]
+      }
+    },
+    "household_living_costs": {
+      "label": "Household Living Costs",
+      "group": "living_costs",
+      "forms": {
+        "en": [
+          "household living costs",
+          "household costs",
+          "household expenses",
+          "household bills",
+          "household budgets",
+          "family budgets"
+        ]
+      }
+    },
+    "purchasing_power": {
+      "label": "Purchasing Power",
+      "group": "living_costs",
+      "forms": {
+        "en": [
+          "purchasing power",
+          "buying power",
+          "erosion of purchasing power",
+          "loss of purchasing power"
+        ]
+      }
+    },
+    "real_wages": {
+      "label": "Real Wages",
+      "group": "living_costs",
+      "forms": {
+        "en": [
+          "real wages",
+          "real wage",
+          "real earnings",
+          "real wage growth",
+          "inflation-adjusted wages",
+          "inflation-adjusted incomes"
+        ]
+      }
+    },
+    "utility_tariffs": {
+      "label": "Utility Tariffs",
+      "group": "essentials_costs",
+      "forms": {
+        "en": [
+          "utility tariffs",
+          "utility tariff",
+          "electricity tariff",
+          "electricity tariffs",
+          "power tariff",
+          "power tariffs",
+          "utility bills",
+          "utility rates"
+        ]
+      }
+    },
+    "transport_fares": {
+      "label": "Transport Fares",
+      "group": "essentials_costs",
+      "forms": {
+        "en": [
+          "transport fares",
+          "transport fare",
+          "public transport fares",
+          "bus fares",
+          "bus fare",
+          "taxi fares",
+          "jeepney fares",
+          "fare increase",
+          "fare increases",
+          "fare hike"
+        ]
+      }
+    },
+    "rent_inflation": {
+      "label": "Rent Inflation",
+      "group": "essentials_costs",
+      "forms": {
+        "en": [
+          "rent inflation",
+          "rising rents",
+          "rent increases",
+          "rent increase",
+          "rent hikes",
+          "rent hike",
+          "higher rents",
+          "rental prices",
+          "rental costs"
+        ]
+      }
+    },
+    "medical_inflation": {
+      "label": "Medical Inflation",
+      "group": "essentials_costs",
+      "forms": {
+        "en": [
+          "medical inflation",
+          "healthcare inflation",
+          "health care inflation",
+          "medical costs",
+          "healthcare costs",
+          "health-care costs",
+          "medicine prices",
+          "drug prices"
+        ]
+      }
+    },
+    "education_costs": {
+      "label": "Education Costs",
+      "group": "essentials_costs",
+      "forms": {
+        "en": [
+          "education costs",
+          "cost of education",
+          "costs of education",
+          "education expenses",
+          "schooling costs",
+          "tuition costs",
+          "tuition hikes",
+          "tuition increases"
+        ]
+      }
+    },
+    "price_controls": {
+      "label": "Price Controls",
+      "group": "price_limits",
+      "forms": {
+        "en": [
+          "price controls",
+          "price control",
+          "price regulation",
+          "price regulations",
+          "regulated prices",
+          "controlled prices",
+          "price freeze",
+          "price freezes"
+        ]
+      }
+    },
+    "price_ceilings": {
+      "label": "Price Ceilings",
+      "group": "price_limits",
+      "forms": {
+        "en": [
+          "price ceilings",
+          "price ceiling",
+          "ceiling price",
+          "ceiling prices",
+          "maximum retail price",
+          "highest retail price"
+        ]
+      }
+    },
+    "price_caps": {
+      "label": "Price Caps",
+      "group": "price_limits",
+      "forms": {
+        "en": [
+          "price caps",
+          "price cap",
+          "capped prices",
+          "cap on prices",
+          "price capping"
+        ]
+      }
+    },
+    "price_stabilization": {
+      "label": "Price Stabilization",
+      "group": "price_policy",
+      "forms": {
+        "en": [
+          "price stabilization",
+          "price stabilisation",
+          "stabilize prices",
+          "stabilise prices",
+          "stabilizing prices",
+          "stabilising prices",
+          "price stabilization fund"
+        ]
+      }
+    },
+    "price_monitoring": {
+      "label": "Price Monitoring",
+      "group": "price_policy",
+      "forms": {
+        "en": [
+          "price monitoring",
+          "monitoring of prices",
+          "monitor prices",
+          "monitoring prices",
+          "price surveillance",
+          "price inspection",
+          "price inspections"
+        ]
+      }
+    },
+    "administered_prices": {
+      "label": "Administered Prices",
+      "group": "price_policy",
+      "forms": {
+        "en": [
+          "administered prices",
+          "administered price",
+          "government-set prices",
+          "government-regulated prices",
+          "state-set prices",
+          "official prices"
+        ]
+      }
+    },
+    "consumer_subsidies": {
+      "label": "Consumer Subsidies",
+      "group": "price_policy",
+      "forms": {
+        "en": [
+          "consumer subsidies",
+          "consumer subsidy",
+          "price subsidies",
+          "price subsidy",
+          "subsidized prices",
+          "subsidised prices",
+          "subsidized goods",
+          "subsidised goods"
+        ]
+      }
+    },
+    "consumption_tax_pass_through": {
+      "label": "Consumption Tax Pass-Through",
+      "group": "price_policy",
+      "forms": {
+        "en": [
+          "consumption tax pass-through",
+          "consumption-tax pass-through",
+          "tax pass-through",
+          "VAT pass-through",
+          "GST pass-through",
+          "passed on to consumers",
+          "pass on to consumers",
+          "passing on to consumers"
+        ]
+      }
+    },
+    "price_gouging": {
+      "label": "Price Gouging",
+      "group": "market_abuse",
+      "forms": {
+        "en": [
+          "price gouging",
+          "price-gouging",
+          "overcharging",
+          "overpricing",
+          "excessive pricing",
+          "unfair pricing"
+        ]
+      }
+    },
+    "profiteering": {
+      "label": "Profiteering",
+      "group": "market_abuse",
+      "forms": {
+        "en": [
+          "profiteering",
+          "profiteer",
+          "profiteers",
+          "greedflation"
+        ]
+      }
+    },
+    "hoarding": {
+      "label": "Hoarding",
+      "group": "market_abuse",
+      "forms": {
+        "en": [
+          "hoarding",
+          "hoarder",
+          "hoarders",
+          "hoarded"
+        ]
+      }
+    },
+    "black_market_prices": {
+      "label": "Black-Market Prices",
+      "group": "market_abuse",
+      "forms": {
+        "en": [
+          "black-market prices",
+          "black market prices",
+          "black-market price",
+          "black market price",
+          "black-market rate",
+          "black market rate",
+          "black-market premium",
+          "black market premium"
+        ]
+      }
+    }
+  }
+}

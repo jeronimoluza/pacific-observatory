@@ -1,0 +1,668 @@
+{
+  "heading": "water_sanitation",
+  "label": "Water, sanitation, and water security",
+  "groups": {
+    "water_supply_access": {
+      "label": "Water supply and access",
+      "parent": null
+    },
+    "water_supply_interruptions": {
+      "label": "Supply interruptions",
+      "parent": "water_supply_access"
+    },
+    "water_quality_treatment": {
+      "label": "Water quality and treatment",
+      "parent": null
+    },
+    "water_resources": {
+      "label": "Water resources and basins",
+      "parent": null
+    },
+    "water_governance_allocation": {
+      "label": "Governance and allocation",
+      "parent": "water_resources"
+    },
+    "water_utilities": {
+      "label": "Water utilities and tariffs",
+      "parent": null
+    },
+    "sanitation_hygiene": {
+      "label": "Sanitation and hygiene",
+      "parent": null
+    },
+    "sanitation_services": {
+      "label": "Sanitation",
+      "parent": "sanitation_hygiene"
+    },
+    "hygiene_practices": {
+      "label": "Hygiene",
+      "parent": "sanitation_hygiene"
+    },
+    "water_infrastructure": {
+      "label": "Water infrastructure",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "water_security": {
+      "label": "Water Security",
+      "group": "water_supply_access",
+      "forms": {
+        "en": [
+          "water security",
+          "water insecurity",
+          "water-secure",
+          "water-insecure",
+          "water resilience"
+        ]
+      }
+    },
+    "drinking_water": {
+      "label": "Drinking Water",
+      "group": "water_supply_access",
+      "forms": {
+        "en": [
+          "drinking water",
+          "drinking-water",
+          "potable water",
+          "water for drinking"
+        ]
+      }
+    },
+    "safe_drinking_water": {
+      "label": "Safe Drinking Water",
+      "group": "water_supply_access",
+      "forms": {
+        "en": [
+          "safe drinking water",
+          "clean drinking water",
+          "safe water",
+          "clean water",
+          "safely managed drinking water"
+        ]
+      }
+    },
+    "water_access": {
+      "label": "Water Access",
+      "group": "water_supply_access",
+      "forms": {
+        "en": [
+          "water access",
+          "access to water",
+          "access to clean water",
+          "access to safe water",
+          "water point",
+          "water points",
+          "borehole",
+          "boreholes",
+          "standpipes",
+          "piped water"
+        ]
+      }
+    },
+    "water_supply": {
+      "label": "Water Supply",
+      "group": "water_supply_access",
+      "forms": {
+        "en": [
+          "water supply",
+          "water supplies",
+          "water supply system",
+          "water supply systems",
+          "water provision",
+          "water services"
+        ]
+      }
+    },
+    "water_service_disruption": {
+      "label": "Water Service Disruption",
+      "group": "water_supply_interruptions",
+      "forms": {
+        "en": [
+          "water service disruption",
+          "water service disruptions",
+          "water outage",
+          "water outages",
+          "water cut",
+          "water cuts",
+          "water interruption",
+          "water interruptions",
+          "water supply disruption",
+          "water supply interruption",
+          "dry taps"
+        ]
+      }
+    },
+    "water_rationing": {
+      "label": "Water Rationing",
+      "group": "water_supply_interruptions",
+      "forms": {
+        "en": [
+          "water rationing",
+          "rationing of water",
+          "water restrictions",
+          "water use restrictions",
+          "water rationed"
+        ]
+      }
+    },
+    "water_quality": {
+      "label": "Water Quality",
+      "group": "water_quality_treatment",
+      "forms": {
+        "en": [
+          "water quality",
+          "quality of water",
+          "water testing",
+          "water quality standards",
+          "water quality monitoring"
+        ]
+      }
+    },
+    "water_contamination": {
+      "label": "Water Contamination",
+      "group": "water_quality_treatment",
+      "forms": {
+        "en": [
+          "water contamination",
+          "contaminated water",
+          "contaminated drinking water",
+          "unsafe water",
+          "tainted water",
+          "boil water advisory",
+          "boil-water advisory",
+          "boil water notice",
+          "boil-water notice"
+        ]
+      }
+    },
+    "water_treatment": {
+      "label": "Water Treatment",
+      "group": "water_quality_treatment",
+      "forms": {
+        "en": [
+          "water treatment",
+          "water treatment plant",
+          "water treatment plants",
+          "water purification",
+          "water filtration",
+          "chlorination",
+          "purified water"
+        ]
+      }
+    },
+    "desalination": {
+      "label": "Desalination",
+      "group": "water_quality_treatment",
+      "forms": {
+        "en": [
+          "desalination",
+          "desalinization",
+          "desalination plant",
+          "desalination plants",
+          "desalinated water",
+          "reverse osmosis"
+        ]
+      }
+    },
+    "groundwater": {
+      "label": "Groundwater",
+      "group": "water_resources",
+      "forms": {
+        "en": [
+          "groundwater",
+          "ground water",
+          "aquifer",
+          "aquifers",
+          "underground water"
+        ]
+      }
+    },
+    "groundwater_depletion": {
+      "label": "Groundwater Depletion",
+      "group": "water_resources",
+      "forms": {
+        "en": [
+          "groundwater depletion",
+          "aquifer depletion",
+          "depleted aquifers",
+          "falling water tables",
+          "declining water table",
+          "groundwater overextraction",
+          "over-extraction of groundwater"
+        ]
+      }
+    },
+    "surface_water": {
+      "label": "Surface Water",
+      "group": "water_resources",
+      "forms": {
+        "en": [
+          "surface water",
+          "surface waters",
+          "river levels",
+          "lake levels",
+          "river flows"
+        ]
+      }
+    },
+    "watersheds": {
+      "label": "Watersheds",
+      "group": "water_resources",
+      "forms": {
+        "en": [
+          "watersheds",
+          "watershed management",
+          "watershed protection",
+          "watershed area",
+          "catchment area",
+          "catchment areas",
+          "water catchment",
+          "water catchments"
+        ]
+      }
+    },
+    "river_basin_management": {
+      "label": "River-Basin Management",
+      "group": "water_resources",
+      "forms": {
+        "en": [
+          "river-basin management",
+          "river basin management",
+          "river basin authority",
+          "river basin organization",
+          "river basin organisation",
+          "integrated water resources management",
+          "IWRM"
+        ]
+      }
+    },
+    "rainwater_harvesting": {
+      "label": "Rainwater Harvesting",
+      "group": "water_resources",
+      "forms": {
+        "en": [
+          "rainwater harvesting",
+          "rain water harvesting",
+          "rain-water harvesting",
+          "rainwater collection",
+          "rainwater tank",
+          "rainwater tanks"
+        ]
+      }
+    },
+    "transboundary_water": {
+      "label": "Transboundary Water",
+      "group": "water_governance_allocation",
+      "forms": {
+        "en": [
+          "transboundary water",
+          "transboundary waters",
+          "transboundary river",
+          "transboundary rivers",
+          "shared rivers",
+          "shared water resources",
+          "Mekong River Commission",
+          "water treaty",
+          "water-sharing agreement",
+          "water sharing agreement"
+        ]
+      }
+    },
+    "water_conflict": {
+      "label": "Water Conflict",
+      "group": "water_governance_allocation",
+      "forms": {
+        "en": [
+          "water conflict",
+          "water conflicts",
+          "water dispute",
+          "water disputes",
+          "conflict over water",
+          "disputes over water",
+          "water wars"
+        ]
+      }
+    },
+    "water_allocation": {
+      "label": "Water Allocation",
+      "group": "water_governance_allocation",
+      "forms": {
+        "en": [
+          "water allocation",
+          "water allocations",
+          "allocation of water",
+          "water rights",
+          "water abstraction",
+          "water permits",
+          "water quotas"
+        ]
+      }
+    },
+    "water_governance": {
+      "label": "Water Governance",
+      "group": "water_governance_allocation",
+      "forms": {
+        "en": [
+          "water governance",
+          "water policy",
+          "water policies",
+          "water law",
+          "water sector reform",
+          "water regulator",
+          "water resources management",
+          "water management"
+        ]
+      }
+    },
+    "water_utility": {
+      "label": "Water Utility",
+      "group": "water_utilities",
+      "forms": {
+        "en": [
+          "water utility",
+          "water utilities",
+          "water company",
+          "water companies",
+          "water board",
+          "water authority",
+          "waterworks",
+          "water corporation"
+        ]
+      }
+    },
+    "water_tariffs": {
+      "label": "Water Tariffs",
+      "group": "water_utilities",
+      "forms": {
+        "en": [
+          "water tariffs",
+          "water tariff",
+          "water rates",
+          "water bill",
+          "water bills",
+          "water charges",
+          "water pricing",
+          "price of water"
+        ]
+      }
+    },
+    "nonrevenue_water": {
+      "label": "Nonrevenue Water",
+      "group": "water_utilities",
+      "forms": {
+        "en": [
+          "nonrevenue water",
+          "non-revenue water",
+          "unbilled water",
+          "unaccounted-for water",
+          "unaccounted for water"
+        ]
+      }
+    },
+    "water_leakage": {
+      "label": "Water Leakage",
+      "group": "water_utilities",
+      "forms": {
+        "en": [
+          "water leakage",
+          "water leaks",
+          "leaking pipes",
+          "pipe leaks",
+          "burst pipes",
+          "burst water main",
+          "burst water mains",
+          "water main break",
+          "water losses"
+        ]
+      }
+    },
+    "sanitation": {
+      "label": "Sanitation",
+      "group": "sanitation_services",
+      "forms": {
+        "en": [
+          "sanitation",
+          "sanitation services",
+          "sanitation facilities",
+          "water, sanitation and hygiene",
+          "water, sanitation, and hygiene",
+          "latrine",
+          "latrines",
+          "toilet facilities",
+          "public toilets"
+        ]
+      }
+    },
+    "basic_sanitation": {
+      "label": "Basic Sanitation",
+      "group": "sanitation_services",
+      "forms": {
+        "en": [
+          "basic sanitation",
+          "improved sanitation",
+          "access to sanitation",
+          "sanitation coverage",
+          "safely managed sanitation",
+          "improved latrines"
+        ]
+      }
+    },
+    "sewerage": {
+      "label": "Sewerage",
+      "group": "sanitation_services",
+      "forms": {
+        "en": [
+          "sewerage",
+          "sewer",
+          "sewers",
+          "sewer system",
+          "sewer systems",
+          "sewerage system",
+          "sewer network",
+          "sewage",
+          "raw sewage"
+        ]
+      }
+    },
+    "wastewater_treatment": {
+      "label": "Wastewater Treatment",
+      "group": "sanitation_services",
+      "forms": {
+        "en": [
+          "wastewater treatment",
+          "waste water treatment",
+          "wastewater treatment plant",
+          "wastewater treatment plants",
+          "sewage treatment",
+          "sewage treatment plant",
+          "effluent treatment",
+          "wastewater",
+          "waste water"
+        ]
+      }
+    },
+    "open_defecation": {
+      "label": "Open Defecation",
+      "group": "sanitation_services",
+      "forms": {
+        "en": [
+          "open defecation",
+          "open-defecation",
+          "open defecation free",
+          "ODF"
+        ]
+      }
+    },
+    "fecal_sludge_management": {
+      "label": "Fecal Sludge Management",
+      "group": "sanitation_services",
+      "forms": {
+        "en": [
+          "fecal sludge management",
+          "faecal sludge management",
+          "fecal sludge",
+          "faecal sludge",
+          "septage",
+          "septic tank",
+          "septic tanks",
+          "desludging",
+          "pit emptying"
+        ]
+      }
+    },
+    "hygiene": {
+      "label": "Hygiene",
+      "group": "hygiene_practices",
+      "forms": {
+        "en": [
+          "hygiene",
+          "hygienic",
+          "hygiene practices",
+          "hygiene promotion",
+          "personal hygiene",
+          "hygiene kits"
+        ]
+      }
+    },
+    "handwashing": {
+      "label": "Handwashing",
+      "group": "hygiene_practices",
+      "forms": {
+        "en": [
+          "handwashing",
+          "hand washing",
+          "hand-washing",
+          "handwashing stations",
+          "hand hygiene",
+          "wash hands",
+          "washing hands",
+          "wash their hands",
+          "wash your hands"
+        ]
+      }
+    },
+    "menstrual_hygiene": {
+      "label": "Menstrual Hygiene",
+      "group": "hygiene_practices",
+      "forms": {
+        "en": [
+          "menstrual hygiene",
+          "menstrual hygiene management",
+          "menstrual health",
+          "period poverty",
+          "sanitary pads",
+          "sanitary napkins",
+          "menstrual products"
+        ]
+      }
+    },
+    "irrigation_systems": {
+      "label": "Irrigation Systems",
+      "group": "water_infrastructure",
+      "forms": {
+        "en": [
+          "irrigation systems",
+          "irrigation system",
+          "irrigation scheme",
+          "irrigation schemes",
+          "irrigation canal",
+          "irrigation canals",
+          "irrigation infrastructure",
+          "irrigation network",
+          "irrigation networks"
+        ]
+      }
+    },
+    "dam_safety": {
+      "label": "Dam Safety",
+      "group": "water_infrastructure",
+      "forms": {
+        "en": [
+          "dam safety",
+          "dam failure",
+          "dam failures",
+          "dam collapse",
+          "dam breach",
+          "dam burst",
+          "dam break",
+          "dam inspection"
+        ]
+      }
+    },
+    "reservoir_management": {
+      "label": "Reservoir Management",
+      "group": "water_infrastructure",
+      "forms": {
+        "en": [
+          "reservoir management",
+          "reservoir levels",
+          "reservoir level",
+          "reservoir operations",
+          "reservoir capacity",
+          "dam levels",
+          "dam releases",
+          "water releases"
+        ]
+      }
+    },
+    "hydropower_water_use": {
+      "label": "Hydropower Water Use",
+      "group": "water_infrastructure",
+      "forms": {
+        "en": [
+          "hydropower water use",
+          "water for hydropower",
+          "hydropower reservoir",
+          "hydropower reservoirs",
+          "hydroelectric reservoir",
+          "hydroelectric reservoirs",
+          "water-energy nexus",
+          "water-energy-food nexus"
+        ]
+      }
+    },
+    "urban_drainage": {
+      "label": "Urban Drainage",
+      "group": "water_infrastructure",
+      "forms": {
+        "en": [
+          "urban drainage",
+          "drainage system",
+          "drainage systems",
+          "storm drain",
+          "storm drains",
+          "stormwater",
+          "storm water",
+          "drainage canals",
+          "clogged drains",
+          "blocked drains"
+        ]
+      }
+    },
+    "flood_control_infrastructure": {
+      "label": "Flood-Control Infrastructure",
+      "group": "water_infrastructure",
+      "forms": {
+        "en": [
+          "flood-control infrastructure",
+          "flood control infrastructure",
+          "flood control",
+          "flood-control",
+          "flood defences",
+          "flood defenses",
+          "flood barrier",
+          "flood barriers",
+          "levee",
+          "levees",
+          "floodgates",
+          "flood gates",
+          "seawall",
+          "seawalls",
+          "sea wall",
+          "sea walls"
+        ]
+      }
+    }
+  }
+}

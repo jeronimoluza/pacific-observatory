@@ -1,0 +1,876 @@
+{
+  "heading": "poverty_inequality",
+  "label": "Poverty, inequality and household welfare",
+  "groups": {
+    "pov_poverty": {
+      "label": "Poverty",
+      "parent": null
+    },
+    "pov_poverty_dynamics": {
+      "label": "Poverty trends and dynamics",
+      "parent": "pov_poverty"
+    },
+    "pov_poverty_by_place_group": {
+      "label": "Poverty by place and group",
+      "parent": "pov_poverty"
+    },
+    "pov_poverty_measurement": {
+      "label": "Poverty measurement and mapping",
+      "parent": "pov_poverty"
+    },
+    "pov_inequality_distribution": {
+      "label": "Inequality and distribution",
+      "parent": null
+    },
+    "pov_spatial_group_inequality": {
+      "label": "Spatial and group inequality",
+      "parent": "pov_inequality_distribution"
+    },
+    "pov_shared_prosperity_classes": {
+      "label": "Shared prosperity and the middle class",
+      "parent": "pov_inequality_distribution"
+    },
+    "pov_mobility": {
+      "label": "Social and intergenerational mobility",
+      "parent": "pov_inequality_distribution"
+    },
+    "pov_household_finances": {
+      "label": "Household income, spending and finances",
+      "parent": null
+    },
+    "pov_household_coping": {
+      "label": "Household coping and resilience",
+      "parent": null
+    },
+    "pov_wellbeing_sentiment": {
+      "label": "Wellbeing and economic sentiment",
+      "parent": null
+    },
+    "pov_exclusion": {
+      "label": "Deprivation, exclusion and marginalization",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "poverty": {
+      "label": "Poverty",
+      "group": "pov_poverty",
+      "forms": {
+        "en": [
+          "poverty",
+          "poverty rate",
+          "poverty rates",
+          "poverty level",
+          "poverty levels",
+          "poverty headcount",
+          "living in poverty",
+          "poor households",
+          "impoverished",
+          "impoverishment"
+        ]
+      }
+    },
+    "extreme_poverty": {
+      "label": "Extreme Poverty",
+      "group": "pov_poverty",
+      "forms": {
+        "en": [
+          "extreme poverty",
+          "extreme poor",
+          "extremely poor",
+          "abject poverty",
+          "absolute poverty",
+          "dire poverty",
+          "ultra-poor",
+          "ultra poor",
+          "destitution",
+          "destitute"
+        ]
+      }
+    },
+    "multidimensional_poverty": {
+      "label": "Multidimensional Poverty",
+      "group": "pov_poverty",
+      "forms": {
+        "en": [
+          "multidimensional poverty",
+          "multi-dimensional poverty",
+          "multidimensional poverty index",
+          "multidimensionally poor",
+          "non-monetary poverty"
+        ]
+      }
+    },
+    "working_poverty": {
+      "label": "Working Poverty",
+      "group": "pov_poverty",
+      "forms": {
+        "en": [
+          "working poverty",
+          "working poor",
+          "in-work poverty",
+          "in work poverty",
+          "working poverty rate"
+        ]
+      }
+    },
+    "poverty_reduction": {
+      "label": "Poverty Reduction",
+      "group": "pov_poverty_dynamics",
+      "forms": {
+        "en": [
+          "poverty reduction",
+          "poverty alleviation",
+          "poverty eradication",
+          "reduce poverty",
+          "reducing poverty",
+          "eradicate poverty",
+          "end poverty",
+          "ending poverty",
+          "lifted out of poverty",
+          "escape poverty",
+          "anti-poverty",
+          "fight against poverty"
+        ]
+      }
+    },
+    "poverty_increase": {
+      "label": "Poverty Increase",
+      "group": "pov_poverty_dynamics",
+      "forms": {
+        "en": [
+          "poverty increase",
+          "increase in poverty",
+          "rising poverty",
+          "poverty rose",
+          "surge in poverty",
+          "pushed into poverty",
+          "fall into poverty",
+          "fell into poverty",
+          "falling into poverty",
+          "newly poor",
+          "new poor"
+        ]
+      }
+    },
+    "chronic_poverty": {
+      "label": "Chronic Poverty",
+      "group": "pov_poverty_dynamics",
+      "forms": {
+        "en": [
+          "chronic poverty",
+          "chronically poor",
+          "persistent poverty",
+          "entrenched poverty",
+          "poverty trap",
+          "poverty traps",
+          "cycle of poverty"
+        ]
+      }
+    },
+    "transient_poverty": {
+      "label": "Transient Poverty",
+      "group": "pov_poverty_dynamics",
+      "forms": {
+        "en": [
+          "transient poverty",
+          "transitory poverty",
+          "transient poor",
+          "transiently poor",
+          "temporarily poor"
+        ]
+      }
+    },
+    "vulnerability_to_poverty": {
+      "label": "Vulnerability to Poverty",
+      "group": "pov_poverty_dynamics",
+      "forms": {
+        "en": [
+          "vulnerability to poverty",
+          "vulnerable to poverty",
+          "near-poor",
+          "near poor",
+          "at risk of poverty",
+          "at-risk-of-poverty",
+          "risk of falling into poverty",
+          "vulnerable non-poor"
+        ]
+      }
+    },
+    "urban_poverty": {
+      "label": "Urban Poverty",
+      "group": "pov_poverty_by_place_group",
+      "forms": {
+        "en": [
+          "urban poverty",
+          "urban poor",
+          "poverty in cities",
+          "poor urban households",
+          "urban destitution"
+        ]
+      }
+    },
+    "rural_poverty": {
+      "label": "Rural Poverty",
+      "group": "pov_poverty_by_place_group",
+      "forms": {
+        "en": [
+          "rural poverty",
+          "rural poor",
+          "poverty in rural areas",
+          "poor rural households",
+          "rural destitution"
+        ]
+      }
+    },
+    "child_poverty": {
+      "label": "Child Poverty",
+      "group": "pov_poverty_by_place_group",
+      "forms": {
+        "en": [
+          "child poverty",
+          "children living in poverty",
+          "children in poverty",
+          "poor children",
+          "child deprivation"
+        ]
+      }
+    },
+    "poverty_line": {
+      "label": "Poverty Line",
+      "group": "pov_poverty_measurement",
+      "forms": {
+        "en": [
+          "poverty line",
+          "poverty lines",
+          "poverty threshold",
+          "poverty thresholds",
+          "below the poverty line",
+          "international poverty line",
+          "national poverty line"
+        ]
+      }
+    },
+    "poverty_gap": {
+      "label": "Poverty Gap",
+      "group": "pov_poverty_measurement",
+      "forms": {
+        "en": [
+          "poverty gap",
+          "poverty gap index",
+          "squared poverty gap",
+          "depth of poverty",
+          "poverty depth",
+          "severity of poverty",
+          "poverty severity"
+        ]
+      }
+    },
+    "poverty_mapping": {
+      "label": "Poverty Mapping",
+      "group": "pov_poverty_measurement",
+      "forms": {
+        "en": [
+          "poverty mapping",
+          "poverty map",
+          "poverty maps",
+          "poverty atlas",
+          "small area estimation",
+          "small-area estimates"
+        ]
+      }
+    },
+    "geographic_targeting": {
+      "label": "Geographic Targeting",
+      "group": "pov_poverty_measurement",
+      "forms": {
+        "en": [
+          "geographic targeting",
+          "geographical targeting",
+          "geographically targeted",
+          "area-based targeting",
+          "targeting the poorest areas"
+        ]
+      }
+    },
+    "inequality": {
+      "label": "Inequality",
+      "group": "pov_inequality_distribution",
+      "forms": {
+        "en": [
+          "inequality",
+          "inequalities",
+          "economic inequality",
+          "social inequality",
+          "social inequalities",
+          "rich-poor gap",
+          "gap between rich and poor",
+          "gap between the rich and the poor"
+        ]
+      }
+    },
+    "income_inequality": {
+      "label": "Income Inequality",
+      "group": "pov_inequality_distribution",
+      "forms": {
+        "en": [
+          "income inequality",
+          "income inequalities",
+          "income gap",
+          "income gaps",
+          "income disparity",
+          "income disparities",
+          "income divide"
+        ]
+      }
+    },
+    "consumption_inequality": {
+      "label": "Consumption Inequality",
+      "group": "pov_inequality_distribution",
+      "forms": {
+        "en": [
+          "consumption inequality",
+          "inequality in consumption",
+          "consumption gap",
+          "consumption disparities",
+          "expenditure inequality"
+        ]
+      }
+    },
+    "wealth_inequality": {
+      "label": "Wealth Inequality",
+      "group": "pov_inequality_distribution",
+      "forms": {
+        "en": [
+          "wealth inequality",
+          "wealth inequalities",
+          "wealth gap",
+          "wealth gaps",
+          "wealth disparity",
+          "wealth disparities",
+          "wealth concentration",
+          "concentration of wealth"
+        ]
+      }
+    },
+    "income_distribution": {
+      "label": "Income Distribution",
+      "group": "pov_inequality_distribution",
+      "forms": {
+        "en": [
+          "income distribution",
+          "income distributions",
+          "distribution of income",
+          "income share",
+          "income shares",
+          "share of income"
+        ]
+      }
+    },
+    "wealth_distribution": {
+      "label": "Wealth Distribution",
+      "group": "pov_inequality_distribution",
+      "forms": {
+        "en": [
+          "wealth distribution",
+          "distribution of wealth",
+          "wealth redistribution",
+          "redistribution of wealth",
+          "wealth share",
+          "share of wealth"
+        ]
+      }
+    },
+    "gini_coefficient": {
+      "label": "Gini Coefficient",
+      "group": "pov_inequality_distribution",
+      "forms": {
+        "en": [
+          "Gini coefficient",
+          "Gini coefficients",
+          "Gini index",
+          "Gini ratio",
+          "Gini"
+        ]
+      }
+    },
+    "distributional_impacts": {
+      "label": "Distributional Impacts",
+      "group": "pov_inequality_distribution",
+      "forms": {
+        "en": [
+          "distributional impacts",
+          "distributional impact",
+          "distributional effects",
+          "distributional effect",
+          "distributional consequences",
+          "distributional analysis",
+          "distributional incidence",
+          "incidence analysis",
+          "hit the poor hardest",
+          "hits the poor hardest"
+        ]
+      }
+    },
+    "spatial_inequality": {
+      "label": "Spatial Inequality",
+      "group": "pov_spatial_group_inequality",
+      "forms": {
+        "en": [
+          "spatial inequality",
+          "spatial inequalities",
+          "spatial disparities",
+          "geographic inequality",
+          "urban-rural gap",
+          "rural-urban gap",
+          "urban-rural divide",
+          "rural-urban divide",
+          "urban-rural disparities"
+        ]
+      }
+    },
+    "regional_disparities": {
+      "label": "Regional Disparities",
+      "group": "pov_spatial_group_inequality",
+      "forms": {
+        "en": [
+          "regional disparities",
+          "regional disparity",
+          "regional inequality",
+          "regional inequalities",
+          "regional imbalances",
+          "regional development gap",
+          "provincial disparities",
+          "lagging regions"
+        ]
+      }
+    },
+    "horizontal_inequality": {
+      "label": "Horizontal Inequality",
+      "group": "pov_spatial_group_inequality",
+      "forms": {
+        "en": [
+          "horizontal inequality",
+          "horizontal inequalities",
+          "inter-group inequality",
+          "between-group inequality",
+          "group-based inequality",
+          "ethnic inequality",
+          "ethnic inequalities"
+        ]
+      }
+    },
+    "shared_prosperity": {
+      "label": "Shared Prosperity",
+      "group": "pov_shared_prosperity_classes",
+      "forms": {
+        "en": [
+          "shared prosperity",
+          "common prosperity",
+          "inclusive growth",
+          "pro-poor growth",
+          "broad-based growth"
+        ]
+      }
+    },
+    "prosperity_gap": {
+      "label": "Prosperity Gap",
+      "group": "pov_shared_prosperity_classes",
+      "forms": {
+        "en": [
+          "prosperity gap",
+          "prosperity gaps",
+          "global prosperity gap"
+        ]
+      }
+    },
+    "bottom_40_percent": {
+      "label": "Bottom 40 Percent",
+      "group": "pov_shared_prosperity_classes",
+      "forms": {
+        "en": [
+          "bottom 40 percent",
+          "bottom 40 per cent",
+          "bottom 40",
+          "B40",
+          "B40 group",
+          "B40 households"
+        ]
+      }
+    },
+    "middle_class": {
+      "label": "Middle Class",
+      "group": "pov_shared_prosperity_classes",
+      "forms": {
+        "en": [
+          "middle class",
+          "middle-class",
+          "middle classes",
+          "middle-income households",
+          "middle income households",
+          "middle-income earners",
+          "M40",
+          "squeezed middle"
+        ]
+      }
+    },
+    "intergenerational_mobility": {
+      "label": "Intergenerational Mobility",
+      "group": "pov_mobility",
+      "forms": {
+        "en": [
+          "intergenerational mobility",
+          "inter-generational mobility",
+          "intergenerational income mobility",
+          "intergenerational transmission of poverty",
+          "intergenerational poverty",
+          "generational poverty",
+          "intergenerational persistence"
+        ]
+      }
+    },
+    "social_mobility": {
+      "label": "Social Mobility",
+      "group": "pov_mobility",
+      "forms": {
+        "en": [
+          "social mobility",
+          "upward mobility",
+          "downward mobility",
+          "economic mobility",
+          "socioeconomic mobility",
+          "socio-economic mobility",
+          "income mobility",
+          "social ladder"
+        ]
+      }
+    },
+    "household_income": {
+      "label": "Household Income",
+      "group": "pov_household_finances",
+      "forms": {
+        "en": [
+          "household income",
+          "household incomes",
+          "family income",
+          "family incomes",
+          "household earnings",
+          "disposable income",
+          "household disposable income",
+          "median household income",
+          "household per capita income"
+        ]
+      }
+    },
+    "household_expenditure": {
+      "label": "Household Expenditure",
+      "group": "pov_household_finances",
+      "forms": {
+        "en": [
+          "household expenditure",
+          "household expenditures",
+          "family spending",
+          "family expenditure",
+          "household budget",
+          "household budgets"
+        ]
+      }
+    },
+    "household_welfare": {
+      "label": "Household Welfare",
+      "group": "pov_household_finances",
+      "forms": {
+        "en": [
+          "household welfare",
+          "household well-being",
+          "household wellbeing",
+          "welfare of households",
+          "family welfare",
+          "living standards",
+          "standard of living",
+          "standards of living"
+        ]
+      }
+    },
+    "household_savings": {
+      "label": "Household Savings",
+      "group": "pov_household_finances",
+      "forms": {
+        "en": [
+          "household savings",
+          "household saving",
+          "household savings rate",
+          "personal savings",
+          "personal saving rate",
+          "family savings"
+        ]
+      }
+    },
+    "household_debt_distress": {
+      "label": "Household Debt Distress",
+      "group": "pov_household_finances",
+      "forms": {
+        "en": [
+          "household debt distress",
+          "household debt crisis",
+          "household debt burden",
+          "indebted households",
+          "heavily indebted households",
+          "over-indebtedness",
+          "overindebtedness",
+          "over-indebted households",
+          "loan sharks",
+          "loan shark"
+        ]
+      }
+    },
+    "financial_stress": {
+      "label": "Financial Stress",
+      "group": "pov_household_finances",
+      "forms": {
+        "en": [
+          "financial stress",
+          "financial strain",
+          "financial hardship",
+          "financial hardships",
+          "financial difficulties",
+          "make ends meet",
+          "making ends meet",
+          "paycheck to paycheck",
+          "paycheque to paycheque"
+        ]
+      }
+    },
+    "welfare_losses": {
+      "label": "Welfare Losses",
+      "group": "pov_household_finances",
+      "forms": {
+        "en": [
+          "welfare losses",
+          "welfare loss",
+          "loss of welfare",
+          "losses in welfare",
+          "welfare costs"
+        ]
+      }
+    },
+    "consumption_smoothing": {
+      "label": "Consumption Smoothing",
+      "group": "pov_household_coping",
+      "forms": {
+        "en": [
+          "consumption smoothing",
+          "consumption-smoothing",
+          "smooth consumption",
+          "smoothing consumption"
+        ]
+      }
+    },
+    "coping_strategies": {
+      "label": "Coping Strategies",
+      "group": "pov_household_coping",
+      "forms": {
+        "en": [
+          "coping strategies",
+          "coping strategy",
+          "coping mechanisms",
+          "coping mechanism",
+          "negative coping strategies",
+          "negative coping"
+        ]
+      }
+    },
+    "distress_sales": {
+      "label": "Distress Sales",
+      "group": "pov_household_coping",
+      "forms": {
+        "en": [
+          "distress sales",
+          "distress sale",
+          "distress selling",
+          "distressed sales",
+          "distress sales of livestock"
+        ]
+      }
+    },
+    "asset_depletion": {
+      "label": "Asset Depletion",
+      "group": "pov_household_coping",
+      "forms": {
+        "en": [
+          "asset depletion",
+          "depletion of assets",
+          "depleting assets",
+          "sale of productive assets",
+          "selling productive assets",
+          "depleted savings",
+          "depleting savings"
+        ]
+      }
+    },
+    "household_resilience": {
+      "label": "Household Resilience",
+      "group": "pov_household_coping",
+      "forms": {
+        "en": [
+          "household resilience",
+          "resilience of households",
+          "resilient households",
+          "household-level resilience"
+        ]
+      }
+    },
+    "vulnerable_households": {
+      "label": "Vulnerable Households",
+      "group": "pov_household_coping",
+      "forms": {
+        "en": [
+          "vulnerable households",
+          "vulnerable household",
+          "vulnerable families",
+          "poor and vulnerable households",
+          "low-income households",
+          "low income households",
+          "low-income families"
+        ]
+      }
+    },
+    "economic_insecurity": {
+      "label": "Economic Insecurity",
+      "group": "pov_wellbeing_sentiment",
+      "forms": {
+        "en": [
+          "economic insecurity",
+          "financial insecurity",
+          "income insecurity",
+          "livelihood insecurity",
+          "economic vulnerability"
+        ]
+      }
+    },
+    "economic_anxiety": {
+      "label": "Economic Anxiety",
+      "group": "pov_wellbeing_sentiment",
+      "forms": {
+        "en": [
+          "economic anxiety",
+          "economic anxieties",
+          "economic worries",
+          "money worries",
+          "financial anxiety",
+          "economic pessimism"
+        ]
+      }
+    },
+    "subjective_wellbeing": {
+      "label": "Subjective Wellbeing",
+      "group": "pov_wellbeing_sentiment",
+      "forms": {
+        "en": [
+          "subjective wellbeing",
+          "subjective well-being",
+          "wellbeing index",
+          "well-being index",
+          "happiness index",
+          "World Happiness Report",
+          "gross national happiness"
+        ]
+      }
+    },
+    "life_satisfaction": {
+      "label": "Life Satisfaction",
+      "group": "pov_wellbeing_sentiment",
+      "forms": {
+        "en": [
+          "life satisfaction",
+          "satisfaction with life",
+          "life evaluation",
+          "life evaluations",
+          "satisfied with their lives",
+          "Cantril ladder"
+        ]
+      }
+    },
+    "deprivation": {
+      "label": "Deprivation",
+      "group": "pov_exclusion",
+      "forms": {
+        "en": [
+          "material deprivation",
+          "severe material deprivation",
+          "economic deprivation",
+          "social deprivation",
+          "multiple deprivation",
+          "multiple deprivations",
+          "deprived households",
+          "deprived communities",
+          "deprived areas"
+        ]
+      }
+    },
+    "social_exclusion": {
+      "label": "Social Exclusion",
+      "group": "pov_exclusion",
+      "forms": {
+        "en": [
+          "social exclusion",
+          "socially excluded",
+          "excluded groups",
+          "exclusion from society"
+        ]
+      }
+    },
+    "marginalized_communities": {
+      "label": "Marginalized Communities",
+      "group": "pov_exclusion",
+      "forms": {
+        "en": [
+          "marginalized communities",
+          "marginalised communities",
+          "marginalized groups",
+          "marginalised groups",
+          "marginalized people",
+          "marginalised people",
+          "marginalized populations",
+          "marginalised populations",
+          "marginalization",
+          "marginalisation",
+          "disadvantaged communities",
+          "disadvantaged groups",
+          "underserved communities"
+        ]
+      }
+    },
+    "homelessness": {
+      "label": "Homelessness",
+      "group": "pov_exclusion",
+      "forms": {
+        "en": [
+          "homelessness",
+          "homeless",
+          "homeless people",
+          "rough sleeping",
+          "rough sleepers",
+          "sleeping rough",
+          "unhoused",
+          "homeless shelter",
+          "homeless shelters"
+        ]
+      }
+    },
+    "street_children": {
+      "label": "Street Children",
+      "group": "pov_exclusion",
+      "forms": {
+        "en": [
+          "street children",
+          "street child",
+          "street kids",
+          "children living on the streets",
+          "children in street situations",
+          "street youth"
+        ]
+      }
+    }
+  }
+}

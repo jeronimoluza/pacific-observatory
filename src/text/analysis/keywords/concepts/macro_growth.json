@@ -1,0 +1,682 @@
+{
+  "heading": "macro_growth",
+  "label": "Macroeconomic growth and economic activity",
+  "groups": {
+    "growth_and_output": {
+      "label": "Growth and output",
+      "parent": null
+    },
+    "income_levels": {
+      "label": "Income levels and convergence",
+      "parent": null
+    },
+    "outlook_and_sentiment": {
+      "label": "Outlook and sentiment",
+      "parent": null
+    },
+    "cycle_and_capacity": {
+      "label": "Business cycle and capacity",
+      "parent": null
+    },
+    "productivity_and_competitiveness": {
+      "label": "Productivity and competitiveness",
+      "parent": null
+    },
+    "structural_change": {
+      "label": "Structural change",
+      "parent": null
+    },
+    "sectoral_output": {
+      "label": "Sectoral output",
+      "parent": "structural_change"
+    },
+    "formality": {
+      "label": "Informality and formalization",
+      "parent": "structural_change"
+    },
+    "demand_and_investment": {
+      "label": "Demand, consumption and investment",
+      "parent": null
+    },
+    "thematic_economies": {
+      "label": "Thematic economies",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "economic_growth": {
+      "label": "Economic Growth",
+      "group": "growth_and_output",
+      "forms": {
+        "en": [
+          "economic growth",
+          "economic expansion",
+          "growth of the economy",
+          "economy grew",
+          "economy grows",
+          "economy expanded",
+          "economies grew"
+        ]
+      }
+    },
+    "economic_contraction": {
+      "label": "Economic Contraction",
+      "group": "growth_and_output",
+      "forms": {
+        "en": [
+          "economic contraction",
+          "economic contractions",
+          "contraction of the economy",
+          "economy contracted",
+          "economy shrank",
+          "GDP contracted",
+          "GDP shrank",
+          "economic downturn",
+          "economic downturns",
+          "economic slowdown"
+        ]
+      }
+    },
+    "economic_recovery": {
+      "label": "Economic Recovery",
+      "group": "growth_and_output",
+      "forms": {
+        "en": [
+          "economic recovery",
+          "economic recoveries",
+          "recovery of the economy",
+          "economy recovered",
+          "economic rebound",
+          "economy rebounded",
+          "growth recovery"
+        ]
+      }
+    },
+    "recession": {
+      "label": "Recession",
+      "group": "growth_and_output",
+      "forms": {
+        "en": [
+          "recession",
+          "recessions",
+          "recessionary",
+          "technical recession",
+          "economic depression"
+        ]
+      }
+    },
+    "gross_domestic_product": {
+      "label": "Gross Domestic Product",
+      "group": "growth_and_output",
+      "forms": {
+        "en": [
+          "gross domestic product",
+          "GDP",
+          "real GDP",
+          "nominal GDP",
+          "national output",
+          "economic output"
+        ]
+      }
+    },
+    "gdp_growth": {
+      "label": "GDP Growth",
+      "group": "growth_and_output",
+      "forms": {
+        "en": [
+          "GDP growth",
+          "real GDP growth",
+          "GDP growth rate",
+          "growth in GDP",
+          "GDP grew",
+          "GDP expanded",
+          "GDP expansion"
+        ]
+      }
+    },
+    "gdp_per_capita": {
+      "label": "GDP Per Capita",
+      "group": "income_levels",
+      "forms": {
+        "en": [
+          "GDP per capita",
+          "per capita GDP",
+          "per-capita GDP",
+          "GDP per head"
+        ]
+      }
+    },
+    "national_income": {
+      "label": "National Income",
+      "group": "income_levels",
+      "forms": {
+        "en": [
+          "national income",
+          "gross national income",
+          "GNI",
+          "gross national product",
+          "GNP"
+        ]
+      }
+    },
+    "per_capita_income": {
+      "label": "Per Capita Income",
+      "group": "income_levels",
+      "forms": {
+        "en": [
+          "per capita income",
+          "per-capita income",
+          "income per capita",
+          "income per head",
+          "GNI per capita"
+        ]
+      }
+    },
+    "middle_income_trap": {
+      "label": "Middle-Income Trap",
+      "group": "income_levels",
+      "forms": {
+        "en": [
+          "middle-income trap",
+          "middle income trap",
+          "middle-income country trap"
+        ]
+      }
+    },
+    "economic_convergence": {
+      "label": "Economic Convergence",
+      "group": "income_levels",
+      "forms": {
+        "en": [
+          "economic convergence",
+          "income convergence",
+          "catch-up growth",
+          "real convergence",
+          "convergence with advanced economies"
+        ]
+      }
+    },
+    "economic_outlook": {
+      "label": "Economic Outlook",
+      "group": "outlook_and_sentiment",
+      "forms": {
+        "en": [
+          "economic outlook",
+          "economic outlooks",
+          "growth outlook",
+          "outlook for the economy",
+          "economic prospects",
+          "growth prospects",
+          "World Economic Outlook"
+        ]
+      }
+    },
+    "economic_forecast": {
+      "label": "Economic Forecast",
+      "group": "outlook_and_sentiment",
+      "forms": {
+        "en": [
+          "economic forecast",
+          "economic forecasts",
+          "growth forecast",
+          "growth forecasts",
+          "GDP forecast",
+          "GDP forecasts",
+          "growth projection",
+          "growth projections"
+        ]
+      }
+    },
+    "business_confidence": {
+      "label": "Business Confidence",
+      "group": "outlook_and_sentiment",
+      "forms": {
+        "en": [
+          "business confidence",
+          "business sentiment",
+          "business confidence index",
+          "business optimism",
+          "investor confidence"
+        ]
+      }
+    },
+    "consumer_confidence": {
+      "label": "Consumer Confidence",
+      "group": "outlook_and_sentiment",
+      "forms": {
+        "en": [
+          "consumer confidence",
+          "consumer sentiment",
+          "consumer confidence index",
+          "consumer optimism",
+          "consumer pessimism"
+        ]
+      }
+    },
+    "economic_sentiment": {
+      "label": "Economic Sentiment",
+      "group": "outlook_and_sentiment",
+      "forms": {
+        "en": [
+          "economic sentiment",
+          "economic sentiment indicator",
+          "economic mood",
+          "economic confidence",
+          "investor sentiment",
+          "market sentiment"
+        ]
+      }
+    },
+    "business_cycle": {
+      "label": "Business Cycle",
+      "group": "cycle_and_capacity",
+      "forms": {
+        "en": [
+          "business cycle",
+          "business cycles",
+          "economic cycle",
+          "economic cycles",
+          "boom and bust",
+          "boom-and-bust",
+          "boom-bust"
+        ]
+      }
+    },
+    "output_gap": {
+      "label": "Output Gap",
+      "group": "cycle_and_capacity",
+      "forms": {
+        "en": [
+          "output gap",
+          "output gaps",
+          "potential output",
+          "potential GDP",
+          "potential growth"
+        ]
+      }
+    },
+    "capacity_utilization": {
+      "label": "Capacity Utilization",
+      "group": "cycle_and_capacity",
+      "forms": {
+        "en": [
+          "capacity utilization",
+          "capacity utilisation",
+          "idle capacity",
+          "spare capacity",
+          "excess capacity",
+          "overcapacity"
+        ]
+      }
+    },
+    "supply_constraints": {
+      "label": "Supply Constraints",
+      "group": "cycle_and_capacity",
+      "forms": {
+        "en": [
+          "supply constraints",
+          "supply constraint",
+          "supply-side constraints",
+          "supply bottlenecks",
+          "supply bottleneck",
+          "capacity constraints",
+          "input shortages"
+        ]
+      }
+    },
+    "production_disruptions": {
+      "label": "Production Disruptions",
+      "group": "cycle_and_capacity",
+      "forms": {
+        "en": [
+          "production disruptions",
+          "production disruption",
+          "disruption to production",
+          "disruptions to production",
+          "production halt",
+          "production halts",
+          "production stoppage",
+          "production stoppages",
+          "factory shutdowns",
+          "plant shutdowns"
+        ]
+      }
+    },
+    "productivity": {
+      "label": "Productivity",
+      "group": "productivity_and_competitiveness",
+      "forms": {
+        "en": [
+          "productivity",
+          "productivity growth",
+          "productive capacity"
+        ]
+      }
+    },
+    "labor_productivity": {
+      "label": "Labor Productivity",
+      "group": "productivity_and_competitiveness",
+      "forms": {
+        "en": [
+          "labor productivity",
+          "labour productivity",
+          "worker productivity",
+          "workforce productivity",
+          "output per worker",
+          "output per hour"
+        ]
+      }
+    },
+    "total_factor_productivity": {
+      "label": "Total Factor Productivity",
+      "group": "productivity_and_competitiveness",
+      "forms": {
+        "en": [
+          "total factor productivity",
+          "total-factor productivity",
+          "TFP",
+          "multifactor productivity",
+          "multi-factor productivity"
+        ]
+      }
+    },
+    "competitiveness": {
+      "label": "Competitiveness",
+      "group": "productivity_and_competitiveness",
+      "forms": {
+        "en": [
+          "competitiveness",
+          "economic competitiveness",
+          "global competitiveness",
+          "competitiveness index",
+          "uncompetitive"
+        ]
+      }
+    },
+    "structural_transformation": {
+      "label": "Structural Transformation",
+      "group": "structural_change",
+      "forms": {
+        "en": [
+          "structural transformation",
+          "structural change",
+          "economic transformation",
+          "structural shift"
+        ]
+      }
+    },
+    "economic_diversification": {
+      "label": "Economic Diversification",
+      "group": "structural_change",
+      "forms": {
+        "en": [
+          "economic diversification",
+          "diversification of the economy",
+          "diversify the economy",
+          "diversifying the economy",
+          "diversify its economy",
+          "diversified economy",
+          "diversify their economies"
+        ]
+      }
+    },
+    "industrialization": {
+      "label": "Industrialization",
+      "group": "structural_change",
+      "forms": {
+        "en": [
+          "industrialization",
+          "industrialisation",
+          "industrializing",
+          "industrialising",
+          "reindustrialization",
+          "re-industrialization"
+        ]
+      }
+    },
+    "deindustrialization": {
+      "label": "Deindustrialization",
+      "group": "structural_change",
+      "forms": {
+        "en": [
+          "deindustrialization",
+          "deindustrialisation",
+          "de-industrialization",
+          "de-industrialisation",
+          "premature deindustrialization"
+        ]
+      }
+    },
+    "manufacturing_output": {
+      "label": "Manufacturing Output",
+      "group": "sectoral_output",
+      "forms": {
+        "en": [
+          "manufacturing output",
+          "industrial output",
+          "industrial production",
+          "manufacturing production",
+          "factory output",
+          "manufacturing activity",
+          "manufacturing PMI"
+        ]
+      }
+    },
+    "services_growth": {
+      "label": "Services Growth",
+      "group": "sectoral_output",
+      "forms": {
+        "en": [
+          "services growth",
+          "services sector growth",
+          "service sector growth",
+          "services output",
+          "growth in services",
+          "services PMI"
+        ]
+      }
+    },
+    "agricultural_growth": {
+      "label": "Agricultural Growth",
+      "group": "sectoral_output",
+      "forms": {
+        "en": [
+          "agricultural growth",
+          "agriculture growth",
+          "agricultural output",
+          "farm output",
+          "agricultural GDP",
+          "agricultural sector growth"
+        ]
+      }
+    },
+    "informal_economy": {
+      "label": "Informal Economy",
+      "group": "formality",
+      "forms": {
+        "en": [
+          "informal economy",
+          "informal economies",
+          "informal sector",
+          "shadow economy",
+          "underground economy",
+          "informality"
+        ]
+      }
+    },
+    "economic_formalization": {
+      "label": "Economic Formalization",
+      "group": "formality",
+      "forms": {
+        "en": [
+          "economic formalization",
+          "economic formalisation",
+          "formalization of the economy",
+          "formalisation of the economy",
+          "business formalization",
+          "business formalisation",
+          "formalization of informal businesses"
+        ]
+      }
+    },
+    "domestic_demand": {
+      "label": "Domestic Demand",
+      "group": "demand_and_investment",
+      "forms": {
+        "en": [
+          "domestic demand",
+          "internal demand",
+          "aggregate demand",
+          "domestic consumption"
+        ]
+      }
+    },
+    "household_consumption": {
+      "label": "Household Consumption",
+      "group": "demand_and_investment",
+      "forms": {
+        "en": [
+          "household consumption",
+          "household spending",
+          "consumer spending",
+          "household consumption expenditure"
+        ]
+      }
+    },
+    "private_consumption": {
+      "label": "Private Consumption",
+      "group": "demand_and_investment",
+      "forms": {
+        "en": [
+          "private consumption",
+          "private consumption expenditure",
+          "private final consumption",
+          "private spending"
+        ]
+      }
+    },
+    "investment_growth": {
+      "label": "Investment Growth",
+      "group": "demand_and_investment",
+      "forms": {
+        "en": [
+          "investment growth",
+          "growth in investment",
+          "private investment",
+          "business investment",
+          "investment spending"
+        ]
+      }
+    },
+    "gross_fixed_capital_formation": {
+      "label": "Gross Fixed Capital Formation",
+      "group": "demand_and_investment",
+      "forms": {
+        "en": [
+          "gross fixed capital formation",
+          "fixed capital formation",
+          "capital formation",
+          "GFCF",
+          "fixed investment",
+          "fixed-asset investment",
+          "fixed asset investment"
+        ]
+      }
+    },
+    "savings_rate": {
+      "label": "Savings Rate",
+      "group": "demand_and_investment",
+      "forms": {
+        "en": [
+          "savings rate",
+          "saving rate",
+          "savings rates",
+          "household savings",
+          "national savings",
+          "domestic savings",
+          "gross savings"
+        ]
+      }
+    },
+    "green_growth": {
+      "label": "Green Growth",
+      "group": "thematic_economies",
+      "forms": {
+        "en": [
+          "green growth",
+          "green economy",
+          "green economies",
+          "green recovery",
+          "low-carbon growth"
+        ]
+      }
+    },
+    "blue_economy": {
+      "label": "Blue Economy",
+      "group": "thematic_economies",
+      "forms": {
+        "en": [
+          "blue economy",
+          "blue economies",
+          "ocean economy",
+          "blue growth",
+          "maritime economy"
+        ]
+      }
+    },
+    "circular_economy": {
+      "label": "Circular Economy",
+      "group": "thematic_economies",
+      "forms": {
+        "en": [
+          "circular economy",
+          "circular economies",
+          "circularity"
+        ]
+      }
+    },
+    "tourism_economy": {
+      "label": "Tourism Economy",
+      "group": "thematic_economies",
+      "forms": {
+        "en": [
+          "tourism economy",
+          "tourism sector",
+          "tourism industry",
+          "tourism receipts",
+          "tourism revenue",
+          "tourism revenues",
+          "tourist arrivals",
+          "visitor arrivals",
+          "international arrivals"
+        ]
+      }
+    },
+    "creative_economy": {
+      "label": "Creative Economy",
+      "group": "thematic_economies",
+      "forms": {
+        "en": [
+          "creative economy",
+          "creative industries",
+          "creative industry",
+          "creative sector",
+          "orange economy",
+          "cultural industries"
+        ]
+      }
+    },
+    "care_economy": {
+      "label": "Care Economy",
+      "group": "thematic_economies",
+      "forms": {
+        "en": [
+          "care economy",
+          "care economies",
+          "care sector",
+          "care industry"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1067 @@
+{
+  "heading": "fiscal_public_finance",
+  "label": "Fiscal policy, public finance and debt",
+  "groups": {
+    "fiscal_stance": {
+      "label": "Fiscal stance",
+      "parent": null
+    },
+    "budget_and_balance": {
+      "label": "Budget and fiscal balance",
+      "parent": null
+    },
+    "public_spending": {
+      "label": "Public spending",
+      "parent": null
+    },
+    "government_debt": {
+      "label": "Public debt",
+      "parent": null
+    },
+    "debt_distress_and_relief": {
+      "label": "Debt distress and relief",
+      "parent": "government_debt"
+    },
+    "sovereign_borrowing": {
+      "label": "Sovereign borrowing and ratings",
+      "parent": "government_debt"
+    },
+    "hidden_liabilities": {
+      "label": "Contingent and off-budget liabilities",
+      "parent": "government_debt"
+    },
+    "taxation_and_revenue": {
+      "label": "Taxation and revenue",
+      "parent": null
+    },
+    "tax_instruments": {
+      "label": "Tax instruments",
+      "parent": "taxation_and_revenue"
+    },
+    "tax_enforcement": {
+      "label": "Tax compliance and enforcement",
+      "parent": "taxation_and_revenue"
+    },
+    "tax_expenditures": {
+      "label": "Tax exemptions and incentives",
+      "parent": "taxation_and_revenue"
+    },
+    "pfm_and_subnational": {
+      "label": "Public financial management and subnational finance",
+      "parent": null
+    },
+    "subnational_fiscal": {
+      "label": "Subnational finance",
+      "parent": "pfm_and_subnational"
+    }
+  },
+  "concepts": {
+    "fiscal_policy": {
+      "label": "Fiscal Policy",
+      "group": "fiscal_stance",
+      "forms": {
+        "en": [
+          "fiscal policy",
+          "fiscal policies",
+          "fiscal stance",
+          "fiscal space",
+          "fiscal position",
+          "fiscal outlook"
+        ]
+      }
+    },
+    "fiscal_stimulus": {
+      "label": "Fiscal Stimulus",
+      "group": "fiscal_stance",
+      "forms": {
+        "en": [
+          "fiscal stimulus",
+          "stimulus package",
+          "stimulus packages",
+          "economic stimulus",
+          "stimulus measures",
+          "stimulus spending",
+          "fiscal support package"
+        ]
+      }
+    },
+    "countercyclical_policy": {
+      "label": "Countercyclical Policy",
+      "group": "fiscal_stance",
+      "forms": {
+        "en": [
+          "countercyclical policy",
+          "counter-cyclical policy",
+          "countercyclical fiscal policy",
+          "counter-cyclical fiscal policy",
+          "countercyclical",
+          "counter-cyclical",
+          "procyclical",
+          "pro-cyclical"
+        ]
+      }
+    },
+    "fiscal_consolidation": {
+      "label": "Fiscal Consolidation",
+      "group": "fiscal_stance",
+      "forms": {
+        "en": [
+          "fiscal consolidation",
+          "budget consolidation",
+          "consolidation of public finances",
+          "deficit reduction",
+          "fiscal tightening",
+          "belt-tightening"
+        ]
+      }
+    },
+    "fiscal_adjustment": {
+      "label": "Fiscal Adjustment",
+      "group": "fiscal_stance",
+      "forms": {
+        "en": [
+          "fiscal adjustment",
+          "fiscal adjustments",
+          "fiscal correction",
+          "budgetary adjustment"
+        ]
+      }
+    },
+    "austerity": {
+      "label": "Austerity",
+      "group": "fiscal_stance",
+      "forms": {
+        "en": [
+          "austerity",
+          "austerity measures",
+          "austerity budget",
+          "austerity programme",
+          "austerity program",
+          "austere budget"
+        ]
+      }
+    },
+    "expenditure_cuts": {
+      "label": "Expenditure Cuts",
+      "group": "fiscal_stance",
+      "forms": {
+        "en": [
+          "expenditure cuts",
+          "spending cuts",
+          "budget cuts",
+          "budget cut",
+          "cuts in spending",
+          "cut spending",
+          "cutting spending",
+          "spending reductions",
+          "expenditure reductions"
+        ]
+      }
+    },
+    "fiscal_rules": {
+      "label": "Fiscal Rules",
+      "group": "fiscal_stance",
+      "forms": {
+        "en": [
+          "fiscal rules",
+          "fiscal rule",
+          "fiscal responsibility law",
+          "fiscal responsibility act",
+          "deficit ceiling",
+          "deficit limit",
+          "deficit cap",
+          "balanced budget rule",
+          "fiscal anchor"
+        ]
+      }
+    },
+    "government_budget": {
+      "label": "Government Budget",
+      "group": "budget_and_balance",
+      "forms": {
+        "en": [
+          "government budget",
+          "government budgets",
+          "state budget",
+          "state budgets",
+          "public budget",
+          "budget allocation",
+          "budget allocations"
+        ]
+      }
+    },
+    "national_budget": {
+      "label": "National Budget",
+      "group": "budget_and_balance",
+      "forms": {
+        "en": [
+          "national budget",
+          "national budgets",
+          "federal budget",
+          "union budget",
+          "annual budget",
+          "budget estimates",
+          "budget speech",
+          "budget statement",
+          "appropriation bill",
+          "appropriations bill"
+        ]
+      }
+    },
+    "supplementary_budget": {
+      "label": "Supplementary Budget",
+      "group": "budget_and_balance",
+      "forms": {
+        "en": [
+          "supplementary budget",
+          "supplementary budgets",
+          "supplemental budget",
+          "additional budget",
+          "revised budget",
+          "budget revision",
+          "mini-budget",
+          "supplementary appropriation",
+          "supplementary appropriations"
+        ]
+      }
+    },
+    "fiscal_deficit": {
+      "label": "Fiscal Deficit",
+      "group": "budget_and_balance",
+      "forms": {
+        "en": [
+          "fiscal deficit",
+          "fiscal deficits",
+          "government deficit",
+          "public deficit",
+          "deficit-to-GDP",
+          "deficit to GDP",
+          "fiscal shortfall",
+          "fiscal gap"
+        ]
+      }
+    },
+    "budget_deficit": {
+      "label": "Budget Deficit",
+      "group": "budget_and_balance",
+      "forms": {
+        "en": [
+          "budget deficit",
+          "budget deficits",
+          "budgetary deficit",
+          "budget shortfall",
+          "budget gap",
+          "budget hole"
+        ]
+      }
+    },
+    "fiscal_surplus": {
+      "label": "Fiscal Surplus",
+      "group": "budget_and_balance",
+      "forms": {
+        "en": [
+          "fiscal surplus",
+          "fiscal surpluses",
+          "budget surplus",
+          "budget surpluses",
+          "government surplus"
+        ]
+      }
+    },
+    "primary_balance": {
+      "label": "Primary Balance",
+      "group": "budget_and_balance",
+      "forms": {
+        "en": [
+          "primary balance",
+          "primary deficit",
+          "primary surplus",
+          "primary fiscal balance",
+          "primary budget balance"
+        ]
+      }
+    },
+    "government_spending": {
+      "label": "Government Spending",
+      "group": "public_spending",
+      "forms": {
+        "en": [
+          "government spending",
+          "state spending",
+          "federal spending",
+          "public spending",
+          "government outlays"
+        ]
+      }
+    },
+    "public_expenditure": {
+      "label": "Public Expenditure",
+      "group": "public_spending",
+      "forms": {
+        "en": [
+          "public expenditure",
+          "public expenditures",
+          "government expenditure",
+          "government expenditures",
+          "state expenditure",
+          "public outlays",
+          "public expenditure review"
+        ]
+      }
+    },
+    "capital_expenditure": {
+      "label": "Capital Expenditure",
+      "group": "public_spending",
+      "forms": {
+        "en": [
+          "capital expenditure",
+          "capital expenditures",
+          "capital spending",
+          "capital budget",
+          "development expenditure",
+          "development budget",
+          "capex"
+        ]
+      }
+    },
+    "recurrent_expenditure": {
+      "label": "Recurrent Expenditure",
+      "group": "public_spending",
+      "forms": {
+        "en": [
+          "recurrent expenditure",
+          "recurrent expenditures",
+          "recurrent spending",
+          "recurrent budget",
+          "current expenditure",
+          "current spending",
+          "operating expenditure"
+        ]
+      }
+    },
+    "public_investment": {
+      "label": "Public Investment",
+      "group": "public_spending",
+      "forms": {
+        "en": [
+          "public investment",
+          "public investments",
+          "government investment",
+          "state investment",
+          "public infrastructure investment",
+          "infrastructure spending"
+        ]
+      }
+    },
+    "government_arrears": {
+      "label": "Government Arrears",
+      "group": "public_spending",
+      "forms": {
+        "en": [
+          "government arrears",
+          "expenditure arrears",
+          "payment arrears",
+          "domestic arrears",
+          "arrears to suppliers",
+          "arrears to contractors",
+          "pending bills",
+          "unpaid government bills"
+        ]
+      }
+    },
+    "public_debt": {
+      "label": "Public Debt",
+      "group": "government_debt",
+      "forms": {
+        "en": [
+          "public debt",
+          "government debt",
+          "national debt",
+          "state debt",
+          "public borrowing",
+          "government borrowing",
+          "debt-to-GDP",
+          "debt to GDP"
+        ]
+      }
+    },
+    "sovereign_debt": {
+      "label": "Sovereign Debt",
+      "group": "government_debt",
+      "forms": {
+        "en": [
+          "sovereign debt",
+          "sovereign borrowing",
+          "sovereign bond",
+          "sovereign bonds",
+          "sovereign lending",
+          "sovereign debt crisis"
+        ]
+      }
+    },
+    "external_public_debt": {
+      "label": "External Public Debt",
+      "group": "government_debt",
+      "forms": {
+        "en": [
+          "external public debt",
+          "public external debt",
+          "external debt",
+          "foreign debt",
+          "external borrowing",
+          "foreign borrowing",
+          "external loans"
+        ]
+      }
+    },
+    "domestic_public_debt": {
+      "label": "Domestic Public Debt",
+      "group": "government_debt",
+      "forms": {
+        "en": [
+          "domestic public debt",
+          "domestic debt",
+          "domestic borrowing",
+          "domestic government debt",
+          "local-currency debt",
+          "local currency debt"
+        ]
+      }
+    },
+    "debt_ceiling": {
+      "label": "Debt Ceiling",
+      "group": "government_debt",
+      "forms": {
+        "en": [
+          "debt ceiling",
+          "debt ceilings",
+          "debt limit",
+          "borrowing limit",
+          "borrowing ceiling",
+          "debt cap"
+        ]
+      }
+    },
+    "debt_sustainability": {
+      "label": "Debt Sustainability",
+      "group": "debt_distress_and_relief",
+      "forms": {
+        "en": [
+          "debt sustainability",
+          "debt sustainability analysis",
+          "sustainable debt",
+          "unsustainable debt",
+          "debt dynamics",
+          "debt burden",
+          "debt burdens"
+        ]
+      }
+    },
+    "debt_distress": {
+      "label": "Debt Distress",
+      "group": "debt_distress_and_relief",
+      "forms": {
+        "en": [
+          "debt distress",
+          "high risk of debt distress",
+          "debt trap",
+          "debt-trap",
+          "debt overhang",
+          "debt vulnerabilities",
+          "debt vulnerability"
+        ]
+      }
+    },
+    "debt_restructuring": {
+      "label": "Debt Restructuring",
+      "group": "debt_distress_and_relief",
+      "forms": {
+        "en": [
+          "debt restructuring",
+          "debt restructurings",
+          "restructuring of debt",
+          "restructure debt",
+          "restructure its debt",
+          "debt reprofiling",
+          "debt rescheduling",
+          "debt swap",
+          "debt swaps"
+        ]
+      }
+    },
+    "debt_relief": {
+      "label": "Debt Relief",
+      "group": "debt_distress_and_relief",
+      "forms": {
+        "en": [
+          "debt relief",
+          "debt forgiveness",
+          "debt cancellation",
+          "debt write-off",
+          "debt write-offs",
+          "debt moratorium",
+          "debt service suspension",
+          "HIPC"
+        ]
+      }
+    },
+    "sovereign_default": {
+      "label": "Sovereign Default",
+      "group": "debt_distress_and_relief",
+      "forms": {
+        "en": [
+          "sovereign default",
+          "sovereign defaults",
+          "debt default",
+          "default on its debt",
+          "defaulted on its debt",
+          "default on debt",
+          "selective default",
+          "missed bond payment",
+          "missed debt payment"
+        ]
+      }
+    },
+    "debt_service": {
+      "label": "Debt Service",
+      "group": "sovereign_borrowing",
+      "forms": {
+        "en": [
+          "debt service",
+          "debt-service",
+          "debt servicing",
+          "debt repayment",
+          "debt repayments",
+          "debt service payments",
+          "debt service ratio",
+          "debt obligations"
+        ]
+      }
+    },
+    "interest_payments": {
+      "label": "Interest Payments",
+      "group": "sovereign_borrowing",
+      "forms": {
+        "en": [
+          "interest payments",
+          "interest payment",
+          "interest bill",
+          "interest costs",
+          "interest expense",
+          "interest expenses",
+          "interest burden"
+        ]
+      }
+    },
+    "credit_rating": {
+      "label": "Credit Rating",
+      "group": "sovereign_borrowing",
+      "forms": {
+        "en": [
+          "credit rating",
+          "credit ratings",
+          "sovereign rating",
+          "sovereign credit rating",
+          "rating downgrade",
+          "rating upgrade",
+          "credit rating agency",
+          "credit rating agencies",
+          "Moody's",
+          "Fitch Ratings"
+        ]
+      }
+    },
+    "sovereign_risk": {
+      "label": "Sovereign Risk",
+      "group": "sovereign_borrowing",
+      "forms": {
+        "en": [
+          "sovereign risk",
+          "country risk",
+          "sovereign spread",
+          "sovereign spreads",
+          "sovereign risk premium",
+          "credit default swap",
+          "credit default swaps",
+          "CDS spreads"
+        ]
+      }
+    },
+    "eurobond": {
+      "label": "Eurobond",
+      "group": "sovereign_borrowing",
+      "forms": {
+        "en": [
+          "eurobond",
+          "eurobonds",
+          "euro-bond",
+          "euro-bonds",
+          "international bond",
+          "international bonds"
+        ]
+      }
+    },
+    "government_bonds": {
+      "label": "Government Bonds",
+      "group": "sovereign_borrowing",
+      "forms": {
+        "en": [
+          "government bonds",
+          "government bond",
+          "treasury bonds",
+          "treasury bond",
+          "government securities",
+          "state bonds",
+          "gilts",
+          "T-bonds"
+        ]
+      }
+    },
+    "treasury_bills": {
+      "label": "Treasury Bills",
+      "group": "sovereign_borrowing",
+      "forms": {
+        "en": [
+          "treasury bills",
+          "treasury bill",
+          "T-bills",
+          "T-bill",
+          "treasury bill rate"
+        ]
+      }
+    },
+    "contingent_liabilities": {
+      "label": "Contingent Liabilities",
+      "group": "hidden_liabilities",
+      "forms": {
+        "en": [
+          "contingent liabilities",
+          "contingent liability",
+          "implicit liabilities",
+          "government guarantees",
+          "state guarantees",
+          "sovereign guarantees"
+        ]
+      }
+    },
+    "state_owned_enterprise_debt": {
+      "label": "State-Owned Enterprise Debt",
+      "group": "hidden_liabilities",
+      "forms": {
+        "en": [
+          "state-owned enterprise debt",
+          "state owned enterprise debt",
+          "SOE debt",
+          "SOE debts",
+          "SOE borrowing",
+          "SOE liabilities",
+          "debt of state-owned enterprises",
+          "debts of state-owned enterprises",
+          "state enterprise debt"
+        ]
+      }
+    },
+    "public_private_partnership_liabilities": {
+      "label": "Public-Private Partnership Liabilities",
+      "group": "hidden_liabilities",
+      "forms": {
+        "en": [
+          "public-private partnership liabilities",
+          "public private partnership liabilities",
+          "PPP liabilities",
+          "PPP commitments",
+          "PPP contingent liabilities",
+          "PPP obligations",
+          "availability payments"
+        ]
+      }
+    },
+    "revenue_mobilization": {
+      "label": "Revenue Mobilization",
+      "group": "taxation_and_revenue",
+      "forms": {
+        "en": [
+          "revenue mobilization",
+          "revenue mobilisation",
+          "domestic revenue mobilization",
+          "domestic revenue mobilisation",
+          "revenue collection",
+          "revenue collections",
+          "government revenue",
+          "government revenues",
+          "public revenue",
+          "state revenue"
+        ]
+      }
+    },
+    "tax_revenue": {
+      "label": "Tax Revenue",
+      "group": "taxation_and_revenue",
+      "forms": {
+        "en": [
+          "tax revenue",
+          "tax revenues",
+          "tax collection",
+          "tax collections",
+          "tax receipts",
+          "tax take",
+          "tax-to-GDP",
+          "tax to GDP"
+        ]
+      }
+    },
+    "customs_revenue": {
+      "label": "Customs Revenue",
+      "group": "taxation_and_revenue",
+      "forms": {
+        "en": [
+          "customs revenue",
+          "customs revenues",
+          "customs collection",
+          "customs collections",
+          "customs receipts",
+          "trade tax revenue"
+        ]
+      }
+    },
+    "natural_resource_revenue": {
+      "label": "Natural-Resource Revenue",
+      "group": "taxation_and_revenue",
+      "forms": {
+        "en": [
+          "natural-resource revenue",
+          "natural resource revenue",
+          "natural resource revenues",
+          "resource revenue",
+          "resource revenues",
+          "mining revenue",
+          "mining revenues",
+          "oil revenue",
+          "oil revenues",
+          "mining royalties"
+        ]
+      }
+    },
+    "tax_reform": {
+      "label": "Tax Reform",
+      "group": "taxation_and_revenue",
+      "forms": {
+        "en": [
+          "tax reform",
+          "tax reforms",
+          "tax overhaul",
+          "tax policy reform",
+          "reform of the tax system",
+          "tax code reform"
+        ]
+      }
+    },
+    "value_added_tax": {
+      "label": "Value-Added Tax",
+      "group": "tax_instruments",
+      "forms": {
+        "en": [
+          "value-added tax",
+          "value added tax",
+          "VAT",
+          "VAT rate",
+          "goods and services tax",
+          "GST",
+          "sales tax",
+          "sales taxes",
+          "consumption tax"
+        ]
+      }
+    },
+    "income_tax": {
+      "label": "Income Tax",
+      "group": "tax_instruments",
+      "forms": {
+        "en": [
+          "income tax",
+          "income taxes",
+          "personal income tax",
+          "income tax rate",
+          "withholding tax",
+          "PAYE"
+        ]
+      }
+    },
+    "corporate_tax": {
+      "label": "Corporate Tax",
+      "group": "tax_instruments",
+      "forms": {
+        "en": [
+          "corporate tax",
+          "corporate taxes",
+          "corporate income tax",
+          "corporation tax",
+          "company tax",
+          "profits tax",
+          "global minimum tax",
+          "minimum corporate tax"
+        ]
+      }
+    },
+    "property_tax": {
+      "label": "Property Tax",
+      "group": "tax_instruments",
+      "forms": {
+        "en": [
+          "property tax",
+          "property taxes",
+          "land tax",
+          "land taxes",
+          "land and building tax",
+          "real estate tax"
+        ]
+      }
+    },
+    "excise_tax": {
+      "label": "Excise Tax",
+      "group": "tax_instruments",
+      "forms": {
+        "en": [
+          "excise tax",
+          "excise taxes",
+          "excise duty",
+          "excise duties",
+          "sin tax",
+          "sin taxes",
+          "sugar tax",
+          "tobacco excise",
+          "alcohol excise"
+        ]
+      }
+    },
+    "carbon_tax": {
+      "label": "Carbon Tax",
+      "group": "tax_instruments",
+      "forms": {
+        "en": [
+          "carbon tax",
+          "carbon taxes",
+          "carbon levy",
+          "levy on carbon"
+        ]
+      }
+    },
+    "tax_administration": {
+      "label": "Tax Administration",
+      "group": "tax_enforcement",
+      "forms": {
+        "en": [
+          "tax administration",
+          "tax authority",
+          "tax authorities",
+          "revenue authority",
+          "revenue authorities",
+          "tax office",
+          "tax agency",
+          "inland revenue",
+          "revenue service"
+        ]
+      }
+    },
+    "tax_compliance": {
+      "label": "Tax Compliance",
+      "group": "tax_enforcement",
+      "forms": {
+        "en": [
+          "tax compliance",
+          "tax non-compliance",
+          "tax noncompliance",
+          "taxpayer compliance",
+          "tax amnesty",
+          "tax amnesties",
+          "tax arrears",
+          "tax audit",
+          "tax audits"
+        ]
+      }
+    },
+    "tax_evasion": {
+      "label": "Tax Evasion",
+      "group": "tax_enforcement",
+      "forms": {
+        "en": [
+          "tax evasion",
+          "tax evader",
+          "tax evaders",
+          "evading taxes",
+          "evade taxes",
+          "tax fraud",
+          "tax dodging"
+        ]
+      }
+    },
+    "tax_avoidance": {
+      "label": "Tax Avoidance",
+      "group": "tax_enforcement",
+      "forms": {
+        "en": [
+          "tax avoidance",
+          "avoid taxes",
+          "aggressive tax planning",
+          "tax haven",
+          "tax havens",
+          "profit shifting",
+          "base erosion",
+          "BEPS",
+          "transfer pricing"
+        ]
+      }
+    },
+    "tax_exemptions": {
+      "label": "Tax Exemptions",
+      "group": "tax_expenditures",
+      "forms": {
+        "en": [
+          "tax exemptions",
+          "tax exemption",
+          "tax-exempt",
+          "tax exempt",
+          "tax waiver",
+          "tax waivers"
+        ]
+      }
+    },
+    "tax_incentives": {
+      "label": "Tax Incentives",
+      "group": "tax_expenditures",
+      "forms": {
+        "en": [
+          "tax incentives",
+          "tax incentive",
+          "tax holiday",
+          "tax holidays",
+          "tax break",
+          "tax breaks",
+          "tax allowance",
+          "tax allowances",
+          "tax credit",
+          "tax credits"
+        ]
+      }
+    },
+    "public_financial_management": {
+      "label": "Public Financial Management",
+      "group": "pfm_and_subnational",
+      "forms": {
+        "en": [
+          "public financial management",
+          "public finance management",
+          "PFM",
+          "budget execution",
+          "budget credibility",
+          "treasury single account",
+          "IFMIS",
+          "integrated financial management information system"
+        ]
+      }
+    },
+    "budget_transparency": {
+      "label": "Budget Transparency",
+      "group": "pfm_and_subnational",
+      "forms": {
+        "en": [
+          "budget transparency",
+          "fiscal transparency",
+          "open budget",
+          "open budget survey",
+          "open budget index",
+          "citizens' budget",
+          "citizens budget",
+          "budget openness"
+        ]
+      }
+    },
+    "procurement_reform": {
+      "label": "Procurement Reform",
+      "group": "pfm_and_subnational",
+      "forms": {
+        "en": [
+          "procurement reform",
+          "procurement reforms",
+          "public procurement",
+          "government procurement",
+          "e-procurement",
+          "electronic procurement",
+          "procurement law",
+          "procurement act"
+        ]
+      }
+    },
+    "public_investment_management": {
+      "label": "Public Investment Management",
+      "group": "pfm_and_subnational",
+      "forms": {
+        "en": [
+          "public investment management",
+          "public investment management assessment",
+          "PIMA",
+          "public investment programme",
+          "public investment program",
+          "public sector investment programme",
+          "PSIP",
+          "public sector development programme",
+          "public sector development program",
+          "PSDP"
+        ]
+      }
+    },
+    "fiscal_transfers": {
+      "label": "Fiscal Transfers",
+      "group": "subnational_fiscal",
+      "forms": {
+        "en": [
+          "fiscal transfers",
+          "fiscal transfer",
+          "intergovernmental transfers",
+          "intergovernmental transfer",
+          "block grants",
+          "block grant",
+          "revenue sharing",
+          "revenue-sharing",
+          "equalization grants",
+          "equalisation grants"
+        ]
+      }
+    },
+    "intergovernmental_finance": {
+      "label": "Intergovernmental Finance",
+      "group": "subnational_fiscal",
+      "forms": {
+        "en": [
+          "intergovernmental finance",
+          "intergovernmental fiscal relations",
+          "fiscal decentralization",
+          "fiscal decentralisation",
+          "fiscal federalism",
+          "subnational finance",
+          "subnational finances",
+          "subnational debt",
+          "local government finance"
+        ]
+      }
+    },
+    "municipal_finance": {
+      "label": "Municipal Finance",
+      "group": "subnational_fiscal",
+      "forms": {
+        "en": [
+          "municipal finance",
+          "municipal finances",
+          "municipal budget",
+          "municipal budgets",
+          "municipal revenue",
+          "municipal bond",
+          "municipal bonds",
+          "city budget",
+          "own-source revenue",
+          "own source revenue"
+        ]
+      }
+    }
+  }
+}

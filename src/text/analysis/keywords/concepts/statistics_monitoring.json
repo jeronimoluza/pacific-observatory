@@ -1,0 +1,732 @@
+{
+  "heading": "statistics_monitoring",
+  "label": "Development data, statistics, monitoring and evaluation",
+  "groups": {
+    "statistical_systems": {
+      "label": "Statistical systems and capacity",
+      "parent": null
+    },
+    "surveys_and_sources": {
+      "label": "Surveys and data sources",
+      "parent": null
+    },
+    "survey_instruments": {
+      "label": "Surveys",
+      "parent": "surveys_and_sources"
+    },
+    "thematic_data_sources": {
+      "label": "Records, census and thematic data",
+      "parent": "surveys_and_sources"
+    },
+    "data_quality_and_gaps": {
+      "label": "Data gaps and quality",
+      "parent": null
+    },
+    "survey_measurement_error": {
+      "label": "Survey and measurement error",
+      "parent": "data_quality_and_gaps"
+    },
+    "disaggregated_data": {
+      "label": "Disaggregated data",
+      "parent": "data_quality_and_gaps"
+    },
+    "monitoring_evaluation_practice": {
+      "label": "Monitoring and evaluation",
+      "parent": null
+    },
+    "feedback_and_opinion": {
+      "label": "Feedback and public opinion",
+      "parent": null
+    },
+    "data_openness_access": {
+      "label": "Data transparency and access",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "development_data": {
+      "label": "Development Data",
+      "group": "statistical_systems",
+      "forms": {
+        "en": [
+          "development data",
+          "data for development",
+          "development statistics",
+          "development indicators",
+          "SDG data",
+          "SDG indicators",
+          "SDG monitoring"
+        ]
+      }
+    },
+    "official_statistics": {
+      "label": "Official Statistics",
+      "group": "statistical_systems",
+      "forms": {
+        "en": [
+          "official statistics",
+          "official data",
+          "official figures",
+          "national statistics",
+          "government statistics"
+        ]
+      }
+    },
+    "national_statistical_system": {
+      "label": "National Statistical System",
+      "group": "statistical_systems",
+      "forms": {
+        "en": [
+          "national statistical system",
+          "national statistical systems",
+          "national statistics office",
+          "national statistical office",
+          "national statistics offices",
+          "national statistical agency",
+          "statistics office",
+          "statistical office",
+          "statistics bureau",
+          "bureau of statistics"
+        ]
+      }
+    },
+    "statistical_capacity": {
+      "label": "Statistical Capacity",
+      "group": "statistical_systems",
+      "forms": {
+        "en": [
+          "statistical capacity",
+          "statistical capacity building",
+          "statistics capacity",
+          "statistical capability",
+          "statistical performance",
+          "statistical performance indicators"
+        ]
+      }
+    },
+    "statistical_reform": {
+      "label": "Statistical Reform",
+      "group": "statistical_systems",
+      "forms": {
+        "en": [
+          "statistical reform",
+          "statistical reforms",
+          "statistics law",
+          "statistical law",
+          "statistics act",
+          "statistical modernization",
+          "statistical modernisation",
+          "modernization of statistics"
+        ]
+      }
+    },
+    "household_survey": {
+      "label": "Household Survey",
+      "group": "survey_instruments",
+      "forms": {
+        "en": [
+          "household survey",
+          "household surveys",
+          "household income and expenditure survey",
+          "HIES",
+          "household budget survey",
+          "living standards survey",
+          "living standards measurement study",
+          "LSMS",
+          "household panel survey"
+        ]
+      }
+    },
+    "population_survey": {
+      "label": "Population Survey",
+      "group": "survey_instruments",
+      "forms": {
+        "en": [
+          "population survey",
+          "population surveys",
+          "population-based survey",
+          "population-based surveys",
+          "national population survey",
+          "intercensal survey"
+        ]
+      }
+    },
+    "agricultural_survey": {
+      "label": "Agricultural Survey",
+      "group": "survey_instruments",
+      "forms": {
+        "en": [
+          "agricultural survey",
+          "agricultural surveys",
+          "agriculture survey",
+          "agricultural census",
+          "farm survey",
+          "farm surveys",
+          "crop survey",
+          "crop surveys",
+          "crop-cutting survey"
+        ]
+      }
+    },
+    "labor_force_survey": {
+      "label": "Labor-Force Survey",
+      "group": "survey_instruments",
+      "forms": {
+        "en": [
+          "labor-force survey",
+          "labor force survey",
+          "labour force survey",
+          "labour-force survey",
+          "labor force surveys",
+          "labour force surveys",
+          "LFS"
+        ]
+      }
+    },
+    "enterprise_survey": {
+      "label": "Enterprise Survey",
+      "group": "survey_instruments",
+      "forms": {
+        "en": [
+          "enterprise survey",
+          "enterprise surveys",
+          "business survey",
+          "business surveys",
+          "firm survey",
+          "firm surveys",
+          "establishment survey",
+          "business census"
+        ]
+      }
+    },
+    "demographic_and_health_survey": {
+      "label": "Demographic and Health Survey",
+      "group": "survey_instruments",
+      "forms": {
+        "en": [
+          "demographic and health survey",
+          "demographic and health surveys",
+          "multiple indicator cluster survey",
+          "multiple indicator cluster surveys",
+          "MICS"
+        ]
+      }
+    },
+    "high_frequency_survey": {
+      "label": "High-Frequency Survey",
+      "group": "survey_instruments",
+      "forms": {
+        "en": [
+          "high-frequency survey",
+          "high frequency survey",
+          "high-frequency surveys",
+          "high frequency surveys",
+          "high-frequency phone survey",
+          "rapid survey",
+          "rapid surveys",
+          "pulse survey",
+          "pulse surveys"
+        ]
+      }
+    },
+    "phone_survey": {
+      "label": "Phone Survey",
+      "group": "survey_instruments",
+      "forms": {
+        "en": [
+          "phone survey",
+          "phone surveys",
+          "telephone survey",
+          "telephone surveys",
+          "mobile phone survey",
+          "SMS survey",
+          "CATI"
+        ]
+      }
+    },
+    "administrative_records": {
+      "label": "Administrative Records",
+      "group": "thematic_data_sources",
+      "forms": {
+        "en": [
+          "administrative records",
+          "administrative registers",
+          "administrative register",
+          "registry data",
+          "register data"
+        ]
+      }
+    },
+    "census_data": {
+      "label": "Census Data",
+      "group": "thematic_data_sources",
+      "forms": {
+        "en": [
+          "census data",
+          "census results",
+          "census figures",
+          "census statistics",
+          "census findings",
+          "census report",
+          "census estimates"
+        ]
+      }
+    },
+    "price_data": {
+      "label": "Price Data",
+      "group": "thematic_data_sources",
+      "forms": {
+        "en": [
+          "price data",
+          "price statistics",
+          "price survey",
+          "price surveys",
+          "price collection"
+        ]
+      }
+    },
+    "poverty_data": {
+      "label": "Poverty Data",
+      "group": "thematic_data_sources",
+      "forms": {
+        "en": [
+          "poverty data",
+          "poverty statistics",
+          "poverty estimates",
+          "poverty figures",
+          "poverty numbers",
+          "poverty measurement"
+        ]
+      }
+    },
+    "data_gaps": {
+      "label": "Data Gaps",
+      "group": "data_quality_and_gaps",
+      "forms": {
+        "en": [
+          "data gaps",
+          "data gap",
+          "lack of data",
+          "missing data",
+          "data scarcity",
+          "data-scarce",
+          "absence of data",
+          "insufficient data"
+        ]
+      }
+    },
+    "data_deprivation": {
+      "label": "Data Deprivation",
+      "group": "data_quality_and_gaps",
+      "forms": {
+        "en": [
+          "data deprivation",
+          "data poverty",
+          "data-poor",
+          "data poor",
+          "data invisibility",
+          "statistically invisible"
+        ]
+      }
+    },
+    "data_timeliness": {
+      "label": "Data Timeliness",
+      "group": "data_quality_and_gaps",
+      "forms": {
+        "en": [
+          "data timeliness",
+          "timeliness of data",
+          "timely data",
+          "outdated data",
+          "data delays",
+          "delayed data",
+          "data lag",
+          "data lags"
+        ]
+      }
+    },
+    "data_accuracy": {
+      "label": "Data Accuracy",
+      "group": "data_quality_and_gaps",
+      "forms": {
+        "en": [
+          "data accuracy",
+          "accuracy of data",
+          "inaccurate data",
+          "data errors",
+          "unreliable data",
+          "data reliability",
+          "data inaccuracies",
+          "data discrepancies"
+        ]
+      }
+    },
+    "data_comparability": {
+      "label": "Data Comparability",
+      "group": "data_quality_and_gaps",
+      "forms": {
+        "en": [
+          "data comparability",
+          "comparability of data",
+          "comparable data",
+          "internationally comparable data",
+          "harmonized data",
+          "harmonised data",
+          "data harmonization",
+          "data harmonisation"
+        ]
+      }
+    },
+    "survey_nonresponse": {
+      "label": "Survey Nonresponse",
+      "group": "survey_measurement_error",
+      "forms": {
+        "en": [
+          "survey nonresponse",
+          "survey non-response",
+          "nonresponse",
+          "non-response",
+          "nonresponse bias",
+          "non-response bias",
+          "survey response rate",
+          "survey response rates",
+          "refusal rate"
+        ]
+      }
+    },
+    "survey_attrition": {
+      "label": "Survey Attrition",
+      "group": "survey_measurement_error",
+      "forms": {
+        "en": [
+          "survey attrition",
+          "panel attrition",
+          "sample attrition",
+          "attrition bias"
+        ]
+      }
+    },
+    "sampling_error": {
+      "label": "Sampling Error",
+      "group": "survey_measurement_error",
+      "forms": {
+        "en": [
+          "sampling error",
+          "sampling errors",
+          "margin of error",
+          "margins of error",
+          "sampling bias",
+          "sample size",
+          "confidence interval"
+        ]
+      }
+    },
+    "measurement_error": {
+      "label": "Measurement Error",
+      "group": "survey_measurement_error",
+      "forms": {
+        "en": [
+          "measurement error",
+          "measurement errors",
+          "mismeasurement",
+          "measurement bias",
+          "misreporting",
+          "underreporting",
+          "under-reporting",
+          "undercount",
+          "undercounting"
+        ]
+      }
+    },
+    "data_disaggregation": {
+      "label": "Data Disaggregation",
+      "group": "disaggregated_data",
+      "forms": {
+        "en": [
+          "data disaggregation",
+          "disaggregated data",
+          "disaggregation of data",
+          "data disaggregated by",
+          "granular data"
+        ]
+      }
+    },
+    "sex_disaggregated_data": {
+      "label": "Sex-Disaggregated Data",
+      "group": "disaggregated_data",
+      "forms": {
+        "en": [
+          "sex-disaggregated data",
+          "sex disaggregated data",
+          "gender-disaggregated data",
+          "gender disaggregated data",
+          "data disaggregated by sex",
+          "data disaggregated by gender",
+          "gender data",
+          "gender statistics"
+        ]
+      }
+    },
+    "disability_disaggregated_data": {
+      "label": "Disability-Disaggregated Data",
+      "group": "disaggregated_data",
+      "forms": {
+        "en": [
+          "disability-disaggregated data",
+          "disability disaggregated data",
+          "data disaggregated by disability",
+          "disability data",
+          "disability statistics",
+          "Washington Group questions",
+          "Washington Group Short Set"
+        ]
+      }
+    },
+    "subnational_data": {
+      "label": "Subnational Data",
+      "group": "disaggregated_data",
+      "forms": {
+        "en": [
+          "subnational data",
+          "sub-national data",
+          "subnational statistics",
+          "sub-national statistics",
+          "provincial data",
+          "district-level data",
+          "local-level data"
+        ]
+      }
+    },
+    "real_time_monitoring": {
+      "label": "Real-Time Monitoring",
+      "group": "monitoring_evaluation_practice",
+      "forms": {
+        "en": [
+          "real-time monitoring",
+          "real time monitoring",
+          "real-time data",
+          "real time data",
+          "real-time tracking",
+          "live monitoring",
+          "nowcasting"
+        ]
+      }
+    },
+    "rapid_cycle_monitoring": {
+      "label": "Rapid-Cycle Monitoring",
+      "group": "monitoring_evaluation_practice",
+      "forms": {
+        "en": [
+          "rapid-cycle monitoring",
+          "rapid cycle monitoring",
+          "rapid-cycle evaluation",
+          "rapid cycle evaluation",
+          "rapid monitoring"
+        ]
+      }
+    },
+    "project_monitoring": {
+      "label": "Project Monitoring",
+      "group": "monitoring_evaluation_practice",
+      "forms": {
+        "en": [
+          "project monitoring",
+          "monitoring of projects",
+          "project supervision",
+          "project implementation monitoring",
+          "project tracking",
+          "project progress reports"
+        ]
+      }
+    },
+    "results_framework": {
+      "label": "Results Framework",
+      "group": "monitoring_evaluation_practice",
+      "forms": {
+        "en": [
+          "results framework",
+          "results frameworks",
+          "results-based management",
+          "results monitoring",
+          "logical framework",
+          "logframe"
+        ]
+      }
+    },
+    "monitoring_and_evaluation": {
+      "label": "Monitoring and Evaluation",
+      "group": "monitoring_evaluation_practice",
+      "forms": {
+        "en": [
+          "monitoring and evaluation",
+          "monitoring & evaluation",
+          "M&E",
+          "monitoring, evaluation and learning",
+          "evaluation framework"
+        ]
+      }
+    },
+    "impact_evaluation": {
+      "label": "Impact Evaluation",
+      "group": "monitoring_evaluation_practice",
+      "forms": {
+        "en": [
+          "impact evaluation",
+          "impact evaluations",
+          "randomized controlled trial",
+          "randomised controlled trial",
+          "randomized controlled trials",
+          "randomised controlled trials",
+          "RCT",
+          "RCTs",
+          "impact study"
+        ]
+      }
+    },
+    "program_evaluation": {
+      "label": "Program Evaluation",
+      "group": "monitoring_evaluation_practice",
+      "forms": {
+        "en": [
+          "program evaluation",
+          "programme evaluation",
+          "program evaluations",
+          "programme evaluations",
+          "project evaluation",
+          "policy evaluation",
+          "independent evaluation",
+          "mid-term review",
+          "midterm review"
+        ]
+      }
+    },
+    "evidence_based_policy": {
+      "label": "Evidence-Based Policy",
+      "group": "monitoring_evaluation_practice",
+      "forms": {
+        "en": [
+          "evidence-based policy",
+          "evidence based policy",
+          "evidence-based policymaking",
+          "evidence-based policy-making",
+          "evidence based policymaking",
+          "evidence-based decision-making",
+          "evidence-based decision making",
+          "evidence-informed policy",
+          "data-driven policy",
+          "data-driven policymaking"
+        ]
+      }
+    },
+    "beneficiary_feedback": {
+      "label": "Beneficiary Feedback",
+      "group": "feedback_and_opinion",
+      "forms": {
+        "en": [
+          "beneficiary feedback",
+          "feedback from beneficiaries",
+          "beneficiary satisfaction",
+          "beneficiary complaints",
+          "grievance redress mechanism",
+          "grievance redress",
+          "grievance mechanism",
+          "complaints mechanism"
+        ]
+      }
+    },
+    "citizen_feedback": {
+      "label": "Citizen Feedback",
+      "group": "feedback_and_opinion",
+      "forms": {
+        "en": [
+          "citizen feedback",
+          "citizen report card",
+          "citizen report cards",
+          "public feedback",
+          "community feedback",
+          "social audit",
+          "social audits"
+        ]
+      }
+    },
+    "public_perceptions": {
+      "label": "Public Perceptions",
+      "group": "feedback_and_opinion",
+      "forms": {
+        "en": [
+          "public perception",
+          "public perceptions",
+          "public opinion",
+          "public sentiment",
+          "public attitudes",
+          "perception survey",
+          "perception surveys"
+        ]
+      }
+    },
+    "opinion_polling": {
+      "label": "Opinion Polling",
+      "group": "feedback_and_opinion",
+      "forms": {
+        "en": [
+          "opinion poll",
+          "opinion polls",
+          "opinion polling",
+          "public opinion poll",
+          "pollster",
+          "pollsters",
+          "exit poll",
+          "exit polls"
+        ]
+      }
+    },
+    "data_transparency": {
+      "label": "Data Transparency",
+      "group": "data_openness_access",
+      "forms": {
+        "en": [
+          "data transparency",
+          "transparency of data",
+          "statistical transparency",
+          "data manipulation",
+          "manipulated data",
+          "data suppression",
+          "withholding data"
+        ]
+      }
+    },
+    "data_dissemination": {
+      "label": "Data Dissemination",
+      "group": "data_openness_access",
+      "forms": {
+        "en": [
+          "data dissemination",
+          "dissemination of data",
+          "data release",
+          "data releases",
+          "statistical release",
+          "statistical releases",
+          "release calendar",
+          "data portal",
+          "data portals"
+        ]
+      }
+    },
+    "microdata_access": {
+      "label": "Microdata Access",
+      "group": "data_openness_access",
+      "forms": {
+        "en": [
+          "microdata access",
+          "access to microdata",
+          "microdata",
+          "micro-data",
+          "microdata library",
+          "public use files",
+          "public-use files",
+          "anonymized microdata"
+        ]
+      }
+    }
+  }
+}

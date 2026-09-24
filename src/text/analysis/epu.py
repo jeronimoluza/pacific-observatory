@@ -199,6 +199,7 @@ class EPU:
         df["body"] = (
             df["body"]
             .str.replace("\n", "", regex=False)
+            .str.replace("\u200b", "", regex=False)
             .str.lower()
             .str.normalize("NFC")
         )

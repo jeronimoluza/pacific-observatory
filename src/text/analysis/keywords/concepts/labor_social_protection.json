@@ -1,0 +1,1327 @@
+{
+  "heading": "labor_social_protection",
+  "label": "Labor markets, jobs and social protection",
+  "groups": {
+    "labor_employment_levels": {
+      "label": "Employment and unemployment",
+      "parent": null
+    },
+    "labor_joblessness": {
+      "label": "Unemployment",
+      "parent": "labor_employment_levels"
+    },
+    "labor_job_flows": {
+      "label": "Job creation and job losses",
+      "parent": "labor_employment_levels"
+    },
+    "labor_demand_supply_skills": {
+      "label": "Labor demand, supply and skills",
+      "parent": null
+    },
+    "labor_forms_of_work": {
+      "label": "Forms of work",
+      "parent": null
+    },
+    "labor_nonstandard_work": {
+      "label": "Informal and non-standard work",
+      "parent": "labor_forms_of_work"
+    },
+    "labor_job_quality_rights": {
+      "label": "Working conditions and labor rights",
+      "parent": null
+    },
+    "labor_abuses": {
+      "label": "Child and forced labor",
+      "parent": "labor_job_quality_rights"
+    },
+    "labor_workplace_safety": {
+      "label": "Workplace safety",
+      "parent": "labor_job_quality_rights"
+    },
+    "labor_leave_benefits": {
+      "label": "Leave and severance",
+      "parent": "labor_job_quality_rights"
+    },
+    "labor_wages": {
+      "label": "Wages",
+      "parent": null
+    },
+    "labor_industrial_relations": {
+      "label": "Unions and industrial action",
+      "parent": null
+    },
+    "sp_social_protection": {
+      "label": "Social protection",
+      "parent": null
+    },
+    "sp_social_assistance": {
+      "label": "Social assistance and transfers",
+      "parent": "sp_social_protection"
+    },
+    "sp_social_insurance_pensions": {
+      "label": "Social insurance and pensions",
+      "parent": "sp_social_protection"
+    },
+    "sp_delivery_systems": {
+      "label": "Targeting, registries and adaptive systems",
+      "parent": "sp_social_protection"
+    },
+    "labor_active_policies": {
+      "label": "Active labor-market policies and skills",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "labor_market": {
+      "label": "Labor Market",
+      "group": "labor_employment_levels",
+      "forms": {
+        "en": [
+          "labor market",
+          "labour market",
+          "labor markets",
+          "labour markets",
+          "job market",
+          "job markets",
+          "jobs market",
+          "employment market"
+        ]
+      }
+    },
+    "employment": {
+      "label": "Employment",
+      "group": "labor_employment_levels",
+      "forms": {
+        "en": [
+          "employment",
+          "employment rate",
+          "employment rates",
+          "employment level",
+          "employment figures",
+          "jobs report",
+          "jobs data"
+        ]
+      }
+    },
+    "labor_force_participation": {
+      "label": "Labor-Force Participation",
+      "group": "labor_employment_levels",
+      "forms": {
+        "en": [
+          "labor-force participation",
+          "labour-force participation",
+          "labor force participation",
+          "labour force participation",
+          "labor force participation rate",
+          "labour force participation rate",
+          "labor-force participation rate",
+          "labour-force participation rate",
+          "LFPR",
+          "economically active population",
+          "economically inactive",
+          "economic inactivity"
+        ]
+      }
+    },
+    "female_labor_force_participation": {
+      "label": "Female Labor-Force Participation",
+      "group": "labor_employment_levels",
+      "forms": {
+        "en": [
+          "female labor-force participation",
+          "female labour-force participation",
+          "female labor force participation",
+          "female labour force participation",
+          "women's labor force participation",
+          "women's labour force participation",
+          "women's labor-force participation",
+          "women's labour-force participation",
+          "women in the workforce",
+          "women's participation in the workforce",
+          "female employment",
+          "women's employment"
+        ]
+      }
+    },
+    "unemployment": {
+      "label": "Unemployment",
+      "group": "labor_joblessness",
+      "forms": {
+        "en": [
+          "unemployment",
+          "unemployment rate",
+          "unemployment rates",
+          "unemployed",
+          "jobless rate",
+          "joblessness",
+          "jobless",
+          "out of work"
+        ]
+      }
+    },
+    "underemployment": {
+      "label": "Underemployment",
+      "group": "labor_joblessness",
+      "forms": {
+        "en": [
+          "underemployment",
+          "under-employment",
+          "underemployed",
+          "under-employed",
+          "time-related underemployment",
+          "involuntary part-time"
+        ]
+      }
+    },
+    "youth_unemployment": {
+      "label": "Youth Unemployment",
+      "group": "labor_joblessness",
+      "forms": {
+        "en": [
+          "youth unemployment",
+          "youth unemployment rate",
+          "unemployed youth",
+          "unemployed young people",
+          "youth joblessness",
+          "jobless youth",
+          "NEET rate",
+          "NEETs"
+        ]
+      }
+    },
+    "long_term_unemployment": {
+      "label": "Long-Term Unemployment",
+      "group": "labor_joblessness",
+      "forms": {
+        "en": [
+          "long-term unemployment",
+          "long term unemployment",
+          "long-term unemployed",
+          "long term unemployed",
+          "long-term jobless",
+          "chronic unemployment"
+        ]
+      }
+    },
+    "job_creation": {
+      "label": "Job Creation",
+      "group": "labor_job_flows",
+      "forms": {
+        "en": [
+          "job creation",
+          "job-creation",
+          "employment creation",
+          "create jobs",
+          "creating jobs",
+          "created jobs",
+          "jobs created",
+          "new jobs",
+          "job growth"
+        ]
+      }
+    },
+    "job_losses": {
+      "label": "Job Losses",
+      "group": "labor_job_flows",
+      "forms": {
+        "en": [
+          "job losses",
+          "job loss",
+          "lost jobs",
+          "jobs lost",
+          "loss of jobs",
+          "job cuts",
+          "cut jobs",
+          "cutting jobs",
+          "shed jobs",
+          "job shedding"
+        ]
+      }
+    },
+    "layoffs": {
+      "label": "Layoffs",
+      "group": "labor_job_flows",
+      "forms": {
+        "en": [
+          "layoffs",
+          "layoff",
+          "lay-offs",
+          "lay-off",
+          "laid off",
+          "mass layoffs",
+          "redundancies",
+          "made redundant"
+        ]
+      }
+    },
+    "worker_retrenchment": {
+      "label": "Worker Retrenchment",
+      "group": "labor_job_flows",
+      "forms": {
+        "en": [
+          "worker retrenchment",
+          "retrenchment of workers",
+          "staff retrenchment",
+          "retrenched workers",
+          "retrenched employees",
+          "retrenched",
+          "retrench workers",
+          "retrenching workers"
+        ]
+      }
+    },
+    "labor_demand": {
+      "label": "Labor Demand",
+      "group": "labor_demand_supply_skills",
+      "forms": {
+        "en": [
+          "labor demand",
+          "labour demand",
+          "demand for labor",
+          "demand for labour",
+          "demand for workers",
+          "hiring freeze",
+          "hiring slowdown",
+          "hiring intentions"
+        ]
+      }
+    },
+    "labor_supply": {
+      "label": "Labor Supply",
+      "group": "labor_demand_supply_skills",
+      "forms": {
+        "en": [
+          "labor supply",
+          "labour supply",
+          "supply of labor",
+          "supply of labour",
+          "labor pool",
+          "labour pool",
+          "labor force growth",
+          "labour force growth",
+          "size of the labor force",
+          "size of the labour force"
+        ]
+      }
+    },
+    "labor_shortages": {
+      "label": "Labor Shortages",
+      "group": "labor_demand_supply_skills",
+      "forms": {
+        "en": [
+          "labor shortages",
+          "labour shortages",
+          "labor shortage",
+          "labour shortage",
+          "shortage of labor",
+          "shortage of labour",
+          "shortage of workers",
+          "worker shortage",
+          "worker shortages",
+          "workforce shortage",
+          "workforce shortages",
+          "staff shortages",
+          "staffing shortages"
+        ]
+      }
+    },
+    "skills_shortages": {
+      "label": "Skills Shortages",
+      "group": "labor_demand_supply_skills",
+      "forms": {
+        "en": [
+          "skills shortages",
+          "skills shortage",
+          "skill shortage",
+          "skill shortages",
+          "shortage of skilled workers",
+          "skilled labor shortage",
+          "skilled labour shortage",
+          "skills gap",
+          "skills gaps",
+          "talent shortage"
+        ]
+      }
+    },
+    "skills_mismatch": {
+      "label": "Skills Mismatch",
+      "group": "labor_demand_supply_skills",
+      "forms": {
+        "en": [
+          "skills mismatch",
+          "skill mismatch",
+          "skills mismatches",
+          "skills-mismatch",
+          "mismatch of skills",
+          "overqualified",
+          "overqualification",
+          "education-job mismatch"
+        ]
+      }
+    },
+    "job_vacancies": {
+      "label": "Job Vacancies",
+      "group": "labor_demand_supply_skills",
+      "forms": {
+        "en": [
+          "job vacancies",
+          "job vacancy",
+          "vacancy rate",
+          "job openings",
+          "unfilled vacancies",
+          "unfilled positions",
+          "unfilled jobs",
+          "vacant positions"
+        ]
+      }
+    },
+    "agricultural_employment": {
+      "label": "Agricultural Employment",
+      "group": "labor_forms_of_work",
+      "forms": {
+        "en": [
+          "agricultural employment",
+          "farm employment",
+          "agricultural jobs",
+          "farm jobs",
+          "agricultural workers",
+          "agricultural worker",
+          "farm workers",
+          "farmworkers",
+          "agricultural labor",
+          "agricultural labour",
+          "farm labor",
+          "farm labour"
+        ]
+      }
+    },
+    "public_sector_employment": {
+      "label": "Public-Sector Employment",
+      "group": "labor_forms_of_work",
+      "forms": {
+        "en": [
+          "public-sector employment",
+          "public sector employment",
+          "public-sector jobs",
+          "public sector jobs",
+          "public-sector workers",
+          "public sector workers",
+          "government jobs",
+          "government employees",
+          "civil servants",
+          "public servants"
+        ]
+      }
+    },
+    "migrant_workers": {
+      "label": "Migrant Workers",
+      "group": "labor_forms_of_work",
+      "forms": {
+        "en": [
+          "migrant workers",
+          "migrant worker",
+          "migrant labor",
+          "migrant labour",
+          "foreign workers",
+          "foreign worker",
+          "overseas workers",
+          "overseas Filipino workers",
+          "OFW",
+          "OFWs",
+          "guest workers"
+        ]
+      }
+    },
+    "seasonal_workers": {
+      "label": "Seasonal Workers",
+      "group": "labor_forms_of_work",
+      "forms": {
+        "en": [
+          "seasonal workers",
+          "seasonal worker",
+          "seasonal labor",
+          "seasonal labour",
+          "seasonal employment",
+          "seasonal work",
+          "seasonal worker program",
+          "seasonal worker programme",
+          "Recognised Seasonal Employer",
+          "RSE scheme",
+          "RSE workers",
+          "PALM scheme",
+          "Pacific Australia Labour Mobility"
+        ]
+      }
+    },
+    "informal_employment": {
+      "label": "Informal Employment",
+      "group": "labor_nonstandard_work",
+      "forms": {
+        "en": [
+          "informal employment",
+          "informally employed",
+          "informal workers",
+          "informal worker",
+          "informal jobs",
+          "informal labor",
+          "informal labour",
+          "informal sector workers",
+          "informal sector employment"
+        ]
+      }
+    },
+    "vulnerable_employment": {
+      "label": "Vulnerable Employment",
+      "group": "labor_nonstandard_work",
+      "forms": {
+        "en": [
+          "vulnerable employment",
+          "precarious employment",
+          "precarious work",
+          "precarious jobs",
+          "insecure work",
+          "insecure jobs",
+          "job insecurity",
+          "precarity"
+        ]
+      }
+    },
+    "casual_labor": {
+      "label": "Casual Labor",
+      "group": "labor_nonstandard_work",
+      "forms": {
+        "en": [
+          "casual labor",
+          "casual labour",
+          "casual workers",
+          "casual worker",
+          "casual employment",
+          "casual jobs",
+          "day laborers",
+          "day labourers",
+          "day laborer",
+          "day labourer",
+          "day labor",
+          "day labour",
+          "daily wage workers",
+          "daily-wage workers",
+          "daily wage earners"
+        ]
+      }
+    },
+    "contract_workers": {
+      "label": "Contract Workers",
+      "group": "labor_nonstandard_work",
+      "forms": {
+        "en": [
+          "contract workers",
+          "contract worker",
+          "contract labor",
+          "contract labour",
+          "contractual workers",
+          "contractual employees",
+          "temporary workers",
+          "fixed-term contracts",
+          "agency workers",
+          "outsourced workers",
+          "contractualization",
+          "contractualisation"
+        ]
+      }
+    },
+    "gig_economy": {
+      "label": "Gig Economy",
+      "group": "labor_nonstandard_work",
+      "forms": {
+        "en": [
+          "gig economy",
+          "gig-economy",
+          "gig work",
+          "gig workers",
+          "gig worker",
+          "gig jobs"
+        ]
+      }
+    },
+    "platform_work": {
+      "label": "Platform Work",
+      "group": "labor_nonstandard_work",
+      "forms": {
+        "en": [
+          "platform work",
+          "platform workers",
+          "platform worker",
+          "platform-based work",
+          "ride-hailing drivers",
+          "delivery riders",
+          "food delivery riders"
+        ]
+      }
+    },
+    "self_employment": {
+      "label": "Self-Employment",
+      "group": "labor_nonstandard_work",
+      "forms": {
+        "en": [
+          "self-employment",
+          "self employment",
+          "self-employed",
+          "self employed",
+          "own-account workers",
+          "own-account worker",
+          "own account workers"
+        ]
+      }
+    },
+    "unpaid_family_work": {
+      "label": "Unpaid Family Work",
+      "group": "labor_nonstandard_work",
+      "forms": {
+        "en": [
+          "unpaid family work",
+          "unpaid family workers",
+          "unpaid family worker",
+          "contributing family workers",
+          "contributing family worker",
+          "unpaid family labor",
+          "unpaid family labour",
+          "unpaid family helpers"
+        ]
+      }
+    },
+    "working_conditions": {
+      "label": "Working Conditions",
+      "group": "labor_job_quality_rights",
+      "forms": {
+        "en": [
+          "working conditions",
+          "work conditions",
+          "conditions of work",
+          "labor conditions",
+          "labour conditions",
+          "working environment",
+          "decent work",
+          "sweatshop",
+          "sweatshops"
+        ]
+      }
+    },
+    "working_hours": {
+      "label": "Working Hours",
+      "group": "labor_job_quality_rights",
+      "forms": {
+        "en": [
+          "working hours",
+          "work hours",
+          "hours of work",
+          "working time",
+          "long working hours",
+          "working week",
+          "workweek",
+          "four-day week",
+          "overtime pay",
+          "unpaid overtime"
+        ]
+      }
+    },
+    "labor_rights": {
+      "label": "Labor Rights",
+      "group": "labor_job_quality_rights",
+      "forms": {
+        "en": [
+          "labor rights",
+          "labour rights",
+          "workers' rights",
+          "workers rights",
+          "worker rights",
+          "labor law",
+          "labour law",
+          "labor laws",
+          "labour laws",
+          "labor code",
+          "labour code",
+          "labor standards",
+          "labour standards",
+          "right to strike"
+        ]
+      }
+    },
+    "child_labor": {
+      "label": "Child Labor",
+      "group": "labor_abuses",
+      "forms": {
+        "en": [
+          "child labor",
+          "child labour",
+          "child laborers",
+          "child labourers",
+          "child laborer",
+          "child labourer",
+          "child workers",
+          "working children",
+          "worst forms of child labor",
+          "worst forms of child labour"
+        ]
+      }
+    },
+    "forced_labor": {
+      "label": "Forced Labor",
+      "group": "labor_abuses",
+      "forms": {
+        "en": [
+          "forced labor",
+          "forced labour",
+          "forced laborers",
+          "forced labourers",
+          "bonded labor",
+          "bonded labour",
+          "debt bondage",
+          "modern slavery",
+          "slave labor",
+          "slave labour",
+          "labor trafficking",
+          "labour trafficking"
+        ]
+      }
+    },
+    "occupational_safety": {
+      "label": "Occupational Safety",
+      "group": "labor_workplace_safety",
+      "forms": {
+        "en": [
+          "occupational safety",
+          "occupational health and safety",
+          "occupational safety and health",
+          "workplace safety",
+          "work safety",
+          "safety at work",
+          "health and safety at work",
+          "OSH"
+        ]
+      }
+    },
+    "workplace_injuries": {
+      "label": "Workplace Injuries",
+      "group": "labor_workplace_safety",
+      "forms": {
+        "en": [
+          "workplace injuries",
+          "workplace injury",
+          "workplace accident",
+          "workplace accidents",
+          "occupational injuries",
+          "occupational injury",
+          "occupational accidents",
+          "industrial accident",
+          "industrial accidents",
+          "work-related injuries",
+          "workplace deaths",
+          "workplace fatalities"
+        ]
+      }
+    },
+    "severance_pay": {
+      "label": "Severance Pay",
+      "group": "labor_leave_benefits",
+      "forms": {
+        "en": [
+          "severance pay",
+          "severance payment",
+          "severance payments",
+          "severance package",
+          "severance packages",
+          "redundancy pay",
+          "redundancy payment",
+          "separation pay",
+          "termination benefits"
+        ]
+      }
+    },
+    "maternity_protection": {
+      "label": "Maternity Protection",
+      "group": "labor_leave_benefits",
+      "forms": {
+        "en": [
+          "maternity protection",
+          "maternity leave",
+          "maternity benefits",
+          "maternity benefit",
+          "maternity pay",
+          "pregnancy discrimination"
+        ]
+      }
+    },
+    "paid_leave": {
+      "label": "Paid Leave",
+      "group": "labor_leave_benefits",
+      "forms": {
+        "en": [
+          "paid leave",
+          "sick leave",
+          "paid sick leave",
+          "annual leave",
+          "parental leave",
+          "paternity leave",
+          "family leave",
+          "paid holidays"
+        ]
+      }
+    },
+    "minimum_wage": {
+      "label": "Minimum Wage",
+      "group": "labor_wages",
+      "forms": {
+        "en": [
+          "minimum wage",
+          "minimum wages",
+          "national minimum wage",
+          "regional minimum wage",
+          "minimum salary",
+          "wage floor",
+          "living wage"
+        ]
+      }
+    },
+    "wage_arrears": {
+      "label": "Wage Arrears",
+      "group": "labor_wages",
+      "forms": {
+        "en": [
+          "wage arrears",
+          "salary arrears",
+          "arrears of salaries",
+          "unpaid wages",
+          "unpaid salaries",
+          "delayed wages",
+          "delayed salaries",
+          "late payment of wages",
+          "owed wages",
+          "wage theft",
+          "back pay"
+        ]
+      }
+    },
+    "wage_growth": {
+      "label": "Wage Growth",
+      "group": "labor_wages",
+      "forms": {
+        "en": [
+          "wage growth",
+          "wage increase",
+          "wage increases",
+          "wage hike",
+          "wage hikes",
+          "pay rise",
+          "pay rises",
+          "pay raise",
+          "salary increase",
+          "salary increases",
+          "pay increase"
+        ]
+      }
+    },
+    "wage_inequality": {
+      "label": "Wage Inequality",
+      "group": "labor_wages",
+      "forms": {
+        "en": [
+          "wage inequality",
+          "wage gap",
+          "wage gaps",
+          "pay gap",
+          "pay gaps",
+          "wage disparity",
+          "wage disparities",
+          "pay disparities",
+          "earnings inequality",
+          "wage dispersion"
+        ]
+      }
+    },
+    "collective_bargaining": {
+      "label": "Collective Bargaining",
+      "group": "labor_industrial_relations",
+      "forms": {
+        "en": [
+          "collective bargaining",
+          "collective agreement",
+          "collective agreements",
+          "collective bargaining agreement",
+          "collective labor agreement",
+          "collective labour agreement",
+          "wage negotiations",
+          "wage talks",
+          "pay talks"
+        ]
+      }
+    },
+    "trade_unions": {
+      "label": "Trade Unions",
+      "group": "labor_industrial_relations",
+      "forms": {
+        "en": [
+          "trade unions",
+          "trade union",
+          "trade unionists",
+          "labor union",
+          "labour union",
+          "labor unions",
+          "labour unions",
+          "workers' union",
+          "workers union",
+          "unionized",
+          "unionised",
+          "unionization",
+          "unionisation"
+        ]
+      }
+    },
+    "labor_strikes": {
+      "label": "Labor Strikes",
+      "group": "labor_industrial_relations",
+      "forms": {
+        "en": [
+          "labor strikes",
+          "labour strikes",
+          "labor strike",
+          "labour strike",
+          "workers' strike",
+          "workers strike",
+          "general strike",
+          "strike action",
+          "industrial action",
+          "on strike",
+          "went on strike",
+          "striking workers",
+          "work stoppage"
+        ]
+      }
+    },
+    "labor_protests": {
+      "label": "Labor Protests",
+      "group": "labor_industrial_relations",
+      "forms": {
+        "en": [
+          "labor protests",
+          "labour protests",
+          "labor protest",
+          "labour protest",
+          "labor unrest",
+          "labour unrest",
+          "worker protests",
+          "workers' protests",
+          "workers protest",
+          "labor demonstrations",
+          "labour demonstrations",
+          "industrial unrest",
+          "May Day rally",
+          "May Day rallies"
+        ]
+      }
+    },
+    "social_protection": {
+      "label": "Social Protection",
+      "group": "sp_social_protection",
+      "forms": {
+        "en": [
+          "social protection",
+          "social protection system",
+          "social protection systems",
+          "social protection programs",
+          "social protection programmes",
+          "social safety net",
+          "social safety nets",
+          "safety net program",
+          "safety net programme",
+          "safety net programs",
+          "safety net programmes"
+        ]
+      }
+    },
+    "social_assistance": {
+      "label": "Social Assistance",
+      "group": "sp_social_assistance",
+      "forms": {
+        "en": [
+          "social assistance",
+          "social welfare programs",
+          "social welfare programmes",
+          "welfare programs",
+          "welfare programmes",
+          "welfare payments",
+          "welfare benefits",
+          "social transfers",
+          "social grants",
+          "social grant",
+          "social aid",
+          "bansos"
+        ]
+      }
+    },
+    "cash_transfers": {
+      "label": "Cash Transfers",
+      "group": "sp_social_assistance",
+      "forms": {
+        "en": [
+          "cash transfers",
+          "cash transfer",
+          "unconditional cash transfers",
+          "unconditional cash transfer",
+          "direct cash transfers",
+          "cash assistance",
+          "cash handouts",
+          "cash handout",
+          "cash aid",
+          "Bantuan Langsung Tunai"
+        ]
+      }
+    },
+    "conditional_cash_transfers": {
+      "label": "Conditional Cash Transfers",
+      "group": "sp_social_assistance",
+      "forms": {
+        "en": [
+          "conditional cash transfers",
+          "conditional cash transfer",
+          "conditional cash transfer program",
+          "conditional cash transfer programme",
+          "CCT program",
+          "CCT programme",
+          "CCT programs",
+          "CCT programmes",
+          "Pantawid Pamilyang Pilipino Program",
+          "Pantawid",
+          "Program Keluarga Harapan",
+          "Bolsa Familia"
+        ]
+      }
+    },
+    "public_works_programs": {
+      "label": "Public Works Programs",
+      "group": "sp_social_assistance",
+      "forms": {
+        "en": [
+          "public works programs",
+          "public works programmes",
+          "public works program",
+          "public works programme",
+          "public works scheme",
+          "public works schemes",
+          "labor-intensive public works",
+          "labour-intensive public works",
+          "employment guarantee scheme",
+          "cash-for-work",
+          "cash for work",
+          "workfare",
+          "Productive Safety Net Programme"
+        ]
+      }
+    },
+    "disability_benefits": {
+      "label": "Disability Benefits",
+      "group": "sp_social_assistance",
+      "forms": {
+        "en": [
+          "disability benefits",
+          "disability benefit",
+          "disability allowance",
+          "disability allowances",
+          "disability pension",
+          "disability pensions",
+          "disability grant",
+          "disability grants",
+          "disability support pension"
+        ]
+      }
+    },
+    "child_benefits": {
+      "label": "Child Benefits",
+      "group": "sp_social_assistance",
+      "forms": {
+        "en": [
+          "child benefits",
+          "child benefit",
+          "child grant",
+          "child grants",
+          "child allowance",
+          "child allowances",
+          "child support grant",
+          "universal child benefit",
+          "child tax credit"
+        ]
+      }
+    },
+    "family_benefits": {
+      "label": "Family Benefits",
+      "group": "sp_social_assistance",
+      "forms": {
+        "en": [
+          "family benefits",
+          "family benefit",
+          "family allowance",
+          "family allowances",
+          "family support payments",
+          "family tax benefit"
+        ]
+      }
+    },
+    "social_insurance": {
+      "label": "Social Insurance",
+      "group": "sp_social_insurance_pensions",
+      "forms": {
+        "en": [
+          "social insurance",
+          "social insurance scheme",
+          "social insurance schemes",
+          "social security system",
+          "social security fund",
+          "social security contributions",
+          "social security coverage",
+          "social security scheme",
+          "BPJS Ketenagakerjaan"
+        ]
+      }
+    },
+    "unemployment_insurance": {
+      "label": "Unemployment Insurance",
+      "group": "sp_social_insurance_pensions",
+      "forms": {
+        "en": [
+          "unemployment insurance",
+          "unemployment benefits",
+          "unemployment benefit",
+          "jobless benefits",
+          "jobless claims",
+          "unemployment compensation",
+          "unemployment allowance",
+          "employment insurance",
+          "jobseeker's allowance",
+          "JobSeeker payment"
+        ]
+      }
+    },
+    "social_pensions": {
+      "label": "Social Pensions",
+      "group": "sp_social_insurance_pensions",
+      "forms": {
+        "en": [
+          "social pensions",
+          "social pension",
+          "non-contributory pension",
+          "non-contributory pensions",
+          "old-age allowance",
+          "old age allowance",
+          "senior citizens' pension",
+          "universal pension",
+          "elderly allowance"
+        ]
+      }
+    },
+    "contributory_pensions": {
+      "label": "Contributory Pensions",
+      "group": "sp_social_insurance_pensions",
+      "forms": {
+        "en": [
+          "contributory pensions",
+          "contributory pension",
+          "pension contributions",
+          "pension scheme",
+          "pension schemes",
+          "pension system",
+          "pension systems",
+          "retirement pension",
+          "pension coverage",
+          "occupational pensions"
+        ]
+      }
+    },
+    "pension_reform": {
+      "label": "Pension Reform",
+      "group": "sp_social_insurance_pensions",
+      "forms": {
+        "en": [
+          "pension reform",
+          "pension reforms",
+          "pension overhaul",
+          "pension system reform",
+          "retirement age",
+          "raising the retirement age"
+        ]
+      }
+    },
+    "shock_responsive_social_protection": {
+      "label": "Shock-Responsive Social Protection",
+      "group": "sp_delivery_systems",
+      "forms": {
+        "en": [
+          "shock-responsive social protection",
+          "shock responsive social protection",
+          "shock-responsive safety nets",
+          "shock-responsive cash transfers",
+          "shock-responsive",
+          "emergency cash transfers"
+        ]
+      }
+    },
+    "adaptive_social_protection": {
+      "label": "Adaptive Social Protection",
+      "group": "sp_delivery_systems",
+      "forms": {
+        "en": [
+          "adaptive social protection",
+          "adaptive safety nets",
+          "adaptive safety net",
+          "adaptive social safety nets"
+        ]
+      }
+    },
+    "social_registry": {
+      "label": "Social Registry",
+      "group": "sp_delivery_systems",
+      "forms": {
+        "en": [
+          "social registry",
+          "social registries",
+          "social register",
+          "unified social registry",
+          "national household targeting system",
+          "Listahanan",
+          "DTKS"
+        ]
+      }
+    },
+    "beneficiary_targeting": {
+      "label": "Beneficiary Targeting",
+      "group": "sp_delivery_systems",
+      "forms": {
+        "en": [
+          "beneficiary targeting",
+          "targeting of beneficiaries",
+          "beneficiary selection",
+          "beneficiary lists",
+          "proxy means test",
+          "proxy means testing",
+          "means test",
+          "means testing",
+          "means-tested",
+          "inclusion errors",
+          "exclusion errors",
+          "ghost beneficiaries"
+        ]
+      }
+    },
+    "active_labor_market_programs": {
+      "label": "Active Labor-Market Programs",
+      "group": "labor_active_policies",
+      "forms": {
+        "en": [
+          "active labor-market programs",
+          "active labour-market programmes",
+          "active labor market programs",
+          "active labour market programmes",
+          "active labor-market policies",
+          "active labour-market policies",
+          "active labor market policies",
+          "active labour market policies",
+          "active labor market policy",
+          "active labour market policy",
+          "ALMPs",
+          "wage subsidies",
+          "wage subsidy",
+          "hiring subsidies",
+          "employment subsidies",
+          "Kartu Prakerja"
+        ]
+      }
+    },
+    "employment_services": {
+      "label": "Employment Services",
+      "group": "labor_active_policies",
+      "forms": {
+        "en": [
+          "employment services",
+          "employment service",
+          "public employment service",
+          "public employment services",
+          "job centre",
+          "job centres",
+          "job center",
+          "job centers",
+          "job placement",
+          "job matching",
+          "job fair",
+          "job fairs"
+        ]
+      }
+    },
+    "worker_reskilling": {
+      "label": "Worker Reskilling",
+      "group": "labor_active_policies",
+      "forms": {
+        "en": [
+          "worker reskilling",
+          "reskilling",
+          "re-skilling",
+          "upskilling",
+          "up-skilling",
+          "retraining",
+          "worker retraining",
+          "skills upgrading",
+          "reskill",
+          "upskill"
+        ]
+      }
+    },
+    "vocational_training": {
+      "label": "Vocational Training",
+      "group": "labor_active_policies",
+      "forms": {
+        "en": [
+          "vocational training",
+          "vocational skills training",
+          "vocational training centers",
+          "vocational training centres",
+          "vocational courses",
+          "skills training",
+          "job training"
+        ]
+      }
+    },
+    "economic_inclusion_programs": {
+      "label": "Economic Inclusion Programs",
+      "group": "labor_active_policies",
+      "forms": {
+        "en": [
+          "economic inclusion programs",
+          "economic inclusion programmes",
+          "economic inclusion program",
+          "economic inclusion programme",
+          "economic inclusion",
+          "productive inclusion",
+          "graduation approach",
+          "economic empowerment programs",
+          "economic empowerment programmes"
+        ]
+      }
+    },
+    "livelihood_support": {
+      "label": "Livelihood Support",
+      "group": "labor_active_policies",
+      "forms": {
+        "en": [
+          "livelihood support",
+          "livelihoods support",
+          "livelihood assistance",
+          "livelihood programs",
+          "livelihood programmes",
+          "livelihood program",
+          "livelihood programme",
+          "livelihood grants",
+          "livelihood recovery",
+          "livelihood restoration",
+          "livelihood training"
+        ]
+      }
+    }
+  }
+}

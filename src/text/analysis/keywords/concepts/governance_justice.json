@@ -1,0 +1,1129 @@
+{
+  "heading": "governance_justice",
+  "label": "Governance, institutions, justice and political stability",
+  "groups": {
+    "government_administration": {
+      "label": "Government and public administration",
+      "parent": null
+    },
+    "administrative_reform": {
+      "label": "Public-sector and regulatory reform",
+      "parent": "government_administration"
+    },
+    "decentralization_local_gov": {
+      "label": "Decentralization and local government",
+      "parent": "government_administration"
+    },
+    "transparency_open_gov": {
+      "label": "Transparency and open government",
+      "parent": null
+    },
+    "digital_gov_services": {
+      "label": "E-government",
+      "parent": "transparency_open_gov"
+    },
+    "corruption_integrity": {
+      "label": "Corruption and governance",
+      "parent": null
+    },
+    "corrupt_practices": {
+      "label": "Corrupt practices",
+      "parent": "corruption_integrity"
+    },
+    "anti_corruption_oversight": {
+      "label": "Anti-corruption and oversight",
+      "parent": "corruption_integrity"
+    },
+    "justice_rule_of_law": {
+      "label": "Justice and rule of law",
+      "parent": null
+    },
+    "courts_legal_services": {
+      "label": "Courts and legal services",
+      "parent": "justice_rule_of_law"
+    },
+    "security_justice_reform": {
+      "label": "Police, prison and security-sector reform",
+      "parent": "justice_rule_of_law"
+    },
+    "property_contracts": {
+      "label": "Property and contracts",
+      "parent": "justice_rule_of_law"
+    },
+    "electoral_politics": {
+      "label": "Elections",
+      "parent": null
+    },
+    "political_stability_crises": {
+      "label": "Political stability and crises",
+      "parent": null
+    },
+    "government_turnover": {
+      "label": "Government change and transition",
+      "parent": "political_stability_crises"
+    },
+    "protests_unrest": {
+      "label": "Protests and unrest",
+      "parent": "political_stability_crises"
+    },
+    "emergency_measures": {
+      "label": "Emergency measures",
+      "parent": "political_stability_crises"
+    },
+    "civic_freedoms_rights": {
+      "label": "Civic space and rights",
+      "parent": null
+    },
+    "data_consumer_protection": {
+      "label": "Data, privacy and consumer protection",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "political_stability": {
+      "label": "Political Stability",
+      "group": "political_stability_crises",
+      "forms": {
+        "en": [
+          "political stability",
+          "political instability",
+          "politically stable",
+          "politically unstable",
+          "political volatility"
+        ]
+      }
+    },
+    "governance": {
+      "label": "Governance",
+      "group": "government_administration",
+      "forms": {
+        "en": [
+          "good governance",
+          "poor governance",
+          "bad governance",
+          "weak governance",
+          "governance reform",
+          "governance reforms",
+          "public governance",
+          "democratic governance",
+          "government accountability",
+          "public accountability"
+        ]
+      }
+    },
+    "government_effectiveness": {
+      "label": "Government Effectiveness",
+      "group": "government_administration",
+      "forms": {
+        "en": [
+          "government effectiveness",
+          "effective government",
+          "ineffective government",
+          "government performance",
+          "government efficiency",
+          "government inefficiency",
+          "bureaucratic inefficiency",
+          "bureaucratic delays"
+        ]
+      }
+    },
+    "institutional_capacity": {
+      "label": "Institutional Capacity",
+      "group": "government_administration",
+      "forms": {
+        "en": [
+          "institutional capacity",
+          "institutional capacities",
+          "weak institutions",
+          "strong institutions",
+          "institutional strengthening",
+          "institution building",
+          "institutional weakness",
+          "institutional reform",
+          "institutional reforms"
+        ]
+      }
+    },
+    "state_capacity": {
+      "label": "State Capacity",
+      "group": "government_administration",
+      "forms": {
+        "en": [
+          "state capacity",
+          "state capacities",
+          "capacity of the state",
+          "weak state",
+          "state weakness"
+        ]
+      }
+    },
+    "public_administration": {
+      "label": "Public Administration",
+      "group": "government_administration",
+      "forms": {
+        "en": [
+          "public administration",
+          "civil service",
+          "civil servant",
+          "civil servants",
+          "public servant",
+          "public servants",
+          "bureaucracy",
+          "bureaucrats"
+        ]
+      }
+    },
+    "civil_service_reform": {
+      "label": "Civil-Service Reform",
+      "group": "administrative_reform",
+      "forms": {
+        "en": [
+          "civil-service reform",
+          "civil-service reforms",
+          "civil service reform",
+          "civil service reforms",
+          "reform of the civil service",
+          "civil service overhaul",
+          "bureaucratic reform",
+          "bureaucracy reform",
+          "merit-based recruitment"
+        ]
+      }
+    },
+    "public_sector_reform": {
+      "label": "Public-Sector Reform",
+      "group": "administrative_reform",
+      "forms": {
+        "en": [
+          "public-sector reform",
+          "public-sector reforms",
+          "public sector reform",
+          "public sector reforms",
+          "reform of the public sector",
+          "public administration reform",
+          "public service reform",
+          "government restructuring"
+        ]
+      }
+    },
+    "decentralization": {
+      "label": "Decentralization",
+      "group": "decentralization_local_gov",
+      "forms": {
+        "en": [
+          "decentralization",
+          "decentralisation",
+          "fiscal decentralization",
+          "fiscal decentralisation",
+          "decentralized governance",
+          "decentralised governance",
+          "regional autonomy",
+          "local autonomy"
+        ]
+      }
+    },
+    "local_government": {
+      "label": "Local Government",
+      "group": "decentralization_local_gov",
+      "forms": {
+        "en": [
+          "local government",
+          "local governments",
+          "local authority",
+          "local authorities",
+          "local council",
+          "local councils",
+          "provincial government",
+          "provincial governments",
+          "district government",
+          "subnational government",
+          "subnational governments",
+          "sub-national governments",
+          "LGU",
+          "LGUs"
+        ]
+      }
+    },
+    "municipal_government": {
+      "label": "Municipal Government",
+      "group": "decentralization_local_gov",
+      "forms": {
+        "en": [
+          "municipal government",
+          "municipal governments",
+          "municipality",
+          "municipalities",
+          "municipal council",
+          "city council",
+          "city government",
+          "city hall",
+          "mayor",
+          "mayors"
+        ]
+      }
+    },
+    "devolution": {
+      "label": "Devolution",
+      "group": "decentralization_local_gov",
+      "forms": {
+        "en": [
+          "devolution",
+          "devolved government",
+          "devolved governments",
+          "devolved powers",
+          "devolved functions",
+          "devolution of powers",
+          "county governments"
+        ]
+      }
+    },
+    "service_delivery_accountability": {
+      "label": "Service-Delivery Accountability",
+      "group": "decentralization_local_gov",
+      "forms": {
+        "en": [
+          "service-delivery accountability",
+          "service delivery accountability",
+          "accountability for service delivery",
+          "public service delivery",
+          "service delivery",
+          "poor service delivery"
+        ]
+      }
+    },
+    "transparency": {
+      "label": "Transparency",
+      "group": "transparency_open_gov",
+      "forms": {
+        "en": [
+          "transparency",
+          "lack of transparency",
+          "government transparency",
+          "public transparency",
+          "opacity"
+        ]
+      }
+    },
+    "open_government": {
+      "label": "Open Government",
+      "group": "transparency_open_gov",
+      "forms": {
+        "en": [
+          "open government",
+          "open-government",
+          "Open Government Partnership",
+          "open budget",
+          "open contracting"
+        ]
+      }
+    },
+    "access_to_information": {
+      "label": "Access to Information",
+      "group": "transparency_open_gov",
+      "forms": {
+        "en": [
+          "access to information",
+          "right to information",
+          "right-to-information",
+          "freedom of information",
+          "freedom of information act",
+          "FOI",
+          "FOI law"
+        ]
+      }
+    },
+    "e_government": {
+      "label": "E-Government",
+      "group": "digital_gov_services",
+      "forms": {
+        "en": [
+          "e-government",
+          "e-governance",
+          "egovernment",
+          "electronic government",
+          "online government services",
+          "e-gov"
+        ]
+      }
+    },
+    "digital_government": {
+      "label": "Digital Government",
+      "group": "digital_gov_services",
+      "forms": {
+        "en": [
+          "digital government",
+          "digital governance",
+          "government digitalization",
+          "government digitalisation",
+          "digital transformation of government",
+          "government digital services"
+        ]
+      }
+    },
+    "corruption": {
+      "label": "Corruption",
+      "group": "corruption_integrity",
+      "forms": {
+        "en": [
+          "corruption",
+          "corrupt",
+          "corrupt officials",
+          "graft",
+          "anti-corruption",
+          "anticorruption",
+          "anti-graft",
+          "kickback",
+          "kickbacks",
+          "malfeasance"
+        ]
+      }
+    },
+    "bribery": {
+      "label": "Bribery",
+      "group": "corrupt_practices",
+      "forms": {
+        "en": [
+          "bribery",
+          "bribe",
+          "bribes",
+          "bribed",
+          "bribing",
+          "bribe-taking",
+          "backhanders"
+        ]
+      }
+    },
+    "embezzlement": {
+      "label": "Embezzlement",
+      "group": "corrupt_practices",
+      "forms": {
+        "en": [
+          "embezzlement",
+          "embezzle",
+          "embezzled",
+          "embezzling",
+          "misappropriation of funds",
+          "misappropriation of public funds",
+          "misappropriated funds",
+          "misuse of public funds",
+          "diversion of public funds"
+        ]
+      }
+    },
+    "procurement_fraud": {
+      "label": "Procurement Fraud",
+      "group": "corrupt_practices",
+      "forms": {
+        "en": [
+          "procurement fraud",
+          "procurement irregularities",
+          "procurement corruption",
+          "tender fraud",
+          "tender irregularities",
+          "rigged tenders",
+          "bid rigging",
+          "bid-rigging",
+          "inflated contracts"
+        ]
+      }
+    },
+    "patronage": {
+      "label": "Patronage",
+      "group": "corrupt_practices",
+      "forms": {
+        "en": [
+          "political patronage",
+          "patronage networks",
+          "patronage politics",
+          "patronage system",
+          "clientelism",
+          "clientelistic",
+          "pork barrel",
+          "pork-barrel"
+        ]
+      }
+    },
+    "nepotism": {
+      "label": "Nepotism",
+      "group": "corrupt_practices",
+      "forms": {
+        "en": [
+          "nepotism",
+          "nepotistic",
+          "cronyism",
+          "crony capitalism",
+          "cronies"
+        ]
+      }
+    },
+    "state_capture": {
+      "label": "State Capture",
+      "group": "corrupt_practices",
+      "forms": {
+        "en": [
+          "state capture",
+          "captured state",
+          "regulatory capture",
+          "elite capture",
+          "policy capture"
+        ]
+      }
+    },
+    "conflict_of_interest": {
+      "label": "Conflict of Interest",
+      "group": "corrupt_practices",
+      "forms": {
+        "en": [
+          "conflict of interest",
+          "conflicts of interest",
+          "conflict-of-interest"
+        ]
+      }
+    },
+    "asset_declaration": {
+      "label": "Asset Declaration",
+      "group": "anti_corruption_oversight",
+      "forms": {
+        "en": [
+          "asset declaration",
+          "asset declarations",
+          "assets declaration",
+          "declaration of assets",
+          "wealth declaration",
+          "wealth declarations",
+          "SALN",
+          "LHKPN"
+        ]
+      }
+    },
+    "anti_corruption_agency": {
+      "label": "Anti-Corruption Agency",
+      "group": "anti_corruption_oversight",
+      "forms": {
+        "en": [
+          "anti-corruption agency",
+          "anti-corruption agencies",
+          "anti-corruption commission",
+          "anti-corruption body",
+          "anti-corruption bureau",
+          "anti-graft agency",
+          "anti-graft body",
+          "KPK",
+          "MACC",
+          "ICAC",
+          "CCDI"
+        ]
+      }
+    },
+    "whistleblower_protection": {
+      "label": "Whistleblower Protection",
+      "group": "anti_corruption_oversight",
+      "forms": {
+        "en": [
+          "whistleblower protection",
+          "protection of whistleblowers",
+          "whistleblower",
+          "whistleblowers",
+          "whistle-blower",
+          "whistle-blowers",
+          "whistleblowing",
+          "whistle-blowing"
+        ]
+      }
+    },
+    "audit_institutions": {
+      "label": "Audit Institutions",
+      "group": "anti_corruption_oversight",
+      "forms": {
+        "en": [
+          "audit institutions",
+          "supreme audit institution",
+          "supreme audit institutions",
+          "auditor-general",
+          "auditor general",
+          "national audit office",
+          "state audit office",
+          "audit board",
+          "Commission on Audit"
+        ]
+      }
+    },
+    "parliamentary_oversight": {
+      "label": "Parliamentary Oversight",
+      "group": "anti_corruption_oversight",
+      "forms": {
+        "en": [
+          "parliamentary oversight",
+          "legislative oversight",
+          "congressional oversight",
+          "parliamentary scrutiny",
+          "parliamentary inquiry",
+          "public accounts committee",
+          "senate inquiry",
+          "oversight committee"
+        ]
+      }
+    },
+    "judicial_independence": {
+      "label": "Judicial Independence",
+      "group": "courts_legal_services",
+      "forms": {
+        "en": [
+          "judicial independence",
+          "independence of the judiciary",
+          "independent judiciary",
+          "judicial interference",
+          "politicized judiciary",
+          "politicised judiciary",
+          "judicial reform",
+          "judicial reforms"
+        ]
+      }
+    },
+    "rule_of_law": {
+      "label": "Rule of Law",
+      "group": "justice_rule_of_law",
+      "forms": {
+        "en": [
+          "rule of law",
+          "lawlessness",
+          "impunity",
+          "culture of impunity",
+          "legal certainty",
+          "legal uncertainty"
+        ]
+      }
+    },
+    "access_to_justice": {
+      "label": "Access to Justice",
+      "group": "courts_legal_services",
+      "forms": {
+        "en": [
+          "access to justice",
+          "justice system",
+          "justice sector",
+          "access to courts",
+          "denial of justice"
+        ]
+      }
+    },
+    "court_backlogs": {
+      "label": "Court Backlogs",
+      "group": "courts_legal_services",
+      "forms": {
+        "en": [
+          "court backlog",
+          "court backlogs",
+          "case backlog",
+          "case backlogs",
+          "backlog of cases",
+          "judicial backlog",
+          "court delays",
+          "judicial delays",
+          "delayed justice"
+        ]
+      }
+    },
+    "legal_aid": {
+      "label": "Legal Aid",
+      "group": "courts_legal_services",
+      "forms": {
+        "en": [
+          "legal aid",
+          "free legal services",
+          "free legal assistance",
+          "public defender",
+          "public defenders",
+          "legal aid services",
+          "pro bono"
+        ]
+      }
+    },
+    "prison_reform": {
+      "label": "Prison Reform",
+      "group": "security_justice_reform",
+      "forms": {
+        "en": [
+          "prison reform",
+          "penal reform",
+          "prison overcrowding",
+          "overcrowded prisons",
+          "prison conditions",
+          "prison system",
+          "detention conditions"
+        ]
+      }
+    },
+    "police_reform": {
+      "label": "Police Reform",
+      "group": "security_justice_reform",
+      "forms": {
+        "en": [
+          "police reform",
+          "police reforms",
+          "reform of the police",
+          "police brutality",
+          "police misconduct",
+          "police accountability",
+          "police violence",
+          "police abuse",
+          "police abuses"
+        ]
+      }
+    },
+    "security_sector_reform": {
+      "label": "Security-Sector Reform",
+      "group": "security_justice_reform",
+      "forms": {
+        "en": [
+          "security-sector reform",
+          "security sector reform",
+          "security sector governance",
+          "military reform",
+          "defence reform",
+          "defense reform",
+          "civilian control of the military"
+        ]
+      }
+    },
+    "property_rights": {
+      "label": "Property Rights",
+      "group": "property_contracts",
+      "forms": {
+        "en": [
+          "property rights",
+          "property right",
+          "right to property",
+          "property ownership rights"
+        ]
+      }
+    },
+    "contract_enforcement": {
+      "label": "Contract Enforcement",
+      "group": "property_contracts",
+      "forms": {
+        "en": [
+          "contract enforcement",
+          "enforcement of contracts",
+          "enforcing contracts",
+          "enforceability of contracts",
+          "contract disputes",
+          "commercial disputes",
+          "commercial court",
+          "commercial courts"
+        ]
+      }
+    },
+    "electoral_governance": {
+      "label": "Electoral Governance",
+      "group": "electoral_politics",
+      "forms": {
+        "en": [
+          "electoral governance",
+          "election commission",
+          "electoral commission",
+          "election management body",
+          "electoral reform",
+          "electoral reforms",
+          "electoral integrity",
+          "election fraud",
+          "electoral fraud",
+          "vote rigging",
+          "vote-rigging",
+          "ballot stuffing",
+          "vote buying",
+          "vote-buying",
+          "money politics",
+          "election observers"
+        ]
+      }
+    },
+    "elections": {
+      "label": "Elections",
+      "group": "electoral_politics",
+      "forms": {
+        "en": [
+          "election",
+          "elections",
+          "electoral",
+          "general election",
+          "presidential election",
+          "parliamentary election",
+          "legislative elections",
+          "local elections",
+          "snap election",
+          "by-election",
+          "referendum",
+          "election campaign",
+          "polling day",
+          "polling stations",
+          "ballot"
+        ]
+      }
+    },
+    "voter_registration": {
+      "label": "Voter Registration",
+      "group": "electoral_politics",
+      "forms": {
+        "en": [
+          "voter registration",
+          "voters list",
+          "voter list",
+          "voter roll",
+          "voter rolls",
+          "electoral roll",
+          "electoral rolls",
+          "registered voters",
+          "voter registry"
+        ]
+      }
+    },
+    "election_violence": {
+      "label": "Election Violence",
+      "group": "electoral_politics",
+      "forms": {
+        "en": [
+          "election violence",
+          "electoral violence",
+          "election-related violence",
+          "post-election violence",
+          "pre-election violence",
+          "poll violence",
+          "poll-related violence"
+        ]
+      }
+    },
+    "constitutional_reform": {
+      "label": "Constitutional Reform",
+      "group": "government_turnover",
+      "forms": {
+        "en": [
+          "constitutional reform",
+          "constitutional reforms",
+          "constitutional amendment",
+          "constitutional amendments",
+          "amend the constitution",
+          "amending the constitution",
+          "new constitution",
+          "charter change",
+          "constitutional referendum"
+        ]
+      }
+    },
+    "political_transition": {
+      "label": "Political Transition",
+      "group": "government_turnover",
+      "forms": {
+        "en": [
+          "political transition",
+          "democratic transition",
+          "transition of power",
+          "transfer of power",
+          "peaceful transfer of power",
+          "handover of power",
+          "transitional government"
+        ]
+      }
+    },
+    "cabinet_reshuffle": {
+      "label": "Cabinet Reshuffle",
+      "group": "government_turnover",
+      "forms": {
+        "en": [
+          "cabinet reshuffle",
+          "cabinet reshuffles",
+          "reshuffled the cabinet",
+          "ministerial reshuffle",
+          "cabinet shake-up",
+          "cabinet shakeup",
+          "new cabinet"
+        ]
+      }
+    },
+    "government_collapse": {
+      "label": "Government Collapse",
+      "group": "government_turnover",
+      "forms": {
+        "en": [
+          "government collapse",
+          "collapse of the government",
+          "government collapsed",
+          "fall of the government",
+          "coalition collapse",
+          "vote of no confidence",
+          "no-confidence vote",
+          "no-confidence motion",
+          "motion of no confidence",
+          "dissolution of parliament",
+          "parliament dissolved"
+        ]
+      }
+    },
+    "political_crisis": {
+      "label": "Political Crisis",
+      "group": "political_stability_crises",
+      "forms": {
+        "en": [
+          "political crisis",
+          "political crises",
+          "political turmoil",
+          "political deadlock",
+          "political impasse",
+          "political upheaval",
+          "constitutional crisis",
+          "institutional crisis",
+          "government crisis",
+          "military coup",
+          "coup attempt",
+          "coup d'etat",
+          "coup d'état",
+          "failed coup"
+        ]
+      }
+    },
+    "political_protests": {
+      "label": "Political Protests",
+      "group": "protests_unrest",
+      "forms": {
+        "en": [
+          "political protests",
+          "political protest",
+          "protests",
+          "protesters",
+          "protestors",
+          "anti-government protests",
+          "mass protests",
+          "street protests",
+          "protest movement"
+        ]
+      }
+    },
+    "civil_unrest": {
+      "label": "Civil Unrest",
+      "group": "protests_unrest",
+      "forms": {
+        "en": [
+          "civil unrest",
+          "political unrest",
+          "civil disorder",
+          "public disorder",
+          "riots",
+          "riot",
+          "rioting",
+          "rioters",
+          "looting"
+        ]
+      }
+    },
+    "demonstrations": {
+      "label": "Demonstrations",
+      "group": "protests_unrest",
+      "forms": {
+        "en": [
+          "demonstrations",
+          "demonstrators",
+          "street demonstrations",
+          "mass demonstrations",
+          "anti-government demonstrations",
+          "rallies",
+          "sit-in",
+          "sit-ins"
+        ]
+      }
+    },
+    "curfew": {
+      "label": "Curfew",
+      "group": "emergency_measures",
+      "forms": {
+        "en": [
+          "curfew",
+          "curfews",
+          "night curfew",
+          "dusk-to-dawn curfew",
+          "curfew imposed"
+        ]
+      }
+    },
+    "state_of_emergency": {
+      "label": "State of Emergency",
+      "group": "emergency_measures",
+      "forms": {
+        "en": [
+          "state of emergency",
+          "states of emergency",
+          "emergency rule",
+          "martial law",
+          "emergency decree",
+          "emergency powers",
+          "national emergency"
+        ]
+      }
+    },
+    "media_freedom": {
+      "label": "Media Freedom",
+      "group": "civic_freedoms_rights",
+      "forms": {
+        "en": [
+          "media freedom",
+          "press freedom",
+          "freedom of the press",
+          "free press",
+          "independent media",
+          "censorship",
+          "media censorship",
+          "attacks on journalists",
+          "jailed journalists"
+        ]
+      }
+    },
+    "freedom_of_expression": {
+      "label": "Freedom of Expression",
+      "group": "civic_freedoms_rights",
+      "forms": {
+        "en": [
+          "freedom of expression",
+          "freedom of speech",
+          "free speech",
+          "lese majeste",
+          "lese-majeste",
+          "lèse-majesté",
+          "sedition law",
+          "sedition laws",
+          "criminal defamation"
+        ]
+      }
+    },
+    "civic_space": {
+      "label": "Civic Space",
+      "group": "civic_freedoms_rights",
+      "forms": {
+        "en": [
+          "civic space",
+          "shrinking civic space",
+          "freedom of assembly",
+          "freedom of association",
+          "right to protest",
+          "crackdown on dissent",
+          "crackdown on civil society",
+          "foreign agent law"
+        ]
+      }
+    },
+    "civil_society": {
+      "label": "Civil Society",
+      "group": "civic_freedoms_rights",
+      "forms": {
+        "en": [
+          "civil society",
+          "civil society organizations",
+          "civil society organisations",
+          "civil society groups",
+          "NGO",
+          "NGOs",
+          "non-governmental organization",
+          "non-governmental organizations",
+          "non-governmental organisations"
+        ]
+      }
+    },
+    "human_rights": {
+      "label": "Human Rights",
+      "group": "civic_freedoms_rights",
+      "forms": {
+        "en": [
+          "human rights",
+          "human rights violations",
+          "human rights abuses",
+          "rights abuses",
+          "human rights defenders",
+          "extrajudicial killing",
+          "extrajudicial killings",
+          "enforced disappearances",
+          "arbitrary detention",
+          "torture"
+        ]
+      }
+    },
+    "data_protection": {
+      "label": "Data Protection",
+      "group": "data_consumer_protection",
+      "forms": {
+        "en": [
+          "data protection",
+          "personal data protection",
+          "data protection law",
+          "data protection act",
+          "GDPR",
+          "PDPA",
+          "personal data"
+        ]
+      }
+    },
+    "privacy_regulation": {
+      "label": "Privacy Regulation",
+      "group": "data_consumer_protection",
+      "forms": {
+        "en": [
+          "privacy regulation",
+          "privacy regulations",
+          "privacy law",
+          "privacy laws",
+          "privacy legislation",
+          "privacy rules",
+          "privacy act",
+          "right to privacy",
+          "privacy protection"
+        ]
+      }
+    },
+    "consumer_protection": {
+      "label": "Consumer Protection",
+      "group": "data_consumer_protection",
+      "forms": {
+        "en": [
+          "consumer protection",
+          "consumer rights",
+          "consumer protection law",
+          "consumer protection agency",
+          "consumer watchdog",
+          "consumer complaints",
+          "consumer affairs",
+          "product safety"
+        ]
+      }
+    },
+    "regulatory_reform": {
+      "label": "Regulatory Reform",
+      "group": "administrative_reform",
+      "forms": {
+        "en": [
+          "regulatory reform",
+          "regulatory reforms",
+          "deregulation",
+          "regulatory overhaul",
+          "regulatory simplification",
+          "cutting red tape",
+          "regulatory streamlining",
+          "omnibus law"
+        ]
+      }
+    },
+    "administrative_justice": {
+      "label": "Administrative Justice",
+      "group": "courts_legal_services",
+      "forms": {
+        "en": [
+          "administrative justice",
+          "administrative court",
+          "administrative courts",
+          "administrative law",
+          "administrative tribunal",
+          "administrative tribunals",
+          "judicial review",
+          "ombudsman",
+          "ombudsperson"
+        ]
+      }
+    }
+  }
+}

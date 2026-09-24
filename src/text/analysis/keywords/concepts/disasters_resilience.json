@@ -1,0 +1,810 @@
+{
+  "heading": "disasters_resilience",
+  "label": "Disasters, weather extremes, and resilience",
+  "groups": {
+    "disaster_risk_management": {
+      "label": "Disaster risk management",
+      "parent": null
+    },
+    "extreme_weather": {
+      "label": "Extreme weather",
+      "parent": null
+    },
+    "floods_group": {
+      "label": "Floods",
+      "parent": "extreme_weather"
+    },
+    "storms_group": {
+      "label": "Storms",
+      "parent": "extreme_weather"
+    },
+    "heat_and_cold": {
+      "label": "Heat and cold",
+      "parent": "extreme_weather"
+    },
+    "drought_rainfall": {
+      "label": "Drought and rainfall",
+      "parent": null
+    },
+    "enso": {
+      "label": "El Nino and La Nina",
+      "parent": "drought_rainfall"
+    },
+    "geophysical_hazards": {
+      "label": "Geophysical hazards",
+      "parent": null
+    },
+    "sea_level_coastal_change": {
+      "label": "Sea-level rise and coastal change",
+      "parent": null
+    },
+    "disaster_impacts": {
+      "label": "Disaster impacts",
+      "parent": null
+    },
+    "recovery_resilience": {
+      "label": "Recovery and resilience",
+      "parent": null
+    },
+    "disaster_risk_finance": {
+      "label": "Disaster risk finance",
+      "parent": "recovery_resilience"
+    }
+  },
+  "concepts": {
+    "natural_disaster": {
+      "label": "Natural Disaster",
+      "group": "disaster_risk_management",
+      "forms": {
+        "en": [
+          "natural disaster",
+          "natural disasters",
+          "natural hazard",
+          "natural hazards",
+          "disaster-hit",
+          "disaster-stricken",
+          "disaster zone",
+          "state of calamity",
+          "state of disaster",
+          "disaster declaration"
+        ]
+      }
+    },
+    "disaster_risk": {
+      "label": "Disaster Risk",
+      "group": "disaster_risk_management",
+      "forms": {
+        "en": [
+          "disaster risk",
+          "disaster risks",
+          "disaster-prone",
+          "disaster risk assessment",
+          "hazard mapping"
+        ]
+      }
+    },
+    "disaster_risk_reduction": {
+      "label": "Disaster Risk Reduction",
+      "group": "disaster_risk_management",
+      "forms": {
+        "en": [
+          "disaster risk reduction",
+          "DRR",
+          "Sendai Framework",
+          "disaster risk management",
+          "disaster mitigation"
+        ]
+      }
+    },
+    "disaster_preparedness": {
+      "label": "Disaster Preparedness",
+      "group": "disaster_risk_management",
+      "forms": {
+        "en": [
+          "disaster preparedness",
+          "emergency preparedness",
+          "disaster readiness",
+          "disaster drill",
+          "disaster drills",
+          "evacuation drill",
+          "evacuation drills"
+        ]
+      }
+    },
+    "early_warning_systems": {
+      "label": "Early Warning Systems",
+      "group": "disaster_risk_management",
+      "forms": {
+        "en": [
+          "early warning systems",
+          "early warning system",
+          "early warning",
+          "early warnings",
+          "early-warning",
+          "anticipatory action"
+        ]
+      }
+    },
+    "emergency_management": {
+      "label": "Emergency Management",
+      "group": "disaster_risk_management",
+      "forms": {
+        "en": [
+          "emergency management",
+          "disaster management",
+          "civil defense",
+          "civil defence",
+          "emergency operations center",
+          "emergency operations centre",
+          "disaster management agency",
+          "national disaster management office"
+        ]
+      }
+    },
+    "disaster_response": {
+      "label": "Disaster Response",
+      "group": "disaster_risk_management",
+      "forms": {
+        "en": [
+          "disaster response",
+          "disaster relief",
+          "emergency response",
+          "relief operations",
+          "relief efforts",
+          "search and rescue",
+          "rescue operations",
+          "evacuation",
+          "evacuations",
+          "evacuees"
+        ]
+      }
+    },
+    "humanitarian_emergency": {
+      "label": "Humanitarian Emergency",
+      "group": "disaster_risk_management",
+      "forms": {
+        "en": [
+          "humanitarian emergency",
+          "humanitarian emergencies",
+          "complex emergency",
+          "emergency appeal",
+          "flash appeal"
+        ]
+      }
+    },
+    "flood": {
+      "label": "Flood",
+      "group": "floods_group",
+      "forms": {
+        "en": [
+          "flood",
+          "floods",
+          "flooding",
+          "floodwaters",
+          "flood waters",
+          "flooded",
+          "inundation",
+          "inundated",
+          "flood-hit",
+          "flood-affected"
+        ]
+      }
+    },
+    "flash_flood": {
+      "label": "Flash Flood",
+      "group": "floods_group",
+      "forms": {
+        "en": [
+          "flash flood",
+          "flash floods",
+          "flash flooding",
+          "flash-flood"
+        ]
+      }
+    },
+    "river_flooding": {
+      "label": "River Flooding",
+      "group": "floods_group",
+      "forms": {
+        "en": [
+          "river flooding",
+          "riverine flooding",
+          "river floods",
+          "fluvial flooding",
+          "burst its banks",
+          "burst their banks",
+          "overflowing rivers"
+        ]
+      }
+    },
+    "coastal_flooding": {
+      "label": "Coastal Flooding",
+      "group": "floods_group",
+      "forms": {
+        "en": [
+          "coastal flooding",
+          "coastal floods",
+          "tidal flooding",
+          "king tide",
+          "king tides",
+          "high tide flooding"
+        ]
+      }
+    },
+    "cyclone": {
+      "label": "Cyclone",
+      "group": "storms_group",
+      "forms": {
+        "en": [
+          "cyclone",
+          "cyclones",
+          "tropical cyclone",
+          "tropical cyclones",
+          "severe tropical cyclone",
+          "cyclonic"
+        ]
+      }
+    },
+    "hurricane": {
+      "label": "Hurricane",
+      "group": "storms_group",
+      "forms": {
+        "en": [
+          "hurricane",
+          "hurricanes"
+        ]
+      }
+    },
+    "typhoon": {
+      "label": "Typhoon",
+      "group": "storms_group",
+      "forms": {
+        "en": [
+          "typhoon",
+          "typhoons",
+          "super typhoon"
+        ]
+      }
+    },
+    "tropical_storm": {
+      "label": "Tropical Storm",
+      "group": "storms_group",
+      "forms": {
+        "en": [
+          "tropical storm",
+          "tropical storms",
+          "severe tropical storm",
+          "tropical depression",
+          "tropical depressions"
+        ]
+      }
+    },
+    "storm_surge": {
+      "label": "Storm Surge",
+      "group": "storms_group",
+      "forms": {
+        "en": [
+          "storm surge",
+          "storm surges",
+          "tidal surge",
+          "storm tide"
+        ]
+      }
+    },
+    "tornado": {
+      "label": "Tornado",
+      "group": "storms_group",
+      "forms": {
+        "en": [
+          "tornado",
+          "tornadoes",
+          "tornados",
+          "twister",
+          "twisters",
+          "waterspout"
+        ]
+      }
+    },
+    "hailstorm": {
+      "label": "Hailstorm",
+      "group": "storms_group",
+      "forms": {
+        "en": [
+          "hailstorm",
+          "hailstorms",
+          "hail storm",
+          "hail storms",
+          "hailstones",
+          "hail damage"
+        ]
+      }
+    },
+    "dust_storm": {
+      "label": "Dust Storm",
+      "group": "storms_group",
+      "forms": {
+        "en": [
+          "dust storm",
+          "dust storms",
+          "sandstorm",
+          "sandstorms",
+          "sand storm",
+          "sand storms",
+          "haboob"
+        ]
+      }
+    },
+    "extreme_heat": {
+      "label": "Extreme Heat",
+      "group": "heat_and_cold",
+      "forms": {
+        "en": [
+          "extreme heat",
+          "scorching heat",
+          "record heat",
+          "record temperatures",
+          "heat stress",
+          "extreme temperatures"
+        ]
+      }
+    },
+    "heatwave": {
+      "label": "Heatwave",
+      "group": "heat_and_cold",
+      "forms": {
+        "en": [
+          "heatwave",
+          "heatwaves",
+          "heat wave",
+          "heat waves",
+          "heat-wave"
+        ]
+      }
+    },
+    "cold_wave": {
+      "label": "Cold Wave",
+      "group": "heat_and_cold",
+      "forms": {
+        "en": [
+          "cold wave",
+          "cold waves",
+          "cold snap",
+          "cold snaps",
+          "cold spell",
+          "cold spells"
+        ]
+      }
+    },
+    "extreme_cold": {
+      "label": "Extreme Cold",
+      "group": "heat_and_cold",
+      "forms": {
+        "en": [
+          "extreme cold",
+          "severe cold",
+          "freezing temperatures",
+          "sub-zero temperatures",
+          "frost",
+          "frosts",
+          "dzud",
+          "extreme temperatures"
+        ]
+      }
+    },
+    "wildfire": {
+      "label": "Wildfire",
+      "group": "extreme_weather",
+      "forms": {
+        "en": [
+          "wildfire",
+          "wildfires",
+          "wild fire",
+          "wild fires",
+          "bushfire",
+          "bushfires",
+          "bush fire",
+          "bush fires",
+          "veld fire",
+          "veld fires",
+          "grass fire"
+        ]
+      }
+    },
+    "drought": {
+      "label": "Drought",
+      "group": "drought_rainfall",
+      "forms": {
+        "en": [
+          "drought",
+          "droughts",
+          "drought-hit",
+          "drought-stricken",
+          "drought-affected",
+          "drought conditions",
+          "drought emergency",
+          "dry spell",
+          "dry spells"
+        ]
+      }
+    },
+    "water_scarcity": {
+      "label": "Water Scarcity",
+      "group": "drought_rainfall",
+      "forms": {
+        "en": [
+          "water scarcity",
+          "water shortage",
+          "water shortages",
+          "water crisis",
+          "water stress",
+          "water-stressed",
+          "water-scarce"
+        ]
+      }
+    },
+    "rainfall_deficit": {
+      "label": "Rainfall Deficit",
+      "group": "drought_rainfall",
+      "forms": {
+        "en": [
+          "rainfall deficit",
+          "rainfall deficits",
+          "below-average rainfall",
+          "below-average rains",
+          "below-normal rainfall",
+          "low rainfall",
+          "poor rainfall",
+          "poor rains",
+          "rainfall shortfall"
+        ]
+      }
+    },
+    "excess_rainfall": {
+      "label": "Excess Rainfall",
+      "group": "drought_rainfall",
+      "forms": {
+        "en": [
+          "excess rainfall",
+          "excessive rainfall",
+          "heavy rain",
+          "heavy rains",
+          "heavy rainfall",
+          "torrential rain",
+          "torrential rains",
+          "above-normal rainfall",
+          "above-average rainfall",
+          "extreme rainfall"
+        ]
+      }
+    },
+    "failed_rains": {
+      "label": "Failed Rains",
+      "group": "drought_rainfall",
+      "forms": {
+        "en": [
+          "failed rains",
+          "failed rainy season",
+          "failed rainy seasons",
+          "failure of the rains",
+          "rain failure"
+        ]
+      }
+    },
+    "delayed_rains": {
+      "label": "Delayed Rains",
+      "group": "drought_rainfall",
+      "forms": {
+        "en": [
+          "delayed rains",
+          "late rains",
+          "late onset of rains",
+          "delayed onset of rains",
+          "delayed monsoon",
+          "late monsoon"
+        ]
+      }
+    },
+    "el_nino": {
+      "label": "El Nino",
+      "group": "enso",
+      "forms": {
+        "en": [
+          "El Nino",
+          "El Niño",
+          "ENSO",
+          "El Nino-Southern Oscillation",
+          "El Niño-Southern Oscillation",
+          "Southern Oscillation"
+        ]
+      }
+    },
+    "la_nina": {
+      "label": "La Nina",
+      "group": "enso",
+      "forms": {
+        "en": [
+          "La Nina",
+          "La Niña",
+          "La Nina conditions",
+          "La Niña conditions"
+        ]
+      }
+    },
+    "earthquake": {
+      "label": "Earthquake",
+      "group": "geophysical_hazards",
+      "forms": {
+        "en": [
+          "earthquake",
+          "earthquakes",
+          "quake",
+          "quakes",
+          "tremor",
+          "tremors",
+          "aftershock",
+          "aftershocks",
+          "seismic activity"
+        ]
+      }
+    },
+    "tsunami": {
+      "label": "Tsunami",
+      "group": "geophysical_hazards",
+      "forms": {
+        "en": [
+          "tsunami",
+          "tsunamis",
+          "tidal wave",
+          "tidal waves",
+          "tsunami warning"
+        ]
+      }
+    },
+    "volcanic_eruption": {
+      "label": "Volcanic Eruption",
+      "group": "geophysical_hazards",
+      "forms": {
+        "en": [
+          "volcanic eruption",
+          "volcanic eruptions",
+          "volcano",
+          "volcanoes",
+          "volcanic activity",
+          "volcanic ash",
+          "ashfall",
+          "lava flows",
+          "lahar",
+          "lahars"
+        ]
+      }
+    },
+    "landslide": {
+      "label": "Landslide",
+      "group": "geophysical_hazards",
+      "forms": {
+        "en": [
+          "landslides",
+          "landslip",
+          "landslips",
+          "rockslide",
+          "rockslides",
+          "deadly landslide",
+          "landslide victims",
+          "killed in a landslide",
+          "landslide-hit"
+        ]
+      }
+    },
+    "mudslide": {
+      "label": "Mudslide",
+      "group": "geophysical_hazards",
+      "forms": {
+        "en": [
+          "mudslide",
+          "mudslides",
+          "mud slide",
+          "mud slides",
+          "mudflow",
+          "mudflows",
+          "debris flow",
+          "debris flows"
+        ]
+      }
+    },
+    "avalanche": {
+      "label": "Avalanche",
+      "group": "geophysical_hazards",
+      "forms": {
+        "en": [
+          "avalanches",
+          "snow avalanche",
+          "avalanche warning",
+          "avalanche risk",
+          "killed in an avalanche"
+        ]
+      }
+    },
+    "sea_level_rise": {
+      "label": "Sea-Level Rise",
+      "group": "sea_level_coastal_change",
+      "forms": {
+        "en": [
+          "sea-level rise",
+          "sea level rise",
+          "rising sea levels",
+          "rising sea level",
+          "rising seas",
+          "sea levels rising"
+        ]
+      }
+    },
+    "coastal_erosion": {
+      "label": "Coastal Erosion",
+      "group": "sea_level_coastal_change",
+      "forms": {
+        "en": [
+          "coastal erosion",
+          "beach erosion",
+          "shoreline erosion",
+          "coastline erosion",
+          "eroding coastline",
+          "shoreline retreat"
+        ]
+      }
+    },
+    "saltwater_intrusion": {
+      "label": "Saltwater Intrusion",
+      "group": "sea_level_coastal_change",
+      "forms": {
+        "en": [
+          "saltwater intrusion",
+          "salt water intrusion",
+          "seawater intrusion",
+          "saline intrusion",
+          "salinity intrusion",
+          "salinization",
+          "salinisation"
+        ]
+      }
+    },
+    "disaster_displacement": {
+      "label": "Disaster Displacement",
+      "group": "disaster_impacts",
+      "forms": {
+        "en": [
+          "disaster displacement",
+          "disaster-displaced",
+          "displaced by floods",
+          "displaced by the floods",
+          "displaced by the earthquake",
+          "displaced by disasters",
+          "evacuation centers",
+          "evacuation centres"
+        ]
+      }
+    },
+    "disaster_damage": {
+      "label": "Disaster Damage",
+      "group": "disaster_impacts",
+      "forms": {
+        "en": [
+          "disaster damage",
+          "flood damage",
+          "storm damage",
+          "damage assessment",
+          "houses destroyed",
+          "homes destroyed",
+          "destroyed homes",
+          "damaged homes"
+        ]
+      }
+    },
+    "economic_losses_from_disasters": {
+      "label": "Economic Losses from Disasters",
+      "group": "disaster_impacts",
+      "forms": {
+        "en": [
+          "economic losses from disasters",
+          "disaster losses",
+          "disaster-related losses",
+          "losses from disasters",
+          "losses from natural disasters",
+          "damage and losses",
+          "cost of the disaster"
+        ]
+      }
+    },
+    "climate_induced_migration": {
+      "label": "Climate-Induced Migration",
+      "group": "disaster_impacts",
+      "forms": {
+        "en": [
+          "climate-induced migration",
+          "climate migration",
+          "climate migrants",
+          "climate refugees",
+          "climate-induced displacement",
+          "climate displacement",
+          "climate mobility",
+          "planned relocation"
+        ]
+      }
+    },
+    "disaster_recovery": {
+      "label": "Disaster Recovery",
+      "group": "recovery_resilience",
+      "forms": {
+        "en": [
+          "disaster recovery",
+          "post-disaster recovery",
+          "post-disaster",
+          "post-disaster needs assessment",
+          "PDNA"
+        ]
+      }
+    },
+    "resilient_reconstruction": {
+      "label": "Resilient Reconstruction",
+      "group": "recovery_resilience",
+      "forms": {
+        "en": [
+          "resilient reconstruction",
+          "build back better",
+          "building back better",
+          "resilient rebuilding",
+          "post-disaster reconstruction"
+        ]
+      }
+    },
+    "building_resilience": {
+      "label": "Building Resilience",
+      "group": "recovery_resilience",
+      "forms": {
+        "en": [
+          "building resilience",
+          "build resilience",
+          "resilience building",
+          "resilience-building",
+          "disaster resilience",
+          "community resilience"
+        ]
+      }
+    },
+    "catastrophe_insurance": {
+      "label": "Catastrophe Insurance",
+      "group": "disaster_risk_finance",
+      "forms": {
+        "en": [
+          "catastrophe insurance",
+          "catastrophe bond",
+          "catastrophe bonds",
+          "cat bond",
+          "cat bonds",
+          "parametric insurance",
+          "disaster insurance",
+          "Pacific Catastrophe Risk Insurance Company",
+          "PCRIC",
+          "CCRIF"
+        ]
+      }
+    },
+    "disaster_contingency_financing": {
+      "label": "Disaster Contingency Financing",
+      "group": "disaster_risk_finance",
+      "forms": {
+        "en": [
+          "disaster contingency financing",
+          "contingency financing",
+          "contingent financing",
+          "disaster risk financing",
+          "Cat DDO",
+          "Cat-DDO",
+          "catastrophe deferred drawdown option",
+          "contingent credit line",
+          "disaster reserve fund",
+          "disaster fund"
+        ]
+      }
+    }
+  }
+}

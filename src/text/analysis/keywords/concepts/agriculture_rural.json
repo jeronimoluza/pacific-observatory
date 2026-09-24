@@ -1,0 +1,1428 @@
+{
+  "heading": "agriculture_rural",
+  "label": "Agriculture, livestock, fisheries and rural development",
+  "groups": {
+    "agri_farming_systems": {
+      "label": "Farming systems and agribusiness",
+      "parent": null
+    },
+    "agri_crop_production": {
+      "label": "Crop production",
+      "parent": null
+    },
+    "agri_cropping_calendar": {
+      "label": "Cropping calendar",
+      "parent": "agri_crop_production"
+    },
+    "agricultural_inputs": {
+      "label": "Agricultural inputs",
+      "parent": null
+    },
+    "agri_fertilizer_inputs": {
+      "label": "Fertilizer",
+      "parent": "agricultural_inputs"
+    },
+    "agri_seed_inputs": {
+      "label": "Seed",
+      "parent": "agricultural_inputs"
+    },
+    "agri_feed_inputs": {
+      "label": "Animal feed",
+      "parent": "agricultural_inputs"
+    },
+    "crop_livestock_shocks": {
+      "label": "Crop and livestock shocks",
+      "parent": null
+    },
+    "agri_pests_crop_disease": {
+      "label": "Crop pests and disease",
+      "parent": "crop_livestock_shocks"
+    },
+    "agri_finance_services": {
+      "label": "Agricultural finance and services",
+      "parent": null
+    },
+    "agri_insurance_schemes": {
+      "label": "Agricultural insurance",
+      "parent": "agri_finance_services"
+    },
+    "agri_markets_storage": {
+      "label": "Markets, storage and value chains",
+      "parent": null
+    },
+    "agri_livestock_fisheries": {
+      "label": "Livestock and fisheries",
+      "parent": null
+    },
+    "agri_livestock_sector": {
+      "label": "Livestock",
+      "parent": "agri_livestock_fisheries"
+    },
+    "agri_fisheries_aquaculture": {
+      "label": "Fisheries and aquaculture",
+      "parent": "agri_livestock_fisheries"
+    },
+    "agri_land_rural": {
+      "label": "Land, soils and rural development",
+      "parent": null
+    },
+    "agri_land_tenure_rights": {
+      "label": "Land tenure and rights",
+      "parent": "agri_land_rural"
+    },
+    "agri_rural_infrastructure_livelihoods": {
+      "label": "Rural livelihoods and infrastructure",
+      "parent": "agri_land_rural"
+    },
+    "agri_sustainability_soils": {
+      "label": "Sustainable agriculture and soils",
+      "parent": "agri_land_rural"
+    }
+  },
+  "concepts": {
+    "agriculture": {
+      "label": "Agriculture",
+      "group": "agri_farming_systems",
+      "forms": {
+        "en": [
+          "agriculture",
+          "agricultural sector",
+          "farm sector",
+          "farming",
+          "farmers",
+          "farmer",
+          "agri-food sector",
+          "agrifood sector"
+        ]
+      }
+    },
+    "smallholder_farming": {
+      "label": "Smallholder Farming",
+      "group": "agri_farming_systems",
+      "forms": {
+        "en": [
+          "smallholder farming",
+          "smallholder agriculture",
+          "smallholder farmers",
+          "smallholder farmer",
+          "smallholder farms",
+          "smallholders",
+          "smallholder",
+          "small-scale farmers",
+          "small-scale farming",
+          "small farmers"
+        ]
+      }
+    },
+    "commercial_farming": {
+      "label": "Commercial Farming",
+      "group": "agri_farming_systems",
+      "forms": {
+        "en": [
+          "commercial farming",
+          "commercial agriculture",
+          "commercial farms",
+          "commercial farmers",
+          "large-scale farming",
+          "large-scale agriculture",
+          "plantation agriculture",
+          "plantation sector"
+        ]
+      }
+    },
+    "subsistence_farming": {
+      "label": "Subsistence Farming",
+      "group": "agri_farming_systems",
+      "forms": {
+        "en": [
+          "subsistence farming",
+          "subsistence agriculture",
+          "subsistence farmers",
+          "subsistence farmer",
+          "subsistence crops",
+          "subsistence production",
+          "semi-subsistence"
+        ]
+      }
+    },
+    "family_farming": {
+      "label": "Family Farming",
+      "group": "agri_farming_systems",
+      "forms": {
+        "en": [
+          "family farming",
+          "family farms",
+          "family farm",
+          "family farmers",
+          "family-run farms"
+        ]
+      }
+    },
+    "agribusiness": {
+      "label": "Agribusiness",
+      "group": "agri_farming_systems",
+      "forms": {
+        "en": [
+          "agribusiness",
+          "agribusinesses",
+          "agri-business",
+          "agro-industry",
+          "agroindustry",
+          "agro-processing",
+          "agro processing",
+          "agroprocessing"
+        ]
+      }
+    },
+    "farmer_cooperatives": {
+      "label": "Farmer Cooperatives",
+      "group": "agri_farming_systems",
+      "forms": {
+        "en": [
+          "farmer cooperatives",
+          "farmer cooperative",
+          "farmers' cooperatives",
+          "farmers cooperatives",
+          "agricultural cooperatives",
+          "agricultural cooperative",
+          "farmer organizations",
+          "farmer organisations",
+          "farmers' organizations",
+          "farmers' organisations",
+          "producer organizations",
+          "producer organisations",
+          "farmer groups"
+        ]
+      }
+    },
+    "contract_farming": {
+      "label": "Contract Farming",
+      "group": "agri_farming_systems",
+      "forms": {
+        "en": [
+          "contract farming",
+          "contract farmers",
+          "contract growers",
+          "outgrower scheme",
+          "outgrower schemes",
+          "outgrowers",
+          "out-growers",
+          "nucleus estate"
+        ]
+      }
+    },
+    "staple_crops": {
+      "label": "Staple Crops",
+      "group": "agri_crop_production",
+      "forms": {
+        "en": [
+          "staple crops",
+          "staple crop",
+          "staple food crops",
+          "cereal crops",
+          "root crops",
+          "rice",
+          "paddy",
+          "palay",
+          "wheat",
+          "maize",
+          "corn",
+          "cassava",
+          "taro",
+          "sweet potato",
+          "sweet potatoes",
+          "yams",
+          "sago",
+          "breadfruit",
+          "sorghum",
+          "millet"
+        ]
+      }
+    },
+    "agricultural_productivity": {
+      "label": "Agricultural Productivity",
+      "group": "agri_crop_production",
+      "forms": {
+        "en": [
+          "agricultural productivity",
+          "farm productivity",
+          "agricultural production",
+          "productivity of farms"
+        ]
+      }
+    },
+    "crop_yields": {
+      "label": "Crop Yields",
+      "group": "agri_crop_production",
+      "forms": {
+        "en": [
+          "crop yields",
+          "crop yield",
+          "yield per hectare",
+          "yields per hectare",
+          "tonnes per hectare",
+          "rice yields",
+          "paddy yields",
+          "maize yields",
+          "wheat yields"
+        ]
+      }
+    },
+    "irrigation_agriculture": {
+      "label": "Irrigation Agriculture",
+      "group": "agri_crop_production",
+      "forms": {
+        "en": [
+          "irrigation agriculture",
+          "irrigated agriculture",
+          "irrigated farming",
+          "irrigated farmland",
+          "irrigated land",
+          "irrigated crops",
+          "irrigated rice",
+          "irrigated areas"
+        ]
+      }
+    },
+    "rainfed_agriculture": {
+      "label": "Rainfed Agriculture",
+      "group": "agri_crop_production",
+      "forms": {
+        "en": [
+          "rainfed agriculture",
+          "rain-fed agriculture",
+          "rainfed farming",
+          "rain-fed farming",
+          "rainfed crops",
+          "rain-fed crops",
+          "rainfed rice",
+          "rainfed areas",
+          "rain-fed areas",
+          "rain-dependent agriculture"
+        ]
+      }
+    },
+    "land_preparation": {
+      "label": "Land Preparation",
+      "group": "agri_cropping_calendar",
+      "forms": {
+        "en": [
+          "land preparation",
+          "field preparation",
+          "seedbed preparation",
+          "tillage"
+        ]
+      }
+    },
+    "planting_season": {
+      "label": "Planting Season",
+      "group": "agri_cropping_calendar",
+      "forms": {
+        "en": [
+          "planting season",
+          "planting seasons",
+          "sowing season",
+          "cropping season",
+          "cropping seasons",
+          "growing season",
+          "planting time",
+          "sowing time",
+          "planting period"
+        ]
+      }
+    },
+    "harvest_season": {
+      "label": "Harvest Season",
+      "group": "agri_cropping_calendar",
+      "forms": {
+        "en": [
+          "harvest season",
+          "harvest seasons",
+          "harvesting season",
+          "harvest time",
+          "harvest period",
+          "main harvest",
+          "rice harvest",
+          "maize harvest",
+          "wheat harvest",
+          "grain harvest"
+        ]
+      }
+    },
+    "fertilizer": {
+      "label": "Fertilizer",
+      "group": "agri_fertilizer_inputs",
+      "forms": {
+        "en": [
+          "fertilizer",
+          "fertiliser",
+          "fertilizers",
+          "fertilisers",
+          "chemical fertilizer",
+          "chemical fertiliser",
+          "organic fertilizer",
+          "organic fertiliser",
+          "urea",
+          "NPK",
+          "fertilizer subsidy",
+          "fertiliser subsidy",
+          "fertilizer subsidies",
+          "fertiliser subsidies",
+          "subsidized fertilizer",
+          "subsidised fertiliser",
+          "fertilizer imports",
+          "fertiliser imports"
+        ]
+      }
+    },
+    "fertilizer_shortage": {
+      "label": "Fertilizer Shortage",
+      "group": "agri_fertilizer_inputs",
+      "forms": {
+        "en": [
+          "fertilizer shortage",
+          "fertiliser shortage",
+          "fertilizer shortages",
+          "fertiliser shortages",
+          "shortage of fertilizer",
+          "shortage of fertiliser",
+          "shortage of fertilizers",
+          "shortage of fertilisers",
+          "fertilizer scarcity",
+          "fertiliser scarcity",
+          "scarcity of fertilizer",
+          "scarcity of fertiliser",
+          "urea shortage"
+        ]
+      }
+    },
+    "fertilizer_prices": {
+      "label": "Fertilizer Prices",
+      "group": "agri_fertilizer_inputs",
+      "forms": {
+        "en": [
+          "fertilizer prices",
+          "fertiliser prices",
+          "fertilizer price",
+          "fertiliser price",
+          "price of fertilizer",
+          "price of fertiliser",
+          "cost of fertilizer",
+          "cost of fertiliser",
+          "fertilizer costs",
+          "fertiliser costs",
+          "urea prices",
+          "urea price"
+        ]
+      }
+    },
+    "seed_supply": {
+      "label": "Seed Supply",
+      "group": "agri_seed_inputs",
+      "forms": {
+        "en": [
+          "seed supply",
+          "seed supplies",
+          "seed distribution",
+          "seed system",
+          "seed systems",
+          "improved seeds",
+          "certified seeds",
+          "certified seed",
+          "hybrid seeds",
+          "quality seeds"
+        ]
+      }
+    },
+    "seed_shortage": {
+      "label": "Seed Shortage",
+      "group": "agri_seed_inputs",
+      "forms": {
+        "en": [
+          "seed shortage",
+          "seed shortages",
+          "shortage of seeds",
+          "shortage of seed",
+          "lack of seeds",
+          "seed scarcity"
+        ]
+      }
+    },
+    "animal_feed": {
+      "label": "Animal Feed",
+      "group": "agri_feed_inputs",
+      "forms": {
+        "en": [
+          "animal feed",
+          "animal feeds",
+          "livestock feed",
+          "cattle feed",
+          "poultry feed",
+          "feed prices",
+          "feed mill",
+          "feed mills",
+          "feedstuffs",
+          "fodder crops",
+          "soybean meal"
+        ]
+      }
+    },
+    "feed_shortage": {
+      "label": "Feed Shortage",
+      "group": "agri_feed_inputs",
+      "forms": {
+        "en": [
+          "feed shortage",
+          "feed shortages",
+          "shortage of feed",
+          "animal feed shortage",
+          "shortage of animal feed",
+          "fodder shortage",
+          "fodder shortages",
+          "shortage of fodder",
+          "pasture shortage",
+          "lack of pasture"
+        ]
+      }
+    },
+    "pesticides": {
+      "label": "Pesticides",
+      "group": "agricultural_inputs",
+      "forms": {
+        "en": [
+          "pesticides",
+          "pesticide",
+          "herbicides",
+          "herbicide",
+          "fungicides",
+          "agrochemicals",
+          "agrochemical",
+          "agro-chemicals",
+          "crop protection products",
+          "glyphosate",
+          "paraquat"
+        ]
+      }
+    },
+    "farm_mechanization": {
+      "label": "Farm Mechanization",
+      "group": "agricultural_inputs",
+      "forms": {
+        "en": [
+          "farm mechanization",
+          "farm mechanisation",
+          "agricultural mechanization",
+          "agricultural mechanisation",
+          "mechanization of agriculture",
+          "mechanisation of agriculture",
+          "farm machinery",
+          "agricultural machinery",
+          "farm equipment",
+          "farm tractors",
+          "agricultural tractors",
+          "combine harvesters",
+          "combine harvester",
+          "power tillers",
+          "hand tractors"
+        ]
+      }
+    },
+    "crop_failure": {
+      "label": "Crop Failure",
+      "group": "crop_livestock_shocks",
+      "forms": {
+        "en": [
+          "crop failure",
+          "crop failures",
+          "failed harvest",
+          "failed harvests",
+          "harvest failure",
+          "poor harvest",
+          "poor harvests",
+          "crop loss",
+          "crop losses",
+          "crop damage",
+          "damaged crops"
+        ]
+      }
+    },
+    "harvest_losses": {
+      "label": "Harvest Losses",
+      "group": "crop_livestock_shocks",
+      "forms": {
+        "en": [
+          "harvest losses",
+          "harvest loss",
+          "losses at harvest",
+          "yield losses",
+          "yield loss",
+          "lost harvests",
+          "harvest shortfall",
+          "harvest shortfalls"
+        ]
+      }
+    },
+    "livestock_disease": {
+      "label": "Livestock Disease",
+      "group": "crop_livestock_shocks",
+      "forms": {
+        "en": [
+          "livestock disease",
+          "livestock diseases",
+          "animal disease",
+          "animal diseases",
+          "African swine fever",
+          "ASF",
+          "foot-and-mouth disease",
+          "foot and mouth disease",
+          "FMD",
+          "avian influenza",
+          "bird flu",
+          "lumpy skin disease",
+          "Newcastle disease",
+          "Rift Valley fever"
+        ]
+      }
+    },
+    "animal_mortality": {
+      "label": "Animal Mortality",
+      "group": "crop_livestock_shocks",
+      "forms": {
+        "en": [
+          "animal mortality",
+          "livestock mortality",
+          "livestock deaths",
+          "livestock losses",
+          "animal deaths",
+          "cattle deaths",
+          "herd losses",
+          "dead livestock",
+          "mass culling",
+          "pig culling",
+          "poultry culling"
+        ]
+      }
+    },
+    "crop_disease": {
+      "label": "Crop Disease",
+      "group": "agri_pests_crop_disease",
+      "forms": {
+        "en": [
+          "crop disease",
+          "crop diseases",
+          "plant disease",
+          "plant diseases",
+          "crop blight",
+          "late blight",
+          "rice blast",
+          "taro leaf blight",
+          "cassava mosaic",
+          "cassava brown streak",
+          "maize lethal necrosis",
+          "banana wilt",
+          "wheat rust",
+          "coffee rust",
+          "citrus greening",
+          "Panama disease"
+        ]
+      }
+    },
+    "crop_pests": {
+      "label": "Crop Pests",
+      "group": "agri_pests_crop_disease",
+      "forms": {
+        "en": [
+          "crop pests",
+          "crop pest",
+          "pest infestation",
+          "pest infestations",
+          "pest outbreak",
+          "pest outbreaks",
+          "rice pests",
+          "brown planthopper",
+          "planthoppers",
+          "stem borer",
+          "stalk borer",
+          "coconut rhinoceros beetle",
+          "quelea"
+        ]
+      }
+    },
+    "locust_infestation": {
+      "label": "Locust Infestation",
+      "group": "agri_pests_crop_disease",
+      "forms": {
+        "en": [
+          "locust infestation",
+          "locust infestations",
+          "locust swarm",
+          "locust swarms",
+          "locust outbreak",
+          "locust plague",
+          "locusts",
+          "locust",
+          "desert locust",
+          "desert locusts"
+        ]
+      }
+    },
+    "fall_armyworm": {
+      "label": "Fall Armyworm",
+      "group": "agri_pests_crop_disease",
+      "forms": {
+        "en": [
+          "fall armyworm",
+          "fall army worm",
+          "armyworm",
+          "armyworms",
+          "army worm",
+          "army worms"
+        ]
+      }
+    },
+    "agricultural_credit": {
+      "label": "Agricultural Credit",
+      "group": "agri_finance_services",
+      "forms": {
+        "en": [
+          "agricultural credit",
+          "agricultural loans",
+          "agricultural loan",
+          "agricultural lending",
+          "farm credit",
+          "farm loans",
+          "farm loan",
+          "credit to farmers",
+          "loans to farmers",
+          "agricultural finance",
+          "agri-finance"
+        ]
+      }
+    },
+    "rural_finance": {
+      "label": "Rural Finance",
+      "group": "agri_finance_services",
+      "forms": {
+        "en": [
+          "rural finance",
+          "rural credit",
+          "rural financial services",
+          "rural banking",
+          "rural banks",
+          "rural bank",
+          "village banks",
+          "village savings and loan associations"
+        ]
+      }
+    },
+    "agricultural_extension": {
+      "label": "Agricultural Extension",
+      "group": "agri_finance_services",
+      "forms": {
+        "en": [
+          "agricultural extension",
+          "extension services",
+          "extension workers",
+          "extension officers",
+          "extension agents",
+          "agricultural advisory services",
+          "farm advisory services",
+          "farmer field schools",
+          "farmer field school"
+        ]
+      }
+    },
+    "agricultural_research": {
+      "label": "Agricultural Research",
+      "group": "agri_finance_services",
+      "forms": {
+        "en": [
+          "agricultural research",
+          "agricultural R&D",
+          "agricultural innovation",
+          "crop research",
+          "plant breeding",
+          "crop breeding",
+          "new crop varieties",
+          "high-yielding varieties",
+          "CGIAR",
+          "IRRI"
+        ]
+      }
+    },
+    "agricultural_insurance": {
+      "label": "Agricultural Insurance",
+      "group": "agri_insurance_schemes",
+      "forms": {
+        "en": [
+          "agricultural insurance",
+          "agriculture insurance",
+          "farm insurance",
+          "agri-insurance",
+          "livestock insurance",
+          "insurance for farmers"
+        ]
+      }
+    },
+    "crop_insurance": {
+      "label": "Crop Insurance",
+      "group": "agri_insurance_schemes",
+      "forms": {
+        "en": [
+          "crop insurance",
+          "crop insurance scheme",
+          "crop insurance payouts",
+          "insured crops",
+          "Philippine Crop Insurance Corporation",
+          "PCIC"
+        ]
+      }
+    },
+    "weather_index_insurance": {
+      "label": "Weather-Index Insurance",
+      "group": "agri_insurance_schemes",
+      "forms": {
+        "en": [
+          "weather-index insurance",
+          "weather index insurance",
+          "weather-based insurance",
+          "index-based insurance",
+          "index insurance",
+          "index-based livestock insurance"
+        ]
+      }
+    },
+    "agricultural_storage": {
+      "label": "Agricultural Storage",
+      "group": "agri_markets_storage",
+      "forms": {
+        "en": [
+          "agricultural storage",
+          "grain storage",
+          "crop storage",
+          "on-farm storage",
+          "grain silos",
+          "grain silo",
+          "granaries",
+          "granary",
+          "hermetic storage",
+          "warehouse receipt system",
+          "warehouse receipts"
+        ]
+      }
+    },
+    "cold_storage": {
+      "label": "Cold Storage",
+      "group": "agri_markets_storage",
+      "forms": {
+        "en": [
+          "cold storage",
+          "cold-storage",
+          "cold storage facility",
+          "cold storage facilities",
+          "cold storage warehouses",
+          "cold rooms",
+          "refrigerated storage"
+        ]
+      }
+    },
+    "post_harvest_losses": {
+      "label": "Post-Harvest Losses",
+      "group": "agri_markets_storage",
+      "forms": {
+        "en": [
+          "post-harvest losses",
+          "post harvest losses",
+          "postharvest losses",
+          "post-harvest loss",
+          "post harvest loss",
+          "post-harvest handling"
+        ]
+      }
+    },
+    "agricultural_value_chains": {
+      "label": "Agricultural Value Chains",
+      "group": "agri_markets_storage",
+      "forms": {
+        "en": [
+          "agricultural value chains",
+          "agricultural value chain",
+          "agri-food value chains",
+          "agrifood value chains",
+          "agri-food value chain",
+          "food value chains",
+          "agri-food chains"
+        ]
+      }
+    },
+    "farmgate_prices": {
+      "label": "Farmgate Prices",
+      "group": "agri_markets_storage",
+      "forms": {
+        "en": [
+          "farmgate prices",
+          "farm-gate prices",
+          "farm gate prices",
+          "farmgate price",
+          "farm-gate price",
+          "prices paid to farmers",
+          "prices received by farmers",
+          "minimum support price",
+          "minimum support prices",
+          "palay price"
+        ]
+      }
+    },
+    "agricultural_markets": {
+      "label": "Agricultural Markets",
+      "group": "agri_markets_storage",
+      "forms": {
+        "en": [
+          "agricultural markets",
+          "agricultural market",
+          "agricultural marketing",
+          "agricultural commodity markets",
+          "crop marketing",
+          "grain markets",
+          "grain marketing board",
+          "livestock markets",
+          "farmers' markets",
+          "produce markets"
+        ]
+      }
+    },
+    "livestock": {
+      "label": "Livestock",
+      "group": "agri_livestock_sector",
+      "forms": {
+        "en": [
+          "livestock",
+          "livestock sector",
+          "livestock farming",
+          "livestock production",
+          "livestock farmers",
+          "livestock keepers",
+          "animal husbandry",
+          "pig farming",
+          "pig farms",
+          "hog farms",
+          "goat farming"
+        ]
+      }
+    },
+    "cattle": {
+      "label": "Cattle",
+      "group": "agri_livestock_sector",
+      "forms": {
+        "en": [
+          "cattle",
+          "cows",
+          "beef cattle",
+          "cattle herd",
+          "cattle herds",
+          "cattle farming",
+          "cattle ranching",
+          "bovine",
+          "water buffalo",
+          "carabao"
+        ]
+      }
+    },
+    "poultry": {
+      "label": "Poultry",
+      "group": "agri_livestock_sector",
+      "forms": {
+        "en": [
+          "poultry",
+          "poultry farming",
+          "poultry farms",
+          "poultry farm",
+          "poultry industry",
+          "poultry sector",
+          "chickens",
+          "broilers",
+          "chicken farms",
+          "egg production"
+        ]
+      }
+    },
+    "dairy_farming": {
+      "label": "Dairy Farming",
+      "group": "agri_livestock_sector",
+      "forms": {
+        "en": [
+          "dairy farming",
+          "dairy farms",
+          "dairy farm",
+          "dairy farmers",
+          "dairy farmer",
+          "dairy sector",
+          "dairy industry",
+          "dairy cattle",
+          "dairy cows",
+          "milk production"
+        ]
+      }
+    },
+    "pastoralism": {
+      "label": "Pastoralism",
+      "group": "agri_livestock_sector",
+      "forms": {
+        "en": [
+          "pastoralism",
+          "pastoralist",
+          "pastoralists",
+          "pastoral communities",
+          "agro-pastoralists",
+          "agropastoralists",
+          "herders",
+          "herder",
+          "nomadic herders",
+          "transhumance"
+        ]
+      }
+    },
+    "rangelands": {
+      "label": "Rangelands",
+      "group": "agri_livestock_sector",
+      "forms": {
+        "en": [
+          "rangelands",
+          "rangeland",
+          "grazing land",
+          "grazing lands",
+          "grazing areas",
+          "communal grazing",
+          "pastureland",
+          "pasturelands",
+          "overgrazing"
+        ]
+      }
+    },
+    "veterinary_services": {
+      "label": "Veterinary Services",
+      "group": "agri_livestock_sector",
+      "forms": {
+        "en": [
+          "veterinary services",
+          "veterinary service",
+          "veterinarians",
+          "veterinarian",
+          "veterinary clinics",
+          "veterinary officers",
+          "animal health services",
+          "animal health workers",
+          "community animal health workers"
+        ]
+      }
+    },
+    "animal_vaccination": {
+      "label": "Animal Vaccination",
+      "group": "agri_livestock_sector",
+      "forms": {
+        "en": [
+          "animal vaccination",
+          "livestock vaccination",
+          "vaccination of livestock",
+          "vaccinating livestock",
+          "vaccination of animals",
+          "cattle vaccination",
+          "poultry vaccination",
+          "animal vaccines",
+          "livestock vaccines",
+          "veterinary vaccines"
+        ]
+      }
+    },
+    "fisheries": {
+      "label": "Fisheries",
+      "group": "agri_fisheries_aquaculture",
+      "forms": {
+        "en": [
+          "fisheries",
+          "fishery",
+          "fishing industry",
+          "fishing sector",
+          "fishing communities",
+          "fishing community",
+          "fishermen",
+          "fisherman",
+          "fishers",
+          "fish catch",
+          "fish catches",
+          "fishing fleet",
+          "fishing fleets",
+          "fishing licence",
+          "fishing license",
+          "fishing rights"
+        ]
+      }
+    },
+    "marine_fisheries": {
+      "label": "Marine Fisheries",
+      "group": "agri_fisheries_aquaculture",
+      "forms": {
+        "en": [
+          "marine fisheries",
+          "marine fishery",
+          "ocean fisheries",
+          "coastal fisheries",
+          "offshore fisheries",
+          "reef fisheries",
+          "tuna fisheries",
+          "tuna fishery",
+          "tuna fishing",
+          "tuna fleet",
+          "purse seine",
+          "purse seiners",
+          "deep-sea fishing",
+          "vessel day scheme",
+          "Parties to the Nauru Agreement"
+        ]
+      }
+    },
+    "inland_fisheries": {
+      "label": "Inland Fisheries",
+      "group": "agri_fisheries_aquaculture",
+      "forms": {
+        "en": [
+          "inland fisheries",
+          "inland fishery",
+          "inland fishing",
+          "freshwater fisheries",
+          "freshwater fishery",
+          "lake fisheries",
+          "river fisheries",
+          "Mekong fisheries",
+          "Tonle Sap fisheries"
+        ]
+      }
+    },
+    "aquaculture": {
+      "label": "Aquaculture",
+      "group": "agri_fisheries_aquaculture",
+      "forms": {
+        "en": [
+          "aquaculture",
+          "mariculture",
+          "fish farming",
+          "fish farms",
+          "fish farm",
+          "fish farmers",
+          "shrimp farming",
+          "shrimp farms",
+          "prawn farming",
+          "seaweed farming",
+          "fish ponds",
+          "fishponds",
+          "fish cages"
+        ]
+      }
+    },
+    "fish_stocks": {
+      "label": "Fish Stocks",
+      "group": "agri_fisheries_aquaculture",
+      "forms": {
+        "en": [
+          "fish stocks",
+          "fish stock",
+          "fish populations",
+          "fishery stocks",
+          "fisheries resources",
+          "tuna stocks",
+          "fish stock assessment",
+          "maximum sustainable yield"
+        ]
+      }
+    },
+    "illegal_fishing": {
+      "label": "Illegal Fishing",
+      "group": "agri_fisheries_aquaculture",
+      "forms": {
+        "en": [
+          "illegal fishing",
+          "IUU fishing",
+          "illegal unreported and unregulated fishing",
+          "unreported and unregulated fishing",
+          "illegal fishing vessels",
+          "fish poaching",
+          "blast fishing",
+          "dynamite fishing",
+          "cyanide fishing"
+        ]
+      }
+    },
+    "overfishing": {
+      "label": "Overfishing",
+      "group": "agri_fisheries_aquaculture",
+      "forms": {
+        "en": [
+          "overfishing",
+          "over-fishing",
+          "overfished",
+          "over-fished",
+          "depleted fish stocks",
+          "depletion of fish stocks",
+          "overexploited fish stocks",
+          "overexploitation of fish"
+        ]
+      }
+    },
+    "land_tenure": {
+      "label": "Land Tenure",
+      "group": "agri_land_tenure_rights",
+      "forms": {
+        "en": [
+          "land tenure",
+          "land tenure security",
+          "tenure security",
+          "security of tenure",
+          "insecure tenure",
+          "customary land",
+          "customary land tenure",
+          "communal land",
+          "land ownership",
+          "landownership",
+          "landlessness",
+          "landless"
+        ]
+      }
+    },
+    "land_rights": {
+      "label": "Land Rights",
+      "group": "agri_land_tenure_rights",
+      "forms": {
+        "en": [
+          "land rights",
+          "land right",
+          "rights to land",
+          "right to land",
+          "land use rights",
+          "land-use rights",
+          "customary land rights",
+          "indigenous land rights"
+        ]
+      }
+    },
+    "land_titling": {
+      "label": "Land Titling",
+      "group": "agri_land_tenure_rights",
+      "forms": {
+        "en": [
+          "land titling",
+          "land titles",
+          "land title",
+          "title deeds",
+          "land certificates",
+          "land certification",
+          "land registration",
+          "land registry",
+          "cadastre",
+          "cadastral"
+        ]
+      }
+    },
+    "land_reform": {
+      "label": "Land Reform",
+      "group": "agri_land_tenure_rights",
+      "forms": {
+        "en": [
+          "land reform",
+          "land reforms",
+          "agrarian reform",
+          "agrarian reform beneficiaries",
+          "Comprehensive Agrarian Reform Program",
+          "land redistribution",
+          "redistribution of land",
+          "land restitution"
+        ]
+      }
+    },
+    "land_grabbing": {
+      "label": "Land Grabbing",
+      "group": "agri_land_tenure_rights",
+      "forms": {
+        "en": [
+          "land grabbing",
+          "land-grabbing",
+          "land grab",
+          "land grabs",
+          "land grabbers",
+          "large-scale land acquisitions",
+          "illegal land acquisition"
+        ]
+      }
+    },
+    "land_conflict": {
+      "label": "Land Conflict",
+      "group": "agri_land_tenure_rights",
+      "forms": {
+        "en": [
+          "land conflict",
+          "land conflicts",
+          "land dispute",
+          "land disputes",
+          "land-related conflict",
+          "land-related disputes",
+          "conflict over land",
+          "disputes over land",
+          "land clashes",
+          "land wrangles"
+        ]
+      }
+    },
+    "rural_livelihoods": {
+      "label": "Rural Livelihoods",
+      "group": "agri_rural_infrastructure_livelihoods",
+      "forms": {
+        "en": [
+          "rural livelihoods",
+          "rural livelihood",
+          "rural incomes",
+          "rural income",
+          "rural households",
+          "rural employment",
+          "rural economy",
+          "rural economies",
+          "farm incomes",
+          "farm income",
+          "off-farm income",
+          "non-farm income"
+        ]
+      }
+    },
+    "rural_roads": {
+      "label": "Rural Roads",
+      "group": "agri_rural_infrastructure_livelihoods",
+      "forms": {
+        "en": [
+          "rural roads",
+          "rural road",
+          "rural road network",
+          "rural access roads",
+          "feeder roads",
+          "feeder road",
+          "farm-to-market roads",
+          "farm-to-market road",
+          "farm to market roads",
+          "village roads"
+        ]
+      }
+    },
+    "rural_electrification": {
+      "label": "Rural Electrification",
+      "group": "agri_rural_infrastructure_livelihoods",
+      "forms": {
+        "en": [
+          "rural electrification",
+          "rural electricity",
+          "rural electricity access",
+          "electrification of rural areas",
+          "village electrification",
+          "rural power supply",
+          "rural electric cooperatives"
+        ]
+      }
+    },
+    "climate_smart_agriculture": {
+      "label": "Climate-Smart Agriculture",
+      "group": "agri_sustainability_soils",
+      "forms": {
+        "en": [
+          "climate-smart agriculture",
+          "climate smart agriculture",
+          "climate-smart farming",
+          "climate-resilient agriculture",
+          "climate-resilient farming",
+          "climate-resilient crops",
+          "drought-tolerant varieties",
+          "drought-tolerant crops",
+          "drought-resistant crops",
+          "flood-tolerant rice"
+        ]
+      }
+    },
+    "regenerative_agriculture": {
+      "label": "Regenerative Agriculture",
+      "group": "agri_sustainability_soils",
+      "forms": {
+        "en": [
+          "regenerative agriculture",
+          "regenerative farming",
+          "conservation agriculture",
+          "agroecology",
+          "agro-ecology",
+          "organic farming",
+          "organic agriculture",
+          "sustainable agriculture",
+          "sustainable farming",
+          "zero tillage",
+          "no-till"
+        ]
+      }
+    },
+    "agroforestry": {
+      "label": "Agroforestry",
+      "group": "agri_sustainability_soils",
+      "forms": {
+        "en": [
+          "agroforestry",
+          "agro-forestry",
+          "agroforestry systems",
+          "silvopasture",
+          "silvopastoral"
+        ]
+      }
+    },
+    "soil_fertility": {
+      "label": "Soil Fertility",
+      "group": "agri_sustainability_soils",
+      "forms": {
+        "en": [
+          "soil fertility",
+          "soil health",
+          "soil nutrients",
+          "soil nutrient depletion",
+          "soil quality",
+          "soil organic matter",
+          "soil testing",
+          "fertile soils",
+          "infertile soils"
+        ]
+      }
+    },
+    "soil_degradation": {
+      "label": "Soil Degradation",
+      "group": "agri_sustainability_soils",
+      "forms": {
+        "en": [
+          "soil degradation",
+          "land degradation",
+          "degraded soils",
+          "degraded land",
+          "degraded lands",
+          "soil erosion",
+          "topsoil loss",
+          "soil salinization",
+          "soil salinisation",
+          "soil salinity",
+          "soil acidification"
+        ]
+      }
+    },
+    "desertification": {
+      "label": "Desertification",
+      "group": "agri_sustainability_soils",
+      "forms": {
+        "en": [
+          "desertification",
+          "desertified",
+          "desert encroachment",
+          "sand encroachment",
+          "desert expansion",
+          "advancing desert"
+        ]
+      }
+    }
+  }
+}

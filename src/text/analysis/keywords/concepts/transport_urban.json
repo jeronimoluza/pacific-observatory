@@ -1,0 +1,1065 @@
+{
+  "heading": "transport_urban",
+  "label": "Transport, urban development, housing and infrastructure",
+  "groups": {
+    "transport_sector": {
+      "label": "Transport",
+      "parent": null
+    },
+    "roads_and_traffic": {
+      "label": "Roads and traffic",
+      "parent": "transport_sector"
+    },
+    "urban_public_transit": {
+      "label": "Urban and public transport",
+      "parent": "transport_sector"
+    },
+    "rail_air_maritime": {
+      "label": "Rail, air and maritime",
+      "parent": "transport_sector"
+    },
+    "freight_and_logistics": {
+      "label": "Freight and logistics",
+      "parent": "transport_sector"
+    },
+    "infrastructure_assets": {
+      "label": "Infrastructure",
+      "parent": null
+    },
+    "urban_development_planning": {
+      "label": "Urban development and planning",
+      "parent": null
+    },
+    "urban_planning_governance": {
+      "label": "Urban planning and governance",
+      "parent": "urban_development_planning"
+    },
+    "regional_territorial_development": {
+      "label": "Territorial and regional development",
+      "parent": "urban_development_planning"
+    },
+    "municipal_urban_services": {
+      "label": "Municipal services",
+      "parent": "urban_development_planning"
+    },
+    "informal_settlements_and_slums": {
+      "label": "Informal settlements and slums",
+      "parent": "urban_development_planning"
+    },
+    "housing_property": {
+      "label": "Housing and real estate",
+      "parent": null
+    },
+    "housing_access_affordability": {
+      "label": "Housing supply and affordability",
+      "parent": "housing_property"
+    },
+    "property_markets": {
+      "label": "Property markets",
+      "parent": "housing_property"
+    },
+    "housing_credit": {
+      "label": "Housing finance",
+      "parent": "housing_property"
+    },
+    "construction_and_buildings": {
+      "label": "Construction and buildings",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "transport": {
+      "label": "Transport",
+      "group": "transport_sector",
+      "forms": {
+        "en": [
+          "transport",
+          "transportation",
+          "transport sector",
+          "transportation sector",
+          "transport network",
+          "transport networks",
+          "transport system",
+          "transport infrastructure",
+          "ministry of transport"
+        ]
+      }
+    },
+    "transport_affordability": {
+      "label": "Transport Affordability",
+      "group": "transport_sector",
+      "forms": {
+        "en": [
+          "transport affordability",
+          "affordable transport",
+          "affordable public transport",
+          "cost of commuting",
+          "commuting costs",
+          "transport subsidy",
+          "transport subsidies"
+        ]
+      }
+    },
+    "transport_disruption": {
+      "label": "Transport Disruption",
+      "group": "transport_sector",
+      "forms": {
+        "en": [
+          "transport disruption",
+          "transport disruptions",
+          "transport strike",
+          "transport strikes",
+          "flight cancellations",
+          "cancelled flights",
+          "canceled flights",
+          "road closures",
+          "road blockades",
+          "port closures"
+        ]
+      }
+    },
+    "road_transport": {
+      "label": "Road Transport",
+      "group": "roads_and_traffic",
+      "forms": {
+        "en": [
+          "road transport",
+          "road transportation",
+          "road freight",
+          "road haulage",
+          "trucking",
+          "trucking industry",
+          "road network",
+          "road networks",
+          "highway network"
+        ]
+      }
+    },
+    "rural_transport": {
+      "label": "Rural Transport",
+      "group": "roads_and_traffic",
+      "forms": {
+        "en": [
+          "rural transport",
+          "rural transportation",
+          "rural mobility",
+          "rural transport services",
+          "rural access roads"
+        ]
+      }
+    },
+    "road_construction": {
+      "label": "Road Construction",
+      "group": "roads_and_traffic",
+      "forms": {
+        "en": [
+          "road construction",
+          "road building",
+          "road project",
+          "road projects",
+          "road upgrade",
+          "road upgrades",
+          "road rehabilitation",
+          "road works",
+          "roadworks"
+        ]
+      }
+    },
+    "road_maintenance": {
+      "label": "Road Maintenance",
+      "group": "roads_and_traffic",
+      "forms": {
+        "en": [
+          "road maintenance",
+          "road repairs",
+          "road repair",
+          "pothole",
+          "potholes",
+          "road resurfacing",
+          "maintenance of roads"
+        ]
+      }
+    },
+    "road_safety": {
+      "label": "Road Safety",
+      "group": "roads_and_traffic",
+      "forms": {
+        "en": [
+          "road safety",
+          "traffic safety",
+          "road accident",
+          "road accidents",
+          "traffic accident",
+          "traffic accidents",
+          "road crash",
+          "road crashes",
+          "road deaths",
+          "traffic fatalities"
+        ]
+      }
+    },
+    "traffic_congestion": {
+      "label": "Traffic Congestion",
+      "group": "roads_and_traffic",
+      "forms": {
+        "en": [
+          "traffic congestion",
+          "traffic jam",
+          "traffic jams",
+          "gridlock",
+          "congested roads",
+          "road congestion",
+          "congestion charge",
+          "congestion pricing"
+        ]
+      }
+    },
+    "vehicle_ownership": {
+      "label": "Vehicle Ownership",
+      "group": "roads_and_traffic",
+      "forms": {
+        "en": [
+          "vehicle ownership",
+          "car ownership",
+          "motorization",
+          "motorisation",
+          "vehicle registrations",
+          "new vehicle registrations",
+          "private vehicle ownership"
+        ]
+      }
+    },
+    "fuel_efficient_transport": {
+      "label": "Fuel-Efficient Transport",
+      "group": "roads_and_traffic",
+      "forms": {
+        "en": [
+          "fuel-efficient transport",
+          "fuel efficient transport",
+          "fuel-efficient vehicles",
+          "fuel efficient vehicles",
+          "vehicle fuel efficiency",
+          "fuel economy standards",
+          "hybrid vehicles"
+        ]
+      }
+    },
+    "public_transport": {
+      "label": "Public Transport",
+      "group": "urban_public_transit",
+      "forms": {
+        "en": [
+          "public transport",
+          "public transportation",
+          "public transit",
+          "public buses",
+          "commuter rail",
+          "commuter trains"
+        ]
+      }
+    },
+    "urban_transport": {
+      "label": "Urban Transport",
+      "group": "urban_public_transit",
+      "forms": {
+        "en": [
+          "urban transport",
+          "urban transportation",
+          "urban mobility",
+          "urban transit",
+          "city transport"
+        ]
+      }
+    },
+    "mass_transit": {
+      "label": "Mass Transit",
+      "group": "urban_public_transit",
+      "forms": {
+        "en": [
+          "mass transit",
+          "mass rapid transit",
+          "rapid transit",
+          "MRT",
+          "light rail",
+          "light-rail",
+          "LRT"
+        ]
+      }
+    },
+    "bus_rapid_transit": {
+      "label": "Bus Rapid Transit",
+      "group": "urban_public_transit",
+      "forms": {
+        "en": [
+          "bus rapid transit",
+          "BRT",
+          "busway",
+          "busways",
+          "dedicated bus lanes"
+        ]
+      }
+    },
+    "metro_systems": {
+      "label": "Metro Systems",
+      "group": "urban_public_transit",
+      "forms": {
+        "en": [
+          "metro system",
+          "metro systems",
+          "metro line",
+          "metro lines",
+          "metro rail",
+          "subway system",
+          "subway line",
+          "subway lines",
+          "underground railway"
+        ]
+      }
+    },
+    "railways": {
+      "label": "Railways",
+      "group": "rail_air_maritime",
+      "forms": {
+        "en": [
+          "railway",
+          "railways",
+          "railroad",
+          "railroads",
+          "rail network",
+          "rail line",
+          "rail lines",
+          "railway line",
+          "rail transport",
+          "train services"
+        ]
+      }
+    },
+    "rail_electrification": {
+      "label": "Rail Electrification",
+      "group": "rail_air_maritime",
+      "forms": {
+        "en": [
+          "rail electrification",
+          "railway electrification",
+          "electrified railway",
+          "electrified railways",
+          "electrification of railways",
+          "electric trains"
+        ]
+      }
+    },
+    "ports": {
+      "label": "Ports",
+      "group": "rail_air_maritime",
+      "forms": {
+        "en": [
+          "seaport",
+          "seaports",
+          "port authority",
+          "port facilities",
+          "port infrastructure",
+          "port expansion",
+          "port development",
+          "port congestion",
+          "container terminal",
+          "container terminals"
+        ]
+      }
+    },
+    "airports": {
+      "label": "Airports",
+      "group": "rail_air_maritime",
+      "forms": {
+        "en": [
+          "airport",
+          "airports",
+          "airfield",
+          "airfields",
+          "airport terminal",
+          "airport expansion",
+          "airport infrastructure"
+        ]
+      }
+    },
+    "aviation": {
+      "label": "Aviation",
+      "group": "rail_air_maritime",
+      "forms": {
+        "en": [
+          "aviation",
+          "civil aviation",
+          "aviation sector",
+          "aviation industry",
+          "airline",
+          "airlines",
+          "airline industry",
+          "air travel",
+          "air transport",
+          "air connectivity"
+        ]
+      }
+    },
+    "shipping": {
+      "label": "Shipping",
+      "group": "rail_air_maritime",
+      "forms": {
+        "en": [
+          "shipping",
+          "shipping line",
+          "shipping lines",
+          "shipping industry",
+          "shipping costs",
+          "shipping routes",
+          "container shipping"
+        ]
+      }
+    },
+    "maritime_transport": {
+      "label": "Maritime Transport",
+      "group": "rail_air_maritime",
+      "forms": {
+        "en": [
+          "maritime transport",
+          "maritime transportation",
+          "sea transport",
+          "sea freight",
+          "maritime sector",
+          "maritime connectivity",
+          "inter-island shipping",
+          "domestic shipping",
+          "ferry services",
+          "ferries"
+        ]
+      }
+    },
+    "inland_waterways": {
+      "label": "Inland Waterways",
+      "group": "rail_air_maritime",
+      "forms": {
+        "en": [
+          "inland waterways",
+          "inland waterway",
+          "inland water transport",
+          "river transport",
+          "river transportation",
+          "barge traffic"
+        ]
+      }
+    },
+    "logistics": {
+      "label": "Logistics",
+      "group": "freight_and_logistics",
+      "forms": {
+        "en": [
+          "logistics",
+          "logistics sector",
+          "logistics industry",
+          "logistics costs",
+          "logistics hub",
+          "logistics hubs"
+        ]
+      }
+    },
+    "freight_transport": {
+      "label": "Freight Transport",
+      "group": "freight_and_logistics",
+      "forms": {
+        "en": [
+          "freight transport",
+          "freight transportation",
+          "freight",
+          "cargo transport",
+          "freight rates",
+          "freight costs",
+          "cargo volumes"
+        ]
+      }
+    },
+    "transport_corridors": {
+      "label": "Transport Corridors",
+      "group": "freight_and_logistics",
+      "forms": {
+        "en": [
+          "transport corridor",
+          "transport corridors",
+          "trade corridor",
+          "trade corridors",
+          "economic corridor",
+          "economic corridors",
+          "transit corridor",
+          "transit corridors"
+        ]
+      }
+    },
+    "infrastructure": {
+      "label": "Infrastructure",
+      "group": "infrastructure_assets",
+      "forms": {
+        "en": [
+          "infrastructure",
+          "infrastructure project",
+          "infrastructure projects",
+          "infrastructure development",
+          "public infrastructure",
+          "public works"
+        ]
+      }
+    },
+    "infrastructure_investment": {
+      "label": "Infrastructure Investment",
+      "group": "infrastructure_assets",
+      "forms": {
+        "en": [
+          "infrastructure investment",
+          "infrastructure investments",
+          "investment in infrastructure",
+          "infrastructure spending",
+          "infrastructure program",
+          "infrastructure programme",
+          "infrastructure pipeline",
+          "infrastructure gap"
+        ]
+      }
+    },
+    "infrastructure_financing": {
+      "label": "Infrastructure Financing",
+      "group": "infrastructure_assets",
+      "forms": {
+        "en": [
+          "infrastructure financing",
+          "infrastructure finance",
+          "financing for infrastructure",
+          "infrastructure fund",
+          "infrastructure funds",
+          "infrastructure bond",
+          "infrastructure bonds",
+          "infrastructure loan",
+          "infrastructure loans"
+        ]
+      }
+    },
+    "infrastructure_maintenance": {
+      "label": "Infrastructure Maintenance",
+      "group": "infrastructure_assets",
+      "forms": {
+        "en": [
+          "infrastructure maintenance",
+          "maintenance of infrastructure",
+          "maintenance backlog",
+          "ageing infrastructure",
+          "aging infrastructure",
+          "deteriorating infrastructure"
+        ]
+      }
+    },
+    "infrastructure_resilience": {
+      "label": "Infrastructure Resilience",
+      "group": "infrastructure_assets",
+      "forms": {
+        "en": [
+          "infrastructure resilience",
+          "resilient infrastructure",
+          "climate-resilient infrastructure",
+          "climate resilient infrastructure",
+          "disaster-resilient infrastructure",
+          "climate-proofing",
+          "climate proofing"
+        ]
+      }
+    },
+    "infrastructure_damage": {
+      "label": "Infrastructure Damage",
+      "group": "infrastructure_assets",
+      "forms": {
+        "en": [
+          "infrastructure damage",
+          "damage to infrastructure",
+          "damaged infrastructure",
+          "destroyed infrastructure",
+          "damaged roads",
+          "damaged bridges",
+          "washed-out roads"
+        ]
+      }
+    },
+    "bridge_collapse": {
+      "label": "Bridge Collapse",
+      "group": "infrastructure_assets",
+      "forms": {
+        "en": [
+          "bridge collapse",
+          "bridge collapses",
+          "bridge collapsed",
+          "collapsed bridge",
+          "collapse of the bridge",
+          "bridge failure"
+        ]
+      }
+    },
+    "urbanization": {
+      "label": "Urbanization",
+      "group": "urban_development_planning",
+      "forms": {
+        "en": [
+          "urbanization",
+          "urbanisation",
+          "rapid urbanization",
+          "rapid urbanisation",
+          "urban growth",
+          "urban expansion",
+          "urban sprawl"
+        ]
+      }
+    },
+    "urban_development": {
+      "label": "Urban Development",
+      "group": "urban_development_planning",
+      "forms": {
+        "en": [
+          "urban development",
+          "urban renewal",
+          "urban regeneration",
+          "urban redevelopment",
+          "urban upgrading",
+          "city development"
+        ]
+      }
+    },
+    "urban_planning": {
+      "label": "Urban Planning",
+      "group": "urban_planning_governance",
+      "forms": {
+        "en": [
+          "urban planning",
+          "town planning",
+          "city planning",
+          "urban planner",
+          "urban planners"
+        ]
+      }
+    },
+    "land_use_planning": {
+      "label": "Land-Use Planning",
+      "group": "urban_planning_governance",
+      "forms": {
+        "en": [
+          "land-use planning",
+          "land use planning",
+          "land-use plan",
+          "land use plan",
+          "zoning",
+          "zoning laws",
+          "zoning regulations"
+        ]
+      }
+    },
+    "metropolitan_governance": {
+      "label": "Metropolitan Governance",
+      "group": "urban_planning_governance",
+      "forms": {
+        "en": [
+          "metropolitan governance",
+          "metropolitan authority",
+          "metropolitan authorities",
+          "metropolitan government",
+          "metropolitan council",
+          "metropolitan development authority"
+        ]
+      }
+    },
+    "territorial_development": {
+      "label": "Territorial Development",
+      "group": "regional_territorial_development",
+      "forms": {
+        "en": [
+          "territorial development",
+          "regional development",
+          "balanced regional development",
+          "spatial development",
+          "spatial planning",
+          "territorial planning"
+        ]
+      }
+    },
+    "secondary_cities": {
+      "label": "Secondary Cities",
+      "group": "regional_territorial_development",
+      "forms": {
+        "en": [
+          "secondary cities",
+          "secondary city",
+          "secondary towns",
+          "intermediate cities",
+          "second-tier cities",
+          "second tier cities",
+          "provincial cities",
+          "provincial towns"
+        ]
+      }
+    },
+    "place_based_development": {
+      "label": "Place-Based Development",
+      "group": "regional_territorial_development",
+      "forms": {
+        "en": [
+          "place-based development",
+          "place based development",
+          "place-based policy",
+          "place-based policies",
+          "place-based approach"
+        ]
+      }
+    },
+    "municipal_services": {
+      "label": "Municipal Services",
+      "group": "municipal_urban_services",
+      "forms": {
+        "en": [
+          "municipal services",
+          "municipal service",
+          "city services",
+          "urban services",
+          "basic urban services",
+          "municipal utilities"
+        ]
+      }
+    },
+    "solid_waste_collection": {
+      "label": "Solid-Waste Collection",
+      "group": "municipal_urban_services",
+      "forms": {
+        "en": [
+          "solid-waste collection",
+          "solid waste collection",
+          "waste collection",
+          "garbage collection",
+          "refuse collection",
+          "rubbish collection",
+          "trash collection",
+          "garbage collectors"
+        ]
+      }
+    },
+    "public_spaces": {
+      "label": "Public Spaces",
+      "group": "municipal_urban_services",
+      "forms": {
+        "en": [
+          "public space",
+          "public spaces",
+          "public parks",
+          "urban parks",
+          "green spaces",
+          "urban green space",
+          "pedestrian zones"
+        ]
+      }
+    },
+    "urban_flooding": {
+      "label": "Urban Flooding",
+      "group": "municipal_urban_services",
+      "forms": {
+        "en": [
+          "urban flooding",
+          "urban flood",
+          "urban floods",
+          "city flooding",
+          "flooded streets",
+          "street flooding"
+        ]
+      }
+    },
+    "informal_settlements": {
+      "label": "Informal Settlements",
+      "group": "informal_settlements_and_slums",
+      "forms": {
+        "en": [
+          "informal settlement",
+          "informal settlements",
+          "squatter settlement",
+          "squatter settlements",
+          "squatters",
+          "informal housing",
+          "unplanned settlements"
+        ]
+      }
+    },
+    "slums": {
+      "label": "Slums",
+      "group": "informal_settlements_and_slums",
+      "forms": {
+        "en": [
+          "slum",
+          "slums",
+          "slum dwellers",
+          "slum upgrading",
+          "shantytown",
+          "shantytowns",
+          "shanty town",
+          "shanty towns"
+        ]
+      }
+    },
+    "housing_supply": {
+      "label": "Housing Supply",
+      "group": "housing_access_affordability",
+      "forms": {
+        "en": [
+          "housing supply",
+          "housing stock",
+          "housing construction",
+          "home building",
+          "homebuilding",
+          "housing starts",
+          "housing units",
+          "new housing units",
+          "housing development",
+          "housing developments"
+        ]
+      }
+    },
+    "affordable_housing": {
+      "label": "Affordable Housing",
+      "group": "housing_access_affordability",
+      "forms": {
+        "en": [
+          "affordable housing",
+          "housing affordability",
+          "low-cost housing",
+          "low cost housing",
+          "low-income housing",
+          "social housing",
+          "public housing"
+        ]
+      }
+    },
+    "housing_shortage": {
+      "label": "Housing Shortage",
+      "group": "housing_access_affordability",
+      "forms": {
+        "en": [
+          "housing shortage",
+          "housing shortages",
+          "shortage of housing",
+          "housing crisis",
+          "housing deficit",
+          "housing backlog"
+        ]
+      }
+    },
+    "rental_housing": {
+      "label": "Rental Housing",
+      "group": "housing_access_affordability",
+      "forms": {
+        "en": [
+          "rental housing",
+          "rental market",
+          "rental markets",
+          "rental accommodation",
+          "rental properties",
+          "housing rents",
+          "tenants",
+          "renters"
+        ]
+      }
+    },
+    "rent_control": {
+      "label": "Rent Control",
+      "group": "housing_access_affordability",
+      "forms": {
+        "en": [
+          "rent control",
+          "rent controls",
+          "rent cap",
+          "rent caps",
+          "rent freeze",
+          "rent stabilization",
+          "rent regulation"
+        ]
+      }
+    },
+    "evictions": {
+      "label": "Evictions",
+      "group": "housing_access_affordability",
+      "forms": {
+        "en": [
+          "eviction",
+          "evictions",
+          "evicted",
+          "forced eviction",
+          "forced evictions",
+          "eviction notice",
+          "eviction notices"
+        ]
+      }
+    },
+    "land_prices": {
+      "label": "Land Prices",
+      "group": "property_markets",
+      "forms": {
+        "en": [
+          "land prices",
+          "land price",
+          "land values",
+          "land value",
+          "price of land",
+          "land costs"
+        ]
+      }
+    },
+    "property_prices": {
+      "label": "Property Prices",
+      "group": "property_markets",
+      "forms": {
+        "en": [
+          "property prices",
+          "property price",
+          "house prices",
+          "house price",
+          "home prices",
+          "home price",
+          "housing prices",
+          "real estate prices",
+          "real-estate prices"
+        ]
+      }
+    },
+    "real_estate_market": {
+      "label": "Real-Estate Market",
+      "group": "property_markets",
+      "forms": {
+        "en": [
+          "real-estate market",
+          "real estate market",
+          "real estate",
+          "real estate sector",
+          "real-estate sector",
+          "property market",
+          "property markets",
+          "housing market",
+          "housing markets",
+          "property developers"
+        ]
+      }
+    },
+    "property_bubble": {
+      "label": "Property Bubble",
+      "group": "property_markets",
+      "forms": {
+        "en": [
+          "property bubble",
+          "housing bubble",
+          "real estate bubble",
+          "real-estate bubble",
+          "house price bubble",
+          "property market bubble"
+        ]
+      }
+    },
+    "housing_finance": {
+      "label": "Housing Finance",
+      "group": "housing_credit",
+      "forms": {
+        "en": [
+          "housing finance",
+          "housing loan",
+          "housing loans",
+          "home loan",
+          "home loans",
+          "housing credit",
+          "housing bank"
+        ]
+      }
+    },
+    "mortgages": {
+      "label": "Mortgages",
+      "group": "housing_credit",
+      "forms": {
+        "en": [
+          "mortgage",
+          "mortgages",
+          "mortgage rate",
+          "mortgage rates",
+          "mortgage payments",
+          "mortgage holders",
+          "mortgage borrowers"
+        ]
+      }
+    },
+    "foreclosures": {
+      "label": "Foreclosures",
+      "group": "housing_credit",
+      "forms": {
+        "en": [
+          "foreclosure",
+          "foreclosures",
+          "home repossessions",
+          "repossessions",
+          "mortgage default",
+          "mortgage defaults"
+        ]
+      }
+    },
+    "construction_sector": {
+      "label": "Construction Sector",
+      "group": "construction_and_buildings",
+      "forms": {
+        "en": [
+          "construction sector",
+          "construction industry",
+          "construction activity",
+          "construction output",
+          "construction firms",
+          "construction companies",
+          "building industry",
+          "construction boom"
+        ]
+      }
+    },
+    "construction_costs": {
+      "label": "Construction Costs",
+      "group": "construction_and_buildings",
+      "forms": {
+        "en": [
+          "construction costs",
+          "construction cost",
+          "building costs",
+          "cost of construction",
+          "building materials prices",
+          "price of building materials",
+          "cement prices"
+        ]
+      }
+    },
+    "building_codes": {
+      "label": "Building Codes",
+      "group": "construction_and_buildings",
+      "forms": {
+        "en": [
+          "building code",
+          "building codes",
+          "building regulations",
+          "building standards",
+          "construction standards",
+          "building permit",
+          "building permits"
+        ]
+      }
+    },
+    "green_buildings": {
+      "label": "Green Buildings",
+      "group": "construction_and_buildings",
+      "forms": {
+        "en": [
+          "green building",
+          "green buildings",
+          "energy-efficient buildings",
+          "energy efficient buildings",
+          "sustainable buildings",
+          "net-zero buildings",
+          "green building standards"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1040 @@
+{
+  "heading": "digital_technology",
+  "label": "Digital development, data and technology",
+  "groups": {
+    "connectivity_and_access": {
+      "label": "Connectivity and access",
+      "parent": null
+    },
+    "networks_and_broadband": {
+      "label": "Networks and broadband",
+      "parent": "connectivity_and_access"
+    },
+    "compute_and_cloud": {
+      "label": "Data centers and computing",
+      "parent": "connectivity_and_access"
+    },
+    "digital_access_inclusion": {
+      "label": "Digital access and inclusion",
+      "parent": "connectivity_and_access"
+    },
+    "digital_government_dpi": {
+      "label": "Digital government and public infrastructure",
+      "parent": null
+    },
+    "digital_economy_business": {
+      "label": "Digital economy",
+      "parent": null
+    },
+    "sector_technologies": {
+      "label": "Sector technologies",
+      "parent": "digital_economy_business"
+    },
+    "ai_and_automation": {
+      "label": "AI and automation",
+      "parent": null
+    },
+    "cyber_and_online_harms": {
+      "label": "Cybersecurity and online harms",
+      "parent": null
+    },
+    "cyber_threats": {
+      "label": "Cyber threats",
+      "parent": "cyber_and_online_harms"
+    },
+    "information_integrity": {
+      "label": "Information integrity and online rights",
+      "parent": "cyber_and_online_harms"
+    },
+    "digital_regulation_data_governance": {
+      "label": "Digital regulation and data governance",
+      "parent": null
+    },
+    "data_sources_analytics": {
+      "label": "Data sources and analytics",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "digital_infrastructure": {
+      "label": "Digital Infrastructure",
+      "group": "connectivity_and_access",
+      "forms": {
+        "en": [
+          "digital infrastructure",
+          "ICT infrastructure",
+          "telecommunications infrastructure",
+          "telecom infrastructure",
+          "internet infrastructure",
+          "digital backbone"
+        ]
+      }
+    },
+    "connectivity": {
+      "label": "Connectivity",
+      "group": "connectivity_and_access",
+      "forms": {
+        "en": [
+          "digital connectivity",
+          "internet connectivity",
+          "broadband connectivity",
+          "mobile connectivity",
+          "telecommunications connectivity",
+          "network connectivity"
+        ]
+      }
+    },
+    "broadband": {
+      "label": "Broadband",
+      "group": "networks_and_broadband",
+      "forms": {
+        "en": [
+          "broadband",
+          "broadband internet",
+          "high-speed internet",
+          "high speed internet",
+          "fixed broadband",
+          "broadband network",
+          "broadband networks"
+        ]
+      }
+    },
+    "mobile_broadband": {
+      "label": "Mobile Broadband",
+      "group": "networks_and_broadband",
+      "forms": {
+        "en": [
+          "mobile broadband",
+          "mobile internet",
+          "4G",
+          "5G",
+          "LTE",
+          "4G network",
+          "5G network",
+          "5G networks"
+        ]
+      }
+    },
+    "mobile_network": {
+      "label": "Mobile Network",
+      "group": "networks_and_broadband",
+      "forms": {
+        "en": [
+          "mobile network",
+          "mobile networks",
+          "cellular network",
+          "cellular networks",
+          "mobile network operator",
+          "mobile network operators",
+          "mobile operator",
+          "mobile operators",
+          "telecom tower",
+          "telecom towers"
+        ]
+      }
+    },
+    "fiber_optic_network": {
+      "label": "Fiber-Optic Network",
+      "group": "networks_and_broadband",
+      "forms": {
+        "en": [
+          "fiber-optic network",
+          "fiber optic network",
+          "fibre-optic network",
+          "fibre optic network",
+          "fiber-optic cable",
+          "fiber optic cable",
+          "fibre-optic cable",
+          "fibre optic cable",
+          "optical fiber",
+          "optical fibre"
+        ]
+      }
+    },
+    "submarine_cable": {
+      "label": "Submarine Cable",
+      "group": "networks_and_broadband",
+      "forms": {
+        "en": [
+          "submarine cable",
+          "submarine cables",
+          "undersea cable",
+          "undersea cables",
+          "subsea cable",
+          "subsea cables"
+        ]
+      }
+    },
+    "rural_connectivity": {
+      "label": "Rural Connectivity",
+      "group": "networks_and_broadband",
+      "forms": {
+        "en": [
+          "rural connectivity",
+          "rural broadband",
+          "rural internet",
+          "rural internet access",
+          "universal service fund",
+          "universal access fund"
+        ]
+      }
+    },
+    "last_mile_connectivity": {
+      "label": "Last-Mile Connectivity",
+      "group": "networks_and_broadband",
+      "forms": {
+        "en": [
+          "last-mile connectivity",
+          "last mile connectivity",
+          "last-mile internet",
+          "last mile internet",
+          "last-mile broadband",
+          "last mile broadband"
+        ]
+      }
+    },
+    "data_centers": {
+      "label": "Data Centers",
+      "group": "compute_and_cloud",
+      "forms": {
+        "en": [
+          "data center",
+          "data centers",
+          "data centre",
+          "data centres",
+          "datacenter",
+          "datacenters",
+          "hyperscale data center"
+        ]
+      }
+    },
+    "cloud_computing": {
+      "label": "Cloud Computing",
+      "group": "compute_and_cloud",
+      "forms": {
+        "en": [
+          "cloud computing",
+          "cloud services",
+          "cloud service",
+          "cloud infrastructure",
+          "cloud storage",
+          "public cloud"
+        ]
+      }
+    },
+    "computing_infrastructure": {
+      "label": "Computing Infrastructure",
+      "group": "compute_and_cloud",
+      "forms": {
+        "en": [
+          "computing infrastructure",
+          "computing capacity",
+          "computing power",
+          "compute capacity",
+          "supercomputer",
+          "supercomputers",
+          "high-performance computing"
+        ]
+      }
+    },
+    "internet_access": {
+      "label": "Internet Access",
+      "group": "digital_access_inclusion",
+      "forms": {
+        "en": [
+          "internet access",
+          "access to the internet",
+          "access to internet",
+          "internet penetration",
+          "internet users",
+          "internet coverage",
+          "internet usage"
+        ]
+      }
+    },
+    "internet_affordability": {
+      "label": "Internet Affordability",
+      "group": "digital_access_inclusion",
+      "forms": {
+        "en": [
+          "internet affordability",
+          "affordable internet",
+          "cost of internet",
+          "internet prices",
+          "internet costs",
+          "mobile data prices",
+          "cost of mobile data"
+        ]
+      }
+    },
+    "digital_divide": {
+      "label": "Digital Divide",
+      "group": "digital_access_inclusion",
+      "forms": {
+        "en": [
+          "digital divide",
+          "digital divides",
+          "digital gap",
+          "digital inequality",
+          "digital inequalities"
+        ]
+      }
+    },
+    "digital_exclusion": {
+      "label": "Digital Exclusion",
+      "group": "digital_access_inclusion",
+      "forms": {
+        "en": [
+          "digital exclusion",
+          "digitally excluded",
+          "digital inclusion",
+          "unconnected population",
+          "offline population"
+        ]
+      }
+    },
+    "device_affordability": {
+      "label": "Device Affordability",
+      "group": "digital_access_inclusion",
+      "forms": {
+        "en": [
+          "device affordability",
+          "affordable devices",
+          "affordable smartphones",
+          "smartphone affordability",
+          "smartphone prices",
+          "cost of smartphones",
+          "handset affordability",
+          "handset prices"
+        ]
+      }
+    },
+    "digital_literacy": {
+      "label": "Digital Literacy",
+      "group": "digital_access_inclusion",
+      "forms": {
+        "en": [
+          "digital literacy",
+          "digital literacy skills",
+          "computer literacy",
+          "ICT literacy"
+        ]
+      }
+    },
+    "digital_public_infrastructure": {
+      "label": "Digital Public Infrastructure",
+      "group": "digital_government_dpi",
+      "forms": {
+        "en": [
+          "digital public infrastructure",
+          "digital public goods",
+          "digital public good"
+        ]
+      }
+    },
+    "digital_identification": {
+      "label": "Digital Identification",
+      "group": "digital_government_dpi",
+      "forms": {
+        "en": [
+          "digital identification",
+          "digital ID",
+          "digital IDs",
+          "digital ID system",
+          "e-ID",
+          "eID",
+          "electronic ID",
+          "electronic identification",
+          "biometric ID",
+          "biometric identification"
+        ]
+      }
+    },
+    "civil_digital_identity": {
+      "label": "Civil Digital Identity",
+      "group": "digital_government_dpi",
+      "forms": {
+        "en": [
+          "civil digital identity",
+          "digital identity",
+          "digital identities",
+          "national digital identity",
+          "digital identity system",
+          "foundational ID",
+          "national ID system",
+          "national identity system"
+        ]
+      }
+    },
+    "data_interoperability": {
+      "label": "Data Interoperability",
+      "group": "digital_government_dpi",
+      "forms": {
+        "en": [
+          "data interoperability",
+          "interoperability of data",
+          "interoperable data",
+          "data exchange platform",
+          "data exchange layer",
+          "system interoperability",
+          "interoperable systems"
+        ]
+      }
+    },
+    "government_digital_platforms": {
+      "label": "Government Digital Platforms",
+      "group": "digital_government_dpi",
+      "forms": {
+        "en": [
+          "government digital platform",
+          "government digital platforms",
+          "government online platform",
+          "government portal",
+          "government app",
+          "e-government platform",
+          "e-government platforms"
+        ]
+      }
+    },
+    "online_public_services": {
+      "label": "Online Public Services",
+      "group": "digital_government_dpi",
+      "forms": {
+        "en": [
+          "online public services",
+          "online government services",
+          "government services online",
+          "public e-services",
+          "e-services"
+        ]
+      }
+    },
+    "digital_service_delivery": {
+      "label": "Digital Service Delivery",
+      "group": "digital_government_dpi",
+      "forms": {
+        "en": [
+          "digital service delivery",
+          "digital delivery of services",
+          "digital public services",
+          "digital government services",
+          "digitized services",
+          "digitalized services"
+        ]
+      }
+    },
+    "govtech": {
+      "label": "GovTech",
+      "group": "digital_government_dpi",
+      "forms": {
+        "en": [
+          "govtech",
+          "gov tech",
+          "gov-tech",
+          "government technology",
+          "public sector technology"
+        ]
+      }
+    },
+    "digital_transformation": {
+      "label": "Digital Transformation",
+      "group": "digital_economy_business",
+      "forms": {
+        "en": [
+          "digital transformation",
+          "digitalization",
+          "digitalisation",
+          "digitization",
+          "digitisation",
+          "going digital"
+        ]
+      }
+    },
+    "digital_economy": {
+      "label": "Digital Economy",
+      "group": "digital_economy_business",
+      "forms": {
+        "en": [
+          "digital economy",
+          "digital economies",
+          "internet economy",
+          "digital sector",
+          "ICT sector",
+          "tech sector",
+          "technology sector"
+        ]
+      }
+    },
+    "digital_business": {
+      "label": "Digital Business",
+      "group": "digital_economy_business",
+      "forms": {
+        "en": [
+          "digital business",
+          "digital businesses",
+          "digital startups",
+          "tech startups",
+          "tech start-ups",
+          "technology startups",
+          "tech companies"
+        ]
+      }
+    },
+    "e_commerce": {
+      "label": "E-Commerce",
+      "group": "digital_economy_business",
+      "forms": {
+        "en": [
+          "e-commerce",
+          "ecommerce",
+          "e commerce",
+          "online shopping",
+          "online retail",
+          "online retailers",
+          "online marketplace",
+          "online marketplaces"
+        ]
+      }
+    },
+    "platform_economy": {
+      "label": "Platform Economy",
+      "group": "digital_economy_business",
+      "forms": {
+        "en": [
+          "platform economy",
+          "digital platforms",
+          "platform companies",
+          "platform businesses",
+          "ride-hailing",
+          "ride hailing",
+          "super app",
+          "super apps"
+        ]
+      }
+    },
+    "digital_taxation": {
+      "label": "Digital Taxation",
+      "group": "digital_economy_business",
+      "forms": {
+        "en": [
+          "digital taxation",
+          "digital tax",
+          "digital taxes",
+          "digital services tax",
+          "digital services taxes",
+          "tax on digital services"
+        ]
+      }
+    },
+    "edtech": {
+      "label": "EdTech",
+      "group": "sector_technologies",
+      "forms": {
+        "en": [
+          "edtech",
+          "ed tech",
+          "ed-tech",
+          "education technology",
+          "educational technology"
+        ]
+      }
+    },
+    "healthtech": {
+      "label": "HealthTech",
+      "group": "sector_technologies",
+      "forms": {
+        "en": [
+          "healthtech",
+          "health tech",
+          "health-tech",
+          "health technology",
+          "digital health",
+          "telemedicine",
+          "telehealth",
+          "e-health",
+          "ehealth",
+          "mHealth"
+        ]
+      }
+    },
+    "agritech": {
+      "label": "AgriTech",
+      "group": "sector_technologies",
+      "forms": {
+        "en": [
+          "agritech",
+          "agtech",
+          "agri-tech",
+          "agri tech",
+          "agricultural technology",
+          "agriculture technology",
+          "digital agriculture",
+          "precision agriculture"
+        ]
+      }
+    },
+    "artificial_intelligence": {
+      "label": "Artificial Intelligence",
+      "group": "ai_and_automation",
+      "forms": {
+        "en": [
+          "artificial intelligence",
+          "AI",
+          "AI technology",
+          "AI tools",
+          "AI adoption",
+          "AI-powered"
+        ]
+      }
+    },
+    "generative_ai": {
+      "label": "Generative AI",
+      "group": "ai_and_automation",
+      "forms": {
+        "en": [
+          "generative AI",
+          "generative artificial intelligence",
+          "GenAI",
+          "Gen AI",
+          "ChatGPT",
+          "large language model",
+          "large language models",
+          "LLM",
+          "LLMs",
+          "AI chatbot",
+          "AI chatbots"
+        ]
+      }
+    },
+    "machine_learning": {
+      "label": "Machine Learning",
+      "group": "ai_and_automation",
+      "forms": {
+        "en": [
+          "machine learning",
+          "machine-learning",
+          "deep learning",
+          "neural network",
+          "neural networks"
+        ]
+      }
+    },
+    "automation": {
+      "label": "Automation",
+      "group": "ai_and_automation",
+      "forms": {
+        "en": [
+          "automation",
+          "job automation",
+          "industrial automation",
+          "process automation",
+          "automated systems"
+        ]
+      }
+    },
+    "robotics": {
+      "label": "Robotics",
+      "group": "ai_and_automation",
+      "forms": {
+        "en": [
+          "robotics",
+          "robot",
+          "robots",
+          "industrial robots",
+          "robotization",
+          "robotisation"
+        ]
+      }
+    },
+    "algorithmic_governance": {
+      "label": "Algorithmic Governance",
+      "group": "ai_and_automation",
+      "forms": {
+        "en": [
+          "algorithmic governance",
+          "algorithmic decision-making",
+          "algorithmic decision making",
+          "automated decision-making",
+          "algorithmic bias",
+          "algorithmic accountability",
+          "algorithmic transparency"
+        ]
+      }
+    },
+    "ai_regulation": {
+      "label": "AI Regulation",
+      "group": "ai_and_automation",
+      "forms": {
+        "en": [
+          "AI regulation",
+          "AI regulations",
+          "regulation of AI",
+          "regulating AI",
+          "AI law",
+          "AI act",
+          "AI governance",
+          "AI policy",
+          "AI rules",
+          "artificial intelligence regulation"
+        ]
+      }
+    },
+    "ai_safety": {
+      "label": "AI Safety",
+      "group": "ai_and_automation",
+      "forms": {
+        "en": [
+          "AI safety",
+          "AI risk",
+          "AI risks",
+          "safe AI",
+          "responsible AI",
+          "AI ethics",
+          "trustworthy AI",
+          "AI misuse"
+        ]
+      }
+    },
+    "digital_trust": {
+      "label": "Digital Trust",
+      "group": "cyber_threats",
+      "forms": {
+        "en": [
+          "digital trust",
+          "online trust",
+          "trust in digital services",
+          "trust in online services"
+        ]
+      }
+    },
+    "cybersecurity": {
+      "label": "Cybersecurity",
+      "group": "cyber_threats",
+      "forms": {
+        "en": [
+          "cybersecurity",
+          "cyber security",
+          "cyber-security",
+          "information security",
+          "cyber defence",
+          "cyber defense",
+          "cyber resilience"
+        ]
+      }
+    },
+    "cyberattack": {
+      "label": "Cyberattack",
+      "group": "cyber_threats",
+      "forms": {
+        "en": [
+          "cyberattack",
+          "cyberattacks",
+          "cyber attack",
+          "cyber attacks",
+          "cyber-attack",
+          "cyber-attacks",
+          "hacking",
+          "hackers",
+          "data breach",
+          "data breaches",
+          "cyber incident",
+          "DDoS"
+        ]
+      }
+    },
+    "ransomware": {
+      "label": "Ransomware",
+      "group": "cyber_threats",
+      "forms": {
+        "en": [
+          "ransomware",
+          "ransomware attack",
+          "ransomware attacks",
+          "ransomware gang",
+          "ransomware gangs"
+        ]
+      }
+    },
+    "online_fraud": {
+      "label": "Online Fraud",
+      "group": "cyber_threats",
+      "forms": {
+        "en": [
+          "online fraud",
+          "online scam",
+          "online scams",
+          "internet fraud",
+          "cyber fraud",
+          "cyber scam",
+          "cyber scams",
+          "phishing",
+          "scam centers",
+          "scam centres",
+          "scam compounds"
+        ]
+      }
+    },
+    "digital_surveillance": {
+      "label": "Digital Surveillance",
+      "group": "information_integrity",
+      "forms": {
+        "en": [
+          "digital surveillance",
+          "online surveillance",
+          "internet surveillance",
+          "mass surveillance",
+          "spyware",
+          "facial recognition",
+          "surveillance technology"
+        ]
+      }
+    },
+    "internet_shutdown": {
+      "label": "Internet Shutdown",
+      "group": "information_integrity",
+      "forms": {
+        "en": [
+          "internet shutdown",
+          "internet shutdowns",
+          "internet blackout",
+          "internet blackouts",
+          "social media blackout",
+          "internet restrictions",
+          "blocked social media"
+        ]
+      }
+    },
+    "online_misinformation": {
+      "label": "Online Misinformation",
+      "group": "information_integrity",
+      "forms": {
+        "en": [
+          "online misinformation",
+          "misinformation",
+          "fake news",
+          "false information",
+          "misleading information",
+          "deepfake",
+          "deepfakes"
+        ]
+      }
+    },
+    "disinformation": {
+      "label": "Disinformation",
+      "group": "information_integrity",
+      "forms": {
+        "en": [
+          "disinformation",
+          "disinformation campaign",
+          "disinformation campaigns",
+          "propaganda campaign",
+          "influence operations",
+          "information warfare"
+        ]
+      }
+    },
+    "social_media_regulation": {
+      "label": "Social Media Regulation",
+      "group": "digital_regulation_data_governance",
+      "forms": {
+        "en": [
+          "social media regulation",
+          "regulation of social media",
+          "social media law",
+          "social media laws",
+          "social media ban",
+          "platform regulation",
+          "online safety act",
+          "online safety law",
+          "content moderation"
+        ]
+      }
+    },
+    "telecommunications_regulation": {
+      "label": "Telecommunications Regulation",
+      "group": "digital_regulation_data_governance",
+      "forms": {
+        "en": [
+          "telecommunications regulation",
+          "telecom regulation",
+          "telecommunications regulator",
+          "telecom regulator",
+          "telecommunications authority",
+          "telecommunications act",
+          "telecom licence",
+          "telecom license",
+          "telecom liberalization",
+          "telecom liberalisation"
+        ]
+      }
+    },
+    "spectrum_management": {
+      "label": "Spectrum Management",
+      "group": "digital_regulation_data_governance",
+      "forms": {
+        "en": [
+          "spectrum management",
+          "spectrum allocation",
+          "spectrum auction",
+          "spectrum auctions",
+          "radio spectrum",
+          "5G spectrum",
+          "spectrum licences",
+          "spectrum licenses"
+        ]
+      }
+    },
+    "data_governance": {
+      "label": "Data Governance",
+      "group": "digital_regulation_data_governance",
+      "forms": {
+        "en": [
+          "data governance",
+          "data policy",
+          "data strategy",
+          "national data strategy",
+          "data regulation",
+          "data sharing",
+          "data-sharing"
+        ]
+      }
+    },
+    "open_data": {
+      "label": "Open Data",
+      "group": "digital_regulation_data_governance",
+      "forms": {
+        "en": [
+          "open data",
+          "open-data",
+          "open government data",
+          "open data portal",
+          "open data initiative"
+        ]
+      }
+    },
+    "data_privacy": {
+      "label": "Data Privacy",
+      "group": "digital_regulation_data_governance",
+      "forms": {
+        "en": [
+          "data privacy",
+          "privacy of data",
+          "online privacy",
+          "digital privacy",
+          "personal data",
+          "privacy rights"
+        ]
+      }
+    },
+    "data_localization": {
+      "label": "Data Localization",
+      "group": "digital_regulation_data_governance",
+      "forms": {
+        "en": [
+          "data localization",
+          "data localisation",
+          "data sovereignty",
+          "data residency",
+          "localization of data",
+          "local data storage"
+        ]
+      }
+    },
+    "cross_border_data_flows": {
+      "label": "Cross-Border Data Flows",
+      "group": "digital_regulation_data_governance",
+      "forms": {
+        "en": [
+          "cross-border data flows",
+          "cross border data flows",
+          "cross-border data flow",
+          "cross-border data transfer",
+          "cross-border data transfers",
+          "international data transfers",
+          "free flow of data"
+        ]
+      }
+    },
+    "administrative_data": {
+      "label": "Administrative Data",
+      "group": "data_sources_analytics",
+      "forms": {
+        "en": [
+          "administrative data",
+          "admin data",
+          "administrative datasets",
+          "administrative data systems"
+        ]
+      }
+    },
+    "geospatial_data": {
+      "label": "Geospatial Data",
+      "group": "data_sources_analytics",
+      "forms": {
+        "en": [
+          "geospatial data",
+          "geospatial information",
+          "spatial data",
+          "GIS data",
+          "geographic information system",
+          "geographic information systems",
+          "geospatial mapping"
+        ]
+      }
+    },
+    "satellite_data": {
+      "label": "Satellite Data",
+      "group": "data_sources_analytics",
+      "forms": {
+        "en": [
+          "satellite data",
+          "satellite imagery",
+          "satellite image",
+          "satellite images",
+          "satellite observations"
+        ]
+      }
+    },
+    "remote_sensing": {
+      "label": "Remote Sensing",
+      "group": "data_sources_analytics",
+      "forms": {
+        "en": [
+          "remote sensing",
+          "remotely sensed",
+          "earth observation",
+          "aerial imagery",
+          "drone imagery",
+          "drone mapping"
+        ]
+      }
+    },
+    "big_data": {
+      "label": "Big Data",
+      "group": "data_sources_analytics",
+      "forms": {
+        "en": [
+          "big data",
+          "big-data",
+          "big data analytics",
+          "data analytics",
+          "alternative data"
+        ]
+      }
+    },
+    "data_quality": {
+      "label": "Data Quality",
+      "group": "data_sources_analytics",
+      "forms": {
+        "en": [
+          "data quality",
+          "quality of data",
+          "data quality issues",
+          "poor-quality data",
+          "low-quality data",
+          "data quality assurance"
+        ]
+      }
+    }
+  }
+}

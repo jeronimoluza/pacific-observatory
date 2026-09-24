@@ -1,0 +1,547 @@
+{
+  "heading": "shocks_uncertainty",
+  "label": "Cross-cutting shocks, crises and policy uncertainty",
+  "groups": {
+    "crisis_episodes": {
+      "label": "Crises",
+      "parent": null
+    },
+    "financial_and_debt_crises": {
+      "label": "Financial and debt crises",
+      "parent": "crisis_episodes"
+    },
+    "multiple_crises": {
+      "label": "Compound crises",
+      "parent": "crisis_episodes"
+    },
+    "economic_shocks": {
+      "label": "Economic shocks",
+      "parent": null
+    },
+    "commodity_and_trade_shocks": {
+      "label": "Commodity and trade shocks",
+      "parent": "economic_shocks"
+    },
+    "macro_household_shocks": {
+      "label": "Supply, demand and income shocks",
+      "parent": "economic_shocks"
+    },
+    "non_economic_shocks": {
+      "label": "Health, climate and political shocks",
+      "parent": null
+    },
+    "uncertainty_and_risk": {
+      "label": "Uncertainty and risk",
+      "parent": null
+    },
+    "crisis_response_recovery": {
+      "label": "Crisis response and recovery",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "global_crisis": {
+      "label": "Global Crisis",
+      "group": "crisis_episodes",
+      "forms": {
+        "en": [
+          "global crisis",
+          "global crises",
+          "global economic crisis",
+          "global financial crisis",
+          "GFC",
+          "worldwide crisis"
+        ]
+      }
+    },
+    "economic_crisis": {
+      "label": "Economic Crisis",
+      "group": "crisis_episodes",
+      "forms": {
+        "en": [
+          "economic crisis",
+          "economic crises",
+          "economic meltdown",
+          "economic collapse",
+          "economic turmoil",
+          "crisis-hit economy"
+        ]
+      }
+    },
+    "financial_crisis": {
+      "label": "Financial Crisis",
+      "group": "financial_and_debt_crises",
+      "forms": {
+        "en": [
+          "financial crisis",
+          "financial crises",
+          "financial meltdown",
+          "financial turmoil",
+          "financial panic"
+        ]
+      }
+    },
+    "debt_crisis": {
+      "label": "Debt Crisis",
+      "group": "financial_and_debt_crises",
+      "forms": {
+        "en": [
+          "debt crisis",
+          "debt crises",
+          "sovereign debt crisis",
+          "external debt crisis",
+          "debt meltdown"
+        ]
+      }
+    },
+    "banking_crisis": {
+      "label": "Banking Crisis",
+      "group": "financial_and_debt_crises",
+      "forms": {
+        "en": [
+          "banking crisis",
+          "banking crises",
+          "bank crisis",
+          "banking sector crisis",
+          "banking panic",
+          "systemic banking crisis"
+        ]
+      }
+    },
+    "compound_crisis": {
+      "label": "Compound Crisis",
+      "group": "multiple_crises",
+      "forms": {
+        "en": [
+          "compound crisis",
+          "compound crises",
+          "compounding crises",
+          "multiple crises",
+          "overlapping crises",
+          "cascading crises",
+          "compound shocks",
+          "overlapping shocks",
+          "multiple shocks"
+        ]
+      }
+    },
+    "polycrisis": {
+      "label": "Polycrisis",
+      "group": "multiple_crises",
+      "forms": {
+        "en": [
+          "polycrisis",
+          "poly-crisis",
+          "polycrises",
+          "permacrisis"
+        ]
+      }
+    },
+    "commodity_shock": {
+      "label": "Commodity Shock",
+      "group": "commodity_and_trade_shocks",
+      "forms": {
+        "en": [
+          "commodity shock",
+          "commodity shocks",
+          "commodity price shock",
+          "commodity price shocks",
+          "commodity price collapse",
+          "commodity price slump",
+          "commodity price swings"
+        ]
+      }
+    },
+    "oil_price_shock": {
+      "label": "Oil-Price Shock",
+      "group": "commodity_and_trade_shocks",
+      "forms": {
+        "en": [
+          "oil-price shock",
+          "oil price shock",
+          "oil price shocks",
+          "oil shock",
+          "oil shocks",
+          "oil price spike",
+          "oil price surge",
+          "oil price collapse",
+          "oil price crash"
+        ]
+      }
+    },
+    "energy_price_shock": {
+      "label": "Energy-Price Shock",
+      "group": "commodity_and_trade_shocks",
+      "forms": {
+        "en": [
+          "energy-price shock",
+          "energy price shock",
+          "energy price shocks",
+          "energy shock",
+          "energy shocks",
+          "energy price spike",
+          "energy price surge",
+          "energy crisis"
+        ]
+      }
+    },
+    "terms_of_trade_shock": {
+      "label": "Terms-of-Trade Shock",
+      "group": "commodity_and_trade_shocks",
+      "forms": {
+        "en": [
+          "terms-of-trade shock",
+          "terms of trade shock",
+          "terms-of-trade shocks",
+          "terms of trade shocks",
+          "terms of trade deterioration",
+          "deterioration in the terms of trade",
+          "worsening terms of trade"
+        ]
+      }
+    },
+    "external_demand_shock": {
+      "label": "External Demand Shock",
+      "group": "commodity_and_trade_shocks",
+      "forms": {
+        "en": [
+          "external demand shock",
+          "external demand shocks",
+          "drop in external demand",
+          "weak external demand",
+          "falling external demand",
+          "export demand shock"
+        ]
+      }
+    },
+    "global_supply_chain_shock": {
+      "label": "Global Supply-Chain Shock",
+      "group": "commodity_and_trade_shocks",
+      "forms": {
+        "en": [
+          "global supply-chain shock",
+          "global supply chain shock",
+          "supply-chain shock",
+          "supply chain shock",
+          "supply-chain shocks",
+          "supply chain shocks"
+        ]
+      }
+    },
+    "supply_shock": {
+      "label": "Supply Shock",
+      "group": "macro_household_shocks",
+      "forms": {
+        "en": [
+          "supply shock",
+          "supply shocks",
+          "supply-side shock",
+          "supply-side shocks",
+          "supply side shock"
+        ]
+      }
+    },
+    "demand_shock": {
+      "label": "Demand Shock",
+      "group": "macro_household_shocks",
+      "forms": {
+        "en": [
+          "demand shock",
+          "demand shocks",
+          "demand-side shock",
+          "demand-side shocks",
+          "collapse in demand",
+          "demand collapse"
+        ]
+      }
+    },
+    "income_shock": {
+      "label": "Income Shock",
+      "group": "macro_household_shocks",
+      "forms": {
+        "en": [
+          "income shock",
+          "income shocks",
+          "loss of income",
+          "income loss",
+          "income losses",
+          "lost income"
+        ]
+      }
+    },
+    "employment_shock": {
+      "label": "Employment Shock",
+      "group": "macro_household_shocks",
+      "forms": {
+        "en": [
+          "employment shock",
+          "employment shocks",
+          "labor market shock",
+          "labour market shock",
+          "labor market shocks",
+          "labour market shocks",
+          "jobs shock"
+        ]
+      }
+    },
+    "market_disruption": {
+      "label": "Market Disruption",
+      "group": "macro_household_shocks",
+      "forms": {
+        "en": [
+          "market disruption",
+          "market disruptions",
+          "market turmoil",
+          "market turbulence",
+          "market meltdown",
+          "market crash",
+          "market rout",
+          "disrupted markets"
+        ]
+      }
+    },
+    "health_shock": {
+      "label": "Health Shock",
+      "group": "non_economic_shocks",
+      "forms": {
+        "en": [
+          "health shock",
+          "health shocks",
+          "health emergency",
+          "health emergencies",
+          "public health emergency"
+        ]
+      }
+    },
+    "pandemic_shock": {
+      "label": "Pandemic Shock",
+      "group": "non_economic_shocks",
+      "forms": {
+        "en": [
+          "pandemic shock",
+          "pandemic shocks",
+          "pandemic-induced shock",
+          "pandemic-related shock",
+          "shock of the pandemic",
+          "COVID shock",
+          "COVID-19 shock"
+        ]
+      }
+    },
+    "epidemic_shock": {
+      "label": "Epidemic Shock",
+      "group": "non_economic_shocks",
+      "forms": {
+        "en": [
+          "epidemic shock",
+          "epidemic shocks",
+          "epidemic-related shock",
+          "shock of the epidemic",
+          "outbreak shock"
+        ]
+      }
+    },
+    "climate_shock": {
+      "label": "Climate Shock",
+      "group": "non_economic_shocks",
+      "forms": {
+        "en": [
+          "climate shock",
+          "climate shocks",
+          "climate-related shock",
+          "climate-related shocks",
+          "climatic shock",
+          "climatic shocks",
+          "weather shock",
+          "weather shocks"
+        ]
+      }
+    },
+    "conflict_shock": {
+      "label": "Conflict Shock",
+      "group": "non_economic_shocks",
+      "forms": {
+        "en": [
+          "conflict shock",
+          "conflict shocks",
+          "conflict-related shock",
+          "conflict-related shocks",
+          "war shock"
+        ]
+      }
+    },
+    "political_shock": {
+      "label": "Political Shock",
+      "group": "non_economic_shocks",
+      "forms": {
+        "en": [
+          "political shock",
+          "political shocks",
+          "political upheaval",
+          "political upheavals"
+        ]
+      }
+    },
+    "policy_uncertainty": {
+      "label": "Policy Uncertainty",
+      "group": "uncertainty_and_risk",
+      "forms": {
+        "en": [
+          "policy uncertainty",
+          "policy uncertainties",
+          "policy unpredictability",
+          "unpredictable policy",
+          "policy volatility",
+          "policy flip-flop",
+          "policy flip-flops"
+        ]
+      }
+    },
+    "economic_policy_uncertainty": {
+      "label": "Economic Policy Uncertainty",
+      "group": "uncertainty_and_risk",
+      "forms": {
+        "en": [
+          "economic policy uncertainty",
+          "uncertainty about economic policy",
+          "uncertainty over economic policy",
+          "fiscal policy uncertainty",
+          "monetary policy uncertainty",
+          "trade policy uncertainty",
+          "tax policy uncertainty"
+        ]
+      }
+    },
+    "regulatory_uncertainty": {
+      "label": "Regulatory Uncertainty",
+      "group": "uncertainty_and_risk",
+      "forms": {
+        "en": [
+          "regulatory uncertainty",
+          "regulatory uncertainties",
+          "regulatory unpredictability",
+          "uncertain regulatory environment",
+          "regulatory ambiguity",
+          "legal uncertainty"
+        ]
+      }
+    },
+    "political_uncertainty": {
+      "label": "Political Uncertainty",
+      "group": "uncertainty_and_risk",
+      "forms": {
+        "en": [
+          "political uncertainty",
+          "political uncertainties",
+          "uncertain political climate",
+          "uncertain political situation",
+          "political limbo",
+          "electoral uncertainty",
+          "election uncertainty"
+        ]
+      }
+    },
+    "geopolitical_risk": {
+      "label": "Geopolitical Risk",
+      "group": "uncertainty_and_risk",
+      "forms": {
+        "en": [
+          "geopolitical risk",
+          "geopolitical risks",
+          "geopolitical tension",
+          "geopolitical tensions",
+          "geopolitical uncertainty",
+          "geopolitical instability"
+        ]
+      }
+    },
+    "emergency_policy_response": {
+      "label": "Emergency Policy Response",
+      "group": "crisis_response_recovery",
+      "forms": {
+        "en": [
+          "emergency policy response",
+          "emergency response measures",
+          "emergency measures",
+          "emergency economic measures",
+          "emergency relief package",
+          "crisis response"
+        ]
+      }
+    },
+    "crisis_coordination": {
+      "label": "Crisis Coordination",
+      "group": "crisis_response_recovery",
+      "forms": {
+        "en": [
+          "crisis coordination",
+          "coordinated crisis response",
+          "coordinated response",
+          "crisis management",
+          "crisis task force",
+          "crisis committee",
+          "emergency task force"
+        ]
+      }
+    },
+    "crisis_communication": {
+      "label": "Crisis Communication",
+      "group": "crisis_response_recovery",
+      "forms": {
+        "en": [
+          "crisis communication",
+          "crisis communications",
+          "emergency communication",
+          "emergency communications",
+          "risk communication"
+        ]
+      }
+    },
+    "emergency_financing": {
+      "label": "Emergency Financing",
+      "group": "crisis_response_recovery",
+      "forms": {
+        "en": [
+          "emergency financing",
+          "emergency funding",
+          "emergency loan",
+          "emergency loans",
+          "emergency credit",
+          "rapid financing instrument",
+          "rapid credit facility"
+        ]
+      }
+    },
+    "shock_preparedness": {
+      "label": "Shock Preparedness",
+      "group": "crisis_response_recovery",
+      "forms": {
+        "en": [
+          "shock preparedness",
+          "crisis preparedness",
+          "preparedness for shocks",
+          "emergency preparedness",
+          "contingency planning",
+          "contingency plan",
+          "contingency plans"
+        ]
+      }
+    },
+    "shock_recovery": {
+      "label": "Shock Recovery",
+      "group": "crisis_response_recovery",
+      "forms": {
+        "en": [
+          "shock recovery",
+          "crisis recovery",
+          "post-crisis recovery",
+          "recovery from the crisis",
+          "recovery from the shock",
+          "post-pandemic recovery",
+          "recovery plan",
+          "recovery package"
+        ]
+      }
+    }
+  }
+}

@@ -250,12 +250,19 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
 
 
 def _process_body(body: str | float) -> str:
-    """Mirror EPU.process_data body normalization (strip newlines, lower, NFC)."""
+    """Mirror EPU.process_data body normalization (strip newlines and zero-width
+    spaces, lower, NFC).
+
+    Khmer sources insert U+200B between words (about 64 per article in
+    kampuchea_thmey_daily), and one inside a phrase stops the phrase matching.
+    """
     if not isinstance(body, str):
         return ""
     import unicodedata
 
-    return unicodedata.normalize("NFC", body.replace("\n", "").lower())
+    return unicodedata.normalize(
+        "NFC", body.replace("\n", "").replace("\u200b", "").lower()
+    )
 
 
 def _ym_for_date(d: pd.Timestamp, daily_tail_start: pd.Timestamp | None) -> str:

@@ -1,0 +1,708 @@
+{
+  "heading": "gender_inclusion",
+  "label": "Gender equality and social inclusion",
+  "groups": {
+    "gender_equality_norms": {
+      "label": "Gender equality and norms",
+      "parent": null
+    },
+    "women_economic_participation": {
+      "label": "Women's economic participation",
+      "parent": null
+    },
+    "womens_assets_inclusion": {
+      "label": "Women's assets and financial and digital inclusion",
+      "parent": "women_economic_participation"
+    },
+    "women_leadership_politics": {
+      "label": "Women in leadership and politics",
+      "parent": null
+    },
+    "care_and_households": {
+      "label": "Care and household structure",
+      "parent": null
+    },
+    "gbv_harmful_practices": {
+      "label": "Gender-based violence and harmful practices",
+      "parent": null
+    },
+    "minorities_indigenous": {
+      "label": "Minorities and indigenous peoples",
+      "parent": null
+    },
+    "inclusion_of_groups": {
+      "label": "Inclusion of specific groups",
+      "parent": null
+    },
+    "inclusion_participation": {
+      "label": "Social inclusion and participation",
+      "parent": null
+    }
+  },
+  "concepts": {
+    "gender_equality": {
+      "label": "Gender Equality",
+      "group": "gender_equality_norms",
+      "forms": {
+        "en": [
+          "gender equality",
+          "gender parity",
+          "gender equity",
+          "gender balance",
+          "equality between women and men",
+          "equality between men and women",
+          "women's rights"
+        ]
+      }
+    },
+    "gender_inequality": {
+      "label": "Gender Inequality",
+      "group": "gender_equality_norms",
+      "forms": {
+        "en": [
+          "gender inequality",
+          "gender inequalities",
+          "gender gap",
+          "gender gaps",
+          "gender disparity",
+          "gender disparities",
+          "gender discrimination",
+          "gender bias",
+          "sex discrimination"
+        ]
+      }
+    },
+    "womens_economic_empowerment": {
+      "label": "Women's Economic Empowerment",
+      "group": "women_economic_participation",
+      "forms": {
+        "en": [
+          "women's economic empowerment",
+          "economic empowerment of women",
+          "women's empowerment",
+          "women empowerment",
+          "empowerment of women",
+          "female labor force participation",
+          "female labour force participation",
+          "women's labor force participation",
+          "women's labour force participation",
+          "women's employment"
+        ]
+      }
+    },
+    "women_owned_businesses": {
+      "label": "Women-Owned Businesses",
+      "group": "women_economic_participation",
+      "forms": {
+        "en": [
+          "women-owned businesses",
+          "women-owned business",
+          "women owned businesses",
+          "female-owned businesses",
+          "women-led businesses",
+          "women-led enterprises",
+          "women entrepreneurs",
+          "female entrepreneurs",
+          "women's entrepreneurship",
+          "female entrepreneurship"
+        ]
+      }
+    },
+    "gender_pay_gap": {
+      "label": "Gender Pay Gap",
+      "group": "women_economic_participation",
+      "forms": {
+        "en": [
+          "gender pay gap",
+          "gender wage gap",
+          "gender pay gaps",
+          "equal pay",
+          "unequal pay",
+          "pay gap between men and women",
+          "wage gap between men and women"
+        ]
+      }
+    },
+    "gender_employment_gap": {
+      "label": "Gender Employment Gap",
+      "group": "women_economic_participation",
+      "forms": {
+        "en": [
+          "gender employment gap",
+          "gender employment gaps",
+          "gender gap in employment",
+          "gender gap in labour force participation",
+          "gender gap in labor force participation",
+          "female employment gap"
+        ]
+      }
+    },
+    "occupational_segregation": {
+      "label": "Occupational Segregation",
+      "group": "women_economic_participation",
+      "forms": {
+        "en": [
+          "occupational segregation",
+          "occupational gender segregation",
+          "gender segregation in occupations",
+          "male-dominated professions",
+          "male-dominated industries",
+          "female-dominated occupations",
+          "gendered occupations"
+        ]
+      }
+    },
+    "unpaid_care_work": {
+      "label": "Unpaid Care Work",
+      "group": "care_and_households",
+      "forms": {
+        "en": [
+          "unpaid care work",
+          "unpaid care",
+          "unpaid work",
+          "unpaid domestic work",
+          "unpaid care and domestic work",
+          "household chores",
+          "domestic chores",
+          "care burden"
+        ]
+      }
+    },
+    "childcare": {
+      "label": "Childcare",
+      "group": "care_and_households",
+      "forms": {
+        "en": [
+          "childcare",
+          "child care",
+          "child-care",
+          "daycare",
+          "day care",
+          "day-care",
+          "childcare centres",
+          "childcare centers",
+          "creche",
+          "creches"
+        ]
+      }
+    },
+    "care_services": {
+      "label": "Care Services",
+      "group": "care_and_households",
+      "forms": {
+        "en": [
+          "care services",
+          "long-term care",
+          "elderly care",
+          "eldercare",
+          "aged care",
+          "care homes",
+          "caregiving services"
+        ]
+      }
+    },
+    "property_rights_for_women": {
+      "label": "Property Rights for Women",
+      "group": "womens_assets_inclusion",
+      "forms": {
+        "en": [
+          "property rights for women",
+          "women's property rights",
+          "women's right to property",
+          "women's inheritance rights",
+          "inheritance rights for women",
+          "women's right to inherit",
+          "women's ownership of property"
+        ]
+      }
+    },
+    "womens_land_rights": {
+      "label": "Women's Land Rights",
+      "group": "womens_assets_inclusion",
+      "forms": {
+        "en": [
+          "women's land rights",
+          "land rights for women",
+          "women's access to land",
+          "women's land ownership",
+          "land ownership by women",
+          "women landowners"
+        ]
+      }
+    },
+    "womens_financial_inclusion": {
+      "label": "Women's Financial Inclusion",
+      "group": "womens_assets_inclusion",
+      "forms": {
+        "en": [
+          "women's financial inclusion",
+          "financial inclusion of women",
+          "financial inclusion for women",
+          "women's access to finance",
+          "women's access to credit",
+          "gender gap in financial inclusion",
+          "unbanked women"
+        ]
+      }
+    },
+    "womens_digital_inclusion": {
+      "label": "Women's Digital Inclusion",
+      "group": "womens_assets_inclusion",
+      "forms": {
+        "en": [
+          "women's digital inclusion",
+          "digital inclusion of women",
+          "gender digital divide",
+          "digital gender divide",
+          "digital gender gap",
+          "women's access to the internet",
+          "women in tech",
+          "women in technology"
+        ]
+      }
+    },
+    "women_in_leadership": {
+      "label": "Women in Leadership",
+      "group": "women_leadership_politics",
+      "forms": {
+        "en": [
+          "women in leadership",
+          "women leaders",
+          "female leaders",
+          "women on boards",
+          "women executives",
+          "female executives",
+          "women CEOs",
+          "female CEOs",
+          "glass ceiling",
+          "women in senior management"
+        ]
+      }
+    },
+    "political_representation_of_women": {
+      "label": "Political Representation of Women",
+      "group": "women_leadership_politics",
+      "forms": {
+        "en": [
+          "political representation of women",
+          "women's political representation",
+          "women's political participation",
+          "women's representation",
+          "women in parliament",
+          "women MPs",
+          "female MPs",
+          "female parliamentarians",
+          "women legislators",
+          "women candidates",
+          "female candidates",
+          "gender quota",
+          "gender quotas"
+        ]
+      }
+    },
+    "gender_based_violence": {
+      "label": "Gender-Based Violence",
+      "group": "gbv_harmful_practices",
+      "forms": {
+        "en": [
+          "gender-based violence",
+          "gender based violence",
+          "GBV",
+          "sexual and gender-based violence",
+          "SGBV",
+          "violence against women",
+          "violence against women and girls",
+          "VAWG",
+          "sexual violence",
+          "sexual assault",
+          "rape",
+          "femicide"
+        ]
+      }
+    },
+    "domestic_violence": {
+      "label": "Domestic Violence",
+      "group": "gbv_harmful_practices",
+      "forms": {
+        "en": [
+          "domestic violence",
+          "domestic abuse",
+          "intimate partner violence",
+          "spousal abuse",
+          "family violence",
+          "wife beating",
+          "violence in the home"
+        ]
+      }
+    },
+    "sexual_harassment": {
+      "label": "Sexual Harassment",
+      "group": "gbv_harmful_practices",
+      "forms": {
+        "en": [
+          "sexual harassment",
+          "sexually harassed",
+          "sexual misconduct",
+          "harassment of women",
+          "MeToo"
+        ]
+      }
+    },
+    "child_marriage": {
+      "label": "Child Marriage",
+      "group": "gbv_harmful_practices",
+      "forms": {
+        "en": [
+          "child marriage",
+          "child marriages",
+          "early marriage",
+          "early marriages",
+          "child bride",
+          "child brides",
+          "underage marriage",
+          "forced marriage",
+          "forced marriages"
+        ]
+      }
+    },
+    "female_genital_mutilation": {
+      "label": "Female Genital Mutilation",
+      "group": "gbv_harmful_practices",
+      "forms": {
+        "en": [
+          "female genital mutilation",
+          "FGM",
+          "FGM/C",
+          "female genital cutting",
+          "female circumcision",
+          "genital mutilation"
+        ]
+      }
+    },
+    "gender_norms": {
+      "label": "Gender Norms",
+      "group": "gender_equality_norms",
+      "forms": {
+        "en": [
+          "gender norms",
+          "gender roles",
+          "traditional gender roles",
+          "gender stereotypes",
+          "gender stereotyping",
+          "patriarchy",
+          "patriarchal"
+        ]
+      }
+    },
+    "adolescent_girls": {
+      "label": "Adolescent Girls",
+      "group": "gender_equality_norms",
+      "forms": {
+        "en": [
+          "adolescent girls",
+          "adolescent girl",
+          "teenage girls",
+          "adolescent girls and young women",
+          "AGYW"
+        ]
+      }
+    },
+    "single_parent_households": {
+      "label": "Single-Parent Households",
+      "group": "care_and_households",
+      "forms": {
+        "en": [
+          "single-parent households",
+          "single-parent household",
+          "single parent households",
+          "single-parent families",
+          "single parents",
+          "single mothers",
+          "single mother",
+          "lone parents",
+          "female-headed households",
+          "female-headed household",
+          "women-headed households"
+        ]
+      }
+    },
+    "widowhood": {
+      "label": "Widowhood",
+      "group": "care_and_households",
+      "forms": {
+        "en": [
+          "widowhood",
+          "widows",
+          "widow",
+          "widowed",
+          "widowed women"
+        ]
+      }
+    },
+    "social_inclusion": {
+      "label": "Social Inclusion",
+      "group": "inclusion_participation",
+      "forms": {
+        "en": [
+          "social inclusion",
+          "social exclusion",
+          "socially excluded",
+          "marginalized groups",
+          "marginalised groups",
+          "marginalized communities",
+          "marginalised communities",
+          "vulnerable groups",
+          "inclusive society",
+          "leave no one behind"
+        ]
+      }
+    },
+    "disability_inclusion": {
+      "label": "Disability Inclusion",
+      "group": "inclusion_of_groups",
+      "forms": {
+        "en": [
+          "disability inclusion",
+          "disability-inclusive",
+          "inclusion of persons with disabilities",
+          "rights of persons with disabilities",
+          "disability rights",
+          "CRPD",
+          "disability discrimination"
+        ]
+      }
+    },
+    "indigenous_peoples": {
+      "label": "Indigenous Peoples",
+      "group": "minorities_indigenous",
+      "forms": {
+        "en": [
+          "indigenous peoples",
+          "indigenous people",
+          "indigenous communities",
+          "indigenous community",
+          "indigenous groups",
+          "indigenous rights",
+          "first nations",
+          "tribal communities",
+          "native title",
+          "Orang Asli"
+        ]
+      }
+    },
+    "ethnic_minorities": {
+      "label": "Ethnic Minorities",
+      "group": "minorities_indigenous",
+      "forms": {
+        "en": [
+          "ethnic minorities",
+          "ethnic minority",
+          "ethnic minority groups",
+          "minority ethnic groups",
+          "ethnic groups",
+          "ethnic communities"
+        ]
+      }
+    },
+    "linguistic_minorities": {
+      "label": "Linguistic Minorities",
+      "group": "minorities_indigenous",
+      "forms": {
+        "en": [
+          "linguistic minorities",
+          "linguistic minority",
+          "language minorities",
+          "minority language",
+          "minority languages",
+          "indigenous languages",
+          "language rights"
+        ]
+      }
+    },
+    "religious_minorities": {
+      "label": "Religious Minorities",
+      "group": "minorities_indigenous",
+      "forms": {
+        "en": [
+          "religious minorities",
+          "religious minority",
+          "minority religions",
+          "religious freedom",
+          "freedom of religion",
+          "religious discrimination",
+          "blasphemy law",
+          "blasphemy laws"
+        ]
+      }
+    },
+    "caste_discrimination": {
+      "label": "Caste Discrimination",
+      "group": "minorities_indigenous",
+      "forms": {
+        "en": [
+          "caste discrimination",
+          "caste-based discrimination",
+          "caste system",
+          "caste",
+          "Dalit",
+          "Dalits",
+          "untouchability",
+          "lower castes"
+        ]
+      }
+    },
+    "refugee_inclusion": {
+      "label": "Refugee Inclusion",
+      "group": "inclusion_of_groups",
+      "forms": {
+        "en": [
+          "refugee inclusion",
+          "inclusion of refugees",
+          "refugee integration",
+          "integration of refugees",
+          "refugee self-reliance",
+          "right to work for refugees",
+          "refugee work permits"
+        ]
+      }
+    },
+    "migrant_inclusion": {
+      "label": "Migrant Inclusion",
+      "group": "inclusion_of_groups",
+      "forms": {
+        "en": [
+          "migrant inclusion",
+          "inclusion of migrants",
+          "social inclusion of migrants",
+          "migrant rights",
+          "migrants' rights",
+          "xenophobia",
+          "xenophobic"
+        ]
+      }
+    },
+    "youth_inclusion": {
+      "label": "Youth Inclusion",
+      "group": "inclusion_of_groups",
+      "forms": {
+        "en": [
+          "youth inclusion",
+          "inclusion of young people",
+          "youth participation",
+          "youth engagement",
+          "youth empowerment",
+          "youth exclusion"
+        ]
+      }
+    },
+    "elderly_inclusion": {
+      "label": "Elderly Inclusion",
+      "group": "inclusion_of_groups",
+      "forms": {
+        "en": [
+          "elderly inclusion",
+          "inclusion of older persons",
+          "rights of older persons",
+          "older persons",
+          "senior citizens",
+          "elderly people",
+          "the elderly",
+          "ageism",
+          "age discrimination"
+        ]
+      }
+    },
+    "accessibility": {
+      "label": "Accessibility",
+      "group": "inclusion_of_groups",
+      "forms": {
+        "en": [
+          "disability access",
+          "disabled access",
+          "wheelchair accessible",
+          "wheelchair-accessible",
+          "barrier-free",
+          "universal design",
+          "accessible infrastructure",
+          "accessible transport",
+          "accessibility for persons with disabilities",
+          "accessibility standards"
+        ]
+      }
+    },
+    "discrimination": {
+      "label": "Discrimination",
+      "group": "inclusion_participation",
+      "forms": {
+        "en": [
+          "discrimination",
+          "discriminatory",
+          "discriminated against",
+          "anti-discrimination",
+          "non-discrimination"
+        ]
+      }
+    },
+    "equal_opportunity": {
+      "label": "Equal Opportunity",
+      "group": "inclusion_participation",
+      "forms": {
+        "en": [
+          "equal opportunity",
+          "equal opportunities",
+          "equality of opportunity",
+          "equal employment opportunity",
+          "affirmative action"
+        ]
+      }
+    },
+    "community_participation": {
+      "label": "Community Participation",
+      "group": "inclusion_participation",
+      "forms": {
+        "en": [
+          "community participation",
+          "community engagement",
+          "community involvement",
+          "community-driven development",
+          "participatory planning",
+          "participatory budgeting",
+          "community consultation",
+          "community consultations"
+        ]
+      }
+    },
+    "social_cohesion": {
+      "label": "Social Cohesion",
+      "group": "inclusion_participation",
+      "forms": {
+        "en": [
+          "social cohesion",
+          "social harmony",
+          "social fabric",
+          "communal harmony",
+          "interfaith harmony",
+          "social trust",
+          "interethnic relations"
+        ]
+      }
+    },
+    "social_accountability": {
+      "label": "Social Accountability",
+      "group": "inclusion_participation",
+      "forms": {
+        "en": [
+          "social accountability",
+          "social audit",
+          "social audits",
+          "community scorecard",
+          "community scorecards",
+          "citizen report cards",
+          "citizen monitoring",
+          "grievance redress mechanism",
+          "grievance redress mechanisms"
+        ]
+      }
+    }
+  }
+}

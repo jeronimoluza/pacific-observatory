@@ -1,0 +1,482 @@
+{
+  "heading": "migration_demography",
+  "label": "Migration, demography and spatial mobility",
+  "groups": {
+    "migration_flows": {
+      "label": "Migration flows",
+      "parent": null
+    },
+    "labor_and_temporary_migration": {
+      "label": "Labor and temporary migration",
+      "parent": "migration_flows"
+    },
+    "irregular_forced_migration": {
+      "label": "Irregular and forced migration",
+      "parent": null
+    },
+    "border_enforcement": {
+      "label": "Borders and enforcement",
+      "parent": "irregular_forced_migration"
+    },
+    "migration_governance_integration": {
+      "label": "Migration policy, integration and remittances",
+      "parent": null
+    },
+    "population_and_demography": {
+      "label": "Population and demography",
+      "parent": null
+    },
+    "population_age_structure": {
+      "label": "Age structure",
+      "parent": "population_and_demography"
+    },
+    "population_distribution": {
+      "label": "Population size and distribution",
+      "parent": "population_and_demography"
+    }
+  },
+  "concepts": {
+    "migration": {
+      "label": "Migration",
+      "group": "migration_flows",
+      "forms": {
+        "en": [
+          "migration",
+          "migrants",
+          "migrant",
+          "migration flows",
+          "migratory flows",
+          "migrant flows"
+        ]
+      }
+    },
+    "internal_migration": {
+      "label": "Internal Migration",
+      "group": "migration_flows",
+      "forms": {
+        "en": [
+          "internal migration",
+          "internal migrants",
+          "internal migrant",
+          "domestic migration",
+          "interprovincial migration",
+          "inter-provincial migration",
+          "inter-island migration"
+        ]
+      }
+    },
+    "international_migration": {
+      "label": "International Migration",
+      "group": "migration_flows",
+      "forms": {
+        "en": [
+          "international migration",
+          "international migrants",
+          "cross-border migration",
+          "overseas migration",
+          "migration abroad"
+        ]
+      }
+    },
+    "rural_urban_migration": {
+      "label": "Rural-Urban Migration",
+      "group": "migration_flows",
+      "forms": {
+        "en": [
+          "rural-urban migration",
+          "rural urban migration",
+          "rural-to-urban migration",
+          "rural to urban migration",
+          "migration to cities",
+          "urban drift"
+        ]
+      }
+    },
+    "emigration": {
+      "label": "Emigration",
+      "group": "migration_flows",
+      "forms": {
+        "en": [
+          "emigration",
+          "emigrants",
+          "emigrant",
+          "emigrate",
+          "emigrated",
+          "emigrating",
+          "outmigration",
+          "out-migration",
+          "brain drain"
+        ]
+      }
+    },
+    "labor_migration": {
+      "label": "Labor Migration",
+      "group": "labor_and_temporary_migration",
+      "forms": {
+        "en": [
+          "labor migration",
+          "labour migration",
+          "labor mobility",
+          "labour mobility",
+          "overseas workers",
+          "overseas foreign workers",
+          "OFWs",
+          "guest workers",
+          "foreign workers"
+        ]
+      }
+    },
+    "circular_migration": {
+      "label": "Circular Migration",
+      "group": "labor_and_temporary_migration",
+      "forms": {
+        "en": [
+          "circular migration",
+          "circular migrants",
+          "temporary migration",
+          "temporary migrants"
+        ]
+      }
+    },
+    "seasonal_migration": {
+      "label": "Seasonal Migration",
+      "group": "labor_and_temporary_migration",
+      "forms": {
+        "en": [
+          "seasonal migration",
+          "seasonal migrants",
+          "seasonal worker programme",
+          "seasonal worker program",
+          "Recognised Seasonal Employer",
+          "RSE scheme",
+          "seasonal work visa"
+        ]
+      }
+    },
+    "return_migration": {
+      "label": "Return Migration",
+      "group": "labor_and_temporary_migration",
+      "forms": {
+        "en": [
+          "return migration",
+          "return migrants",
+          "returning migrants",
+          "returned migrants",
+          "returnee migrants",
+          "migrant returnees",
+          "repatriated workers",
+          "repatriation of migrant workers"
+        ]
+      }
+    },
+    "irregular_migration": {
+      "label": "Irregular Migration",
+      "group": "irregular_forced_migration",
+      "forms": {
+        "en": [
+          "irregular migration",
+          "irregular migrants",
+          "irregular migrant",
+          "illegal migration",
+          "illegal immigration",
+          "illegal migrants",
+          "illegal immigrants",
+          "unauthorized migration"
+        ]
+      }
+    },
+    "undocumented_migration": {
+      "label": "Undocumented Migration",
+      "group": "irregular_forced_migration",
+      "forms": {
+        "en": [
+          "undocumented migration",
+          "undocumented migrants",
+          "undocumented immigrants",
+          "undocumented workers",
+          "undocumented foreigners"
+        ]
+      }
+    },
+    "population_displacement": {
+      "label": "Population Displacement",
+      "group": "irregular_forced_migration",
+      "forms": {
+        "en": [
+          "population displacement",
+          "displaced population",
+          "displaced populations",
+          "displacement of people",
+          "mass displacement",
+          "displaced people",
+          "displaced persons"
+        ]
+      }
+    },
+    "human_trafficking": {
+      "label": "Human Trafficking",
+      "group": "irregular_forced_migration",
+      "forms": {
+        "en": [
+          "human trafficking",
+          "trafficking in persons",
+          "trafficking of persons",
+          "people trafficking",
+          "sex trafficking",
+          "labor trafficking",
+          "labour trafficking",
+          "trafficking victims",
+          "victims of trafficking"
+        ]
+      }
+    },
+    "people_smuggling": {
+      "label": "People Smuggling",
+      "group": "irregular_forced_migration",
+      "forms": {
+        "en": [
+          "people smuggling",
+          "people smuggler",
+          "people smugglers",
+          "migrant smuggling",
+          "smuggling of migrants",
+          "human smuggling",
+          "human smugglers"
+        ]
+      }
+    },
+    "border_management": {
+      "label": "Border Management",
+      "group": "border_enforcement",
+      "forms": {
+        "en": [
+          "border management",
+          "border control",
+          "border controls",
+          "border security",
+          "border patrol",
+          "border protection",
+          "border enforcement",
+          "border checkpoints"
+        ]
+      }
+    },
+    "deportation": {
+      "label": "Deportation",
+      "group": "border_enforcement",
+      "forms": {
+        "en": [
+          "deportation",
+          "deportations",
+          "deport",
+          "deported",
+          "deportee",
+          "deportees",
+          "expulsion of migrants",
+          "expelled migrants"
+        ]
+      }
+    },
+    "migration_detention": {
+      "label": "Migration Detention",
+      "group": "border_enforcement",
+      "forms": {
+        "en": [
+          "migration detention",
+          "immigration detention",
+          "migrant detention",
+          "immigration detention centre",
+          "immigration detention center",
+          "offshore detention",
+          "offshore processing",
+          "detained migrants"
+        ]
+      }
+    },
+    "migration_policy": {
+      "label": "Migration Policy",
+      "group": "migration_governance_integration",
+      "forms": {
+        "en": [
+          "migration policy",
+          "migration policies",
+          "migration law",
+          "migration laws",
+          "migration governance",
+          "migration management",
+          "migration reform"
+        ]
+      }
+    },
+    "immigration_policy": {
+      "label": "Immigration Policy",
+      "group": "migration_governance_integration",
+      "forms": {
+        "en": [
+          "immigration policy",
+          "immigration policies",
+          "immigration law",
+          "immigration laws",
+          "immigration reform",
+          "immigration rules",
+          "immigration crackdown",
+          "visa policy",
+          "visa rules"
+        ]
+      }
+    },
+    "migrant_integration": {
+      "label": "Migrant Integration",
+      "group": "migration_governance_integration",
+      "forms": {
+        "en": [
+          "migrant integration",
+          "integration of migrants",
+          "immigrant integration",
+          "integration of immigrants",
+          "migrant inclusion"
+        ]
+      }
+    },
+    "migrant_remittances": {
+      "label": "Migrant Remittances",
+      "group": "migration_governance_integration",
+      "forms": {
+        "en": [
+          "migrant remittances",
+          "remittances from migrants",
+          "workers' remittances",
+          "remittances from abroad",
+          "remittances sent home",
+          "money sent home"
+        ]
+      }
+    },
+    "demographic_dividend": {
+      "label": "Demographic Dividend",
+      "group": "population_age_structure",
+      "forms": {
+        "en": [
+          "demographic dividend",
+          "demographic bonus",
+          "demographic window",
+          "demographic window of opportunity"
+        ]
+      }
+    },
+    "dependency_ratio": {
+      "label": "Dependency Ratio",
+      "group": "population_age_structure",
+      "forms": {
+        "en": [
+          "dependency ratio",
+          "dependency ratios",
+          "old-age dependency ratio",
+          "old age dependency ratio",
+          "age dependency ratio",
+          "youth dependency ratio"
+        ]
+      }
+    },
+    "youth_bulge": {
+      "label": "Youth Bulge",
+      "group": "population_age_structure",
+      "forms": {
+        "en": [
+          "youth bulge",
+          "youth bulges",
+          "youthful population",
+          "young population",
+          "large youth population"
+        ]
+      }
+    },
+    "population_aging": {
+      "label": "Population Aging",
+      "group": "population_age_structure",
+      "forms": {
+        "en": [
+          "population aging",
+          "population ageing",
+          "aging population",
+          "ageing population",
+          "aging society",
+          "ageing society",
+          "aged society",
+          "super-aged society",
+          "greying population",
+          "graying population"
+        ]
+      }
+    },
+    "population_decline": {
+      "label": "Population Decline",
+      "group": "population_distribution",
+      "forms": {
+        "en": [
+          "population decline",
+          "declining population",
+          "shrinking population",
+          "falling population",
+          "population shrinkage",
+          "depopulation"
+        ]
+      }
+    },
+    "urban_population_growth": {
+      "label": "Urban Population Growth",
+      "group": "population_distribution",
+      "forms": {
+        "en": [
+          "urban population growth",
+          "growth of the urban population",
+          "urban population",
+          "city population growth"
+        ]
+      }
+    },
+    "rural_depopulation": {
+      "label": "Rural Depopulation",
+      "group": "population_distribution",
+      "forms": {
+        "en": [
+          "rural depopulation",
+          "depopulation of rural areas",
+          "rural exodus",
+          "rural flight",
+          "rural population decline",
+          "ghost villages"
+        ]
+      }
+    },
+    "household_formation": {
+      "label": "Household Formation",
+      "group": "population_distribution",
+      "forms": {
+        "en": [
+          "household formation",
+          "new households",
+          "household size",
+          "household sizes",
+          "household growth",
+          "number of households"
+        ]
+      }
+    },
+    "population_census": {
+      "label": "Population Census",
+      "group": "population_and_demography",
+      "forms": {
+        "en": [
+          "population census",
+          "population and housing census",
+          "national census",
+          "census",
+          "censuses",
+          "census enumeration",
+          "census enumerators"
+        ]
+      }
+    }
+  }
+}

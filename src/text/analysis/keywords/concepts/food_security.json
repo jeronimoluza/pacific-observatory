@@ -1,0 +1,1059 @@
+{
+  "heading": "food_security",
+  "label": "Food security",
+  "groups": {
+    "food_security_status": {
+      "label": "Food security and insecurity",
+      "parent": null
+    },
+    "food_insecurity_severity": {
+      "label": "Severity and duration of food insecurity",
+      "parent": "food_security_status"
+    },
+    "food_security_dimensions": {
+      "label": "Food security dimensions",
+      "parent": "food_security_status"
+    },
+    "food_shortage_rationing": {
+      "label": "Food shortages and rationing",
+      "parent": null
+    },
+    "food_trade_supply": {
+      "label": "Food trade",
+      "parent": null
+    },
+    "food_stocks_reserves": {
+      "label": "Food reserves and stocks",
+      "parent": null
+    },
+    "food_pricing": {
+      "label": "Food prices",
+      "parent": null
+    },
+    "food_staple_prices": {
+      "label": "Staple food prices",
+      "parent": "food_pricing"
+    },
+    "food_assistance_programs": {
+      "label": "Food assistance",
+      "parent": null
+    },
+    "food_hunger_famine": {
+      "label": "Hunger, famine and food crises",
+      "parent": null
+    },
+    "food_famine_conditions": {
+      "label": "Famine",
+      "parent": "food_hunger_famine"
+    },
+    "food_hunger_seasonality": {
+      "label": "Seasonal hunger",
+      "parent": "food_hunger_famine"
+    },
+    "food_diet_coping": {
+      "label": "Diet, meals and coping",
+      "parent": null
+    },
+    "food_meal_reduction": {
+      "label": "Meal reduction",
+      "parent": "food_diet_coping"
+    },
+    "food_survey_indicators": {
+      "label": "Food security survey indicators",
+      "parent": "food_diet_coping"
+    }
+  },
+  "concepts": {
+    "food_security": {
+      "label": "Food Security",
+      "group": "food_security_status",
+      "forms": {
+        "en": [
+          "food security",
+          "food secure",
+          "national food security",
+          "food self-sufficiency",
+          "food sovereignty",
+          "food resilience"
+        ]
+      }
+    },
+    "food_insecurity": {
+      "label": "Food Insecurity",
+      "group": "food_security_status",
+      "forms": {
+        "en": [
+          "food insecurity",
+          "food insecurities",
+          "food insecure",
+          "food-insecure",
+          "food poverty"
+        ]
+      }
+    },
+    "household_food_insecurity": {
+      "label": "Household Food Insecurity",
+      "group": "food_security_status",
+      "forms": {
+        "en": [
+          "household food insecurity",
+          "household food security",
+          "food-insecure households",
+          "food insecure households",
+          "food insecure families"
+        ]
+      }
+    },
+    "integrated_food_security_phase_classification": {
+      "label": "Integrated Food Security Phase Classification",
+      "group": "food_security_status",
+      "forms": {
+        "en": [
+          "Integrated Food Security Phase Classification",
+          "IPC phase",
+          "IPC phases",
+          "IPC classification",
+          "IPC analysis",
+          "IPC Phase 3",
+          "Cadre Harmonisé",
+          "Cadre Harmonise"
+        ]
+      }
+    },
+    "acute_food_insecurity": {
+      "label": "Acute Food Insecurity",
+      "group": "food_insecurity_severity",
+      "forms": {
+        "en": [
+          "acute food insecurity",
+          "acutely food insecure",
+          "acutely food-insecure",
+          "acute hunger"
+        ]
+      }
+    },
+    "chronic_food_insecurity": {
+      "label": "Chronic Food Insecurity",
+      "group": "food_insecurity_severity",
+      "forms": {
+        "en": [
+          "chronic food insecurity",
+          "chronically food insecure",
+          "chronically food-insecure"
+        ]
+      }
+    },
+    "severe_food_insecurity": {
+      "label": "Severe Food Insecurity",
+      "group": "food_insecurity_severity",
+      "forms": {
+        "en": [
+          "severe food insecurity",
+          "severely food insecure",
+          "severely food-insecure"
+        ]
+      }
+    },
+    "moderate_food_insecurity": {
+      "label": "Moderate Food Insecurity",
+      "group": "food_insecurity_severity",
+      "forms": {
+        "en": [
+          "moderate food insecurity",
+          "moderately food insecure",
+          "moderately food-insecure",
+          "moderate or severe food insecurity"
+        ]
+      }
+    },
+    "food_access": {
+      "label": "Food Access",
+      "group": "food_security_dimensions",
+      "forms": {
+        "en": [
+          "food access",
+          "access to food",
+          "accessing food",
+          "physical access to food",
+          "economic access to food"
+        ]
+      }
+    },
+    "food_availability": {
+      "label": "Food Availability",
+      "group": "food_security_dimensions",
+      "forms": {
+        "en": [
+          "food availability",
+          "availability of food",
+          "food supply",
+          "food supplies",
+          "domestic food supply"
+        ]
+      }
+    },
+    "food_affordability": {
+      "label": "Food Affordability",
+      "group": "food_security_dimensions",
+      "forms": {
+        "en": [
+          "food affordability",
+          "affordability of food",
+          "affordable food",
+          "unaffordable food",
+          "cost of a healthy diet",
+          "afford a healthy diet",
+          "cannot afford food"
+        ]
+      }
+    },
+    "food_utilization": {
+      "label": "Food Utilization",
+      "group": "food_security_dimensions",
+      "forms": {
+        "en": [
+          "food utilization",
+          "food utilisation",
+          "utilization of food",
+          "utilisation of food"
+        ]
+      }
+    },
+    "food_stability": {
+      "label": "Food Stability",
+      "group": "food_security_dimensions",
+      "forms": {
+        "en": [
+          "food stability",
+          "stability of food supply",
+          "stable food supply",
+          "food supply stability"
+        ]
+      }
+    },
+    "food_market_access": {
+      "label": "Food Market Access",
+      "group": "food_security_dimensions",
+      "forms": {
+        "en": [
+          "food market access",
+          "access to food markets",
+          "access to markets for food"
+        ]
+      }
+    },
+    "food_rationing": {
+      "label": "Food Rationing",
+      "group": "food_shortage_rationing",
+      "forms": {
+        "en": [
+          "food rationing",
+          "rationing of food",
+          "rationed food",
+          "rice rationing",
+          "bread rationing",
+          "ration card",
+          "ration cards",
+          "food ration cards"
+        ]
+      }
+    },
+    "food_shortages": {
+      "label": "Food Shortages",
+      "group": "food_shortage_rationing",
+      "forms": {
+        "en": [
+          "food shortages",
+          "food shortage",
+          "shortage of food",
+          "shortages of food",
+          "food scarcity",
+          "empty shelves",
+          "bare shelves"
+        ]
+      }
+    },
+    "staple_food_shortages": {
+      "label": "Staple Food Shortages",
+      "group": "food_shortage_rationing",
+      "forms": {
+        "en": [
+          "staple food shortages",
+          "staple food shortage",
+          "shortage of staples",
+          "rice shortage",
+          "rice shortages",
+          "shortage of rice",
+          "maize shortage",
+          "shortage of maize",
+          "wheat shortage",
+          "flour shortage",
+          "bread shortage",
+          "grain shortage",
+          "grain shortages",
+          "cereal shortage"
+        ]
+      }
+    },
+    "food_supply_disruption": {
+      "label": "Food Supply Disruption",
+      "group": "food_shortage_rationing",
+      "forms": {
+        "en": [
+          "food supply disruption",
+          "food supply disruptions",
+          "disruption of food supplies",
+          "disruptions to food supply",
+          "disrupted food supplies",
+          "food supply chain disruption",
+          "food supply chain disruptions",
+          "food supply shock",
+          "food supply shocks"
+        ]
+      }
+    },
+    "food_market_disruption": {
+      "label": "Food Market Disruption",
+      "group": "food_shortage_rationing",
+      "forms": {
+        "en": [
+          "food market disruption",
+          "food market disruptions",
+          "disruption of food markets",
+          "food markets disrupted",
+          "food market closures",
+          "closure of food markets",
+          "wet market closures"
+        ]
+      }
+    },
+    "food_import_dependence": {
+      "label": "Food Import Dependence",
+      "group": "food_trade_supply",
+      "forms": {
+        "en": [
+          "food import dependence",
+          "food import dependency",
+          "dependence on food imports",
+          "reliance on food imports",
+          "net food importer",
+          "net food-importing",
+          "food imports"
+        ]
+      }
+    },
+    "food_import_bill": {
+      "label": "Food Import Bill",
+      "group": "food_trade_supply",
+      "forms": {
+        "en": [
+          "food import bill",
+          "food import bills",
+          "food import costs",
+          "cost of food imports",
+          "wheat import bill",
+          "rice import bill",
+          "cereal import bill"
+        ]
+      }
+    },
+    "food_export_restrictions": {
+      "label": "Food Export Restrictions",
+      "group": "food_trade_supply",
+      "forms": {
+        "en": [
+          "food export restrictions",
+          "food export restriction",
+          "restrictions on food exports",
+          "export restrictions on food",
+          "rice export restrictions",
+          "grain export restrictions",
+          "export curbs on rice"
+        ]
+      }
+    },
+    "food_export_bans": {
+      "label": "Food Export Bans",
+      "group": "food_trade_supply",
+      "forms": {
+        "en": [
+          "food export bans",
+          "food export ban",
+          "ban on food exports",
+          "rice export ban",
+          "export ban on rice",
+          "ban on rice exports",
+          "wheat export ban",
+          "maize export ban",
+          "grain export ban"
+        ]
+      }
+    },
+    "food_import_restrictions": {
+      "label": "Food Import Restrictions",
+      "group": "food_trade_supply",
+      "forms": {
+        "en": [
+          "food import restrictions",
+          "restrictions on food imports",
+          "food import ban",
+          "food import bans",
+          "import ban on food",
+          "rice import restrictions",
+          "rice import ban"
+        ]
+      }
+    },
+    "food_reserves": {
+      "label": "Food Reserves",
+      "group": "food_stocks_reserves",
+      "forms": {
+        "en": [
+          "food reserves",
+          "food reserve",
+          "national food reserve",
+          "food stockpile",
+          "food stockpiles",
+          "food stocks",
+          "buffer stock",
+          "buffer stocks",
+          "rice reserve",
+          "rice reserves",
+          "rice stocks",
+          "public stockholding"
+        ]
+      }
+    },
+    "strategic_grain_reserves": {
+      "label": "Strategic Grain Reserves",
+      "group": "food_stocks_reserves",
+      "forms": {
+        "en": [
+          "strategic grain reserves",
+          "strategic grain reserve",
+          "national grain reserve",
+          "grain reserve",
+          "grain reserves",
+          "strategic rice reserve",
+          "strategic food reserve",
+          "cereal reserve",
+          "cereal reserves",
+          "National Food Reserve Agency"
+        ]
+      }
+    },
+    "emergency_food_stocks": {
+      "label": "Emergency Food Stocks",
+      "group": "food_stocks_reserves",
+      "forms": {
+        "en": [
+          "emergency food stocks",
+          "emergency food stock",
+          "emergency food reserve",
+          "emergency food reserves",
+          "emergency grain stocks",
+          "emergency stockpile",
+          "ASEAN Plus Three Emergency Rice Reserve",
+          "APTERR"
+        ]
+      }
+    },
+    "grain_stock_releases": {
+      "label": "Grain Stock Releases",
+      "group": "food_stocks_reserves",
+      "forms": {
+        "en": [
+          "grain stock releases",
+          "grain stock release",
+          "release of grain reserves",
+          "release of grain stocks",
+          "release of rice reserves",
+          "release of rice stocks",
+          "released rice stocks",
+          "rice stock release"
+        ]
+      }
+    },
+    "food_stock_depletion": {
+      "label": "Food Stock Depletion",
+      "group": "food_stocks_reserves",
+      "forms": {
+        "en": [
+          "food stock depletion",
+          "depletion of food stocks",
+          "depleted food stocks",
+          "dwindling food stocks",
+          "depleted grain reserves",
+          "dwindling rice stocks",
+          "empty granaries"
+        ]
+      }
+    },
+    "food_prices": {
+      "label": "Food Prices",
+      "group": "food_pricing",
+      "forms": {
+        "en": [
+          "food prices",
+          "food price",
+          "price of food",
+          "prices of food",
+          "cost of food",
+          "food costs",
+          "grocery prices",
+          "retail food prices",
+          "food price index",
+          "food basket"
+        ]
+      }
+    },
+    "food_price_inflation": {
+      "label": "Food Price Inflation",
+      "group": "food_pricing",
+      "forms": {
+        "en": [
+          "food price inflation",
+          "food-price inflation",
+          "food inflation",
+          "food inflation rate",
+          "inflation in food prices"
+        ]
+      }
+    },
+    "food_price_spikes": {
+      "label": "Food Price Spikes",
+      "group": "food_pricing",
+      "forms": {
+        "en": [
+          "food price spikes",
+          "food price spike",
+          "food price surge",
+          "food price surges",
+          "food price shock",
+          "food price shocks",
+          "soaring food prices",
+          "surging food prices",
+          "skyrocketing food prices",
+          "spike in food prices"
+        ]
+      }
+    },
+    "food_price_volatility": {
+      "label": "Food Price Volatility",
+      "group": "food_pricing",
+      "forms": {
+        "en": [
+          "food price volatility",
+          "volatile food prices",
+          "food price fluctuations",
+          "fluctuating food prices",
+          "food price instability",
+          "food price stabilization",
+          "food price stabilisation",
+          "stabilize food prices",
+          "stabilise food prices"
+        ]
+      }
+    },
+    "staple_food_prices": {
+      "label": "Staple Food Prices",
+      "group": "food_staple_prices",
+      "forms": {
+        "en": [
+          "staple food prices",
+          "staple food price",
+          "staple prices",
+          "prices of staples",
+          "price of staples",
+          "basic food prices",
+          "prices of basic foodstuffs"
+        ]
+      }
+    },
+    "cereal_prices": {
+      "label": "Cereal Prices",
+      "group": "food_staple_prices",
+      "forms": {
+        "en": [
+          "cereal prices",
+          "cereal price",
+          "prices of cereals",
+          "grain prices",
+          "grain price",
+          "price of grain",
+          "cereal price index"
+        ]
+      }
+    },
+    "rice_prices": {
+      "label": "Rice Prices",
+      "group": "food_staple_prices",
+      "forms": {
+        "en": [
+          "rice prices",
+          "rice price",
+          "price of rice",
+          "prices of rice",
+          "cost of rice",
+          "retail rice prices",
+          "rice price hike"
+        ]
+      }
+    },
+    "wheat_prices": {
+      "label": "Wheat Prices",
+      "group": "food_staple_prices",
+      "forms": {
+        "en": [
+          "wheat prices",
+          "wheat price",
+          "price of wheat",
+          "flour prices",
+          "flour price",
+          "price of flour",
+          "bread prices",
+          "bread price",
+          "price of bread"
+        ]
+      }
+    },
+    "maize_prices": {
+      "label": "Maize Prices",
+      "group": "food_staple_prices",
+      "forms": {
+        "en": [
+          "maize prices",
+          "maize price",
+          "price of maize",
+          "corn prices",
+          "corn price",
+          "price of corn",
+          "mealie meal price",
+          "mealie-meal price",
+          "maize meal price"
+        ]
+      }
+    },
+    "cooking_oil_prices": {
+      "label": "Cooking-Oil Prices",
+      "group": "food_staple_prices",
+      "forms": {
+        "en": [
+          "cooking-oil prices",
+          "cooking oil prices",
+          "cooking oil price",
+          "cooking-oil price",
+          "price of cooking oil",
+          "edible oil prices",
+          "vegetable oil prices",
+          "minyak goreng"
+        ]
+      }
+    },
+    "food_assistance": {
+      "label": "Food Assistance",
+      "group": "food_assistance_programs",
+      "forms": {
+        "en": [
+          "food assistance",
+          "food relief",
+          "food distribution",
+          "food distributions",
+          "food parcels",
+          "food packs",
+          "food hampers",
+          "food bank",
+          "food banks",
+          "targeted food assistance"
+        ]
+      }
+    },
+    "emergency_food_assistance": {
+      "label": "Emergency Food Assistance",
+      "group": "food_assistance_programs",
+      "forms": {
+        "en": [
+          "emergency food assistance",
+          "emergency food aid",
+          "emergency food relief",
+          "emergency food distribution",
+          "emergency feeding",
+          "general food distribution",
+          "life-saving food assistance"
+        ]
+      }
+    },
+    "food_aid": {
+      "label": "Food Aid",
+      "group": "food_assistance_programs",
+      "forms": {
+        "en": [
+          "food aid",
+          "food aid shipments",
+          "food aid deliveries",
+          "food donations",
+          "donated food"
+        ]
+      }
+    },
+    "in_kind_food_transfers": {
+      "label": "In-Kind Food Transfers",
+      "group": "food_assistance_programs",
+      "forms": {
+        "en": [
+          "in-kind food transfers",
+          "in kind food transfers",
+          "in-kind food assistance",
+          "in-kind transfers",
+          "food rations",
+          "food ration",
+          "Raskin",
+          "Rastra"
+        ]
+      }
+    },
+    "school_feeding": {
+      "label": "School Feeding",
+      "group": "food_assistance_programs",
+      "forms": {
+        "en": [
+          "school feeding",
+          "school feeding program",
+          "school feeding programme",
+          "school feeding programs",
+          "school feeding programmes",
+          "school meals",
+          "school meal",
+          "free school meals",
+          "school lunch",
+          "school lunches",
+          "school lunch program",
+          "school lunch programme"
+        ]
+      }
+    },
+    "community_kitchens": {
+      "label": "Community Kitchens",
+      "group": "food_assistance_programs",
+      "forms": {
+        "en": [
+          "community kitchens",
+          "community kitchen",
+          "communal kitchens",
+          "public kitchens",
+          "soup kitchens",
+          "soup kitchen",
+          "dapur umum",
+          "community pantry",
+          "community pantries"
+        ]
+      }
+    },
+    "food_vouchers": {
+      "label": "Food Vouchers",
+      "group": "food_assistance_programs",
+      "forms": {
+        "en": [
+          "food vouchers",
+          "food voucher",
+          "food stamps",
+          "food stamp",
+          "food coupons",
+          "SNAP benefits",
+          "Kartu Sembako"
+        ]
+      }
+    },
+    "food_subsidies": {
+      "label": "Food Subsidies",
+      "group": "food_assistance_programs",
+      "forms": {
+        "en": [
+          "food subsidies",
+          "food subsidy",
+          "subsidized food",
+          "subsidised food",
+          "subsidized rice",
+          "subsidised rice",
+          "rice subsidy",
+          "rice subsidies",
+          "bread subsidies",
+          "subsidized bread",
+          "subsidised bread"
+        ]
+      }
+    },
+    "food_crisis": {
+      "label": "Food Crisis",
+      "group": "food_hunger_famine",
+      "forms": {
+        "en": [
+          "food crisis",
+          "food crises",
+          "global food crisis",
+          "food price crisis",
+          "hunger crisis",
+          "hunger crises"
+        ]
+      }
+    },
+    "food_emergency": {
+      "label": "Food Emergency",
+      "group": "food_hunger_famine",
+      "forms": {
+        "en": [
+          "food emergency",
+          "food emergencies",
+          "food security emergency",
+          "nutrition emergency",
+          "state of food emergency",
+          "IPC Phase 4"
+        ]
+      }
+    },
+    "hunger": {
+      "label": "Hunger",
+      "group": "food_hunger_famine",
+      "forms": {
+        "en": [
+          "hunger",
+          "hungry people",
+          "going hungry",
+          "go hungry",
+          "went hungry",
+          "hunger levels",
+          "hunger hotspots",
+          "Global Hunger Index",
+          "zero hunger"
+        ]
+      }
+    },
+    "undernourishment": {
+      "label": "Undernourishment",
+      "group": "food_hunger_famine",
+      "forms": {
+        "en": [
+          "undernourishment",
+          "undernourished",
+          "prevalence of undernourishment",
+          "undernutrition",
+          "chronic hunger"
+        ]
+      }
+    },
+    "famine": {
+      "label": "Famine",
+      "group": "food_famine_conditions",
+      "forms": {
+        "en": [
+          "famine",
+          "famines",
+          "famine conditions",
+          "famine-like conditions",
+          "famine declaration",
+          "famine declared",
+          "IPC Phase 5",
+          "catastrophic hunger"
+        ]
+      }
+    },
+    "famine_risk": {
+      "label": "Famine Risk",
+      "group": "food_famine_conditions",
+      "forms": {
+        "en": [
+          "famine risk",
+          "risk of famine",
+          "brink of famine",
+          "verge of famine",
+          "threat of famine",
+          "looming famine",
+          "famine warning",
+          "famine warnings",
+          "famine early warning"
+        ]
+      }
+    },
+    "starvation": {
+      "label": "Starvation",
+      "group": "food_famine_conditions",
+      "forms": {
+        "en": [
+          "starvation",
+          "starving",
+          "starved to death",
+          "starve to death",
+          "starvation deaths",
+          "died of starvation",
+          "death by starvation"
+        ]
+      }
+    },
+    "lean_season": {
+      "label": "Lean Season",
+      "group": "food_hunger_seasonality",
+      "forms": {
+        "en": [
+          "lean season",
+          "lean seasons",
+          "lean period",
+          "pre-harvest season"
+        ]
+      }
+    },
+    "seasonal_hunger": {
+      "label": "Seasonal Hunger",
+      "group": "food_hunger_seasonality",
+      "forms": {
+        "en": [
+          "seasonal hunger",
+          "hunger season",
+          "hungry season",
+          "hunger gap",
+          "hunger months",
+          "seasonal food insecurity"
+        ]
+      }
+    },
+    "dietary_diversity": {
+      "label": "Dietary Diversity",
+      "group": "food_diet_coping",
+      "forms": {
+        "en": [
+          "dietary diversity",
+          "diet diversity",
+          "dietary diversity score",
+          "minimum dietary diversity",
+          "diverse diets",
+          "diversified diet"
+        ]
+      }
+    },
+    "poor_diet_quality": {
+      "label": "Poor Diet Quality",
+      "group": "food_diet_coping",
+      "forms": {
+        "en": [
+          "poor diet quality",
+          "diet quality",
+          "poor diets",
+          "poor-quality diets",
+          "low-quality diets",
+          "unhealthy diets",
+          "nutrient-poor diets"
+        ]
+      }
+    },
+    "subsistence_consumption": {
+      "label": "Subsistence Consumption",
+      "group": "food_diet_coping",
+      "forms": {
+        "en": [
+          "subsistence consumption",
+          "own consumption",
+          "own-consumption",
+          "self-consumption",
+          "consumption of own produce",
+          "own-produced food"
+        ]
+      }
+    },
+    "emergency_livelihood_coping": {
+      "label": "Emergency Livelihood Coping",
+      "group": "food_diet_coping",
+      "forms": {
+        "en": [
+          "emergency livelihood coping",
+          "emergency livelihood coping strategies",
+          "livelihood coping strategies",
+          "livelihood-based coping",
+          "emergency coping strategies",
+          "crisis coping strategies"
+        ]
+      }
+    },
+    "meal_skipping": {
+      "label": "Meal Skipping",
+      "group": "food_meal_reduction",
+      "forms": {
+        "en": [
+          "meal skipping",
+          "skipping meals",
+          "skipped meals",
+          "skip meals",
+          "skipping a meal",
+          "skipped a meal",
+          "missed meals",
+          "going without meals"
+        ]
+      }
+    },
+    "reduced_meal_size": {
+      "label": "Reduced Meal Size",
+      "group": "food_meal_reduction",
+      "forms": {
+        "en": [
+          "reduced meal size",
+          "reduced meal sizes",
+          "smaller meals",
+          "smaller portions",
+          "reduced portions",
+          "reduced portion sizes",
+          "reducing portion sizes",
+          "cutting portion sizes"
+        ]
+      }
+    },
+    "reduced_meal_frequency": {
+      "label": "Reduced Meal Frequency",
+      "group": "food_meal_reduction",
+      "forms": {
+        "en": [
+          "reduced meal frequency",
+          "fewer meals",
+          "fewer meals a day",
+          "reduced number of meals",
+          "reducing the number of meals",
+          "eating fewer meals"
+        ]
+      }
+    },
+    "food_consumption_score": {
+      "label": "Food Consumption Score",
+      "group": "food_survey_indicators",
+      "forms": {
+        "en": [
+          "food consumption score",
+          "food consumption scores",
+          "poor food consumption",
+          "borderline food consumption",
+          "inadequate food consumption"
+        ]
+      }
+    },
+    "household_hunger_scale": {
+      "label": "Household Hunger Scale",
+      "group": "food_survey_indicators",
+      "forms": {
+        "en": [
+          "household hunger scale",
+          "household hunger score"
+        ]
+      }
+    },
+    "coping_strategies_index": {
+      "label": "Coping Strategies Index",
+      "group": "food_survey_indicators",
+      "forms": {
+        "en": [
+          "coping strategies index",
+          "coping strategy index",
+          "reduced coping strategies index",
+          "rCSI",
+          "food-based coping strategies",
+          "food-based coping"
+        ]
+      }
+    }
+  }
+}
