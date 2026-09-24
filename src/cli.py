@@ -448,6 +448,7 @@ from prices.enrich.classifier.cli import (  # noqa: E402
     train_classifier_command as _prices_train_classifier,
 )
 from prices.enrich.label_cli import label_group as _prices_label  # noqa: E402
+from prices.enrich.hierlex.cli import hierlex_group as _prices_hierlex  # noqa: E402
 from prices.enrich.gold_audit.cli import (  # noqa: E402
     gold_audit_group as _prices_gold_audit,
 )
@@ -478,6 +479,7 @@ prices.add_command(_prices_coverage, name="coverage")
 prices.add_command(_prices_port_decisions, name="port-decisions")
 prices.add_command(_prices_train_classifier, name="train-classifier")
 prices.add_command(_prices_label, name="label")
+prices.add_command(_prices_hierlex, name="hierlex")
 prices.add_command(_prices_gold_audit, name="gold-audit")
 prices.add_command(_prices_rtcal, name="rtcal")
 prices.add_command(_prices_sanity, name="sanity")

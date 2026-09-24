@@ -23,7 +23,7 @@ def hierlex_group() -> None:
 
 
 @hierlex_group.command("verify")
-@click.option("--version", default=None, help="Bundle version (default: newest).")
+@click.option("--version", default=None, help="Bundle version (default: promoted, else newest).")
 def verify_cmd(version: str | None) -> None:
     """Check every frozen artifact against the bundle's own sha256 manifest."""
     installed = package.available()
@@ -49,8 +49,17 @@ def verify_cmd(version: str | None) -> None:
     click.echo(f"integrity: OK ({len(meta['artifacts'])} artifacts)")
 
 
+@hierlex_group.command("promote")
+@click.argument("version")
+def promote_cmd(version: str) -> None:
+    """Make VERSION the bundle every other command uses by default."""
+    was = package.read_promoted()
+    package.promote(version)
+    click.echo(f"promoted {version} (was {was or 'unset: newest directory'})")
+
+
 @hierlex_group.command("score")
-@click.option("--version", default=None, help="Bundle version (default: newest).")
+@click.option("--version", default=None, help="Bundle version (default: promoted, else newest).")
 @click.option(
     "--chunk-rows",
     default=20_000,
@@ -90,7 +99,7 @@ def score_cmd(version, chunk_rows, max_buckets, products_path, workers) -> None:
 
 
 @hierlex_group.command("decide")
-@click.option("--version", default=None, help="Bundle version (default: newest).")
+@click.option("--version", default=None, help="Bundle version (default: promoted, else newest).")
 @click.option(
     "--policy",
     default="conservative_risk",
@@ -134,7 +143,7 @@ def decide_cmd(version, policy, out_path, full_out_path, in_path) -> None:
 
 
 @hierlex_group.command("report")
-@click.option("--version", default=None, help="Bundle version (default: newest).")
+@click.option("--version", default=None, help="Bundle version (default: promoted, else newest).")
 @click.option(
     "--policy",
     default="conservative_risk",

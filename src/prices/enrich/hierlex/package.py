@@ -29,6 +29,10 @@ MANIFEST_REL = Path("models") / "model_manifest.json"
 # manifest, and `available()` skips a directory with no manifest, so this is
 # invisible to `resolve()`.
 TAUS_DIR = PACKAGE_ROOT / "taus"
+# The live bundle, named explicitly. Without it the newest directory wins, so
+# unzipping a bundle would promote it. Same shape as the in-house classifier's
+# `latest.txt`.
+PROMOTED_POINTER = PACKAGE_ROOT / "promoted.txt"
 
 
 def available() -> list[str]:
@@ -37,8 +41,14 @@ def available() -> list[str]:
     return sorted(p.name for p in PACKAGE_ROOT.iterdir() if (p / MANIFEST_REL).exists())
 
 
+def read_promoted() -> str | None:
+    if not PROMOTED_POINTER.exists():
+        return None
+    return PROMOTED_POINTER.read_text(encoding="utf-8").strip() or None
+
+
 def resolve(version: str | None = None) -> Path:
-    """Bundle directory for `version`, or the newest installed one."""
+    """Bundle directory for `version`, else the promoted one, else the newest."""
     names = available()
     if not names:
         raise FileNotFoundError(
@@ -46,12 +56,20 @@ def resolve(version: str | None = None) -> Path:
             "implementation package there (see `prices hierlex verify`)"
         )
     if version is None:
-        version = names[-1]
+        version = read_promoted() or names[-1]
     if version not in names:
         raise FileNotFoundError(
             f"HierLex bundle {version!r} not installed; have: {', '.join(names)}"
         )
     return PACKAGE_ROOT / version
+
+
+def promote(version: str) -> None:
+    """Point `resolve()` at `version`. Refuses a bundle that fails `verify`."""
+    problems = verify(resolve(version))
+    if problems:
+        raise ValueError(f"{version} fails verify: {'; '.join(problems[:3])}")
+    PROMOTED_POINTER.write_text(version + "\n", encoding="utf-8")
 
 
 def manifest(pkg: Path) -> dict:
