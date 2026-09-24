@@ -6,7 +6,7 @@ SOURCE_META = [
         "fetcher_fn": "fetch_au_aip_tgp",
         "country": "Australia",
         "source_name": "AIP Terminal Gate Prices",
-        "url": "http://www.aip.com.au/historical-ulp-and-diesel-tgp-data",
+        "url": "https://www.aip.com.au/historical-ulp-and-diesel-tgp-data",
         "description": "Official industry body (Australian Institute of Petroleum). Weekly wholesale terminal gate prices as Excel. 7 capital cities + national average.",
         "extraction_method": ["Web scraping", "Excel download"],
         "products": ["Gasoline (Regular)", "Diesel"],
@@ -115,7 +115,7 @@ def fetch_au_aip_tgp(cutoff: date) -> pd.DataFrame:
     session = get_session()
     excel_url = None
     for page in [
-        "http://www.aip.com.au/historical-ulp-and-diesel-tgp-data",
+        "https://www.aip.com.au/historical-ulp-and-diesel-tgp-data",
         "https://www.aip.com.au/pricing/terminal-gate-prices",
     ]:
         try:
@@ -130,7 +130,7 @@ def fetch_au_aip_tgp(cutoff: date) -> pd.DataFrame:
                     excel_url = (
                         href
                         if href.startswith("http")
-                        else "http://www.aip.com.au" + href
+                        else "https://www.aip.com.au" + href
                     )
                     break
             if excel_url:

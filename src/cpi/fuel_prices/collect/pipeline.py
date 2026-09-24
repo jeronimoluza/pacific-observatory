@@ -178,7 +178,12 @@ def run_collection(
         cutoffs: list[date] = []
         for key in source_keys:
             cfg = FETCHER_REGISTRY[key]
-            cutoffs.append(get_cutoff(state, key, cfg.fallback_date))
+            # A full refresh replaces the file, so it must re-fetch the whole
+            # history; an incremental cutoff would shrink it to the newest rows.
+            if cfg.full_refresh:
+                cutoffs.append(cfg.fallback_date)
+            else:
+                cutoffs.append(get_cutoff(state, key, cfg.fallback_date))
         cutoff = min(cutoffs) if cutoffs else date(1900, 1, 1)
 
         keys_label = ", ".join(source_keys)
@@ -234,8 +239,13 @@ def run_collection(
 
             cfg = FETCHER_REGISTRY.get(grouped_source)
             full_refresh = cfg.full_refresh if cfg is not None else False
-            if full_refresh:
-                existing = pd.DataFrame(columns=existing.columns)
+            if full_refresh and not existing.empty:
+                # Replace only the window the fetch covers; a short or
+                # truncated upstream file must never delete older history.
+                window_start = str(group["observation_date"].dropna().min())
+                existing = existing[
+                    existing["observation_date"].astype(str) < window_start
+                ]
 
             merged = merge_new_rows(existing, group)
             existing_cache[cache_key] = merged
