@@ -98,9 +98,8 @@ def _topic_payload(rows: list) -> tuple[list, dict, list]:
     full column. Across 43 topics and three measures that is the difference
     between a dashboard the intranet serves and one it chokes on.
 
-    Values are rounded to three decimals. The index sits around 100, so three
-    decimals is well past what the chart can draw, and full float repr is
-    roughly two and a half times the bytes.
+    Values are rounded to one decimal. The index sits around 100, so a tenth
+    of a point is already below what the chart can draw.
 
     Returns (rows, factors, groups) where `factors` maps a `<group>_<measure>`
     column to the divisor that converts it back to a z-score, or None when the
@@ -134,7 +133,7 @@ def _topic_payload(rows: list) -> tuple[list, dict, list]:
         trimmed = {"date": row.get("date"), "ym": row.get("ym")}
         for col in wanted:
             v = row.get(col)
-            trimmed[col] = None if v is None else round(v, 3)
+            trimmed[col] = None if v is None else round(v, 1)
         out.append(trimmed)
     return out, factors, groups
 
@@ -1644,7 +1643,7 @@ def build_epu_iframe_html(
     method_foot_extra="",
     chip_groups=None,
     chip_html=None,
-    pool=None,
+    pool_expr=None,
 ):
     options = (
         dropdown_options_html
@@ -1670,7 +1669,7 @@ def build_epu_iframe_html(
         .replace("__PALETTE_JSON__", json.dumps(PALETTE))
         .replace("__LABEL_MAP_JSON__", json.dumps(label_map))
         .replace("__FACTORS_JSON__", factors_expr or json.dumps(factors or {}))
-        .replace("__POOL_JSON__", json.dumps(pool or {}))
+        .replace("__POOL_JSON__", pool_expr or "{}")
     )
 
 
@@ -1781,7 +1780,44 @@ body {
     border-color: var(--accent);
 }
 </style>
-<script>window.__DASH__ = __SHARED_DATA_JSON__;</script>
+<script>window.__DASH__ = __SHARED_DATA_JSON__;
+// Series ship column-wise (see _columnar) and turn back into rows only for the
+// unit a tab asks for, so the page never holds every unit's rows at once.
+(function () {
+    const D = window.__DASH__;
+    function lazy(obj, decode) {
+        const out = {};
+        Object.keys(obj || {}).forEach(k => {
+            let v;
+            Object.defineProperty(out, k, {
+                enumerable: true,
+                get() { return v || (v = decode(obj[k])); }
+            });
+        });
+        return out;
+    }
+    function rows(p) {
+        const out = new Array(p.date.length);
+        for (let i = 0; i < out.length; i++) {
+            const r = {date: p.date[i], ym: p.ym[i]};
+            p.keys.forEach(c => { r[c] = p.cols[c] ? p.cols[c][i] : 0; });
+            out[i] = r;
+        }
+        return out;
+    }
+    function pool(p) {
+        const out = {};
+        p.date.forEach((d, i) => {
+            const r = {A: p.A[i], U: p.U[i]};
+            Object.keys(p.items).forEach(k => { r[k] = [p.items[k][0][i], p.items[k][1][i]]; });
+            out[d] = r;
+        });
+        return {rows: out, base: p.base};
+    }
+    ['topics', 'actors'].forEach(k => { if (D[k]) D[k] = lazy(D[k], rows); });
+    if (D.pool) D.pool = lazy(D.pool, pool);
+})();
+</script>
 <script type="application/json" id="keywords-schema">__KEYWORDS_SCHEMA_JSON__</script>
 </head>
 <body>
@@ -2042,6 +2078,38 @@ def _merge_rows(a: list, b: list) -> list:
     return [by_date[d] for d in sorted(by_date)]
 
 
+def _columnar(rows: list) -> dict:
+    """One unit's rows as columns, with all-zero columns named but not shipped.
+
+    Row objects repeat every column name on every row, which was 88% of the
+    bytes. The page rebuilds the rows (``rows()`` in the host script), filling
+    the named zero columns back in, so what a tab reads is unchanged.
+    """
+    keys = [k for k in rows[0] if k not in ("date", "ym")]
+    cols = {k: [r.get(k) for r in rows] for k in keys}
+    return {
+        "date": [r["date"] for r in rows],
+        "ym": [r.get("ym") for r in rows],
+        "keys": keys,
+        "cols": {k: col for k, col in cols.items() if any(v != 0 for v in col)},
+    }
+
+
+def _pool_columnar(pool: dict) -> dict:
+    """``_pool_payload`` column-wise; ``pool()`` in the host script inverts it."""
+    dates = sorted(pool["rows"])
+    items = [k for k in pool["rows"][dates[0]] if k not in ("A", "U")]
+    return {
+        "date": dates,
+        "A": [pool["rows"][d]["A"] for d in dates],
+        "U": [pool["rows"][d]["U"] for d in dates],
+        "items": {
+            k: [[pool["rows"][d][k][j] for d in dates] for j in (0, 1)] for k in items
+        },
+        "base": pool["base"],
+    }
+
+
 def _pool_payload(attribution: dict) -> dict:
     """The daily tail as pooled counts, for the weekly and daily points.
 
@@ -2160,7 +2228,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
             " A group series counts articles matching any concept beneath it."
         ),
         chip_html=_schema_tree_html(schema, items, defaults),
-        pool=concept_pool,
+        pool_expr='window.parent.__DASH__["pool"]',
     )
     actors_html = build_epu_iframe_html(
         actors_data,
@@ -2172,7 +2240,8 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         label_map=ACTORS_LABEL_MAP,
         noun="actor",
         dropdown_options_html=hier_options,
-        factors=actor_factors,
+        data_expr='window.parent.__DASH__["actors"]',
+        factors_expr='window.parent.__DASH__["actorFactors"]',
     )
 
     region_label = _resolve_region_label(region_subtree, region)
@@ -2184,7 +2253,13 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         host_title=f"{region_label} — Keyword Concepts & Uncertainty Dashboard",
         host_subtitle="uncertainty concepts over time and ranked, keyword schema, and uncertainty actors",
         policy_tab_label="Keyword Schema",
-        shared_data={"topics": concept_data, "topicFactors": concept_factors},
+        shared_data={
+            "topics": {k: _columnar(v) for k, v in concept_data.items()},
+            "topicFactors": concept_factors,
+            "pool": {k: _pool_columnar(v) for k, v in concept_pool.items()},
+            "actors": {k: _columnar(v) for k, v in actors_data.items()},
+            "actorFactors": actor_factors,
+        },
         keywords_schema=schema,
     )
 
