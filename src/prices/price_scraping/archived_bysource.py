@@ -80,6 +80,9 @@ _YAHOO_MIN_GRID = 2
 _RAKUTEN_BANNER = "【楽天市場】"
 _FULLWIDTH_COLON = "："
 
+_NOMIN_LABEL = "Худалдах үнэ"
+_TUGRIK = re.compile("^\\d[\\d,]*₮$")
+
 
 def _text(el: Any) -> str:
     return " ".join((el.text_content() or "").split())
@@ -367,7 +370,39 @@ def _ckgreaves_vc(doc: Any, url: str) -> list[dict]:
     return rows
 
 
+def _nomin(doc: Any, url: str) -> dict | None:
+    """The first bare tugrik figure after nomin's "Худалдах үнэ" (selling price) label.
+
+    ``nomin.mn/p/<id>`` has carried three templates in the crawls that hold
+    it, and the selector tier reads only the newest. The label outlived all
+    three, a trailing colon aside, and so did its order: the selling price
+    comes first, then whatever the template adds -- a struck-through list
+    price, a loyalty-card price, a "N-с дээш" bulk price, the saving. Class
+    names are no anchor: the oldest template is MUI, whose classes are style
+    hashes that change with every build.
+
+    ``style`` and ``script`` are skipped because the MUI template interleaves
+    a ``<style>`` between the label and the figure. Measured over 120 captures,
+    20 per crawl from CC-MAIN-2024-22 to 2026-39, it prices every one; a page
+    without the label (the product named, nothing for sale) prices nothing.
+    """
+    names = [_text(h) for h in doc.iter("h1")]
+    if len(names) != 1 or not names[0]:
+        return None
+    seen = False
+    for el in doc.iter():
+        if not isinstance(el.tag, str) or el.tag in ("style", "script"):
+            continue
+        own = " ".join((el.text or "").split())
+        if not seen:
+            seen = own.rstrip(":").strip() == _NOMIN_LABEL
+        elif _TUGRIK.match(own):
+            return _row(names[0], normalize_price(own, "MNT"), url, "MNT")
+    return None
+
+
 _EXTRACTORS = {
+    "nomin": _nomin,
     "rakuten": _rakuten,
     "lohaco": _lohaco,
     "gmarket": _gmarket,

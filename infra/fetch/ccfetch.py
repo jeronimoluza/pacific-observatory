@@ -164,7 +164,11 @@ def fetch_one(rec, state):
     stamp = to_iso(rec.get("timestamp", ""))
     out = []
     for row in rows:
-        row = dict(row)
+        # The page url is the default, as cc_warc_fetcher._save_rows has it: the
+        # selector tier returns only a name and a price, and a row without a url
+        # falls back to a name-only identity downstream. A tier that names its
+        # own url (a rail product) keeps it.
+        row = {"url": rec["url"], **row}
         row["scraped_at_utc"] = stamp
         # Manifest records name the source `spider`; miss records name it
         # `source`, because miss_row renames it on the way out. Reading only
