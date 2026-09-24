@@ -45,6 +45,13 @@ _LDJSON_SPIDERS = {"cosmed", "fairprice", "carrefour_tw"}
 # Spiders that embed price/name in __NEXT_DATA__ JSON (Next.js SPA, no meta price tag).
 _NEXTDATA_SPIDERS = {"tiki"}
 
+# Spiders whose JSON-LD row beats a priced selector row. tiki's 2024+ product
+# pages render the list price in product-price__current-price and a "Mua <name>
+# tại <seller>" og:title, while the JSON-LD offer carries the selling price
+# (the same `price` the live API spider collects) and the bare name. Its
+# 2019-2020 pages have no JSON-LD, so the selectors still read those.
+_JSONLD_FIRST = {"tiki"}
+
 
 def decode(headers: Optional[bytes], body: bytes) -> str:
     """Text, preferring the charset the page declares.
@@ -265,7 +272,8 @@ def parse_rows(
     if _site_title(extracted, url):
         extracted = {}
     rows, tier = portable_rows(html, url, source)
-    if extracted.get("price") and len(rows) <= 1:
+    jsonld_first = source in _JSONLD_FIRST and tier == "jsonld" and rows
+    if extracted.get("price") and len(rows) <= 1 and not jsonld_first:
         return [extracted], "selectors"
     if rows:
         return rows, tier
