@@ -34,4 +34,4 @@ extra_unit:
      regex: '(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*(?:cl|CL|cL|Cl)\b'}
   LITRE_VI:
     {basis: volume, su: lt, mul: 1.0,
-     regex: '(?P<value>\d+(?:[.,]\d+)?)\s*l[íi]t'}
+     regex: '(?P<value>\d+(?:[.,]\d+)?)\s*(?:l[íi]t|[lL][íÍ][tT](?![^\W\d_]))'}
