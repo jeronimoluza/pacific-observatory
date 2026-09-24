@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 import ahocorasick
+import numpy as np
 import pandas as pd
 
 from text.analysis.utils import (
@@ -201,9 +202,12 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
     Implements the same greedy non-overlapping dedupe as the legacy
     ``match_keywords`` in ``utils.py`` — but per category, so two categories
     matching overlapping byte ranges are counted independently.
+
+    Only categories with a match are returned: with 1,700 concept and group
+    categories, a full dict per article held 1.4 GB per 20,000-row chunk.
     """
     if not body:
-        return {cat: 0 for cat in combo.categories}
+        return {}
 
     text = str(body)
     per_cat_matches: dict[str, list[tuple[int, int]]] = defaultdict(list)
@@ -233,7 +237,7 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
                     continue
             per_cat_matches[cat].append((start_idx, end_pos))
 
-    counts: dict[str, int] = {cat: 0 for cat in combo.categories}
+    counts: dict[str, int] = {}
     for cat, matches in per_cat_matches.items():
         matches.sort(key=lambda m: (m[0], -(m[1] - m[0])))
         last_end = -1
@@ -283,20 +287,15 @@ def _grouped_for_frame(
     per-chunk results and summing them by ym reproduces the whole-file answer.
     Returned frame is indexed by ym and carries no source_key column.
     """
-    counts_per_row: list[dict[str, int]] = []
-    for body in df.get("body", pd.Series([], dtype=str)):
-        counts_per_row.append(_match_all_categories(_process_body(body), combo))
+    col = {cat: j for j, cat in enumerate(combo.categories)}
+    matrix = np.zeros((len(df), len(col)), dtype=np.int64)
+    for i, body in enumerate(df.get("body", pd.Series([], dtype=str))):
+        for cat, c in _match_all_categories(_process_body(body), combo).items():
+            matrix[i, col[cat]] = c
 
     ym_series = df["date"].apply(lambda d: _ym_for_date(d, daily_tail_start))
 
-    cat_df = pd.DataFrame(counts_per_row, index=df.index).fillna(0).astype(int)
-    # When df is empty (e.g. a source with zero rows after subset filtering),
-    # `counts_per_row` is empty and pandas cannot infer columns. Force every
-    # category from the automaton to exist as an int64 zero-filled column so
-    # downstream `cat_df[cat]` never KeyErrors.
-    for cat in combo.categories:
-        if cat not in cat_df.columns:
-            cat_df[cat] = 0
+    cat_df = pd.DataFrame(matrix, index=df.index, columns=list(combo.categories))
 
     e_present = cat_df["econ"] > 0
     p_present = cat_df["policy"] > 0
@@ -357,42 +356,37 @@ def _grouped_for_frame(
     # much is this topic being discussed", as opposed to "how much of the
     # uncertainty is about this topic"; the two diverge badly for topics that are
     # covered routinely rather than in moments of doubt.
-    for cat in combo.categories:
-        if cat in ("econ", "policy", "uncertain"):
-            continue
-        present = cat_df[cat] > 0
-        epu_x = (
-            work.loc[epu_present & present]
-            .groupby("ym")
-            .size()
+    # One groupby per condition over every category at once; a groupby per
+    # category took 1,700 x 3 passes per chunk once concepts arrived.
+    cats = [c for c in combo.categories if c not in ("econ", "policy", "uncertain")]
+    present = cat_df[cats] > 0
+
+    def per_month(mask: pd.Series) -> pd.DataFrame:
+        return (
+            present[mask]
+            .groupby(work.loc[mask, "ym"])
+            .sum()
             .reindex(grouped.index, fill_value=0)
             .astype(int)
         )
-        u_x = (
-            work.loc[u_present & present]
-            .groupby("ym")
-            .size()
-            .reindex(grouped.index, fill_value=0)
-            .astype(int)
-        )
-        g_x = (
-            work.loc[present]
-            .groupby("ym")
-            .size()
-            .reindex(grouped.index, fill_value=0)
-            .astype(int)
-        )
+
+    epu_x, u_x, g_x = (
+        per_month(epu_present),
+        per_month(u_present),
+        per_month(pd.Series(True, index=df.index)),
+    )
+    columns = {}
+    for cat in cats:
         base = (
             cat.replace("topic:", "topic_")
             .replace("actor:", "actor_")
             .replace("concept:", "concept_")
             .replace("group:", "group_")
         )
-        grouped[f"{base}_count"] = epu_x
-        grouped[f"{base}_U_count"] = u_x
-        grouped[f"{base}_A_count"] = g_x
-
-    return grouped
+        columns[f"{base}_count"] = epu_x[cat]
+        columns[f"{base}_U_count"] = u_x[cat]
+        columns[f"{base}_A_count"] = g_x[cat]
+    return pd.concat([grouped, pd.DataFrame(columns, index=grouped.index)], axis=1)
 
 
 def annotate_source(
