@@ -19,6 +19,7 @@ into a historical series where nothing downstream can detect it.
 
 from __future__ import annotations
 
+import json
 import re
 from typing import Any
 
@@ -401,7 +402,70 @@ def _nomin(doc: Any, url: str) -> dict | None:
     return None
 
 
+def _life_pharmacy_nz(doc: Any, url: str) -> list[dict]:
+    """One row per variant in the old site's product JSON attributes.
+
+    Before mid-2024 lifepharmacy.co.nz kept its catalogue under
+    ``/home/shop-by-category/`` and ``/home/shop-by-brand/``, and a product
+    page rendered its price client-side: the visible markup holds only the
+    shipping table and a Laybuy instalment of "$0.00". The price sits in an
+    attribute instead, in one of two shapes:
+
+    - 2019 on, ``data-product-details``: ``variants`` carry ``name``,
+      ``unitPrice`` and ``discountedPrice``, the selling price, which equals
+      ``unitPrice`` when nothing is discounted.
+    - 2017-2019, ``data-variantlist`` (a list, empty for a single product) and
+      ``data-product``: ``DisplayName`` and ``Price``, with
+      ``PromotionPricing.DiscountedPrice`` at 0.0 unless a promotion runs.
+
+    A variant name spells out its shade or size, so each variant is its own
+    product.
+
+    Listing and brand pages carry no such attribute and price nothing; their
+    tiles were filled client-side too. Measured on a 48-page sample from
+    CC-MAIN-2017-39 to 2024-30: every product page carries it, no other page does.
+    """
+    rows, seen = [], set()
+    for el in doc.xpath("//*[@data-product-details]"):
+        try:
+            variants = json.loads(el.get("data-product-details"))["data"]["variants"]
+        except (ValueError, KeyError, TypeError):
+            continue
+        for v in variants:
+            name = " ".join(str(v.get("name") or "").split())
+            if not name or name in seen:
+                continue
+            row = _row(name, normalize_price(v.get("discountedPrice"), "NZD"), url, "NZD")
+            if row:
+                seen.add(name)
+                rows.append(row)
+    if rows:
+        return rows
+    for attr in ("data-variantlist", "data-product"):
+        for el in doc.xpath(f"//*[@{attr}]"):
+            try:
+                got = json.loads(el.get(attr))
+            except ValueError:
+                continue
+            for v in got if isinstance(got, list) else [got]:
+                if not isinstance(v, dict):
+                    continue
+                name = " ".join(str(v.get("DisplayName") or "").split())
+                promo = (v.get("PromotionPricing") or {}).get("DiscountedPrice") or 0
+                price = promo if promo > 0 else v.get("Price")
+                if not name or name in seen:
+                    continue
+                row = _row(name, normalize_price(price, "NZD"), url, "NZD")
+                if row:
+                    seen.add(name)
+                    rows.append(row)
+        if rows:
+            return rows
+    return rows
+
+
 _EXTRACTORS = {
+    "life_pharmacy_nz": _life_pharmacy_nz,
     "nomin": _nomin,
     "rakuten": _rakuten,
     "lohaco": _lohaco,

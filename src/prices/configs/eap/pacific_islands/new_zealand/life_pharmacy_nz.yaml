@@ -9,3 +9,6 @@ cadence: weekly
 channel: pharmacy
 archive_prefix: "www.lifepharmacy.co.nz/products/"
 archive_path_re: '^/products/[^/?]+'
+archive_also:
+  - prefix: "www.lifepharmacy.co.nz/home/shop-by-"
+    path_re: '^/home/shop-by-(?:category/.+|brand/[^/]+/.+)'
