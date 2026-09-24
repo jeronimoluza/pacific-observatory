@@ -443,14 +443,35 @@ def standardize_unit(
         _extended_calc=calc,
     )
 
+    # Topics and actors never read the extra families' columns, and each of
+    # their StandardizedUnits keeps a full copy of its input, so they get the
+    # frame without them.
+    extra_prefixes = tuple(
+        f"{s}_{prefix}" for s in sources for prefix, _ in extra_families.values()
+    )
+    wide_core = wide[[c for c in wide.columns if not c.startswith(extra_prefixes)]]
+    # Each unit also keeps its own copy of its input, and the outputs read only
+    # date and epu_weighted from it, so each key gets date, weights and its
+    # own ratio columns.
+    base_cols = ["date", "ym"] + [
+        f"{s}_weights" for s in sources if f"{s}_weights" in wide_core
+    ]
+
     # ── Per-topic EPU ────────────────────────────────────────────────
     wide_with_topic_ratios = _build_topic_or_actor_ratios(
-        wide, sources, topic_keys, metric_prefix="topic_"
+        wide_core, sources, topic_keys, metric_prefix="topic_"
     )
     topic_epus: dict[str, StandardizedUnit] = {}
     for k in topic_keys:
         df_t, params_t, _ = _standardize_epu(
-            wide_with_topic_ratios,
+            wide_with_topic_ratios[
+                base_cols
+                + [
+                    c
+                    for s in sources
+                    if (c := f"{s}_topic_{k}_ratio") in wide_with_topic_ratios
+                ]
+            ],
             sources,
             cutoff_start,
             cutoff_end,
@@ -466,12 +487,19 @@ def standardize_unit(
 
     # ── Per-actor EPU ────────────────────────────────────────────────
     wide_with_actor_ratios = _build_topic_or_actor_ratios(
-        wide, sources, actor_keys, metric_prefix="actor_"
+        wide_core, sources, actor_keys, metric_prefix="actor_"
     )
     actor_epus: dict[str, StandardizedUnit] = {}
     for k in actor_keys:
         df_a, params_a, _ = _standardize_epu(
-            wide_with_actor_ratios,
+            wide_with_actor_ratios[
+                base_cols
+                + [
+                    c
+                    for s in sources
+                    if (c := f"{s}_actor_{k}_ratio") in wide_with_actor_ratios
+                ]
+            ],
             sources,
             cutoff_start,
             cutoff_end,
@@ -502,9 +530,20 @@ def standardize_unit(
             wide, sources, keys, metric_prefix=prefix
         )
         extra_epus[name] = {}
+        # `_standardize_epu` copies its input, and each StandardizedUnit keeps
+        # that copy. With ~1,600 concept and group keys a full-width copy per
+        # key ran past 80 GB, so each key gets only the columns it reads.
+        base_cols = ["date", "ym"] + [
+            f"{s}_weights" for s in sources if f"{s}_weights" in wide_with_ratios
+        ]
         for k in keys:
+            ratio_cols = [
+                c
+                for s in sources
+                if (c := f"{s}_{prefix}{k}_ratio") in wide_with_ratios
+            ]
             df_x, params_x, _ = _standardize_epu(
-                wide_with_ratios,
+                wide_with_ratios[base_cols + ratio_cols],
                 sources,
                 cutoff_start,
                 cutoff_end,

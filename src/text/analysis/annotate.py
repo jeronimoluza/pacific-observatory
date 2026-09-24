@@ -155,7 +155,7 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
 
     def add(tag: str, terms, is_prefix: bool = False):
         for term in terms:
-            t = term.lower()
+            t = _compose_sara_am(term.lower())
             by_word.setdefault(t, []).append((tag, t, is_prefix))
 
     for cat, terms in epu_key:
@@ -259,14 +259,27 @@ def _process_body(body: str | float) -> str:
 
     Khmer sources insert U+200B between words (about 64 per article in
     kampuchea_thmey_daily), and one inside a phrase stops the phrase matching.
+    Sara am is composed too (see `_compose_sara_am`).
     """
     if not isinstance(body, str):
         return ""
     import unicodedata
 
-    return unicodedata.normalize(
-        "NFC", body.replace("\n", "").replace("\u200b", "").lower()
+    return _compose_sara_am(
+        unicodedata.normalize(
+            "NFC", body.replace("\n", "").replace("\u200b", "").lower()
+        )
     )
+
+
+def _compose_sara_am(text: str) -> str:
+    """Write Thai and Lao sara am as one character.
+
+    matichon and thai_rath spell ำ as nikhahit + sara aa (ํา), and KPL spells
+    ຳ as ໍາ; NFC leaves both pairs apart, so a form written ำ never matched
+    them. Applied to bodies and keyword terms alike.
+    """
+    return text.replace("\u0e4d\u0e32", "\u0e33").replace("\u0ecd\u0eb2", "\u0eb3")
 
 
 def _ym_for_date(d: pd.Timestamp, daily_tail_start: pd.Timestamp | None) -> str:

@@ -7,7 +7,7 @@
 
 name: "United Daily News"
 country: "taiwan_china"
-language: "zh"
+language: chinese_traditional
 base_url: "https://udn.com/"
 
 listing:

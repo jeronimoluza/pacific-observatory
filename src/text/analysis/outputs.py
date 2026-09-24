@@ -402,6 +402,8 @@ def build_outputs(
         # question is "how unusual is this month" rather than "how does this
         # unit compare to that one".
         out_cols = ["date", "ym"]
+        renames = {}
+        present = set(attr_df.columns)
         for g in group_names:
             for stem, label in (
                 (f"UG_{g}_abs", f"{g}_absolute"),
@@ -412,10 +414,11 @@ def build_outputs(
                     (f"{stem}_weighted", label),
                     (f"{stem}_z_weighted", f"{label}_z"),
                 ):
-                    if src_col in attr_df.columns:
-                        attr_df = attr_df.rename(columns={src_col: out_col})
+                    if src_col in present:
+                        renames[src_col] = out_col
                         out_cols.append(out_col)
 
+        attr_df = attr_df.rename(columns=renames)
         attr_out = attr_df[[c for c in out_cols if c in attr_df.columns]]
         attr_folder = base_out / "uncertainty_attribution"
         attr_folder.mkdir(parents=True, exist_ok=True)

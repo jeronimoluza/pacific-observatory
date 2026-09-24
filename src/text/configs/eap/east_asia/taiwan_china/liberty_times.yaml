@@ -5,7 +5,7 @@
 
 name: "Liberty Times"
 country: "taiwan_china"
-language: "zh"
+language: chinese_traditional
 base_url: "https://news.ltn.com.tw/"
 
 listing:
