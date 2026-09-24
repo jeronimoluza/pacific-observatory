@@ -148,15 +148,80 @@ def _read_actors_csv(output_dir: Path) -> list | None:
     return df.to_dict(orient="records")
 
 
+# Concept and group attribution tables: about 95% of a unit's payload, read only
+# by the concepts dashboard, so they ship in per-unit files instead
+# (``_export_concept_units``).
+CONCEPT_FILES = (
+    "concepts",
+    "concepts_pooled",
+    "concepts_pooled_baseline",
+    "groups",
+    "groups_pooled",
+    "groups_pooled_baseline",
+)
+
+
 def _read_attribution(output_dir: Path) -> dict:
     attr_dir = output_dir / "uncertainty_attribution"
     if not attr_dir.exists():
         return {}
     result = {}
     for csv_path in sorted(attr_dir.glob("*.csv")):
+        if csv_path.stem in CONCEPT_FILES:
+            continue
         df = pd.read_csv(csv_path, encoding="utf-8")
         result[csv_path.stem] = df.to_dict(orient="records")
     return result
+
+
+def _unit_key(u: dict) -> str:
+    return u["slug"] if u["level"] == "country" else f"{u['level']}:{u['slug']}"
+
+
+def _concept_unit(output_dir: Path) -> dict:
+    """One unit's concept and group tables, column-wise, without the ``_z`` twins.
+
+    Each ``<item>_<measure>`` column is an exact rescale of its ``_z`` twin
+    (``index = factor * z``, one factor per column), so the twin ships as that
+    factor in ``<family>_z_factor``. Floats are rounded to 4 decimals.
+    """
+    attr_dir = output_dir / "uncertainty_attribution"
+    out: dict = {}
+    for stem in CONCEPT_FILES:
+        path = attr_dir / f"{stem}.csv"
+        if not path.exists():
+            continue
+        df = pd.read_csv(path, encoding="utf-8")
+        if stem in ("concepts", "groups"):
+            z_cols = [c for c in df.columns if c.endswith("_z")]
+            factors = {}
+            for z in z_cols:
+                col = z[:-2]
+                ok = df[z].ne(0) & df[z].notna() & df[col].notna()
+                factors[col] = (
+                    float(df.loc[ok, col].iloc[0] / df.loc[ok, z].iloc[0])
+                    if ok.any()
+                    else None
+                )
+            df = df.drop(columns=z_cols)
+            out[f"{stem}_z_factor"] = factors
+        df = df.round(4).astype(object).where(df.notna(), None)
+        out[stem] = df.to_dict(orient="list")
+    return out
+
+
+def _export_concept_units(region: str, units: list) -> Path:
+    """Write ``dashboard_data/json/<region>/<unit key>.json``, one per unit."""
+    unit_dir = DASHBOARD_DATA_DIR / "json" / region
+    unit_dir.mkdir(parents=True, exist_ok=True)
+    for u in units:
+        payload = _concept_unit(u["output_dir"])
+        if not payload:
+            continue
+        path = unit_dir / f"{_unit_key(u).replace(':', '__')}.json"
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, separators=(",", ":"), default=str)
+    return unit_dir
 
 
 def _build_tree(units: list) -> list:
@@ -248,7 +313,7 @@ def _build_dashboard_json(units: list) -> dict:
         slug = u["slug"]
         level = u["level"]
         # Use composite key for aggregates to avoid collisions
-        key = slug if level == "country" else f"{level}:{slug}"
+        key = _unit_key(u)
         output_dir = u["output_dir"]
 
         data["units"][key] = {
@@ -590,6 +655,8 @@ def run_publish(
         rgn_units = [u for u in units if u["region"] == rgn]
         click.echo(f"  Building {rgn}/ panel from outputs/text/...")
         region_json = _export_region_panel(rgn, rgn_units, database_status)
+        unit_dir = _export_concept_units(rgn, rgn_units)
+        click.echo(f"  Written: {unit_dir.relative_to(PROJECT_ROOT)}/<unit>.json")
         click.echo(
             f"  Written: {DASHBOARD_DATA_DIR.relative_to(PROJECT_ROOT)}/"
             f"{{json,csv,xlsx,dta}}/{rgn}.<ext>"

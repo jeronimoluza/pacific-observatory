@@ -833,6 +833,13 @@ __COMMON_JS__
 
 const topicData = __DATA_JSON__;
 const topicFactors = __FACTORS_JSON__;
+// A unit's series may live in its own data file, loaded on first use.
+const loadUnit = __LOADER_EXPR__;
+function withUnit(key, fn) {
+    if (!loadUnit) return fn();
+    loadUnit(key).then(fn, err => { document.body.insertAdjacentHTML('afterbegin',
+        '<p style="color:#b42318">Could not load data for ' + key + ': ' + err.message + '</p>'); });
+}
 const topicFocusGroups = __FOCUS_JSON__;
 const topicAllGroups = __ALL_GROUPS_JSON__;
 const topicPalette = __PALETTE_JSON__;
@@ -1063,15 +1070,19 @@ function initTopicTab() {
 
     topicState.onChange = render;
     select.addEventListener('change', function(e) {
-        initSlider(topicState, topicData[e.target.value], 12, 'topic-slider', 'topic-range');
-        render();
+        withUnit(e.target.value, () => {
+            initSlider(topicState, topicData[e.target.value], 12, 'topic-slider', 'topic-range');
+            render();
+        });
     });
     topnInput.addEventListener('change', render);
     ['topic-measure', 'topic-scale', 'topic-universe'].forEach(id => {
         document.getElementById(id).addEventListener('change', render);
     });
-    initSlider(topicState, topicData[select.value], 12, 'topic-slider', 'topic-range');
-    render();
+    withUnit(select.value, () => {
+        initSlider(topicState, topicData[select.value], 12, 'topic-slider', 'topic-range');
+        render();
+    });
 }
 
 initTopicTab();
@@ -1149,6 +1160,13 @@ EPU_PAGE_TEMPLATE = r"""<!DOCTYPE html>
 __COMMON_JS__
 
 const epuData = __DATA_JSON__;
+// A unit's series may live in its own data file, loaded on first use.
+const loadUnit = __LOADER_EXPR__;
+function withUnit(key, fn) {
+    if (!loadUnit) return fn();
+    loadUnit(key).then(fn, err => { document.body.insertAdjacentHTML('afterbegin',
+        '<p style="color:#b42318">Could not load data for ' + key + ': ' + err.message + '</p>'); });
+}
 const items = __ITEMS_JSON__;
 const defaultItems = __DEFAULTS_JSON__;
 const palette = __PALETTE_JSON__;
@@ -1394,8 +1412,10 @@ function render() {
 
 state.onChange = render;
 document.getElementById('country').addEventListener('change', function(e) {
-    initSlider(state, epuData[e.target.value], 12, 'slider', 'range-label');
-    render();
+    withUnit(e.target.value, () => {
+        initSlider(state, epuData[e.target.value], 12, 'slider', 'range-label');
+        render();
+    });
 });
 document.getElementById('item-select').addEventListener('change', function() {
     updateSelectedCount();
@@ -1433,10 +1453,12 @@ document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventList
 ['actor-measure', 'actor-scale'].forEach(id => {
     document.getElementById(id).addEventListener('change', render);
 });
-initSlider(state, epuData[document.getElementById('country').value], 12, 'slider', 'range-label');
 updateSelectedCount();
 applyChipFilters();
-render();
+withUnit(document.getElementById('country').value, () => {
+    initSlider(state, epuData[document.getElementById('country').value], 12, 'slider', 'range-label');
+    render();
+});
 </script>
 <div class="method-box">
     <h3>How this index is calculated</h3>
@@ -1532,6 +1554,7 @@ def build_topic_iframe_html(
     all_groups=None,
     data_expr=None,
     factors_expr=None,
+    loader_expr=None,
 ):
     options = (
         dropdown_options_html
@@ -1554,6 +1577,7 @@ def build_topic_iframe_html(
         .replace("__COMMON_JS__", EPU_COMMON_JS)
         .replace("__DATA_JSON__", data_expr or json.dumps(topic_data))
         .replace("__FACTORS_JSON__", factors_expr or json.dumps(factors))
+        .replace("__LOADER_EXPR__", loader_expr or "null")
         .replace("__FOCUS_JSON__", json.dumps(focus_groups))
         .replace("__ALL_GROUPS_JSON__", json.dumps(all_groups))
         .replace("__PALETTE_JSON__", json.dumps(PALETTE))
@@ -1644,6 +1668,7 @@ def build_epu_iframe_html(
     chip_groups=None,
     chip_html=None,
     pool_expr=None,
+    loader_expr=None,
 ):
     options = (
         dropdown_options_html
@@ -1670,6 +1695,7 @@ def build_epu_iframe_html(
         .replace("__LABEL_MAP_JSON__", json.dumps(label_map))
         .replace("__FACTORS_JSON__", factors_expr or json.dumps(factors or {}))
         .replace("__POOL_JSON__", pool_expr or "{}")
+        .replace("__LOADER_EXPR__", loader_expr or "null")
     )
 
 
@@ -1796,11 +1822,18 @@ body {
         });
         return out;
     }
+    // A column is a dense array, or {index: value} when mostly zero (absent
+    // index = 0). Unit files store tenths as integers (p.s = 10).
     function rows(p) {
-        const out = new Array(p.date.length);
+        const out = new Array(p.date.length), s = p.s || 1;
         for (let i = 0; i < out.length; i++) {
             const r = {date: p.date[i], ym: p.ym[i]};
-            p.keys.forEach(c => { r[c] = p.cols[c] ? p.cols[c][i] : 0; });
+            p.keys.forEach(c => {
+                const col = p.cols[c];
+                let v = col ? col[i] : 0;
+                if (v === undefined) v = 0;
+                r[c] = v === null ? null : v / s;
+            });
             out[i] = r;
         }
         return out;
@@ -1816,6 +1849,26 @@ body {
     }
     ['topics', 'actors'].forEach(k => { if (D[k]) D[k] = lazy(D[k], rows); });
     if (D.pool) D.pool = lazy(D.pool, pool);
+
+    // Concept series ship one file per unit next to the page and load on first
+    // selection; the tabs hold the same objects, so filling them is enough.
+    const files = D.unitFiles || {}, pending = {};
+    D.topics = D.topics || {}; D.topicFactors = D.topicFactors || {}; D.pool = D.pool || {};
+    window.__DASH_UNIT__ = function (key, u) {
+        D.topics[key] = rows(u.topics);
+        D.topicFactors[key] = u.factors;
+        if (u.pool) D.pool[key] = pool(u.pool);
+    };
+    window.__DASH_LOAD__ = function (key) {
+        if (D.topics[key] || !files[key]) return Promise.resolve();
+        return pending[key] || (pending[key] = new Promise((resolve, reject) => {
+            const el = document.createElement('script');
+            el.src = files[key];
+            el.onload = () => resolve();
+            el.onerror = () => { delete pending[key]; reject(new Error('missing ' + files[key])); };
+            document.head.appendChild(el);
+        }));
+    };
 })();
 </script>
 <script type="application/json" id="keywords-schema">__KEYWORDS_SCHEMA_JSON__</script>
@@ -2068,16 +2121,6 @@ def _schema_page_html(schema: dict) -> str:
     return "".join(parts)
 
 
-def _merge_rows(a: list, b: list) -> list:
-    """Join two attribution tables of one unit on date."""
-    if not a or not b:
-        return a or b
-    by_date = {r["date"]: dict(r) for r in a}
-    for r in b:
-        by_date.setdefault(r["date"], {"date": r["date"], "ym": r.get("ym")}).update(r)
-    return [by_date[d] for d in sorted(by_date)]
-
-
 def _columnar(rows: list) -> dict:
     """One unit's rows as columns, with all-zero columns named but not shipped.
 
@@ -2134,6 +2177,74 @@ def _pool_payload(attribution: dict) -> dict:
     return {"rows": rows, "base": base} if rows else {}
 
 
+def _records(table: dict | None) -> list:
+    """A column-wise table (``{col: [values]}``) back as row dicts."""
+    if not table:
+        return []
+    cols = list(table)
+    return [dict(zip(cols, vals)) for vals in zip(*(table[c] for c in cols))]
+
+
+def _compact_col(col: list):
+    """Tenths as integers; a mostly-zero column as ``{index: value}``.
+
+    ``rows()`` in the host script reads both shapes (an absent index is 0).
+    """
+    q = [None if v is None else round(v * 10) for v in col]
+    zeros = sum(1 for v in q if v == 0)
+    if zeros * 2 > len(q):
+        return {i: v for i, v in enumerate(q) if v != 0}
+    return q
+
+
+def _concept_unit_payload(path: Path) -> tuple[dict, dict, set, dict]:
+    """One publish unit file as (series, factors, groups, pool) for the page.
+
+    Series are column-wise like ``_columnar``: all-zero columns are named in
+    ``keys`` but not shipped, and values are at one decimal.
+    """
+    with open(path, encoding="utf-8") as f:
+        u = json.load(f)
+    fams = [u[k] for k in ("concepts", "groups") if u.get(k)]
+    dates = fams[0]["date"]
+    if any(t["date"] != dates for t in fams):
+        raise ValueError(f"{path.name}: concepts and groups dates differ")
+    factors = {**(u.get("concepts_z_factor") or {}), **(u.get("groups_z_factor") or {})}
+    keys = [
+        c
+        for t in fams
+        for c in t
+        if c not in ("date", "ym")
+        and c.endswith(tuple("_" + m for m in _TOPIC_MEASURES))
+    ]
+    col_of = {c: t[c] for t in fams for c in t}
+    cols = {}
+    for c in keys:
+        rounded = [None if v is None else round(v, 1) for v in col_of[c]]
+        if any(v != 0 for v in rounded):
+            cols[c] = _compact_col(rounded)
+    groups = {c[: -len("_intensity")] for c in keys if c.endswith("_intensity")}
+    pool = _pool_payload(
+        {
+            k: _records(u.get(k))
+            for k in (
+                "concepts_pooled",
+                "concepts_pooled_baseline",
+                "groups_pooled",
+                "groups_pooled_baseline",
+            )
+        }
+    )
+    series = {
+        "date": dates,
+        "ym": fams[0].get("ym"),
+        "keys": keys,
+        "cols": cols,
+        "s": 10,
+    }
+    return series, {k: factors.get(k) for k in keys}, groups, pool
+
+
 def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
     """Generate the concepts dashboard for ``region``.
 
@@ -2161,30 +2272,41 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
     # back to a prettified id.
     RANK_LABEL_MAP.update(labels)
 
-    concept_data: dict = {}
-    concept_pool: dict = {}
+    project_root = Path(__file__).resolve().parents[3]
+    output_dir = project_root / "outputs" / "text" / "dashboards" / "concepts"
+    data_dirname = f"{region}_concepts_data"
+    (output_dir / data_dirname).mkdir(parents=True, exist_ok=True)
+
+    # Concept series: one publish file per unit in, one page data file per unit
+    # out, loaded when the unit is first selected (``__DASH_LOAD__``).
+    unit_json_dir = Path(json_path).parent / region
+    unit_files: dict = {}
+    concept_groups: set = set()
     actors_data: dict = {}
     for key, unit in units.items():
         if key not in valid_keys:
             continue
         attribution = unit.get("attribution") or {}
-        rows = _merge_rows(
-            attribution.get("concepts") or [], attribution.get("groups") or []
-        )
-        if rows:
-            concept_data[key] = rows
-        if pooled := _pool_payload(attribution):
-            concept_pool[key] = pooled
         if attribution.get("actors"):
             actors_data[key] = attribution["actors"]
-
-    concept_factors: dict = {}
-    concept_groups: set = set()
-    for key, rows in list(concept_data.items()):
-        trimmed, factors, groups = _topic_payload(rows)
-        concept_data[key] = trimmed
-        concept_factors[key] = factors
+        src = unit_json_dir / f"{key.replace(':', '__')}.json"
+        if not src.exists():
+            continue
+        series, factors, groups, pool = _concept_unit_payload(src)
         concept_groups.update(groups)
+        name = f"{data_dirname}/{key.replace(':', '__')}.js"
+        payload = {
+            "topics": series,
+            "factors": factors,
+            "pool": _pool_columnar(pool) if pool else None,
+        }
+        (output_dir / name).write_text(
+            f"window.__DASH_UNIT__({json.dumps(key)}, "
+            + json.dumps(payload, separators=(",", ":"))
+            + ");\n",
+            encoding="utf-8",
+        )
+        unit_files[key] = name
 
     actor_factors: dict = {}
     actors_set: set = set()
@@ -2205,15 +2327,16 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
     defaults = [i for i in _schema_defaults(schema) if i in concept_groups]
 
     ranked_html = build_topic_iframe_html(
-        concept_data,
+        {},
         dropdown_options_html=hier_options,
         focus_groups=defaults,
         all_groups=items,
         data_expr=data_expr,
         factors_expr=factors_expr,
+        loader_expr="window.parent.__DASH_LOAD__",
     )
     series_html = build_epu_iframe_html(
-        concept_data,
+        {},
         items,
         defaults,
         title="Uncertainty Concepts",
@@ -2229,6 +2352,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         ),
         chip_html=_schema_tree_html(schema, items, defaults),
         pool_expr='window.parent.__DASH__["pool"]',
+        loader_expr="window.parent.__DASH_LOAD__",
     )
     actors_html = build_epu_iframe_html(
         actors_data,
@@ -2254,18 +2378,13 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         host_subtitle="uncertainty concepts over time and ranked, keyword schema, and uncertainty actors",
         policy_tab_label="Keyword Schema",
         shared_data={
-            "topics": {k: _columnar(v) for k, v in concept_data.items()},
-            "topicFactors": concept_factors,
-            "pool": {k: _pool_columnar(v) for k, v in concept_pool.items()},
+            "unitFiles": unit_files,
             "actors": {k: _columnar(v) for k, v in actors_data.items()},
             "actorFactors": actor_factors,
         },
         keywords_schema=schema,
     )
 
-    project_root = Path(__file__).resolve().parents[3]
-    output_dir = project_root / "outputs" / "text" / "dashboards" / "concepts"
-    output_dir.mkdir(parents=True, exist_ok=True)
     dashboard_path = output_dir / f"{region}_concepts_dashboard.html"
     dashboard_path.write_text(out, encoding="utf-8")
     print(f"Created {dashboard_path}")
