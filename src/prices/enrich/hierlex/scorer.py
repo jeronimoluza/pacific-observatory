@@ -33,9 +33,10 @@ BUNDLE_POLICIES = ("conservative_risk", "empirical_98")
 # Each is the LOWEST tau whose accepted set still meets the named precision, so
 # each buys the most coverage that target allows.
 #
-# These are calibration-specific: a tau is a threshold on THIS bundle's Platt
-# output, so it is meaningless against another bundle. Solved against
-# `hierlex_select_v1_20260910`; re-solve before pointing them at any other.
+# These are calibration-specific: a tau is a threshold on ONE bundle's Platt
+# output, so it is meaningless against another bundle. The values live beside the
+# bundles, one file per bundle (`package.local_taus`), and a bundle without one
+# has no local policies at all.
 #
 # That warning is not theoretical, and the 20260908 -> 20260910 retrain is the
 # worked example. `target_95` moved 0.5893 -> 0.6988. Left stale, the old value
@@ -56,13 +57,9 @@ BUNDLE_POLICIES = ("conservative_risk", "empirical_98")
 # bundle never trained on. They do NOT transfer to the ~308k gold rows, whose
 # production scores are in-sample and inflated; validate against the OOF audit,
 # never against the production cache.
-LOCAL_TAUS = {
-    "target_95": 0.6987841129302979,
-    "target_92": 0.309093713760376,
-    "target_90": 0.1546705812215805,
-}
+LOCAL_POLICIES = ("target_95", "target_92", "target_90")
 
-POLICIES = BUNDLE_POLICIES + tuple(LOCAL_TAUS)
+POLICIES = BUNDLE_POLICIES + LOCAL_POLICIES
 
 
 def resolve_tau(
@@ -74,7 +71,7 @@ def resolve_tau(
 
     An explicit `tau` wins outright; otherwise `policy` (defaulting to the
     configured one) is looked up in the bundle's thresholds and then in
-    `LOCAL_TAUS`. Reads the manifest rather than the models because callers want
+    the bundle's local taus file. Reads the manifest rather than the models because callers want
     a float and loading 1.65 GB of weights to get one is the thing this avoids.
     """
     from prices.enrich import config  # noqa: PLC0415 - avoids an import cycle
@@ -87,8 +84,8 @@ def resolve_tau(
             raise ValueError(f"tau must lie in [0, 1], got {tau!r}")
         return tau
     policy = policy or config.HIERLEX_POLICY
-    if policy in LOCAL_TAUS:
-        return float(LOCAL_TAUS[policy])
+    if policy in LOCAL_POLICIES:
+        return package.local_taus(package.resolve(version))[policy]
     if policy not in BUNDLE_POLICIES:
         raise ValueError(f"unknown policy {policy!r}; expected one of {POLICIES}")
     meta = package.manifest(package.resolve(version))

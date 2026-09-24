@@ -25,6 +25,10 @@ from prices.enrich import config
 PACKAGE_ROOT = config.PRODUCTS_INPUT_PARQUET.parent / "_models" / "hierlex"
 SCORER_REL = Path("scripts") / "score_hierlex_select.py"
 MANIFEST_REL = Path("models") / "model_manifest.json"
+# Beside the bundles, not inside one: a bundle is sha256-verified against its own
+# manifest, and `available()` skips a directory with no manifest, so this is
+# invisible to `resolve()`.
+TAUS_DIR = PACKAGE_ROOT / "taus"
 
 
 def available() -> list[str]:
@@ -52,6 +56,27 @@ def resolve(version: str | None = None) -> Path:
 
 def manifest(pkg: Path) -> dict:
     return json.loads((pkg / MANIFEST_REL).read_text(encoding="utf-8"))
+
+
+def local_taus(pkg: Path) -> dict[str, float]:
+    """The taus solved in this repo against `pkg`, from `TAUS_DIR/<bundle>.json`.
+
+    Refuses rather than falls back. A tau is a threshold on one bundle's Platt
+    output, and a stale one is a perfectly valid float: nothing downstream can
+    tell it is wrong. So a bundle nobody has solved taus for has none, and a
+    file that records a different bundle than the one it is named for is
+    rejected.
+    """
+    path = TAUS_DIR / f"{pkg.name}.json"
+    if not path.exists():
+        raise FileNotFoundError(
+            f"no taus solved for {pkg.name}: run ~/hlretrain/solve_taus.py on its "
+            f"audit/implementation_oof_decisions.parquet and write {path}"
+        )
+    rec = json.loads(path.read_text(encoding="utf-8"))
+    if rec["bundle"] != pkg.name:
+        raise ValueError(f"{path} records taus for {rec['bundle']!r}, not {pkg.name!r}")
+    return {k: float(v) for k, v in rec["taus"].items()}
 
 
 def _sha256(path: Path) -> str:
