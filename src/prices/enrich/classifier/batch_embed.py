@@ -42,7 +42,7 @@ def _build_store(bucket_names: dict[int, list[str]]) -> None:
             continue
         if block["backend"] == "st":
             for b, nm in miss.items():
-                embed_store.append(tag, b, nm, embedding.encode_st_block(block, nm))
+                embed_store.append(block, b, nm, embedding.encode_st_block(block, nm))
                 print(f"[embed {tag}] bucket {b} +{len(nm)}", flush=True)
             embedding.free_st()
             continue
@@ -50,7 +50,7 @@ def _build_store(bucket_names: dict[int, list[str]]) -> None:
         try:
             for b, nm in miss.items():
                 t0 = time.monotonic()
-                embed_store.append(tag, b, nm, worker.encode(block, nm))
+                embed_store.append(block, b, nm, worker.encode(block, nm))
                 print(
                     f"[embed {tag}] bucket {b} +{len(nm)} in {time.monotonic() - t0:.0f}s",
                     flush=True,

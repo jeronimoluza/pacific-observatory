@@ -16,13 +16,15 @@ def store(tmp_path, monkeypatch):
     monkeypatch.setattr(embed_store, "STORE_DIR", tmp_path)
     for b, n in [(0, 10), (1, 400), (2, 40)]:
         embed_store.append(
-            "blk", b, [f"n{b}_{i}" for i in range(n)], np.zeros((n, 64), np.float16)
+            {"tag": "blk", "backend": "st", "model": "m"}, b, [f"n{b}_{i}" for i in range(n)], np.zeros((n, 64), np.float16)
         )
     return tmp_path
 
 
 def test_bucket_bytes_sums_every_block(store):
-    embed_store.append("other", 1, ["x"], np.zeros((1, 64), np.float16))
+    embed_store.append(
+        {"tag": "other", "backend": "st", "model": "m"}, 1, ["x"], np.zeros((1, 64), np.float16)
+    )
     one = bucket_pool.bucket_bytes(1, ["blk"])
     both = bucket_pool.bucket_bytes(1, ["blk", "other"])
     assert one > 0

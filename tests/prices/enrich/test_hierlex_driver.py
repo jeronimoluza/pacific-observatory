@@ -80,7 +80,7 @@ def bundle(tmp_path, monkeypatch):
         by_bucket.setdefault(embed_store.bucket_of(n), []).append(n)
     for b, names in by_bucket.items():
         embed_store.append(
-            "blk", b, names, rng.standard_normal((len(names), DIM)).astype(np.float16)
+            {"tag": "blk", "backend": "st", "model": "m"}, b, names, rng.standard_normal((len(names), DIM)).astype(np.float16)
         )
 
     monkeypatch.setattr(package, "resolve", lambda version=None: tmp_path / "bundle")

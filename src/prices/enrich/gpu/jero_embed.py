@@ -142,7 +142,7 @@ def run(tag: str) -> None:
                     if _stop:
                         raise KeyboardInterrupt
                     raise
-                embed_store.append(tag, b, chunk, vecs)
+                embed_store.append(blk, b, chunk, vecs)
                 done += len(chunk)
                 dt = time.monotonic() - t0
                 rate = done / max(time.monotonic() - t_start, 1e-9)

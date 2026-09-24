@@ -19,6 +19,7 @@ negligible for the head.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from collections import defaultdict
 from pathlib import Path
@@ -144,7 +145,47 @@ def missing_keys(tag: str, bucket_names: dict[int, list[str]]) -> dict[int, list
     return out
 
 
-def append(tag: str, b: int, names, vecs: np.ndarray) -> None:
+def _tag_manifest_path(tag: str) -> Path:
+    # Beside the tag directory, not in it: tag directories are mode 555.
+    return STORE_DIR / f"{tag}.TAG.json"
+
+
+def _declared(block: dict) -> dict:
+    """What a write under `block` produces. None means the block does not say
+    (no pinned revision; the backend's default dtype) -- recorded as such, never
+    filled in with a guess."""
+    return {
+        "model": str(block["model"]),
+        "revision": block.get("revision"),
+        "dtype": block.get("model_kwargs", {}).get("torch_dtype"),
+        "framework": "mlx" if block["backend"] == "mlx" else "sentence-transformers",
+    }
+
+
+def check_tag(block: dict) -> None:
+    """Refuse a write whose model disagrees with the tag's `TAG.json`.
+
+    A tag without one gets it from this write: nothing is backfilled about the
+    vectors already there. Resume skips every name already stored, so a second
+    model pointed at an existing tag appends a second vector space beside the
+    first with no error. A wrong vector is a valid array; only this catches it.
+    """
+    path = _tag_manifest_path(block["tag"])
+    declared = _declared(block)
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(declared, indent=2) + "\n", encoding="utf-8")
+        return
+    recorded = json.loads(path.read_text(encoding="utf-8"))
+    if recorded != declared:
+        raise ValueError(
+            f"tag {block['tag']!r} holds {recorded}; this write declares {declared}"
+        )
+
+
+def append(block: dict, b: int, names, vecs: np.ndarray) -> None:
+    tag = block["tag"]
+    check_tag(block)
     store = _load_bucket(tag, b)
     for n, v in zip(names, vecs):
         store[str(n)] = np.asarray(v, dtype=np.float16)

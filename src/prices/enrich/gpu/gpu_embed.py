@@ -166,7 +166,7 @@ def run(tag: str) -> None:
                 chunk = names[i : i + CHECKPOINT_EVERY]
                 t0 = time.monotonic()
                 vecs = encode(blk, chunk)
-                embed_store.append(tag, b, chunk, vecs)
+                embed_store.append(blk, b, chunk, vecs)
                 done += len(chunk)
                 dt = time.monotonic() - t0
                 rate = done / max(time.monotonic() - t_start, 1e-9)

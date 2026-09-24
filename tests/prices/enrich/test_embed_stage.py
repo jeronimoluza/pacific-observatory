@@ -84,7 +84,8 @@ def test_missing_is_reported_per_block(corpus, monkeypatch):
     )
     names = ["Rice 1kg", "Flour 2kg"]
     embed_store.append(
-        "a", embed_store.bucket_of(names[0]), [names[0]], np.zeros((1, 4), np.float16)
+        {"tag": "a", "backend": "st", "model": "m"},
+        embed_store.bucket_of(names[0]), [names[0]], np.zeros((1, 4), np.float16)
     )
     assert embed.missing(names) == {"a": 1, "b": 2}
 
