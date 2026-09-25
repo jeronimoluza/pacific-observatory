@@ -451,12 +451,21 @@ def _write_policy_sheets(xw, region: str) -> None:
 def _write_sources_sheet(xw, database_status: dict | None, region: str) -> None:
     """Append a ``sources`` sheet scoped to ``region``, if status data allows.
 
+    Without fresh ``database_status`` (``--skip-database-status``), falls back to
+    the region's last export, ``sources_<region>.json``, so a skipped scan does
+    not drop the sheet from a workbook that already had one.
+
     Never raises: a status failure or empty region slice just skips the sheet.
     """
-    if not database_status:
-        return
     try:
-        from text.status import DATABASE_STATUS_FIELDS
+        from text.status import DATABASE_STATUS_DIR, DATABASE_STATUS_FIELDS
+
+        if not database_status:
+            saved = DATABASE_STATUS_DIR / f"sources_{region}.json"
+            if not saved.exists():
+                return
+            with open(saved, encoding="utf-8") as f:
+                database_status = json.load(f)
 
         rows = [
             r for r in database_status.get("sources", []) if r.get("region") == region
@@ -483,18 +492,28 @@ def _render_fcp_dashboard(
     return generate_dashboard_from_json(region_json, region, tracker)
 
 
-def _refresh_database_status():
-    """Regenerate the global outputs/text/database_status/sources.{csv,json,xlsx} snapshot.
+def _refresh_database_status(region=None):
+    """Regenerate the database status snapshot under outputs/text/database_status/.
 
-    Scope-independent: always reflects the whole data/text/ database. Failures
-    here never block dashboard publishing. Returns the computed data dict (also
-    used to populate the per-region ``sources`` xlsx sheet), or None on failure.
+    With ``region``, scans only that region's news.csv files, writes
+    ``sources_<region>.*`` and re-merges the combined ``sources.xlsx`` from every
+    per-region export, the same path as ``po text database-status --region``.
+    Without it, rescans the whole data/text/ database into the global export.
+    Failures here never block dashboard publishing. Returns the computed data
+    dict (also used to populate the per-region ``sources`` xlsx sheet), or None
+    on failure.
     """
-    from text.status import compute_database_status, write_database_status
+    from text.status import (
+        compute_database_status,
+        merge_region_exports,
+        write_database_status,
+    )
 
     try:
-        data = compute_database_status()
-        write_database_status(data)
+        data = compute_database_status(region_filter=region)
+        write_database_status(data, region=region)
+        if region:
+            merge_region_exports()
         t = data["totals"]
         click.echo(
             f"  Database status: {t['sources']} sources · "
@@ -515,8 +534,9 @@ def run_publish(
 ):
     """Build dashboard_data.json, per-region panels, and EPU dashboards.
 
-    ``skip_database_status`` bypasses the global raw-data rescan, which is
-    pointless when the published regions have no local ``data/text/`` copy.
+    ``skip_database_status`` bypasses the raw-data rescan (scoped to ``region``
+    when one is given), which is pointless when the published regions have no
+    local ``data/text/`` copy.
 
     Always writes the global ``outputs/text/dashboard_data/dashboard_data.json``
     and renders the basic integrated HTML. When the scope covers full
@@ -534,7 +554,7 @@ def run_publish(
         click.echo("  Database status: skipped (--skip-database-status)")
         database_status = None
     else:
-        database_status = _refresh_database_status()
+        database_status = _refresh_database_status(region)
 
     if not units:
         click.echo("  No units with EPU data found. Run 'po text build' first.")
