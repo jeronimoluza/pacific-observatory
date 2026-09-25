@@ -95,6 +95,23 @@ def code_fingerprint(stage: str) -> str:
     raise click.BadParameter(f"no gate for stage {stage!r}")
 
 
+def source_patches(stage: str) -> dict[str, str]:
+    """`{source: patch hash}`: source patches sit outside the stage fingerprint."""
+    if stage == "extraction":
+        from prices.enrich.stages import extraction
+
+        return extraction.source_patch_hashes()
+    return {}
+
+
+def scoped_fingerprint(fp: Optional[str], scope: str, patches: dict[str, str]) -> Optional[str]:
+    """The fingerprint a verdict on `scope` is recorded under: the stage's,
+    plus the source's own patch hash when it has one -- so editing one
+    source's patch reopens that source's verdict and no other."""
+    patch = patches.get(scope.rsplit("/", 1)[-1])
+    return f"{fp}+{patch}" if fp and patch else fp
+
+
 # ── extraction metrics ─────────────────────────────────────────────
 
 
@@ -110,15 +127,16 @@ def _source_keys() -> dict[tuple[str, str], str]:
 def _extraction_counts() -> pd.DataFrame:
     """n_rows, qty rows and duplicate (input_hash, country) rows per (country, source).
 
-    One part per country, and the grain key contains country, so a duplicate
-    can only sit inside one part: streaming part by part never misses one.
+    One file per (country, source); the grain key contains country and
+    `input_hash` contains source, so a duplicate can only sit inside one file:
+    streaming file by file never misses one.
     """
     from prices.enrich import config
     from prices.enrich.stages import decisions_store
-    from prices.enrich.stages.extraction import _QTY_BASES
+    from prices.enrich.stages.extraction import _QTY_BASES, part_files
 
     frames = []
-    for part in sorted(decisions_store.parts_root(config.EXTRACTION_PARQUET).glob("*.parquet")):
+    for part in part_files(decisions_store.parts_root(config.EXTRACTION_PARQUET)):
         df = pq.read_table(
             part, columns=["input_hash", "country", "source", "pricing_basis"]
         ).to_pandas()
@@ -224,7 +242,11 @@ def read_verdicts() -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("ts", kind="stable").reset_index(drop=True)
 
 
-def status_view(events: pd.DataFrame, fingerprints: dict[str, str]) -> pd.DataFrame:
+def status_view(
+    events: pd.DataFrame,
+    fingerprints: dict[str, str],
+    patches: Optional[dict[str, dict[str, str]]] = None,
+) -> pd.DataFrame:
     """Current state per (source, stage), folded from the verdict events.
 
     An episode runs until the source passes or parks. It reopens -- `pending`,
@@ -250,7 +272,10 @@ def status_view(events: pd.DataFrame, fingerprints: dict[str, str]) -> pd.DataFr
                 status, reason = "parked", ev.reason
             else:
                 reason = ev.reason
-        if status in ("passed", "parked") and fp != fingerprints.get(stage):
+        current = scoped_fingerprint(
+            fingerprints.get(stage), scope, (patches or {}).get(stage, {})
+        )
+        if status in ("passed", "parked") and fp != current:
             status, attempts, escalated = "pending", 0, False
         out.append(
             {
@@ -270,7 +295,7 @@ def status_view(events: pd.DataFrame, fingerprints: dict[str, str]) -> pd.DataFr
 def write_status() -> pd.DataFrame:
     events = read_verdicts()
     fps = {stage: code_fingerprint(stage) for stage in FLOORS}
-    view = status_view(events, fps)
+    view = status_view(events, fps, {stage: source_patches(stage) for stage in FLOORS})
     STATUS_PARQUET.parent.mkdir(parents=True, exist_ok=True)
     view.to_parquet(STATUS_PARQUET, index=False)
     return view
@@ -334,6 +359,7 @@ def run_command(stage: str, only: tuple[str, ...], escalated: bool) -> None:
     if df.empty:
         raise click.ClickException("no source matched")
     fp = code_fingerprint(stage)
+    patches = source_patches(stage)
     results = []
     # Every verdict reaches the ledger before anything is printed, for the
     # reason source_sanity gives: a closed stdout must not cost a record.
@@ -350,7 +376,7 @@ def run_command(stage: str, only: tuple[str, ...], escalated: bool) -> None:
             gate_stage=stage,
             verdict=verdict,
             escalated=escalated,
-            code_fingerprint=fp,
+            code_fingerprint=scoped_fingerprint(fp, row["key"], patches),
             metrics=metrics,
         )
         results.append((row["key"], verdict, reason))

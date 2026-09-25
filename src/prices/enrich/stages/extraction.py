@@ -35,16 +35,20 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 from dataclasses import replace
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
 import pandas as pd
 import pyarrow as pa
+import pyarrow.compute as pc
+import pyarrow.parquet as pq
 
 from prices.enrich import config
 from prices.enrich.declared_unit import parse_declared_count, parse_declared_unit
 from prices.enrich.extract import StructuralFields, extract
+from prices.enrich.regex_patterns.dict_view import pattern_set
 from prices.enrich.stages import decisions_store, products_reader
 
 _QTY_BASES = frozenset({"mass", "volume", "length", "count"})
@@ -52,18 +56,6 @@ _QTY_BASES = frozenset({"mass", "volume", "length", "count"})
 # on purpose below: there the count IS the quantity and already scales the
 # denominator, so promoting it would double-count.
 _MEASURED_BASES = frozenset({"mass", "volume", "length"})
-
-# Sources whose trailing "(N pieces)" is a wholesale CASE size rather than a
-# breakdown of the stated measure: the measure describes ONE unit and N of them
-# ship together, so N multiplies the denominator. Verified per source, never
-# assumed -- mangusa_cw is a bulk hypermarket whose own manifest records the
-# convention ("Unoli Canola oil 2ltr (6 pieces)" at XCG 84.10, which is a case
-# price: as a lone 2L bottle it implies ~$23/L of canola oil). Volume basis was
-# already right (volume always multiplies); mass basis was not, and priced a
-# whole case as one piece. Other sources using the same phrasing are NOT listed
-# here -- the identical words mean pack-total at some of them, so each one has
-# to be checked on its own evidence before it is added.
-_PIECE_IS_CASE_SOURCES = frozenset({"mangusa_cw"})
 
 
 def _structural_fields(
@@ -116,8 +108,10 @@ def _structural_fields(
                 promo_reason=qs.promo_reason,
             )
             unit_declared = True
+    # A source-patch flag (regex_patterns/source/<source>/patch.py): the
+    # trailing "(N pieces)" is a wholesale case, so N multiplies the measure.
     piece_is_case = (
-        source in _PIECE_IS_CASE_SOURCES
+        "piece_is_case" in pattern_set(source).flags
         and qs.pricing_basis in _MEASURED_BASES
         and qs.multiplier == 1
         and qs.count is not None
@@ -188,17 +182,44 @@ _CODE_FILES = (
     "declared_unit.py",
 )
 _CODE_TREES = ("regex_patterns",)
+# Source patches are keyed per source (`source_patch_hashes`), not globally:
+# in the global key, a one-line tiki fix would restale all 48.5M rows.
+_SOURCE_PATCH_DIR = _ENRICH_DIR / "regex_patterns" / "source"
+
+
+def _code_files(tree: Path) -> list[Path]:
+    # .pyc is rewritten by the interpreter, so including it would invalidate
+    # the table on every run and defeat the whole key.
+    return [
+        p for p in sorted(tree.rglob("*"))
+        if p.is_file() and "__pycache__" not in p.parts
+    ]
 
 
 def _fingerprint_paths() -> list[Path]:
     paths = [_ENRICH_DIR / name for name in _CODE_FILES]
     for tree in _CODE_TREES:
-        for p in sorted((_ENRICH_DIR / tree).rglob("*")):
-            # .pyc is rewritten by the interpreter, so including it would
-            # invalidate the table on every run and defeat the whole key.
-            if p.is_file() and "__pycache__" not in p.parts:
-                paths.append(p)
+        for p in _code_files(_ENRICH_DIR / tree):
+            if p.parent != _SOURCE_PATCH_DIR and _SOURCE_PATCH_DIR in p.parents:
+                continue  # inside source/<slug>/
+            paths.append(p)
     return [p for p in paths if p.is_file()]
+
+
+def source_patch_hashes() -> dict[str, str]:
+    """`{source: content hash}` for every source that has a patch directory."""
+    out = {}
+    if not _SOURCE_PATCH_DIR.is_dir():
+        return out
+    for d in sorted(_SOURCE_PATCH_DIR.iterdir()):
+        if not d.is_dir() or d.name == "__pycache__":
+            continue
+        h = hashlib.sha256()
+        for p in _code_files(d):
+            h.update(str(p.relative_to(d)).encode())
+            h.update(p.read_bytes())
+        out[d.name] = h.hexdigest()[:16]
+    return out
 
 
 def code_fingerprint() -> str:
@@ -249,6 +270,113 @@ def extract_frame(products: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=EXTRACTION_COLS)
 
 
+# ── Layout: <root>/<country>/<source>.parquet ──────────────────────────────
+#
+# Country outer, source inner (spec Q13). Per-source freshness then means
+# "rewrite one source's files", never a read-modify-write of a whole country
+# part (a rakuten edit would otherwise rewrite Japan's file). Country stays the
+# outer level because per-country readers would otherwise open ~2,111 files:
+# 7 sources span more than one country. The layout is extraction's own;
+# `decisions_store` keeps the flat per-country layout the classify output uses.
+#
+# Rows reach the stage in products_input order, not grouped by source, and one
+# open writer per (country, source) would pass the 1,024-descriptor limit. So a
+# run still stages one part per country beside the root and splits each staged
+# part into its source files at the end.
+
+
+def _staging_root(root: Path) -> Path:
+    return root.with_name(root.name + ".staging")
+
+
+def nest_part(part: Path, country_dir: Path) -> dict[str, Path]:
+    """Split one flat country part into `<country_dir>/<source>.parquet`.
+
+    Every source in the part is written whole, each file via `.tmp` + rename;
+    row order within a source is kept. Returns `{source file stem: path}`.
+    """
+    table = pq.read_table(part)
+    col = table.column("source")
+    by_stem: dict[str, object] = {}
+    for src in pc.unique(col).to_pylist():
+        stem = decisions_store.part_name(src)
+        if stem in by_stem:  # two source names sanitising to one filename
+            raise RuntimeError(
+                f"{part}: sources {by_stem[stem]!r} and {src!r} share file stem {stem!r}"
+            )
+        by_stem[stem] = src
+    country_dir.mkdir(parents=True, exist_ok=True)
+    written = {}
+    for stem, src in by_stem.items():
+        mask = pc.is_null(col) if src is None else pc.equal(col, src)
+        final = country_dir / f"{stem}.parquet"
+        tmp = final.with_name(final.name + ".tmp")
+        pq.write_table(table.filter(mask), tmp)
+        tmp.replace(final)
+        written[stem] = final
+    return written
+
+
+def _prune_nested(root: Path, scope, written: dict[str, set[str]]) -> None:
+    """Drop source files this run was responsible for but did not write.
+
+    A full run owns everything; a scoped run owns only the countries it took
+    whole and the named sources of the ones it took in part -- nothing outside
+    its scope is touched. A source file this run owned and wrote nothing for is
+    empty now, not untouched, and keeping it would serve last run's rows.
+    """
+    if scope is None:
+        owned = {d.name: None for d in root.iterdir() if d.is_dir()}
+    else:
+        owned = {
+            decisions_store.part_name(c): (
+                None if srcs is None else {decisions_store.part_name(s) for s in srcs}
+            )
+            for c, srcs in scope.items()
+        }
+    for country, stems in owned.items():
+        cdir = root / country
+        if not cdir.is_dir():
+            continue
+        keep = written.get(country, set())
+        for f in cdir.glob("*.parquet"):
+            if f.stem not in keep and (stems is None or f.stem in stems):
+                f.unlink()
+        if not any(cdir.iterdir()):
+            cdir.rmdir()
+
+
+def part_files(root: Path, countries: Optional[Iterable[str]] = None) -> list[Path]:
+    """Every source file, optionally only those of `countries`."""
+    root = Path(root)
+    if not root.is_dir():
+        return []
+    if countries is None:
+        return sorted(root.glob("*/*.parquet"))
+    wanted = {decisions_store.part_name(c) for c in countries}
+    return sorted(p for p in root.glob("*/*.parquet") if p.parent.name in wanted)
+
+
+def read(
+    path: Optional[Path] = None,
+    columns: Optional[Sequence[str]] = None,
+    countries: Optional[Iterable[str]] = None,
+) -> pd.DataFrame:
+    """The extraction table (or the named countries of it) as one frame."""
+    root = decisions_store.parts_root(path or config.EXTRACTION_PARQUET)
+    paths = part_files(root, countries)
+    if not paths:
+        return pd.DataFrame(columns=list(columns) if columns else None)
+    return pd.concat(
+        [pd.read_parquet(p, columns=columns) for p in paths], ignore_index=True
+    )
+
+
+def row_count(path: Optional[Path] = None) -> int:
+    root = decisions_store.parts_root(path or config.EXTRACTION_PARQUET)
+    return sum(pq.ParquetFile(p).metadata.num_rows for p in part_files(root))
+
+
 def _state_path(out_path: Path) -> Path:
     """The freshness key, beside the parts directory and never inside it.
 
@@ -259,11 +387,28 @@ def _state_path(out_path: Path) -> Path:
     return root.with_name(root.name + ".state.json")
 
 
-def _read_fingerprint(out_path: Path) -> Optional[str]:
+def _read_state(out_path: Path) -> dict:
     try:
-        return json.loads(_state_path(out_path).read_text())["fingerprint"]
-    except (OSError, ValueError, KeyError):
-        return None
+        state = json.loads(_state_path(out_path).read_text())
+    except (OSError, ValueError):
+        return {}
+    return state if isinstance(state, dict) else {}
+
+
+def _scope_of_sources(in_path: Path, sources: Sequence[str]) -> dict:
+    """`{country: frozenset(sources)}` covering every row of `sources`."""
+    import pyarrow.dataset as pads
+
+    keys = (
+        pads.dataset(in_path)
+        .to_table(columns=["country", "source"], filter=pads.field("source").isin(list(sources)))
+        .to_pandas()
+        .drop_duplicates()
+    )
+    return {
+        country: frozenset(grp["source"])
+        for country, grp in keys.groupby("country", dropna=False)
+    }
 
 
 def run(
@@ -285,6 +430,11 @@ def run(
     the fingerprint would mark the whole table current on the strength of a few
     hundred rows -- the same confusion between "what I looked at" and "what is
     true" that the CC ledger's filename rule made.
+
+    The one exception is a source patch (`regex_patterns/source/<source>/`),
+    keyed per source in the same state file: when the shared code is current
+    and only patches changed, an unscoped run re-extracts just those sources
+    and stamps the table, because every other source is known current.
     """
     # Imported here, not at module scope: classify imports THIS module for
     # `_structural_fields`, so a top-level import back into classify is a cycle.
@@ -295,67 +445,61 @@ def run(
     root = decisions_store.parts_root(out_path)
     scope = classify.scope_for(selectors, shard_root)
     fingerprint = code_fingerprint()
+    patches = source_patch_hashes()
+    state = _read_state(out_path)
+    stamp = scope is None
+    refreshed: list[str] = []
 
-    if (
-        not force
-        and scope is None
-        and root.is_dir()
-        and _read_fingerprint(out_path) == fingerprint
-    ):
-        return {
-            "rows": decisions_store.row_count(out_path),
-            "countries": len(decisions_store.existing_countries(root)),
-            "fingerprint": fingerprint,
-            "skipped": True,
-        }
+    if not force and scope is None and root.is_dir() and state.get("fingerprint") == fingerprint:
+        # Shared code unchanged: only sources whose patch changed (added,
+        # edited or deleted) are stale. Re-extract exactly those and stamp the
+        # table current -- every other source is already current.
+        done = state.get("sources", {})
+        refreshed = sorted(s for s in patches.keys() | done.keys() if patches.get(s) != done.get(s))
+        if not refreshed:
+            return {
+                "rows": row_count(out_path),
+                "countries": sum(1 for d in root.iterdir() if d.is_dir()),
+                "fingerprint": fingerprint,
+                "skipped": True,
+            }
+        scope = _scope_of_sources(in_path, refreshed)
 
-    # A country in scope only in PART is merged into rather than replaced, so
-    # the keys this run may drop have to be known before the first part is
-    # written. They come from products_input, not from what extraction emits:
-    # the two are the same set by construction, and reading it up front costs
-    # one key-only scan instead of buffering every frame in memory.
-    merge_keys = None
-    partial = [c for c, sources in (scope or {}).items() if sources is not None]
-    if partial:
-        keys = products_reader.read_product_keys(
-            in_path, ["input_hash", "country"], scope=scope
-        )
-        merge_keys = {
-            decisions_store.part_name(c): set(
-                keys.loc[keys["country"] == c, "input_hash"]
-            )
-            for c in partial
-        }
-
-    root.mkdir(parents=True, exist_ok=True)
-    writer = decisions_store.PartitionedWriter(
-        root, EXTRACTION_SCHEMA, merge_keys=merge_keys
-    )
+    # Every source this run reads it reads WHOLE (a scope never splits a
+    # source within a country), so each source file is replaced outright and
+    # nothing has to be merged into.
+    staging = _staging_root(root)
+    shutil.rmtree(staging, ignore_errors=True)
+    writer = decisions_store.PartitionedWriter(staging, EXTRACTION_SCHEMA)
     rows = 0
     try:
         for chunk in products_reader.iter_products(in_path, chunk_rows, scope=scope):
             frame = extract_frame(chunk)
             writer.write(frame)
             rows += len(frame)
-        written = writer.close()
+        staged = writer.close()
     except BaseException:
         # Publish nothing on the way out: a half-written part reads exactly
         # like a complete one.
         writer.abort()
+        shutil.rmtree(staging, ignore_errors=True)
         raise
 
-    if scope is None:
-        decisions_store.prune(root, {p.stem for p in written})
-        _state_path(out_path).write_text(json.dumps({"fingerprint": fingerprint}))
-    else:
-        # Only countries taken WHOLE may be pruned. A partly-scoped country that
-        # wrote nothing still has its other sources on disk.
-        whole = [c for c, sources in scope.items() if sources is None]
-        decisions_store.prune_scoped(root, whole, {p.stem for p in written})
+    root.mkdir(parents=True, exist_ok=True)
+    written: dict[str, set[str]] = {}
+    for part in staged:
+        written[part.stem] = set(nest_part(part, root / part.stem))
+    shutil.rmtree(staging, ignore_errors=True)
+    _prune_nested(root, scope, written)
+    if stamp:
+        _state_path(out_path).write_text(
+            json.dumps({"fingerprint": fingerprint, "sources": patches})
+        )
 
     return {
         "rows": rows,
         "countries": len(written),
         "fingerprint": fingerprint,
         "skipped": False,
+        "refreshed": refreshed,
     }
