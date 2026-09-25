@@ -331,6 +331,23 @@ def _build_topic_or_actor_ratios(
     return df
 
 
+def _key_frame(wide: pd.DataFrame, sources: list[str], key: str) -> pd.DataFrame:
+    """The columns `_standardize_epu` reads for one topic or actor key.
+
+    `_standardize_epu` copies its input, and every per-key result is kept, so
+    passing the full wide frame (all sources x all keys) holds one full copy
+    per key. Consumers of the per-key units read only `date` and
+    `epu_weighted`.
+    """
+    existing = set(wide.columns)
+    cols = [c for c in ("date", "ym") if c in existing]
+    for s in sources:
+        for c in (f"{s}_weights", f"{s}_{key}_ratio"):
+            if c in existing:
+                cols.append(c)
+    return wide[cols]
+
+
 def _build_ug_counts_frame(
     wide: pd.DataFrame,
     sources: list[str],
@@ -440,7 +457,7 @@ def standardize_unit(
     topic_epus: dict[str, StandardizedUnit] = {}
     for k in topic_keys:
         df_t, params_t, _ = _standardize_epu(
-            wide_with_topic_ratios,
+            _key_frame(wide_with_topic_ratios, sources, f"topic_{k}"),
             sources,
             cutoff_start,
             cutoff_end,
@@ -461,7 +478,7 @@ def standardize_unit(
     actor_epus: dict[str, StandardizedUnit] = {}
     for k in actor_keys:
         df_a, params_a, _ = _standardize_epu(
-            wide_with_actor_ratios,
+            _key_frame(wide_with_actor_ratios, sources, f"actor_{k}"),
             sources,
             cutoff_start,
             cutoff_end,
