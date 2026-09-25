@@ -67,12 +67,16 @@ class Intent:
     rows:     approximate number of rows it should move in its source.
     examples: 3-5 real product names from the source; re-checked on every
               extraction change so a later shared edit cannot silently undo it.
+    count_loss: the entry may turn a count > 1 into 1 (it corrects bogus
+              counts, e.g. "(80 Lít)" read as 80 pieces); otherwise that is a
+              refusal. Those rows still go to review.
     """
 
     why: str
     expect: str
     rows: int
     examples: tuple[str, ...]
+    count_loss: bool = False
 
 
 @dataclass(frozen=True)

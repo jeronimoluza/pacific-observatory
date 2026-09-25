@@ -14,7 +14,8 @@ diffs. Two modes:
 
 **Refused** (hard): a changed row outside the declaration -- another transition,
 another country (shared), or more than 10x the declared rows; a `count` > 1
-that becomes 1; a patch example (any source's) that is not a real row or that
+that becomes 1, unless the entry declares `count_loss` (`--count-loss` for
+shared); a patch example (any source's) that is not a real row or that
 the rule no longer moves.
 
 **Flagged** (sent to model review, never refused alone): the change adds case
@@ -191,10 +192,9 @@ def _coicop(df: pd.DataFrame) -> pd.Series:
 # ── judging one diff ───────────────────────────────────────────────────
 
 
-def judge(df, old, new, old_up, new_up, strata: pd.Series) -> tuple[list[str], pd.DataFrame]:
-    """Invariants over the changed rows of `df`. Returns (refusals, changed rows
-    with old/new fields, unit values and flags)."""
-    refusals = []
+def judge(df, old, new, old_up, new_up, strata: pd.Series) -> pd.DataFrame:
+    """The changed rows of `df` with old/new fields, unit values and flags
+    (count_lost, case_flag, uv_flag); the callers decide what is refused."""
     rows = df.copy()
     for c in EXTRACTION_FIELDS:
         rows[f"{c}_old"], rows[f"{c}_new"] = old[c], new[c]
@@ -203,8 +203,6 @@ def judge(df, old, new, old_up, new_up, strata: pd.Series) -> tuple[list[str], p
 
     lost = (_pieces(old) > 1) & (_pieces(new) == 1)
     rows["count_lost"] = lost
-    if lost.any():
-        refusals.append(f"count > 1 became 1 on {int(lost.sum())} rows")
 
     rows["case_new"] = changed(new, new_up)
     rows["case_old"] = changed(old, old_up)
@@ -216,7 +214,7 @@ def judge(df, old, new, old_up, new_up, strata: pd.Series) -> tuple[list[str], p
     rows["coicop_code"] = _coicop(df)
     rows["food"] = rows["coicop_code"].fillna("").astype(str).str.startswith("01")
     rows["uv_flag"] = rows["food"] & ((ratio >= UV_FLAG) | (ratio <= 1 / UV_FLAG))
-    return refusals, rows
+    return rows
 
 
 def review_sample(rows: pd.DataFrame) -> pd.DataFrame:
@@ -361,12 +359,19 @@ def check_source(source: str, workers: int = 14) -> tuple[dict, Path]:
         [",".join(k for k, m in by_entry.items() if m[i]) or "(interaction)" for i in d.index],
         index=d.index,
     )
-    refusals, rows = judge(
+    refusals: list[str] = []
+    rows = judge(
         d, o, n,
         extract_rows(d, shared, upper=True, workers=workers),
         extract_rows(d, upper=True, workers=workers),
         strata,
     )
+    declared_loss = rows["stratum"].map(
+        lambda s: all(k in patch.intent and patch.intent[k].count_loss for k in s.split(","))
+    )
+    lost = rows["count_lost"] & ~declared_loss
+    if lost.any():
+        refusals.append(f"count > 1 became 1 on {int(lost.sum())} rows (no count_loss declared)")
     entries = {}
     for key, intent in patch.intent.items():
         mask = by_entry[key]
@@ -389,7 +394,7 @@ def check_source(source: str, workers: int = 14) -> tuple[dict, Path]:
 
 def check_shared(
     base: Path, cand: Optional[Path], countries: list[str], expect: str, rows_declared: int,
-    prefilter: Optional[str], workers: int = 14,
+    prefilter: Optional[str], workers: int = 14, count_loss: bool = False,
 ) -> tuple[dict, Path]:
     flt = None
     if prefilter:
@@ -399,9 +404,12 @@ def check_shared(
     new, new_up = _extract_with(cand or _SRC_ROOT, df, workers)
     chg = changed(old, new)
     d = df[chg]
-    refusals, rows = judge(
+    refusals: list[str] = []
+    rows = judge(
         d, old[chg], new[chg], old_up[chg], new_up[chg], pd.Series("shared", index=d.index)
     )
+    if rows["count_lost"].any() and not count_loss:
+        refusals.append(f"count > 1 became 1 on {int(rows['count_lost'].sum())} rows (no --count-loss)")
     outside = sorted(set(d["country"].dropna()) - set(countries))
     if outside:
         refusals.append(f"moved rows in {len(outside)} undeclared countries: {outside[:10]}")
@@ -415,7 +423,8 @@ def check_shared(
     report = {
         "mode": "shared", "base": str(base), "cand": str(cand or _SRC_ROOT),
         "prefilter": prefilter, "candidate_rows": len(df),
-        "declared": {"countries": countries, "expect": expect, "rows": rows_declared},
+        "declared": {"countries": countries, "expect": expect, "rows": rows_declared,
+                     "count_loss": count_loss},
         "verdict": "refused" if refusals else "model_review",
         "refusals": refusals, **_summary(rows),
     }
@@ -455,9 +464,11 @@ def source_command(source: str, workers: int) -> None:
 @click.option("--rows", "rows_declared", type=int, required=True)
 @click.option("--prefilter", help="Regex on product_name_original limiting the rows diffed.")
 @click.option("--workers", default=14, show_default=True)
-def shared_command(base, cand, countries, expect, rows_declared, prefilter, workers) -> None:
+@click.option("--count-loss", is_flag=True, help="The change may turn a count > 1 into 1.")
+def shared_command(base, cand, countries, expect, rows_declared, prefilter, workers, count_loss) -> None:
     """Diff two checkouts' extraction; judge against the declaration."""
-    _print(*check_shared(base, cand, list(countries), expect, rows_declared, prefilter, workers))
+    _print(*check_shared(base, cand, list(countries), expect, rows_declared, prefilter, workers,
+                         count_loss))
 
 
 @rulecheck_group.command("scan")
