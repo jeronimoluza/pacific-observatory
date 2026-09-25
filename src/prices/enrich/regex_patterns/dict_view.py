@@ -27,6 +27,7 @@ from __future__ import annotations
 import functools
 import importlib
 import re
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any
 
@@ -304,13 +305,8 @@ _DEFAULT = PatternSet(
 )
 
 
-@functools.lru_cache(maxsize=None)
-def pattern_set(source: str | None) -> PatternSet:
-    """Composed buckets for `source`: the shared ones unless it has a patch.
-
-    Cached per source (~2,300 distinct), never composed per row.
-    """
-    patch = load_source_patch(source)
+def compose(patch: SourcePatch | None) -> PatternSet:
+    """The buckets `patch` produces over the shared ones (None: the shared ones)."""
     if patch is None:
         return _DEFAULT
     return PatternSet(
@@ -323,3 +319,32 @@ def pattern_set(source: str | None) -> PatternSet:
         ),
         flags=patch.flags,
     )
+
+
+# Set only by the rule-check harness, to extract a source as if its patch (or
+# one entry of it) were absent. Empty in every pipeline run.
+_OVERRIDES: dict[str, PatternSet] = {}
+
+
+@contextmanager
+def override(source: str, ps: PatternSet):
+    _OVERRIDES[source] = ps
+    try:
+        yield
+    finally:
+        _OVERRIDES.pop(source, None)
+
+
+@functools.lru_cache(maxsize=None)
+def _composed(source: str | None) -> PatternSet:
+    return compose(load_source_patch(source))
+
+
+def pattern_set(source: str | None) -> PatternSet:
+    """Composed buckets for `source`: the shared ones unless it has a patch.
+
+    Cached per source (~2,300 distinct), never composed per row.
+    """
+    if _OVERRIDES and source in _OVERRIDES:
+        return _OVERRIDES[source]
+    return _composed(source)

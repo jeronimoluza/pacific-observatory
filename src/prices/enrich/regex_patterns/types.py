@@ -60,7 +60,10 @@ class Intent:
     """What a source-patch entry claims to do, checked against its real diff.
 
     why:      one line.
-    expect:   the transition it should cause, e.g. "item -> volume".
+    expect:   the pricing_basis transitions it may cause, comma-separated:
+              "item -> volume" or "item -> volume, count -> volume"; a change
+              within one basis is "mass -> mass". Any other transition in its
+              real diff is a refusal.
     rows:     approximate number of rows it should move in its source.
     examples: 3-5 real product names from the source; re-checked on every
               extraction change so a later shared edit cannot silently undo it.
