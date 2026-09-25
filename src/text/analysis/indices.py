@@ -431,14 +431,21 @@ class IndexCalculator:
         df = df.copy()
         for g in group_names:
             ratio_cols = []
+            new_cols: dict = {}
             for source in sources:
                 ug_col = f"{source}_UG_{g}_count"
                 total_col = f"{source}_A_total"
                 ratio_col = f"{source}_UG_{g}_abs_ratio"
                 if ug_col in df.columns and total_col in df.columns:
-                    df[ratio_col] = df[ug_col] / df[total_col]
-                    df[ratio_col] = df[ratio_col].replace([np.inf, -np.inf], np.nan)
+                    ratio = (df[ug_col] / df[total_col]).replace(
+                        [np.inf, -np.inf], np.nan
+                    )
+                    if ratio_col in df.columns:
+                        df[ratio_col] = ratio
+                    else:
+                        new_cols[ratio_col] = ratio
                     ratio_cols.append(ratio_col)
+            df = _attach(df, new_cols)
             if ratio_cols:
                 df = self._standardize_aggregate_normalize(
                     df, ratio_cols, sources, f"UG_{g}_abs"
@@ -472,14 +479,21 @@ class IndexCalculator:
         df = df.copy()
         for g in group_names:
             ratio_cols = []
+            new_cols: dict = {}
             for source in sources:
                 g_col = f"{source}_G_{g}_count"
                 total_col = f"{source}_A_total"
                 ratio_col = f"{source}_G_{g}_int_ratio"
                 if g_col in df.columns and total_col in df.columns:
-                    df[ratio_col] = df[g_col] / df[total_col]
-                    df[ratio_col] = df[ratio_col].replace([np.inf, -np.inf], np.nan)
+                    ratio = (df[g_col] / df[total_col]).replace(
+                        [np.inf, -np.inf], np.nan
+                    )
+                    if ratio_col in df.columns:
+                        df[ratio_col] = ratio
+                    else:
+                        new_cols[ratio_col] = ratio
                     ratio_cols.append(ratio_col)
+            df = _attach(df, new_cols)
             if ratio_cols:
                 df = self._standardize_aggregate_normalize(
                     df, ratio_cols, sources, f"G_{g}_int"
@@ -506,14 +520,19 @@ class IndexCalculator:
         df = df.copy()
         for g in group_names:
             ratio_cols = []
+            new_cols: dict = {}
             for source in sources:
                 ug_col = f"{source}_UG_{g}_count"
                 u_col = f"{source}_U_count"
                 ratio_col = f"{source}_UG_{g}_frm_ratio"
                 if ug_col in df.columns and u_col in df.columns:
-                    df[ratio_col] = df[ug_col] / df[u_col]
-                    df[ratio_col] = df[ratio_col].replace([np.inf, -np.inf], np.nan)
+                    ratio = (df[ug_col] / df[u_col]).replace([np.inf, -np.inf], np.nan)
+                    if ratio_col in df.columns:
+                        df[ratio_col] = ratio
+                    else:
+                        new_cols[ratio_col] = ratio
                     ratio_cols.append(ratio_col)
+            df = _attach(df, new_cols)
             if ratio_cols:
                 df = self._standardize_aggregate_normalize(
                     df, ratio_cols, sources, f"UG_{g}_frm"
