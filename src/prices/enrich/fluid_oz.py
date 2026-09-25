@@ -4,7 +4,9 @@ An "oz" on a drink is a FLUID ounce (volume); the unit table only knows the
 weight one, because `extract.py` runs before any leaf is known and has no
 textual way to tell the two apart. On 02.1 (alcoholic beverages) it always is
 the fluid one, so a 12 fl oz beer was filed as 340 g and priced per kilogram in
-a division priced per litre everywhere else.
+a division priced per litre everywhere else. The same holds for juice (01.2.1),
+water (01.2.5) and soft drinks (01.2.6), whose bare-oz rows the basis audit
+flagged as mass; coffee, tea and cocoa (01.2.2-4) are sold by weight and stay.
 
 Lives outside `stages/classify.py` (the only caller) purely for that file's line
 budget, and is applied there BEFORE the basis-audit — which would otherwise rule
@@ -17,7 +19,7 @@ import re
 
 from prices.enrich.regex_patterns.unit_tables import UNIT_MAP
 
-_ALCOHOL_PREFIX = "02.1"
+_FLUID_PREFIXES = ("02.1", "01.2.1.", "01.2.5.", "01.2.6.")
 _FL_OZ_LT = 0.0295735  # US fluid ounce, in litres
 _OZ_MEASURE_RE = re.compile(
     r"(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*(?:fl\.?\s*)?oz\b", re.IGNORECASE
@@ -25,11 +27,11 @@ _OZ_MEASURE_RE = re.compile(
 
 
 def remap_fluid_oz(row: dict, name: str) -> None:
-    """Re-read an alcoholic drink's ounce measure as volume, in place.
+    """Re-read a drink's ounce measure as volume, in place.
 
     Only fires when the name's ounce figure IS the mass the extractor emitted,
     so a name mentioning ounces alongside some other measure is left alone."""
-    if not str(row.get("coicop_code") or "").startswith(_ALCOHOL_PREFIX):
+    if not str(row.get("coicop_code") or "").startswith(_FLUID_PREFIXES):
         return
     if row.get("pricing_basis") != "mass" or row.get("standard_unit") != "kg":
         return
