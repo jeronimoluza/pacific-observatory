@@ -53,3 +53,32 @@ class CountryPatch:
     additions: tuple[PackPattern, ...] = field(default_factory=tuple)
     removals: tuple[str, ...] = field(default_factory=tuple)
     replacements: tuple[PackPattern, ...] = field(default_factory=tuple)
+
+
+@dataclass(frozen=True)
+class Intent:
+    """What a source-patch entry claims to do, checked against its real diff.
+
+    why:      one line.
+    expect:   the transition it should cause, e.g. "item -> volume".
+    rows:     approximate number of rows it should move in its source.
+    examples: 3-5 real product names from the source; re-checked on every
+              extraction change so a later shared edit cannot silently undo it.
+    """
+
+    why: str
+    expect: str
+    rows: int
+    examples: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class SourcePatch(CountryPatch):
+    """A CountryPatch scoped to one source, plus post-match transform flags.
+
+    Every addition, removal, replacement and flag needs an `intent` entry, keyed
+    by pattern id or flag name.
+    """
+
+    flags: frozenset[str] = field(default_factory=frozenset)
+    intent: dict[str, Intent] = field(default_factory=dict)

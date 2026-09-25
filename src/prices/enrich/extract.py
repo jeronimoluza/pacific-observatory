@@ -33,6 +33,8 @@ from prices.enrich.extract_patterns import (
 )
 from prices.enrich.normalize import extract_pack
 from prices.enrich.regex_patterns.dict_view import (
+    PatternSet,
+    pattern_set,
     regex_units_for_extract,
     value_unit_pattern,
 )
@@ -156,8 +158,8 @@ def _nutrient_claim_span(name: str, pack_value, pack_unit):
     return None
 
 
-def _match_extra_unit(item_name: str, lang: str | None):
-    for entry in _EXTRA_UNITS:
+def _match_extra_unit(item_name: str, lang: str | None, entries=_EXTRA_UNITS):
+    for entry in entries:
         if entry["lang"] != "any" and lang and entry["lang"] != lang:
             continue
         m = entry["regex"].search(item_name)
@@ -170,10 +172,12 @@ def _match_extra_unit(item_name: str, lang: str | None):
 _BASIS_TO_SU = {"mass": "kg", "volume": "lt"}
 
 
-def _match_pricing_basis_marker(item_name: str, lang: str | None):
+def _match_pricing_basis_marker(
+    item_name: str, lang: str | None, entries=_PRICING_BASIS_MARKERS
+):
     """Return (pricing_basis, regex_id, span) when a bare per-unit marker fires
     (no amount_value); (None, None, None) otherwise."""
-    for entry in _PRICING_BASIS_MARKERS:
+    for entry in entries:
         if entry["lang"] != "any" and lang and entry["lang"] != lang:
             continue
         m = entry["regex"].search(item_name)
@@ -201,10 +205,10 @@ def _cjk_numeral_to_int(s: str) -> int | None:
     return n if n else None
 
 
-def _match_extra_count(item_name: str, lang: str | None):
+def _match_extra_count(item_name: str, lang: str | None, entries=_EXTRA_COUNT):
     """Return (count, regex_id, span) for the firing entry/match; (None, None,
     None) when nothing fires."""
-    for entry in _EXTRA_COUNT:
+    for entry in entries:
         if entry["lang"] != "any" and lang and entry["lang"] != lang:
             continue
         for m in entry["regex"].finditer(item_name):
@@ -242,10 +246,10 @@ def _match_extra_count(item_name: str, lang: str | None):
     return None, None, None
 
 
-def _match_multi_pack(item_name: str, lang: str | None):
+def _match_multi_pack(item_name: str, lang: str | None, entries=_MULTI_PACK):
     """Return (inner, outer, regex_id, span) for the firing entry/match;
     (None, None, None, None) when nothing fires."""
-    for entry in _MULTI_PACK:
+    for entry in entries:
         if entry["lang"] != "any" and lang and entry["lang"] != lang:
             continue
         m = entry["regex"].search(item_name)
@@ -275,6 +279,7 @@ def enumerate_candidates(
     lang: str | None,
     has_non_ascii: bool,
     effective_lang: str | None,
+    ps: PatternSet | None = None,
 ):
     """Record every tier-a matcher fire as a Candidate, without deciding.
 
@@ -286,9 +291,10 @@ def enumerate_candidates(
     from prices.enrich.extract_decide import Candidate
 
     candidates: list = []
+    ps = ps or pattern_set(None)
 
     cleaned, pack_count, pack_value, pack_unit, pack_id = extract_pack(
-        stripped, lang, with_id=True
+        stripped, lang, with_id=True, patterns=ps.pack
     )
     candidates.append(
         Candidate(
@@ -305,7 +311,9 @@ def enumerate_candidates(
         )
     )
     if has_non_ascii:
-        nc_cleaned, nc, nv, nu, nc_id = extract_pack(stripped, None, with_id=True)
+        nc_cleaned, nc, nv, nu, nc_id = extract_pack(
+            stripped, None, with_id=True, patterns=ps.pack
+        )
         candidates.append(
             Candidate(
                 source="pack_none",
@@ -334,7 +342,9 @@ def enumerate_candidates(
             },
         )
     )
-    extra_entry, extra_value, extra_id, extra_span = _match_extra_unit(stripped, lang)
+    extra_entry, extra_value, extra_id, extra_span = _match_extra_unit(
+        stripped, lang, ps.extra_units
+    )
     if extra_entry is not None:
         candidates.append(
             Candidate(
@@ -348,7 +358,9 @@ def enumerate_candidates(
                 },
             )
         )
-    extra_count, ec_id, ec_span = _match_extra_count(stripped, effective_lang)
+    extra_count, ec_id, ec_span = _match_extra_count(
+        stripped, effective_lang, ps.extra_count
+    )
     if extra_count is not None:
         candidates.append(
             Candidate(
@@ -358,7 +370,9 @@ def enumerate_candidates(
                 groups={"count": extra_count, "regex_id": ec_id},
             )
         )
-    basis_marker, bm_id, bm_span = _match_pricing_basis_marker(stripped, lang)
+    basis_marker, bm_id, bm_span = _match_pricing_basis_marker(
+        stripped, lang, ps.pricing_basis_markers
+    )
     if basis_marker is not None:
         candidates.append(
             Candidate(
@@ -368,7 +382,9 @@ def enumerate_candidates(
                 groups={"basis": basis_marker, "regex_id": bm_id},
             )
         )
-    mp_inner, mp_outer, mp_id, mp_span = _match_multi_pack(stripped, effective_lang)
+    mp_inner, mp_outer, mp_id, mp_span = _match_multi_pack(
+        stripped, effective_lang, ps.multi_pack
+    )
     if mp_inner is not None:
         candidates.append(
             Candidate(
@@ -390,6 +406,7 @@ def extract(
     category: str | None,
     country: str | None,
     lang: str | None,
+    source: str | None = None,
 ) -> StructuralFields:
     """Tier (a) — deterministic structural-field extraction.
 
@@ -402,6 +419,9 @@ def extract(
     - Count-only marker (12 PCS, セット, 入, etc.) → basis=count, su=unit,
       count=N, multiplier=1.
     - No marker → basis=item, su=item, amount_value=None, count=1, multiplier=1.
+
+    `source` selects the pattern set: the shared buckets, edited by the
+    source's patch under regex_patterns/source/<source>/ when it has one.
     """
     if not item_name or not item_name.strip():
         return StructuralFields(None, None, None, None, None, None, None, None, None)
@@ -439,8 +459,9 @@ def extract(
 
     from prices.enrich.extract_decide import decide
 
+    ps = pattern_set(source)
     candidates = enumerate_candidates(
-        item_name, stripped, lang, has_non_ascii, effective_lang
+        item_name, stripped, lang, has_non_ascii, effective_lang, ps
     )
 
     # Side-channel emission (§9 match log). No-op when recording is off; the
@@ -488,4 +509,5 @@ def extract(
         stripped=stripped,
         has_non_ascii=has_non_ascii,
         effective_lang=effective_lang,
+        pack_patterns=ps.pack,
     )

@@ -196,7 +196,9 @@ class Candidate:
     multiplier: int | None = None
 
 
-def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
+def _resolve_pack(
+    by: dict, *, item_name: str, has_non_ascii: bool, pack_patterns=None
+):
     """Port of Pass 1b-1e: settle pack_count/pack_value/pack_unit from the
     pack_lang / pack_none candidates, the Pass-1c substring re-scan, the
     secondary value+unit promotion (1d) and the appliance/apparel suppression
@@ -266,7 +268,7 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
                     )
                 pack_count = None
                 _cleaned, alt_count, alt_value, alt_unit = extract_pack(
-                    item_name[pack_count_m.end() :], None
+                    item_name[pack_count_m.end() :], None, patterns=pack_patterns
                 )
                 if alt_value is not None or alt_count is not None:
                     pack_count, pack_value, pack_unit = alt_count, alt_value, alt_unit
@@ -314,7 +316,9 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
                 regex_id="pack_lang",
             )
         tail, offset = tail[claim[1] :], offset + claim[1]
-        _cleaned, _alt_count, pack_value, pack_unit = extract_pack(tail, None)
+        _cleaned, _alt_count, pack_value, pack_unit = extract_pack(
+            tail, None, patterns=pack_patterns
+        )
 
     return pack_count, pack_value, pack_unit
 
@@ -560,6 +564,7 @@ def decide(
     stripped,
     has_non_ascii,
     effective_lang,
+    pack_patterns=None,
 ):
     """Select a StructuralFields from the enumerated candidate set.
 
@@ -574,7 +579,10 @@ def decide(
     by = {c.source: c for c in candidates}
 
     pack_count, pack_value, pack_unit = _resolve_pack(
-        by, item_name=item_name, has_non_ascii=has_non_ascii
+        by,
+        item_name=item_name,
+        has_non_ascii=has_non_ascii,
+        pack_patterns=pack_patterns,
     )
 
     extra_entry, extra_value = (None, None)

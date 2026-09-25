@@ -117,17 +117,22 @@ def clean_text(s: str, lang: str | None = None) -> str:
 
 
 def extract_pack(
-    s: str, lang: str | None = None, with_id: bool = False
+    s: str,
+    lang: str | None = None,
+    with_id: bool = False,
+    patterns: list[dict] | None = None,
 ) -> tuple[str, int | None, float | None, str | None]:
     """Return (text_with_pack_removed, count, value, unit). First match wins.
 
     When `with_id` is True, append the winning pattern id (or None) as a 5th
     element — an additive, display-only channel for the §9 recorder. The first
     four elements are identical to the default (4-tuple) return for every input.
+
+    `patterns` is a source's composed canon bucket; None means the shared one.
     """
     if not s:
         return (s, None, None, None, None) if with_id else (s, None, None, None)
-    for pat in _PACK_PATTERNS:
+    for pat in patterns if patterns is not None else _PACK_PATTERNS:
         if pat["lang"] != "any" and lang and pat["lang"] != lang:
             continue
         m = pat["regex"].search(s)

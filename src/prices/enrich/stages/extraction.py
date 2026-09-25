@@ -69,14 +69,18 @@ _PIECE_IS_CASE_SOURCES = frozenset({"mangusa_cw"})
 def _structural_fields(
     name, category, country, lang, details=None, unit=None, source=None
 ) -> dict:
-    sf = extract(str(name), category or None, country or None, lang or None)
+    sf = extract(
+        str(name), category or None, country or None, lang or None, source or None
+    )
     # Quantity fallback: some sources (e.g. pickaroo, aldi_au) publish the pack
     # size in a separate `details` string ("~500 g", "10 pcs") the product_name
     # omits, so the name alone resolves to `item`. When that happens, read the
     # quantity off `details`; keep the name's promo/bundle flags.
     qs = sf
     if sf.pricing_basis == "item" and details and str(details).strip():
-        sf2 = extract(str(details), category or None, country or None, lang or None)
+        sf2 = extract(
+            str(details), category or None, country or None, lang or None, source or None
+        )
         if sf2.pricing_basis in _QTY_BASES:
             qs = sf2
     # Second fallback: a fetcher-declared `unit` (e.g. agmarknet's "quintal
