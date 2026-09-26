@@ -230,6 +230,32 @@ def run(country: str) -> pd.DataFrame:
     return out.drop(columns=["_row", "_cand", "_cand_share"], errors="ignore")
 
 
+def piece_check(out: pd.DataFrame) -> pd.DataFrame:
+    """(leaf, source) pairs whose per-piece price implies an implausible weight.
+
+    Implied piece weight = median per-piece price / median per-kg price, from
+    the same source when it has >= 3 per-kg rows of the leaf (a premium shop
+    is then compared with itself), else the country's. Outside 0.4x-2.5x of
+    the leaf's `piece_kg` range, the "pieces" are likely per-kg prices or
+    packs. A flag for review, never a gate.
+    """
+    m = pd.read_csv(trust.BASIS_MAP_CSV, dtype=str, keep_default_na=False)
+    rng = m[m["piece_kg"].ne("")].set_index("code")["piece_kg"].str.split("-", expand=True).astype(float)
+    rows = out[out["coicop_code"].isin(rng.index) & out["unit_value_local"].gt(0)]
+    kg = rows[rows["pricing_basis"].eq("mass")]
+    own = kg.groupby(["coicop_code", "source"])["unit_value_local"].agg(["size", "median"])
+    country = kg.groupby("coicop_code")["unit_value_local"].median()
+    it = rows[rows["pricing_basis"].eq("item")].groupby(["coicop_code", "source"])["unit_value_local"].agg(["size", "median"])
+    it = it[it["size"] >= 3]
+    leaf = it.index.get_level_values(0)
+    ref = own["median"].where(own["size"] >= 3).reindex(it.index)
+    it["ref"] = np.where(ref.notna(), "same source", "country")
+    it["implied_kg"] = (it["median"] / ref.fillna(pd.Series(leaf.map(country), index=it.index))).round(2)
+    it["piece_kg"] = leaf.map(m.set_index("code")["piece_kg"])
+    lo, hi = leaf.map(rng[0]), leaf.map(rng[1])
+    return it[(it["implied_kg"] < 0.4 * lo) | (it["implied_kg"] > 2.5 * hi)]
+
+
 def report(out: pd.DataFrame) -> str:
     """Counts against the precision-sweep build, same rows, same COICOP."""
     lines = [f"rows {len(out):,}  products {out['input_hash'].nunique():,}"]
@@ -255,6 +281,8 @@ def report(out: pd.DataFrame) -> str:
     outs = out["qa_level"].eq("out").groupby(out["coicop_code"]).agg(["size", "mean"])
     lines.append("\nleaves with out share > 5% (review-agent trigger)")
     lines.append(outs[(outs["mean"] > 0.05) & (outs["size"] >= 30)].sort_values("size", ascending=False).to_string())
+    lines.append("\nimplied piece weight outside 0.4x-2.5x of piece_kg (review)")
+    lines.append(piece_check(out).to_string())
     return "\n".join(lines)
 
 
