@@ -12,14 +12,25 @@ it ("~0.3Kg/Trái"); that order is reversed from the "pieces per kg" ratio
 some names also carry ("5~6 Trái/Kg", left alone: unit after the slash).
 
 These two canon patterns match "(Kg)" together with the note (either order)
-and read only the literal "Kg" in "(Kg)" as the unit, not the note's number,
-so the row falls back to the existing bare "(Kg)" convention (mass, amount
-1 kg) exactly like a "(Kg)" name with no note.
+and capture nothing (no value, no count, no unit): a pack pattern with no
+groups still wins its slot by matching first (source patterns go first in
+their bucket) and returns nothing, so the shared measure pattern that would
+otherwise read the note's number never runs. With no pack-unit candidate,
+`decide()` falls through to the untouched, independently-matched bare "Kg"
+marker (BARE_KG, `pack_basis.yaml`) already present in every one of these
+names, which sets mass at its usual default of 1 kg -- the same path a
+plain "(Kg)" name with no note takes.
+
+An earlier version of this patch captured a "unit" group from the literal
+"(Kg)", which also blocked the wrong measure but, because a pack-pattern
+candidate with a unit and no value outranks the marker rung in decide(),
+left amount_value at NaN (`review_uv_unscored`) instead of reaching the
+marker's 1 kg default. Confirmed by inspecting `extract.py`/`extract_decide.py`
+and diffing rulecheck's output between the two versions.
 
 Measured 2026-09-26 on products_input (09-20), via rulecheck: 25 emartmall
 names carry a note after "(Kg)" or before it, 167 rows total (159 + 8), all
-mass -> mass (amount corrected to 1 kg), 0 count lost, 0 rows outside
-vietnam.
+mass -> mass, amount 1 kg, 0 count lost, 0 rows outside vietnam.
 """
 
 import re
@@ -31,16 +42,16 @@ _NOTE = rf"~?\s*\d+(?:[.,]\d+)?(?:\s*[-~]\s*\d+(?:[.,]\d+)?)?\s*(?:g|gr|gam|kg)\
 
 _KG_THEN_NOTE = PackPattern(
     id="EMART_KG_PAREN_THEN_NOTE",
-    regex=re.compile(rf"(?i)\((?P<unit>kg)\).{{0,30}}?{_NOTE}"),
-    groups=("unit",),
+    regex=re.compile(rf"(?i)\(kg\).{{0,30}}?{_NOTE}"),
+    groups=(),
     role="canonicalization",
     kind="canon",
     bucket="single_measure",
 )
 _NOTE_THEN_KG = PackPattern(
     id="EMART_NOTE_THEN_KG_PAREN",
-    regex=re.compile(rf"(?i){_NOTE}.{{0,10}}?\((?P<unit>kg)\)"),
-    groups=("unit",),
+    regex=re.compile(rf"(?i){_NOTE}.{{0,10}}?\(kg\)"),
+    groups=(),
     role="canonicalization",
     kind="canon",
     bucket="single_measure",
