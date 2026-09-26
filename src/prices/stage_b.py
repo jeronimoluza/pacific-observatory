@@ -89,8 +89,15 @@ def load_rows(country: str) -> pd.DataFrame:
         products[key + ["input_hash"]],
         left_on=["product_name", "product_url", "_src"], right_on=key, how="left",
     ).drop(columns=["product_name_original"])
-    if rows["input_hash"].isna().any():
-        raise RuntimeError(f"{country}: {rows['input_hash'].isna().sum()} rows have no input_hash")
+    # A build row whose product left products_input (japan: one homes.co.jp
+    # rental filed as sunflower oil) has nothing to extract from. A handful is
+    # dropped and counted; more means the join is wrong.
+    orphan = rows["input_hash"].isna()
+    if orphan.sum() > max(1, len(rows) // 10_000):
+        raise RuntimeError(f"{country}: {orphan.sum()} rows have no input_hash")
+    if orphan.any():
+        click.echo(f"{country}: dropped {orphan.sum()} build rows with no product in products_input")
+        rows = rows[~orphan].reset_index(drop=True)
 
     # Grain check: the COICOP Stage A wrote must be the one the rows carry.
     # classified_hierlex predates the fold, so it is keyed on the pre-fold hash.
