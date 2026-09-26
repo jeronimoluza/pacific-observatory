@@ -156,8 +156,35 @@ def _status(df: pd.DataFrame) -> np.ndarray:
     return np.select(conditions, choices, default="trusted").astype(object)
 
 
+def to_local_currency(rows: pd.DataFrame) -> pd.DataFrame:
+    """Reprice rows quoted in another currency into the country's own.
+
+    livingcost quotes New Zealand in USD (fx_rate 1): banded as NZD it sat at
+    ~0.6x every other shop, blended in, and was trusted. Via USD at the month's
+    median rate of the country's own-currency rows; a month with no such rate
+    leaves the row as it was and marks it `fx_suspect`.
+    """
+    local = rows["currency"].mode().iloc[0]
+    fx = pd.to_numeric(rows["fx_rate"], errors="coerce")
+    month = pd.to_datetime(rows["observation_date"], errors="coerce").dt.to_period("M")
+    rate = fx[rows["currency"].eq(local)].groupby(month).median()
+    foreign = rows["currency"].ne(local)
+    to_local = month[foreign].map(rate)
+    ok = to_local.notna() & fx[foreign].gt(0)
+    idx = to_local.index[ok]
+    rows = rows.copy()
+    rows["currency_quoted"] = rows["currency"]
+    price = pd.to_numeric(rows.loc[idx, "price_local"], errors="coerce")
+    rows.loc[idx, "price_local"] = price / fx[idx] * to_local[ok]
+    rows.loc[idx, "fx_rate"] = to_local[ok]
+    rows.loc[idx, "currency"] = local
+    rows.loc[to_local.index[~ok], "fx_suspect"] = True
+    return rows
+
+
 def run(country: str) -> pd.DataFrame:
     rows, products = load_rows(country)
+    rows = to_local_currency(rows)
     codes = rows[["input_hash", "coicop_code"]].drop_duplicates("input_hash")
     ex = extract_products(products, codes)
     n = len(rows)
