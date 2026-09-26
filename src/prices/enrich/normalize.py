@@ -67,7 +67,7 @@ _TOTAL_INTERNAL_COUNT_IDS = {"NUM_PCS", "COUNT_UNIT_VI", "LOC_VI_PIECES"}
 # measure, so the count multiplies it. A measure not on a container
 # ("柿 1kg（大玉 12個入）", 1 kg of 12 fruit) keeps the old reading.
 _PER_CONTAINER_COUNT_IDS = {"SET_JA"}
-_JA_CONTAINER = r"\s*(?:ペットボトル|ボトル|パック|カップ|缶|袋|本|瓶|箱|包)"
+_JA_CONTAINER = r"\s*(?:ペットボトル|ボトル|パック|カップ|缶|袋|本|瓶|箱|包|[x×*ｘＸ＊])"  # or an explicit "×"
 _VALUE_UNIT_PAT = next(p for p in _PACK_PATTERNS if p["id"] == "VALUE_UNIT")
 _VALUE_UNIT_ON_CONTAINER_RE = re.compile(
     _VALUE_UNIT_PAT["regex"].pattern + f"(?={_JA_CONTAINER})", re.IGNORECASE

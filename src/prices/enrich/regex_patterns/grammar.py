@@ -64,8 +64,8 @@ def _measure_alt(key):
 # and the row fell to its bottle count (Japan Stage B pilot, 2026-09-26). Not
 # before サイズ/玉 (produce grades "2Lサイズ", "3L玉") or 用/相当/換算/配合
 # ("10kg用" = for 10 kg, "60L相当" = makes 60 L, "15g配合" = contains 15 g,
-# "1L分" = worth 1 L).
-_UNIT_END = r"(?:\b|(?=[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\uff00-\uffef])(?!サイズ|玉|用|相当|換算|配合|分))"
+# "1L分" = worth 1 L; "キロカロリー", "キロメートル" are not kilograms).
+_UNIT_END = r"(?:\b|(?=[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\uff00-\uffef])(?!サイズ|玉|用|相当|換算|配合|分|カロリー|メートル))"
 
 
 def _value_unit_regex():

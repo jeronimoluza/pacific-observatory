@@ -51,6 +51,19 @@ UNIT_NORM: Mapping[str, str] = {
     "公克": "g",
     "克": "g",
     "升": "l",
+    # Fullwidth and katakana spellings (Japan Stage B pilot, 2026-09-26): "550ｇ",
+    # "1.8Ｌ", "500ミリリットル". Lower-case keys; str.lower() folds fullwidth.
+    "ｇ": "g",
+    "グラム": "g",
+    "ｋｇ": "kg",
+    "キログラム": "kg",
+    "キロ": "kg",
+    "ｍｇ": "mg",
+    "ｍｌ": "ml",
+    "ｃｃ": "ml",
+    "ミリリットル": "ml",
+    "ｌ": "l",
+    "リットル": "l",
     # Cyrillic mass/volume abbreviations (ru/uk/bg/kk/ky/tk/mk/be/mn). Lower-case
     # keys only -- extract_pack and _match_extra_unit both retry the lookup on
     # `raw.lower()`, and str.lower() folds Cyrillic, so "ГР"/"МЛ"/"КГ" resolve here.
