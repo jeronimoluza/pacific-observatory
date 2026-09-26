@@ -144,7 +144,7 @@ def _status(df: pd.DataFrame) -> np.ndarray:
         ~df["qa_uv_category"],
         level.eq("unscored"),
         level.eq("out"),
-        src.eq("imputed_fit") | (src.eq("imputed_mode") & level.eq("C")),
+        src.eq("imputed_fit") | (src.isin(["imputed_mode", "per_kg"]) & level.eq("C")),
         ~df["qa_uv_plausible"],
         ~df["qa_fx"],
     ]
@@ -202,17 +202,24 @@ def run(country: str) -> pd.DataFrame:
 
     # Imputation draws sizes from in-band measured rows of the same country.
     pool = extracted[base2 & extracted["pricing_basis"].isin(["mass", "volume", "count"])]
-    cand = trust.impute_candidates(pool, rows[sizeless & rows["qa_price_positive"]])
+    # A shop that sells the leaf per kg at the same price is quoting per kg.
+    todo = rows[sizeless & rows["qa_price_positive"]]
+    perkg = trust.per_kg_rows(extracted, todo)
+    cand = trust.impute_candidates(pool, todo[~todo["_row"].isin(perkg["_row"])])
 
-    both = pd.concat([extracted, cand], ignore_index=True)
-    mask = pd.Series(np.r_[base2.to_numpy(), np.zeros(len(cand), bool)], index=both.index)
+    both = pd.concat([extracted, perkg, cand], ignore_index=True)
+    mask = pd.Series(np.r_[base2.to_numpy(), np.zeros(len(perkg) + len(cand), bool)], index=both.index)
     scored = flag_uv_outliers(both, group_cols=tuple(trust.CELL), baseline_mask=mask, k=trust.K)
-    chosen = trust.choose_fit(scored.iloc[len(extracted):].reset_index(drop=True))
+    ne, npk = len(extracted), len(perkg)
+    chosen = pd.concat(
+        [scored.iloc[ne : ne + npk], trust.choose_fit(scored.iloc[ne + npk :].reset_index(drop=True))],
+        ignore_index=True,
+    )
     if chosen["_row"].duplicated().any():
         raise RuntimeError("imputation kept two sizes for one row")
 
     judged = pd.concat(
-        [scored.iloc[: len(extracted)], chosen.drop(columns=["_cand_share"], errors="ignore")], ignore_index=True
+        [scored.iloc[:ne], chosen.drop(columns=["_cand_share"], errors="ignore")], ignore_index=True
     )
     judged_base = pd.Series(np.r_[base2.to_numpy(), np.zeros(len(chosen), bool)], index=judged.index)
     judged["in_band_baseline"] = judged_base

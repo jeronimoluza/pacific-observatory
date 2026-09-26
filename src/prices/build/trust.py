@@ -84,6 +84,41 @@ def band(rows: pd.DataFrame, baseline: pd.Series) -> pd.Series:
     return baseline & ~first["uv_outlier"].astype(bool)
 
 
+# Human-owned: a shop's sizeless price within this factor of its own per-kg
+# price is read as a per-kg price (the "/kg" left off), not as a pack.
+PER_KG_BOUNDS = (0.7, 1.4)
+
+
+def per_kg_rows(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.DataFrame:
+    """Sizeless rows whose shop sells the same leaf per kg at about that price.
+
+    Per (country, leaf, source) with >= 3 rows on each side: when the median
+    sizeless price is within PER_KG_BOUNDS of the same source's median per-kg
+    unit value, the rows are per-kg prices and get 1 kg (`size_source`
+    `per_kg`). Imputing a pack size instead would scale their unit value by
+    the pack, e.g. a per-kg chicken at the country's 0.5 kg mode doubles.
+
+    A false match is bounded by construction: a pack of true size s costs
+    about s x the per-kg price, so a ratio inside PER_KG_BOUNDS means s is
+    too, and 1 kg is off by at most that factor (a 0.8 kg formula tin reads
+    25% cheap). No guard on "sells loose" separates the cases on Vietnam.
+    """
+    key = ["country", "coicop_code", "source"]
+    kg = extracted[extracted["pricing_basis"].eq("mass")]
+    own = kg.groupby(key)["unit_value_local"].agg(["size", "median"])
+    free = sizeless.groupby(key)["price_local"].agg(["size", "median"])
+    both = free.join(own, lsuffix="_free", rsuffix="_kg", how="inner")
+    both = both[(both["size_free"] >= 3) & (both["size_kg"] >= 3)]
+    ratio = both["median_free"] / both["median_kg"]
+    hit = set(both.index[ratio.between(*PER_KG_BOUNDS)])
+    rows = sizeless[[k in hit for k in zip(*(sizeless[c] for c in key))]]
+    return rows.assign(
+        pricing_basis="mass", standard_unit="kg", amount_value=1.0, count=1.0,
+        multiplier=1.0, size_qty=1.0, size_source="per_kg",
+        unit_value_local=rows["price_local"].astype(float),
+    )
+
+
 def impute_candidates(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.DataFrame:
     """Sizeless rows copied once per candidate size, with a unit value each.
 
