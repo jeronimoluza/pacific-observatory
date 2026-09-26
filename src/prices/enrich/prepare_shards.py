@@ -66,13 +66,18 @@ from prices import partition
 from prices.enrich import config, shards
 from prices.enrich.stages.prepare import (
     SHUFFLE_BUCKETS,
-    prepare_input,
+    _aggregate,
+    _derive,
     prepare_input_streaming,
+    product_months,
 )
 
 logger = logging.getLogger(__name__)
 
 PREPARED_DIR = config.ENRICH_DIR / "_prepared"
+# `product_months` per country, beside the prepared tree and never inside it:
+# `write_products_input` unions every parquet under `_prepared`.
+PRODUCT_MONTHS_DIR = config.ENRICH_DIR / "_prepared_months"
 
 # Sidecar mapping `region/subregion/country` to the identity of the shards that
 # country was last prepared from, so an unchanged country is not recomputed.
@@ -181,6 +186,14 @@ def prepared_path(key: Sequence[str], out_dir: Optional[Path] = None) -> Path:
 STREAM_ABOVE_BYTES = 256 << 20
 
 
+def months_path(key: Sequence[str], out_dir: Optional[Path] = None) -> Path:
+    """`_prepared_months/<region>/<subregion>/<country>.parquet`, the sibling
+    of `prepared_path` for the same `out_dir`."""
+    out_dir = out_dir or PREPARED_DIR
+    region, subregion, country = key
+    return out_dir.parent / f"{out_dir.name}_months" / region / subregion / f"{country}.parquet"
+
+
 def _spill_dir(out_dir: Path, key: Sequence[str]) -> Path:
     """Pass-1 scratch for one country, a SIBLING of the prepared tree.
 
@@ -261,6 +274,10 @@ def prepare_country(
     path.parent.mkdir(parents=True, exist_ok=True)
     merging = bool(scoped_sources) and path.exists()
     dest = path.with_name(path.name + ".fresh") if merging else path
+    mpath = months_path(key, out_dir)
+    mpath.parent.mkdir(parents=True, exist_ok=True)
+    m_merging = bool(scoped_sources) and mpath.exists()
+    mdest = mpath.with_name(mpath.name + ".fresh") if m_merging else mpath
     total = sum(s.size for s in country_shards)
     if total > stream_above:
         spill = _spill_dir(out_dir, key)
@@ -270,6 +287,7 @@ def prepare_country(
                 dest,
                 shuffle_dir=spill,
                 verbose=False,
+                months_path=mdest,
             )
         finally:
             shutil.rmtree(spill, ignore_errors=True)
@@ -282,8 +300,10 @@ def prepare_country(
         )
     else:
         raw = shards.read_shards(country_shards, columns=list(PREPARE_COLUMNS))
-        prepared = prepare_input(raw)
+        derived = _derive(raw)
+        prepared = _aggregate(derived)
         prepared.to_parquet(dest, index=False)
+        product_months(derived).to_parquet(mdest, index=False)
         logger.info(
             "[prepare] %s: %d raw rows -> %d prepared",
             "/".join(key),
@@ -292,6 +312,8 @@ def prepare_country(
         )
     if merging:
         _merge_forward(path, dest, set(scoped_sources))
+    if m_merging:
+        _merge_forward(mpath, mdest, set(scoped_sources))
     return path
 
 
@@ -387,6 +409,7 @@ def run(
             and signature
             and state.get(name) == signature
             and prepared_path(key, out_dir).exists()
+            and months_path(key, out_dir).exists()
         ):
             n_skipped += 1
             continue

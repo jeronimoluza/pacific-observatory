@@ -519,11 +519,14 @@ def load_shards(
     version: str | None = None,
     pred_root: Path = PRED_ROOT,
     columns: Sequence[str] | None = LOAD_COLUMNS,
+    names: Sequence[str] | None = None,
 ) -> pd.DataFrame:
     """Every scored pair for a bundle version, concatenated.
 
     `columns` defaults to what the callers read rather than to everything, so
-    the diagnostic columns are not paid for. Pass None for the full frame."""
+    the diagnostic columns are not paid for. Pass None for the full frame.
+    `names` keeps only pairs whose name is listed, read with an arrow filter so
+    a one-source decide does not load all 7.29M pairs."""
     from prices.enrich.hierlex import package
 
     version = version or package.manifest(package.resolve(version))["method_version"]
@@ -533,6 +536,8 @@ def load_shards(
             f"no HierLex shards under {pred_root / version} — run `prices hierlex score`"
         )
     wanted = list(columns) if columns else None
+    filters = None if names is None else [("name", "in", list(names))]
     return pd.concat(
-        (pd.read_parquet(p, columns=wanted) for p in parts), ignore_index=True
+        (pd.read_parquet(p, columns=wanted, filters=filters) for p in parts),
+        ignore_index=True,
     )

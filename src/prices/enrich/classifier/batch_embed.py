@@ -107,9 +107,13 @@ def embed_and_predict(
     pred_root: Path = PRED_DIR,
     max_chunks: int | None = None,
     workers: int = 1,
+    build_store: bool = True,
 ) -> tuple[dict, dict, dict]:
     """Build the store for `uniq`, then score every name with the head. Returns
     (leaf_by, conf_by, ok_by) maps name -> value.
+
+    `build_store=False` (classify) refuses instead of embedding: a name missing
+    from any ensemble block raises, so classify never embeds silently.
 
     `workers` parallelises the predict phase only. Building the store stays
     sequential because it is bound by one resident embedding model, not by
@@ -128,7 +132,17 @@ def embed_and_predict(
     items = sorted(bucket_names.items())
     if cap:
         items = items[:cap]
-    _build_store(dict(items))
+    if build_store:
+        _build_store(dict(items))
+    else:
+        for block in config.CLASSIFIER_EMBED_ENSEMBLE:
+            miss = embed_store.missing(block["tag"], dict(items))
+            if miss:
+                n = sum(len(v) for v in miss.values())
+                raise RuntimeError(
+                    f"{n} names lack a {block['tag']} vector; classify does not "
+                    "embed, run `prices embed` first"
+                )
 
     pred_dir = pred_root / str(predictor.version)
     tags = [b["tag"] for b in config.CLASSIFIER_EMBED_ENSEMBLE]

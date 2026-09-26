@@ -41,7 +41,15 @@ def _invalidate_for(
     backend: str | None = None,
     selectors: list[str] | None = None,
 ) -> None:
-    if stage == "concatenate" and concatenate_stage.STATE_FILE.exists():
+    # A scoped run keeps the state file: `force` already re-derives every
+    # source in scope, and deleting the file would make the next unscoped run
+    # re-derive every source the selector excluded. Concatenate's cache is
+    # code-blind, so a code change is rolled out with a scoped --rebuild.
+    if (
+        stage == "concatenate"
+        and not selectors
+        and concatenate_stage.STATE_FILE.exists()
+    ):
         concatenate_stage.STATE_FILE.unlink()
     if stage == "prepare" and config.PRODUCTS_INPUT_PARQUET.exists():
         config.PRODUCTS_INPUT_PARQUET.unlink()
@@ -147,7 +155,7 @@ def _explain(selectors) -> None:
     default=1,
     show_default=True,
     help=(
-        "Processes for classify's decide loop (tier-a regex extraction). "
+        "Processes for classify's decide loop. "
         "Separate from --workers, which sizes the scoring pass: the decide "
         "loop runs where the parent is largest, so a second pool there is "
         "asked for deliberately, never inherited. Clamped to free memory."
@@ -194,12 +202,12 @@ def process_command(
 ):
     """AI enrichment pipeline (concatenate → prepare → classify).
 
-    `classify` runs the two independent enrich jobs per product: deterministic
-    structural regex extraction (pricing_basis / amount / count / promo flags)
-    plus COICOP classification by the chosen backend. It is predict-only —
-    nothing here fits a model. `hierlex` (default) scores a frozen bundle at
-    (name, country) grain into classified_hierlex.parquet; `head` scores the
-    in-house trained model at name grain into classified.parquet.
+    `classify` writes one COICOP decision per product and nothing else;
+    quantity extraction is Stage B (`prices stage-b`). It never trains, scores
+    or embeds: `hierlex` (default) looks up the frozen bundle's existing
+    (name, country) scores into classified_hierlex.parquet, and a pair they do
+    not hold is decided `unscored`; `head` scores the in-house model at name
+    grain into classified.parquet and refuses names without vectors.
     """
     selectors = _selectors(only, region, subregion, country)
     if explain:

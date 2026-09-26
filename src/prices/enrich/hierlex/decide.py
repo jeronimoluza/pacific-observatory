@@ -1,8 +1,7 @@
 """Turn HierLex shards into the pipeline's decisions table.
 
 The shards carry model output only. Everything else a decision row needs —
-structural regex extraction, the source-declared narrow-COICOP short-circuit, the
-basis audit — is pipeline behaviour that has nothing to do with which classifier
+the source-declared narrow-COICOP short-circuit — is pipeline behaviour that has nothing to do with which classifier
 produced the leaf, so this reuses `stages.classify.decide_rows` rather than
 restating it. The result is schema-identical to the in-house head's output and
 lands in the same place, which is what lets `prices build` consume either.
@@ -26,12 +25,12 @@ from prices.enrich import config
 from prices.enrich.classifier import embed_store
 from prices.enrich.hierlex import driver, package, scorer, vectors
 from prices.enrich.stages.classify import (
+    CLASSIFIED_COLS,
     DECISION_SCHEMA,
     PRODUCT_COLS,
     classified_view,
     decide_rows,
 )
-from prices.enrich.stages.merge import ENRICHMENT_COLS
 
 _COUNTRY = "_hlx_country"
 
@@ -253,7 +252,7 @@ def run(
     view = (
         pd.concat(views, ignore_index=True)
         if views
-        else pd.DataFrame(columns=[*ENRICHMENT_COLS, "input_hash"])
+        else pd.DataFrame(columns=[*CLASSIFIED_COLS, "input_hash"])
     )
     view.to_parquet(out_path, index=False)
     return {

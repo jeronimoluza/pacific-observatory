@@ -23,7 +23,7 @@ you exactly why the chosen backend has nothing to fit.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -48,6 +48,8 @@ class ScoreResult:
 
     frame: pd.DataFrame
     unembedded: frozenset[str]
+    # What produced the verdicts (bundle, tau, policy), for the decide sidecar.
+    meta: dict = field(default_factory=dict)
 
 
 _HIERLEX_MISSING = (
@@ -98,7 +100,7 @@ def _score_head(products: pd.DataFrame, version=None, workers: int = 1) -> Score
     uniq = pd.Index(names.unique())
     embedded, unembedded = embed_store.split_by_store_coverage(uniq)
     leaf_by, conf_by, ok_by = batch_embed.embed_and_predict(
-        predictor, pd.Index(embedded), workers=workers
+        predictor, pd.Index(embedded), workers=workers, build_store=False
     )
     frame = pd.DataFrame(
         {
@@ -116,6 +118,11 @@ def _score_head(products: pd.DataFrame, version=None, workers: int = 1) -> Score
         }
     )
     return ScoreResult(frame=frame, unembedded=frozenset(unembedded))
+
+
+# The bundle the refactor is frozen on (vault `specs/prices-refactor`): never
+# re-run, retrained or rescored.
+FROZEN_HIERLEX = "hierlex_select_v1_20260910"
 
 
 def _hierlex():
@@ -143,17 +150,20 @@ def _score_hierlex(
     so the two can be developed apart and still meet.
     """
     hierlex = _hierlex()
-    # `workers` reaches the driver now. It used to be dropped here, because a
-    # whole bucket gathered at once is ~9 GB and N workers hold N of them, so
-    # the driver walked buckets serially and the flag would have been a lie.
-    # The driver gathers a scoring chunk at a time instead, and clamps the count
-    # to a memory budget itself -- asking for sixteen gets whatever fits.
-    # Forwarding it is still the thing to get wrong: it once raised TypeError on
-    # every call, against a driver that had never taken the parameter, so the
-    # backend test asserts both that the driver's signature carries `workers`
-    # and that the value arrives.
-    hierlex.driver.run(version=version, workers=workers)
-    shards = hierlex.driver.load_shards(version=version)
+    # Lookup-only decide: the frozen bundle's existing scores, never a scoring
+    # pass. `driver.run` used to stand here and would score every pair the
+    # shards lacked; in this refactor scores are frozen, so a pair the shards
+    # do not hold is decided `unscored` downstream and counted instead.
+    # `workers` is kept for the backend contract and unused.
+    from prices.enrich.hierlex import package  # noqa: PLC0415
+
+    version = package.manifest(package.resolve(version))["method_version"]
+    if version != FROZEN_HIERLEX:
+        raise RuntimeError(
+            f"classify is pinned to {FROZEN_HIERLEX}; {version} resolved instead"
+        )
+    names = products["product_name_original"].astype(str).unique().tolist()
+    shards = hierlex.driver.load_shards(version=version, names=names)
     # `assigned_coicop` is NOT always a COICOP code. For a fallback that lands on
     # a parent with no "n.e.c." leaf, the scorer emits a synthetic
     # `<parent>.__parent_fallback__` token, and `is_leaf` is how it says so.
@@ -237,7 +247,8 @@ def _score_hierlex(
     )
     if wanted:
         frame = frame[frame["country"].isin(wanted)].reset_index(drop=True)
-    return ScoreResult(frame=frame, unembedded=unembedded)
+    meta = {"bundle": version, "tau": float(tau), "policy": config.HIERLEX_POLICY}
+    return ScoreResult(frame=frame, unembedded=unembedded, meta=meta)
 
 
 def _fit_head(version: str) -> dict:

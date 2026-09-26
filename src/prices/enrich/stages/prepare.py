@@ -237,6 +237,39 @@ def _first_non_empty(series: pd.Series) -> str:
     return ""
 
 
+def parse_dates(raw: pd.Series) -> pd.Series:
+    """The raw `date` column as UTC timestamps.
+
+    format="mixed": Common Crawl writes compact numeric timestamps
+    ("20251212100333") while live scrapes write ISO. Inferring a single format
+    from the first row coerces every other shape to NaT. utc=True is required,
+    not cosmetic: the corpus mixes tz-aware ISO, tz-naive ISO, RFC2822 (Common
+    Crawl) and compact numeric stamps. With mixed offsets and no utc=True pandas
+    returns object dtype, and the `observation_date=max` aggregation dies with
+    "agg function failed [how->max,dtype->object]".
+
+    A chunk holding only Common Crawl rows infers int64 for `date`, and pandas
+    then reads the compact stamp 20240722014727 as NANOSECONDS since epoch --
+    every such row lands on 1970-01-01, silently. Rendering compact stamps as
+    text first makes the parse independent of how the chunk happened to be
+    typed.
+
+    Stage B's final join parses dated rows with this same function, so a row's
+    month matches the month `product_months` put it in.
+    """
+    num = pd.to_numeric(raw, errors="coerce")
+    compact = num.notna() & (num >= 1e13) & (num < 1e15)
+    if compact.any():
+        raw = raw.astype(object).copy()
+        raw[compact] = num[compact].astype("int64").astype(str)
+    return pd.to_datetime(raw, errors="coerce", format="mixed", utc=True)
+
+
+def month_of(dates: pd.Series) -> pd.Series:
+    """Calendar month (UTC) of a parsed `observation_date`, as "YYYY-MM"."""
+    return dates.dt.strftime("%Y-%m")
+
+
 def _derive(raw: pd.DataFrame) -> pd.DataFrame:
     df = raw.copy()
     if "product_name_original" not in df.columns:
@@ -260,33 +293,9 @@ def _derive(raw: pd.DataFrame) -> pd.DataFrame:
     if "product_url" not in df.columns:
         df["product_url"] = ""
     df["product_url"] = df["product_url"].map(_clean_url)
-    if "date" in df.columns:
-        # format="mixed": Common Crawl writes compact numeric timestamps
-        # ("20251212100333") while live scrapes write ISO. Inferring a single
-        # format from the first row coerces every other shape to NaT.
-        # utc=True is required, not cosmetic: the corpus mixes tz-aware ISO,
-        # tz-naive ISO, RFC2822 (Common Crawl) and compact numeric stamps. With
-        # mixed offsets and no utc=True pandas returns object dtype, and the
-        # `observation_date=max` aggregation below dies with "agg function
-        # failed [how->max,dtype->object]".
-        # A chunk holding only Common Crawl rows infers int64 for `date`, and
-        # pandas then reads the compact stamp 20240722014727 as NANOSECONDS
-        # since epoch -- every such row lands on 1970-01-01, silently. A chunk
-        # that mixes CC with ISO rows infers object and parses correctly, so the
-        # corruption depends on chunk composition rather than on the data.
-        # Rendering compact stamps as text first makes the parse independent of
-        # how the chunk happened to be typed.
-        raw = df["date"]
-        num = pd.to_numeric(raw, errors="coerce")
-        compact = num.notna() & (num >= 1e13) & (num < 1e15)
-        if compact.any():
-            raw = raw.astype(object).copy()
-            raw[compact] = num[compact].astype("int64").astype(str)
-        df["observation_date"] = pd.to_datetime(
-            raw, errors="coerce", format="mixed", utc=True
-        )
-    else:
-        df["observation_date"] = pd.NaT
+    df["observation_date"] = (
+        parse_dates(df["date"]) if "date" in df.columns else pd.NaT
+    )
     # zip, not `df.apply(..., axis=1)`: apply materialises a Series per row --
     # index and all -- to hand `parse_price` two scalars, 110.3M times per
     # corpus pass. The `.get` is preserved as an explicit null column so a frame
@@ -363,6 +372,24 @@ def _aggregate(df: pd.DataFrame) -> pd.DataFrame:
     return grouped
 
 
+def product_months(df: pd.DataFrame) -> pd.DataFrame:
+    """One row per (`input_hash`, month) of a derived frame: Stage B's price
+    grain (vault `stage-b-trust.md`, Grain). `source` rides along so a scoped
+    prepare can merge forward by source, as it does for products. A row with no
+    date keeps a null month rather than vanishing."""
+    work = df.assign(month=month_of(df["observation_date"]))
+    agg = dict(
+        price=("price", "median"),
+        n_rows=("input_hash", "size"),
+        currency=("currency", "first"),
+    )
+    if "source" in work.columns:
+        agg["source"] = ("source", _first_non_empty)
+    return work.groupby(["input_hash", "month"], as_index=False, dropna=False).agg(
+        **agg
+    )
+
+
 def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
     return _aggregate(_derive(raw))
 
@@ -394,6 +421,7 @@ def prepare_input_streaming(
     shuffle_dir: Optional[Path] = None,
     n_buckets: int = SHUFFLE_BUCKETS,
     verbose: bool = True,
+    months_path: Optional[Path] = None,
 ) -> int:
     """Chunked `prepare_input` that never holds the corpus in memory.
 
@@ -416,7 +444,9 @@ def prepare_input_streaming(
     as one whole-frame `groupby` would be. `shuffle_dir` must therefore be
     private to one call — two runs sharing it would interleave their parts.
 
-    Returns the number of output rows. Writes `out_path` incrementally.
+    Returns the number of output rows. Writes `out_path` incrementally, and
+    `product_months` of each bucket to `months_path` when given (exact for the
+    same reason: a bucket holds whole `input_hash` groups).
     """
     import pyarrow as pa
     import pyarrow.parquet as pq
@@ -444,6 +474,8 @@ def prepare_input_streaming(
     out_path.parent.mkdir(parents=True, exist_ok=True)
     writer = None
     schema = None
+    m_writer = None
+    m_schema = None
     n_out = 0
     try:
         for b in range(n_buckets):
@@ -463,6 +495,14 @@ def prepare_input_streaming(
                 # infer a null column type and fail the append.
                 table = table.cast(schema)
             writer.write_table(table)
+            if months_path is not None:
+                m_table = pa.Table.from_pandas(product_months(df), preserve_index=False)
+                if m_writer is None:
+                    m_schema = m_table.schema
+                    m_writer = pq.ParquetWriter(months_path, m_schema)
+                else:
+                    m_table = m_table.cast(m_schema)
+                m_writer.write_table(m_table)
             for f in files:
                 f.unlink()
             if verbose:
@@ -473,6 +513,8 @@ def prepare_input_streaming(
     finally:
         if writer is not None:
             writer.close()
+        if m_writer is not None:
+            m_writer.close()
     if verbose:
         print(f"  [prepare] {n_in} raw rows -> {n_out} products", flush=True)
     return n_out

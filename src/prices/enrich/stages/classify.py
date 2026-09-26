@@ -1,32 +1,31 @@
-"""Classify stage — assign each product a COICOP leaf plus structural fields.
+"""Classify stage — assign each product a COICOP leaf.
 
-Reads ``products_input`` (already one row per ``input_hash``) and runs the two
-independent enrich jobs per unique product name:
+Reads ``products_input`` (already one row per ``input_hash``) and writes one
+COICOP decision per row, accepted only where the backend's calibrated gate
+clears. Classify writes COICOP only: quantity extraction, the fluid-oz remap,
+the basis check and the unit-value gate are Stage B (vault
+`specs/prices-refactor/stage-a.md`, item 1).
 
-  - structural regex extraction (``extract``) overlays pricing_basis / amount /
-    count / multiplier / promo flags;
-  - a classifier backend predicts the COICOP leaf, accepted only where that
-    backend's calibrated gate clears.
+**This stage never trains, scores or embeds.** HierLex decides by looking up
+the frozen bundle's existing scores (lookup-only decide); a (name, country)
+pair the scores do not hold is decided ``unscored`` and counted, never scored
+here. Scoring is `prices hierlex score`, embedding is `prices embed`.
 
-**This stage never trains anything.** Which model scores, at what grain, and
-where the result lands are all properties of the backend
-(``classifier/backends.py``); the default is the frozen HierLex bundle, which
-has no training procedure to call at all. Training lives behind
-``backends.fit_backend`` and is reached by its own command.
+Source-declared narrow COICOP codes bypass the classifier.
 
-Source-declared narrow COICOP codes bypass the classifier (structural extraction
-still runs). A basis-audit (``audit.py``) withholds trust from accepted rows
-whose extracted basis contradicts the leaf's denylist.
-
-Two artifacts come out of one scoring pass. The **decisions** table keeps EVERY
+Two artifacts come out of one pass. The **decisions** table keeps EVERY
 ``input_hash`` — rejects and never-scored rows included — because that is the
 only place coverage can be measured; ``classified.parquet`` is a filtered view
-of it, carrying ``merge.ENRICHMENT_COLS`` for the backend's COICOP divisions.
+of it for the backend's COICOP divisions. Each run appends its bundle, tau and
+state counts to ``_decide.jsonl`` beside the decision parts.
 """
 
 from __future__ import annotations
 
-from dataclasses import replace
+import json
+import subprocess
+from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Sequence
 
@@ -35,13 +34,9 @@ import pandas as pd
 import pyarrow as pa
 
 from prices import partition
-from prices.enrich import audit, coicop_codes, coicop_taxonomy, config, uv_gate
+from prices.enrich import coicop_codes, coicop_taxonomy, config
 from prices.enrich.classifier import backends
-from prices.enrich.declared_unit import parse_declared_count, parse_declared_unit
-from prices.enrich.extract import StructuralFields, extract
-from prices.enrich.fluid_oz import remap_fluid_oz
 from prices.enrich.stages import decide_pool, decisions_store
-from prices.enrich.stages.merge import ENRICHMENT_COLS
 
 # Re-exported: these moved to `products_reader` when this file hit its size
 # limit, and `hierlex/decide.py` plus the tests import them from here.
@@ -52,52 +47,28 @@ from prices.enrich.stages.products_reader import (  # noqa: F401
     read_products,
 )
 
-_EMPTY = {c: None for c in ENRICHMENT_COLS}
-
-
-from prices.enrich.stages.extraction import (  # noqa: F401
-    _structural_fields,
-)
-
-
-DECISION_COLS = [*ENRICHMENT_COLS, "input_hash", "country", "leaf_top1", "gate_score"]
+# What `classified.parquet` carries besides `input_hash`: COICOP and nothing
+# else. The quantity columns of `merge.ENRICHMENT_COLS` are dropped, not left
+# null (user, 2026-09-26); Stage B derives them.
+CLASSIFIED_COLS = ["coicop_code", "confidence", "state", "trust_level"]
+DECISION_COLS = [*CLASSIFIED_COLS, "input_hash", "country", "leaf_top1", "gate_score"]
 
 # Explicit arrow schema for the decisions writer. Inferring it from the first
-# chunk is a trap: a chunk whose `promo_reason` or `coicop_code` happens to be
-# entirely null infers arrow type `null`, and the first later chunk carrying a
-# real string then fails to cast — hours into the run. Numerics are float64 here
-# (not the view's int64) because rejected rows widen the population.
-# `classified.parquet` is unaffected: it is written from pandas, so it keeps the
-# dtypes it has always had.
+# chunk is a trap: a chunk whose `coicop_code` happens to be entirely null
+# infers arrow type `null`, and the first later chunk carrying a real string
+# then fails to cast — hours into the run.
 _DECISION_TYPES = {
-    "pricing_basis": pa.string(),
-    "amount_value": pa.float64(),
-    "standard_unit": pa.string(),
-    "count": pa.float64(),
-    "multiplier": pa.float64(),
     "coicop_code": pa.string(),
-    "is_promotion": pa.bool_(),
-    "is_bundle": pa.bool_(),
-    "is_multipack": pa.bool_(),
-    "uv_trusted": pa.bool_(),
-    "unit_declared": pa.bool_(),
-    "promo_reason": pa.string(),
     "confidence": pa.float64(),
     "state": pa.string(),
-    "dimensions_json": pa.string(),
     "trust_level": pa.string(),
     "input_hash": pa.string(),
     # Carried so the table can be partitioned and scoped by country without a
-    # join back to products_input. Coverage is reported per country anyway, so
-    # the column the report needs was previously being recovered by re-reading
-    # a 6.4 GB file to get one string per row.
+    # join back to products_input.
     "country": pa.string(),
     "leaf_top1": pa.string(),
     "gate_score": pa.float64(),
 }
-_uncovered = [c for c in DECISION_COLS if c not in _DECISION_TYPES]
-if _uncovered:  # ENRICHMENT_COLS grew — extend _DECISION_TYPES deliberately
-    raise RuntimeError(f"no arrow type declared for decision columns: {_uncovered}")
 DECISION_SCHEMA = pa.schema([(c, _DECISION_TYPES[c]) for c in DECISION_COLS])
 
 
@@ -161,21 +132,12 @@ def decide_rows(
     # `load_taxonomy_index` caches at module level, so this costs one branch.
     valid_leaves = None
 
-    # zip over the nine columns the body reads, not `iterrows()`. iterrows
-    # materialises a fresh Series per row -- the values plus an Index carrying
-    # every column name -- 36.9M times, to serve nine lookups. Rebuilding a
-    # nine-key dict instead keeps `p[...]` and `p.get(...)` exactly as they
-    # were, including the None a `.get` returns for a column the frame does not
-    # carry, so nothing below this line had to change.
+    # zip over the columns the body reads, not `iterrows()`, which
+    # materialises a fresh Series per row to serve four lookups.
     read = (
         "product_name_original",
         "input_hash",
         "country",
-        "category",
-        "lang",
-        "details",
-        "unit",
-        "source",
         "declared_coicop_codes",
     )
     names = list(dict.fromkeys((*read, *key_cols)))
@@ -190,24 +152,14 @@ def decide_rows(
     for values, key in zip(zip(*columns), row_keys(products, key_cols)):
         p = dict(zip(names, values))
         name = str(p["product_name_original"])
-        row = dict(_EMPTY)
+        row = dict.fromkeys(DECISION_COLS)
         row["input_hash"] = p["input_hash"]
         country = p.get("country")
         row["country"] = None if country is None or pd.isna(country) else str(country)
-        row.update(
-            _structural_fields(
-                name,
-                p.get("category"),
-                p.get("country"),
-                p.get("lang"),
-                p.get("details"),
-                p.get("unit"),
-                p.get("source"),
-            )
-        )
 
-        leaf, conf, accepted, leaf_top1, gate_score = scored.get(
-            key, (None, 0.0, False, None, float("nan"))
+        hit = scored.get(key)
+        leaf, conf, accepted, leaf_top1, gate_score = hit or (
+            None, float("nan"), False, None, float("nan")
         )
         # The model's top-1 leaf REGARDLESS of acceptance. Keeping it is what
         # separates "this country has no such product" from "it has them but the
@@ -238,6 +190,15 @@ def decide_rows(
             row["confidence"] = float("nan")
             row["state"] = "unembedded"
             row["trust_level"] = "low"
+        elif hit is None:
+            # The name has scores in some country, but not this pair: the frozen
+            # scores predate it. Lookup-only decide never scores, so the row is
+            # counted as a backlog item rather than decided `rejected`, which
+            # would read as a model refusal.
+            row["coicop_code"] = None
+            row["confidence"] = float("nan")
+            row["state"] = "unscored"
+            row["trust_level"] = "low"
         elif accepted:
             row["coicop_code"] = str(leaf)
             row["confidence"] = float(conf)
@@ -249,29 +210,6 @@ def decide_rows(
             row["state"] = "rejected"
             row["trust_level"] = "low"
 
-        remap_fluid_oz(row, name)
-
-        if row["trust_level"] == "high":
-            verdict = audit.audit(
-                row.get("coicop_code"), row.get("pricing_basis"), audit._denylist_map()
-            )
-            if verdict == audit.REJECT:
-                row["trust_level"] = "low"
-                row["state"] = "rejected"
-            elif verdict == audit.FLAG:
-                row["trust_level"] = "flagged"
-                row["state"] = "flagged_basis"
-
-        # Unit-value adoption gate (layer 1). Independent of `state`: it answers
-        # only "is this row's DENOMINATOR adoptable", never whether the leaf is
-        # right. Runs after the basis-audit because a pair that audit ruled
-        # physically impossible is not adoptable however permissive the
-        # category allow-list is.
-        adopt, _reason = uv_gate.gate(row["coicop_code"], row["pricing_basis"])
-        if adopt and row["pricing_basis"] in uv_gate.GATED_BASES:
-            adopt = row["trust_level"] == "high"
-        row["uv_trusted"] = adopt
-
         out_rows.append(row)
     return pd.DataFrame(out_rows, columns=DECISION_COLS)
 
@@ -279,13 +217,12 @@ def decide_rows(
 def classified_view(decisions: pd.DataFrame, divisions) -> pd.DataFrame:
     """The `classified.parquet` contract, derived from the decisions table.
 
-    Same columns as before the decisions table existed, so `build/aggregate.py`
-    and `build/leaf_support.py` see no change. `divisions` is a prefix or a tuple
-    of prefixes, and it — not aggregate.py — is where build scope is decided, so
-    an all-division scoring run cannot silently widen what `prices build` reads.
+    COICOP columns only (`CLASSIFIED_COLS`). `divisions` is a prefix or a tuple
+    of prefixes, and it is where Stage B scope is decided, so an all-division
+    run cannot silently widen what Stage B reads.
     """
     keep = decisions[classified_mask(decisions, divisions)]
-    return keep[[*ENRICHMENT_COLS, "input_hash"]].reset_index(drop=True)
+    return keep[[*CLASSIFIED_COLS, "input_hash"]].reset_index(drop=True)
 
 
 def classified_mask(decisions: pd.DataFrame, divisions) -> pd.Series:
@@ -385,6 +322,27 @@ def countries_for(selectors, root: Optional[Path] = None) -> Optional[list[str]]
     return None if scope is None else sorted(scope)
 
 
+def _append_sidecar(dec_root: Path, record: dict) -> None:
+    """One JSON line per run beside the decision parts: which bundle and tau
+    decided these rows, over what scope, with what outcome. Readers glob
+    `*.parquet`, so the file never reads as a part."""
+    try:
+        head = subprocess.run(
+            ["git", "-C", str(config.REPO_ROOT), "rev-parse", "HEAD"],
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        head = None
+    record = {
+        "written_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "git_head": head,
+        **record,
+    }
+    dec_root.mkdir(parents=True, exist_ok=True)
+    with open(dec_root / "_decide.jsonl", "a") as fh:
+        fh.write(json.dumps(record) + "\n")
+
+
 def run(
     in_path: Optional[Path] = None,
     out_path: Optional[Path] = None,
@@ -454,6 +412,7 @@ def run(
     # the lookup exists the loop reads nothing from it but `unembedded`. Keeping
     # it alive means paying for the scores twice, as a frame and as a dict.
     unembedded = result.unembedded
+    meta = result.meta
     del result
 
     dec_root = decisions_store.parts_root(full_out_path)
@@ -467,6 +426,7 @@ def run(
     views: dict[str, list[pd.DataFrame]] = {}
     n_dec = 0
     n_view = 0
+    states: Counter = Counter()
     # `decide_workers`, not `workers`. The decide loop is ~68 minutes on one
     # core -- about as long as the scoring pass above it -- so it is worth
     # splitting, but `--workers` already means "workers for the scoring pass"
@@ -494,6 +454,7 @@ def run(
             workers=decide_workers,
         ):
             n_dec += len(dec)
+            states.update(dec["state"])
             if merge_keys:
                 stems = dec["country"].map(decisions_store.part_name)
                 for stem in merge_keys:
@@ -535,6 +496,26 @@ def run(
         decisions_store.prune_scoped(
             view_root, full, {p.stem for p in written_views}
         )
+
+    if states.get("unscored"):
+        print(
+            f"[classify] {states['unscored']} rows are pairs the frozen scores do "
+            "not hold — recorded as state='unscored', not scored",
+            flush=True,
+        )
+    _append_sidecar(
+        dec_root,
+        {
+            "backend": be.name,
+            **meta,
+            "selectors": list(selectors or []),
+            "countries": countries,
+            "decisions": n_dec,
+            "classified": n_view,
+            "states": dict(states),
+            "unembedded_names": len(unembedded),
+        },
+    )
 
     summary = {
         "backend": be.name,

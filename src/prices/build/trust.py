@@ -166,7 +166,9 @@ def impute_candidates(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.Dat
 
 
 def choose_fit(scored: pd.DataFrame) -> pd.DataFrame:
-    """Keep one candidate per (country, leaf): the one putting most rows in band.
+    """Keep one candidate size per product: the one putting most of its months
+    in band. A size is a property of the product, so every month of it takes
+    the same one.
 
     Ties go to the more frequent size (lower `_cand`). `imputed_mode` rows have
     a single candidate and pass through unchanged.
@@ -176,12 +178,12 @@ def choose_fit(scored: pd.DataFrame) -> pd.DataFrame:
     inside = scored["uv_robust_z"].abs().le(K)
     wins = (
         scored.assign(_in=inside)
-        .groupby(["country", "coicop_code", "_cand"], sort=False)["_in"].sum()
+        .groupby(["input_hash", "_cand"], sort=False)["_in"].sum()
         .reset_index()
-        .sort_values(["country", "coicop_code", "_in", "_cand"], ascending=[True, True, False, True])
-        .drop_duplicates(["country", "coicop_code"])
+        .sort_values(["input_hash", "_in", "_cand"], ascending=[True, False, True])
+        .drop_duplicates(["input_hash"])
     )
-    keep = scored.merge(wins[["country", "coicop_code", "_cand"]], on=["country", "coicop_code", "_cand"])
+    keep = scored.merge(wins[["input_hash", "_cand"]], on=["input_hash", "_cand"])
     return keep.drop(columns=["_cand"])
 
 
