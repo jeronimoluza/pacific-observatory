@@ -169,7 +169,7 @@ def _match_extra_unit(item_name: str, lang: str | None, entries=_EXTRA_UNITS):
     return None, None, None, None
 
 
-_BASIS_TO_SU = {"mass": "kg", "volume": "lt"}
+_BASIS_TO_SU = {"mass": "kg", "volume": "lt", "count": "unit"}  # count: a source marker for one piece
 
 
 def _match_pricing_basis_marker(
