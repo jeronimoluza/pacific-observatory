@@ -9,4 +9,4 @@ from __future__ import annotations
 from prices.enrich.regex_patterns import grammar
 from prices.enrich.regex_patterns.types import PackPattern
 
-PATTERNS: tuple[PackPattern, ...] = grammar.build_ids("VI_PIECES")
+PATTERNS: tuple[PackPattern, ...] = grammar.build_ids("VI_PIECES", "VI_PIECE_NOUN", "VI_Q_GLUED", "VI_TRAY")

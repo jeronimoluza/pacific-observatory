@@ -34,6 +34,7 @@ RENAME: dict[str, str] = {
     "multipack_pcs_en": "NUM_PCS",
     "multipack_pc_glued_en": "NUM_PC_GLUED",
     "multipack_n_x_only": "NUM_X_TRAILING",
+    "multipack_vi_loc_pieces": "LOC_VI_PIECES",
     "multipack_vi_loc": "LOC_VI",
     "multipack_vi_count_unit": "COUNT_UNIT_VI",
     "multipack_zh_count_unit": "COUNT_UNIT_ZH",
@@ -72,6 +73,9 @@ RENAME: dict[str, str] = {
     "en_n_tickets": "EN_N_TICKETS",
     "ru_tabs_caps": "RU_TABS_CAPS",
     "vi_m_pieces": "VI_PIECES",
+    "vi_piece_noun": "VI_PIECE_NOUN",
+    "vi_q_glued": "VI_Q_GLUED",
+    "vi_tray": "VI_TRAY",
     "vi_to_sheets": "VI_TO_SHEETS",
     # --- _unrouted -----------------------------------------------------------
     "cjk_numeral_version": "VERSION_CJK",

@@ -174,6 +174,12 @@ _META = {
         role="canonicalization",
         kind="canon",
         bucket="multipack",
+    ),    "LOC_VI_PIECES": dict(
+        groups=("count",),
+        lang="vi",
+        role="canonicalization",
+        kind="canon",
+        bucket="multipack",
     ),
     "COUNT_UNIT_VI": dict(
         groups=("count",),
@@ -258,6 +264,9 @@ _META = {
     "RU_TABS_CAPS": dict(lang="any"),
     # count_pack/vi + vi_sheets (extra_count, script=None)
     "VI_PIECES": dict(lang="vi"),
+    "VI_PIECE_NOUN": dict(lang="vi"),
+    "VI_Q_GLUED": dict(lang="vi"),
+    "VI_TRAY": dict(lang="vi"),
     "VI_TO_SHEETS": dict(lang="any"),
 }
 

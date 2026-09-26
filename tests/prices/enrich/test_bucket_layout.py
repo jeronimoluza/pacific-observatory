@@ -29,8 +29,8 @@ _SCREAMING_SNAKE = re.compile(r"^[A-Z0-9_]+$")
 _EXPECTED_CARDINALITY = {
     "per_unit_marker": 7,  # 2026-08-03: +SLASH_KG, BARE_KG, SLASH_LITRE
     "single_measure": 4,
-    "multipack": 11,
-    "count_pack": 32,  # 2026-09-23: +RU_TABS_CAPS
+    "multipack": 12,  # 2026-09-26: +LOC_VI_PIECES
+    "count_pack": 35,  # 2026-09-23: +RU_TABS_CAPS; 2026-09-26: +VI_PIECE_NOUN, VI_Q_GLUED, VI_TRAY
     "_unrouted": 1,
 }
 

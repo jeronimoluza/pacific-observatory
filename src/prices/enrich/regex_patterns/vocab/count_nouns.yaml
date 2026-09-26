@@ -20,6 +20,12 @@ NUM_X_TRAILING:
   {template: regex, case: ci, regex: '(?P<count>\d+)\s*[xX×]\s*$'}
 LOC_VI:
   {template: noun_num, case: ci, nouns: ['Lốc', 'Thùng', 'Hộp', 'Bộ', 'Combo', 'Set']}
+# A box/tray OF N eggs or fruit ("Hộp 10 Trứng ... 530G"): N counts the pieces,
+# not boxes. Listed in normalize._TOTAL_INTERNAL_COUNT_IDS, so a stated weight
+# is the total and N stays inert; with no weight N is the count.
+LOC_VI_PIECES:
+  {template: regex, case: ci,
+   regex: '\b(?:Lốc|Thùng|Hộp|Bộ|Combo|Set|vỉ|vĩ|khay)\s+(?P<count>\d+)\s*(?:trứng|quả|trái)(?![^\W\d_])'}
 COUNT_UNIT_VI:
   {template: num_noun, sep: optional, lb: none, case: ci,
    nouns: ['cái', 'cây', 'gói', 'chai', 'lon', 'chiếc', 'hộp', 'bịch', 'viên', 'miếng']}
@@ -27,6 +33,16 @@ COUNT_UNIT_VI:
 # --- extra_count channel (fallback; decide rung 8) ---------------------------
 VI_TO_SHEETS:
   {template: regex, case: cs, regex: '(?P<count>\d+)\s*Tờ\b'}
+# Pieces the product IS (eggs, fruit), not containers: the count is inert
+# against a stated total weight ("10 trứng ... 530g"), so extra_count, not canon.
+VI_PIECE_NOUN:
+  {template: regex, case: ci, regex: '(?<!\w)(?P<count>\d+)\s*(?:quả|trái|trứng)(?![^\W\d_])'}
+# "vỉ 6q": q = quả, glued to the number.
+VI_Q_GLUED:
+  {template: regex, case: cs, regex: '(?<!\w)(?P<count>\d+)q\b'}
+# "Vỉ 10" / "vĩ 6": a tray of N eggs.
+VI_TRAY:
+  {template: regex, case: ci, regex: '\bv[ỉĩ]\s*(?P<count>\d+)\b'}
 EN_CAPS:
   {template: num_noun, sep: optional, lb: word, case: cs,
    nouns: ['Caps?', 'Capsules?', 'caps?', 'capsules?', 'CAPS?', 'CAPSULES?']}

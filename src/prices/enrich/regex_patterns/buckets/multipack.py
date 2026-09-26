@@ -73,6 +73,7 @@ PATTERNS: tuple[PackPattern, ...] = (
         "NUM_PCS",
         "NUM_PC_GLUED",
         "NUM_X_TRAILING",
+        "LOC_VI_PIECES",
         "LOC_VI",
         "COUNT_UNIT_VI",
     )

@@ -61,12 +61,16 @@ _OUTER_PACK_OF_RE = re.compile(
 # with a single total mass/volume, the spec treats the measure as the pack TOTAL
 # (e.g. "24 Pack 1.8kg" = 24 items totalling 1.8 kg, multiplier 1), so the count
 # must not be promoted to a multiplier. Excludes "Combo/Lốc N" (real outer pack).
-_TOTAL_INTERNAL_COUNT_IDS = {"NUM_PCS", "COUNT_UNIT_VI"}
+_TOTAL_INTERNAL_COUNT_IDS = {"NUM_PCS", "COUNT_UNIT_VI", "LOC_VI_PIECES"}
 _VALUE_UNIT_PAT = next(p for p in _PACK_PATTERNS if p["id"] == "VALUE_UNIT")
 # A counter joined to the measure by x/×/* IS an explicit multiplier ("12PACK x
-# 86g", "6 PCS X 100ml") — NOT a total, so the total-internal redirect is skipped.
+# 86g", "6 PCS X 100ml", "4 Cây*70G") — NOT a total, so the total-internal
+# redirect is skipped. The added Vietnamese counters (COUNT_UNIT_VI's) need a
+# unit after the number: "10g / Gói x 33 Gói" is a count, not a measure.
 _COUNTER_X_MEASURE_RE = re.compile(
-    r"(?:pack|pcs|pieces?|ct|miếng|viên)\s*[x×*]\s*\d", re.IGNORECASE
+    r"(?:pack|pcs|pieces?|ct|miếng|viên)\s*[x×*]\s*\d"
+    r"|(?:cái|cây|gói|chai|lon|chiếc|hộp|bịch)\s*[x×*]\s*\d+(?:[.,]\d+)?\s*(?:mg|kg|g|gr|ml|l)\b",
+    re.IGNORECASE,
 )
 
 # CJK stop-words and ZH/JA promo markers are substring-stripped because
