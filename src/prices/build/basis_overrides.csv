@@ -1,1 +1,7 @@
 country,code,allowed,approved_by,note
+japan,01.1.8.5.9,mass|count,user 2026-09-26,"Japan sells chocolate per piece (個, 枚, 袋); 28% of rows in the mass-only map"
+japan,01.1.9.1.1,mass|count,user 2026-09-26,"ready meals per serving or piece (食, 個, 袋); 31% in map"
+japan,01.1.9.1.2,mass|count,user 2026-09-26,"ready meals per serving or piece (食, 個, 袋); 42% in map"
+japan,01.1.9.1.3,mass|count,user 2026-09-26,"ready meals per serving or piece (食, 個, 袋)"
+japan,01.1.9.1.6,mass|volume|count,user 2026-09-26,"soups per serving or piece (食, 個, 袋); 23% in map"
+japan,01.1.9.1.9,mass|count,user 2026-09-26,"ready meals per serving or piece (食, 個, 袋); 8% in map"
