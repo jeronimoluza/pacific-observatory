@@ -35,8 +35,12 @@ VI_TO_SHEETS:
   {template: regex, case: cs, regex: '(?P<count>\d+)\s*Tờ\b'}
 # Pieces the product IS (eggs, fruit), not containers: the count is inert
 # against a stated total weight ("10 trứng ... 530g"), so extra_count, not canon.
+# "con" counts animals ("Bào ngư (1 CON)"). Not after "N/": "1/2 con" is half a
+# bird. "12 con giáp" is the zodiac. A shrimp grade "28 - 32con" (pieces per kg)
+# still reads 32; a range can't be told from "loại 1 - 6 trứng" (grade 1, six
+# eggs), and on a mass-only leaf the count lands in basis review, not imputation.
 VI_PIECE_NOUN:
-  {template: regex, case: ci, regex: '(?<!\w)(?P<count>\d+)\s*(?:quả|trái|trứng)(?![^\W\d_])'}
+  {template: regex, case: ci, regex: '(?<!\w)(?<!\d/)(?P<count>\d+)\s*(?:quả|trái|trứng|con(?!\s*giáp))(?![^\W\d_])'}
 # "vỉ 6q": q = quả, glued to the number.
 VI_Q_GLUED:
   {template: regex, case: cs, regex: '(?<!\w)(?P<count>\d+)q\b'}

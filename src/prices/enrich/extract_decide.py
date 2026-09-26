@@ -66,6 +66,10 @@ _BONUS_PLUS_RE = re.compile(r"\d\s*\+\s*$")
 # signal separates them within [8, 30]. 30 is the highest count-before-measure
 # value in the gold slice, so gating strictly above it is gate-safe.
 _ORDER_GUARDED_IDS = frozenset({"EN_SACHETS", "EN_APOS_S"})
+# Counts of pieces the product IS (animals, fruit, eggs), not containers: beside
+# a volume they are never a multipack ("Nước Mắm 3 Con Tôm ... Chai 500Ml" is a
+# brand, not three bottles), so the volume -> multiplier route skips them.
+_PIECE_NOUN_IDS = frozenset({"VI_PIECE_NOUN", "VI_Q_GLUED"})
 _COUNT_BEFORE_MEASURE_CAP = 30
 # A retail pack count above this is not a count: it is an EAN/SKU that trailed a
 # pack noun, or a mass/volume figure that lost its unit token. Both fabricate a
@@ -436,7 +440,7 @@ def _rung_pack_unit_emit(st):
             # _measure_is_per_piece): "2g 100 Bags" is 100 bags of 2 g, and
             # leaving the count inert priced the box as a single tea bag.
             if (
-                um["basis"] == "volume"
+                (um["basis"] == "volume" and st.noun_count_id not in _PIECE_NOUN_IDS)
                 or st.noun_count_via_operator
                 or re.search(rf"[Pp]ack\s*(?:of\s*)?0*{n}(?!\d)", st.item_name)
                 or _measure_is_per_piece(st, um, amount_value, n)
@@ -510,7 +514,8 @@ def _rung_pack_count_emit(st):
 def _rung_extra_count_pred(st):
     return (
         st.extra_count is not None
-        and st.extra_count > 1
+        # "1 con" / "1 quả": sold per piece, so a count of one is a quantity.
+        and (st.extra_count > 1 or st.noun_count_id in _PIECE_NOUN_IDS)
         and _count_is_plausible(st.extra_count)
     )
 
