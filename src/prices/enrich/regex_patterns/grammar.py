@@ -58,9 +58,19 @@ def _measure_alt(key):
     return _alt(s)
 
 
+# After the unit: a word boundary, or a CJK character. Kana, kanji, hangul and
+# fullwidth forms are word characters, so a plain `\b` refused every measure
+# glued to the Japanese word after it ("250ml缶 ×30本", "1800mlパック×6本"),
+# and the row fell to its bottle count (Japan Stage B pilot, 2026-09-26). Not
+# before サイズ/玉 (produce grades "2Lサイズ", "3L玉") or 用/相当/換算/配合
+# ("10kg用" = for 10 kg, "60L相当" = makes 60 L, "15g配合" = contains 15 g,
+# "1L分" = worth 1 L).
+_UNIT_END = r"(?:\b|(?=[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\uff00-\uffef])(?!サイズ|玉|用|相当|換算|配合|分))"
+
+
 def _value_unit_regex():
     return re.compile(
-        rf"{_LB}{_VAL}\s*(?P<unit>{_measure_alt('measure')})\b", re.IGNORECASE
+        rf"{_LB}{_VAL}\s*(?P<unit>{_measure_alt('measure')}){_UNIT_END}", re.IGNORECASE
     )
 
 
@@ -79,7 +89,7 @@ def _pack_regex(form):
     sep = rf"(?:[{''.join(_PB['separators'])}]|\bby\b)"
     if form == "num_sep_measure":
         return re.compile(
-            rf"(?P<count>\d+)\s*{sep}\s*{_VAL_P}\s*(?P<unit>{ua})\b", re.IGNORECASE
+            rf"(?P<count>\d+)\s*{sep}\s*{_VAL_P}\s*(?P<unit>{ua}){_UNIT_END}", re.IGNORECASE
         )
     return re.compile(
         rf"{_VAL_P}\s*(?P<unit>{ua})\s*{sep}\s*(?P<count>\d+)"

@@ -62,7 +62,16 @@ _OUTER_PACK_OF_RE = re.compile(
 # (e.g. "24 Pack 1.8kg" = 24 items totalling 1.8 kg, multiplier 1), so the count
 # must not be promoted to a multiplier. Excludes "Combo/Lốc N" (real outer pack).
 _TOTAL_INTERNAL_COUNT_IDS = {"NUM_PCS", "COUNT_UNIT_VI", "LOC_VI_PIECES"}
+# The opposite case: a Japanese "N本入 / N袋入" count beside a measure glued to
+# its container ("190g缶 20本入", "180g袋×2袋入") is N containers of that
+# measure, so the count multiplies it. A measure not on a container
+# ("柿 1kg（大玉 12個入）", 1 kg of 12 fruit) keeps the old reading.
+_PER_CONTAINER_COUNT_IDS = {"SET_JA"}
+_JA_CONTAINER = r"\s*(?:ペットボトル|ボトル|パック|カップ|缶|袋|本|瓶|箱|包)"
 _VALUE_UNIT_PAT = next(p for p in _PACK_PATTERNS if p["id"] == "VALUE_UNIT")
+_VALUE_UNIT_ON_CONTAINER_RE = re.compile(
+    _VALUE_UNIT_PAT["regex"].pattern + f"(?={_JA_CONTAINER})", re.IGNORECASE
+)
 # A counter joined to the measure by x/×/* IS an explicit multiplier ("12PACK x
 # 86g", "6 PCS X 100ml", "4 Cây*70G") — NOT a total, so the total-internal
 # redirect is skipped. The added Vietnamese counters (COUNT_UNIT_VI's) need a
@@ -174,6 +183,13 @@ def extract_pack(
                 return cleaned, count, value, unit
         cleaned = (s[: m.start()] + " " + s[m.end() :]).strip()
         cleaned = re.sub(r"\s+", " ", cleaned)
+        if value is None and count is not None and pat["id"] in _PER_CONTAINER_COUNT_IDS:
+            vm = _VALUE_UNIT_ON_CONTAINER_RE.search(cleaned)
+            if vm:
+                raw = vm.group("unit")
+                unit = _UNIT_NORM.get(raw, _UNIT_NORM.get(raw.lower(), raw.lower()))
+                value = float(vm.group("value").replace(",", "."))
+                cleaned = re.sub(r"\s+", " ", cleaned[: vm.start()] + " " + cleaned[vm.end() :]).strip()
         if with_id:
             return cleaned, count, value, unit, pat["id"]
         return cleaned, count, value, unit
