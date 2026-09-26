@@ -338,7 +338,9 @@ def _status(df: pd.DataFrame) -> np.ndarray:
         ~df["qa_uv_category"],
         level.eq("unscored"),
         level.eq("out"),
-        src.eq("imputed_fit") | (src.isin(["imputed_mode", "per_kg"]) & level.eq("C")),
+        # Imputed sizes are trusted at A-B only; imputed_fit is accepted like
+        # imputed_mode (user, 2026-09-26) and stays tagged by `size_source`.
+        src.isin(["imputed_mode", "imputed_fit", "per_kg"]) & level.eq("C"),
         ~df["qa_uv_plausible"],
         ~df["qa_fx"],
     ]
