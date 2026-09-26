@@ -32,6 +32,7 @@ from prices.build import trust
 from prices.build.aggregate import OBSERVATIONS_PARQUET
 from prices.build.qa import PLAUSIBLE_USD
 from prices.build.unit_value_audit import flag_uv_outliers
+from prices.fx.attach import build_fx_table
 from prices.enrich import config, uv_gate
 from prices.enrich.fluid_oz import remap_fluid_oz
 from prices.enrich.stages import decisions_store
@@ -160,16 +161,16 @@ def to_local_currency(rows: pd.DataFrame) -> pd.DataFrame:
     """Reprice rows quoted in another currency into the country's own.
 
     livingcost quotes New Zealand in USD (fx_rate 1): banded as NZD it sat at
-    ~0.6x every other shop, blended in, and was trusted. Via USD at the month's
-    median rate of the country's own-currency rows; a month with no such rate
-    leaves the row as it was and marks it `fx_suspect`.
+    ~0.6x every other shop, blended in, and was trusted. Via USD at the day's
+    rate from the prices FX table; a row with no rate (or an unknown currency,
+    "?") is left as it was and marked `fx_suspect`.
     """
     local = rows["currency"].mode().iloc[0]
     fx = pd.to_numeric(rows["fx_rate"], errors="coerce")
-    month = pd.to_datetime(rows["observation_date"], errors="coerce").dt.to_period("M")
-    rate = fx[rows["currency"].eq(local)].groupby(month).median()
+    day = pd.to_datetime(rows["observation_date"], errors="coerce").dt.tz_localize(None).dt.normalize()
     foreign = rows["currency"].ne(local)
-    to_local = month[foreign].map(rate)
+    table = build_fx_table(pd.DataFrame({"currency": local, "observation_date": day[foreign]}))
+    to_local = day[foreign].map(table.set_index("observation_date")["fx_rate"])
     ok = to_local.notna() & fx[foreign].gt(0)
     idx = to_local.index[ok]
     rows = rows.copy()
