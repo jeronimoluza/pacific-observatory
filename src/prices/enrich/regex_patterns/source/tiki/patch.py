@@ -10,6 +10,17 @@ which keeps appliance capacities ("Tủ Chống Ẩm ... (80 Lít)") out.
 
 Named gap 1 of rung 1a (00-SPEC.md). Measured 2026-09-24 on products_input
 (09-20): 29 tiki rows move, 0 lose a count.
+
+"N gói ... mỗi gói Xg|gr|gam" states a per-sachet weight and the sachet count
+separately ("DAMODE 58 gói màu đỏ mỗi gói 2,2gr"); the shared gram pattern
+reads only the per-sachet number, so the row prices at 1/N of its true total
+weight. This canon pattern reads the count and the per-sachet weight together
+and multiplies.
+
+Measured 2026-09-26 on products_input (09-20): 18 tiki names move mass ->
+mass, 0 count lost (rulecheck); 2 more names matching the same text shape
+("Combo ..." prefix) already resolve through an earlier pattern and are left
+alone.
 """
 
 import re
@@ -36,9 +47,19 @@ _N_X_LIT = PackPattern(
     kind="canon",
     bucket="multipack",
 )
+_N_GOI_MOI_GOI = PackPattern(
+    id="TIKI_N_GOI_MOI_GOI",
+    regex=re.compile(
+        r"(?i)(?P<count>\d+)\s*gói\b.{0,25}?mỗi\s*gói\s*(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>gr|g|gam)\b"
+    ),
+    groups=("count", "value", "unit"),
+    role="canonicalization",
+    kind="canon",
+    bucket="multipack",
+)
 
 PATCH = SourcePatch(
-    additions=(_CASE_N_LIT, _N_X_LIT),
+    additions=(_CASE_N_LIT, _N_X_LIT, _N_GOI_MOI_GOI),
     intent={
         "TIKI_CASE_N_LIT": Intent(
             why="'Thùng/Combo/Lốc N hộp|chai ... V Lít' is N units of V litres",
@@ -58,6 +79,16 @@ PATCH = SourcePatch(
             examples=(
                 "Thùng Veyo sữa hạt 05 loại cao cấp (10 hộp x 1 Lít)",
                 "Thùng Vinasoy Fami Green soy rất ít đường hộp (10 hộp x 1 Lít)",
+            ),
+        ),
+        "TIKI_N_GOI_MOI_GOI": Intent(
+            why="'N gói ... mỗi gói Xg' is N sachets of X grams each",
+            expect="mass -> mass",
+            rows=18,
+            examples=(
+                "Mua DMAXX thức uống bổ sung vitamin năng lượng không đường DAMODE 58 gói màu đỏ mỗi gói 2,2gr tại d&ghouse",
+                "DMAXX thức uống bổ sung vitamin năng lượng có đường DAMODE 46 gói màu xanh mỗi gói 22gr",
+                "DMAXX thức uống bổ sung vitamin năng lượng có đường DAMODE 90 gói màu xanh mỗi gói 22gr",
             ),
         ),
     },
