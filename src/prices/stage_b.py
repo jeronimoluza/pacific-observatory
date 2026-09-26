@@ -140,6 +140,7 @@ def _status(df: pd.DataFrame) -> np.ndarray:
         ~df["qa_price_positive"],
         df["basis_mismatch"],
         src.isna(),
+        df["piece_fail"],
         ~df["qa_uv_category"],
         level.eq("unscored"),
         level.eq("out"),
@@ -149,7 +150,7 @@ def _status(df: pd.DataFrame) -> np.ndarray:
     ]
     choices = [
         "review_zero_price", "review_basis", "review_missing_qty",
-        "review_uv_category", "review_uv_unscored", "review_uv_out",
+        "review_piece", "review_uv_category", "review_uv_unscored", "review_uv_out",
         "review_level", "review_uv_implausible", "review_fx",
     ]
     return np.select(conditions, choices, default="trusted").astype(object)
@@ -186,8 +187,16 @@ def run(country: str) -> pd.DataFrame:
     ]
     rows["size_source"] = pd.Series(np.where(rows["basis_ok"], "extracted", None), dtype=object)
 
+    # Per-piece rows from a shop whose own per-kg price says they are not
+    # pieces (bags, bulk packs) leave before the band and are never imputed.
+    pieces = piece_table(rows[rows["basis_ok"]])
+    failed = set(pieces.index[pieces["outside"] & pieces["ref"].eq("same source")])
+    rows["piece_fail"] = basis.eq("item") & pd.Series(
+        [k in failed for k in zip(rows["coicop_code"], rows["source"])], index=rows.index
+    )
+
     # The band: extracted rows in an allowed basis define it, twice over.
-    is_ex = rows["basis_ok"] & rows["qa_price_positive"] & rows["unit_value_local"].gt(0)
+    is_ex = rows["basis_ok"] & rows["qa_price_positive"] & rows["unit_value_local"].gt(0) & ~rows["piece_fail"]
     extracted = rows[is_ex].reset_index(drop=True)
     base2 = trust.band(extracted, pd.Series(True, index=extracted.index))
 
@@ -230,18 +239,23 @@ def run(country: str) -> pd.DataFrame:
     return out.drop(columns=["_row", "_cand", "_cand_share"], errors="ignore")
 
 
-def piece_check(out: pd.DataFrame) -> pd.DataFrame:
-    """(leaf, source) pairs whose per-piece price implies an implausible weight.
+# Human-owned, like k=5: how far an implied piece weight may sit from the
+# leaf's `piece_kg` range before the "pieces" are judged not to be pieces.
+PIECE_BOUNDS = (0.4, 2.5)
 
-    Implied piece weight = median per-piece price / median per-kg price, from
-    the same source when it has >= 3 per-kg rows of the leaf (a premium shop
-    is then compared with itself), else the country's. Outside 0.4x-2.5x of
-    the leaf's `piece_kg` range, the "pieces" are likely per-kg prices or
-    packs. A flag for review, never a gate.
+
+def piece_table(rows: pd.DataFrame) -> pd.DataFrame:
+    """Implied piece weight per (leaf, source) for leaves that allow `item`.
+
+    Implied weight = median per-piece price / median per-kg price, from the
+    same source when it has >= 3 per-kg rows of the leaf, else the country's.
+    `outside` marks weights beyond PIECE_BOUNDS x the leaf's `piece_kg`.
+    Only a same-source comparison is trusted to exclude rows (`run`): against
+    the country's price, a premium shop reads as heavy pieces.
     """
     m = pd.read_csv(trust.BASIS_MAP_CSV, dtype=str, keep_default_na=False)
     rng = m[m["piece_kg"].ne("")].set_index("code")["piece_kg"].str.split("-", expand=True).astype(float)
-    rows = out[out["coicop_code"].isin(rng.index) & out["unit_value_local"].gt(0)]
+    rows = rows[rows["coicop_code"].isin(rng.index) & rows["unit_value_local"].gt(0)]
     kg = rows[rows["pricing_basis"].eq("mass")]
     own = kg.groupby(["coicop_code", "source"])["unit_value_local"].agg(["size", "median"])
     country = kg.groupby("coicop_code")["unit_value_local"].median()
@@ -253,7 +267,8 @@ def piece_check(out: pd.DataFrame) -> pd.DataFrame:
     it["implied_kg"] = (it["median"] / ref.fillna(pd.Series(leaf.map(country), index=it.index))).round(2)
     it["piece_kg"] = leaf.map(m.set_index("code")["piece_kg"])
     lo, hi = leaf.map(rng[0]), leaf.map(rng[1])
-    return it[(it["implied_kg"] < 0.4 * lo) | (it["implied_kg"] > 2.5 * hi)]
+    it["outside"] = (it["implied_kg"] < PIECE_BOUNDS[0] * lo) | (it["implied_kg"] > PIECE_BOUNDS[1] * hi)
+    return it
 
 
 def report(out: pd.DataFrame) -> str:
@@ -281,8 +296,8 @@ def report(out: pd.DataFrame) -> str:
     outs = out["qa_level"].eq("out").groupby(out["coicop_code"]).agg(["size", "mean"])
     lines.append("\nleaves with out share > 5% (review-agent trigger)")
     lines.append(outs[(outs["mean"] > 0.05) & (outs["size"] >= 30)].sort_values("size", ascending=False).to_string())
-    lines.append("\nimplied piece weight outside 0.4x-2.5x of piece_kg (review)")
-    lines.append(piece_check(out).to_string())
+    lines.append("\nimplied piece weight outside PIECE_BOUNDS x piece_kg (same source: excluded as review_piece; country: review only)")
+    lines.append(piece_table(out[out["size_source"].eq("extracted")]).query("outside").to_string())
     return "\n".join(lines)
 
 
