@@ -39,7 +39,7 @@ reading as the Vietnam/Philippines "count beside a total mass is inert
 contents" precedent).
 
 Measured 2026-09-26 with `rulecheck source pasar_segar` (pasar_segar is
-indonesia-only): 564 product rows move, all item -> mass, 11 with
+indonesia-only): 563 product rows move, all item -> mass, 11 with
 count_loss. Verdict: model_review.
 """
 
@@ -49,7 +49,7 @@ from prices.enrich.regex_patterns.types import Intent, PackPattern, SourcePatch,
 
 _GRAM = PackPattern(
     id="PASAR_SEGAR_GRAM",
-    regex=re.compile(r"(?P<value>\d+(?:,\d+)?)\s*gram\b", re.IGNORECASE),
+    regex=re.compile(r"(?<![\d.,])(?P<value>\d+(?:,\d+)?)\s*gram\b", re.IGNORECASE),
     groups=("value",),
     lang="any",
     role="extract",
@@ -64,7 +64,7 @@ PATCH = SourcePatch(
         "PASAR_SEGAR_GRAM": Intent(
             why="spelled-out 'gram' states the size in grams",
             expect="item -> mass, count -> mass",
-            rows=564,
+            rows=563,
             examples=(
                 "Asparagus Perpack (250 gram) - Eat Me",
                 "pop mie pedes dower 75 gram",

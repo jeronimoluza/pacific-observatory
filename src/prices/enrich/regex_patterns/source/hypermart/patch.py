@@ -32,7 +32,7 @@ from prices.enrich.regex_patterns.types import Intent, PackPattern, SourcePatch,
 
 _GRAM = PackPattern(
     id="HYPERMART_GRAM",
-    regex=re.compile(r"(?<!\d)(?<!x )(?P<value>\d+(?:,\d+)?)\s*gram\b", re.IGNORECASE),
+    regex=re.compile(r"(?<![\d.,])(?<!x )(?P<value>\d+(?:,\d+)?)\s*gram\b", re.IGNORECASE),
     groups=("value",),
     lang="any",
     role="extract",
@@ -43,7 +43,7 @@ _GRAM = PackPattern(
 
 _KILOGRAM = PackPattern(
     id="HYPERMART_KILOGRAM",
-    regex=re.compile(r"(?<!\d)(?<!x )(?P<value>\d+(?:,\d+)?)\s*kilo(?:gram)?\b", re.IGNORECASE),
+    regex=re.compile(r"(?<![\d.,])(?<!x )(?P<value>\d+(?:,\d+)?)\s*kilo(?:gram)?\b", re.IGNORECASE),
     groups=("value",),
     lang="any",
     role="extract",

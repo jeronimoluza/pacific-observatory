@@ -31,7 +31,7 @@ from prices.enrich.regex_patterns.types import Intent, PackPattern, SourcePatch,
 _GRAM = PackPattern(
     id="NUTRIMART_ID_GRAM",
     regex=re.compile(
-        r"(?<!\d)(?<!x )(?P<value>\d+(?:,\d+)?)\s*gram\b(?!\s*[-x]\s*\d)", re.IGNORECASE
+        r"(?<![\d.,])(?<!x )(?P<value>\d+(?:,\d+)?)\s*gram\b(?!\s*[-x]\s*\d)", re.IGNORECASE
     ),
     groups=("value",),
     lang="any",

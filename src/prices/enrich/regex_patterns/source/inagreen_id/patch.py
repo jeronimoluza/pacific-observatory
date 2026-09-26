@@ -19,7 +19,7 @@ from prices.enrich.regex_patterns.types import Intent, PackPattern, SourcePatch,
 
 _GRAM = PackPattern(
     id="INAGREEN_ID_GRAM",
-    regex=re.compile(r"(?<!\d)(?<!x )(?P<value>\d+(?:,\d+)?)\s*gram\b", re.IGNORECASE),
+    regex=re.compile(r"(?<![\d.,])(?<!x )(?P<value>\d+(?:,\d+)?)\s*gram\b", re.IGNORECASE),
     groups=("value",),
     lang="any",
     role="extract",
