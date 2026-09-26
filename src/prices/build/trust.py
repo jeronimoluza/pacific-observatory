@@ -123,7 +123,7 @@ def impute_candidates(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.Dat
     """Sizeless rows copied once per candidate size, with a unit value each.
 
     Per (country, leaf) with >= 30 extracted rows from >= 2 sources. One size
-    at >= 60% of those rows is `imputed_mode` and the only candidate; otherwise
+    at >= 60% of the rows in its unit is `imputed_mode` and the only candidate; otherwise
     every frequent size is an `imputed_fit` candidate and `choose_fit` picks.
     """
     if extracted.empty or sizeless.empty:
@@ -137,7 +137,9 @@ def impute_candidates(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.Dat
         if len(pool) < MIN_IMPUTE_ROWS or pool["source"].nunique() < MIN_IMPUTE_SOURCES:
             continue
         sizes = pool.groupby(["standard_unit", "size_qty"]).size().sort_values(ascending=False)
-        share = sizes.iloc[0] / len(pool)
+        # The mode's share among rows in its own unit: per-piece rows of a leaf
+        # sold both ways say nothing about which kg size is typical.
+        share = sizes.iloc[0] / pool["standard_unit"].eq(sizes.index[0][0]).sum()
         kind = "imputed_mode" if share >= MODE_SHARE else "imputed_fit"
         chosen = sizes.head(1 if kind == "imputed_mode" else MAX_FIT_CANDIDATES)
         for rank, ((unit, qty), n) in enumerate(chosen.items()):

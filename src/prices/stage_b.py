@@ -173,6 +173,10 @@ def run(country: str) -> pd.DataFrame:
     basis = rows["pricing_basis"]
     rows["basis_ok"] = [b in allowed[c] for b, c in zip(basis, rows["coicop_code"])]
     sizeless = ~rows["basis_ok"] & (basis.isna() | basis.eq("item"))
+    # An allowed item row is one piece, the same quantity as a count of one:
+    # both price per piece, so they share the count cell ("Thơm 1 trái" and
+    # "Thơm" are one pineapple each) instead of thinning two cells.
+    rows.loc[rows["basis_ok"] & basis.eq("item"), "standard_unit"] = "unit"
     rows["basis_mismatch"] = ~rows["basis_ok"] & ~sizeless
     rows["qa_price_positive"] = pd.to_numeric(rows["price_local"], errors="coerce").gt(0)
     rows["unit_value_local"] = pd.to_numeric(pd.Series([
