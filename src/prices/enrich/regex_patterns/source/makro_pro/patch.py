@@ -53,7 +53,7 @@ _TH_CONT = "ก-๏"
 
 _G_ABBR = PackPattern(
     id="MAKRO_G_ABBR",
-    regex=re.compile(rf"(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*ก\.(?![{_TH_CONT}])"),
+    regex=re.compile(rf"(?<![A-Za-z0-9.,])(?P<value>\d+(?:\.\d+)?)\s*ก\.(?![{_TH_CONT}])"),
     groups=("value",),
     lang="any",
     role="extract",
@@ -63,7 +63,7 @@ _G_ABBR = PackPattern(
 )
 _L_ABBR = PackPattern(
     id="MAKRO_L_ABBR",
-    regex=re.compile(rf"(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*ล\.(?![{_TH_CONT}])"),
+    regex=re.compile(rf"(?<![A-Za-z0-9.,])(?P<value>\d+(?:\.\d+)?)\s*ล\.(?![{_TH_CONT}])"),
     groups=("value",),
     lang="any",
     role="extract",
@@ -78,7 +78,7 @@ PATCH = SourcePatch(
         "MAKRO_G_ABBR": Intent(
             why="makro_pro abbreviates กรัม (gram) as a bare 'ก.' with a period",
             expect="item -> mass, count -> mass, volume -> mass",
-            rows=7958,
+            rows=7956,
             examples=(
                 "บลูเบอร์รี่ 500 ก.",
                 "ไข่ปลาริวกิวแช่แข็ง 300 ก.",
