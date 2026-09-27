@@ -255,7 +255,7 @@ code,title,allowed,piece_kg,note
 01.2.6.0.0,Soft drinks,volume,,
 01.2.9.0.0,Other non-alcoholic beverages,mass|volume,,powdered drink mixes by weight
 02.1.1.0,Spirits and liquors (ND),volume,,
-02.1.2.1,Wine from grapes (ND),volume,,
+02.1.2.1,Wine from grapes (ND),volume|count,,per bottle is a standard size (750 ml); user 2026-09-27
 02.1.2.2,Wine from other sources (ND),volume,,
-02.1.3.0,Beer (ND),volume,,
+02.1.3.0,Beer (ND),volume|count,,per can or bottle is a standard size; user 2026-09-27
 02.1.9.0,Other alcoholic beverages (ND),volume,,

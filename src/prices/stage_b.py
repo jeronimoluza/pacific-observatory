@@ -191,16 +191,22 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         raise RuntimeError(f"leaves missing from the basis map: {missing}")
     basis = prod["pricing_basis"]
     prod["basis_ok"] = [b in allowed[c] for b, c in zip(basis, prod["coicop_code"])]
-    prod["sizeless"] = ~prod["basis_ok"] & (basis.isna() | basis.eq("item"))
+    prod["size_qty"] = [
+        trust.size_of(*t)[1]
+        for t in zip(basis, prod["amount_value"], prod["count"], prod["multiplier"])
+    ]
+    # A piece count in a leaf sold by weight or volume ("3本セット", "6pack")
+    # has no size, only pieces: it is imputed a size per piece like a sizeless
+    # product, times its pieces (user 2026-09-27).
+    measured = [bool(allowed[c] & {"mass", "volume"}) for c in prod["coicop_code"]]
+    counted = ~prod["basis_ok"] & basis.eq("count") & measured & prod["size_qty"].gt(0)
+    prod["_pieces"] = prod["size_qty"].where(counted, 1.0)
+    prod["sizeless"] = ~prod["basis_ok"] & (basis.isna() | basis.eq("item") | counted)
     # An allowed item is one piece, the same quantity as a count of one: both
     # price per piece, so they share the count cell ("Thơm 1 trái" and "Thơm"
     # are one pineapple each) instead of thinning two cells.
     prod.loc[prod["basis_ok"] & basis.eq("item"), "standard_unit"] = "unit"
     prod["basis_mismatch"] = ~prod["basis_ok"] & ~prod["sizeless"]
-    prod["size_qty"] = [
-        trust.size_of(*t)[1]
-        for t in zip(basis, prod["amount_value"], prod["count"], prod["multiplier"])
-    ]
     prod["size_source"] = pd.Series(np.where(prod["basis_ok"], "extracted", None), dtype=object)
 
     # Step 2, product x month: FX at the month's rate, unit value.
@@ -289,7 +295,7 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     pm["qa_fx"] = pm["fx_rate"].notna() & ~pm["fx_suspect"]
     pm["qa_uv_category"] = pm["qa_uv_category"].fillna(True).astype(bool)
     pm["stage_b_status"] = _status(pm)
-    pm = pm.drop(columns=["_row", "_cand", "_cand_share"], errors="ignore")
+    pm = pm.drop(columns=["_row", "_cand", "_cand_share", "_pieces"], errors="ignore")
 
     # Step 5, dated rows: the final join before publish.
     return join_dated(dated_rows(country, pm["input_hash"]), pm), pm

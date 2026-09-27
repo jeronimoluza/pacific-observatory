@@ -138,6 +138,8 @@ def impute_candidates(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.Dat
     Per (country, leaf) with >= 30 extracted rows from >= 2 sources. One size
     at >= 60% of the rows in its unit is `imputed_mode` and the only candidate; otherwise
     every frequent size is an `imputed_fit` candidate and `choose_fit` picks.
+    A row with `_pieces` > 1 (a piece count, no size) gets the size per piece,
+    times its pieces.
     """
     if extracted.empty or sizeless.empty:
         return sizeless.iloc[0:0]
@@ -155,15 +157,16 @@ def impute_candidates(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.Dat
         share = sizes.iloc[0] / pool["standard_unit"].eq(sizes.index[0][0]).sum()
         kind = "imputed_mode" if share >= MODE_SHARE else "imputed_fit"
         chosen = sizes.head(1 if kind == "imputed_mode" else MAX_FIT_CANDIDATES)
+        pieces = grp["_pieces"].fillna(1.0) if "_pieces" in grp else 1.0
         for rank, ((unit, qty), n) in enumerate(chosen.items()):
             basis = _UNIT_BASIS[unit]
             cand = grp.assign(
                 pricing_basis=basis,
                 standard_unit=unit,
                 amount_value=np.nan if basis == "count" else qty,
-                count=qty if basis == "count" else 1.0,
-                multiplier=1.0,
-                size_qty=qty,
+                count=qty * pieces if basis == "count" else 1.0,
+                multiplier=1.0 if basis == "count" else pieces,
+                size_qty=qty * pieces,
                 size_source=kind,
                 _cand=rank,
                 _cand_share=n / len(pool),
@@ -172,9 +175,7 @@ def impute_candidates(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.Dat
     if not out:
         return sizeless.iloc[0:0]
     cand = pd.concat(out, ignore_index=True)
-    cand["unit_value_local"] = cand["price_local"] / np.where(
-        cand["pricing_basis"] == "count", cand["count"], cand["amount_value"]
-    )
+    cand["unit_value_local"] = cand["price_local"] / cand["size_qty"]
     return cand
 
 
