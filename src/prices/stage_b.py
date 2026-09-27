@@ -236,18 +236,22 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     # The band: extracted product-months in an allowed basis define it, twice
     # over. One row per product per month, so a month cell's support is its
     # count of distinct products.
-    # Official series neither define the band nor are judged by it.
+    # Official series help define the band but are judged by their own
+    # history (below), and never lend sizes to imputation.
     official = rows["source"].isin(trust.official_sources())
     is_ex = (
         rows["basis_ok"] & rows["qa_price_positive"] & rows["unit_value_local"].gt(0)
-        & ~rows["piece_fail"] & ~official
+        & ~rows["piece_fail"]
     )
     extracted = rows[is_ex].reset_index(drop=True)
     base2 = trust.band(extracted, pd.Series(True, index=extracted.index))
 
     # Step 3, product grain: imputation. Sizes are drawn from in-band measured
     # products of the same country, one vote per product, not per month.
-    pool = extracted[base2 & extracted["pricing_basis"].isin(["mass", "volume", "count"])]
+    pool = extracted[
+        base2 & extracted["pricing_basis"].isin(["mass", "volume", "count"])
+        & ~extracted["source"].isin(trust.official_sources())
+    ]
     pool = pool.drop_duplicates("input_hash")
     todo = rows[rows["sizeless"] & rows["qa_price_positive"] & ~official]
     # A shop that sells the leaf per kg at the same price is quoting per kg.
@@ -278,14 +282,14 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         qa_level="unscored", in_band_baseline=False
     )
     rest.loc[~rest["basis_ok"], "size_source"] = None
-    own = rest["source"].isin(trust.official_sources()) & rest["basis_ok"] & rest["unit_value_local"].gt(0)
-    med = rest[own].groupby("input_hash")["unit_value_local"].transform("median")
-    rest.loc[own, "qa_level"] = np.where(
-        (rest.loc[own, "unit_value_local"] / med).between(*OFFICIAL_BOUNDS), "official", "out"
-    )
     pm = pd.concat([judged, rest], ignore_index=True).sort_values("_row", ignore_index=True)
     if len(pm) != n or pm["_row"].duplicated().any():
         raise RuntimeError(f"product-month count moved: {n} in, {len(pm)} out")
+    own = pm["source"].isin(trust.official_sources()) & pm["basis_ok"] & pm["unit_value_local"].gt(0)
+    med = pm[own].groupby("input_hash")["unit_value_local"].transform("median")
+    pm.loc[own, "qa_level"] = np.where(
+        (pm.loc[own, "unit_value_local"] / med).between(*OFFICIAL_BOUNDS), "official", "out"
+    )
 
     pm["unit_value_usd"] = pm["unit_value_local"] / pm["fx_rate"]
     lo = pd.to_numeric(pm["standard_unit"].map(lambda u: PLAUSIBLE_USD.get(u, (None, None))[0]))
