@@ -45,6 +45,11 @@ OUT_ROOT = config.REPO_ROOT / "outputs" / "prices" / "stage_b"
 # Human-owned, like k=5: a dated row priced outside this factor of its
 # product-month median does not inherit the product-month's trust.
 RATIO_BOUNDS = (0.5, 2.0)
+# Human-owned: an official series (`official_sources.csv`) is judged against
+# its own history instead. A product-month outside this factor of the
+# product's median over its months, or a dated row outside it of its
+# product-month median, is out.
+OFFICIAL_BOUNDS = (0.2, 5.0)
 
 _PRODUCT_COLS = [
     "input_hash", "product_name_original", "product_url", "category",
@@ -78,7 +83,12 @@ def load_products(country: str) -> pd.DataFrame:
             f"{country}: {len(classified) - len(products)} classified products "
             "are not in products_input"
         )
-    return products
+    # Human-approved leaf corrections (`coicop_overrides.csv`); one that moves a
+    # product out of 01 + 02.1 drops it here.
+    over = trust.coicop_overrides()
+    fixed = pd.Series(list(zip(products["source"], products["product_name_original"])), index=products.index).map(over)
+    products["coicop_code"] = fixed.fillna(products["coicop_code"])
+    return products[_in_divisions(products["coicop_code"])].reset_index(drop=True)
 
 
 def load_months(country: str, hashes: pd.Series) -> pd.DataFrame:
@@ -220,7 +230,12 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     # The band: extracted product-months in an allowed basis define it, twice
     # over. One row per product per month, so a month cell's support is its
     # count of distinct products.
-    is_ex = rows["basis_ok"] & rows["qa_price_positive"] & rows["unit_value_local"].gt(0) & ~rows["piece_fail"]
+    # Official series neither define the band nor are judged by it.
+    official = rows["source"].isin(trust.official_sources())
+    is_ex = (
+        rows["basis_ok"] & rows["qa_price_positive"] & rows["unit_value_local"].gt(0)
+        & ~rows["piece_fail"] & ~official
+    )
     extracted = rows[is_ex].reset_index(drop=True)
     base2 = trust.band(extracted, pd.Series(True, index=extracted.index))
 
@@ -228,7 +243,7 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     # products of the same country, one vote per product, not per month.
     pool = extracted[base2 & extracted["pricing_basis"].isin(["mass", "volume", "count"])]
     pool = pool.drop_duplicates("input_hash")
-    todo = rows[rows["sizeless"] & rows["qa_price_positive"]]
+    todo = rows[rows["sizeless"] & rows["qa_price_positive"] & ~official]
     # A shop that sells the leaf per kg at the same price is quoting per kg.
     perkg = trust.per_kg_rows(extracted, todo)
     cand = trust.impute_candidates(pool, todo[~todo["_row"].isin(perkg["_row"])])
@@ -257,6 +272,11 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         qa_level="unscored", in_band_baseline=False
     )
     rest.loc[~rest["basis_ok"], "size_source"] = None
+    own = rest["source"].isin(trust.official_sources()) & rest["basis_ok"] & rest["unit_value_local"].gt(0)
+    med = rest[own].groupby("input_hash")["unit_value_local"].transform("median")
+    rest.loc[own, "qa_level"] = np.where(
+        (rest.loc[own, "unit_value_local"] / med).between(*OFFICIAL_BOUNDS), "official", "out"
+    )
     pm = pd.concat([judged, rest], ignore_index=True).sort_values("_row", ignore_index=True)
     if len(pm) != n or pm["_row"].duplicated().any():
         raise RuntimeError(f"product-month count moved: {n} in, {len(pm)} out")
@@ -321,7 +341,10 @@ def join_dated(rows: pd.DataFrame, pm: pd.DataFrame) -> pd.DataFrame:
     out["unit_value_usd"] = out["unit_value_usd"] * ratio
     status = out["stage_b_status"].copy()
     trusted = status.eq("trusted")
-    status[trusted & ~ratio.between(*RATIO_BOUNDS)] = "review_price_ratio"
+    official = out["source"].isin(trust.official_sources())
+    lo = np.where(official, OFFICIAL_BOUNDS[0], RATIO_BOUNDS[0])
+    hi = np.where(official, OFFICIAL_BOUNDS[1], RATIO_BOUNDS[1])
+    status[trusted & ~((ratio >= lo) & (ratio <= hi))] = "review_price_ratio"
     status[trusted & ~out["price_quoted"].gt(0)] = "review_zero_price"
     out["stage_b_status"] = status
     out["trusted"] = status.eq("trusted")

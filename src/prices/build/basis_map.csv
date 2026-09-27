@@ -99,7 +99,7 @@ code,title,allowed,piece_kg,note
 01.1.5.1.5,Groundnut oil,volume,,
 01.1.5.1.6,Coconut oil,mass|volume,,solid coconut oil jars often in grams
 01.1.5.1.7,Corn oil,volume,,
-01.1.5.1.9,Other edible vegetable oils n.e.c.,volume,,
+01.1.5.1.9,Other edible vegetable oils n.e.c.,mass|volume,,cooking oil sold per kg (pricecatcher MY; wb_rtdi_prices ID); user 2026-09-27
 01.1.5.2.1,Butter,mass,,
 01.1.5.2.9,Other oils and fats derived from milk,mass|volume,,ghee sold in both g and ml
 01.1.5.3.0,Margarine and similar preparations,mass,,

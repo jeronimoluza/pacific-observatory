@@ -29,6 +29,8 @@ from prices.build.unit_value_audit import UV_SUPPORT_WINDOW, flag_uv_outliers
 _DIR = Path(__file__).resolve().parent
 BASIS_MAP_CSV = _DIR / "basis_map.csv"
 BASIS_OVERRIDES_CSV = _DIR / "basis_overrides.csv"
+OFFICIAL_SOURCES_CSV = _DIR / "official_sources.csv"
+COICOP_OVERRIDES_CSV = _DIR / "coicop_overrides.csv"
 
 CELL = ["coicop_code", "country", "standard_unit"]
 K = 5.0
@@ -52,6 +54,17 @@ def allowed_bases(country: str) -> dict[str, frozenset[str]]:
     over = pd.read_csv(BASIS_OVERRIDES_CSV, dtype=str)
     out.update(parse(over[over["country"] == country]))
     return out
+
+
+def official_sources() -> frozenset[str]:
+    """Sources judged against their own series instead of the online band."""
+    return frozenset(pd.read_csv(OFFICIAL_SOURCES_CSV, dtype=str)["source"])
+
+
+def coicop_overrides() -> dict[tuple[str, str], str]:
+    """`{(source, product name): leaf}`, applied after classification."""
+    over = pd.read_csv(COICOP_OVERRIDES_CSV, dtype=str)
+    return {(r.source, r.product_name): r.coicop_code for r in over.itertuples()}
 
 
 def size_of(basis, amount, count, multiplier) -> tuple[str | None, float]:

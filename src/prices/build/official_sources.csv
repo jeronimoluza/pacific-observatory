@@ -1,0 +1,8 @@
+source,approved_by,note
+pricecatcher,user 2026-09-27,"KPDN PriceCatcher, official daily prices across 500+ Malaysian premises"
+wb_rtdi_prices,user 2026-09-27,"World Bank real-time food prices, monthly market series with a declared unit"
+bi_pihps,user 2026-09-27,"Bank Indonesia PIHPS strategic food prices"
+singstat_arp,user 2026-09-27,"SingStat average retail prices"
+opengov_retail_prices,user 2026-09-27,"Japan government retail price survey"
+opengov_wholesale_produce,user 2026-09-27,"Japan government wholesale produce prices"
+wfp_prices,user 2026-09-27,"WFP VAM market prices"
