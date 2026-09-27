@@ -41,6 +41,10 @@ contents" precedent).
 Measured 2026-09-26 with `rulecheck source pasar_segar` (pasar_segar is
 indonesia-only): 563 product rows move, all item -> mass, 11 with
 count_loss. Verdict: model_review.
+
+"N ons" (2026-09-27) is the Indonesian ons, 100 g ("Lada Hitam 1 Ons",
+"Brokoli 5 ons"); 176 01+02.1 names fell to item. Same value shape as "gram",
+and not after "/": "1/2 ons" must not read as 2 ons (it stays item).
 """
 
 import re
@@ -58,8 +62,19 @@ _GRAM = PackPattern(
     unit_emit=UnitEmit(basis="mass", su="kg", mul=0.001),
 )
 
+_ONS = PackPattern(
+    id="PASAR_SEGAR_ONS",
+    regex=re.compile(r"(?<![\d.,/])(?P<value>\d+(?:,\d+)?)\s*ons\b", re.IGNORECASE),
+    groups=("value",),
+    lang="any",
+    role="extract",
+    kind="extra_unit",
+    bucket="single_measure",
+    unit_emit=UnitEmit(basis="mass", su="kg", mul=0.1),
+)
+
 PATCH = SourcePatch(
-    additions=(_GRAM,),
+    additions=(_GRAM, _ONS),
     intent={
         "PASAR_SEGAR_GRAM": Intent(
             why="spelled-out 'gram' states the size in grams",
@@ -73,6 +88,16 @@ PATCH = SourcePatch(
                 "Ajinomoto Bumbu Penyedap Micin 250 gram",
             ),
             count_loss=True,
+        ),
+        "PASAR_SEGAR_ONS": Intent(
+            why="'N ons' is N x 100 g (Indonesian ons)",
+            expect="item -> mass",
+            rows=176,
+            examples=(
+                "Lada Hitam 1 Ons",
+                "Brokoli 5 ons",
+                "Ikan Teri Nasi Kering 1 Ons",
+            ),
         ),
     },
 )

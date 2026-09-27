@@ -1,4 +1,9 @@
-"""makro_pro: a bare "N ก." / "N ล." is grams / litres, not glued into a longer word.
+"""makro_pro: a bare "N ล." is litres, not glued into a longer word.
+
+2026-09-27: the gram half ("N ก.", MAKRO_G_ABBR) moved to the shared rewrite
+`regex_patterns/shared/thai_gram.py`: lotuss_th and gourmet_market_th write it
+too, and as an extra_unit it dropped the case count of "400 ก. X 20". The
+history below is kept as measured.
 
 makro_pro (Thai wholesale cash-and-carry) abbreviates กรัม (gram) and ลิตร
 (litre) as a bare "ก." / "ล." with a mandatory period ("บลูเบอร์รี่ 500 ก.",
@@ -51,16 +56,6 @@ from prices.enrich.regex_patterns.types import Intent, PackPattern, SourcePatch,
 # a longer word (กรัม, กิโล, กก, ...), not the bare abbreviation.
 _TH_CONT = "ก-๏"
 
-_G_ABBR = PackPattern(
-    id="MAKRO_G_ABBR",
-    regex=re.compile(rf"(?<![A-Za-z0-9.,])(?P<value>\d+(?:\.\d+)?)\s*ก\.(?![{_TH_CONT}])"),
-    groups=("value",),
-    lang="any",
-    role="extract",
-    kind="extra_unit",
-    bucket="single_measure",
-    unit_emit=UnitEmit(basis="mass", su="kg", mul=0.001),
-)
 _L_ABBR = PackPattern(
     id="MAKRO_L_ABBR",
     regex=re.compile(rf"(?<![A-Za-z0-9.,])(?P<value>\d+(?:\.\d+)?)\s*ล\.(?![{_TH_CONT}])"),
@@ -73,23 +68,8 @@ _L_ABBR = PackPattern(
 )
 
 PATCH = SourcePatch(
-    additions=(_G_ABBR, _L_ABBR),
+    additions=(_L_ABBR,),
     intent={
-        "MAKRO_G_ABBR": Intent(
-            why="makro_pro abbreviates กรัม (gram) as a bare 'ก.' with a period",
-            expect="item -> mass, count -> mass, volume -> mass",
-            rows=7956,
-            examples=(
-                "บลูเบอร์รี่ 500 ก.",
-                "ไข่ปลาริวกิวแช่แข็ง 300 ก.",
-                "ไข่ปลาคาเวียร์ลัมพ์ฟิชสีดํา 80 ก.",
-                "บีเคพี อกไก่รมควัน 500 ก.",
-                "เฮอริเทจ พิสทาชิโอดิบ กะเทาะเปลือก 250 ก.",
-                "C116 แคร์ช้อยส์ โจ๊กข้าวไรซ์เบอรี่ ผักรวม5ชนิด ปลาแซลม่อน และสาหร่ายทะเล 75ก. สําหรับเด็ก 6 M+",
-                "เนื้อวัวออสเตรเลียแองกัสบดแช่แข็ง 85CL 500 ก.",
-            ),
-            count_loss=True,
-        ),
         "MAKRO_L_ABBR": Intent(
             why="makro_pro abbreviates ลิตร (litre) as a bare 'ล.' with a period",
             expect="item -> volume, count -> volume",

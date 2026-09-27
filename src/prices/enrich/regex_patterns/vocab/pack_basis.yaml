@@ -9,7 +9,11 @@ separators: ['x', 'X', '×', '*', 'х', 'Х']
 # P productions keyed by id (unit surfaces come from units.yaml::pack_measure):
 #   NUM_X_VALUE_UNIT : <num> SEP <value><unit>
 #   VALUE_UNIT_X_NUM : <value><unit> SEP <num>
+#   NUM_X_NUM_X_VALUE_UNIT : <num> SEP <num> SEP <value><unit>  (all factors multiply)
+#   VALUE_UNIT_WORDS_X_NUM : <value><unit> <word> [<word>] SEP <num> <end of name>
 pack:
+  NUM_X_NUM_X_VALUE_UNIT: {form: num_sep_num_sep_measure}
+  VALUE_UNIT_WORDS_X_NUM: {form: measure_words_sep_num}
   NUM_X_VALUE_UNIT: {form: num_sep_measure}
   VALUE_UNIT_X_NUM: {form: measure_sep_num}
 
@@ -35,3 +39,8 @@ extra_unit:
   LITRE_VI:
     {basis: volume, su: lt, mul: 1.0,
      regex: '(?P<value>\d+(?:[.,]\d+)?)\s*(?:l[íi]t|[lL][íÍ][tT](?![^\W\d_]))'}
+  # US gallon ("Milk (1 gallon)", "White Vinegar | 1 gallon"). Not after "/":
+  # "1/2 gallon" must not read as 2 gallons.
+  GALLON:
+    {basis: volume, su: lt, mul: 3.785411784,
+     regex: '(?i)(?<![A-Za-z0-9./])(?P<value>\d+(?:[.,]\d+)?)\s*gal(?:lons?)?\b'}

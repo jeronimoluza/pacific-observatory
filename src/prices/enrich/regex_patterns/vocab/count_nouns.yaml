@@ -18,8 +18,11 @@ NUM_PC_GLUED:
   {template: regex, case: ci, regex: '(?<!\w)(?P<count>\d+)pc\b(?!s)'}
 NUM_X_TRAILING:
   {template: regex, case: ci, regex: '(?P<count>\d+)\s*[xX×]\s*$'}
+# "Khay N lon|chai|hộp" is a tray of N cans ("Heineken 0.0 Khay 24 Lon 250ml");
+# a bare "Khay 500" is a 500 g tray, so khay needs the container noun after N.
 LOC_VI:
-  {template: noun_num, case: ci, nouns: ['Lốc', 'Thùng', 'Hộp', 'Bộ', 'Combo', 'Set']}
+  {template: noun_num, case: ci,
+   nouns: ['Lốc', 'Thùng', 'Hộp', 'Bộ', 'Combo', 'Set', 'Khay(?=\s+\d+\s*(?:lon|chai|hộp)\b)']}
 # A box/tray OF N eggs or fruit ("Hộp 10 Trứng ... 530G"): N counts the pieces,
 # not boxes. Listed in normalize._TOTAL_INTERNAL_COUNT_IDS, so a stated weight
 # is the total and N stays inert; with no weight N is the count.
@@ -59,7 +62,7 @@ EN_SHEETS:
   {template: num_noun, sep: optional, lb: word, case: cs,
    nouns: ['Sheets?', 'sheets?', 'SHEETS?']}
 EN_PACK_OF:
-  {template: regex, case: cs, regex: '\bPack\s*of\s*(?P<count>\d+)\b'}
+  {template: regex, case: cs, regex: '\bPack\s*(?:of|[xX])\s*(?P<count>\d+)\b'}
 EN_N_PACK:
   {template: regex, case: cs, regex: '\b(?P<count>\d+)\s*[-]?\s*(?:Pack|PACK|pack)\b'}
 EN_N_INDIVIDUAL_PACK:
@@ -94,6 +97,10 @@ EN_N_TICKETS:
 # corpus rows with it, 730,907 without (00-SPEC, 2026-09-17 round 2).
 RU_TABS_CAPS:
   {template: num_noun, sep: optional, lb: none, case: ci, nouns: ['табл', 'капс']}
+# Thai eggs: ฟอง is the classifier for eggs ("ไข่ไก่ 30 ฟอง" = 30 eggs). Not
+# before "x N": "30 ฟอง x 4" is four trays, and extra_count cannot carry the 4.
+TH_EGGS:
+  {template: regex, case: cs, regex: '(?<![\d.,])(?P<count>\d+)\s*ฟอง(?!\s*[xX×]\s*\d)'}
 
 # broad bidirectional count-noun class (C): <num><noun> + guarded <noun><num>.
 # Appended last so existing first-match order is unchanged; fires only when no
@@ -111,4 +118,4 @@ EN_COUNT_NUM_NOUN:
 # through to `item` rather than fabricating a denominator.
 EN_COUNT_NOUN_TRAIL:
   {template: regex, case: ci,
-   regex: '\b(?:pack|combo|set|box|case)\s*-?\s*(?P<count>\d{1,2})(?![\d.,]*\s*(?:ml|mls|l|ltrs?|litres?|liters?|cl|dl|g|gm|gr|kg|mg|oz|lb)\b)\b'}
+   regex: '\b(?:pack|combo|set|box|case)\s*-?\s*(?P<count>\d{1,2})(?![\d.,]*\s*(?:ml|mls|l|ltrs?|litres?|liters?|cl|dl|g|gm|gr|grams?|kg|mg|oz|lb)\b)\b'}

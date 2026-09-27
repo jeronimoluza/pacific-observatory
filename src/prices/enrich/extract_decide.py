@@ -36,7 +36,7 @@ from prices.enrich.extract import (
     _nutrient_claim_span,
     _value_unit_suppressed,
 )
-from prices.enrich.normalize import extract_pack
+from prices.enrich.normalize import _UNIT_NORM, extract_pack
 
 
 # Loose single-suffix count matchers (bare `\d+s` / `\d+'s`) are eligible to
@@ -323,6 +323,32 @@ def _resolve_pack(
         _cleaned, _alt_count, pack_value, pack_unit = extract_pack(
             tail, None, patterns=pack_patterns
         )
+
+    # Pass 1g: a per-unit x CJK-counter breakdown ("5kg×2袋") that follows the
+    # total it breaks down ("10kg（5kg×2袋）") reports the stated total,
+    # multiplier 1 -- the reading the name's first measure gave before the
+    # measure-x-count production learned CJK counters.
+    m = _VU_RE.search(item_name) if has_non_ascii else None
+    ids = {c.groups["regex_id"] for c in (by["pack_lang"], pn) if c is not None}
+    if (
+        m
+        and "VALUE_UNIT_X_NUM" in ids
+        and pack_count
+        and pack_count > 1
+        and pack_value is not None
+        and pack_unit in _UNIT_MAP
+        and re.search(rf"[xX×*ｘＸ＊]\s*{pack_count}(?=[\u3040-\u30ff\u3400-\u9fff])", item_name)
+    ):
+        um = _UNIT_MAP[pack_unit]
+        raw = m.group("unit")
+        unit = _UNIT_NORM.get(raw, _UNIT_NORM.get(raw.lower(), raw.lower()))
+        tm = _UNIT_MAP.get(unit)
+        value = float(m.group("value").replace(",", "."))
+        total = pack_value * float(um["mul"]) * pack_count
+        if tm is not None and tm["basis"] == um["basis"] and abs(
+            value * float(tm["mul"]) - total
+        ) < 1e-9 * max(1.0, total):
+            pack_count, pack_value, pack_unit = None, value, unit
 
     return pack_count, pack_value, pack_unit
 

@@ -40,6 +40,7 @@ from prices.enrich.regex_patterns.dict_view import (
 )
 from prices.enrich.regex_patterns.shared.plus_measure import collapse_additive_measure
 from prices.enrich.regex_patterns.shared.range_lower import collapse_numeric_ranges
+from prices.enrich.regex_patterns.shared.thai_gram import expand_thai_gram
 
 
 @dataclass(frozen=True)
@@ -431,6 +432,7 @@ def extract(
     # tolerance clause ("± 25 gm") — all before any pattern reads the name.
     item_name = collapse_numeric_ranges(item_name)
     item_name = collapse_additive_measure(item_name)
+    item_name = expand_thai_gram(item_name)
     item_name = _TOLERANCE_CLAUSE_RE.sub(" ", item_name)
 
     has_non_ascii = any(ord(ch) > 127 for ch in item_name)

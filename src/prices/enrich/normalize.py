@@ -153,6 +153,8 @@ def extract_pack(
             continue
         gd = m.groupdict()
         count = int(gd["count"]) if gd.get("count") else None
+        if count is not None and gd.get("count2"):  # nested case: "8*5*140G"
+            count *= int(gd["count2"])
         value = float(gd["value"].replace(",", ".")) if gd.get("value") else None
         unit = None
         if gd.get("unit"):

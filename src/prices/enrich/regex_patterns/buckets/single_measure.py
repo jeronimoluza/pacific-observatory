@@ -30,5 +30,5 @@ _VALUE_UNIT_ZH = PackPattern(
 PATTERNS: tuple[PackPattern, ...] = (
     grammar.build_ids("VALUE_UNIT")
     + (_VALUE_UNIT_ZH,)
-    + grammar.build_ids("CENTILITRE", "LITRE_VI")
+    + grammar.build_ids("CENTILITRE", "LITRE_VI", "GALLON")
 )

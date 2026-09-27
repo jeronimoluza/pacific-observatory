@@ -39,6 +39,8 @@ UNIT_NORM: Mapping[str, str] = {
     "gr": "g",
     "GR": "g",
     "grs": "g",
+    "gram": "g",
+    "grams": "g",
     "cc": "ml",
     "oz": "oz",
     "OZ": "oz",
@@ -64,6 +66,7 @@ UNIT_NORM: Mapping[str, str] = {
     "ミリリットル": "ml",
     "ｌ": "l",
     "リットル": "l",
+    "ポンド": "lb",
     # Cyrillic mass/volume abbreviations (ru/uk/bg/kk/ky/tk/mk/be/mn). Lower-case
     # keys only -- extract_pack and _match_extra_unit both retry the lookup on
     # `raw.lower()`, and str.lower() folds Cyrillic, so "ГР"/"МЛ"/"КГ" resolve here.

@@ -68,8 +68,10 @@ _CJK: tuple[PackPattern, ...] = (
 
 PATTERNS: tuple[PackPattern, ...] = (
     grammar.build_ids(
+        "NUM_X_NUM_X_VALUE_UNIT",
         "NUM_X_VALUE_UNIT",
         "VALUE_UNIT_X_NUM",
+        "VALUE_UNIT_WORDS_X_NUM",
         "NUM_PCS",
         "NUM_PC_GLUED",
         "NUM_X_TRAILING",

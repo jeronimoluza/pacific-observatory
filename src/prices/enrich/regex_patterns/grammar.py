@@ -82,6 +82,21 @@ def _value_unit_regex():
 # (pcs/pc/p/s/'s) — never a bare `\D`, so an unrelated glued unit/word after
 # the count still fails to match, same as before this addition.
 _TRAILING_COUNT_NOUN = r"(?:pcs?|p|['’]?s)"
+# A bag/pack noun glued between the count and the operator ("12BAGX185G",
+# "12PACK X 168G") is the same "N of V" multipack; without it the glued noun
+# kills both the count and the measure's left guard and the row reads item.
+_LEADING_COUNT_NOUN = r"(?:bags?|packs?)"
+# After a count: a word boundary, or a CJK counter glued to it ("250gx3個") --
+# unless the count is a bare 1 ("245g×1箱 (30缶)"), another count multiplies
+# that counter ("3g×100包×3袋", "220g x 10種 x 各3個"), or the count is of cases
+# ("350ml×2ケース 48本", "（2L×６本）２ケース"). There the count is not the whole
+# multiplier, and the older reading is kept. `(?!\d)`: the fullwidth block
+# holds the digits ０-９, which must not end a count mid-number ("×２４缶").
+_COUNT_END = (
+    r"(?:\b|(?<!\D[1１])(?!\d)(?=[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\uff00-\uffef])"
+    r"(?!ケース)(?![^\d\s]{0,6}\s*[x×*ｘＸ＊]\s*[^\d\s]{0,2}\d)"
+    r"(?![^\d]{0,3}(?![1１]\s*ケース)\d+\s*ケース))"
+)
 
 
 def _pack_regex(form):
@@ -89,11 +104,31 @@ def _pack_regex(form):
     sep = rf"(?:[{''.join(_PB['separators'])}]|\bby\b)"
     if form == "num_sep_measure":
         return re.compile(
-            rf"(?P<count>\d+)\s*{sep}\s*{_VAL_P}\s*(?P<unit>{ua}){_UNIT_END}", re.IGNORECASE
+            rf"(?P<count>\d+)\s*(?:{_LEADING_COUNT_NOUN}\s*)?{sep}\s*{_VAL_P}\s*(?P<unit>{ua}){_UNIT_END}",
+            re.IGNORECASE,
         )
+    if form == "num_sep_num_sep_measure":
+        # A case of packs of units ("8*5*140G", "6*4*500ML"): every factor
+        # multiplies. extract_pack multiplies `count2` into `count`.
+        return re.compile(
+            rf"(?<![\d.,])(?P<count2>\d+)\s*{sep}\s*(?P<count>\d+)\s*(?:{_LEADING_COUNT_NOUN}\s*)?{sep}\s*"
+            rf"{_VAL_P}\s*(?P<unit>{ua}){_UNIT_END}",
+            re.IGNORECASE,
+        )
+    if form == "measure_words_sep_num":
+        # A trailing case count after the measure and one or two words
+        # ("250ml Can x 24", "330ml Cans x 24", "800 G ขวด X12"). Anchored at the
+        # end of the name, where a case count sits; no digit in the words. A
+        # letter x must stand apart from the word: "túi 1kg CX18" is a grade.
+        return re.compile(
+            rf"{_VAL_P}\s*(?P<unit>{ua})\.?\s+(?:[^\W\d_]+\.?\s+)?[^\W\d_]+"
+            rf"(?:\s+[xXхХ]|\s*[×*])\s*(?P<count>\d+)\s*$",
+            re.IGNORECASE,
+        )
+    # `\.?`: a unit abbreviated with a period ("180 มล. x 6", "1 กก. x 10").
     return re.compile(
-        rf"{_VAL_P}\s*(?P<unit>{ua})\s*{sep}\s*(?P<count>\d+)"
-        rf"(?:{_TRAILING_COUNT_NOUN})?\b",
+        rf"{_VAL_P}\s*(?P<unit>{ua})\.?\s*{sep}\s*(?P<count>\d+)"
+        rf"(?:{_TRAILING_COUNT_NOUN})?{_COUNT_END}",
         re.IGNORECASE,
     )
 
@@ -142,7 +177,28 @@ _META = {
         kind="extra_unit",
         bucket="single_measure",
     ),
+    "GALLON": dict(
+        groups=("value",),
+        lang="any",
+        role="extract",
+        kind="extra_unit",
+        bucket="single_measure",
+    ),
     # multipack (canon P + canon count)
+    "NUM_X_NUM_X_VALUE_UNIT": dict(
+        groups=("count2", "count", "value", "unit"),
+        lang="any",
+        role="canonicalization",
+        kind="canon",
+        bucket="multipack",
+    ),
+    "VALUE_UNIT_WORDS_X_NUM": dict(
+        groups=("count", "value", "unit"),
+        lang="any",
+        role="canonicalization",
+        kind="canon",
+        bucket="multipack",
+    ),
     "NUM_X_VALUE_UNIT": dict(
         groups=("count", "value", "unit"),
         lang="any",
@@ -272,6 +328,7 @@ _META = {
     "EN_APOS_S": dict(lang="any"),
     "EN_N_TICKETS": dict(lang="any"),
     "RU_TABS_CAPS": dict(lang="any"),
+    "TH_EGGS": dict(lang="any"),
     # count_pack/vi + vi_sheets (extra_count, script=None)
     "VI_PIECES": dict(lang="vi"),
     "VI_PIECE_NOUN": dict(lang="vi"),
@@ -290,11 +347,11 @@ def _build(id_):
     meta = dict(_META[id_])
     if id_ == "VALUE_UNIT":
         regex = _value_unit_regex()
-    elif id_ in ("CENTILITRE", "LITRE_VI"):
+    elif id_ in _PB["extra_unit"]:
         e = _PB["extra_unit"][id_]
         regex = re.compile(e["regex"])
         meta["unit_emit"] = UnitEmit(basis=e["basis"], su=e["su"], mul=float(e["mul"]))
-    elif id_ in ("NUM_X_VALUE_UNIT", "VALUE_UNIT_X_NUM"):
+    elif id_ in _PB["pack"]:
         regex = _pack_regex(_PB["pack"][id_]["form"])
     elif id_ in _PB["basis_markers"]:
         b = _PB["basis_markers"][id_]

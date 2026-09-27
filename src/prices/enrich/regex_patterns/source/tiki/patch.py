@@ -21,6 +21,10 @@ Measured 2026-09-26 on products_input (09-20): 18 tiki names move mass ->
 mass, 0 count lost (rulecheck); 2 more names matching the same text shape
 ("Combo ..." prefix) already resolve through an earlier pattern and are left
 alone.
+
+"Combo A Thùng B hộp|chai|lon ... V ml" (2026-09-27) is A cases of B units of
+V: "Combo 2 Thùng 36 hộp sữa ... 180ml" is 72 x 180 ml. The shared LOC_VI read
+only the combo's A, pricing two cases as two cartons.
 """
 
 import re
@@ -58,8 +62,20 @@ _N_GOI_MOI_GOI = PackPattern(
     bucket="multipack",
 )
 
+_COMBO_N_CASE_N = PackPattern(
+    id="TIKI_COMBO_N_CASE_N",
+    regex=re.compile(
+        r"(?i)combo\s*(?P<count2>\d+)\s*thùng\s*(?P<count>\d+)\s*(?:hộp|chai|lon|gói|bịch)\b"
+        r".*?(?<![\d.,])(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|l|kg|gr|g)\b"
+    ),
+    groups=("count2", "count", "value", "unit"),
+    role="canonicalization",
+    kind="canon",
+    bucket="multipack",
+)
+
 PATCH = SourcePatch(
-    additions=(_CASE_N_LIT, _N_X_LIT, _N_GOI_MOI_GOI),
+    additions=(_CASE_N_LIT, _N_X_LIT, _N_GOI_MOI_GOI, _COMBO_N_CASE_N),
     intent={
         "TIKI_CASE_N_LIT": Intent(
             why="'Thùng/Combo/Lốc N hộp|chai ... V Lít' is N units of V litres",
@@ -89,6 +105,14 @@ PATCH = SourcePatch(
                 "Mua DMAXX thức uống bổ sung vitamin năng lượng không đường DAMODE 58 gói màu đỏ mỗi gói 2,2gr tại d&ghouse",
                 "DMAXX thức uống bổ sung vitamin năng lượng có đường DAMODE 46 gói màu xanh mỗi gói 22gr",
                 "DMAXX thức uống bổ sung vitamin năng lượng có đường DAMODE 90 gói màu xanh mỗi gói 22gr",
+            ),
+        ),
+        "TIKI_COMBO_N_CASE_N": Intent(
+            why="'Combo A Thùng B hộp ... V ml' is A x B units of V",
+            expect="volume -> volume",
+            rows=5,
+            examples=(
+                "[Tặng Balo MILO] Combo 2 Thùng 48 Hộp Sữa lúa mạch Nestlé MILO ít đường 180ml",
             ),
         ),
     },
