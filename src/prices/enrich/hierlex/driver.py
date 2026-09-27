@@ -536,8 +536,12 @@ def load_shards(
             f"no HierLex shards under {pred_root / version} — run `prices hierlex score`"
         )
     wanted = list(columns) if columns else None
-    filters = None if names is None else [("name", "in", list(names))]
-    return pd.concat(
-        (pd.read_parquet(p, columns=wanted, filters=filters) for p in parts),
-        ignore_index=True,
-    )
+    if names is None:
+        return pd.concat((pd.read_parquet(p, columns=wanted) for p in parts), ignore_index=True)
+    # One arrow value set for all shards: a list filter is rebuilt per shard,
+    # which took over half an hour for Japan millions of names.
+    import pyarrow as pa
+    import pyarrow.dataset as ds
+
+    keep = ds.field("name").isin(pa.array(list(names), pa.string()))
+    return ds.dataset(parts).to_table(columns=wanted, filter=keep).to_pandas()
