@@ -123,7 +123,7 @@ def ledger(country: str) -> pd.DataFrame:
     add("prepare", "lost", gap.rename("rows").reset_index().assign(name=None))
     add("prepare", "kept", prod)
 
-    part = decisions_store.parts_root(config.CLASSIFIED_HIERLEX_PARQUET) / (
+    part = decisions_store.parts_root(config.DECISIONS_HIERLEX_PARQUET) / (
         decisions_store.part_name(country) + ".parquet"
     )
     state = pd.read_parquet(part, columns=["input_hash", "state"]).drop_duplicates("input_hash")
