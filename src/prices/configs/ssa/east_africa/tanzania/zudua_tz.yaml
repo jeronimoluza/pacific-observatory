@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: dept-store
+spider: zudua_tz
+url: https://zudua.co.tz/
+language: en
+cadence: weekly
+archive_prefix: "zudua.co.tz"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  WooCommerce storefront, open Store API at
+  /wp-json/wc/store/v1/products?per_page=N&page=N — no auth needed.
+  currency_minor_unit=0, so prices need no scaling (WooBaseSpider handles
+  this generically). PDP permalinks use the non-default WooCommerce
+  slug `/p/<slug>/` (not `/product/<slug>/`) — recorded here because it
+  is easy to get wrong from the platform default. "Tanzania's trusted and
+  leading online shopping platform" per its own description: fashion,
+  electronics, home essentials and school supplies — cross-division
+  dept-store catalogue, not food-dominant (channel: dept-store, distinct
+  from the existing supermarket/hypermarket TZ sources).
+
+  Verified live 2026-09-28: GET /wp-json/wc/store/v1/products?per_page=5
+  -> 200, x-wp-total header 1997, real TZS-priced items ("iPhone Duo
+  512GB" 8,900,000 TZS, "APC 800VA EASY UPS BATTERY BACKUP" 270,000 TZS,
+  "MACBOOK NEO MHFG4B" 2,699,000 TZS). Page 2 returns a fully distinct
+  set. Page family: API only (spider reads the Store API, never fetches a
+  rendered page) — collected `url` values are the `/p/<slug>/` permalinks
+  from the API's own `permalink` field, which is the archive_path_re
+  target, not yet validated against actual CC captures for this host.
+  coicop_codes left unset (wide catalog, classifier assigns per product).

@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1"]
+source_key: cog_lcde_water_tariff
+module: ssa.central_africa.congo_rep.lcde_water_tariff
+function: fetch_cog_lcde_water_tariff
+channel: null
+url: https://lcde-sa.cg/informations-clientele/tarifs/
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Onboarded 2026-09-28 (weekly run W40). LCDE (La Congolaise des Eaux) is
+  the Republic of the Congo's national water utility. Its tarifs page
+  server-renders a "Tarif du metre cube" table with 4 rows: Domestiques
+  (0-55 m3 = 130,00 FCFA; >55 m3 = 151,80 FCFA), Non Domestiques (300,00
+  FCFA flat), Non Domestiques Industriels (400,00 FCFA flat). Verified live
+  with a plain `requests` session (no WAF, no cert issue unlike cie.ci).
+  10 further tables on the same page are one-off connection/reopening
+  administrative fees, deliberately excluded -- they are not a recurring
+  consumption price. No effective/decision date printed, so this is scraped
+  as a live snapshot (period_kind=snapshot), same convention as
+  civ_cie_tariff.yaml. First electricity/water-class tariff source for
+  Congo-Brazzaville; opens COICOP division 04 (housing, water, electricity)
+  alongside the existing wfp_prices (01) and mbote_cg (unclassified,
+  general merchandise) manifests.

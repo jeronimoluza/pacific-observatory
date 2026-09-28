@@ -1,0 +1,46 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["10.1", "10.2", "10.6"]
+channel: null
+source_key: lfd_tuition_dji
+module: menaap.north_africa.djibouti.lfd_tuition
+function: fetch_lfd_tuition_dji
+url: https://lfdjibouti.org/wp-content/uploads/2025/02/Reglement-financier-2025-26.pdf
+language: fr
+cadence: annual
+fallback_date: 2020-01-01
+notes: |
+  Lycee Francais de Djibouti (private international school, AEFE-affiliated)
+  annual tuition/enrollment "Reglement financier" PDF. Found via ddgs (yahoo
+  backend -- duckduckgo/google/brave/mojeek were rate-limited from a8's IP
+  this pass) for "Djibouti universite scolarite frais inscription". Verified
+  live 2026-09-28: HTTP 200, 5-page text-native PDF.
+
+  Parsed with pdfplumber.extract_tables() (not extract_text()+regex -- the
+  raw text interleaves multiple space-thousands-grouped DJF amounts on one
+  line with no unambiguous separator, e.g. "Collège 960 990 1 084 590
+  1 381 230"; the ruled-table extractor resolves cell boundaries from the
+  PDF's actual geometry). 12 rows from the "Tarif annuel en DJF" table (4
+  grades Maternelle/Elementaire/College/Lycee x 3 nationality tiers
+  Francais/Nationaux/Tiers) + 4 flat fees (1st inscription 150000 DJF,
+  re-inscription 60000 DJF, SIA supplement 100000 DJF, SIA entrance test
+  10000 DJF) = 16 rows, all numeric, verified live. The matching "Payable en
+  3 fois" table on the same page is deliberately NOT parsed -- its values are
+  exactly the annual figure / 3, i.e. the same 12 prices in a different unit.
+
+  Two other institutional-education leads from the same discovery pass were
+  dead ends, not shipped: esig-djibouti.com's fee page is live but still
+  template placeholder text ("Lorem et Lorem", no real DJF figures);
+  univ.edu.dj (public Universite de Djibouti) publishes only an admissions
+  calendar, no fee table.
+
+  Treated as effective for the 2025-26 school year (2025-09-01). The `_URL`
+  constant is a specific dated PDF, not an index page -- no listing of prior
+  years' PDFs was found, so a future year's release will need the URL
+  updated by hand rather than being auto-discovered.
+
+  coicop_codes: 10.1 (pre-primary/primary: Maternelle, Elementaire), 10.2
+  (secondary: College, Lycee), 10.6 (not definable by level: the 4 flat
+  admin/SIA fees).

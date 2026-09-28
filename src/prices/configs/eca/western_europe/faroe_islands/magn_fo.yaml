@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+source_key: magn_fo
+module: eca.western_europe.faroe_islands.magn_fo
+function: fetch_magn_fo
+url: https://magn.fo/oljuprisir
+language: fo
+currency: DKK
+cadence: weekly
+channel: fuel-station
+coicop_codes: ["07.2.2"]
+fallback_date: "2024-07-01"
+notes: >
+  P/F Magn, one of the Faroe Islands' two dominant fuel retailers (the
+  other is Effo). /oljuprisir publishes a dated history of the company's
+  own per-litre pump price at its own stations, one block per price
+  change, back to 2024-07-26 (~100 dated blocks observed 2026-09-28, no
+  auth, no anti-bot -- plain requests returns 200). Only "Bensin 95 E10"
+  and "Diesel" are taken (road fuel at Magn's own stations); boat fuel
+  ("Batadiesel"/"Batadiesel Pluss") and bulk-delivered heating oil
+  ("Gassolja", priced per 1000 L under a separate table) are excluded to
+  avoid mixing non-road-transport fuel into 07.2.2. Month names on this
+  page render in English ("26 September 2026") despite Faroese page
+  chrome elsewhere -- language: fo describes the site, not this date
+  field. First real COICOP 07 coverage for this country; division 01 in
+  the trusted build is currently 6 rows of misclassified alvaro_fo
+  clothing (see probe/report notes), not real food coverage.

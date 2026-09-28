@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1", "04.4.3"]
+channel: null
+source_key: onead_water_dji
+module: menaap.north_africa.djibouti.onead_water
+function: fetch_onead_water_dji
+url: https://www.journalofficiel.dj/texte-juridique/arrete-n2014-738-pr-maepe-rh-fixant-nouvelle-tarification-de-lonead-pour-la-vente-de-leau-et-la-collecte-de-lassainissement-liquide/
+language: fr
+cadence: irregular
+fallback_date: 2014-01-01
+notes: |
+  ONEAD (Office National de l'Eau et de l'Assainissement de Djibouti) regulated
+  water/sanitation consumption tariff. onead.dj itself is not a live site -- it
+  resolves to a bare Plesk default page (verified 2026-09-28, verify=False
+  needed just to see that it's a parking page: SSL cert doesn't match the
+  hostname). The decree is published inline as HTML (not a PDF) on the
+  government gazette journalofficiel.dj: Arrete n2014-738/PR/MAEPE-RH, "Date de
+  Publication: 06/12/2014". No auth, no WAF.
+
+  Fetcher parses only the three clean, uniformly-structured consumption-tranche
+  tables (Domestique/Etat, Commercial, Industriel -- 7 tranches each, water-only
+  vs water+sanitation columns) = 42 price rows, all numeric, verified live
+  2026-09-28. A fourth table ("Tarifs Speciaux" -- port, private borehole,
+  Cheikh Osman standpipe, public fountains) and the one-off
+  connection/meter-installation/meter-rental fee tables (by meter diameter) are
+  NOT parsed: the former has misaligned blank cells across its two price
+  columns (ambiguous positional zip), the latter are non-recurring capital
+  charges rather than a consumption price. Left for a future pass.
+
+  No newer arrete for this schedule was found this pass; treated as still in
+  force. coicop_codes: 04.4.1 for "Eau seule" rows, 04.4.3 for
+  "Eau et Assainissement" (bundled) rows -- both share the 04.4 three-digit
+  class, so the source is still narrow per the classification.md rule.

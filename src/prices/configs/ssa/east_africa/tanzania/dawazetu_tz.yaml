@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: pharmacy
+spider: dawazetu_tz
+url: https://dawazetu.com/
+language: en
+cadence: weekly
+archive_prefix: "dawazetu.com"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Server-rendered custom-theme pharmacy storefront (Bootstrap-based, not a
+  known platform). Full catalog paginated at /Product?page=N, ~21
+  items/page, product name (img alt), category, unit and price all in
+  raw HTML — no JS hydration needed. Page family: listing only (spider
+  never fetches a PDP; archive_path_re targets the PDP route
+  `/product/<slug>` seen in each card's `<a>` href, which is the browsable
+  page family most likely archived by Common Crawl — not yet confirmed
+  against actual CC captures, flag for a future archive-side check).
+
+  Verified live 2026-09-28: GET /Product?page=1 -> 200, 21 real product
+  cards, e.g. "Ibuprofen 400mg" TSh 6,000 (category "Health Conditions -
+  Pain & Fever"), "Panadol Extra" TSh 20,000. Page 2 returns a fully
+  distinct set (personal-care/cosmetics items, e.g. "UBUYU Baobab Oil
+  100ml", "Cantu Shea Butter Moisturizing Twist & Lock Gel 370g").
+  Pagination nav on page 1 shows up to page=11. Currency TZS matches
+  countries.yaml (site displays "TSh" prefix). Catalog spans OTC
+  medicines/health devices (COICOP 06) and personal-care/cosmetics
+  (COICOP 12/13) — left to the classifier per-product, coicop_codes unset.

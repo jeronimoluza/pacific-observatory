@@ -1,0 +1,55 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.3.3"]
+channel: null
+source_key: stp_enasa_airport_tariff
+module: ssa.central_africa.sao_tome_and_principe.enasa_airport_tariff
+function: fetch_stp_enasa_airport_tariff
+url: https://rstp.st/wp-content/uploads/2024/11/Resolucao-n.36.2024-1_Taxas-de-aeroporto.pdf
+language: pt
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  New source, w40 (2026-09-28). Resolucao n.o 36/2024 (Conselho de Ministros,
+  approved 2024-10-16, published Diario da Republica I Serie n.o 54 of
+  2024-10-25) sets the mandatory "Taxas de Seguranca e do Desenvolvimento
+  Aeroportuario" (TSDA = E1 development fee + CT security fee) and "Taxa de
+  Regulacao" (TR / NJ) charged per leg to every air passenger embarking or
+  disembarking in Sao Tome and Principe. International: E1=EUR62, CT=EUR28,
+  NJ=EUR20 (EUR110 total). Domestic: E1=EUR7, CT=EUR4, NJ=EUR5 (EUR16 total).
+  Children 2-12 pay a flat 75% of TSDA+TR (Artigo 4.2) -- emitted as 6 further
+  rows. 12 rows total, verified live 2026-09-28 by reading the gazette PDF
+  text directly with pdfplumber (not a sample).
+
+  This opens COICOP division 07 (transport) for STP -- the country's only
+  prior coverage was 04 (EMAE electricity/water) and 08 (CST telecom), per
+  the wave-13 inventory (2026-09-01), which also documents an exhaustive and
+  still-current search finding zero food-and-beverage (01) sources; that
+  search was not repeated here.
+
+  Currency is EUR, not STN -- the decree itself denominates every amount in
+  Euros (confirmed reading "62,00 (sessenta e dois Euros)" etc. in the PDF
+  text), so this is a source fact, not a conversion choice.
+
+  No live machine-readable feed exists for this decree, so values are
+  hardcoded in _KNOWN_DECISIONS, mirroring the
+  ssa/west_africa/togo/csfppp_fuel_tariff.py and
+  ssa/west_africa/cote_divoire/dgh_fuel_tariff.py convention for a regulator
+  decision with no scrapable primary source. The PDF itself is mirrored by a
+  national news outlet (rstp.st) under a static /wp-content/uploads/ path --
+  the government's own gazette portal link (dre.gov.st, linked from
+  stp.gov.st/documentos) does not resolve in DNS at all, and no other live
+  copy was found. Re-verify source_url periodically; if rstp.st removes the
+  file, search "Resolucao 36/2024 taxas aeroporto Sao Tome" to relocate it.
+
+  ENASA's own site (enasa.st) was also probed: curl_cffi chrome124/chrome120
+  both 403, but safari17_0 and firefox133 clear (200) -- however its
+  homepage carries no tariff content ("tsda"/"taxa"/"tarif" all 0 hits), so
+  it was not used as the source_url. Logged in the probe log as no_catalog,
+  not blocked (it does render, just has nothing relevant on the page probed).
+
+  period_kind: effective_from, effective_from = publication date 2024-10-25
+  (the resolution does not pin a separate later entrada-em-vigor date in the
+  text beyond "nos termos da Lei").

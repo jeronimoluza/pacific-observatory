@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: ir_mci_tariff
+module: menaap.middle_east.iran.mci_tariff
+function: fetch_ir_mci_tariff
+channel: null
+url: https://mci.ir/prepaid-tariff
+language: fa
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  MCI (Hamrah-e Aval, mci.ir) -- Iran's incumbent mobile operator, prepaid
+  tariff page. Verified live 2026-09-28: plain server-rendered HTML, no
+  JS/WAF, four `dpco-mci-table` blocks -- per-minute call rates, per-page
+  SMS rates, one-time administrative service fees (SIM replacement,
+  number-change, porting...), and per-KB data rate for the standard
+  (non-bundle) credit-SIM tariff. Prices are already Rial-denominated on
+  the page itself ("... (ریال)") -- unlike the retailer WooCommerce
+  sources onboarded alongside this one, MCI does not quote in Toman, so
+  no unit conversion is applied. `pandas.read_html` parses all four
+  tables cleanly including rowspan/colspan cells. Whole catalog is
+  telecommunication services, so coicop_code "08.3.0" is hardcoded for
+  every row rather than mapped per item.
+  Test run (cutoff=2024-01-01): 24 rows emitted (4 call-rate rows,
+  2 SMS-rate rows, 17 admin-fee rows, 1 data-rate row), 24 distinct
+  observation_hash, no duplicates. 5 admin-fee rows dropped and logged
+  (SIM activation / line-lookup services whose displayed tariff is not a
+  single parseable number, e.g. tiered or "contact support" pricing) --
+  per the coicop_classification: source_curated contract, a row that
+  should carry a price but can't be resolved is dropped with a warning,
+  not emitted with a guessed value. Fills the mobile-communications
+  (COICOP 08.3) gap in a country whose 14 trusted sources (as of the
+  2026-09-15 build) sit almost entirely in one division; also the first
+  `tariff`/institutional source for Iran -- every existing manifest is a
+  retailer spider or the WFP food-price fetcher.

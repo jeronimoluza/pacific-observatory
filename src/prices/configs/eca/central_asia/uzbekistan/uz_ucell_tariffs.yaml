@@ -1,0 +1,40 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+channel: null
+source_key: uz_ucell_tariffs
+module: eca.central_asia.uzbekistan.uz_ucell_tariffs
+function: fetch_uz_ucell_tariffs
+url: https://ucell.uz/ru/tariffs
+language: ru
+cadence: monthly
+fallback_date: 2026-01-01
+notes: |
+  Ucell -- one of Uzbekistan's two major mobile operators. Discovered
+  2026-09-28 via institutional-vertical search (division 08 was entirely
+  uncovered against the country's 8 existing retail/food sources).
+
+  ucell.uz/ru/tariffs is a client-shell landing page that embeds only a
+  4-plan "recommended" widget (curl_cffi impersonate=chrome124 clears
+  clean, no challenge). The full catalog lives one hop away:
+  ucell.uz/sitemap-tariffs.xml lists every individual plan PDP
+  (/ru/tariffs/<slug>), 22 of which are current consumer plans (excludes
+  /corporate/tariffs/* and the *_archive/*_archive-detail variants, both
+  deliberately out of scope for v1).
+
+  Each plan PDP embeds a clean schema.org Product JSON-LD block --
+  {"@type":"Product","name":"Bor 70","offers":{"price":"70000",
+  "priceCurrency":"UZS"}} -- verified live against ucell.uz/ru/tariffs/bor_70.
+  No API needed; no Playwright needed. Fetcher walks the sitemap, GETs
+  each plan page (0.3s delay between requests, paced given other workers
+  share this a8 IP), and parses the JSON-LD directly.
+
+  Smoke-tested 2026-09-28: 22/22 plan pages returned a valid Product block,
+  prices 0-1,000,000+ UZS range (Bor_70=70000, Bor_160=160000, TV bundles
+  higher). observation_date is the fetch date (period_kind: snapshot) --
+  the page carries no explicit effective-from date.
+
+  coicop_codes: ["08.3.0"] (Telephone and telefax services) -- narrow,
+  every plan on this page is a mobile subscription.

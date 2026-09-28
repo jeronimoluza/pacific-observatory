@@ -1,0 +1,49 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+source_key: cog_ins_congo_cpi
+module: ssa.central_africa.congo_rep.ins_congo_cpi
+function: fetch_cog_ins_congo_cpi
+channel: null
+url: https://site-ins-congo.vercel.app/stat-prix.html
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Onboarded 2026-09-28 (weekly run W40). INS (Institut National de la
+  Statistique) publishes the INHPC (Indice National Harmonise des Prix a
+  la Consommation), the CEMAC-methodology harmonized CPI, one PDF bulletin
+  per month. Production site ins-congo.cg links to per-month HTML article
+  pages with no reliably-parseable PDF href; a mirror,
+  site-ins-congo.vercel.app/stat-prix.html, lists all 17 available bulletin
+  PDFs directly (Dec 2024 - Feb 2026 at onboarding time) and is used
+  instead. "Tableau 1.1" (national level, base 100 = 2018) carries 12
+  COICOP-function rows x 5 labelled comparison-month columns; verified live
+  2026-09-28 against the February 2026 bulletin: 60 rows (12 divisions x 5
+  months), values cross-checked by hand against the PDF's own printed
+  table (e.g. division 01 Feb-2026 = 122.2, matching the source exactly).
+
+  GOTCHA (mirrors ins_cameroun_cpi.py's documented trap): the prose
+  paragraph directly above the table names several functions by hand in a
+  sentence ("... des fonctions Logement/Transports/Produits alimentaires,
+  qui ont enregistre des augmentations de 5,1%, 4,3% et 2,1%") -- a naive
+  text.find(label) over the whole page locks onto that sentence's own
+  percentages instead of the table row for 3 of 12 divisions. Fixed by
+  scoping the search to start at the all-caps "INDICE GLOBAL" table-header
+  row (prose uses lowercase "l'indice global").
+
+  Filename dates are inconsistent (accents dropped/kept, "-VF", "-Corrige",
+  a trailing edit-date suffix like "_23_03_26" on the Feb-2026 file) --
+  the latest-bulletin picker parses month+year robustly and independently
+  verified: rejects "OCTOBRE_21112025" without misreading "2111" as the
+  year (requires an isolated 4-digit run, not just the first 4 digits of a
+  longer digit sequence).
+
+  Division 13 (insurance/financial services) absent from the 12-function
+  publication, matching Cameroon/Sierra Leone precedent. Headline
+  "INDICE GLOBAL" row dropped (no sanctioned all-items COICOP sentinel).
+  No currency involved (index values). First cpi_benchmark / index-layer
+  source for Congo-Brazzaville, complementing wfp_prices (01, price-level),
+  lcde_water_tariff (04, price-level) and mtn_internet_tariff (08,
+  price-level) -- opens the index layer across all 12 divisions at once.

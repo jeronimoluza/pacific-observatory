@@ -1,0 +1,54 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["10.4.0"]
+channel: null
+source_key: uz_kontrakt_edu_prices
+module: eca.central_asia.uzbekistan.uz_kontrakt_edu_prices
+function: fetch_uz_kontrakt_edu_prices
+url: https://kontrakt.edu.uz/speciality-price-report
+language: uz
+cadence: annual
+fallback_date: 2026-01-01
+notes: |
+  kontrakt.edu.uz -- Ministry of Higher and Secondary Special Education's
+  national contract (tuition) price registry: the "kontrakt narxi"
+  figures universities publish each admission cycle. Discovered
+  2026-09-28 (division 10, education, was entirely uncovered).
+
+  The page itself (kontrakt.edu.uz/speciality-price-report) is a bare
+  Vite/React shell -- found the real backend via one Playwright network
+  trace: kontrakt-api.edu.uz, a separate, open, unauthenticated REST API.
+  /manual/EduYearSelectList gives the current academic year (2026-2027,
+  eduYearId=6). /SpecialityPriceReport/OrganizationSelectList?eduYearId=6
+  lists 90+ organizations (universities, institutes, pedagogical colleges
+  nationwide). /SpecialityPriceReport/GetList is a POST (GET/no-body 404s,
+  a body missing any of the four filter keys 400s) taking
+  {eduYearId, organizationId, eduTypeId, eduLevelId, eduFormId} and
+  returning {..., rows: [{code, name, baseAmountWithoutStipend,
+  baseAmountWithStipend, hyperAmountWithoutStipend, hyperAmountWithStipend,
+  ballPrices: [...]}]} per speciality at that organization.
+
+  Verified live 2026-09-28 against organizationId=97 (Ajiniyoz Nukus State
+  Pedagogical Institute): 'Pedagogika' baseAmountWithoutStipend =
+  7,400,000 UZS/year.
+
+  v1 SCOPE CUT, deliberate: walks every organization at
+  (eduTypeId=1 Bakalavr, eduLevelId=1 1-bosqich, eduFormId=1 Kunduzgi
+  ta'lim) only -- the headline full-time-freshman contract price, which
+  is what "kontrakt narxi" means in ordinary usage. Magistr/Ordinatura/
+  Doktorantura and non-full-time forms (sirtqi/kechki/masofaviy) are not
+  walked; widening the eduTypeId/eduFormId/eduLevelId loop is the obvious
+  follow-up. Emits ONLY baseAmountWithoutStipend per speciality (the base
+  published price); the stipend-adjusted and score-differentiated
+  ballPrices tiers on the same payload are left unmapped for a future
+  pass rather than guessed at.
+
+  item_name is "<organization>: <speciality>" since PriceObservation has
+  no institution column. observation_date/effective_from is the academic
+  year's Sept 1 start (parsed from EduYearSelectList's Russian/Uzbek
+  "20XX-20XX o'quv yili" label), period_kind: effective_from.
+
+  coicop_codes: ["10.4.0"] (tertiary education) -- narrow, every row here
+  is university-level Bakalavr tuition.

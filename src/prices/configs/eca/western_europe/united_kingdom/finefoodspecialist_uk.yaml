@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: finefoodspecialist_uk
+url: https://www.finefoodspecialist.co.uk
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.finefoodspecialist.co.uk/products/"
+throttle_group: shopify
+archive_path_re: "^/products/[^/?]+/?$"
+notes: >
+  Page family: API (spider reads /products.json; never fetches a browsable
+  page). UK online delicatessen/specialty grocer, GBP, Shopify products.json
+  open at the apex. Verified live 2026-09-28: ~1,118 products across 12
+  pages, adjacent pages zero id overlap (real pagination). Onboarded to fill
+  COICOP 01.1.6.4.2 (fresh gooseberries) -- confirmed genuine SKU "British
+  Gooseberries, +/-200g". Also carries fresh redcurrants (adjacent leaf, not
+  targeted this run). Does NOT carry fresh blackcurrant (01.1.6.4.1) -- the
+  only currant-family match across the full catalog was "Blackcurrant
+  Puree, Boiron, Frozen, 1kg" (processed, out of scope); that leaf is still
+  a gap after this source and needs a different candidate (Riverford.co.uk
+  carries it but 403s the curl_cffi ladder on all four profiles -- see probe
+  log).

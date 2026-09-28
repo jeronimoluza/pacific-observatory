@@ -1,0 +1,45 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["10.4.0", "11.2.0", "11.1.1"]
+channel: null
+source_key: fm_comfsm_tuition
+module: eap.pacific_islands.micronesia_fed_sts.comfsm_tuition
+function: fetch_fm_comfsm_tuition
+url: "http://www.comfsm.fm/national/administration/VPSS/tuitionfees.html"
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  College of Micronesia-FSM (COM-FSM) Department of Student Services
+  "tuition fees" page -- static server-rendered HTML, no WAF. FSM's national
+  post-secondary institution (campuses in all 4 states + FMI); this
+  national fee schedule applies system-wide, so subnational_area is null.
+  Micronesia's first education-division (10) source.
+
+  24 rows: tuition (1 -- only the base per-credit rate; the page's
+  {3,6,9,12,15,18}-credit rows are arithmetic multiples of it, not
+  independent observations, so not re-emitted), dormitory fee (2, filed as
+  11.2.0 accommodation services), meal/board fee (6, filed as 11.1.1
+  catering), and 15 enrollment/admin fees -- entrance test, admission,
+  registration, health, student activity, technology, laboratory, late
+  registration, auditing, credit-by-exam, graduation, transcript, duplicate
+  ID, duplicate diploma, NSF check (all 10.4.0). The refundable "Residence
+  Hall/Dormitory Security Deposit" ($50) is deliberately NOT emitted -- not
+  an independent price, same class of exclusion as the PUC senior-discount
+  delta.
+
+  STALENESS CAVEAT: the page's own footer says "last modified 01/04/2009",
+  and the tuition rate text itself says the $95/credit rate was "adopted by
+  the Board on December 2006 ... implemented effective Spring 2007". No
+  newer schedule is linked from COM-FSM's site (verified 2026-09-28). This
+  is a live page COM-FSM edits in place, not a dated schedule, so it is
+  modelled as a daily period_kind=snapshot at scrape time -- but the
+  underlying rates have very likely been unchanged since ~2007-2009. Not a
+  freshly re-priced source; flagged here rather than silently presented as
+  current-year pricing.
+
+  Currency is USD -- FSM's actual currency, no FX conversion needed.
+
+  Probed and verified live 2026-09-28: 24 rows on the current page.

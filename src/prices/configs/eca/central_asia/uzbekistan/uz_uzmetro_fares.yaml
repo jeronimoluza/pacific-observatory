@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.3.2"]
+channel: null
+source_key: uz_uzmetro_fares
+module: eca.central_asia.uzbekistan.uz_uzmetro_fares
+function: fetch_uz_uzmetro_fares
+url: https://uzmetro.uz/
+language: uz
+cadence: quarterly
+fallback_date: 2026-01-01
+notes: |
+  Tashkent Metropoliteni (uzmetro.uz) -- official operator of Tashkent's
+  integrated metro+bus fare/card system. Discovered 2026-09-28 as part of
+  the same institutional-vertical sweep as uz_ucell_tariffs (division 07
+  transport was entirely uncovered).
+
+  Static server-rendered page (curl_cffi impersonate=chrome124, 200, no
+  challenge); values live in an inline i18n JSON blob, not a separate
+  API. Verified live 2026-09-28: four transport-card issuance prices
+  (card1_name/card1_price .. card4_name/card4_price keys -- Yagona/Umumiy
+  20,000 UZS, Talabalar 15,000 UZS, O'quvchilar 0 UZS [free pupil card],
+  Ijtimoiy 15,000 UZS) plus three per-ride fares matched on exact i18n
+  keys observed live (tolov10 = kontaktsiz to'lov 1,700 UZS covering BOTH
+  metro and bus on one card; tolov17 = QR-bilet naqd 3,000 UZS; tolov36 =
+  ATTO karta 1,700 UZS). 7 rows total.
+
+  These i18n keys (tolovNN) are positional, not semantic -- they will
+  break silently if the page copy is reordered. Flagged in the fetcher
+  for the next maintainer; no more stable anchor was found on this page.
+
+  coicop_codes: ["07.3.2"] -- the contactless/ATTO fare is explicitly ONE
+  price for both metro and bus, so it cannot be split into rail vs road;
+  filed under the combined urban-transport class.

@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: gopi_sc
+url: https://www.gopi.shop
+language: en
+cadence: daily
+archive_prefix: "gopi.shop"
+archive_path_re: '^/product-page/[^/?]+/?$'
+notes: |
+  listing. Wix Stores grocery/general-merchandise catalogue (Shreeji
+  Group), Mahe -- GOPI Veg. Food & General Merchants. Verified live
+  2026-09-28: plain curl_cffi GET (no Playwright) on /products?page=N
+  returns server-rendered <a href="/product-page/<slug>"> links;
+  totalCount=1379, 24/page, page1 vs page2 zero overlap (real
+  pagination). Every PDP embeds Schema.org Product JSON-LD (name, sku,
+  offers.price, offers.priceCurrency=SCR) -- same pattern as aradamart_et
+  (Ethiopia, also Wix). No reliable breadcrumb/category on PDP; left null.
+  Catalogue spans food (dairy, snacks, drinks), household and health &
+  beauty -- wide source, coicop_codes left unset for the classifier.

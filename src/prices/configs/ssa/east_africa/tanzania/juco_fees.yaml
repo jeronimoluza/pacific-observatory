@@ -1,0 +1,44 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["10.4.0"]
+channel: null
+source_key: tz_juco_fees
+module: ssa.east_africa.tanzania.juco_fees
+function: fetch_tz_juco_fees
+url: https://juco.ac.tz/index.php/fee_structure
+language: en
+cadence: annual
+fallback_date: 2026-01-01
+notes: |
+  Jordan University College (JUCo), a constituent college of St. Augustine
+  University of Tanzania in Morogoro. Six "Fee Structure" PDFs, one per
+  programme level (Certificate, Diploma, Bachelor Degree, Postgraduate
+  Diploma, Master's, PhD), each a clean pdfplumber-extractable table:
+  SN / Item Name / Amount (TZS) / Status / Currency. First-year mandatory
+  fee lines only (Administrative fees, TCU QA Fee, JUCSO Fee, NACTVET
+  Verification fees where present, Tuition Fee) -- the per-semester
+  installment breakdown under each table is an arithmetic split of the
+  same annual total and is not separately emitted.
+
+  Verified live 2026-09-28, Academic Year 2026/2027 ("Posted on
+  2026-09-08" per the listing page): 6 PDFs fetched, 21 programme-group
+  fee blocks parsed (Bachelor Degree PDF alone repeats the block across
+  ~8 pages, one per degree cluster e.g. "BAED, BASO, BAECO, BAEDRS,
+  BSCPC, BLRIM & BSCCS"), 100% TZS, mandatory-fee totals ranging
+  260,000-4,165,000 TZS (Certificate first-year total 960,000 up to PhD
+  first-year total 4,165,000). All fee lines filed at 10.4.0 (tertiary
+  education services) -- JUCo is a single tertiary institution across all
+  six levels, no per-level COICOP split applied.
+
+  SINGLE-INSTITUTION SOURCE (narrow, rule 19): this is one university's
+  published schedule, not a national average -- complements rather than
+  replaces a future national tuition-survey source. Page-family: PDF only
+  (`pdf`), no HTML table on the listing page itself -- the listing page
+  (`/index.php/fee_structure`) only holds the six PDF download links.
+
+  cadence: annual -- JUCo republishes ahead of each academic year; the
+  fetcher hardcodes the 2026-2027 filenames and will need a manual bump
+  when the 2027-2028 schedule replaces them (same maintenance pattern as
+  nbs_cpi's year-suffixed URL).

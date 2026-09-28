@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: winglokstreet_hk
+url: https://www.winglokstreet.com.hk
+language: zh
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.winglokstreet.com.hk/products/"
+throttle_group: shopify
+archive_path_re: "^/products/[^/?]+/?$"
+notes: >
+  Page family: API (spider reads /products.json; never fetches a browsable
+  page). Wing Lok Street (永樂街海味) dried-seafood and tonic-food
+  specialty store, HK\$/HKD, Shopify products.json open at the apex (not
+  collection-scoped). Verified live 2026-09-28: 236 products across 5 pages,
+  page1 vs page2 zero id overlap (real pagination). Targets COICOP 01.1.3.5.5
+  (dried/salted/smoked molluscs, n.e.c.) -- catalog includes graded dried
+  abalone (鯍魚, priced by 頭/head count, e.g. \"南非鯍魚(3-4頭)\" HK\$2300)
+  and dried conch/sea snail (海螺, e.g. \"美國(特選)海螺片\" HK\$590), plus
+  adjacent dried scallop/fish maw/tonic items outside this leaf. Onboarded
+  because 01.1.3.5.5 sits at 0 global trusted rows despite raw-corpus hits in
+  hong_kong_sar_china and taiwan_china -- those hits were braised/cooked
+  abalone gift sets, abalone-flavoured noodle, and (Taiwan) a likely pet
+  product, none matching the leaf's dried/salted/smoked scope. This source
+  carries the genuine unprocessed form.

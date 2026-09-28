@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1", "04.4.1", "04.4.3"]
+channel: null
+source_key: puc_sc
+module: ssa.east_africa.seychelles.puc_sc
+function: fetch_puc_sc
+url: https://www.puc.sc/
+language: en
+cadence: irregular
+fallback_date: "2020-01-01"
+notes: |
+  Public Utilities Corporation (Seychelles). Tariff tables load via a
+  WordPress "xyz-snippet" AJAX widget (POST admin-ajax.php,
+  action=run_xyz_shortcode, snippet=<name>, nonce read fresh from the
+  parent page each run) -- not present in the static page HTML.
+  Electricity: 3 residential bands (Domestic-110/120/130), commercial/
+  government/bulk out of scope. Water: single Water-Domestic-Sector
+  table with separate WATER CHARGES and SEWERAGE CHARGES columns per
+  consumption band. Neither page states an effective/revision date, so
+  rows are snapshotted with period_kind=effective_from dated by the
+  scrape run. Verified live 2026-09-28.

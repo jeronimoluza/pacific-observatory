@@ -1,0 +1,45 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1", "04.4.1"]
+channel: null
+source_key: fm_cpuc_tariff
+module: eap.pacific_islands.micronesia_fed_sts.cpuc_tariff
+function: fetch_fm_cpuc_tariff
+url: "https://www.cpuc.fm/cpucs-current-tariffs-and-tariff-change-process"
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Chuuk Public Utility Corporation (CPUC) "Current Tariffs and Change
+  Process" page -- published directly in static HTML (no WAF, plain
+  requests). Third of FSM's four states to get a utility-tariff source
+  (Pohnpei: puc_tariff.yaml, Yap: yspsc_electricity_tariff.yaml); Kosrae
+  probed and found to publish only a Fuel Adjustment Charge add-on, not a
+  current base rate table -- see probe log, not onboarded this round.
+
+  Electricity: read from the live "Fuel Price Index Adjustment" notice
+  table, which CPUC re-issues roughly monthly as diesel cost changes. Takes
+  the "To New Rate" column (the rate now in force), separately for Weno and
+  Tonoas, x 3 customer categories (Residential/Commercial/Government) = 6
+  rows. A second, older "Table 1 -- Electricity Supply Tariff Base" table
+  further down the page carries a stale 2021/09/15 snapshot and is NOT
+  read.
+
+  Water: two tiered-usage tables (Residential; Commercial & Government),
+  each with 4 usage tiers + a minimum charge = 10 rows.
+
+  A "Table 4 -- Proposed Sewerage Tariff Price Path" also exists on the page
+  but is explicitly labelled "Proposed" (a 3-year phase-in of percentages of
+  the water bill, not an in-force absolute price) and is deliberately NOT
+  extracted -- not yet a real charge.
+
+  No single effective-date reliably covers every table on the page (the
+  electricity notice states one; the water tables do not), so this is
+  modelled as a daily period_kind=snapshot at scrape time, same pattern as
+  puc_tariff.py and fsmtc_tariff.py.
+
+  Currency is USD -- FSM's actual currency, no FX conversion needed.
+
+  Probed and verified live 2026-09-28: 16 rows on the current page.

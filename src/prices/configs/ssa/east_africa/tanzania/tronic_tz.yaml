@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: home-improvement
+spider: tronic_tz
+throttle_group: shopify
+url: https://www.tronic.co.tz/
+language: en
+cadence: weekly
+archive_prefix: "tronic.co.tz"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront (Cash Sale Stores Limited, "TRONIC"). Open
+  /products.json feed, paginated ?page=N&limit=250. Electrical fittings /
+  LED lighting / switch gear / control gear catalogue — household
+  electrical hardware, not general electronics. /meta.json confirms
+  country "TZ", currency "TZS" (myshopify_domain
+  tronic-tanzania.myshopify.com). Page family: API only (spider reads
+  /products.json directly, never fetches a rendered page) — collected
+  `url` values are the human-facing `/products/<handle>` permalinks,
+  which is the archive_path_re target for Common Crawl, not yet validated
+  against actual CC captures for this host.
+
+  Verified live 2026-09-28: GET /products.json?page=1&limit=5 -> 200, real
+  TZS-priced items ("20W LED Surface Ceiling Light" 9,000.00, "TRONIC 24W
+  LED Panel Light" 30,000.00). Page 2 returns a fully distinct set ("24W
+  Spot LED Downlight" 30,000.00 etc.). Prices are Shopify's standard
+  decimal-string major-unit format (no minor-unit scaling needed, unlike
+  the WooCommerce Store API pattern). channel: home-improvement (lighting
+  fixtures / electrical fittings / switch gear, not phones/computers) —
+  COICOP largely 05.x, left to the classifier per-product.

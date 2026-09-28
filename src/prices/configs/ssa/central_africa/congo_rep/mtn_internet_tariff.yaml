@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: cog_mtn_internet_tariff
+module: ssa.central_africa.congo_rep.mtn_internet_tariff
+function: fetch_cog_mtn_internet_tariff
+channel: null
+url: https://www.mtn.cg/particuliers/forfaits/forfaits-internet-classiques/
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Onboarded 2026-09-28 (weekly run W40). MTN Congo's "Forfaits Internet
+  classiques" page server-renders 6 tables of prepaid data-bundle tariffs
+  (1 jour / 7 jours / 30 jours validity, plus NUIT/FTT/Residentielles named
+  offers) in FCFA -- 34 rows total. No JS, no WAF; verified live with a
+  plain `requests` session. Lump-sum package prices, not per-unit, so
+  unit="forfait" and the Mo volume is folded into item_name. Sibling Airtel
+  Congo (airtel.cg/prix-les-plus-bas) carries an equivalent page and is a
+  good next candidate -- not pursued this pass (budget). Second source
+  opening COICOP division 08 (communication) for Congo-Brazzaville.

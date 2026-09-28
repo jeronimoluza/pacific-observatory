@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: itmall_ir
+url: https://itmall.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: electronics
+archive_prefix: "itmall.ir/product/"
+archive_path_re: '^/product/[^?]+'
+notes: |
+  Verified live 2026-09-28: itmall.ir is a WooCommerce store with the Store
+  API open at /wp-json/wc/store/v1/products (no auth), paginated cleanly
+  via per_page/page (page1/page2 confirmed disjoint ids). prices.currency_code
+  returns "IRT" (Toman, non-ISO) with currency_minor_unit 0; the site
+  quotes Toman, not Rial (Iran's ISO 4217 currency), so the spider sets
+  FORCE_CURRENCY="IRR" and PRICE_MULTIPLIER=10 (1 Toman = 10 Rial),
+  matching the convention already used by adibmarket_ir/torob_ir/
+  sheypoor_ir for the same reason. End-to-end test run (--max-items 5)
+  returned real rows, e.g. Xiaomi PB2030MI 20000mAh power bank priced
+  60,000,000 IRR (6,000,000 Toman on-page), ASUS TUF Gaming FA506 laptops
+  2,409,990,000-3,814,990,000 IRR, Samsung Galaxy A37 5G 1,020,000,000
+  IRR. Genuine consumer-electronics catalog with varied real prices --
+  contrast javan-electronic.ir, dead-ended in the same discovery pass
+  (open Store API but every sampled item price=0, a B2B
+  quote-on-request fiber-optic/dev-board distributor, not consumer
+  retail). Fills the electronics (COICOP 05/09) gap in a country whose 14
+  trusted sources (as of the 2026-09-15 build) sit almost entirely in one
+  division; existing Iran manifests skew cosmetics/pharmacy/food.
+  Page family scraped: API (Store API JSON, never fetches a rendered page).
