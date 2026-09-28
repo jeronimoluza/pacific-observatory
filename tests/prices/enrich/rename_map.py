@@ -6,10 +6,10 @@ the in-tree literal renames import RENAME from here — the mapping is never
 duplicated.
 
 Invariants (proven by test_rename_map.py):
-  * domain == every id in the registry `_INDEX` (all 47, no miss)
+  * domain == every id in the registry `_INDEX` (all 63, no miss)
   * every image matches ^[A-Z0-9_]+$
   * images are globally unique (no collision)
-  * len(set(values)) == len(RENAME) == len(_INDEX) == 47  (bijection)
+  * len(set(values)) == len(RENAME) == len(_INDEX) == 63  (bijection)
 
 The SCREAMING_SNAKE style is locked; spellings group ids by their shape bucket
 (per_unit_marker / single_measure / multipack / count_pack / _unrouted).
@@ -79,4 +79,12 @@ RENAME: dict[str, str] = {
     "vi_to_sheets": "VI_TO_SHEETS",
     # --- _unrouted -----------------------------------------------------------
     "cjk_numeral_version": "VERSION_CJK",
+    # --- added after the reorg: no old id, so each maps to itself -------------
+    "BARE_KG": "BARE_KG",
+    "GALLON": "GALLON",
+    "NUM_X_NUM_X_VALUE_UNIT": "NUM_X_NUM_X_VALUE_UNIT",
+    "SLASH_KG": "SLASH_KG",
+    "SLASH_LITRE": "SLASH_LITRE",
+    "TH_EGGS": "TH_EGGS",
+    "VALUE_UNIT_WORDS_X_NUM": "VALUE_UNIT_WORDS_X_NUM",
 }

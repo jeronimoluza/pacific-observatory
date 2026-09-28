@@ -37,9 +37,9 @@ def test_images_cover_every_registry_id() -> None:
     assert not extra, f"RENAME images absent from registry: {sorted(extra)}"
 
 
-def test_registry_has_47_ids() -> None:
-    """The registry index is the expected 47-id surface."""
-    assert len(_index_ids()) == 47
+def test_registry_has_63_ids() -> None:
+    """The registry index is the expected 63-id surface."""
+    assert len(_index_ids()) == 63
 
 
 def test_images_are_screaming_snake() -> None:
@@ -61,5 +61,5 @@ def test_images_are_globally_unique() -> None:
 
 
 def test_rename_is_a_bijection() -> None:
-    """len(set(values)) == len(RENAME) == len(_INDEX) == 47."""
-    assert len(set(RENAME.values())) == len(RENAME) == len(_index_ids()) == 47
+    """len(set(values)) == len(RENAME) == len(_INDEX) == 63."""
+    assert len(set(RENAME.values())) == len(RENAME) == len(_index_ids()) == 63
