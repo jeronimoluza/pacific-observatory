@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: dept-store
+spider: raenashop_nl
+url: https://raenashop.com
+language: en
+cadence: daily
+notes: |
+  Filed under netherlands (moved from eritrea 2026-09-28): the shop sells and ships
+  inside Europe and prices in EUR only, so it measures a Dutch price level for
+  imported Horn-of-Africa goods, not an Eritrean one.
+  Eritrean/Ethiopian diaspora import store (Netherlands-based). Priced in
+  EUR only (currency selector offers EUR/USD/GBP/SEK/NOK/DKK/CHF/CAD/AUD,
+  never ERN) — this is diaspora-buyer pricing, not a domestic Eritrean
+  price level. Onboarded per the w40 brief: Eritrea has a verified
+  structural absence of domestic online retail (see
+  references/inventories/ssa/eritrea.md), so a diaspora/regional
+  marketplace counts as coverage. WooCommerce Store API, open and
+  unauthenticated, 287 products / 15 pages confirmed enumerable (page 1
+  and page 2 product-id sets fully disjoint). Mixed catalog: cosmetics
+  (41%), home/kitchen accessories incl. coffee-ceremony sets (34%), food
+  and herbs incl. coffee/spices/imported flours (16%), plus textile and
+  drinks. Page family: API (spider reads wc/store/v1/products directly,
+  never fetches an HTML page).

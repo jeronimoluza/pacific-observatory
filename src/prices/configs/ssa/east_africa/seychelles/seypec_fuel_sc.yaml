@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2", "04.5.2", "04.5.3"]
+channel: null
+source_key: seypec_fuel_sc
+module: ssa.east_africa.seychelles.seypec_fuel
+function: fetch_seypec_fuel_sc
+url: https://www.seypec.com/fuel-prices
+language: en
+cadence: irregular
+fallback_date: "2020-01-01"
+notes: |
+  SEYPEC (Seychelles Petroleum Company, the sole importer/distributor)
+  static "Fuel Prices" page. Verified live 2026-09-28: GASOLINE
+  SCR24.68/L, GASOIL SCR25.19/L, KEROSENE SCR150.00/5L (normalised to
+  SCR30.00/L), LPG SCR17.50/KG, stamped "Last modified 14/09/2026". No
+  historical archive on the page -- single current-price snapshot per
+  run, period_kind=effective_from. GASOLINE/GASOIL -> 07.2.2 (vehicle
+  fuel); KEROSENE -> 04.5.3 (liquid heating fuel); LPG -> 04.5.2 (gas).
+  The schedule is structurally 4 items -- SEYPEC is the sole fuel
+  importer/distributor for Seychelles and this page is its complete
+  retail price list, not a partial extract. A test run returning exactly
+  4 rows is full coverage of this source, not a truncated scrape.
