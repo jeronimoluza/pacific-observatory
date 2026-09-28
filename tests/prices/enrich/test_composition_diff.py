@@ -76,5 +76,5 @@ def test_harness_wiring_self_check() -> None:
     Guards against the harness silently no-op'ing (e.g. empty baseline). In MAPPED
     mode this still holds via RENAME, so the check is mode-agnostic.
     """
-    assert len(baseline.CANON) == 12  # 2026-09-26: +LOC_VI_PIECES
+    assert len(baseline.CANON) == 14  # 2026-09-28: +NUM_X_NUM_X_VALUE_UNIT, +VALUE_UNIT_WORDS_X_NUM
     assert _live_kind("canon") == _expected(baseline.CANON)

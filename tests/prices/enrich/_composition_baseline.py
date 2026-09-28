@@ -33,8 +33,10 @@ from __future__ import annotations
 # ---------------------------------------------------------------------------
 
 CANON: tuple[str, ...] = (
+    "NUM_X_NUM_X_VALUE_UNIT",
     "multipack_num_x_value_unit",
     "multipack_value_unit_x_count",
+    "VALUE_UNIT_WORDS_X_NUM",
     "multipack_pcs_en",
     "multipack_pc_glued_en",
     "multipack_n_x_only",
@@ -47,7 +49,11 @@ CANON: tuple[str, ...] = (
     "zh_volume_mass",
 )
 
-EXTRA_UNITS: tuple[str, ...] = ("cl_volume", "vi_lit_volume")
+EXTRA_UNITS: tuple[str, ...] = (
+    "cl_volume",
+    "vi_lit_volume",
+    "GALLON",
+)
 
 EXTRA_COUNT: tuple[str, ...] = (
     "cjk_mai",
@@ -85,6 +91,7 @@ EXTRA_COUNT: tuple[str, ...] = (
     "en_apos_s",
     "en_n_tickets",
     "ru_tabs_caps",
+    "TH_EGGS",
 )
 
 MULTI_PACK: tuple[str, ...] = (
@@ -97,6 +104,9 @@ PRICING_BASIS_MARKERS: tuple[str, ...] = (
     "en_per_kg_bare",
     "en_per_l_parens",
     "en_per_liter_bare",
+    "SLASH_KG",
+    "BARE_KG",
+    "SLASH_LITRE",
 )
 
 # `cjk_numeral_version` is a live PATTERN in the tree but is deliberately NOT
