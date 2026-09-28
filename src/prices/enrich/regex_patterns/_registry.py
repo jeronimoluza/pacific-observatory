@@ -176,19 +176,31 @@ _ORDERED_PATTERNS: tuple[PackPattern, ...] = tuple(
 )
 
 
+# English fires on every row whatever its language: retailers everywhere write
+# "10 pcs", "per kg" and "pack of 6". A row's language only adds its own pack.
+ALWAYS_LANG = "en"
+
+
+def pattern_langs() -> frozenset[str]:
+    """Languages the registry has patterns for, by lang tag or script family."""
+    tagged = {p.lang for p in _ORDERED_PATTERNS} - {"any"}
+    return frozenset(tagged | set(_SCRIPT_OF))
+
+
 def _in_membership(pat: PackPattern, lang: str | None) -> bool:
     """Reproduce the pre-reorg directory membership via the lang/script fields.
 
     - lang=None: broad fallback = every pattern (was shared/* + every lang/*/* +
       every script/*/*).
     - lang given: shared/* (script=None, lang="any") + lang/<lang>/* (script=None,
-      lang==lang) + script/<family>/* (script==script_of(lang)).
+      lang==lang) + script/<family>/* (script==script_of(lang)), plus the
+      ALWAYS_LANG patterns and script family on top.
     """
     if lang is None:
         return True
     if pat.script is not None:
-        return pat.script == _script_family_for(lang)
-    return pat.lang == "any" or pat.lang == lang
+        return pat.script in (_script_family_for(lang), _SCRIPT_OF[ALWAYS_LANG])
+    return pat.lang in ("any", ALWAYS_LANG, lang)
 
 
 def _compose_base(lang: str | None) -> list[PackPattern]:

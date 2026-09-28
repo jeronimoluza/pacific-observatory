@@ -146,7 +146,7 @@ def extract_pack(
     if not s:
         return (s, None, None, None, None) if with_id else (s, None, None, None)
     for pat in patterns if patterns is not None else _PACK_PATTERNS:
-        if pat["lang"] != "any" and lang and pat["lang"] != lang:
+        if pat["lang"] not in ("any", "en") and lang and pat["lang"] != lang:
             continue
         m = pat["regex"].search(s)
         if not m:

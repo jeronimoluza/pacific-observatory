@@ -161,7 +161,7 @@ def _nutrient_claim_span(name: str, pack_value, pack_unit):
 
 def _match_extra_unit(item_name: str, lang: str | None, entries=_EXTRA_UNITS):
     for entry in entries:
-        if entry["lang"] != "any" and lang and entry["lang"] != lang:
+        if entry["lang"] not in ("any", "en") and lang and entry["lang"] != lang:
             continue
         m = entry["regex"].search(item_name)
         if m:
@@ -179,7 +179,7 @@ def _match_pricing_basis_marker(
     """Return (pricing_basis, regex_id, span) when a bare per-unit marker fires
     (no amount_value); (None, None, None) otherwise."""
     for entry in entries:
-        if entry["lang"] != "any" and lang and entry["lang"] != lang:
+        if entry["lang"] not in ("any", "en") and lang and entry["lang"] != lang:
             continue
         m = entry["regex"].search(item_name)
         if m:
@@ -210,7 +210,7 @@ def _match_extra_count(item_name: str, lang: str | None, entries=_EXTRA_COUNT):
     """Return (count, regex_id, span) for the firing entry/match; (None, None,
     None) when nothing fires."""
     for entry in entries:
-        if entry["lang"] != "any" and lang and entry["lang"] != lang:
+        if entry["lang"] not in ("any", "en") and lang and entry["lang"] != lang:
             continue
         for m in entry["regex"].finditer(item_name):
             # Local marketing-clause check: suppress count when a limit clause
@@ -251,7 +251,7 @@ def _match_multi_pack(item_name: str, lang: str | None, entries=_MULTI_PACK):
     """Return (inner, outer, regex_id, span) for the firing entry/match;
     (None, None, None, None) when nothing fires."""
     for entry in entries:
-        if entry["lang"] != "any" and lang and entry["lang"] != lang:
+        if entry["lang"] not in ("any", "en") and lang and entry["lang"] != lang:
             continue
         m = entry["regex"].search(item_name)
         if m:
@@ -266,7 +266,7 @@ def _match_multi_pack(item_name: str, lang: str | None, entries=_MULTI_PACK):
 
 def _markers_fire(item_name: str, lang: str | None, markers) -> bool:
     for grp in markers:
-        if grp["lang"] != "any" and lang and grp["lang"] != lang:
+        if grp["lang"] not in ("any", "en") and lang and grp["lang"] != lang:
             continue
         for pat in grp["patterns"]:
             if pat.search(item_name):

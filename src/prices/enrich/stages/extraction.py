@@ -180,6 +180,7 @@ _CODE_FILES = (
     "extract_patterns.py",
     "extract_decide.py",
     "declared_unit.py",
+    "normalize.py",
 )
 _CODE_TREES = ("regex_patterns",)
 # Source patches are keyed per source (`source_patch_hashes`), not globally:
