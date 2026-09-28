@@ -128,7 +128,7 @@ faroe_islands:
   name: Faroe Islands
   iso3: FRO
   currency: DKK
-  languages: [en]
+  languages: [fo, da, en]
 
 fiji:
   name: Fiji
@@ -572,7 +572,7 @@ uzbekistan:
   name: Uzbekistan
   iso3: UZB
   currency: UZS
-  languages: [en]
+  languages: [uz, ru, en]
 
 vanuatu:
   name: Vanuatu
@@ -610,7 +610,7 @@ djibouti:
   name: Djibouti
   iso3: DJI
   currency: DJF
-  languages: [en, fr]
+  languages: [fr, en]
 
 egypt:
   name: "Egypt, Arab Rep."
@@ -622,7 +622,7 @@ iran:
   name: "Iran, Islamic Rep."
   iso3: IRN
   currency: IRR
-  languages: [en]
+  languages: [fa, en]
 
 iraq:
   name: Iraq
@@ -830,7 +830,7 @@ congo_rep:
   name: "Congo, Rep."
   iso3: COG
   currency: XAF
-  languages: [en, fr]
+  languages: [fr, en]
 
 cote_divoire:
   name: Cote d'Ivoire
@@ -848,7 +848,7 @@ eritrea:
   name: Eritrea
   iso3: ERI
   currency: ERN
-  languages: [en, arabic]
+  languages: [ti, en, arabic]
 
 eswatini:
   name: Eswatini
