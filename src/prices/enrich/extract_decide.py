@@ -612,7 +612,7 @@ def decide(
     pack_count, pack_value, pack_unit = _resolve_pack(
         by,
         item_name=item_name,
-        has_non_ascii=has_non_ascii,
+        has_non_ascii=has_non_ascii or "pack_none" in by,
         pack_patterns=pack_patterns,
     )
 
