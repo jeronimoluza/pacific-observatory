@@ -83,7 +83,11 @@ _MARKETING_LIMIT_RE = re.compile(
 
 # Inner value+unit tokens, used to detect a "total（per×count）" breakdown idiom
 # (e.g. 10kg（5kg×2袋）) so the outer count isn't double-applied to the total.
-_INNER_VALUE_UNIT_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*(ml|mL|ML|kg|KG|g|G|l|L|cl|CL)")
+# The unit must not run on into a Latin letter ("10 Gói" is ten packets, not
+# 10 g); x/× stay allowed ("40mlx9"), and so does CJK or hangul ("5g入").
+_INNER_VALUE_UNIT_RE = re.compile(
+    r"(\d+(?:[.,]\d+)?)\s*(ml|mL|ML|kg|KG|g|G|l|L|cl|CL)(?![a-wyzA-WYZÀ-ÖØ-öø-ɏḀ-ỿ])"
+)
 
 # Servings counters (N杯分 / N食分 / N回分 / N人前) are "portions worth", never a
 # pack multiplier — used to veto a recovered outer-pack count in Pass 1b2.
