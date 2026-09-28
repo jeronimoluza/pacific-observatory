@@ -179,6 +179,7 @@ _CODE_FILES = (
     "extract.py",
     "extract_patterns.py",
     "extract_decide.py",
+    "extract_native.py",
     "declared_unit.py",
     "normalize.py",
 )

@@ -31,6 +31,7 @@ from prices.enrich.extract_patterns import (
     _VU_NEG_RE,
     _VU_SUPPRESS_CTX_RE,
 )
+from prices.enrich.extract_native import with_native
 from prices.enrich.normalize import extract_pack
 from prices.enrich.regex_patterns.dict_view import (
     PatternSet,
@@ -462,7 +463,7 @@ def extract(
     from prices.enrich.extract_decide import decide
 
     ps = pattern_set(source)
-    candidates = enumerate_candidates(
+    candidates = with_native(
         item_name, stripped, lang, has_non_ascii, effective_lang, ps
     )
 
