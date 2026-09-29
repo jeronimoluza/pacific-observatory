@@ -392,6 +392,9 @@ def run_collect(
     warnings.filterwarnings("ignore")
 
     state = read_state(STATE_FILE)
+    # Sources whose scraper raised or reported success False. Exiting 0 over
+    # them let a read-only data volume pass as a clean run (2026-09-28).
+    failed = []
 
     for entry in plan:
         newspaper = entry["newspaper"]
@@ -477,6 +480,12 @@ def run_collect(
 
             set_checked(state, entry["source_key"])
             source_logger.info("Done: %s", newspaper)
+            if isinstance(results, dict) and results.get("success") is False:
+                failed.append(newspaper)
+                source_logger.error(
+                    "Failed: %s -- %s", newspaper, results.get("error", "unknown")
+                )
+                click.echo(f"  Failed: {newspaper} -- {results.get('error')}")
 
             stats = results.get("statistics", {}) if isinstance(results, dict) else {}
             nothing_to_resume = (
@@ -492,6 +501,7 @@ def run_collect(
         except Exception as e:
             source_logger.exception("Failed: %s", newspaper)
             click.echo(f"  Failed: {newspaper} -- {e}")
+            failed.append(newspaper)
             set_checked(state, entry["source_key"])
         finally:
             # Detach the per-source FileHandler from text.scrapers so it does
@@ -502,3 +512,6 @@ def run_collect(
 
     write_state(state, STATE_FILE)
     click.echo("\n  Collection complete.")
+    if failed:
+        click.echo(f"  {len(failed)} source(s) failed: {', '.join(failed)}")
+        raise SystemExit(1)

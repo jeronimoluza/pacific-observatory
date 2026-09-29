@@ -74,11 +74,12 @@ fi
 
 csv_size() {
   local total=0 f sz
-  while IFS= read -r f; do
+  # Glob instead of find: a full-tree walk per poll saturates exFAT on USB.
+  for f in "$DATA_BASE"/$FIND_PATTERN "$DATA_BASE"/*/$FIND_PATTERN; do
     [ -f "$f" ] || continue
     sz=$(stat -f%z "$f" 2>/dev/null || stat -c%s "$f" 2>/dev/null || echo 0)
     total=$(( total + sz ))
-  done < <(find "$DATA_BASE" -path "$FIND_PATTERN" 2>/dev/null)
+  done
   echo "$total"
 }
 
