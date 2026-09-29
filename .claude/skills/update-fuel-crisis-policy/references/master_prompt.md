@@ -47,7 +47,7 @@ legacy v5 `Categories` sheet was retired). When in doubt, use that sheet
 as the closed-enum source of truth.
 
 Assignment rule: if a policy is sourced from the v6 consolidated file
-(`data/text/policy_tracker/consolidated_policies/consolidated_policy_responses_v6.xlsx`),
+(`outputs/text/policy_tracker/fuel/consolidated_policies/consolidated_policy_responses_v6.xlsx`),
 copy the v6 row's `category` and `subcategory` verbatim (lowercased,
 trimmed). For policies sourced elsewhere (existing workbook rows, new
 research), pick the closest match from the closed enum above based on
@@ -57,7 +57,7 @@ blank.
 # Regional workbooks
 
 The current regional trackers live at
-`data/text/policy_tracker/<region>.xlsx` for these region keys:
+`outputs/text/policy_tracker/fuel/<newest YYYY-MM-DD>/<region>.xlsx` (edit today's edition, see SKILL.md step 1) for these region keys:
 
 - `eap`
 - `eca`

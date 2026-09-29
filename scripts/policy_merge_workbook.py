@@ -4,7 +4,9 @@
 The discovery pipeline leaves its output in ``discovered_<region>.json`` sidecars
 that only the dashboard builder reads, so the workbooks a human opens still show
 the curated rows alone. This folds the sidecar rows into the ``Policies`` sheet
-so the workbook is the full historic record, backing up the original first.
+so the workbook is the full historic record. The merged workbook is written to
+today's edition (``outputs/text/policy_tracker/<tracker>/YYYY-MM-DD/``) and the
+pre-merge copy to that tracker's ``backups/``.
 
 Discovered rows are appended, never merged over existing ones, and are marked in
 a ``Provenance`` column so curated and corpus rows stay distinguishable.
@@ -23,12 +25,20 @@ Usage:
 import argparse
 import json
 import shutil
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
-CANON = Path("data/text/policy_tracker")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from text.plotting.trackers import (  # noqa: E402
+    WORKBOOK_ROOT,
+    latest_workbook,
+    start_edition,
+    workbook_dir,
+)
+
 SIDECAR = Path("data/text/policy_tracker_extended")
 
 # Columns carried over from the sidecar that the workbook does not already have.
@@ -42,10 +52,11 @@ EXTRA_COLS = [
 ]
 
 
-def paths_for(region: str, tracker: str) -> tuple[Path, Path]:
-    """Workbook and sidecar for one region/tracker pair."""
+def paths_for(region: str, tracker: str) -> tuple[Path | None, Path]:
+    """Current workbook (newest edition) and sidecar for one region/tracker pair."""
     sub = "" if tracker == "fuel" else "food_security"
-    return CANON / sub / f"{region}.xlsx", SIDECAR / sub / f"discovered_{region}.json"
+    root = workbook_dir(WORKBOOK_ROOT, tracker)
+    return latest_workbook(root, region), SIDECAR / sub / f"discovered_{region}.json"
 
 
 def build_rows(discovered: list[dict], existing: pd.DataFrame) -> pd.DataFrame:
@@ -106,7 +117,7 @@ def build_rows(discovered: list[dict], existing: pd.DataFrame) -> pd.DataFrame:
 
 def merge(region: str, tracker: str, stamp: str) -> str:
     wb_path, sc_path = paths_for(region, tracker)
-    if not wb_path.exists():
+    if wb_path is None:
         return f"{tracker:5s} {region:7s} SKIP - no workbook"
     if not sc_path.exists():
         return f"{tracker:5s} {region:7s} SKIP - no sidecar"
@@ -131,10 +142,13 @@ def merge(region: str, tracker: str, stamp: str) -> str:
     merged = pd.concat([policies, new_rows], ignore_index=True)
     merged = merged[list(policies.columns)]
 
-    backup = wb_path.with_suffix(f".pre-discovery-{stamp}.bak.xlsx")
+    root = workbook_dir(WORKBOOK_ROOT, tracker)
+    backup = root / "backups" / f"{region}.pre-discovery-{stamp}.bak.xlsx"
+    backup.parent.mkdir(exist_ok=True)
     shutil.copy2(wb_path, backup)
+    out_path = start_edition(root) / f"{region}.xlsx"
 
-    with pd.ExcelWriter(wb_path, engine="openpyxl") as xw:
+    with pd.ExcelWriter(out_path, engine="openpyxl") as xw:
         merged.to_excel(xw, sheet_name="Policies", index=False)
         for name, df in sheets.items():
             if name != "Policies":
@@ -142,7 +156,7 @@ def merge(region: str, tracker: str, stamp: str) -> str:
 
     return (
         f"{tracker:5s} {region:7s} {before:4d} + {len(new_rows):4d} = {len(merged):4d} rows"
-        f"   backup: {backup.name}"
+        f"   -> {out_path.parent.name}/{out_path.name}   backup: {backup.name}"
     )
 
 

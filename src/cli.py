@@ -337,7 +337,7 @@ def text_publish(region, subregion, country, tracker, skip_database_status):
     help="Policy-tracker variant to build. Default: fuel.",
 )
 def text_build_policy_addons(region, chart_title, tracker):
-    """Build policy addon HTMLs from data/text/policy_tracker/<region>.xlsx."""
+    """Build policy addon HTMLs from the newest outputs/text/policy_tracker/<tracker>/YYYY-MM-DD/<region>.xlsx."""
     from text.plotting.policy_dashboards import build_addons
 
     build_addons(region=region, chart_title=chart_title, tracker=tracker)

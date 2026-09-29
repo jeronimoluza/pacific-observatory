@@ -23,6 +23,9 @@ Adding a tracker is one entry here plus a ``{theme}.json`` per family.
 
 from __future__ import annotations
 
+import datetime as dt
+import re
+import shutil
 from pathlib import Path
 
 # The Topics tab deliberately shows the whole 43-group universe, not the
@@ -184,7 +187,7 @@ TRACKERS = {
         "out_subdir": "fuel",
         "file_suffix": "fuel",
         "aria_subject": "fuel-crisis",
-        "subdir": "",
+        "subdir": "fuel",
         "themes": ["core", "development"],
         "extra_topics": [],
         "extra_actors": [],
@@ -257,9 +260,52 @@ def tracker_dir(base_dir: Path, tracker: str | None = None) -> Path:
     return base_dir / get_tracker(tracker)["out_subdir"]
 
 
+# Tracker workbooks: <root>/<subdir>/YYYY-MM-DD/<region>.xlsx is one dated
+# edition, and the newest edition holding a region is that region's current
+# workbook. Pre-edit copies go to <root>/<subdir>/backups/.
+WORKBOOK_ROOT = (
+    Path(__file__).resolve().parents[3] / "outputs" / "text" / "policy_tracker"
+)
+_EDITION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
 def workbook_dir(base_dir: Path, tracker: str | None = None) -> Path:
-    subdir = get_tracker(tracker)["subdir"]
-    return base_dir / subdir if subdir else base_dir
+    """Tracker root holding the dated editions and ``backups/``."""
+    return base_dir / get_tracker(tracker)["subdir"]
+
+
+def _editions(tracker_root: Path) -> list[Path]:
+    """Dated edition folders, newest first."""
+    if not tracker_root.is_dir():
+        return []
+    return sorted(
+        (d for d in tracker_root.iterdir() if d.is_dir() and _EDITION_RE.match(d.name)),
+        reverse=True,
+    )
+
+
+def latest_workbook(tracker_root: Path, region: str) -> Path | None:
+    """Newest ``YYYY-MM-DD/<region>.xlsx`` under a tracker root, if any."""
+    for edition in _editions(tracker_root):
+        path = edition / f"{region}.xlsx"
+        if path.exists():
+            return path
+    return None
+
+
+def start_edition(tracker_root: Path, date: dt.date | None = None) -> Path:
+    """Today's edition folder, created by carrying every region's newest
+    workbook forward so the newest folder is always a complete set."""
+    edition = tracker_root / (date or dt.date.today()).isoformat()
+    if edition.exists():
+        return edition
+    edition.mkdir(parents=True)
+    regions = {p.stem for d in _editions(tracker_root) for p in d.glob("*.xlsx")}
+    for region in sorted(regions):
+        src = latest_workbook(tracker_root, region)
+        if src is not None and src.parent != edition:
+            shutil.copy2(src, edition / src.name)
+    return edition
 
 
 def tracker_label(tracker: str | None = None) -> str:

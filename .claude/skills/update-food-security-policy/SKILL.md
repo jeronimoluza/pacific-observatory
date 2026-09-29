@@ -1,6 +1,6 @@
 ---
 name: update-food-security-policy
-description: "Update the regional Food Security Policy trackers and regenerate the per-region addon dashboards that feed `po text publish --tracker food`. Trigger when the user wants to refresh food-security policy data for EAP / ECA / MENAAP / SAR / LAC / SSA, asks to 'update the food security tracker', references `data/text/policy_tracker/food_security/<region>.xlsx`, or wants to publish the Food Security Policy + EPU dashboard for a region. Orchestrates: (1) research-driven workbook updates per `references/master_prompt.md` (per-country search across food prices, production shocks, trade measures, input costs and climate/weather shocks; two-part demand/consumption typology; SAR excludes AFG/PAK; EAP includes the 12-PIC view), (2) `po text build-policy-addons --region <r> --tracker food` to convert workbooks into HTML addons under `src/text/plotting/addons/`, (3) `po text publish --region <r> --tracker food` to render the final four-tab dashboard. Stops after publish — does NOT modify any other pipeline state."
+description: "Update the regional Food Security Policy trackers and regenerate the per-region addon dashboards that feed `po text publish --tracker food`. Trigger when the user wants to refresh food-security policy data for EAP / ECA / MENAAP / SAR / LAC / SSA, asks to 'update the food security tracker', references `outputs/text/policy_tracker/food_security/`, or wants to publish the Food Security Policy + EPU dashboard for a region. Orchestrates: (1) research-driven workbook updates per `references/master_prompt.md` (per-country search across food prices, production shocks, trade measures, input costs and climate/weather shocks; two-part demand/consumption typology; SAR excludes AFG/PAK; EAP includes the 12-PIC view), (2) `po text build-policy-addons --region <r> --tracker food` to convert workbooks into HTML addons under `src/text/plotting/addons/`, (3) `po text publish --region <r> --tracker food` to render the final four-tab dashboard. Stops after publish — does NOT modify any other pipeline state."
 ---
 
 # Update Food Security Policy
@@ -23,7 +23,7 @@ tracker so the two never overwrite each other.
   research is done.
 - User says "the EAP food security tracker is stale", "regenerate the
   SAR food policy dashboard", "add export bans to the tracker", or
-  references `data/text/policy_tracker/food_security/`.
+  references `outputs/text/policy_tracker/food_security/`.
 
 For a one-off fix to a single Excel row (no research), the user can edit
 the workbook directly and run step 3 + step 4 below — no skill needed.
@@ -57,10 +57,10 @@ analytical commentary.
 ## Pipeline (canonical)
 
 ```
-data/text/policy_tracker/food_security/<region>.xlsx
-   |  (research + edit per references/master_prompt.md)
+outputs/text/policy_tracker/food_security/YYYY-MM-DD/<region>.xlsx   (newest edition = current)
+   |  (start today's edition, research + edit per references/master_prompt.md)
    v
-data/text/policy_tracker/food_security/YYYY-MM-DD/excel/<region>.xlsx   (dated snapshot)
+outputs/text/policy_tracker/food_security/<today>/<region>.xlsx      (older editions = audit trail)
    |
    v
 po text build-policy-addons --region <r> --tracker food
@@ -100,14 +100,26 @@ Because the definitions are shared, a group named on two dashboards is
 the same series on both — `inflation_prices` on the food dashboard is
 the `inflation_prices` on the fuel dashboard.
 
-The fuel tracker's paths (`policy_tracker/<region>.xlsx`,
+The fuel tracker's paths (`policy_tracker/fuel/`,
 `addons/fuel/<region>_policy_addon.html`,
 `dashboards/fuel/<region>_policy_dashboard.html`) are untouched by any
 `--tracker food` run.
 
 ## Step 1 — Update the workbook
 
-Open `data/text/policy_tracker/food_security/<region>.xlsx`. The research
+Start today's edition. It creates `outputs/text/policy_tracker/food_security/<today>/`
+holding every region's newest workbook (a no-op if it already exists), then
+back up the workbook you are about to edit:
+
+```bash
+DATE=$(date +%Y-%m-%d)
+PYTHONPATH=src poetry run python -c "from text.plotting.trackers import WORKBOOK_ROOT, start_edition; print(start_edition(WORKBOOK_ROOT / 'food_security'))"
+mkdir -p outputs/text/policy_tracker/food_security/backups
+cp -p outputs/text/policy_tracker/food_security/$DATE/<region>.xlsx \
+   outputs/text/policy_tracker/food_security/backups/<region>.pre-research-$(date -u +%Y%m%dT%H%M%SZ).bak.xlsx
+```
+
+Edit `outputs/text/policy_tracker/food_security/$DATE/<region>.xlsx` in place. The research
 protocol — search window, per-country search, per-implementing-agency
 search, multilingual queries, the shock-trigger evidence rule, the
 two-part `Reduce consumption` typology, source hierarchy, evidence
@@ -140,28 +152,17 @@ Region-specific rules the converter enforces on top of that:
 | `lac` | — |
 | `ssa` | — |
 
-Save back to the same filename (`<region>.xlsx`, no date suffix).
+Save back to the same file (`<today>/<region>.xlsx`, no date suffix). Every
+backup goes to `food_security/backups/`, never next to a workbook.
 
-## Step 2 — Archive the dated snapshot
+## Step 2 — Verify the edition
 
-**After every workbook edit is finished and saved** — and specifically
-**after** any parallel research agents have returned and you have
-confirmed the live `.xlsx` mtimes reflect their writes:
-
-```bash
-DATE=$(date -u +%Y-%m-%d)
-mkdir -p data/text/policy_tracker/food_security/$DATE/excel
-cp data/text/policy_tracker/food_security/<region>.xlsx \
-   data/text/policy_tracker/food_security/$DATE/excel/<region>.xlsx
-```
-
-**Ordering rule (do not snapshot early):** in a parallel run, do NOT
-snapshot at job dispatch — the live files still hold the previous run's
-content. Wait until every region's editor has reported done, then
-snapshot once. Identical file sizes across all regions is the canonical
-"snapshotted too early" smell.
-
-Skip this step only when you didn't change the workbook.
+There is no separate snapshot copy: today's edition folder is the snapshot.
+In a parallel run, every editor writes into `outputs/text/policy_tracker/food_security/$DATE/`. Wait until all
+report done, then check that the edited regions' mtimes are after their
+reported finish times and their sizes differ from the previous edition's.
+Identical sizes across all regions is the canonical "an editor wrote
+somewhere else" smell. Never edit an older edition — it is the audit trail.
 
 ## Step 3 — Build the addon HTML
 
@@ -169,8 +170,8 @@ Skip this step only when you didn't change the workbook.
 poetry run po text build-policy-addons --region <r> --tracker food
 ```
 
-The converter reads
-`data/text/policy_tracker/food_security/<region>.xlsx`, normalizes alias
+The converter reads the newest
+`outputs/text/policy_tracker/food_security/YYYY-MM-DD/<region>.xlsx`, normalizes alias
 headers, and writes
 `src/text/plotting/addons/food_security/<region>_policy_addon.html`.
 
@@ -242,8 +243,8 @@ refresh when you only need the dashboard (prototype / iteration runs).
 
 ```
 ## Food Security Policy refresh: <region>
-- Workbook: data/text/policy_tracker/food_security/<region>.xlsx  (last edited: <mtime>)
-- Snapshot: data/text/policy_tracker/food_security/YYYY-MM-DD/excel/<region>.xlsx
+- Workbook: outputs/text/policy_tracker/food_security/YYYY-MM-DD/<region>.xlsx  (last edited: <mtime>)
+- Backup:   outputs/text/policy_tracker/food_security/backups/<region>.pre-research-<ts>.bak.xlsx
 - Addon:    src/text/plotting/addons/food_security/<region>_policy_addon.html
             (rows=<n>, excluded=<n>, countries=<n>)
 - Final:    outputs/text/dashboards/food_security/<region>_policy_dashboard.html
@@ -261,7 +262,7 @@ refresh when you only need the dashboard (prototype / iteration runs).
 - **Never** edit the `Taxonomy` sheet or invent Category/Subcategory
   values outside the closed v6 enum.
 - **Never** add Afghanistan or Pakistan to the SAR workbook.
-- **Never** write to `data/text/policy_tracker/<region>.xlsx` (that is
+- **Never** write to `outputs/text/policy_tracker/fuel/` (that is
   the fuel tracker) or omit `--tracker food` from the build/publish
   commands.
 - **Never** create a row for a weather/climate event alone — the row is

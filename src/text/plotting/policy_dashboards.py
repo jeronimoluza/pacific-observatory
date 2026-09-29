@@ -2,7 +2,7 @@
 addons consumed by ``small_dashboard_integrated_w_policy``.
 
 Pipeline:
-    data/text/policy_tracker/<region>.xlsx
+    outputs/text/policy_tracker/<tracker>/YYYY-MM-DD/<region>.xlsx  (newest edition)
       -> src/text/plotting/addons/<tracker>/<region>_policy_addon.html
 
 CLI:
@@ -35,16 +35,17 @@ from text.plotting.policy_subregions import fold
 from text.plotting.trackers import (
     DEFAULT_TRACKER,
     TRACKERS,
+    WORKBOOK_ROOT,
     addon_filename,
     get_tracker,
+    latest_workbook,
     tracker_dir,
     tracker_label,
     workbook_dir,
 )
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_INPUT_DIR = PROJECT_ROOT / "data" / "text" / "policy_tracker"
+DEFAULT_INPUT_DIR = WORKBOOK_ROOT
 DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "addons"
 
 
@@ -1259,7 +1260,11 @@ render();
 
 
 def find_workbook(input_dir: Path, region_key: str) -> Path:
-    """Locate ``<region>.xlsx`` (preferred) or any ``*<region>*.xlsx`` fallback."""
+    """Locate the newest dated ``YYYY-MM-DD/<region>.xlsx`` edition, else a flat
+    ``<region>.xlsx`` or any ``*<region>*.xlsx`` in ``input_dir``."""
+    latest = latest_workbook(input_dir, region_key)
+    if latest is not None:
+        return latest
     canonical = input_dir / f"{region_key}.xlsx"
     if canonical.exists():
         return canonical
@@ -1298,7 +1303,7 @@ def generate_region(
     display = region_cfg.get("display_name", key)
     print(f"[{key}] {display}")
     workbook = find_workbook(input_dir, key)
-    print(f"  workbook: {workbook.name}")
+    print(f"  workbook: {workbook.parent.name}/{workbook.name}")
     rows, sheet_name, header_row = load_policy_rows(
         workbook, region_cfg.get("sheet", CANONICAL_SHEET)
     )
@@ -1444,7 +1449,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         "--input-dir",
         type=Path,
         default=DEFAULT_INPUT_DIR,
-        help=f"Folder with <region>.xlsx workbooks. Default: {DEFAULT_INPUT_DIR}",
+        help=f"Root holding <tracker>/YYYY-MM-DD/<region>.xlsx editions. Default: {DEFAULT_INPUT_DIR}",
     )
     parser.add_argument(
         "--output-dir",
