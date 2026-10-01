@@ -76,7 +76,7 @@ def pair_table(products: pd.DataFrame) -> pd.DataFrame:
 
 
 def _shard_state(
-    part: Path, pairs: pd.DataFrame, fp: dict
+    part: Path, pairs: pd.DataFrame, fp: dict, append_only: bool = False
 ) -> tuple[pd.DataFrame | None, pd.DataFrame, set[str] | None]:
     """What of `pairs` this shard already covers, and what is left to score.
 
@@ -99,17 +99,31 @@ def _shard_state(
     bucket carrying even one such name -- which is all of them, at ~800 per
     bucket -- and the documented resume silently rescored from zero. Compare
     against the pairs the scorer would actually have written.
+
+    `append_only` turns every "rescore from scratch" over an EXISTING shard into
+    an error: a frozen bundle's old rows must never be rewritten (weekly-run Q28).
     """
     if not part.exists():
         return None, pairs, None
     if not fingerprint.matches(part, fp):
+        if append_only:
+            raise RuntimeError(
+                f"{part.name} fingerprint mismatch; --append-only will not rescore it"
+            )
         print(f"[hierlex] {part.name} fingerprint mismatch — rescoring", flush=True)
         return None, pairs, None
     try:
         df = pd.read_parquet(part)
     except Exception:
+        if append_only:
+            raise
         return None, pairs, None
     if "calibrated_correctness_score" not in df.columns:
+        if append_only:
+            raise RuntimeError(
+                f"{part.name} has no calibrated_correctness_score; "
+                "--append-only will not rescore it"
+            )
         return None, pairs, None
 
     have = set(zip(df["name"].astype(str), df["country"].astype(str)))
@@ -347,7 +361,9 @@ def _run_bucket(job: dict) -> dict:
     b = job["bucket"]
     pairs = pd.read_parquet(job["pairs_path"])
     part = job["out_dir"] / f"pred_{b:03d}.parquet"
-    cached, todo, cached_unemb = _shard_state(part, pairs, job["fp"])
+    cached, todo, cached_unemb = _shard_state(
+        part, pairs, job["fp"], job["append_only"]
+    )
     if cached is not None and todo.empty:
         return {
             "bucket": b,
@@ -396,6 +412,7 @@ def run(
     pred_root: Path = PRED_ROOT,
     workers: int = 1,
     gather_rows: int = GATHER_ROWS,
+    append_only: bool = False,
 ) -> dict:
     """Score every (name, country) pair in `products_input` into shards."""
     from prices.enrich.hierlex import package  # noqa: PLC0415
@@ -429,6 +446,7 @@ def run(
                 "fp": fp,
                 "chunk_rows": chunk_rows,
                 "gather_rows": gather_rows,
+                "append_only": append_only,
             },
         )
         for b in buckets
