@@ -73,3 +73,37 @@ def status_command(ctx: click.Context, country: str | None) -> None:
     ):
         parked = f"  parked until {r['parked_until']}" if r["parked_until"] else ""
         click.echo(f"  {r['engine']:<12} cap {r['daily_cap']}{parked}")
+
+
+@discovery_group.command("load-bank")
+@click.argument("countries", nargs=-1, required=True)
+@click.option("--show", is_flag=True, help="Print every expanded query.")
+@click.pass_context
+def load_bank_command(ctx: click.Context, countries: tuple[str, ...], show: bool) -> None:
+    """Validate banks/<country>.yaml, expand it and insert its queries (idempotent)."""
+    from prices.discovery.bank import load_bank
+
+    con = connect(ctx.obj["db_path"])
+    failed = False
+    for country in countries:
+        with con:
+            res = load_bank(con, country)
+        if res["errors"]:
+            failed = True
+            click.echo(f"{country}: NOT LOADED")
+            for err in res["errors"]:
+                click.echo(f"  - {err}")
+            continue
+        qs = res["queries"]
+        by_lang: dict[str, int] = {}
+        for q in qs:
+            by_lang[q["lang"]] = by_lang.get(q["lang"], 0) + 1
+        n_top = sum(q["tier"] == "top20" for q in qs)
+        click.echo(
+            f"{country}: {len(qs)} queries ({n_top} top20), {res['inserted']} new, by lang {by_lang}"
+        )
+        if show:
+            for q in qs:
+                click.echo(f"  {q['tier']:<6} {q['lang']:<4} {q['template']:<24} {q['text']}")
+    if failed:
+        raise SystemExit(1)

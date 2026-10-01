@@ -1,0 +1,46 @@
+# Query-bank vocabulary. `po prices discovery load-bank <country>` expands it.
+# cities[0] is the main commercial city. Leave a term out where locals would
+# search with another language's word. Terms marked "unverified" want a
+# native speaker's check.
+country: nigeria
+names:
+  en: Nigeria
+  yo: Nàìjíríà
+  ig: Naịjirịa
+  ha: Najeriya
+cities: [Lagos, Abuja, Kano, Port Harcourt, Ibadan, Benin City, Enugu]
+currency_words: [naira, NGN]
+terms:
+  en:
+    online_shop: online store
+    supermarket: supermarket
+    pharmacy: pharmacy
+    electronics: electronics store
+    phone_shop: phone shop
+    building_materials: building materials
+    cosmetics: cosmetics store
+    clothing: clothing store
+    furniture: furniture store
+    food_delivery: food delivery
+    fuel_price: petrol pump price
+    electricity_tariff: electricity tariff band
+    water_tariff: water tariff
+    mobile_data_plans: data plans
+    transport_fares: transport fares
+    market_prices: foodstuff market prices
+    consumer_price_index: consumer price index
+    classifieds: classifieds
+    price: price
+    buy_online: buy online
+    price_list: price list
+  # Nigerian Pidgin: shoppers search in English; no terms written.
+  pcm: {}
+  yo:
+    price: iye owó              # unverified
+    market_prices: iye owó ọjà  # unverified: "price at the market"
+  ig:
+    price: ọnụ ahịa             # unverified
+    market_prices: ọnụ ahịa nri # unverified: "food price"
+  ha:
+    price: farashi              # unverified
+    market_prices: farashin kayan abinci  # unverified: "food prices"

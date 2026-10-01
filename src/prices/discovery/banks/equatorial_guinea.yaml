@@ -1,0 +1,65 @@
+# Query-bank vocabulary. `po prices discovery load-bank <country>` expands it.
+# cities[0] is the main commercial city. Leave a term out where locals would
+# search with another language's word. Terms marked "unverified" want a
+# native speaker's check.
+country: equatorial_guinea
+names:
+  en: Equatorial Guinea
+  es: Guinea Ecuatorial
+  fr: Guinée équatoriale
+cities: [Malabo, Bata, Ebebiyín]
+currency_words: [FCFA, XAF]
+terms:
+  es:
+    online_shop: tienda online
+    supermarket: supermercado
+    pharmacy: farmacia
+    electronics: electrodomésticos
+    phone_shop: tienda de móviles
+    building_materials: materiales de construcción
+    cosmetics: cosméticos
+    clothing: tienda de ropa
+    furniture: muebles
+    food_delivery: comida a domicilio
+    fuel_price: precio del combustible
+    electricity_tariff: tarifa electricidad
+    water_tariff: tarifa agua
+    mobile_data_plans: planes de datos móviles
+    transport_fares: tarifas de transporte
+    market_prices: precios del mercado
+    consumer_price_index: índice de precios al consumo
+    classifieds: anuncios clasificados
+    price: precio
+    buy_online: comprar online
+    price_list: lista de precios
+  en:
+    online_shop: online shop
+    supermarket: supermarket
+    pharmacy: pharmacy
+    electronics: electronics store
+    phone_shop: phone shop
+    building_materials: building materials
+    cosmetics: cosmetics
+    clothing: clothing store
+    furniture: furniture
+    food_delivery: food delivery
+    fuel_price: fuel price
+    electricity_tariff: electricity tariff
+    water_tariff: water tariff
+    mobile_data_plans: mobile data bundles
+    transport_fares: transport fares
+    market_prices: market prices
+    consumer_price_index: consumer price index
+    classifieds: classifieds
+    price: price
+    buy_online: buy online
+    price_list: price list
+  # Fang: commerce online is in Spanish; no terms written.
+  fan: {}
+  fr:
+    online_shop: boutique en ligne
+    supermarket: supermarché
+    pharmacy: pharmacie
+    market_prices: prix des denrées marché
+    price: prix
+    buy_online: acheter en ligne

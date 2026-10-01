@@ -1,0 +1,1068 @@
+{
+"_source": "CLDR 48.2.0 supplemental territoryInfo; languages with populationPercent >= 10, largest first",
+"by_iso3": {
+"ABW": [
+"nl",
+"pap"
+],
+"AFG": [
+"fa",
+"ps"
+],
+"AGO": [
+"pt",
+"umb",
+"kmb"
+],
+"AIA": [
+"en"
+],
+"ALA": [
+"sv"
+],
+"ALB": [
+"sq"
+],
+"AND": [
+"ca",
+"es"
+],
+"ARE": [
+"ar",
+"en"
+],
+"ARG": [
+"es"
+],
+"ARM": [
+"hy",
+"ru"
+],
+"ASC": [
+"en"
+],
+"ASM": [
+"sm",
+"en"
+],
+"ATA": [
+"und"
+],
+"ATF": [
+"fr"
+],
+"ATG": [
+"en"
+],
+"AUS": [
+"en"
+],
+"AUT": [
+"de",
+"bar",
+"en",
+"fr"
+],
+"AZE": [
+"az"
+],
+"BDI": [
+"rn",
+"fr"
+],
+"BEL": [
+"en",
+"nl",
+"fr",
+"de",
+"vls"
+],
+"BEN": [
+"fr",
+"fon"
+],
+"BES": [
+"pap"
+],
+"BFA": [
+"mos",
+"dyu",
+"fr"
+],
+"BGD": [
+"bn",
+"en"
+],
+"BGR": [
+"bg",
+"en",
+"ru",
+"tr"
+],
+"BHR": [
+"ar"
+],
+"BHS": [
+"en"
+],
+"BIH": [
+"bs_Cyrl",
+"bs",
+"en",
+"hr",
+"sr_Latn",
+"sr"
+],
+"BLM": [
+"fr"
+],
+"BLR": [
+"ru",
+"be"
+],
+"BLZ": [
+"en",
+"es",
+"bzj"
+],
+"BMU": [
+"en"
+],
+"BOL": [
+"es",
+"qu",
+"ay"
+],
+"BRA": [
+"pt"
+],
+"BRB": [
+"en"
+],
+"BRN": [
+"ms",
+"zh_Hant"
+],
+"BTN": [
+"dz",
+"ne",
+"tsj",
+"en"
+],
+"BVT": [
+"no"
+],
+"BWA": [
+"en",
+"tn"
+],
+"CAF": [
+"sg",
+"fr"
+],
+"CAN": [
+"en",
+"fr"
+],
+"CCK": [
+"ms_Arab",
+"en"
+],
+"CHE": [
+"de",
+"gsw",
+"en",
+"fr",
+"it"
+],
+"CHL": [
+"es"
+],
+"CHN": [
+"zh"
+],
+"CIV": [
+"fr",
+"bci"
+],
+"CMR": [
+"fr",
+"en"
+],
+"COD": [
+"fr",
+"sw"
+],
+"COG": [
+"fr"
+],
+"COK": [
+"en"
+],
+"COL": [
+"es"
+],
+"COM": [
+"ar",
+"zdj",
+"wni",
+"fr"
+],
+"CPT": [
+"und"
+],
+"CPV": [
+"kea",
+"pt"
+],
+"CRI": [
+"es"
+],
+"CUB": [
+"es"
+],
+"CUW": [
+"pap"
+],
+"CXR": [
+"en"
+],
+"CYM": [
+"en"
+],
+"CYP": [
+"el",
+"en",
+"tr"
+],
+"CZE": [
+"cs",
+"en",
+"sk",
+"de"
+],
+"DEU": [
+"de",
+"en",
+"fr",
+"bar",
+"nds"
+],
+"DGA": [
+"en"
+],
+"DJI": [
+"fr",
+"aa",
+"so"
+],
+"DMA": [
+"en"
+],
+"DNK": [
+"da",
+"en",
+"de",
+"sv"
+],
+"DOM": [
+"es"
+],
+"DZA": [
+"arq",
+"ar",
+"fr",
+"mey"
+],
+"ECU": [
+"es",
+"qu"
+],
+"EGY": [
+"ar",
+"arz",
+"en"
+],
+"ERI": [
+"ti",
+"en",
+"tig"
+],
+"ESH": [
+"ar"
+],
+"ESP": [
+"es",
+"en",
+"ca"
+],
+"EST": [
+"et",
+"ru",
+"en",
+"fi"
+],
+"ETH": [
+"en",
+"am",
+"om"
+],
+"FIN": [
+"fi",
+"en",
+"sv",
+"de"
+],
+"FJI": [
+"en",
+"hi",
+"hif",
+"fj"
+],
+"FLK": [
+"en"
+],
+"FRA": [
+"fr",
+"en",
+"es"
+],
+"FRO": [
+"fo"
+],
+"FSM": [
+"en",
+"chk",
+"pon"
+],
+"GAB": [
+"fr"
+],
+"GBR": [
+"en",
+"fr"
+],
+"GEO": [
+"ka",
+"xmf"
+],
+"GGY": [
+"en"
+],
+"GHA": [
+"ak",
+"en",
+"ee"
+],
+"GIB": [
+"en",
+"es"
+],
+"GIN": [
+"fr",
+"ff",
+"man_Nkoo",
+"man",
+"sus"
+],
+"GLP": [
+"fr"
+],
+"GMB": [
+"en",
+"man_Nkoo",
+"man"
+],
+"GNB": [
+"pt",
+"fr"
+],
+"GNQ": [
+"es",
+"fan",
+"fr"
+],
+"GRC": [
+"el",
+"en"
+],
+"GRD": [
+"en"
+],
+"GRL": [
+"kl",
+"da"
+],
+"GTM": [
+"es"
+],
+"GUF": [
+"fr",
+"gcr"
+],
+"GUM": [
+"en",
+"ch"
+],
+"GUY": [
+"en"
+],
+"HKG": [
+"zh_Hant",
+"yue",
+"en"
+],
+"HMD": [
+"und"
+],
+"HND": [
+"es"
+],
+"HRV": [
+"hr",
+"en"
+],
+"HTI": [
+"ht",
+"fr"
+],
+"HUN": [
+"hu",
+"en",
+"de"
+],
+"IDN": [
+"id",
+"jv",
+"su"
+],
+"IMN": [
+"en"
+],
+"IND": [
+"hi",
+"en"
+],
+"IOT": [
+"en"
+],
+"IRL": [
+"en",
+"ga",
+"fr"
+],
+"IRN": [
+"fa",
+"az_Arab"
+],
+"IRQ": [
+"ar",
+"en",
+"ckb",
+"ku_Arab"
+],
+"ISL": [
+"is"
+],
+"ISR": [
+"he",
+"en",
+"ar",
+"apc",
+"ru"
+],
+"ITA": [
+"it",
+"en",
+"fr"
+],
+"JAM": [
+"en",
+"jam"
+],
+"JEY": [
+"en"
+],
+"JOR": [
+"ar",
+"apc",
+"en"
+],
+"JPN": [
+"ja"
+],
+"KAZ": [
+"ru",
+"kk",
+"en"
+],
+"KEN": [
+"sw",
+"en",
+"ki",
+"luy"
+],
+"KGZ": [
+"ky",
+"ru"
+],
+"KHM": [
+"km"
+],
+"KIR": [
+"en",
+"gil"
+],
+"KNA": [
+"en"
+],
+"KOR": [
+"ko"
+],
+"KWT": [
+"ar"
+],
+"LAO": [
+"lo"
+],
+"LBN": [
+"apc",
+"ar",
+"en",
+"fr"
+],
+"LBR": [
+"en",
+"lir",
+"kpe",
+"bsq",
+"kro"
+],
+"LBY": [
+"ar"
+],
+"LCA": [
+"en"
+],
+"LIE": [
+"de",
+"gsw"
+],
+"LKA": [
+"si",
+"ta",
+"en"
+],
+"LSO": [
+"st",
+"en",
+"zu"
+],
+"LTU": [
+"lt",
+"ru",
+"en",
+"de"
+],
+"LUX": [
+"fr",
+"lb",
+"de",
+"en",
+"pt"
+],
+"LVA": [
+"lv",
+"en",
+"ru"
+],
+"MAC": [
+"zh_Hant",
+"yue",
+"en"
+],
+"MAF": [
+"fr"
+],
+"MAR": [
+"ary",
+"ar",
+"fr",
+"zgh",
+"en"
+],
+"MCO": [
+"fr"
+],
+"MDA": [
+"ro",
+"uk"
+],
+"MDG": [
+"mg",
+"fr",
+"en"
+],
+"MDV": [
+"dv",
+"en"
+],
+"MEX": [
+"es",
+"en"
+],
+"MHL": [
+"en",
+"mh"
+],
+"MKD": [
+"mk",
+"sq"
+],
+"MLI": [
+"bm",
+"fr"
+],
+"MLT": [
+"mt",
+"en",
+"it",
+"fr"
+],
+"MMR": [
+"my"
+],
+"MNE": [
+"sr_Latn"
+],
+"MNG": [
+"mn"
+],
+"MNP": [
+"en",
+"ch"
+],
+"MOZ": [
+"pt",
+"vmw"
+],
+"MRT": [
+"mey",
+"ar",
+"fr"
+],
+"MSR": [
+"en"
+],
+"MTQ": [
+"fr"
+],
+"MUS": [
+"mfe",
+"fr",
+"en"
+],
+"MWI": [
+"ny",
+"en"
+],
+"MYS": [
+"ms",
+"en",
+"zh"
+],
+"MYT": [
+"swb",
+"fr",
+"buc"
+],
+"NAM": [
+"af",
+"kj",
+"ng",
+"naq"
+],
+"NCL": [
+"fr"
+],
+"NER": [
+"ha",
+"dje",
+"fr"
+],
+"NFK": [
+"en"
+],
+"NGA": [
+"en",
+"pcm",
+"yo",
+"ig",
+"ha"
+],
+"NIC": [
+"es"
+],
+"NIU": [
+"niu",
+"en"
+],
+"NLD": [
+"nl",
+"en",
+"de",
+"fr",
+"nds"
+],
+"NOR": [
+"no",
+"nb",
+"nn"
+],
+"NPL": [
+"ne",
+"mai"
+],
+"NRU": [
+"en",
+"na"
+],
+"NZL": [
+"en"
+],
+"OMN": [
+"ar"
+],
+"PAK": [
+"ur",
+"pa_Arab",
+"en",
+"lah",
+"ps",
+"sd",
+"skr"
+],
+"PAN": [
+"es",
+"en"
+],
+"PCN": [
+"en"
+],
+"PER": [
+"es",
+"qu"
+],
+"PHL": [
+"en",
+"fil",
+"es",
+"ceb"
+],
+"PLW": [
+"pau"
+],
+"PNG": [
+"tpi",
+"en"
+],
+"POL": [
+"pl",
+"en",
+"de",
+"ru"
+],
+"PRI": [
+"es",
+"en"
+],
+"PRK": [
+"ko"
+],
+"PRT": [
+"pt",
+"en",
+"fr",
+"es"
+],
+"PRY": [
+"gn"
+],
+"PSE": [
+"ar",
+"apc"
+],
+"PYF": [
+"fr",
+"ty"
+],
+"QAT": [
+"ar",
+"fa"
+],
+"REU": [
+"fr",
+"rcf",
+"ta"
+],
+"ROU": [
+"ro",
+"en",
+"fr",
+"es"
+],
+"RUS": [
+"ru"
+],
+"RWA": [
+"rw",
+"en"
+],
+"SAU": [
+"ar"
+],
+"SDN": [
+"en",
+"ar",
+"apd"
+],
+"SEN": [
+"wo",
+"fr",
+"ff",
+"srr"
+],
+"SGP": [
+"en",
+"zh",
+"ms"
+],
+"SGS": [
+"en"
+],
+"SHN": [
+"en"
+],
+"SJM": [
+"nb",
+"ru"
+],
+"SLB": [
+"en",
+"pis"
+],
+"SLE": [
+"kri",
+"en",
+"men",
+"tem"
+],
+"SLV": [
+"es"
+],
+"SMR": [
+"it"
+],
+"SOM": [
+"so",
+"ar"
+],
+"SPM": [
+"fr"
+],
+"SRB": [
+"sr_Latn",
+"sr",
+"sq"
+],
+"SSD": [
+"en",
+"ar"
+],
+"STP": [
+"pt",
+"fr"
+],
+"SUR": [
+"nl",
+"srn"
+],
+"SVK": [
+"sk",
+"cs",
+"en",
+"de",
+"hu"
+],
+"SVN": [
+"sl",
+"hr",
+"en",
+"de"
+],
+"SWE": [
+"sv",
+"en"
+],
+"SWZ": [
+"en",
+"ss"
+],
+"SXM": [
+"en",
+"es"
+],
+"SYC": [
+"crs",
+"fr",
+"en"
+],
+"SYR": [
+"apc",
+"ar"
+],
+"TAA": [
+"en"
+],
+"TCA": [
+"en"
+],
+"TCD": [
+"ar",
+"fr"
+],
+"TGO": [
+"fr",
+"ee"
+],
+"THA": [
+"th",
+"en",
+"tts"
+],
+"TJK": [
+"tg",
+"ru"
+],
+"TKL": [
+"tkl",
+"en",
+"sm"
+],
+"TKM": [
+"tk",
+"ru"
+],
+"TLS": [
+"tet",
+"pt"
+],
+"TON": [
+"to",
+"en"
+],
+"TTO": [
+"en"
+],
+"TUN": [
+"ar",
+"aeb",
+"fr"
+],
+"TUR": [
+"tr",
+"en"
+],
+"TUV": [
+"tvl"
+],
+"TWN": [
+"zh_Hant",
+"nan_Hant",
+"hak_Hant"
+],
+"TZA": [
+"sw",
+"en"
+],
+"UGA": [
+"sw",
+"lg"
+],
+"UKR": [
+"uk",
+"ru"
+],
+"UMI": [
+"en"
+],
+"URY": [
+"es"
+],
+"USA": [
+"en"
+],
+"UZB": [
+"uz",
+"uz_Cyrl",
+"ru"
+],
+"VAT": [
+"la",
+"it"
+],
+"VCT": [
+"en"
+],
+"VEN": [
+"es"
+],
+"VGB": [
+"en"
+],
+"VIR": [
+"en"
+],
+"VNM": [
+"vi"
+],
+"VUT": [
+"bi",
+"en",
+"fr"
+],
+"WLF": [
+"fr",
+"wls",
+"fud"
+],
+"WSM": [
+"sm"
+],
+"XKK": [
+"sq",
+"aln"
+],
+"YEM": [
+"ar"
+],
+"ZAF": [
+"en",
+"zu",
+"xh",
+"af"
+],
+"ZMB": [
+"bem",
+"ny",
+"en",
+"toi"
+],
+"ZWE": [
+"sn",
+"en",
+"nd"
+],
+"ZZZ": []
+}
+}
