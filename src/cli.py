@@ -433,6 +433,7 @@ from prices.backfill_cli import backfill_command as _prices_backfill  # noqa: E4
 from prices.cc_cli import common_crawl_command as _prices_common_crawl  # noqa: E402
 from prices.cc_fleet_cli import cc_fleet_command as _prices_cc_fleet  # noqa: E402
 from prices.cc_table_cli import cc_table_group as _prices_cc_table  # noqa: E402
+from prices.discovery.cli import discovery_group as _prices_discovery  # noqa: E402
 from prices.enrich.cli import embed_command as _prices_embed  # noqa: E402
 from prices.enrich.cli import process_command as _prices_process  # noqa: E402
 from prices.enrich.eval.cli import eval_command as _prices_eval  # noqa: E402
@@ -472,6 +473,7 @@ prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
 prices.add_command(_prices_common_crawl, name="common-crawl")
 prices.add_command(_prices_cc_table, name="cc-table")
+prices.add_command(_prices_discovery, name="discovery")
 prices.add_command(_prices_cc_fleet, name="cc-fleet")
 prices.add_command(_prices_process, name="process")
 prices.add_command(_prices_embed, name="embed")
