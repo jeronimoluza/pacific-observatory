@@ -1,0 +1,107 @@
+# Registrable domains dropped from search hits before they become candidates.
+# Hits are still kept in the `hits` table; only promotion is skipped.
+# Per-country marketplaces (jumia.com.ng, jumia.cm) are NOT listed: each is a
+# real candidate for its country. Add one domain per line.
+
+# social and messaging: recorded, never fetched (safety rule 4)
+facebook.com
+fb.com
+instagram.com
+whatsapp.com
+tiktok.com
+twitter.com
+x.com
+linkedin.com
+pinterest.com
+reddit.com
+quora.com
+youtube.com
+telegram.me
+t.me
+snapchat.com
+
+# reference and search
+wikipedia.org
+wikimedia.org
+wiktionary.org
+wikivoyage.org
+britannica.com
+google.com
+bing.com
+yahoo.com
+duckduckgo.com
+msn.com
+apple.com
+microsoft.com
+
+# global news
+bbc.com
+bbc.co.uk
+reuters.com
+apnews.com
+aljazeera.com
+cnn.com
+nytimes.com
+theguardian.com
+bloomberg.com
+ft.com
+forbes.com
+economist.com
+france24.com
+rfi.fr
+lemonde.fr
+jeuneafrique.com
+africanews.com
+allafrica.com
+voanews.com
+dw.com
+elpais.com
+euronews.com
+
+# global marketplaces and cross-border resellers
+amazon.com
+ebay.com
+aliexpress.com
+alibaba.com
+temu.com
+shein.com
+etsy.com
+walmart.com
+ubuy.com
+desertcart.com
+parceldaddy.com
+
+# cost-of-living and statistics aggregators (not a local publisher)
+numbeo.com
+livingcost.org
+expatistan.com
+mylifeelsewhere.com
+nomadlist.com
+statista.com
+tradingeconomics.com
+globalpetrolprices.com
+selinawamucii.com
+hikersbay.com
+countryeconomy.com
+ceicdata.com
+indexmundi.com
+
+# documents, travel, directories
+scribd.com
+academia.edu
+researchgate.net
+studocu.com
+issuu.com
+tripadvisor.com
+booking.com
+yelp.com
+
+# currency converters and price indexes (CAR dry run, 2026-10-01)
+themoneyconverter.com
+goldpricez.com
+oilpricez.com
+geocountries.com
+citycost.org
+xe.com
+wise.com
+exchange-rates.org
