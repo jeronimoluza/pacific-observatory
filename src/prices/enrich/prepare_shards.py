@@ -357,7 +357,7 @@ def run(
     root: Optional[Path] = None,
     out_dir: Optional[Path] = None,
     workers: int = 1,
-    write_union: bool = True,
+    write_union: bool = False,
     union_target: Optional[Path] = None,
     force: bool = False,
 ) -> list[Path]:

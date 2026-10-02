@@ -1,4 +1,8 @@
-"""Reading `products_input` for the decide loop, whole or scoped to countries.
+"""Reading the prepared products for the decide loop, whole or scoped to countries.
+
+`in_path` is a parquet file or a directory; a directory (the default,
+`_prepared`) is read as the union of every country part under it, which is
+what `products_input.parquet` used to copy to disk.
 
 Split out of `stages/classify.py`, which is at its size limit. The boundary is a
 real one: everything here is about getting rows off disk cheaply, and nothing
@@ -71,6 +75,31 @@ def _scope_filter(scope, dataset=None):
     return expr
 
 
+def open_products(in_path: Path):
+    """`in_path` as one pyarrow dataset; a directory unions its parquet parts
+    under the schema `write_products_input` used to unify them with."""
+    import pyarrow as pa  # noqa: PLC0415
+    import pyarrow.dataset as pads  # noqa: PLC0415
+    import pyarrow.parquet as pq  # noqa: PLC0415
+
+    in_path = Path(in_path)
+    if not in_path.is_dir():
+        return pads.dataset(in_path, format="parquet")
+    parts = sorted(in_path.rglob("*.parquet"))
+    if not parts:
+        raise FileNotFoundError(f"no prepared parquet under {in_path}")
+    schema = pa.unify_schemas([pq.read_schema(p) for p in parts])
+    return pads.dataset([str(p) for p in parts], schema=schema, format="parquet")
+
+
+def products_mtime(in_path: Path) -> float:
+    """When `in_path` last changed: its newest part, for a directory."""
+    in_path = Path(in_path)
+    if not in_path.is_dir():
+        return in_path.stat().st_mtime
+    return max(p.stat().st_mtime for p in in_path.rglob("*.parquet"))
+
+
 def _projection(dataset):
     """Columns to ask for, and columns to fill in afterwards.
 
@@ -103,9 +132,7 @@ def read_products(in_path: Path, scope=None) -> pd.DataFrame:
     treats a missing `unit` as "no declared unit", which is indistinguishable
     from a file that genuinely has none unless someone says so out loud.
     """
-    import pyarrow.dataset as pads  # noqa: PLC0415
-
-    dataset = pads.dataset(in_path, format="parquet")
+    dataset = open_products(in_path)
     present, absent = _projection(dataset)
     products = dataset.to_table(
         columns=present, filter=_scope_filter(scope, dataset)
@@ -128,9 +155,7 @@ def read_product_keys(in_path: Path, key_cols, scope=None) -> pd.DataFrame:
     No PRODUCT_COLS fill here on purpose: a key column missing from
     products_input should raise, not arrive silently as None and be scored.
     """
-    import pyarrow.dataset as pads  # noqa: PLC0415
-
-    dataset = pads.dataset(in_path, format="parquet")
+    dataset = open_products(in_path)
     missing = [c for c in key_cols if c not in dataset.schema.names]
     if missing:
         raise KeyError(f"products_input is missing key columns {missing}")
@@ -150,9 +175,7 @@ def iter_products(in_path: Path, chunk_rows: int, scope=None):
     and began swapping a third of the way through. The rows are on disk; read
     them from there.
     """
-    import pyarrow.dataset as pads  # noqa: PLC0415
-
-    dataset = pads.dataset(in_path, format="parquet")
+    dataset = open_products(in_path)
     present, absent = _projection(dataset)
     scanner = dataset.scanner(
         columns=present, filter=_scope_filter(scope, dataset), batch_size=chunk_rows

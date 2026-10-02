@@ -36,6 +36,7 @@ from prices.enrich import config
 from prices.enrich.classifier import bucket_pool, embed_store, fingerprint
 from prices.enrich.hierlex import scorer as hlx_scorer
 from prices.enrich.hierlex import vectors
+from prices.enrich.stages.products_reader import open_products, products_mtime
 
 PRED_ROOT = config.PRODUCTS_INPUT_PARQUET.parent / "_hierlex_pred"
 PAIR_COLS = ["product_name_original", "country"]
@@ -216,8 +217,6 @@ def _stage_pairs(
     """
     import shutil  # noqa: PLC0415
 
-    import pyarrow.parquet as pq  # noqa: PLC0415
-
     stage_dir.mkdir(parents=True, exist_ok=True)
     parts_dir = stage_dir / "_parts"
     # A run that died mid-stage leaves parts that would otherwise be folded into
@@ -226,9 +225,10 @@ def _stage_pairs(
         shutil.rmtree(parts_dir)
     parts_dir.mkdir(parents=True)
 
-    pf = pq.ParquetFile(products_path)
     seen: set[int] = set()
-    batches = pf.iter_batches(columns=PAIR_COLS, batch_size=STAGE_BATCH_ROWS)
+    batches = open_products(products_path).to_batches(
+        columns=PAIR_COLS, batch_size=STAGE_BATCH_ROWS
+    )
     for k, batch in enumerate(batches):
         df = pair_table(batch.to_pandas())
         df["bucket"] = [embed_store.bucket_of(n) for n in df["name"]]
@@ -271,7 +271,7 @@ def _staged_counts(stage_dir: Path, products_path: Path) -> dict[int, int] | Non
     if not stage_dir.is_dir():
         return None
     try:
-        newer_than = products_path.stat().st_mtime
+        newer_than = products_mtime(products_path)
     except OSError:
         return None
     parts = sorted(stage_dir.glob("pairs_*.parquet"))
@@ -414,10 +414,10 @@ def run(
     gather_rows: int = GATHER_ROWS,
     append_only: bool = False,
 ) -> dict:
-    """Score every (name, country) pair in `products_input` into shards."""
+    """Score every (name, country) pair in the prepared products into shards."""
     from prices.enrich.hierlex import package  # noqa: PLC0415
 
-    products_path = products_path or config.PRODUCTS_INPUT_PARQUET
+    products_path = products_path or config.ENRICH_DIR / "_prepared"
     # Resolved from the manifest rather than by loading the bundle. `out_dir` is
     # the only thing the parent wants the version for, and a parent that loads
     # 1.65 GB of models it will never score with pays for that again in every

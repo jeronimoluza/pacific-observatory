@@ -357,7 +357,7 @@ def run(
     decide_workers: int = 1,
 ) -> dict:
     be = backends.get(backend)
-    in_path = in_path or config.PRODUCTS_INPUT_PARQUET
+    in_path = in_path or config.ENRICH_DIR / "_prepared"
     # Each backend owns its output files, so `--backend head` after a hierlex run
     # leaves the hierlex result standing instead of overwriting it with a
     # narrower, differently-calibrated one.

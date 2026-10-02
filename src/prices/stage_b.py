@@ -4,7 +4,7 @@ Spec: vault `specs/prices-refactor/stage-b-extraction.md` and `stage-b-trust.md`
 (Grain section).
 
 Reads Stage A only: classify's `classified` part for the country (one COICOP
-per `input_hash`), `products_input` (the product's text, for extraction) and
+per `input_hash`), prepare's part (the product's text, for extraction) and
 prepare's `product_months` (median price per product and month). A size is a
 property of the product and is decided once per product; a check on a price is
 judged per product-month. Dated observation rows are joined back only at the
@@ -22,7 +22,6 @@ from __future__ import annotations
 import click
 import numpy as np
 import pandas as pd
-import pyarrow.dataset as pads
 import pyarrow.parquet as pq
 
 from prices import partition
@@ -31,7 +30,7 @@ from prices.build.qa import PLAUSIBLE_USD
 from prices.build.unit_value_audit import flag_uv_outliers
 from prices.enrich import config, uv_gate
 from prices.enrich.fluid_oz import remap_fluid_oz
-from prices.enrich.prepare_shards import PRODUCT_MONTHS_DIR
+from prices.enrich.prepare_shards import PREPARED_DIR, PRODUCT_MONTHS_DIR
 from prices.enrich.stages import decisions_store
 from prices.enrich.stages.concatenate import PER_SOURCE_DIR
 from prices.enrich.stages.extraction import EXTRACTION_FIELDS, extract_frame
@@ -73,16 +72,15 @@ def load_products(country: str) -> pd.DataFrame:
     classified = classified[_in_divisions(classified["coicop_code"])]
     if classified["input_hash"].duplicated().any():
         raise RuntimeError(f"{part}: duplicate input_hash")
-    products = (
-        pads.dataset(config.PRODUCTS_INPUT_PARQUET)
-        .to_table(columns=_PRODUCT_COLS, filter=pads.field("country") == country)
-        .to_pandas()
-    )
+    paths = sorted(PREPARED_DIR.rglob(f"{country}.parquet"))
+    if len(paths) != 1:
+        raise RuntimeError(f"{country}: expected one prepared part, found {paths}")
+    products = pd.read_parquet(paths[0], columns=_PRODUCT_COLS)
     products = products.merge(classified, on="input_hash", how="inner", validate="one_to_one")
     if len(products) != len(classified):
         raise RuntimeError(
             f"{country}: {len(classified) - len(products)} classified products "
-            "are not in products_input"
+            "are not in its prepared part"
         )
     # Human-approved leaf corrections (`coicop_overrides.csv`); one that moves a
     # product out of 01 + 02.1 drops it here.
