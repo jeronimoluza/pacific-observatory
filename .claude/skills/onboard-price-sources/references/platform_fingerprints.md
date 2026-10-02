@@ -58,4 +58,4 @@ This beats category and search routes on client-hydrated sites, where those rout
 
 ## Do not re-probe
 
-`known_blockers.md` holds the confirmed-blocked list (residential-IP / captcha / HMAC territory). Check it before probing anything, and append to it after every run.
+`probe_log/` holds every candidate ever probed, pass or fail. Check it before probing anything (`scripts/probe_log.py lookup <host>`) and append after every probe (`scripts/probe_log.py append`). `blocker_classes.md` holds the class doctrine — which CDN family behaves how. A prior verdict is a hypothesis with a decay rate, not a finding: 45 of 50 hosts filed as blocked re-probed clean on 2026-09-17.

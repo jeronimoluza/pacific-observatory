@@ -100,7 +100,7 @@ de-duplicate, and drop:
 - global shippers that merely *deliver* to the country — `ubuy`, `desertcart`,
   `parceldaddy`. They are not in-country retail and their prices are not local.
 
-Then cross-check the survivors against `known_blockers.md` and the country's
+Then cross-check the survivors against the probe log (`scripts/probe_log.py lookup`) and the country's
 existing manifests before spending any probe budget.
 
 ## Why breadth is the point — the off-domain storefront rule
@@ -158,6 +158,7 @@ Keep the `{"q": ...}` tag on every row — it is what lets you attribute domains
 English vs local-language queries at the end, which is the measurement the next
 run needs.
 
-Feed survivors into Phase 2.5 and continue normally. `ddgs` replaces the *search*
-step only; probing is still `curl_cffi` per `probe_patterns.md`, and the
-access-vs-enumerability gate in Phase 3 is unchanged.
+Do not filter or read the sweep yourself. Hand `sweep.jsonl` straight to
+`scripts/triage_candidates.py --from-sweep` (`discover.md`, Phase 2): it drops the
+noise hosts above, de-duplicates, probes every host and keeps the `q` tag as the
+probe log's `discovery_detail`.

@@ -30,3 +30,35 @@ NidaDanish's own catalog. A genuine additional food-coverage lift would come fro
 searches were Dar es Salaam-heavy; Arusha was named in the brief but not separately
 searched). TANESCO tariff (electricity, non-food, `tariff`/`fuel-station`-adjacent
 channel) remains a cheap-in-principle but OCR-blocked non-food source for a future pass.
+
+## Wave 40 pass (2026-09-28)
+
+Trusted-build state at pass start: 1 COICOP division / 4 trusted sources / 3,478
+trusted rows (existing manifests: ewura_fuel_caps, fastandfresh_tz, nbs_cpi,
+nidadanish_tz, wfp_prices -- 5 manifests on disk, only 4 registering trusted rows
+per the orchestrator brief). ddgs on a8 was rate-limited to near-zero this pass
+(shared-IP pressure from parallel workers, duckduckgo/google/brave/mojeek/startpage
+all timing out) -- discovery leaned on the Claude-side WebSearch tool instead, with
+candidates then verified live via a8 curl_cffi as normal.
+
+| Source name | URL | Channel | Status | Notes |
+|---|---|---|---|---|
+| DawaZetu | https://dawazetu.com/ | pharmacy | **SHIPPED** as `dawazetu_tz` | Custom server-rendered pharmacy storefront, `/Product?page=N`, ~21 items/page. Test run: 60 rows, real TZS prices (Ibuprofen 400mg 6,000; Panadol Extra 20,000). Opens COICOP 06 (health) + personal-care 12/13 at price level -- new for Tanzania. |
+| Tronic (Cash Sale Stores Ltd) | https://www.tronic.co.tz/ | home-improvement | **SHIPPED** as `tronic_tz` | Shopify, open `/products.json`. `throttle_group: shopify` set per orchestrator instruction. Test run: 250 rows, real TZS prices (LED lighting/electrical fittings, 9,000-30,000 TZS range). Opens COICOP 05 (household equipment) -- new for Tanzania. |
+| Zudua Shopping | https://zudua.co.tz/ | dept-store | **SHIPPED** as `zudua_tz` | WooCommerce Store API, open, x-wp-total 1997. Test run: 100 rows, real TZS prices (fashion/electronics/school-supplies mix, e.g. iPhone Duo 512GB 8,900,000; APC UPS 270,000). Cross-division -- opens 03/05/09 at price level, new for Tanzania. |
+| Jordan University College (JUCo) fee structure | https://juco.ac.tz/index.php/fee_structure | null (tariff) | **SHIPPED** as `juco_fees` fetcher (tz_juco_fees) | 6 clean pdfplumber-extractable PDFs (Certificate/Diploma/Bachelor/PGD/Masters/PhD), first-year mandatory fees only. Test run: 78 rows, 0 duplicates, all 10.4.0. Single-institution (narrow) -- opens COICOP 10 (education) at price level, new for Tanzania. |
+| Airtel Tanzania tariffs | https://www.airtel.co.tz/ | -- | **NOT PURSUED -- SPA shell, no static tariff route** | `/assets/pdf/pdf2/Tariffs_ENG.pdf` and `/personal/bundles` both serve the React app shell (index.html catch-all), not the PDF/data. Needs a Playwright network trace to find the real bundle API; not attempted this pass given budget. |
+| Vodacom Tanzania bundles | https://www.vodacom.co.tz/personal/shop/products/bundles | -- | **NOT PURSUED -- SPA, 6s Playwright capture found no catalog endpoint** | Only `/api/popups` observed in a 6-second network capture; the real bundle/plan endpoint did not fire in that window. Worth a longer capture (10s+) or a manual UI-driven flow in a future pass. |
+| Game Tanzania | https://www.game.co.tz/ | -- | **DEAD -- store-locator only** | No `/shop` or `/product` path, no platform fingerprint; page is "About Game & Promises" plus a store locator. Massmart/Walmart big-box chain has no online catalogue in Tanzania. |
+| D&D Clothing | https://danddclothing.com/ | -- | **DEAD -- foreign_currency, not a Tanzania store** | Global Shopify brand (/meta.json: city New York, country US, currency USD) with a Tanzania-named SEO landing page (/pages/womens-clothing-in-tanzania) -- not a localized TZ storefront. Textbook false positive per the skill's currency-discriminator rule. |
+
+## COICOP gap after wave 40
+
+Price-level divisions now covered by at least one Tanzania source: 01/food
+(fastandfresh_tz, nidadanish_tz, wfp_prices), 03/05/09 (zudua_tz), 04.5.4+07.2.2/fuel
+(ewura_fuel_caps), 05/home-improvement (tronic_tz), 06/12/13-adjacent personal-care
+(dawazetu_tz), 10/education (juco_fees). Index-level: all 13 divisions (nbs_cpi).
+Still open at price level: 02 (alcohol/tobacco), 08 (communication -- Airtel/Vodacom
+both SPA-blocked this pass), 11 (restaurants/hotels). Telecom (08) is the clearest
+next target: both majors are SPA-fronted, so the unlock is a proper Playwright
+network trace (10s+ wait, UI-driven bundle selection) rather than a cold curl probe.

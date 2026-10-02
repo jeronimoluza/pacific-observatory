@@ -1,5 +1,76 @@
 # Eritrea
 
+_Inventory written: 2026-09-28_ (w40 institutional/diaspora pass — first pass
+to ship anything for this country; the domestic-retail structural-absence
+verdict below from 2026-09-01/09-02 is unchanged and still holds)
+
+Before this pass: 0 manifests of any kind (confirmed by two prior passes,
+2026-09-01 and 2026-09-02, both scoped to domestic online grocery/retail).
+**Result: 2 shipped.** This pass deliberately searched two angles the prior
+passes never covered — institutional/tariff sources and diaspora/regional
+marketplaces — per the w40 brief, which named both as acceptable coverage
+for a country with this little e-commerce.
+
+## Shipped
+
+| Source | Scaffolding | Analytical role | COICOP | Notes |
+|---|---|---|---|---|
+| `eritel_tariffs` | fetcher | tariff | 08.3.0 | EriTel, Eritrea's sole state-owned telecom operator (`eritel.com.er`). Mobile GSM, fixed PSTN, VDSL/ADSL/Wifi/VSAT internet tariff schedules — plain server-rendered HTML tables, no JS, no WAF (plain `requests` clears it). 189 rows verified live 2026-09-28. |
+| `raenashop_er` | spider | retailer_sku | wide (cosmetics, home/kitchen incl. coffee-ceremony sets, food and herbs and drinks) | Eritrean/Ethiopian diaspora import store, Netherlands-based (`raenashop.com`). Open, unauthenticated WooCommerce Store API, 287 products across 15 pages, page-1/page-2 product-id sets confirmed disjoint. EUR pricing only (currency selector offers EUR/USD/GBP/SEK/NOK/DKK/CHF/CAD/AUD, never ERN) — this is diaspora-buyer pricing, not a domestic Eritrean price level, but it is exactly the "diaspora/regional marketplace" coverage the brief calls acceptable given the confirmed absence of domestic retail. 99 rows verified live 2026-09-28 (test cap; full catalog is 287). |
+
+## Dead ends this pass
+
+| Candidate | URL | Verdict | Notes |
+|---|---|---|---|
+| Naqfana | naqfana.com | blocked (login wall) | Markets itself as "the trusted Eritrean diaspora marketplace... send livestock, groceries, electronics and gifts." React SPA; the entire catalog sits behind account registration (phone + email + name + country, "no customer password needed") — no product is visible pre-auth, and no public catalog endpoint exists in the rendered JS bundle (`/api/*` there is auth/messaging/wishlist only). Probably the single best-matching diaspora source in scope, but not scrapeable without creating an account. |
+| EriMarket | erimarket.shop | no_catalog | Next.js storefront, real WooCommerce-shaped currency selector (EUR/USD/GBP/SEK/NOK/DKK/CHF/CAD/AUD), but its entire product listing is 8 items literally named "E2E Test Shop" / "Test Shop" — seed/test data from a dev deploy, not a live catalog. Worth a recheck in 3-6 months if it goes live for real. |
+| NatnaShop | natnashop.com | out_of_scope | Shopify, open `/products.json`, EUR pricing. Catalog is print-on-demand identity merch (Eritrean-flag t-shirts, hoodies, jerseys, graduation stoles, sneakers) — not staple consumer goods for a PPP basket, same trap class as the ISO-documents WooCommerce store flagged in `classification.md`. |
+| Habesha Outlets | habeshaoutlets.com | out_of_scope | Shopify apparel dropship store, narrow (single "Habesha Dress" product line), titles heavily SEO-stuffed ("Ethiopian Shop Near Me"), Ethiopia-branded throughout — not meaningfully Eritrea-specific. |
+| Grmawit | grmawit.com | out_of_scope | Shopify apparel dropship store, "Europe's largest Ethiopian and Eritrean products retailer" by self-description, but the sampled catalog is exclusively "Ethiopian Traditional Dress" SKUs, some literally suffixed `(Copy)` — duplicate/placeholder-shaped listings, Ethiopia-branded. |
+| Massawa Port Authority | massawaporteritrea.com | no_catalog | Live site (Elementor/WordPress), reachable, but its tariff line item reads verbatim "Competitive Port Tariff : Available on request" — no published schedule exists to source. |
+| University tuition (7 public colleges) | — | out_of_scope | Multiple independent sources agree Eritrean public higher education is free (state-funded, no verified private alternative) — there is no fee schedule to source, not a search gap. |
+| Himbol Financial Services | erihimbol.com | not probed | Government-linked remittance/FX service publishing real-time exchange rates. Out of scope for a goods/services PPP price basket (FX reference, not a priced catalog) — not chased further, flagged only in case a future FX/aggregate_proxy pass wants it. |
+| Water corporation, agricultural marketing board, hospital charges, Ministry of Trade price list | — | not found | English-only `ddgs` sweep (37 queries total, backends pinned) returned nothing Eritrea-specific for any of these four verticals — hits were false positives for other countries (a Botswana water utility, a California hospital chargemaster) or generic global import-tariff aggregators (not retail/consumer prices). |
+
+## Gap: local-language search not run, and countries.yaml is missing Tigrinya
+
+This pass ran English-only `ddgs` queries. `src/configs/countries.yaml` lists
+Eritrea's `languages:` as `[en, arabic]` — **Tigrinya is missing**, despite
+being the language the one real consumer-facing find (Naqfana) actually ships
+in (`<html lang="ti-ER">`, Tigrinya-first copy). A Tigrinya-language sweep for
+NSO/utility/agricultural-board material was not run this pass and is the most
+likely place to find something this pass missed — flag `countries.yaml` for a
+`languages:` fix (add `ti`) before the next Eritrea pass.
+
+## Verdict
+
+**Domestic online retail:** still a confirmed structural absence — two
+independent prior passes (2026-09-01, 2026-09-02) found none, and nothing in
+this pass contradicts that.
+
+**Institutional tariffs and diaspora marketplaces are NOT structurally
+absent.** This pass shipped one real example of each in under two hours of
+English-only search. The right framing for Eritrea going forward is "no
+*domestic* e-commerce," not "no e-commerce" — a future pass should keep
+working the institutional-vertical and diaspora-marketplace angles (ideally
+adding a Tigrinya sweep) rather than re-confirming the retail absence a third
+time.
+
+## Next steps
+
+- Fix `countries.yaml` to add `ti` (Tigrinya) to Eritrea's `languages:`.
+- A Tigrinya-language institutional sweep (NSO, agricultural marketing board,
+  water/electricity utility) — the English sweep this pass ran came back
+  empty on all four verticals it tried.
+- Naqfana (naqfana.com) is worth a second look if a future pass is willing to
+  register a throwaway account to see past the login wall — it is the
+  closest-matching "send goods to Eritrea" marketplace found and was not
+  ruled out on data quality, only on access.
+- Do not re-chase domestic online grocery/retail; three independent passes
+  now agree it does not exist.
+
+---
+
 _Inventory written: 2026-09-02_ (search-starved re-run; supersedes the
 2026-09-01 pass)
 

@@ -1,648 +1,170 @@
 ---
 name: onboard-price-sources
-description: "Discover, scaffold, and end-to-end-test new price-data sources for the `prices` pipeline, targeting full COICOP 2018 basket coverage for PPP / Real-Exchange-Rate analysis. Use whenever the user wants to expand price-source coverage — for one country ('find new sources for Indonesia', 'add supermarkets in Brunei', 'we have no sources for Korea'), for a region ('expand EAP retail', 'more wholesale feeds'), for a commodity gap ('nothing covers fresh seaweed', 'fill the live-animal leaves'), or for one named URL. Also triggers on references to `src/prices/configs/`, price spiders, or price fetchers. Runs: depth audit of existing sources → marketplace-first discovery → feasibility probing → spider OR fetcher scaffolding + YAML manifest → automated test → coverage report."
+version: 5
+description: "Discover, scaffold, and end-to-end-test new price-data sources for the `prices` pipeline, targeting full COICOP 2018 basket coverage for PPP / Real-Exchange-Rate analysis. Use whenever the user wants to expand price-source coverage — for one country ('find new sources for Indonesia', 'add supermarkets in Brunei', 'we have no sources for Korea'), for a region ('expand EAP retail', 'more wholesale feeds'), for a commodity gap ('nothing covers fresh seaweed', 'fill the live-animal leaves'), for one named URL, or to re-probe sources previously written off ('recover blocked sources', 'anything we gave up on'). Also triggers on references to `src/prices/configs/`, price spiders, or price fetchers. Runs: depth audit of existing sources → marketplace-first discovery → feasibility probing → spider OR fetcher scaffolding + YAML manifest → automated test → coverage report."
 ---
 
 # Onboard Price Sources
 
-Discover and onboard new price-data sources for the `prices` pipeline. The deliverable is one or more working spider files **or** Python fetcher modules plus YAML manifests under `src/prices/configs/<region>/<subregion>/<country>/`, each verified by an end-to-end test run. The downstream consumer is a cross-country PPP / Real-Exchange-Rate pipeline, so coverage is measured against the full COICOP 2018 basket — not just supermarket SKUs.
+Deliver working spider files **or** Python fetcher modules plus YAML manifests under
+`src/prices/configs/<region>/<subregion>/<country>/`, each verified by an end-to-end
+test run. The downstream consumer is a cross-country PPP / Real-Exchange-Rate pipeline,
+so coverage is measured against the full COICOP 2018 basket — not just supermarket SKUs.
+
+**The objective is fewest total billed tokens across the whole run — main agent plus
+every sub-agent — per verified source onboarded.** Phase 8 emits a cost line; that is
+how the run reports against it.
+
+**Check you are not on a stale copy.** The frontmatter says `version: 5`. Several
+worktrees still carry a pre-`ddgs`, pre-probe-log lineage with a monolithic
+`references/known_blockers.md`. If you see that file, you are on an old copy.
 
 ## Scope router — start here
 
-The unit of *scaffolding* is a source. The unit of *discovery* is usually **not** a country. Route on what you were actually given:
+The unit of *scaffolding* is a source. The unit of *discovery* is usually **not** a
+country. Route on what you were given, and read only the file the route names.
 
-| You were given | Start at | Notes |
+| You were given | Read | Notes |
 |---|---|---|
-| **A country** ("sources for Indonesia") | Phase 0 → 0.5 → 1 → 2 | The classic path. Discovery still leads with platforms and marketplaces, not a country-wide search. |
-| **A region or "expand coverage"** | Phase 2 (marketplace sweep), then loop Phases 3–7 per surviving source | Do **not** re-run per-country discovery N times. Sweep once across the region, then onboard each hit. Countries only decide where the YAML file lands. |
-| **A commodity or COICOP gap** ("nothing covers fresh seaweed") | **Phase 0.5 first — this is the one that saves the most work** | Most "sourcing gaps" turn out to be depth gaps in sources already scraped. |
-| **A single named URL** | Phase 3 | Skip discovery entirely. |
-| **A ready-made candidate list** (spreadsheet, inventory dump, hand-off from another team) | Phase 2.5, after de-duplicating against the corpus | Discovery is already done — the work is disambiguation, not search. See "Working from a supplied candidate list" below. |
+| **A coverage-gap complaint** ("we have nothing for X", "more sources") | `references/phases/recover.md` **first** | Cheapest yield in the skill. Zero discovery cost, and the inherited verdicts are measurably wrong — 45 of 50 re-probed clean in 33 s. Then fall through to the row below. |
+| **A country** ("sources for Indonesia") | `discover.md` → `probe.md` → one scaffold file → `report.md` | The classic path. Discovery is script-first: generate hosts into a file, `triage_candidates.py` probes them all, you read only the `adjudicate` table. |
+| **A region or "expand coverage"** | `discover.md` (Phase 2 sweep only) → then loop the per-source files | Do **not** re-run per-country discovery N times. Sweep once across the region, then onboard each hit. Countries only decide where the YAML lands. |
+| **A commodity or COICOP gap** ("nothing covers fresh seaweed") | `discover.md` — **Phase 0.5 first, this saves the most work** | Most "sourcing gaps" are depth gaps in sources already scraped. |
+| **A single named URL** | `probe.md` → one scaffold file → `report.md` | Skip discovery entirely. Do not read `discover.md`. |
+| **A ready-made candidate list** (spreadsheet, hand-off) | `discover.md` § "Working from a supplied candidate list", then `probe.md` | Discovery is done; the work is disambiguation, not search. |
 
-Anti-bot infrastructure clusters by *tenant* and storefront software clusters by *platform* — both cut across borders. Country-by-country discovery rediscovers the same platform and re-loses to the same WAF once per country. Per-country work is right for probing, selector extraction, and scaffolding; it is wrong for finding candidates.
+Anti-bot infrastructure clusters by *tenant* and storefront software clusters by
+*platform* — both cut across borders. Country-by-country discovery rediscovers the same
+platform and re-loses to the same WAF once per country. Per-country work is right for
+probing, selector extraction and scaffolding; it is wrong for finding candidates.
 
-### Coverage density decides what to chase
+**Do not proceed past a phase whose file you have not read.** Each file ends with the
+next one to load.
 
-Two opposite target-selection rules, and picking the wrong one wastes the run. The switch is **per country**, not a project phase — countries sit on different sides of it at the same time.
+**EAP food-and-beverage has already flipped, and adding sources there is close to
+worthless.** Of 22 division-01 leaves flagged `sourcing_gap`, most were *already
+collected* and merely sitting below `MIN_SUPPORT` in gold, so the classifier never routed
+anything to them. Roughly 7 were genuinely unscraped. The binding constraint in EAP F&B is
+**gold labels, not sources**. Route that ask to gold-growth, not here.
 
-| Country's state | Rule | Why |
+## Phase index
+
+| File | Phases | Load when |
 |---|---|---|
-| **Little or no coverage** (the default outside EAP) | **Take whatever verifies.** Onboard every candidate that passes the probe, in whatever order is cheapest. Do not rank by COICOP gap. | When every leaf is empty, every source fills a gap, so gap-ranking sorts by a constant. It costs real effort and returns nothing. |
-| **Established coverage** | **Rank by gap.** Target the leaves and divisions nothing reaches yet. | Once the easy cells are full, an unranked source mostly re-covers ground you already have. |
+| `references/phases/recover.md` | the `recover` route | A coverage-gap ask, or any time the recheck queue is non-empty |
+| `references/phases/discover.md` | 0, 0.5, 1, 2, 2.5, ordering gate | You have to *find* candidates |
+| `references/phases/probe.md` | 3, 3-fetcher, 4 | You have candidates to test |
+| `references/phases/scaffold_spider.md` | 5A, 7 | `scaffolding: spider` |
+| `references/phases/scaffold_fetcher.md` | 5B, 7-fetcher | `scaffolding: fetcher` |
+| `references/phases/report.md` | 6, 8 | Testing and writing everything back |
 
-**The trigger to flip a country:** its sweeps stop opening new leaves — the last pass's candidates carry leaves already covered. Judge this per country, from that country's own results.
+Spider and fetcher are mutually exclusive paths. Read one, never both.
 
-**EAP food-and-beverage has already flipped, and adding sources there is close to worthless.** The measured finding: of 22 division-01 leaves flagged `sourcing_gap`, most were *already collected* and merely sitting below `MIN_SUPPORT` in gold, so the classifier never routed anything to them. Roughly 7 were genuinely unscraped. The binding constraint in EAP F&B is **gold labels, not sources** — a grocery sweep there moves coverage by approximately zero. Route that ask to gold-growth, not to this skill.
+## Classification, in six lines
 
-**Fan-out note:** the proven pattern for large expansions is one agent per country, each invoking this skill with a pre-built candidate list, with the orchestrator doing the sweep and the commits. In that mode the agent enters at Phase 3 and never reads `references/discovery.md`.
+Four axes go into every manifest. Full definitions, the enrichment-operational fields,
+the narrowness rule and worked examples: `references/classification.md`. You do not need
+them to pick a route — Phase 2.5 is where they get assigned.
 
-## Source classification — three orthogonal axes
+- `scaffolding` — `spider` (Scrapy, retailer SKU catalogues and listings) or `fetcher` (plain Python, everything else)
+- `extraction_pattern` — `scrapy_html` / `scrapy_api` / `scrapy_playwright` / `scrapy_listing` / `rest_api` / `tabular_download` / `pdf` / `html_scrape`
+- `analytical_role` — `retailer_sku` / `official_avg` / `tariff` / `cpi_benchmark` / `aggregate_proxy`. Complements, not a ranking: the PPP analyst wants all roles populated.
+- `coicop_classification` — `classifier` / `source_curated` / `publisher_labeled`. Declares who tags COICOP.
+- Plus `channel:` — **required on every manifest, `null` included.** A missing key or an out-of-enum value breaks the *global* `prices collect --list`, not just that source.
+- Retired keys, never write them: `priority:`, `source_type:`, `observation_level:`, `coicop_divisions:`, and `region/subregion/country/source` in a manifest body.
 
-Every source is classified along three axes that drive scaffolding choice, feasibility probing, and analytical handling. A fourth axis declares COICOP-tagging ownership. All four go into the YAML manifest — full schema in `references/yaml_schema.md`.
+## The nine traps that destroy yield
 
-### Axis 1 — `scaffolding` (binary)
+The rest live inline in the phase file where they bite. These nine are here because
+violating them silently loses sources rather than wasting a cycle.
 
-| Value | Meaning |
-|---|---|
-| `spider` | Scrapy spider in `src/prices/price_scraping/spiders/`. Used for retailer SKU catalogues and real-estate / classifieds listings. |
-| `fetcher` | Plain-Python module in `src/prices/fetchers/`. Used for everything else — official APIs, stats-office downloads, tariff pages, CPI publications. |
+1. **Pin `ddgs backend=`.** It rotates through `wikipedia`/`grokipedia`, which find no storefronts and DNS-fail on `region="wt-wt"` — 9 of 23 Botswana queries returned 0 for that reason alone. Pin `backend="duckduckgo, google, brave, mojeek, startpage, yahoo"`.
+2. **A 0-result `ddgs` query is not absence.** It is indistinguishable from a backend failure. Re-run with backends pinned before writing any dead end.
+3. **Never record a dead end after probing only the corporate domain.** `shopsefalana.com` not `sefalana.co.bw`; `echoppies.com` not `choppies.co.bw`; `spar2u.co.bw` not `spar.co.bw`. A prior Botswana run wrote off Choppies and Sefalana this way; Sefalana serves ~316,600 products from an open JSON API.
+4. **Never write a block verdict from bare `curl`.** It measures curl's TLS handshake, not the site's defenses. Run the ladder — `chrome124`, `chrome120`, `safari17_0`, **`firefox133`** — first. The appender refuses a `blocked` verdict that names no lever.
+5. **Log every candidate probed, pass or fail.** `scripts/probe_log.py append`. A win is a manifest and a dead end used to be a markdown bullet, which is why no run could learn from the last one. This is the one habit the whole design rests on.
+6. **A 200 is not a catalog, and an open platform API is not a priced catalog.** Prove a *category* page paginates — page 2 must return a different set. Fetch an actual product and look at its price: six dead ends in one wave were WooCommerce stores where every price was 0.
+7. **Never rank targets by COICOP gap in a low-coverage country.** Every division is a gap there, so the ranking sorts by a constant while costing real analysis time. Take whatever verifies until the country stops opening new leaves.
+8. **Never count cost-of-living aggregators as coverage.** Numbeo, LivingCost, Expatistan, MyLifeElsewhere, Nomad List carry no real SKUs, already exist for most countries, and inflate every table they appear in. Same for a catalog that is not consumer retail — `estore.swasa.co.sz` sells ISO standards documents.
+9. **A covered domain is not a covered surface.** Phase 2 subtracts already-covered sources, which drops the whole *domain* from the pool unprobed. `bluesky_prepaid_as` covered `bluesky.as` at `/personal/prepaid/plans/` (`tariff`, `08.1.0`) while the same host served 97 USD devices from an open WooCommerce Store API at 08.2/08.3/09. Two American Samoa passes missed it. Fingerprint every covered domain once — this blind spot grows with coverage.
 
-Phase 3 probes scaffolding=`spider` sources with the tier algorithm (1A HTML / 1B JSON / 2 Playwright / skip). Phase 3-fetcher probes scaffolding=`fetcher` sources by payload shape.
+## Orchestrator mode — how large expansions actually run
 
-### Axis 2 — `extraction_pattern`
+The proven pattern, and the one that built most of the corpus: 84% of manifests are under
+30 days old and the entire `ssa` region (523 manifests) came from wave campaigns. Leaving
+this as a footnote is why every wave re-invents the brief.
 
-| Value | Typical sources |
-|---|---|
-| `scrapy_html` | Server-rendered retailer PDP HTML — Tier 1A |
-| `scrapy_api` | Retailer JSON / GraphQL endpoint — Tier 1B |
-| `scrapy_playwright` | SPA retailers needing JS hydration — Tier 2 |
-| `scrapy_listing` | Real-estate / classifieds listing-card spiders |
-| `rest_api` | Official tracker JSON endpoints (Pertamina, Opinet, PriceCatcher) |
-| `tabular_download` | Stats-office CSV / XLS / Parquet downloads |
-| `pdf` | Regulator orders, NSO PDF tables |
-| `html_scrape` | Static HTML tariff pages, telco plan pages |
+- **One country per worker.** Keeps the blast radius of a bad shard to one country's YAML.
+- **The orchestrator commits; workers do not.** N agents committing into one git index is a race that produces silently untracked files — already a recorded failure mode here, where a bare `build/` in `.gitignore` swallowed source directories.
+- **A worker reads `probe.md` + one scaffold file + `classification.md`, and explicitly not `discover.md`.** The orchestrator did the discovery.
+- **A probe scout reads no skill file at all.** Its job is ~40 lines of prompt, not a 15 KB reference:
 
-Tells the reader (and the next skill run) what shape of code lives in the module without re-opening it. Drives which recipe in `references/fetcher_pattern.md` applies.
+  > Probe `https://<host>/` with `curl_cffi`, profiles in order: `chrome124`, `chrome120`,
+  > `safari17_0`, `firefox133`. Stop at the first HTTP 200 with a body over 2 KB.
+  > If you get one, try `/wp-json/wc/store/v1/products?per_page=5`, `/products.json?limit=5`,
+  > `/rest/V1/store/storeConfigs`, `/api/products` and report which returns priced products.
+  > Then fetch one category URL and its page 2, and say whether page 2 returns a *different*
+  > set. Report exactly: host, verdict (ok|blocked|no_catalog|unreachable), the profile that
+  > worked or the full list tried, the tell you saw (status code, server header, challenge
+  > name), platform if any, and the endpoint shape. Do not scaffold anything. Do not guess
+  > selectors. A bare-curl 403 is not a verdict.
 
-### Axis 3 — `analytical_role`
+- **Workers write their own probe-log shard** (`probe_log/<run_id>-<country>.jsonl`); the orchestrator commits the directory. Shards are new files, so parallel waves never conflict in git.
+- **Pace the waves.** In a multi-host campaign, late failures are not independent of early success — `handla.ica.se` failed three acceptance runs against a challenge its own campaign triggered from one IP.
 
-| Value | Examples | PPP layer |
+## Environment — check this before Phase 3, not during it
+
+Run on a8 with `~/venv/bin/python`: it carries `curl_cffi`, `ddgs`, `playwright` and
+Chromium, and is the only environment verified end to end (2026-09-17). A stock
+`poetry install` is **not** a working probe environment:
+
+| Need | State | If missing |
 |---|---|---|
-| `retailer_sku` | FairPrice SG, KlikIndomaret ID, Coupang KR | Per-SKU stickiness + basket assembly |
-| `official_avg` | SingStat ARP, BPS HK-58, JP Retail Price Survey | Item-level averages for basket |
-| `tariff` | SP Group SG, PLN ID, FCCC fuel, Singtel plans | Administered-price layer |
-| `cpi_benchmark` | DOSM CPI, PSA CPI, SBS CPI, ABS CPI, BPS CPI | Index benchmark (NOT a fallback for missing price-level coverage) |
-| `aggregate_proxy` | Two distinct populations. **(a)** Commodity / FX reference series — WB Pink Sheet, Brent/WTI, IMF FX. **(b)** Cost-of-living survey publishers — livingcost, expatistan, mylifeelsewhere, numbeo. | Reference series. **(b) is the larger population by far** — 103 of 302 manifests carry this role and most are survey publishers, not commodity feeds. They are already onboarded for most countries; never add more, and never count them as coverage (see the anti-patterns). |
+| `curl_cffi` | locked via `scrapy-impersonate` | arrives with `poetry install` |
+| `playwright` | declared `>=1.40` — **the package is not the browser** | `poetry run playwright install chromium` |
+| `ddgs` | **absent from `pyproject.toml` and `poetry.lock`** | `pip install ddgs` |
 
-Replaces the old `priority` field — sources of different analytical roles are **complements**, not substitutes. The PPP analyst wants all roles populated, not a "best one wins" ranking.
-
-### Axis 4 — `coicop_classification`
-
-Declares who tags COICOP for the rows this source emits. Drives where the COICOP map lives.
-
-| Value | Used for | Handler |
-|---|---|---|
-| `classifier` | Retailer SKU spiders, stats-office tables with long free-text item lists | `src/prices/enrich/classifier/` — the ensemble-embedding → logistic-regression head, run by `prices process --stage classify`. Predicts the COICOP **leaf** from the raw product name. (Renamed 2026-08-05 from `deferred_gemini`, which named a retired Gemini reranker at `src/cpi/coicopping/` — do not route new sources there.) |
-| `source_curated` | Fuel, electricity, water, telco, real-estate, tariff schedules, restaurant aggregators — sources whose domain unambiguously determines COICOP | Fetcher module carries a `_COICOP_MAP` constant written by the skill author at onboarding |
-| `publisher_labeled` | CPI publications (publisher emits its own COICOP labels) | Fetcher reads the publisher's labels; may need a translation map (e.g. Bahasa → COICOP codes) |
-
-Rows that should carry `coicop_code` but for which the map fails MUST be dropped with a logged warning — a null `coicop_code` row that should have been populated is pollution masquerading as coverage.
-
-## Enrichment-operational fields
-
-The four axes above route a source through the pipeline. A *separate* set of YAML fields is read by the enrichment stage and the build. Authors MUST populate these explicitly for every new source; the skill's Phase-5 scaffolding step should not finish until all required entries below are set.
-
-| Field | Required? | Author rule | What it drives downstream |
-|---|---|---|---|
-| `channel` | **required on every manifest — the key must be present even when the value is `null`** | Pick from the closed enum `Channel` in **`src/prices/enrich/schemas.py`** (that module is the authority; `configs/_examples/template.yaml` only shows one example value). Use `null` for non-retail sources where `analytical_role ∈ {cpi_benchmark, official_avg, tariff, aggregate_proxy}`. | Source-mix reporting and per-channel slicing in the build. **Gotcha:** a value outside the enum, or an omitted `channel:` key, raises at load time and takes down the *global* `prices collect --list` — not just that one source. Both have happened (a `fresh_market` value; a fetcher YAML with no `channel:`). |
-| `coicop_codes` | **required for narrow sources**; omit for wide | A *narrow source* is one whose entire catalog falls under a single COICOP 3-digit class (e.g. residential rentals → `04.1`; gasoline retail → `07.2`). Declare every code the source emits — `["04.1.1"]`, `["04.1.1", "04.1.2"]`. For wide sources (supermarkets, hypermarkets, marketplaces), leave unset — the classifier assigns leaves per product. | Lets `source_curated` / `publisher_labeled` rows carry a COICOP code without going through the classifier at all; feeds the Phase-8 coverage report |
-| `language` | optional, recommended | ISO 639-1 of the dominant product-name language (e.g. `ja`, `ko`, `th`, `id`). Falls back to the country's first language in `src/configs/countries.yaml`, then to `"en"`. | Tier-a structural regex variants (unit-detection patterns differ by language). Note `_resolve_lang()` returns the *effective* language, which is not always the country's official one. |
-
-### Narrowness rule
-
-A source is **narrow** iff `len({c[:4] for c in coicop_codes}) == 1`, where `c[:4]` is the 3-digit class prefix (e.g. `"04.1"`, `"07.2"`). `["04.1.1"]` and `["04.1.1", "04.1.2"]` are both narrow. `["07.2.2", "07.3.2"]` is wide (different classes — fuel vs transit fares are not substitutable). Narrow sources take their COICOP code straight from the manifest instead of from the classifier.
-
-> The historical justification for this rule was that narrow sources "bypass tier-b and tier-c." That cascade was **removed on 2026-07-24** — there is no `tier_b` package and no `tier_c.py` (the `src/prices/enrich/tier_b/` path holds nothing but a stale, untracked `__pycache__`). [ADR-0002](../../../docs/adr/0002-source-curated-short-circuit.md) and ADR-0003 describe the retired design; the rule itself survives because declaring a known COICOP code is still strictly better than asking a classifier to rediscover it.
-
-### Worked examples
-
-- **Residential rentals spider** (e.g. propertyguru, lamudi, ddproperty): `coicop_codes: ["04.1.1"]` → narrow → short-circuit. Tier-a still extracts pricing_basis=`monthly` and amount from `"RM 2,200 /mo"`-style strings. `sub_label_id` stays null.
-- **Supermarket** (e.g. emart, coles, fairprice): leave `coicop_codes` unset. A supermarket catalog spans most of divisions 01–13; the classifier assigns a leaf per product.
-- **Pharmacy chain** (e.g. watsons, boots): same — leave `coicop_codes` unset. Cache-derived codes will pick up the dominant 06.x / 13.x top-levels.
-- **Fuel retailer** (e.g. shell, BP price listings, if scraped): `coicop_codes: ["07.2.2"]` → narrow → short-circuit. Same shape as rentals.
-- **Cost-of-living survey publisher** (e.g. livingcost, expatistan, mylifeelsewhere, numbeo): not an outlet — it publishes modelled averages, not a catalog. `channel: null`, `analytical_role: aggregate_proxy`, leave `coicop_codes` unset.
-
-For every other source, pick the `channel` value whose discriminating test matches, from the table in `src/prices/docs/GLOSSARY.md`. Do not copy the value list into this skill — one list, one place.
-
-The fields above are independent of the four axes — a `coicop_classification: source_curated` spider source MUST still set both `channel` AND `coicop_codes`, because routing classification ≠ operational codes.
+`ddgs` being undeclared is a defect, not a footnote: Phase 2 generator 6 mandates it,
+so a fresh environment silently loses the entire search phase. Surface it rather than
+pip-installing around it again.
 
 ## Repo entry points
 
-- Country topology / slug validation: `src/configs/regions.yaml`, `src/configs/countries.yaml`
-- Existing price-source manifests: `src/prices/configs/<region>/<subregion>/<country>/<source>.yaml` (also `src/prices/configs/_global/<source>.yaml` for truly aggregate sources)
-- **Discovery inventory** (seed for Phase 2): `references/inventories/<region>/<country>.md`, with `references/inventories/<region>/_aggregators.md` for cross-country aggregators. Today only `references/inventories/eap/` is populated — other regions cold-start in Phase 2 and write back a seed at the end.
-- **Slug traps** (countries whose `regions.yaml` slug doesn't match the obvious lowercase-of-name): `references/slug_traps.md`
-- **Spider code** (`scaffolding: spider`): `src/prices/price_scraping/spiders/` — flat, one file per source, keyed by the spider's `name = ...` attribute
-- **Centralized CSS selectors** (Tier 1A HTML spiders only): `src/prices/price_scraping/selectors.py`. API spiders and listing-card spiders bypass this and put selectors inline.
-- **Fetcher code** (`scaffolding: fetcher`) — mirrors `src/fuel/fetchers/`:
-  - Bucket 1 (country-bound, ~80% of fetchers): `src/prices/fetchers/<region>/<subregion>/<country>/<source>.py`
-  - Bucket 2 (regional aggregator covering multiple countries in one region): `src/prices/fetchers/_shared/<region>/<source>.py` with thin per-country wrappers at `<region>/<subregion>/<country>/<source>.py`
-  - Bucket 3 (truly global aggregate, e.g. commodity benchmarks): `src/prices/fetchers/_global/<source>.py`
-- **Existing COICOP classifier** (used by `coicop_classification: classifier`): `src/prices/enrich/classifier/` — ensemble embedding → logistic-regression head, run by `python run.py prices process --stage classify`
-- Scrapy + Playwright settings: `src/prices/price_scraping/settings.py` (do not edit unless explicitly asked)
-- CLI:
-  - `python run.py prices collect --source <name> --max-items N` — runs **both** scaffoldings. `collect.py` dispatches on `scaffolding`: spiders go to Scrapy, fetchers go to `_run_fetcher()`, which resolves `module:function`, computes the cutoff from the existing CSV (falling back to `fallback_date`), and writes the columns for the source's `analytical_role`.
-  - `python run.py prices collect --list` (lists everything, both scaffoldings)
-  - There is **no separate `prices fetch` command** — earlier drafts of this skill said one was planned. Fetchers are collected, listed, and tested through `prices collect` like any other source.
-- Data output:
-  - Spiders (raw SKU items, pre-classification): `data/prices/<region>/<subregion>/<country>/<source>/raw_items/<source>_<ts>.jsonl` (one file per run)
-  - Fetchers emitting PriceObservation: `data/prices/<region>/<subregion>/<country>/<source>/price_observations.csv`
-  - Fetchers emitting IndexObservation: `data/prices/<region>/<subregion>/<country>/<source>/index_observations.csv`
-  - Bucket 3 global: `data/prices/_global/<source>/price_observations.csv`
+- Country topology / slug validation: `src/configs/regions.yaml`, `src/configs/countries.yaml`. Ambiguous slugs: `references/slug_traps.md`.
+- Existing manifests: `src/prices/configs/<region>/<subregion>/<country>/<source>.yaml`
+- **Probe log** (every candidate ever probed): `references/probe_log/*.jsonl` — query with `scripts/probe_log.py`
+- **Discovery inventories**: `references/inventories/<region>/<country>.md`, plus `<region>/_aggregators.md`. 143 files; regions without one cold-start and write a seed back at Phase 8.
+- **Spider code**: `src/prices/price_scraping/spiders/` — flat, one file per source, keyed by the spider's `name = ...`
+- **Centralized CSS selectors** (Tier 1A HTML spiders only): `src/prices/price_scraping/selectors.py`. API and listing-card spiders bypass this.
+- **Fetcher code** — mirrors `src/fuel/fetchers/`: country-bound `src/prices/fetchers/<region>/<subregion>/<country>/<source>.py`; regional `_shared/<region>/<source>.py` + thin wrappers; global `_global/<source>.py`.
+- **COICOP classifier**: `src/prices/enrich/classifier/`, run by `python run.py prices process --stage classify`. Do not route anything to `src/cpi/coicopping/` — retired.
+- Scrapy + Playwright settings: `src/prices/price_scraping/settings.py` (do not edit unless asked)
+- CLI: `python run.py prices collect --source <name> --max-items N` runs **both** scaffoldings; `--list` lists everything. There is **no separate `prices fetch` command**.
+- Data output: spiders → `data/prices/<region>/<subregion>/<country>/<source>/raw_items/<source>_<ts>.jsonl`; fetchers → `price_observations.csv` or `index_observations.csv` in the same directory.
 
-## Workflow
+## Scripts
 
-Each phase has a clear deliverable. Don't skip phases — every shortcut taken in the past (inventing selectors without probing, trusting WebFetch on SPAs, declaring a site blocked without a network trace) has produced spiders that emit zero records.
-
-### Phase 0 — Pre-flight checks
-
-Before resolving the country, confirm the repo can actually support it:
-
-1. The country slug appears in `src/configs/regions.yaml` under some `<region>.subregions.<subregion>.countries:` list.
-2. The same slug has an entry in `src/configs/countries.yaml` with non-empty `currency:` and at least one `languages:` value. If either is missing or stubbed, stop and surface to the user — fetcher / spider scaffolding will silently misbehave otherwise (currency defaults to `null`, language resolution falls through to `"en"`).
-
-### Phase 0.5 — Depth audit: is this actually a sourcing gap?
-
-**Run this before any discovery whenever the ask names a commodity, a COICOP leaf, or a coverage hole.** It is the cheapest phase and the one that most often cancels the rest of the run.
-
-The recurring finding across every expansion pass: *the item is already listed by a source we scrape, and the spider simply doesn't crawl deep enough.* Confirmed on Vietnam (winmart/coopmart carried fresh produce the spider never reached — packaged aisles only), Korea (fresh seaweed and yam already on oasis_kr and kurly_kr), and most recently on a 29-leaf "sourcing gap" list of which the majority were already inside scraped catalogs.
-
-A depth gap and a sourcing gap need opposite fixes. Onboarding a new source to solve a depth gap adds maintenance surface and doesn't fill the leaf.
-
-1. **Search the raw collected corpus**, not the classified output — `products_input.parquet` holds everything collected; `cache/classified.parquet` holds only what survived classification. A leaf can read as "zero coverage" downstream while the products sit in the corpus untouched. Search in the local language *and* English.
-   - **Naive substring search lies badly.** Real false positives from this exact audit: `yam` matches "Tom Yam", `uni` matches "United", `杏` matches almond and cosmetics, `螺` matches screws. Add exclusion terms and eyeball the matches before concluding anything. Two commodities came back INCONCLUSIVE purely from bad search terms.
-2. **If rows are absent, check the source's own site** — search the retailer's catalog directly. If the retailer lists it but our data lacks it, the spider's category coverage or pagination is the bug.
-   - Verify *which* source actually carries it rather than trusting a claim. Items are routinely found at a different already-scraped source than the one assumed. And a config existing does not mean data exists — `coles` (AU) has a manifest but **zero rows in the corpus**.
-3. **Classify the outcome explicitly.** Report which one it is in Phase 8:
-
-| Outcome | Signal | Fix — and it is not a new source in three of four cases |
-|---|---|---|
-| **Classifier / gold gap** | Product **is** collected, but the leaf sits below `MIN_SUPPORT` in gold, so it's absent from the closed-set head — matching products get force-routed to a neighbor leaf or dropped (`state=nan`) | **Seed gold for that leaf**, then retrain. This was the dominant cause in the most recent audit: of 22 leaves flagged `sourcing_gap`, most were this. |
-| **Depth gap** | Retailer lists it; our crawl never reaches it | Deepen the existing spider's categories/pagination |
-| **Sourcing gap** | Nobody we scrape carries it | Proceed to Phase 2 — a genuine new source |
-| **Structural absence** | Not sold through the channels we scrape at all (live animals in supermarkets, non-native berries in EAP) | A wholesale/official feed, or an honest "true zero." Record it; don't chase it. |
-
-`src/prices/build/leaf_support.py` produces the leaf worklist, but **treat its `sourcing_gap` verdict as a hypothesis, not a finding** — it derives from "zero rows classified to this leaf," which the first row of the table above also produces. Confirm against the raw corpus before onboarding anything on its say-so.
-
-### Phase 1 — Resolve country, inventory existing coverage, upgrade old manifests
-
-1. Take the country input (slug or name) and resolve it to a canonical slug from `src/configs/regions.yaml`. **Slug traps** (where the slug doesn't match the obvious lowercase-of-name) are listed in `references/slug_traps.md` — grep there if the input is ambiguous.
-2. Determine the country's subregion from `regions.yaml` — this is the path component you'll use later (e.g. `<region>/<subregion>/<country>`).
-3. List **already-covered sources** for the country by reading `src/prices/configs/<region>/<subregion>/<country>/*.yaml`. Cross-check against `src/prices/price_scraping/spiders/<source>.py` (spiders are flat) and `src/prices/fetchers/<region>/<subregion>/<country>/<source>.py` (country-bound fetchers). Also note which `_global/<source>.yaml` and `_shared/<region>/<source>.py` aggregators *cover* this country — they're "already-covered" too.
-4. **Upgrade old-schema manifests in place.** Many existing YAMLs predate the four-axis schema and only have `spider: + language:` or `source_type: + coicop_divisions:`. For each old-schema YAML:
-   - Look the source up by name in `references/inventories/<region>/<country>.md`
-   - **Translate the inventory's column vocabulary — it predates the four-axis schema.** The columns are descriptive prose, not manifest fields, and one of them is a false friend:
-
-     | Inventory column | Maps to | Watch out |
-     |---|---|---|
-     | `Source type` | informs `analytical_role` | **Not** the retired YAML `source_type:` field. The inventory column holds free text ("NSO CPI reports", "Utility/telco tariffs"); the banned YAML key held A–F letters. Same name, unrelated. Never copy this column into a manifest. |
-     | `COICOP divisions covered` | informs `coicop_codes` | Divisions are 2-digit; `coicop_codes` wants the actual codes the source emits. Narrow the value, don't transcribe it. |
-     | `Cadence` | `cadence:` | Declared in prices manifests but enforced only by the `fuel` pipeline — documentation, not behaviour. |
-     | `Machine-readable?` | hints `extraction_pattern` | "HTML/PDF" means you still have to probe which one the price table actually lives in. |
-   - Backfill the four classification fields: `scaffolding`, `extraction_pattern`, `analytical_role`, `coicop_classification`
-   - Backfill `coicop_codes:` (the COICOP codes this source's rows will carry — used for the Phase-8 coverage report)
-   - Backfill infrastructure fields where applicable: `source_key`, `module`, `function`, `url`, `fallback_date`
-   - For spider-backed sources, `scaffolding: spider`, `extraction_pattern: scrapy_*` (pick based on what the spider actually does), `analytical_role: retailer_sku`, `coicop_classification: classifier`. Keep the existing `spider:` field.
-   - Remove the legacy `source_type:`, `priority:`, `observation_level:`, `coicop_divisions:` fields.
-   - Write back to the same file
-   - If the source isn't in the inventory, leave it untouched and record it as "unknown coverage" for the Phase 8 report
-5. Read `src/configs/countries.yaml` to learn the country's `languages:` and `currency:` — these inform fetcher / spider defaults.
-6. Compute the **COICOP gap set**: COICOP 2-digit divisions [01..13] minus divisions covered by the upgraded `coicop_codes:` union (taking the 2-digit prefix of each entry).
-   - **Whether the gap set should drive targeting depends on the country's coverage density** — see "Coverage density decides what to chase" in the scope router. On a low-coverage country the gap set is nearly all 13 divisions, which makes it useless as a ranking; record it for the Phase 8 report and onboard whatever verifies. Rank by it only once the country has established coverage.
-
-### Phase 2 — Build the candidate list (marketplace-first)
-
-Full doctrine — candidate generators vs cost multipliers, the inverse-correlation law, the two source regimes, the wholesale-feed guidance, and the cold-start 17-category table — lives in **`references/discovery.md`**. Read it when you are actually discovering. The order of operations:
-
-**1. Inventory first.** `references/inventories/<region>/<country>.md` is a pre-verified seed (EAP is populated; other regions cold-start and get a seed written back at Phase 8). Read it plus `references/inventories/<region>/_aggregators.md`, then subtract Phase 1's already-covered set. Free candidates, no search.
-
-> **The dead ends in that file are findings too.** Rows like "No online supermarket found" or "No qualifying public source found" are the record of a search that already happened and came back empty — honour them and move on rather than re-running the same search. Every inventory file carries an `_Inventory written: YYYY-MM-DD_` line: treat a null older than roughly six months as worth one cheap re-check (WAF posture and storefront launches both drift), and a recent one as settled.
-
-**2. Marketplace enumeration — the primary candidate generator.** The default first move for anything wider than one country, and the only high-yield way we have of *finding* sites that nobody handed us.
-
-> **A marketplace is a directory, not a source.** The deliverable is its **seller/store list** — the first-party retailers behind it, each onboarded as its own source. Scraping the marketplace's own catalog is the consolation prize, not the goal: those rows are seller-authored, and `src/prices/enrich/census.py` excludes `channel: marketplace` from the corpus census outright because long-tail seller-written names are unreliable tier-a input. Onboard the marketplace itself only when its directory is unreachable and the catalog is the only thing on offer — and tag it `channel: marketplace` so downstream knows what it is.
->
-> This also softens the inverse-correlation law: the hardened market leaders are hardened against *catalog* scraping. Their store directories are frequently a much lighter surface, so a leader can still be worth a visit as a directory even when it is hopeless as a source.
-
-Then **platform-fingerprint each name the directory gives you** — that is what makes scaffolding near-free, but note it finds nothing on its own (see the generator/multiplier split in `references/discovery.md`). Endpoint table: `references/platform_fingerprints.md`.
-
-**3. Apply the inverse-correlation law before spending probe budget.** In EAP, aggregator size and scrapeability are inversely correlated — market leaders (Coupang, Naver, JD, Tmall, HKTVmall, Shopee, GrabMart) are WAF-hardened, while mid-tier and small-market grocers on off-the-shelf platforms verify first try. Aim the budget at the second group; treat the leaders as a separate, explicitly-scoped anti-bot effort.
-
-**4. Wholesale / `official_avg` feeds** whenever the gap involves fresh produce, fish, tubers, or live animals. Retail supermarkets structurally do not carry these, and only a handful of `official_avg` manifests exist against 140+ retailer ones — the marginal source is worth most here. Build them as **whole-catalog walkers**, not targeted extractors.
-
-**5. Search — run it with `ddgs`, in English *and* the local languages.** Still last in the order, because the inventory and the marketplace directories are cheaper and better-targeted. But **execute it with the `ddgs` Python library, not WebSearch** — full recipe in `references/ddgs_search.md`.
-
-WebSearch's session-wide call cap forces search into a handful of careful queries; `ddgs` is a local library, so a 20-60 query sweep costs minutes and no session budget. Build one query pack covering grocery/delivery, named chains, platform fingerprints, beverages, secondary cities and official price publishers, in English *and* in every language from `countries.yaml` (plus the regional trade lingua franca). Tag each result with the query that produced it, so the run can report what local-language search actually added.
-
-Three rules that come straight off measured runs — all three are in the anti-patterns:
-
-- **Pin `backend=`.** `ddgs` rotates through `wikipedia`/`grokipedia`, which return no storefronts and can DNS-fail into a silent 0 results.
-- **A 0-result `ddgs` query is not a dead end** until it has been re-run with backends pinned.
-- **Look for the storefront on a sibling domain.** A chain's online store is often not on its corporate domain, and probing only the corporate one writes off the country's biggest retailer.
-
-Never list the cost-of-living aggregators (Numbeo, LivingCost, Expatistan, MyLifeElsewhere, Nomad List) as candidates. They already exist for most countries, carry no real SKUs, and inflate coverage tables.
-
-Aim for 12-25 candidates across `analytical_role` values. Cast wide for `retailer_sku` / `official_avg` / `tariff`; one strong `cpi_benchmark` source per country is enough.
-
-### Phase 2.5 — Classify candidates along the four axes
-
-For each candidate from Phase 2, open the URL and assign each of the four manifest classification fields:
-
-| Confirm by looking at… | Assign to |
+| Script | Does |
 |---|---|
-| Product detail pages with SKU IDs, add-to-cart, per-unit price | `scaffolding: spider`, `analytical_role: retailer_sku`, `coicop_classification: classifier` |
-| Filterable / queryable price endpoint returning many commodities per call, often per region or per date | `scaffolding: fetcher`, `extraction_pattern: rest_api`, `analytical_role: official_avg` or `aggregate_proxy` |
-| A page listing CSV / XLS / PDF downloads of national averages | `scaffolding: fetcher`, `extraction_pattern: tabular_download`, `analytical_role: official_avg`, `coicop_classification: source_curated` (if items are stable) or `classifier` (long free-text lists) |
-| A static page (or PDF) listing utility / telco / transport plans with per-plan tariff | `scaffolding: fetcher`, `extraction_pattern: html_scrape` or `pdf`, `analytical_role: tariff`, `coicop_classification: source_curated` (single constant COICOP for the whole source) |
-| Paginated listing of individual properties / vehicles / classifieds | `scaffolding: spider`, `extraction_pattern: scrapy_listing`, `analytical_role: retailer_sku` (listings layer), `coicop_classification: source_curated` (whole source = COICOP 04.1.1 rentals, etc.) |
-| A national CPI index publication with COICOP division indexes | `scaffolding: fetcher`, `extraction_pattern: rest_api`/`tabular_download`/`pdf`, `analytical_role: cpi_benchmark`, `coicop_classification: publisher_labeled` |
-
-If two shapes coexist on one site (e.g. an NSO publishes both CPI indexes and an average-retail-prices table), split into two YAML manifests — one with `analytical_role: cpi_benchmark`, one with `analytical_role: official_avg`. They emit different row schemas (IndexObservation vs PriceObservation) — see `references/fetcher_pattern.md`.
-
-If a "supermarket" turns out to only show category pages with no per-product price (very common for legacy retail sites), demote to skip rather than forcing it into a spider — see `references/known_blockers.md`.
-
-### Working from a supplied candidate list
-
-When someone hands you a list — a spreadsheet, another team's inventory, a dump from a prior run — Phase 2 is already done. Skip it. The work that replaces it is **disambiguation**: deciding which rows are things we already have, which are the same thing twice, and which are real.
-
-Do this before probing anything, because probe budget spent on a duplicate is pure loss:
-
-1. **Resolve each row to a registrable domain.** A supplied list identifies sources however its author felt like — brand name, storefront URL, corporate parent, sometimes a mobile app. The domain is the only key that joins reliably.
-2. **De-duplicate within the list**, then **against the corpus** (`src/prices/configs/**/*.yaml`, which is authoritative for what is already onboarded). Match on registrable domain plus path prefix — a country storefront under `/th/` is not the same source as one under `/my/`.
-3. **Collapse multi-TLD tenants** (`lazada.co.th` / `lazada.com.my`, the AS-Watson properties). These are one platform with N country storefronts: one probe answers for the tenant, and the blocker list is organised the same way.
-4. **Drop the cost-of-living survey publishers** on sight — supplied lists are full of them, and they are not price sources (see the anti-patterns).
-5. Feed survivors into Phase 2.5 and continue normally.
-
-> **Not yet built:** there is no automated resolver for this today — no candidate table, no fuzzy name matcher, no alias file for multi-TLD tenants. A run working from a list does the above by hand. Note that name-keyed lists and domain-keyed lists need different matchers; don't assume one will serve both.
-
-### Phase 3 — Tier classification + feasibility probing *(scaffolding=spider only)*
-
-For each candidate, classify into one of four tiers. **Don't write selectors before classifying** — most "obvious" selectors are wrong on SPA sites because the body hasn't hydrated yet.
-
-```
-                        ┌───────────────────────────────────────┐
-                        │ Tier 1A — HTML/CSS, server-rendered    │
-                        │ extraction_pattern: scrapy_html       │
-                        │ Build: CrawlSpider, no Playwright     │
-                        └───────────────────────────────────────┘
-                                       ↑ yes
-curl_cffi with impersonate="chrome124" (NOT bare curl — see the TLS rule below) → does the
-response have h1, og: meta, AND a price visible in raw HTML?
-                                       ↓ no
-                                       ↓
-                        ┌───────────────────────────────────────┐
-                        │ Tier 1B — JSON API, no auth           │
-                        │ extraction_pattern: scrapy_api        │
-                        │ Build: scrapy.Spider hitting the API  │
-                        └───────────────────────────────────────┘
-                                       ↑ yes (after API sniff)
-sniff with Playwright network-capture → is there a /api/, /v1/, /v2/, /graphql endpoint
-that returns ≥5KB JSON with product fields AND works with curl when only Origin/Referer
-headers are set?
-                                       ↓ no
-                                       ↓
-                        ┌───────────────────────────────────────┐
-                        │ Tier 2 — Playwright-rendered HTML     │
-                        │ extraction_pattern: scrapy_playwright │
-                        │ Build: scrapy.Spider with Playwright  │
-                        │        meta + PageMethod waits        │
-                        └───────────────────────────────────────┘
-                                       ↑ yes
-Playwright dump with 6-8s wait + scroll → are product cards present with name + price
-text in the rendered HTML?
-                                       ↓ no
-                                       ↓
-                        ┌───────────────────────────────────────┐
-                        │ SKIP — document the reason            │
-                        │ • Cloudflare/Akamai/PerimeterX 403    │
-                        │ • ERR_CONNECTION_RESET (CDN bot block)│
-                        │ • Empty PDP / login wall              │
-                        │ • App-only (no web catalogue)         │
-                        │ • Aggregator with no per-product URLs │
-                        │ • Heavy JS that doesn't hydrate at 8s │
-                        └───────────────────────────────────────┘
-```
-
-Concrete probe commands and scripts live in `references/probe_patterns.md`. Pre-known blockers we already classified (so you don't waste cycles re-probing) live in `references/known_blockers.md` — **check this first** before probing. That file is ~10,600 lines; grep `references/known_blockers_index.md` instead, which maps each of 2,051 documented hosts to the section that covers it.
-
-A hit in the index does NOT always mean "blocked" — some entries record a workaround. But an HTTP 200 with a real body does NOT contradict a blocker verdict either: marketing sites, app-only storefronts and store-session-gated catalogues all return exactly that. Read the entry before spending probe budget.
-
-**Fingerprint before you climb the ladder.** Check what the storefront is running (`references/platform_fingerprints.md`). If it's Shopify, WooCommerce, Sapo, Magento, Vendure, Algolia, or Typesense, the catalog endpoint is already known and you land on Tier 1B without probing anything.
-
-**Mandatory gate: never reach SKIP without a network trace.** A 403 on the front page says nothing about the backend. Render the page once in Playwright, read the network tab, and look for the internal JSON endpoint — many hardened fronts have a completely open JSON API behind them (confirmed on chemist_warehouse, makro_pro, mm_mega_market, sm_markets_savemore, lazada.ph, shoppy_mn, farro_fresh, basic_homemart). When you find one, the spider hits it directly over plain HTTP and Playwright never runs at collection time. That is the **"Playwright to discover, plain HTTP to scrape"** pattern and it is the single highest-yield move in this phase.
-
-**Mandatory gate: a bare-`curl` 403 is NOT evidence of a WAF. Never record a WAF/blocked verdict
-without re-probing through a real browser TLS fingerprint.** Cloudflare, Akamai and DataDome
-overwhelmingly fingerprint the **TLS handshake (JA3)**, not the User-Agent — so plain `curl` with
-a spoofed browser UA gets a 403 from sites that a stock `chrome124` fingerprint walks straight
-into, with no headers, cookies, proxy, or captcha solving:
-
-```bash
-poetry run python -c "
-from curl_cffi import requests as r
-x = r.get('https://DOMAIN/', impersonate='chrome124', timeout=30)
-print(x.status_code, len(x.text))"
-```
-
-Try `chrome124`, then `chrome120`, then `safari17_0`, then **`firefox133`** — they are **not**
-interchangeable (mall.cz/allegro.cz 403s on both Chrome profiles and clears only on
-`safari17_0`).
-
-**`firefox133` is load-bearing, not a formality.** Measured 2026-09-12 across three
-independent country runs: Syria, Botswana and Liberia each hit an identical 6,192-byte
-403 stub from Hostinger `hcdn` that 403s on `chrome120`, `chrome124`, `chrome131` AND
-`safari17_0`, and returns 200 on `firefox133`. Seven hosts in total, two of them open
-WooCommerce Store APIs. A Chrome-and-Safari-only ladder writes every one of them off as a
-hard WAF block. `comfy.ua` (Imperva stub on all four, 888 KB real page on `firefox133`)
-and `boom.tj` / `kabulbazar.af` are the same pattern recorded earlier.
-
-**Caveat when you use it on a Woo spider:** `RandomBrowserMiddleware` overwrites
-`request.meta["impersonate"]` unconditionally from `IMPERSONATE_BROWSERS`, which is pinned
-repo-wide to `chrome120`. That makes `WooBaseSpider.IMPERSONATE_PROFILE` a silent no-op —
-the spider 403s on every request despite declaring the profile. Narrow
-`IMPERSONATE_BROWSERS` in that spider's own `custom_settings` instead.
-
-**Measured 2026-08-17:** a 279-domain triage probed with bare `curl` + browser UA produced 112
-`SKIP_WAF` verdicts. Re-probing those with `curl_cffi` impersonation alone recovered a large
-share on the first lever, including sites behind Cloudflare Turnstile *and* Akamai
-(hepsiburada.com's Akamai bot-block, tehnomax.me and tehnomanija.rs's `cf-mitigated: challenge`,
-olx.ro, list.am, docmorris.de, gamma.nl, wallashops.co.il). Those 112 verdicts were mostly
-measuring curl's TLS handshake, not a real defense.
-
-What survives impersonation is a genuinely different class, and each has its own tell — record
-which one rather than a generic "blocked":
-- **Content-level proof-of-work** (Amazon's `x-amzn-waf-action: challenge`, JS-execution stubs) — TLS won't touch it.
-- **IP / geo blocks** (Fastly error codes, cf-ray resolving to the wrong continent, origin-level refusals) — needs an exit node in-country, not a fingerprint.
-- **Genuine SPA shells** that clear the WAF at 200 but ship no embedded product JSON — that is a Tier 2 problem, not a block. elcorteingles.es is exactly this.
-
-Also rule out the remaining cheap false positives: a *different TLD of the same platform* being
-open, sitemaps served WAF-exempt even when HTML pages 403 (argos.co.uk, leroymerlin.it — good for
-a URL-seed list), and simple burst-throttling that clears at `concurrency=1`.
-
-**"WAF beaten" is not "catalog enumerable" — they are separate claims and a probe must prove
-both.** Clearing the block gets you the homepage, and a homepage carousel will happily yield 20-50
-name/price pairs that look exactly like a passing probe. It is not a catalog: carousels are
-curated, unpaginated, and reshuffle per visit. A probe that reports "38 products" from `/` has
-demonstrated nothing about whether the source can be crawled.
-
-Record the two verdicts separately, and only the second one licenses scaffolding:
-1. **Access** — a non-homepage URL returns 200 with real content.
-2. **Enumerability** — a *category or listing* URL yields products, AND page 2 of that same
-   listing yields a *different* set. Without the page-2 check you cannot distinguish a paginating
-   catalog from a single fixed page.
-
-Measured on the 2026-08-17 recovery pass: of four domains reported `RECOVERED`, three were counted
-off homepage carousels. Re-probing real category paths confirmed tehnomax.me and hepsiburada.com
-as genuinely enumerable, while tehnomanija.rs was not — its Magento REST returns 401 and its
-category paths 404. Same access verdict, opposite scaffolding decision.
-
-This is the probe-time twin of the Phase 6 ≥5-rows gate, and it is also why a Magento row count is
-never a catalog size — see the short-page truncation trap in `references/known_blockers.md`.
-
-For Tier 2 sites, the Playwright probe should also dump the HTML to `/tmp/probe_<key>_listing.html` and `/tmp/probe_<key>_pdp.html` so the selector-extraction phase has files to grep instead of re-fetching.
-
-**When `curl_cffi` impersonation AND Playwright both return 403 on the same site, stop.** At that
-point you are facing a real challenge, and headless Chromium without a residential proxy and a
-captcha solver will not break Cloudflare/Akamai/Incapsula. Don't iterate — add the site to
-`references/known_blockers.md` (Cloudflare / AWS WAF / Akamai section), **naming the lever that
-failed and the tell you saw**, and move on. Longer waits and stealth flags have never paid off.
-Note the ordering: bare curl failing is not the trigger for this rule — `curl_cffi` failing is.
-
-### Phase 3-fetcher — Feasibility probing *(scaffolding=fetcher)*
-
-The "tier" axis does not apply here. Instead, probe the **payload shape** so you can pick the right extractor in the fetcher:
-
-- **`extraction_pattern: rest_api`** — hit the endpoint with `requests` + a real browser UA. Inspect JSON. Note the date / region / commodity parameters. Check whether responses paginate and whether there's an `as_of` field per row. Most failures here are: site requires a `Referer` header it doesn't document, the JSON nests prices under a `data.items[*].priceHistory[*]` shape that needs flattening, or the endpoint has a rolling window (only last 12 months — backfill via Wayback or sister "yearly" endpoint).
-- **`extraction_pattern: pdf`** — `curl` the PDF, open with `pdfplumber`. If `extract_text()` returns empty, the PDF is image-only — `pytesseract` OCR fallback is acceptable but expect ~5–10× runtime. Record where the price table sits (which page, which heading). Note that regulator PDFs often have a "Schedule 1 / Retail" section + a "Schedule 2 / Bulk" or "Drum Sale" section — anchor on the retail section only, otherwise you'll mix wholesale and retail prices. **Always anchor on the LAST occurrence of "SCHEDULE 1"** — re-published orders with corrigenda leave the stale earlier table in place.
-- **`extraction_pattern: tabular_download`** — download the CSV/XLS with `requests`, open with `pandas.read_csv` / `pd.read_excel`. Identify which sheet, which header row, which COICOP-division column. Stats offices love to merge cells in headers — be prepared to skip rows or read with `header=[0,1]`.
-- **`extraction_pattern: html_scrape`** — many NSO and tariff pages render a price table directly in HTML. Use `pandas.read_html` first — if it parses correctly, that's the lowest-effort extractor. Otherwise BeautifulSoup with explicit selectors.
-- **For tariff schedules specifically**, cadence is annual/irregular, so the fetcher runs rarely. Check whether there's an archive of prior tariffs or only the current one — if only current, the fetcher just snapshots the current value with `period_kind: effective_from` and `effective_from` = release-date.
-- **For `analytical_role: cpi_benchmark`** — pick the published-machine-readable form (REST > CSV > XLS > PDF). Note whether the source publishes a single all-items index, a COICOP-1999 grouping, or the COICOP-2018 13-division grouping — the YAML's `coicop_codes:` field records what's available.
-
-For every probe, save the raw payload sample to `/tmp/probe_<source_key>_sample.{json,csv,xlsx,pdf,html}` so you can re-read it during fetcher development without re-fetching.
-
-**When a fetcher endpoint requires a session cookie or returns Cloudflare-protected responses**, the fetcher may still work with `requests.Session` + browser-realistic headers — but always test from a cold cache before declaring success. If it fails, document in `references/known_blockers.md` under the relevant section.
-
-### Phase 4 — Extract real selectors *(scaffolding=spider only)*
-
-For each non-skipped candidate, open the dumped HTML (Tier 2) or the live page (Tier 1) and identify:
-
-- **product_name**: prefer a stable attribute like `[data-test="product_name"]` (Long Chau) or `<img>` alt text on a product card (City Mall MM). Avoid `<a>::attr(title)` as a high-priority fallback — overlay badges (e.g. "sale") frequently steal that selector. Always try `meta[property='og:title']::attr(content)` as a fallback for PDPs.
-- **price**: look for a specific class like `att-product-detail-latest-price` (Co.opmart) or `data-price` attribute (Carrefour TW). On atomic-CSS sites (Sayurbox-style Twitter/RN-Web classes), there is no clean selector — extract via text regex (`Rp\s?[0-9.,]+`) instead.
-- **product_id**: SKU / barcode / canonical-URL-trailing-id. Often a `meta[property='product:retailer_item_id']`, an `<input name='id'>`, or parsable from the URL.
-- **category**: breadcrumb. Many sites have no inline breadcrumb on PDP — leave it null rather than invent one. A reliable breadcrumb is high-value even when it costs extra work: it's what makes a product auditable and what a human labeller reads when adjudicating a hard case.
-
-Verification rule: **before scaffolding, every selector must have been observed matching the right text in a real dumped HTML file.** This is the single biggest determinant of whether the spider works on first run.
-
-The three spider templates (CrawlSpider HTML, Playwright listing-card, JSON API) with full code skeletons are in `references/spider_templates.md`. Pick the one that matches the candidate's tier.
-
-### Phase 5A — Scaffold spider + manifest *(scaffolding=spider)*
-
-For each viable spider candidate, create three things:
-
-1. **Spider file**: `src/prices/price_scraping/spiders/<source>.py`
-   - File name and class name must be valid Python identifiers (`street11_kr.py` / `Street11KrSpider`, not `11street_kr.py`)
-   - The spider's `name = "<source>"` attribute can be anything; this becomes the `--source` CLI value
-   - Currency: 3-letter ISO 4217 (VND, IDR, KRW, MMK, ...) set at the spider class level. **Never** derive it from the displayed symbol — "$" is BND in Brunei, USD in Cambodia, NZD in several Pacific markets. `countries.yaml` is the *default*, not the override: when the site returns an explicit machine-readable currency code (`prices.currency_code` on Shopify/WooCommerce, a `currency` field in a JSON API), use **what the site returns**. Real cases: `tongamarket` prices in NZD and `niront` (KH) in USD, both against a different `countries.yaml` default.
-   - **Minor-unit traps.** Some platform APIs return integer minor units, not decimals: WooCommerce Store API returns minor units alongside a `currency_minor_unit` exponent (divide by `10**currency_minor_unit`); Vendure `shop-api` returns **thousandths** (divide by 1000). A 100× or 1000× price error that reaches the corpus is far more damaging than a missing source — always eyeball the first extracted price against the rendered page.
-2. **Selectors entry** in `src/prices/price_scraping/selectors.py` — only for `extraction_pattern: scrapy_html` spiders that use the shared `SelectorExtractor` pattern. `scrapy_api` and `scrapy_playwright` (listing-card) spiders bypass the registry and put selectors directly in the spider.
-3. **YAML manifest**: `src/prices/configs/<region>/<subregion>/<country>/<source>.yaml` — see "YAML manifest schema" below.
-
-4. **Record which page family the spider parses** — one line in the manifest's
-   `notes`: `listing`, `PDP`, `both`, or `API` (for a spider that reads a JSON
-   endpoint and never fetches a page at all). Write it even when it seems
-   obvious.
-
-   This is the single fact the Common Crawl side cannot read off a config, and
-   it is what determines the archive regex shape. It is a *hint*, not the
-   answer — the regex must accept every price-bearing family the archive holds,
-   which may be a family the spider never touches in either direction (see
-   `references/yaml_schema.md`). But without it the archive side is guessing.
-
-   Say **which page family you characterised any markup spec from**, too. A
-   spec that is correct about a page the archive barely holds passes review
-   and then returns zero — this happened on `ckgreaves_vc`, where a correct
-   department-page spec was written against an archive that holds PDPs under
-   a different card class.
-
-   Note the `API` case specially: a spider reading an API emits collected URLs
-   that are permalinks it never fetched (`boutiqueacm_mc`) or bare API routes
-   that are not browsable at all (`comoresenligne_km`). Neither can be used to
-   validate an archive regex locally.
-
-After writing all three for each candidate, run `python run.py prices collect --list` and grep for each new spider name to confirm the discovery layer picks them up. If a manifest doesn't appear, the most common cause is a wrong country slug — the loader silently drops files under unknown country directories.
-
-### Phase 5B — Scaffold fetcher + manifest *(scaffolding=fetcher)*
-
-For each viable fetcher candidate, decide the location bucket first.
-
-**Bucket 1 — Country-bound** (e.g. Pertamina ID, FCCC fuel FJ, SP Group SG): one country = one source.
-- Module: `src/prices/fetchers/<region>/<subregion>/<country>/<source>.py`
-- Function: `def fetch_<source_key>(cutoff: date) -> pd.DataFrame | None`
-- YAML: `src/prices/configs/<region>/<subregion>/<country>/<source>.yaml`
-
-**Bucket 2 — Regional aggregator** (e.g. Shopee SEA shares API shape across SG/MY/ID/PH/TH/VN; Watsons across HK/SG/MY/TW): one shared module, per-country wrappers, per-country YAMLs.
-- Shared module: `src/prices/fetchers/_shared/<region>/<source>.py`
-- Wrapper per country: `src/prices/fetchers/<region>/<subregion>/<country>/<source>.py` — re-exports the per-country callable
-- YAML per country: `src/prices/configs/<region>/<subregion>/<country>/<source>.yaml` — `module:` points at the wrapper
-
-**Bucket 3 — Global aggregate series** (rare; 2–3 sources total — WTI/Brent, IMF FX, World Bank Pink Sheet): one module emits rows tagged with aggregate region labels (`country: "Global"`, `"EAP"`).
-- Module: `src/prices/fetchers/_global/<source>.py`
-- Function: `def fetch_<source_key>(cutoff: date) -> pd.DataFrame | None`
-- YAML: **one only**, at `src/prices/configs/_global/<source>.yaml` — not per-country, because the rows are global by definition
-
-A multi-country source that emits *per-country* rows (e.g. WB ICP publishing one row per country per ICP basket item) is **Bucket 2, not 3** — use the shared-module + per-country-wrapper pattern, so the analyst side sees a YAML under each covered country.
-
-**The fetcher module's contract** is in `references/fetcher_pattern.md` § 1. In short: one public `fetch_<source_key>(cutoff)` function; emit `PriceObservation` or `IndexObservation` rows per `analytical_role`; idempotent skip on `observation_date <= cutoff`; `observation_hash` set last; drop unmappable COICOP rows; return `None` for no-new-data. The doc also covers helpers (optional toolbox at `src/prices/fetchers/utils.py`) and worked examples (REST API, PDF+OCR, XLS, HTML tariff, CPI).
-
-After scaffolding, run `python run.py prices collect --list` and grep for each new `source_key` to confirm discovery — the listing shows `fetcher=<module>:<function>` for fetcher-backed sources. If a manifest doesn't appear, the usual causes are a wrong country slug or a missing `channel:` key (see the Enrichment-operational fields table). Then proceed to Phase 6.
-
-### YAML manifest schema
-
-Full field table and six worked examples (spider, country fetcher, wholesale walker, CPI benchmark, regional wrapper, global aggregate): **`references/yaml_schema.md`**.
-
-The three rules worth repeating here, because each has broken discovery in practice:
-
-- Path-derived fields (`region`, `subregion`, `country`, `source`) must **not** appear in the body — the loader reads them from the path.
-- `channel:` must be **present on every manifest**, `null` included. A missing key or an out-of-enum value breaks the *global* `collect --list`.
-- `fallback_date` is the first-run cutoff for fetchers. Set it too recent and run 1 returns nothing.
-
-### Phase 6 — Automated end-to-end test
-
-**Gate: a source ships if and only if the probe passed AND the test run returns >= 5 valid rows.** 0-4 rows fails; record it in the Phase 8 skipped list with a hypothesis rather than shipping it.
-
-Both scaffoldings test through `python run.py prices collect --source <name>` (spiders add `--max-items 5`). The full harness — the macOS `pkill` pattern, batching limits, per-scaffolding record checklists, and the direct-import dev loop for fetchers — is in **`references/testing.md`**.
-
-One check that is worth doing by eye every time: **compare the first extracted price against the rendered page.** Minor-unit platforms produce silent 100x/1000x errors that pass every structural assertion.
-
-### Phase 7 — Iterate on failures *(scaffolding=spider)*
-
-Common failure modes and fixes (each one we've actually hit in prior runs):
-
-| Symptom in log / data | Cause | Fix |
-|---|---|---|
-| `item_scraped_count: 0`, many "Could not extract" warnings | URL filter too broad — spider is fetching non-product pages (blog, disease info, articles) | Tighten the `deny=` regex with the site's non-product path prefixes (e.g. `/bai-viet/`, `/benh/`) and/or narrow `allow=` to a 2-segment path |
-| `product_name` is "sale" or other overlay-badge text | `a::attr(title)` matched a discount badge before the real product anchor | Reorder selectors: `img.product::attr(alt)` / `img::attr(alt)` before any anchor title |
-| `product_name` looks like a brand/short slug instead of the full title | Card has two `<a>` elements pointing at the same PDP — image-wrap anchor came first, product-name anchor came second | Pick the anchor by selector class (e.g. `a.product-name::attr(href)`) or iterate `card.css("a")` and choose the one whose text is longer than the badge text |
-| Spider takes >120s and yields zero items | Listing page hasn't hydrated within Playwright's wait window | Increase `wait_for_timeout` to 8000ms, add a second scroll pass, OR switch to API sniff (Phase 3 Tier 1B) |
-| `ERR_CONNECTION_RESET` during `goto` | CDN-level bot block (MWG/Akamai/Cloudflare on origin). Real browser would also need a residential IP | **Skip this site**, document in `references/known_blockers.md` |
-| HTTP 429 on API with cookie warmup | API has a dynamic security header (e.g. `x-security-key`) generated by client-side JS | Skip — reverse-engineering the key is rarely worth it |
-
-### Phase 7-fetcher — Iterate on fetcher failures *(scaffolding=fetcher)*
-
-| Symptom in log / data | Cause | Fix |
-|---|---|---|
-| Fetcher writes 0 rows, log shows "No new rows" | Cutoff is set to today and the source publishes monthly — nothing newer than cutoff exists | Re-run with a backdated cutoff (`--cutoff 2020-01-01`) once during onboarding to verify the fetcher works against historical data |
-| `pdfplumber` returns empty text from a PDF | PDF is image-only (scanned) | Add the `_ocr_pdf()` helper from `references/fetcher_pattern.md`; expect ~5–10× slower runs |
-| Extracted price is 10× or 100× off | Currency-display shorthand (e.g. `12,90` meaning IDR 12,900 not 12.90) | Implement a `_parse_<currency>_price()` helper that detects the magnitude and normalizes |
-| Many product names in a regulator PDF but only `Schedule 1 / Retail` is wanted | Default search picks the first heading occurrence; later "Drum Sale" / "Bulk" sections leak into the parse | Anchor on the *last* `SCHEDULE 1` occurrence and slice text until the next "Drum Sale" / "Bulk" marker |
-| API endpoint returns 200 but rows lack a date | Endpoint is rolling-window without timestamps in the payload | Use the request date as `observation_date`, fall back to the page's `Last-Modified` header, or pair the rolling endpoint with a "yearly" endpoint that does carry dates |
-| Many rows logged "No COICOP mapping for X — dropping row" | `_COICOP_MAP` doesn't cover an item the source emits | Inspect the missing item; either add to `_COICOP_MAP` (if it really maps cleanly) or accept the drop (if it's an outlier you don't want polluting the basket) |
-| Duplicate rows on re-run | `observation_hash` is being computed before all key fields are populated | Move the `make_hash(row, _IDENT)` call to the very end of the row construction, after every `subnational_area` / `city` / `address` / `price_local` field has been set |
-
-After fixing, re-run only the failing source key(s).
-
-### Phase 8 — Report and document
-
-Output a final summary **to chat** (no in-tree artifacts file for now — that decision is deferred until we've run the skill on three countries and seen what teammates actually need):
-
-- **Working sources by `analytical_role`** (retailer_sku / official_avg / tariff / cpi_benchmark / aggregate_proxy): name, country, `source_key` or spider name, row count from the test run, one sample record
-- **Skipped sites**: name, URL, reason (use the bucket names from Phase 3 / 3-fetcher so they're consistent and searchable). Include sources that probe-passed but failed Phase 6's ≥5-rows bar — record the row count and a one-line hypothesis
-- **COICOP coverage table** — a 13-row division table showing which onboarded source(s) cover each division, at what cadence, via which `analytical_role`. Mark `—` for uncovered. Distinguish *price-level coverage* (retailer_sku / official_avg / tariff / aggregate_proxy) from *index coverage* (cpi_benchmark) — both matter but feed different layers of PPP analysis.
-  - **Division grain overstates coverage** — it reads "covered" off a single SKU. When the run targeted specific commodities or leaves, report at **leaf grain** instead, against the worklist in `src/prices/build/leaf_support.py`. Division tables are for orientation; leaf tables are for deciding what to do next.
-- **Depth-audit outcomes** from Phase 0.5 — for each targeted commodity, say explicitly whether it was a *depth gap* (and which spider needs deepening), a *sourcing gap* (and what you onboarded), or a *structural absence* (and why retail discovery can't fix it). This is what stops the next session from re-chasing the same item.
-- Append new blockers to `references/known_blockers.md` so the next run skips them faster — match the existing **blocker-class headings** (Cloudflare strict, AWS WAF, Akamai tenant, Imperva Incapsula, PerimeterX, CDN connection-reset, etc.). One-line entry per site under the heading whose signature matched.
-- **Cold-start writeback only:** write `references/inventories/<region>/<country>.md` from the Phase 2 sub-agent's output. If the agent surfaced cross-country aggregators, append them to `references/inventories/<region>/_aggregators.md` (create the file if it doesn't exist). Two requirements, because this file is what the *next* run trusts instead of searching:
-  - Open with `_Inventory written: YYYY-MM-DD_` under the H1. An undated inventory can't be aged, so a later run has to redo the work to know whether to believe it.
-  - **Write the dead ends down as rows.** "No online supermarket found", "no marketplace with a reachable seller directory", "no NSO price table published" — a search that came back empty is a finding, and leaving it out is what makes the next run repeat it. Match the existing style: a row whose source name states the negative, with the reason in Notes.
-
-**Everything that must outlive the session goes in-tree**, in the files the next run already reads:
-
-| What | Where it persists |
+| `scripts/probe_log.py` | `append` a probe (refuses a block verdict with no lever), `lookup` a host's history, `recheck` the re-probe queue, `stats`, `audit` the ordering gate |
+| `scripts/recover_sweep.py` | Sharded bulk re-probe of the recheck view. Runs on a8 under `setsid nohup` |
+| `scripts/second_surface_check.py` | Phase 1 step 6 — fingerprints every domain you already cover, flagging the ones whose manifest role is not a catalog role. Found `bluesky.as` after two passes missed it |
+| `scripts/leaf_corpus_search.py` | Phase 0.5 — is a missing leaf already in our raw corpus, and where was it lost |
+| `scripts/triage_candidates.py` | Phase 2 — probes every candidate in a sweep file, tiers each as accept / adjudicate / reject, writes the probe log |
+| `scripts/html_catalog_check.py` | The HTML fallback triage calls when a host has no platform endpoint |
+| `scripts/blockers_to_probe_log.py` | One-off 2026-09-17 migration; precedent for the next schema change |
+
+## Other references
+
+| File | Load when |
 |---|---|
-| Sources that worked | the manifests themselves, under `src/prices/configs/<region>/<subregion>/<country>/` |
-| Sites that are walled | `references/known_blockers.md`, under the matching blocker class |
-| Candidates found, and dead ends confirmed | `references/inventories/<region>/<country>.md`, with its written-on date |
-
-Between them, the next session can reconstruct what happened without the chat log. Nothing about the run should depend on a personal note-keeping tool the next operator may not have — if a finding matters, it belongs in one of the three files above.
-
-## Quick reference
-
-Load only what the current phase needs — these are not meant to be read together.
-
-| Reference | Load when |
-|---|---|
-| `references/discovery.md` | Phase 2 — finding candidates. Generators vs cost multipliers, marketplace-as-directory, inverse-correlation law, the two source regimes, wholesale feeds, recording dead ends, cold-start 17-category table. |
-| `references/ddgs_search.md` | Phase 2 — **how to actually run the search**: the `ddgs` library, the mandatory pinned `backend=`, English + local-language query packs, noise filtering, and the off-domain storefront rule. |
-| `references/platform_fingerprints.md` | Phase 2–3 — identifying the storefront platform, finding the open JSON backend, id-walk, anti-bot cross-checks. |
-| `references/known_blockers_index.md` | Before **any** probe — host → section lookup over 2,051 documented hosts. |
-| `references/known_blockers.md` | The entries themselves. Append to it after every run — in this file, not a scratch file. |
-| `references/probe_patterns.md` | Phase 3 — curl, Playwright dump, API sniffer, PDF/XLS inspectors. |
-| `references/spider_templates.md` | Phase 5A — the three spider skeletons. |
-| `references/fetcher_pattern.md` | Phase 5B — fetcher contract, helpers, worked examples. |
-| `references/yaml_schema.md` | Phase 5 — manifest field table + six worked examples. |
-| `references/testing.md` | Phase 6 — test harness and per-scaffolding record checklists. |
-| `references/slug_traps.md` | Phase 1 — when a country slug is ambiguous. |
-
-## Open design questions
-
-These came out of real onboarding runs and are not yet resolved. Surface them with the user when relevant, or treat them as candidates for a future skill revision.
-
-- **Headline CPI has no slot in IndexObservation.** The schema requires `coicop_code` (01–13), but the analyst running PPP / inflation nowcasting wants the *all-items* headline index too. SingStat publishes it as series `1`; we currently drop it because there is no sanctioned sentinel. Options: add `coicop_code: "00"` for all-items, add a separate `series_label` column, or split into a third schema. Until decided, fetchers drop the headline row.
-
-## Residual-source priority (after the first pass)
-
-After the first country onboarding pass lands the easy fetcher wins (REST APIs, public XLSX / PDF dumps), residual deferred sources almost always fall into three buckets:
-
-1. **Cloudflare-protected listing aggregators** (real-estate, classifieds) — needs `scrapy-playwright` + stealth + new `scrapy_listing` template
-2. **SPA telco / utility plan pages** (Singtel, StarHub, M1 in SG; equivalents in other markets) — needs `scrapy-playwright`
-3. **Akamai-protected SKU retailers** (Cold Storage, NTUC parallel brands) — same Playwright stack as #1, but lower marginal value if FairPrice-class chains are already covered
-
-Prioritise in this order:
-
-- **Gap-COICOPs first**: any source whose COICOP code is not yet covered by the country's already-onboarded set. PropertyGuru-class rental aggregators usually fall here (04.1.1). This ranking assumes the country has **established coverage** — it is the gap-driven branch of the density rule in the scope router, and it is the right one here because a country only reaches a residual-source pass after its easy sources have already landed.
-- **Redundancy second**, and *only after* the anti-bot template has already been built for a higher-priority site. Cracking Cloudflare/Akamai twice in a row before the first one's template lands is wasted effort — build the template once on the gap-COICOP source, then reuse.
-
-Don't bundle these into a routine country onboarding. Each is its own dedicated effort. Surface them in the Phase 8 report as "Next gaps to target (priority order)" so the next session has a clear queue.
-
-## Anti-patterns to avoid
-
-- Don't invent selectors. If the probe HTML is empty or hydration didn't complete, either fix the probe or skip the site — guessed selectors waste an entire iteration cycle.
-- Don't force a fetcher-shaped source into a Scrapy spider. PDFs, Excel files, regulator tariff tables, and CPI publications belong in `src/prices/fetchers/`, not in `spiders/`. Trying to crawl a static stats-office page with Scrapy produces a fragile spider that does what `pd.read_html()` does in three lines.
-- Don't put `region:`, `subregion:`, `country:`, or `source:` in YAML manifest bodies. Path-derived; redundant; breaks the loader.
-- Don't put `priority:` in YAML. Removed in v4. PPP wants all sources, not a ranking — `analytical_role` already encodes what layer of analysis the source feeds.
-- Don't put `source_type:` (A–F letters) in YAML. Removed in v4. Use the four orthogonal axes (`scaffolding`, `extraction_pattern`, `analytical_role`, `coicop_classification`).
-- Don't put `observation_level:` in YAML. Removed in v4. Schema choice (PriceObservation vs IndexObservation) is implied by `analytical_role`.
-- Don't use `SOURCE_META = [...]` in fetcher modules. One file = one fetcher function = one source. All metadata lives in the YAML manifest; private module-level constants like `_BASE_URL`, `_CURRENCY` are recommended but not required.
-- Don't mix PriceObservation and IndexObservation rows in one fetcher. If a source publishes both averaged prices and CPI indexes, write two fetchers.
-- Don't emit rows with null `coicop_code` when `coicop_classification ∈ {source_curated, publisher_labeled}`. Log a warning and drop instead — a null where the schema expects a value is pollution masquerading as coverage.
-- Don't write a country-bound fetcher when a regional aggregator (`_shared/<region>/`) already covers the country. Add a thin per-country wrapper + a per-country YAML pointing at the shared module instead.
-- Don't write per-country YAMLs for truly global aggregate series (oil benchmarks, IMF FX). They live as a single `_global/<source>.yaml` because the rows are global by definition.
-- Don't re-do Phase 2 discovery from scratch when `references/inventories/<region>/<country>.md` already exists. The warm-start path is the seed; supplement only for documented gaps. (Outside EAP, the cold-start path is expected — write back the inventory at Phase 8.)
-- Don't leave old-schema YAMLs unmigrated when the skill runs on a country. Phase 1 upgrades them in place via inventory lookup — that's how the repo migrates organically.
-- Don't add a spider's currency by parsing the price symbol — set it at the spider class level (`currency = "VND"`). Sites that display "$" for Brunei dollars (BND) will be miscoded otherwise. But don't blindly take `countries.yaml` either when the site states its own currency code — see Phase 5A.
-- Don't run per-country discovery N times for a region. Anti-bot clusters by tenant and storefronts cluster by platform — both cut across borders, so sweep once and onboard per source. Probing, selectors, and scaffolding stay per-site; only *discovery* generalizes.
-- Don't open with a generic English web search. It is the lowest-yield discovery method measured *per query*. Inventory → marketplace enumeration → local-language search all come first, and platform fingerprinting is applied to whatever those return.
-- Don't run discovery search through WebSearch. Its session-wide cap is shared across every sub-agent in the run and forces a handful of narrow queries; use the `ddgs` library (`references/ddgs_search.md`) so breadth is free, and run English **and** local-language packs.
-- Don't call `ddgs` without pinning `backend=`. It rotates through `wikipedia`/`grokipedia`, which find no storefronts and DNS-fail on `region="wt-wt"` — 9 of 23 Botswana queries returned 0 results for that reason alone. Pin `backend="duckduckgo, google, brave, mojeek, startpage, yahoo"`.
-- Don't read a 0-result `ddgs` query as absence. It is indistinguishable from a backend failure. Re-run with backends pinned before writing any dead-end row into an inventory file.
-- Don't record a chain as a dead end after probing only its corporate domain. Storefronts routinely live on a sibling domain — `shopsefalana.com` not `sefalana.co.bw`, `echoppies.com` not `choppies.co.bw`, `spar2u.co.bw` not `spar.co.bw`. A prior Botswana run wrote off Choppies and Sefalana this way; Sefalana turned out to serve ~316,600 products from an open JSON API.
-- Don't stamp one URL on several products. `pipelines.py`'s `DuplicationPipeline` hashes `item["url"]` and drops repeats, so a spider that parses ten products off a listing page and emits the listing URL for all ten keeps one. `willys_se`'s first draft lost ~80% of its rows this way and `talabat_eg` hit the same thing on multi-item pages. Build a per-product URL from the id or slug when the payload has no URL — and never substitute `None` (the pipeline's `item.get("url", "")` default only fires when the key is *absent*, so `None` raises) or a constant (which collapses the catalog to one row).
-- Don't set a spider's User-Agent through `custom_settings["USER_AGENT"]`. It is a dead-letter setting repo-wide — Scrapy's own `UserAgentMiddleware` is disabled, and `CustomUserAgentMiddleware` overwrites the UA on every request anyway. Disable that middleware per-spider and set the header on each `Request` (as `plus_nl` does for Googlebot SEO rendering). Scrapy's `USER_AGENT` does not reach a Playwright context either — that needs `PLAYWRIGHT_CONTEXTS`.
-- Don't treat a big, clean product sitemap as evidence a source is scrapable. The sitemap layer and the product layer are protected separately: `nakup.itesco.cz`, `tesco.ie`, `tesco.com` and `koctas.com.tr` all serve `robots.txt`, a sitemap index and every product shard openly — thousands of genuinely disjoint URLs — while denying every product-detail request on every TLS profile *and* on headless Playwright. Fetch a product page before believing a sitemap.
-- Don't conclude a host is blocked from one TLS profile's 403. 11 of 125 retried hosts returned a full 200 on `chrome150` or `chrome131_android` after 403-ing on `chrome120`/`chrome124`; `rewe_de` shipped only because of that retry and needed `chrome133a` specifically. Run the profile ladder before writing a blocker entry.
-- Don't reach for headless Playwright as the general answer to a WAF. It cracked 3 of 100 curl-blocked hosts, and against Akamai tenants it scored *worse* than impersonated TLS — drawing hard edge denials where `curl_cffi` got an interstitial. Unpatched headless Chromium is itself a fingerprint.
-- Don't ignore your own request volume when a late source fails. `handla.ica.se` was proven workable in isolated probing and then failed three acceptance runs against a hardened challenge triggered by the campaign's own traffic from one IP. In a multi-host campaign, late failures are not independent of early success — pace the waves, and don't record a blocker that your own throughput caused.
-- Don't treat a live platform API as evidence of a priced catalog. A 200 from `/wp-json/wc/store/v1/products` that paginates cleanly proves the site is reachable; it says nothing about whether anything in it has a price. On the 2026-09-11 sweep this was the single most common dead end, six times in one wave: `cyberstore.co.bw` (679 products, every one `price=0`, PDP reads "Contact Us"), `abc-guinea.com` (208, all zero), `globicare-pharma.com` (39) and `mpharmaco.com` (63), plus `einkaufland.li`, which is a gift-voucher platform with `x-wp-total=1`, and `shop.tgi.li`, whose 26 SKUs are DTM motorsport tickets for German and Austrian racetracks. Fetch an actual product and look at its price before ranking a candidate or handing it to an agent.
-- Don't let a search engine's country match stand in for the country. `ddgs` matches the *word*: a Chad query pack returns a US TV-and-appliance store and a kids' merch shop, Dominica returns a US grocery chain, Gibraltar returns a US drum-hardware brand. The cheap discriminator is the storefront's own pricing currency, read from `prices.currency_code`, `priceCurrency`, or `Shopify.currency`. On the 2026-09-11 sweep it removed **331 of 410** candidates. For countries on USD, EUR or GBP the currency cannot discriminate — fall back to the ccTLD plus the shipping policy. `fitjeans.as` looked like an American Samoa retailer and is a global Shopify brand on a vanity ccTLD whose shipping policy explicitly excludes American Samoa.
-- Don't trust a multi-tenant Magento GraphQL endpoint to serve the country you asked for. `ctm.co.bw` silently resolves to the CTM **Kenya** store view and returns **KES** unless the request carries an explicit `Store: BW` header. The response is well-formed and looks entirely healthy, which makes it worse than an error: nothing downstream would flag Kenyan prices filed under Botswana. Check that the currency in the response matches the country before you scaffold. `hubbardshardware.gd` is the sibling case — it shares Magento infrastructure with `foodfair.gd` and its own GraphQL and REST endpoints return *foodfair's* data, so its SSR HTML was the only trustworthy path.
-- Don't assume the apex domain paginates. `beares.co.sz` and `hubbardshardware.gd` both silently drop the pagination parameter on the apex and honour it only on `www.`, so an apex crawl re-serves page 1 forever — the same "flat cap = broken spider" signature as a truncating paginator, but with a one-word fix. Test page 2 on both hostnames.
-- Don't set `IMPERSONATE_PROFILE` without disabling `RandomBrowserMiddleware`. It clobbers the spider's profile unconditionally, so a correctly-chosen TLS profile silently does nothing. `kalico_gd` needed both halves; `cassandraonlinemarket_ht` established the pattern. And the underlying point keeps recurring: `zimolange_na` 403s on the repo-default `chrome120` in isolated probing and opens on `chrome124`, exactly as `rewe_de` needed `chrome133a`.
-- Don't count a catalog that is not consumer retail as coverage. `estore.swasa.co.sz` is a real, paginating SZL WooCommerce store — selling ISO conformity-assessment standards documents for the Eswatini Standards Authority. Onboarding it would have added 349 products the classifier can only route into residual leaves. The downstream consumer is a PPP basket; a source whose goods are not in any consumer basket is pollution masquerading as coverage, and a country publishing 10 cells is exactly where that temptation is strongest.
-- Don't assume local-language search pays the same everywhere. It is the strongest generator after marketplaces in CJK / Thai / Vietnamese / Arabic / Indonesian markets, and mostly academic noise in an anglophone one (Botswana: 46 local-only domains, ~42 junk, 1 real). Run it either way — it costs minutes — but measure and record the yield instead of assuming.
-- Don't scrape a marketplace's catalog when its seller directory is reachable. The directory yields first-party retailers with clean names; the catalog yields seller-authored names that `census.py` throws out. Same URL, opposite value.
-- Don't rank targets by COICOP gap in a country that has little coverage. Every division is a gap there, so the ranking sorts by a constant while costing real analysis time. Take whatever verifies until the country stops yielding new leaves.
-- Don't re-run a search an inventory file already recorded as empty. A "No online supermarket found" row is a result, not a blank. Re-check it only if it's stale (older than ~6 months) — and then update the date.
-- Don't send an EAP food-and-beverage coverage complaint to this skill. That corpus is gold-bound, not source-bound; more grocery sources there change nothing. Route it to gold-growth.
-- Don't spend probe budget on the market leader. In EAP, aggregator size and scrapeability are inversely correlated — Coupang/Naver/JD/Tmall/HKTVmall/Shopee will consume the run and yield nothing. Probe the mid-tier chains instead.
-- Don't declare a site blocked without a network trace. The front page 403 says nothing about the backend; several "blocked" retailers had wide-open JSON APIs.
-- Don't onboard a new source before running the Phase 0.5 depth audit. Most reported sourcing gaps are depth gaps in sources already scraped, and a new source doesn't fix those.
-- Don't build a wholesale/official feed as a targeted extractor for the commodities that motivated the search. Walk the whole catalog — the other 1,900 commodities are nearly free and fill leaves nobody has audited yet.
-- Don't count cost-of-living aggregators (Numbeo, LivingCost, Expatistan, MyLifeElsewhere) as coverage. They carry no real SKUs and inflate every table they appear in.
-- Don't treat CPI (`analytical_role: cpi_benchmark`) as a fallback "when nothing else exists for division X." It's the benchmark series that every country needs *in addition to* its price-level sources, because the downstream PPP / inflation-nowcasting analysis compares the two.
-- Don't ship a source that probe-passes but returns 0–4 rows in the Phase 6 test. Record it as skipped with a hypothesis; revisit later.
-- Don't trust scout sub-agents that say "selectors_unknown: true" — that's a signal to do a real Playwright probe, not to invent selectors anyway.
-- Don't record a WAF/blocked verdict from bare `curl`. It measures curl's TLS handshake, not the site's defenses. Re-probe with `curl_cffi impersonate="chrome124"` (then `chrome120`, `safari17_0`, then `firefox133`) before writing anything to `known_blockers.md` — 112 such verdicts were re-probed on 2026-08-17 and a large share fell to that one lever. Do not stop at the Chrome/Safari profiles: seven hosts across Syria, Botswana and Liberia cleared only on `firefox133` on 2026-09-12.
-- Don't count homepage products as a passing probe. Carousels are curated and unpaginated; "38 products from `/`" says nothing about enumerability. Prove a *category* page paginates — page 2 must return a different set — before scaffolding.
-- Don't try to do COICOP classification in retailer SKU spiders. `src/prices/enrich/classifier/` is the downstream classifier — spiders just emit `product_name` + `category`. Note the classifier consumes the **raw** product name: normalizing or canonicalizing text in the spider measurably *hurts* accuracy, so emit the name exactly as the site renders it.
-- Don't route anything to `src/cpi/coicopping/`. That Gemini classifier is retired. A handful of older spider docstrings and YAML `notes:` still name it — they're stale comments, not live wiring.
+| `references/classification.md` | Phase 2.5 — the four axes in full, operational fields, narrowness rule |
+| `references/discovery.md` | Phase 2 — generators vs cost multipliers, marketplace-as-directory, inverse-correlation law, cold-start table |
+| `references/ddgs_search.md` | Phase 2 — the `ddgs` library, pinned backends, query packs, off-domain storefront rule |
+| `references/platform_fingerprints.md` | Phase 2–3 — storefront platform endpoints, open JSON backends, id-walk |
+| `references/blocker_classes.md` | Phase 3 — which CDN family behaves how, which tell means what, which walls are not walls |
+| `references/probe_patterns.md` | Phase 3 — curl, Playwright dump, API sniffer, PDF/XLS inspectors |
+| `references/spider_templates.md` | Phase 5A — the three spider skeletons |
+| `references/fetcher_pattern.md` | Phase 5B — fetcher contract, helpers, worked examples |
+| `references/yaml_schema.md` | Phase 5 — manifest field table + six worked examples |
+| `references/testing.md` | Phase 6 — test harness and per-scaffolding checklists |

@@ -28,7 +28,7 @@ An earlier version of this file ranked all discovery methods on a single ladder.
 | Multiplier | What it does |
 |---|---|
 | **Platform fingerprinting** | Identify the storefront software and the catalog endpoint is already known — see `platform_fingerprints.md`. Turns a probe-and-guess into a known Tier 1B. Scaffolding becomes near-free. |
-| **`known_blockers.md` cross-check** | Removes candidates before you spend probe budget on them. Negative yield avoided is yield. |
+| **probe-log cross-check** (`scripts/probe_log.py lookup`) | Removes candidates before you spend probe budget on them. Negative yield avoided is yield — but check the row's `lever_tried`: a verdict naming no lever has never really been tested. |
 
 **Why the distinction matters.** We have exactly *one* strong generator and three weak ones. Platform fingerprinting used to sit at rank 2 on the old ladder, which made discovery look better resourced than it is — it multiplies whatever the generators return and contributes nothing when they return nothing. In a cold-start country with no reachable marketplace, the honest position is that we are down to local-language search, and the run should say so rather than grinding through a generic sweep.
 
@@ -137,7 +137,7 @@ A search that came back empty is a finding, and it is worth as much as a hit —
 
 The date is what makes the null usable later: storefronts launch and WAF posture drifts, so a null is a claim with a shelf life, not a permanent fact. Roughly six months is a reasonable point to re-check one cheaply. Countries already recorded as having no viable retail e-commerce include North Korea, Brunei, Lao PDR, Kiribati, Marshall Islands, Micronesia, Northern Mariana Islands, Palau, Vanuatu, and Macao (no catalog distinct from HK).
 
-Site-level blocks go somewhere else — `known_blockers.md`, keyed by blocker class. Note that blocking is done per *tenant*: search that file by operator or brand, not only by exact domain.
+Site-level verdicts go somewhere else — `probe_log/`, one row per candidate probed, shipped or not. Class doctrine lives in `blocker_classes.md`. Note that blocking is done per *tenant*: look up the operator or brand, not only the exact domain.
 
 ## Do not onboard as "coverage"
 

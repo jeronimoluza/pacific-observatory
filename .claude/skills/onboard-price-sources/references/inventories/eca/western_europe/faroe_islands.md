@@ -196,3 +196,76 @@ specific search). Treat "no online grocery / food retail sector in the Faroe
 Islands" as settled for routine onboarding purposes; only a genuinely new
 market entrant would change it. Re-check per the standard ~6-month staleness
 window, not sooner.
+
+---
+
+## UPDATE 2026-09-28 (weekly run W40) — root-cause of near-zero trusted yield, plus first COICOP 07 source
+
+**Starting state (a8 trusted build 2026-09-15):** 2 manifests (`alvaro_fo`, `djor_fo`),
+but the trusted build (`data/prices/build/_chunked/finalized/faroe_islands.parquet`)
+held only **6 trusted rows, all COICOP 01, all from `alvaro_fo`**. Diagnosed both causes
+before adding anything new, per this run's brief:
+
+1. **`djor_fo` now collects 0 rows.** `djor.fo/wp-json/wc/store/v1/products` returns
+   HTTP 403 "Attention Required! | Cloudflare" under `curl_cffi` chrome124 AND
+   firefox133 — the WooCommerce Store API that was open at 2026-09-02 onboarding is now
+   behind a Cloudflare challenge. `second_surface_check.py` confirms: djor.fo now
+   fingerprints as "no platform surface". Logged to the probe log as `blocked` so a
+   future `recover` sweep picks it up; no lever found this pass (would need Playwright +
+   stealth, not attempted — paced probing rule).
+2. **`alvaro_fo` (5,497 prepared rows, all Faroese-language clothing/footwear/baby
+   items) is being massively misclassified by the COICOP classifier**, not merely
+   filtered. Confirmed by reading the pipeline stages directly: prepared → 86 rows in
+   `classified_hierlex` → 4,463 in `decisions_hierlex` (dominant code 03.1.2.2,
+   plausible) → but the **finalized build's 169 rows are dominated by division-01 food
+   codes** on clearly non-food items — e.g. "Cove 2 kombivognur" (a baby pram) tagged
+   `02.1.2.1`, "Jork brølapa" (baby shoes) tagged `01.1.7.9.3` with a fabricated
+   `mass_source: derived_typical` of 0.30 kg. Of the 169 finalized rows, only 6 survive
+   `qa_status == "trusted"` (the rest are `review_uv_thin` / `review_missing_qty`), and
+   all 6 are further misclassified clothing/nursery items ("Skúmgólv" = foam play mat,
+   "Body" = baby bodysuit) tagged `01.1.6.2.2`.
+   - **Root cause candidate: `countries.yaml` says `languages: [en]` for
+     `faroe_islands`**, so `resolve_lang("faroe_islands")` returns `"en"`, not `"fo"`,
+     even though both manifests correctly declare `language: fo` and every product name
+     on the live site is Faroese. This is the exact failure mode documented in this
+     repo's root CLAUDE.md ("Effective language ... NOT necessarily the country's
+     official language"), just inverted — here the country wrongly defaults to English
+     over its actual language rather than skipping a non-Latin script. Flagging as a
+     `countries.yaml` data problem for the shared-file owner, not something this run can
+     fix (manifests, not `countries.yaml`, are in scope here). **Not fully proven**
+     end-to-end against the classifier's internals in the time available — the tier-a
+     regex registry consulted (`src/prices/enrich/regex_patterns/_registry.py`) governs
+     unit-value extraction, not necessarily the COICOP leaf classifier itself, so treat
+     this as a strong correlated finding, not a confirmed single root cause.
+
+**New source shipped this pass:** `magn_fo` — P/F Magn's own published retail fuel
+price history (`https://magn.fo/oljuprisir`), fetcher, `analytical_role: tariff`,
+`coicop_classification: source_curated` (COICOP 07.2.2, hard-coded — this source is
+immune to the `alvaro_fo` language-mismatch failure mode above precisely because it
+does not go through the classifier). No anti-bot: plain `requests` returns 200. 100
+dated price-change blocks since 2024-07-26 parsed for "Bensin 95 E10" and "Diesel" only
+(boat fuel and bulk heating-oil rows in the same table excluded to avoid mis-tagging
+them as road transport). Test run: **200 rows**, DKK 10.43-18.45/L, all sane against the
+rendered page. First real (uncontaminated) division-07 coverage for this country.
+
+**Dead ends / leads not chased this pass:**
+
+| Candidate | What | Verdict | Notes |
+|---|---|---|---|
+| `effo.fo/prisir/` | Magn's main fuel competitor's own price page | **needs_work** | Prices are Vue.js client-rendered (`formatPrice(product.totalPrice)`); http-200 but no server-rendered price text. Would need Playwright or API sniffing (the page also shows `kr/kWt` and `kr/min` rows suggesting it also carries electricity/EV-charging tariffs — potentially a second COICOP-04 lead if chased). |
+| `foroyatele.fo` | Guessed Faroese telecom holding domain | no_catalog | Corporate/news page only (`/tidindi`, `/vinna`), no plan/tariff pages. The actual mobile/broadband retail brands ("Hey", "Kall") were not reachable this pass (see below) — telecom (COICOP 08) remains unprobed for the Faroe Islands. |
+| `sev.fo` | Guessed electricity-utility domain (SEV) | unreachable | HTTP 504 gateway timeout on `curl_cffi` chrome124. Worth a plain retry on a future pass — could be transient. |
+| `hey.fo` | Guessed mobile brand domain | unreachable | TLS handshake fails — certificate CN does not match `hey.fo`. Possibly the wrong domain for this brand; needs a search-based re-check rather than a domain guess. |
+| `kall.fo` | Guessed broadband brand domain | unreachable | Connection timeout. |
+| `trygd.fo` | Guessed insurance domain | out_of_scope | Faroese insurance industry federation site (Neos CMS), not a retailer or published tariff table. |
+
+**Next steps:** telecom (08) and electricity (04) remain unprobed with real search
+budget (this pass only tried direct domain guesses off general Nordic-market knowledge,
+not a Faroese-language `ddgs` sweep) — a future pass should search in Faroese for
+mobile/broadband/electricity terms the way the 2026-09-02 food pass did for grocery
+terms. `effo.fo`'s Vue-rendered price page is a concrete, already-located lead for
+COICOP 07 redundancy and possibly 04 (electricity/EV tariff rows visible in the raw
+HTML). `djor_fo` should re-enter the `recover` queue. The `alvaro_fo`
+misclassification is a classifier/gold problem, not a sourcing problem — routing more
+sources at division 01 will not fix it; the `countries.yaml` `languages:` entry for
+`faroe_islands` should be reviewed by whoever owns that shared file.

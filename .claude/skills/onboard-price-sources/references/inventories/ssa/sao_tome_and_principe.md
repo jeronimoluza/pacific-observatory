@@ -106,3 +106,53 @@ public store-directory RPC (4 merchants platform-wide, no prices), and
 confirmed the WFP and FEWS NET nulls against those APIs themselves rather than
 assuming them. STP keeps its 5 non-food sources and its 0-food status; the gap
 is structural, not a search failure.
+
+---
+
+_Reviewed 2026-09-28_ (w40 pass, brief handed a false `STATE`: "0 sources, no
+manifests exist" — that was wrong before this pass started; the wave-13 5-source
+baseline documented above was already in the tree and untouched). No probe-log
+shard existed for STP before this pass (wave 13 predates the `probe_log.py`
+schema, migrated 2026-09-17); `lookup`/`recheck` against `cst.st`, `emae.st`,
+`ine.st` and a bare `sao_tome` substring all returned "no prior probe recorded",
+so there was nothing to recover.
+
+Did not re-run the food-and-beverage search — the 2026-09-01/09-02 passes above
+are recent and were graded exhaustive by this same skill; re-spending budget on
+Entrega.st/Sokeru this soon would not have found anything new. Instead swept
+institutional verticals per `discover.md` Phase 2 generator 5 (none of which had
+been tried for STP before): port authority, university tuition, hospital fees,
+airport passenger fees, fisheries directorate.
+
+## Shipped this pass
+
+| Source name | URL | Channel / role | Status | Notes |
+|---|---|---|---|---|
+| `enasa_airport_tariff` (`stp_enasa_airport_tariff`) | https://rstp.st/wp-content/uploads/2024/11/Resolucao-n.36.2024-1_Taxas-de-aeroporto.pdf | null / `tariff` | **SHIPPED** | Resolucao n.o 36/2024 (Conselho de Ministros, Diario da Republica I Serie n.o 54, 2024-10-25) — mandatory per-leg airport passenger fees (TSDA = E1 + CT, plus TR/NJ). International EUR110 total (E1=62, CT=28, NJ=20); domestic EUR16 total (E1=7, CT=4, NJ=5); children 2-12 pay a flat 75% (Artigo 4.2). 12 rows (6 adult + 6 child), verified 2026-09-28 by reading the gazette PDF text directly with `pdfplumber`, not a sample. Currency is EUR — the decree itself denominates in Euros, not STN. No live feed exists; hardcoded in `_KNOWN_DECISIONS` per the `csfppp_fuel_tariff.py` (Togo) convention. Opens COICOP division **07** (transport) for STP, previously uncovered — prior coverage was only 04 (EMAE) and 08 (CST). |
+
+## Dead ends / needs_work this pass (institutional sweep)
+
+| Candidate | URL | Status | Notes |
+|---|---|---|---|
+| ENAPORT (port authority) | https://enaport.st/PT/empresa/tarifas-e-regulamentos | **NEEDS_WORK — B2B cargo tariff, 25MB PDF, download timed out** | Page (200, no anti-bot) links one PDF, `RTP_enaport.pdf` (Regulamento de Tarifas Portuarias), 25 MB — download timed out at 30s / 1.5MB in. Port tariffs of this shape are almost always vessel-call/cargo-handling fees (B2B, shipping lines), not a household PPP-basket item; not re-attempted given the size and the low expected consumer relevance. A future pass with a longer timeout could confirm whether it also carries passenger-ferry fares. |
+| ENASA (airport operator's own site) | https://enasa.st/ | **NO_CATALOG — reachable, no tariff content on the page probed** | `curl_cffi` chrome124/chrome120 both 403; **safari17_0 and firefox133 both clear (200)**. Homepage has zero "taxa"/"tsda"/"tarif" hits — the fee schedule (see `enasa_airport_tariff` above) was not found anywhere on this domain, only via the gazette mirror on rstp.st. Not pursued deeper into the site given the gazette PDF already gave a clean, dated, verifiable table. |
+| USTP tuition/fees (`ustp.gov.st`, `www.ustp-edu-st.com`, `repositoriodigital.me.gov.st`) | see below | **DEAD/UNREACHABLE — real regulation exists (Deliberacao n.o 17-USTP-2020) but no reachable copy found** | Three-domain chase: (1) `ustp.gov.st/institucional/ordens-regulamentos` is a live SPA (confirmed via Playwright render) whose three regulation cards — Estatutos, Regulamento Academico, Codigo de Conduta — each literally render **"Documento nao encontrado"**; the page is a placeholder, not a broken link on a real archive. (2) `www.ustp-edu-st.com` (the university's Wix marketing site) has no "propina"/"emolumento"/"matricula" text in its raw admissions/notices HTML — Wix client-renders content, not Playwright-traced further given (3). (3) `repositoriodigital.me.gov.st` — the Ministry of Education's document repository, and the one place `ddgs` found an actual named PDF (`Deliberacao n.o 17-USTP-2020 (propinas USTP)`) — times out on every scheme/path tried (`https://`, `http://`, direct IP `197.159.166.193`), consistent with the wave-13 finding that `financas.gov.st` and bare `gov.st` behave the same way. A COICOP-10 (education) source for STP would need this specific document to become reachable again; re-check periodically rather than re-searching. |
+| Diario da Republica official portal | https://dre.gov.st | **DEAD — DNS NXDOMAIN** | Linked from `stp.gov.st/documentos` as the official gazette portal; does not resolve at all. The only working access to gazette content for STP remains third-party mirrors (rstp.st, as used above). |
+| DPA / Direcao das Pescas e Aquacultura (fisheries) | https://www.pescas.st/ | **DEAD — Envato template demo site, not real content** | Reachable (200), but the page inventory is a stock HTML template's own demo pages (`blog-single.html`, `portfolio.html`, `team.html`, `faq.html`, `gallery.html`) — no fish-price or market content anywhere, despite this being the fisheries directorate's official domain. This is the most promising-looking dead end for a future food (01) source if the ministry ever replaces this placeholder. |
+| Ministerio da Saude (hospital fees) | https://minsaude.st/ , https://minsaude.st/documentos/ | **NO_CATALOG — no fee schedule found** | `/documentos/` lists ~80 real PDFs (all health policy/strategy/surveillance documents — malaria plans, TB guides, MICS surveys, a 2018 Lei de Base da Saude) but no "taxas moderadoras" / tabela de precos de cuidados de saude anywhere in the list. No hospital price-schedule source exists for STP as of this pass. |
+| SMF (`smf.st/taxas.php`) | http://www.smf.st/taxas.php | **NEEDS_WORK — unidentified, not pursued** | Turned up under a port-fee query; page is reachable (200), has 23 "taxa" mentions but no `<table>` markup found in the raw fetch, and this pass did not establish what "SMF" is (shipping/forwarding agent vs. something else) or read past the raw-text grep. Worth a proper look in a future pass before writing it off. |
+| `jornaltransparencia.st/taxas.pdf` | https://jornaltransparencia.st/taxas.pdf | **OUT_OF_SCOPE — appears to be a personnel/defence document, not prices** | Surfaced under a hospital-fee search; the source result's own title fragment reads as Ministry of Defence personnel content, and `pdfplumber` extracted no text from page 1 (image-only or non-tabular). Not pursued — wrong ministry, no visible price content. |
+
+## COICOP / channel gap after this pass
+
+STP now stands at **6 sources / 0 food**, divisions **04, 07, 08** covered by
+`tariff`, plus `cpi_benchmark` (all COICOP-1999 divisions as an index, INE).
+Still zero `retailer_sku` / `official_avg` coverage — food (01) remains a
+documented structural gap (see the 2026-09-01 section above), and this pass adds
+health (06) and education (10) as searched-but-unreached: a real regulation
+(USTP tuition) and a real government domain (fisheries) exist for both, but
+neither has a currently reachable copy of actual price content. Re-check
+`repositoriodigital.me.gov.st` and `pescas.st` periodically rather than
+re-running a fresh web search for either.
+
+Probe-log shard: `../probe_log/w40-sao_tome_and_principe.jsonl` (11 rows: 1 `ok`/shipped, 4 `no_catalog`, 3 `needs_work`, 2 `unreachable`, 1 `out_of_scope`).

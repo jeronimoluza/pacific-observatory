@@ -1,7 +1,49 @@
 # Congo, Rep. (Congo-Brazzaville)
 
-_Inventory written: 2026-09-02_ (search-starved re-run; supersedes the
-2026-09-01 pass, which ran with **zero** WebSearch budget)
+_Inventory written: 2026-09-28_ (weekly run W40 — first institutional-vertical
+pass; supersedes nothing below, the two 2026-09 passes were retail-only and
+found almost no candidates)
+
+Before this pass: `wfp_prices` (official_avg, division 01) + `mbote_cg`
+(retailer_sku, general merchandise) — 2 manifests in this worktree, both
+predating the four-axis institutional-vertical doctrine. **Note for the next
+run:** the task brief for this pass stated "6 sources, 12,540 trusted rows"
+for the a8 trusted build as of 2026-09-15, but only these 2 manifests exist
+under `src/prices/configs/ssa/central_africa/congo_rep/` in the
+`onboard-refactor` worktree searched this pass — a real discrepancy, not
+resolved here (see the run's REPORT for detail). **Result: 3 shipped**, all
+`ddgs`-discovered institutional/tariff sources (electricity/telecom retail
+search in the prior two passes had been exhausted; this pass pivoted to
+utilities, telecom and the national statistics office per discover.md's
+institutional-vertical generator, which the prior passes never ran).
+
+## Shipped (2026-09-28, run w40)
+
+| Source name | URL | Channel / role | Status | Notes |
+|---|---|---|---|---|
+| `lcde_water_tariff` | https://lcde-sa.cg/informations-clientele/tarifs/ | utility / `tariff` (04.4.1) | **SHIPPED** | La Congolaise des Eaux, national water utility. Server-rendered "Tarif du metre cube" table (4 rows) plus 10 connection-fee tables (new/existing-connection administrative charges by pipe diameter); 56 rows total, verified by direct-import test. First water/electricity-class (division 04) source for Congo-Brazzaville. |
+| `mtn_internet_tariff` | https://www.mtn.cg/particuliers/forfaits/forfaits-internet-classiques/ | telecom / `tariff` (08.3.0) | **SHIPPED** | MTN Congo prepaid data-bundle tariffs, 6 server-rendered tables (1/7/30-day validity plus NUIT/FTT/Résidentielles offers), 33 rows written on the CLI test run. First communication-division (08) source for Congo-Brazzaville. Sibling `airtel.cg/prix-les-plus-bas` is a client-rendered SPA shell (0 tables, 0 price tokens) — probed and logged `needs_work`, not pursued this pass. |
+| `ins_congo_cpi` | https://site-ins-congo.vercel.app/stat-prix.html | none / `cpi_benchmark` (all 12 divisions) | **SHIPPED** | INS (Institut National de la Statistique) monthly INHPC bulletin (CEMAC-harmonized CPI, base 100 = 2018). Production site ins-congo.cg links only to per-month HTML articles with no reliable PDF href; a Vercel mirror lists all 17 available bulletin PDFs directly and is used instead. 60 rows (12 COICOP divisions x 5 comparison months) on the CLI test run, cross-checked by hand against the PDF's own printed table. First index-layer (`cpi_benchmark`) source for Congo-Brazzaville. |
+
+## NOT shipped this pass — needs_work / no_catalog
+
+| Candidate | URL | Status | Notes |
+|---|---|---|---|
+| E2C (Energie Electrique du Congo) | https://e2c.cg/ | **no_catalog** | National electricity utility, confirmed real (govserv.org address listing, blog third-party billing explainer), but no tariff/grille page found in site nav or a direct URL guess (`/facturation-et-paiement/` is billing-process prose, no price table). A future pass should try a `ddgs` search for "E2C grille tarifaire PDF" specifically, or check the Journal Officiel (`sgg.cg`) for the rate-setting arrêté. |
+| Airtel Congo | https://www.airtel.cg/prix-les-plus-bas | **needs_work** | Client-rendered SPA shell (7.6 KB, 0 tables, 0 price tokens with a plain `requests` GET). Would need Playwright network-capture to find the internal data endpoint, per probe.md's "Playwright to discover, plain HTTP to scrape" gate. Not attempted this pass (budget). |
+| Fil (filcongo.com) | https://filcongo.com/ | **needs_work** | Genuinely promising: JSON-LD confirms `currenciesAccepted: XAF`, Brazzaville-only delivery, "prix du marché traditionnel de Brazzaville" (fresh meat/fish/vegetables/spices — exactly the fresh-produce gap 242market/Tchitunga couldn't fill without the diaspora-EUR trap). No platform fingerprint matched (WooCommerce/Shopify/Magento endpoints all 404), no JSON-LD product catalog, no Next.js data blob on the homepage — looks like a custom SPA. Needs a Playwright network trace to find the product API before it can be scaffolded. **Best next-pass candidate for division 01 depth / fresh produce.** |
+| BrazzaMarket, Marché Intelligent Congo (marche.brazzalabs.com), CongoBio | https://brazzamarket.fr/, https://marche.brazzalabs.com/, https://www.congobio.net/ | **not probed** | Surfaced by this pass's `ddgs` sweep, same "Brazzaville grocery marketplace" shape as Fil; not probed for time. Worth a look alongside Fil next pass. |
+| Ministère des Hydrocarbures / Ministère des Finances (fuel price) | https://www.finances.gouv.cg/, https://www.hydrocarbures.gouv.cg/ | **no_catalog** | Quarterly "réunion des prix des produits pétroliers" and a specific arrêté page are informational articles only — zero FCFA mentions in the page body, the only PDF link is an unrelated 2008 base decree. Matches the Côte d'Ivoire `dgh_fuel_tariff` precedent exactly: no scrapable primary source, would need a hardcoded `_KNOWN_DECISIONS` cross-checked against press (africa-press.net, koaci.com-style outlets carried a Q4-2024 mention). Not pursued this pass — division 07/fuel is the best next-pass institutional target. |
+| Regal Group Congo | https://regal-congo.com/ | **no_catalog** | Resolves the "next steps" note below: Regal's domain is now found (corporate site, 13.8 KB), but it is not an online store — no cart/panier/FCFA/catalogue tokens, no platform fingerprint. Confirms the prior pass's "NO ONLINE STORE" verdict with an actual domain in hand. |
+| UNICONGO tariff grid, Ministère de la Santé / hospital fee arrêtés (scribd-hosted) | scribd.com/document/751016592 (Arrêté 250-MSHP-MEPS), scribd.com/document/855697652 | **not probed** | Found via `ddgs`; health-tariff (06.x) candidates hosted as scribd-embedded PDFs, which need a different extraction path (scribd doesn't serve a direct PDF download without auth). Worth a next-pass look for division 06, which remains uncovered. |
+
+## Currently uncovered COICOP divisions after this pass
+
+02 (alcohol/tobacco), 03 (clothing), 05 (furnishings), 06 (health — see
+scribd leads above), 07 (transport/fuel — see hydrocarbures leads above),
+09 (recreation), 10 (education — campusfrance.org tuition-cost leads
+surfaced but not probed), 11 (restaurants/hotels), 12 (misc goods/services),
+13 (insurance/finance, structurally absent from the INHPC index too).
 
 Before this pass: `wfp_prices` only, 0 retail sources. **Result: 1 shipped,
 plus three diaspora storefronts deliberately NOT shipped — see the currency
@@ -45,9 +87,10 @@ Tchitunga needs no HTML parsing at all. They should not land under
 
 ## Next steps
 
-- Park'n'Shop / Regal are the largest physical chains with no domain found —
-  a targeted French search for those two brand names is the best shot at a
-  genuinely XAF-priced second source.
+- ~~Park'n'Shop / Regal are the largest physical chains with no domain found~~
+  — **resolved 2026-09-28:** Regal's domain (regal-congo.com) is found and is
+  a corporate site with no online store (see the 2026-09-28 section above).
+  Park'n'Shop still has no domain found.
 
 ## Common Crawl coverage
 

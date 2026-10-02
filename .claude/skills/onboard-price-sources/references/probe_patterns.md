@@ -125,7 +125,7 @@ Then grep the dumped HTML the same way as Step 1.
 
 **Tier 2 failures and what to do**:
 
-- `ERR_CONNECTION_RESET` / Playwright `goto` raises → CDN bot block at TCP layer. The real spider will also fail. **Skip this site.** Note it in `known_blockers.md`.
+- `ERR_CONNECTION_RESET` / Playwright `goto` raises → CDN bot block at TCP layer. The real spider will also fail. **Skip this site.** Log it: `scripts/probe_log.py append --verdict blocked --lever ... --tell err_connection_reset`.
 - Listing renders but `<a href="/product/...">` links are absent (only category links) → site uses lazy-loaded product cards via internal API. Skip to Step 3 (API sniff).
 - PDP rendered but `<h1>`, `og:*`, and price classes are all missing → site uses very late hydration or atomic CSS. Either increase wait time to 10–12s and re-probe, or skip.
 
@@ -320,7 +320,7 @@ This usually surfaces both the current quarterly media-release page AND any hist
 - Utility / regulator tariff schedules (quarterly republished, URL pattern not human-derivable)
 - Central-bank fee schedules / FX boards (deeply buried)
 
-Combine with the **stale-DAM-PDF check** from `known_blockers.md`: after downloading the candidate, always run `file` on it to confirm the body is what the content-type claims. Magnolia / AEM 200-OK-but-actually-HTML responses are common on retired vanity URLs.
+Combine with the **stale-DAM-PDF check** (a 200 OK serving HTML "Page not available"): after downloading the candidate, always run `file` on it to confirm the body is what the content-type claims. Magnolia / AEM 200-OK-but-actually-HTML responses are common on retired vanity URLs.
 
 ## How to handle effective-date in published static docs
 
