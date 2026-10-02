@@ -153,8 +153,11 @@ def _walk(node: Any, out: list, depth: int = 0) -> None:
 # number in the text, which let a payload price corroborate itself against an
 # unrelated date or item count, and admitted both separator readings of the
 # same token so that `20,00` counted as 2000 as well as 20.00 -- exactly the
-# value the guard exists to reject.
-_SYMBOLS = r"\$|€|£|¥|₩|₫|₺|₽|₴|₸|﷼|zł|Kč|лв|ден|R\$|US\$|MX\$"
+# value the guard exists to reject. Zakaz.ua storefronts (novus_ua & co.)
+# render `159.00uah` / `159.00грн` -- lowercase and glued to the digits, so the
+# code branch never matched, the page looked unpriced, and their kopiyky
+# payload (`price: 15900`) was banked 100x.
+_SYMBOLS = r"\$|€|£|¥|₩|₫|₺|₽|₴|₸|﷼|zł|Kč|лв|ден|грн|uah|R\$|US\$|MX\$"
 _MONEY_RE = re.compile(
     r"(?:(?:%s|\b[A-Z]{3})\s*(\d[\d.,]*)|(\d[\d.,]*)\s*(?:%s|\b[A-Z]{3}\b))"
     % (_SYMBOLS, _SYMBOLS)
