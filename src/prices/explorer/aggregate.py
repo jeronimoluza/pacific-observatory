@@ -976,7 +976,9 @@ def _weight_labels(weights: dict[str, float]) -> set[str]:
 def _samples(trusted: pd.DataFrame) -> dict[str, list[str]]:
     """Three real product names per leaf cell, so a user can audit what is in it."""
     s = trusted[trusted.standard_unit.isin(COMPARABLE_UNITS)]
-    s = s.sort_values("observation_date", ascending=False)
+    s = s.sort_values(
+        ["observation_date", "product_name"], ascending=[False, True], kind="stable"
+    )
     s = s.groupby(["country", "coicop_code", "standard_unit"], observed=True).head(3)
     out: dict[str, list[str]] = {}
     for (c, code, unit), grp in s.groupby(
