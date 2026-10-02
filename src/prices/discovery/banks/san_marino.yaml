@@ -1,0 +1,55 @@
+# Query-bank vocabulary. `po prices discovery load-bank <country>` expands it.
+# cities[0] is the main commercial city. Leave a term out where locals would
+# search with another language's word. Terms marked "unverified" want a
+# native speaker's check.
+country: san_marino
+names:
+  en: San Marino
+  it: San Marino
+cities: [Serravalle, Borgo Maggiore, Domagnano]
+currency_words: [EUR, euro]
+terms:
+  it:
+    online_shop: negozio online
+    supermarket: supermercato
+    pharmacy: farmacia
+    electronics: elettrodomestici
+    phone_shop: negozio di telefonia
+    building_materials: materiali edili
+    cosmetics: profumeria
+    clothing: abbigliamento
+    furniture: mobili
+    food_delivery: consegna a domicilio
+    fuel_price: prezzo carburante
+    electricity_tariff: tariffe energia elettrica
+    water_tariff: tariffe acqua
+    mobile_data_plans: offerte telefonia mobile
+    transport_fares: tariffe autobus
+    market_prices: prezzi al mercato
+    consumer_price_index: indice dei prezzi al consumo
+    classifieds: annunci
+    price: prezzo
+    buy_online: acquista online
+    price_list: listino prezzi
+  en:
+    online_shop: online shop
+    supermarket: supermarket
+    pharmacy: pharmacy
+    electronics: electronics store
+    phone_shop: phone shop
+    building_materials: building materials
+    cosmetics: cosmetics
+    clothing: clothing store
+    furniture: furniture store
+    food_delivery: food delivery
+    fuel_price: fuel price
+    electricity_tariff: electricity tariff
+    water_tariff: water tariff
+    mobile_data_plans: mobile data plans
+    transport_fares: bus fares
+    market_prices: market prices
+    consumer_price_index: consumer price index
+    classifieds: classifieds
+    price: price
+    buy_online: buy online
+    price_list: price list

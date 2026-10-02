@@ -34,10 +34,11 @@ BLOCKLIST = frozenset(
 )
 
 # Engines whose top-20 queries are re-run even when another engine ran them.
-OVERLAP_ENGINES = ("yahoo", "websearch")
-DDGS_ENGINES = ("yahoo", "duckduckgo")
+OVERLAP_ENGINES = ("yahoo", "yandex", "websearch")
+DDGS_ENGINES = ("yahoo", "duckduckgo", "yandex", "google")
 # Seconds between queries; yahoo held at ~16 s from 191.80.83.234 on 2026-09-30.
-SPACING = {"yahoo": 16, "duckduckgo": 20}
+# yandex and google joined on 2026-10-02 after a 1-query probe; untested pace.
+SPACING = {"yahoo": 16, "duckduckgo": 20, "yandex": 20, "google": 20}
 EMPTIES_MEAN_BLOCK = 3
 CANARY = "weather forecast"
 MAX_RESULTS = 20

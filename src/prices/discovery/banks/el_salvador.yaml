@@ -1,0 +1,55 @@
+# Query-bank vocabulary. `po prices discovery load-bank <country>` expands it.
+# cities[0] is the main commercial city. Leave a term out where locals would
+# search with another language's word. Terms marked "unverified" want a
+# native speaker's check.
+country: el_salvador
+names:
+  en: El Salvador
+  es: El Salvador
+cities: [San Salvador, Santa Ana, San Miguel, Soyapango]
+currency_words: [USD, dólares, colones]
+terms:
+  es:
+    online_shop: tienda en línea
+    supermarket: supermercado
+    pharmacy: farmacia
+    electronics: electrodomésticos
+    phone_shop: celulares
+    building_materials: materiales de construcción
+    cosmetics: cosméticos
+    clothing: tienda de ropa
+    furniture: muebles
+    food_delivery: comida a domicilio
+    fuel_price: precios de combustibles
+    electricity_tariff: pliego tarifario energía
+    water_tariff: tarifa de agua
+    mobile_data_plans: planes de datos
+    transport_fares: tarifas de transporte
+    market_prices: precios de mercado
+    consumer_price_index: índice de precios al consumidor
+    classifieds: clasificados
+    price: precio
+    buy_online: comprar en línea
+    price_list: lista de precios
+  en:
+    online_shop: online store
+    supermarket: supermarket
+    pharmacy: pharmacy
+    electronics: electronics store
+    phone_shop: phone shop
+    building_materials: building materials
+    cosmetics: cosmetics
+    clothing: clothing store
+    furniture: furniture store
+    food_delivery: food delivery
+    fuel_price: fuel prices
+    electricity_tariff: electricity tariff
+    water_tariff: water tariff
+    mobile_data_plans: mobile data plans
+    transport_fares: transport fares
+    market_prices: market prices
+    consumer_price_index: consumer price index
+    classifieds: classifieds
+    price: price
+    buy_online: buy online
+    price_list: price list

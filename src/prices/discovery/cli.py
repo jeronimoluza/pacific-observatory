@@ -110,7 +110,7 @@ def load_bank_command(ctx: click.Context, countries: tuple[str, ...], show: bool
 
 
 @discovery_group.command("search")
-@click.option("--engines", default="yahoo,duckduckgo", show_default=True)
+@click.option("--engines", default="yahoo,duckduckgo,yandex,google", show_default=True)
 @click.option("--country", default=None, help="Only this country's queries.")
 @click.option("--limit", type=int, default=None, help="At most this many queries per engine.")
 @click.pass_context

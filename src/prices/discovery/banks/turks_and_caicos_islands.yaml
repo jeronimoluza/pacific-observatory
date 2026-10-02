@@ -1,0 +1,32 @@
+# Query-bank vocabulary. `po prices discovery load-bank <country>` expands it.
+# cities[0] is the main commercial city. Leave a term out where locals would
+# search with another language's word. Terms marked "unverified" want a
+# native speaker's check.
+country: turks_and_caicos_islands
+names:
+  en: Turks and Caicos Islands
+cities: [Providenciales, Grand Turk, Cockburn Town]
+currency_words: [USD]
+terms:
+  en:
+    online_shop: online store
+    supermarket: supermarket
+    pharmacy: pharmacy
+    electronics: electronics store
+    phone_shop: phone shop
+    building_materials: building materials
+    cosmetics: cosmetics
+    clothing: clothing store
+    furniture: furniture store
+    food_delivery: food delivery
+    fuel_price: gas prices
+    electricity_tariff: electricity rates
+    water_tariff: water rates
+    mobile_data_plans: data plans
+    transport_fares: taxi fares
+    market_prices: grocery prices
+    consumer_price_index: consumer price index
+    classifieds: classifieds
+    price: price
+    buy_online: buy online
+    price_list: price list

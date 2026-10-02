@@ -1,0 +1,55 @@
+# Query-bank vocabulary. `po prices discovery load-bank <country>` expands it.
+# cities[0] is the main commercial city. Leave a term out where locals would
+# search with another language's word. Terms marked "unverified" want a
+# native speaker's check.
+country: canada
+names:
+  en: Canada
+  fr: Canada
+cities: [Toronto, Montreal, Vancouver, Calgary, Ottawa, Edmonton, Winnipeg]
+currency_words: [CAD, dollars canadiens]
+terms:
+  en:
+    online_shop: online store
+    supermarket: grocery store
+    pharmacy: pharmacy
+    electronics: electronics store
+    phone_shop: phone shop
+    building_materials: building supplies
+    cosmetics: beauty products
+    clothing: clothing store
+    furniture: furniture store
+    food_delivery: food delivery
+    fuel_price: gas prices
+    electricity_tariff: electricity rates
+    water_tariff: water rates
+    mobile_data_plans: mobile plans
+    transport_fares: transit fares
+    market_prices: grocery flyer
+    consumer_price_index: consumer price index
+    classifieds: classifieds
+    price: price
+    buy_online: buy online
+    price_list: price list
+  fr:
+    online_shop: boutique en ligne
+    supermarket: épicerie
+    pharmacy: pharmacie
+    electronics: magasin d'électronique
+    phone_shop: boutique de cellulaires
+    building_materials: quincaillerie
+    cosmetics: produits de beauté
+    clothing: magasin de vêtements
+    furniture: magasin de meubles
+    food_delivery: livraison de nourriture
+    fuel_price: prix de l'essence
+    electricity_tariff: tarifs d'électricité
+    water_tariff: tarif eau
+    mobile_data_plans: forfaits cellulaire
+    transport_fares: tarifs transport en commun
+    market_prices: circulaire
+    consumer_price_index: indice des prix à la consommation
+    classifieds: petites annonces
+    price: prix
+    buy_online: magasiner en ligne
+    price_list: liste de prix

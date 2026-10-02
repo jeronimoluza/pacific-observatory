@@ -1,0 +1,40 @@
+# Query-bank vocabulary. `po prices discovery load-bank <country>` expands it.
+# cities[0] is the main commercial city. Leave a term out where locals would
+# search with another language's word. Terms marked "unverified" want a
+# native speaker's check.
+country: korea_dem_peoples_rep
+names:
+  en: North Korea
+  ko: 북한
+cities: [Pyongyang, Chongjin, Hamhung, Sinuiju]
+currency_words: [KPW, won, North Korean won]
+terms:
+  en:
+    online_shop: online shop
+    supermarket: supermarket
+    pharmacy: pharmacy
+    electronics: electronics shop
+    phone_shop: mobile phone shop
+    building_materials: building materials
+    cosmetics: cosmetics
+    clothing: clothing store
+    furniture: furniture
+    food_delivery: food delivery
+    fuel_price: gasoline price
+    electricity_tariff: electricity tariff
+    water_tariff: water tariff
+    mobile_data_plans: mobile data plans
+    transport_fares: transport fares
+    market_prices: North Korea market prices
+    consumer_price_index: consumer price index
+    classifieds: classifieds
+    price: price
+    buy_online: buy online
+    price_list: price list
+  ko:
+    supermarket: 슈퍼마켓       # unverified
+    pharmacy: 약국              # unverified
+    fuel_price: 휘발유 가격     # unverified
+    market_prices: 북한 장마당 가격  # unverified
+    price: 가격
+    price_list: 가격표          # unverified

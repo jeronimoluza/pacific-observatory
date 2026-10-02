@@ -1,0 +1,43 @@
+# Query-bank vocabulary. `po prices discovery load-bank <country>` expands it.
+# cities[0] is the main commercial city. Leave a term out where locals would
+# search with another language's word. Terms marked "unverified" want a
+# native speaker's check.
+country: somalia
+names:
+  en: Somalia
+  so: Soomaaliya
+  ar: الصومال
+cities: [Mogadishu, Hargeisa, Bosaso, Kismayo]
+currency_words: [USD, SOS, shilling, Somali shilling]
+terms:
+  en:
+    online_shop: online shop
+    supermarket: supermarket
+    pharmacy: pharmacy
+    electronics: electronics shop
+    phone_shop: phone shop
+    building_materials: building materials
+    cosmetics: cosmetics
+    clothing: clothing store
+    furniture: furniture
+    food_delivery: food delivery
+    fuel_price: fuel price
+    electricity_tariff: electricity tariff
+    water_tariff: water tariff
+    mobile_data_plans: mobile data bundles
+    transport_fares: transport fares
+    market_prices: market prices
+    consumer_price_index: consumer price index
+    classifieds: classifieds
+    price: price
+    buy_online: buy online
+    price_list: price list
+  so:
+    price: qiimaha              # unverified
+    price_list: liiska qiimaha  # unverified
+    market_prices: qiimaha suuqa  # unverified
+    pharmacy: farmasi           # unverified
+    supermarket: suuq weyn      # unverified
+  ar:
+    price: سعر                  # unverified
+    market_prices: أسعار السوق   # unverified
