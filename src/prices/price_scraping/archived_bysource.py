@@ -52,6 +52,7 @@ from .archived_supermax import extract as _supermax_pr
 from .archived_voli import extract as _voli_me
 from .archived_sas_am import extract as _sas_am
 from .archived_spar_zw import extract as _spar_zw
+from .archived_waitrose import extract as _waitrose
 
 _YEN = re.compile("^[\\d,]+\\s*円$")
 _GBP = re.compile("£\\s*[\\d,]+(?:\\.\\d+)?")
@@ -494,6 +495,7 @@ _EXTRACTORS = {
     "sas_am": _sas_am,
     "spar_zw": _spar_zw,
     "ckgreaves_vc": _ckgreaves_vc,
+    "waitrose": _waitrose,
 }
 
 
