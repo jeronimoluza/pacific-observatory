@@ -75,6 +75,53 @@ def status_command(ctx: click.Context, country: str | None) -> None:
         click.echo(f"  {r['engine']:<12} cap {r['daily_cap']}{parked}")
 
 
+@discovery_group.command("candidates")
+@click.option("--country", default=None, help="List this country's rows; omit for the queue.")
+@click.option("--status", "statuses", default="verified,ambiguous", show_default=True)
+@click.pass_context
+def candidates_command(ctx: click.Context, country: str | None, statuses: str) -> None:
+    """The onboarding queue, or one country's candidates as TSV for an onboarding session."""
+    con = connect(ctx.obj["db_path"])
+    wanted = statuses.split(",")
+    marks = ",".join("?" * len(wanted))
+    if not country:
+        # Lowest coverage first: the order Monday onboarding works in.
+        for r in con.execute(
+            f"""SELECT k.country, k.n_sources, COUNT(*) n,
+                       SUM(c.status = 'verified') verified, SUM(c.status = 'ambiguous') ambiguous
+                FROM candidates c JOIN countries k ON k.country = c.country
+                WHERE c.status IN ({marks})
+                GROUP BY k.country ORDER BY k.n_sources, k.country""",
+            wanted,
+        ):
+            click.echo(
+                f"{r['country']:<32} sources {r['n_sources']:<3} "
+                f"verified {r['verified']:<3} ambiguous {r['ambiguous']}"
+            )
+        return
+    click.echo("status\tdomain\tkind\tbest_url\tcurrency_seen\tplatform\tprice_evidence\treason")
+    for r in con.execute(
+        f"""SELECT * FROM candidates WHERE country = ? AND status IN ({marks})
+            ORDER BY status DESC, domain""",
+        (country, *wanted),
+    ):
+        click.echo(
+            "\t".join(
+                str(r[k] or "")
+                for k in (
+                    "status",
+                    "domain",
+                    "kind",
+                    "best_url",
+                    "currency_seen",
+                    "platform",
+                    "price_evidence",
+                    "reason",
+                )
+            )
+        )
+
+
 @discovery_group.command("load-bank")
 @click.argument("countries", nargs=-1, required=True)
 @click.option("--show", is_flag=True, help="Print every expanded query.")
@@ -200,28 +247,41 @@ def record_search_command(ctx: click.Context, query_id: str, hits_json: Path, en
 @click.argument("domain")
 @click.argument(
     "status",
-    type=click.Choice(["verified", "rejected", "ambiguous", "blocked_plain", "blocked_hard"]),
+    type=click.Choice(
+        ["verified", "rejected", "ambiguous", "blocked_plain", "blocked_hard", "scaffolded"]
+    ),
 )
 @click.option("--reason", required=True)
+@click.option("--config", "source_config", default=None, help="The YAML a scaffolded row became.")
 @click.option(
     "--kind", type=click.Choice(["retail", "tariff", "bulletin", "classifieds"]), default=None
 )
 @click.pass_context
 def record_verdict_command(
-    ctx: click.Context, country: str, domain: str, status: str, reason: str, kind: str | None
+    ctx: click.Context,
+    country: str,
+    domain: str,
+    status: str,
+    reason: str,
+    kind: str | None,
+    source_config: str | None,
 ) -> None:
-    """Settle a `discovered` or `ambiguous` candidate."""
+    """Settle a `discovered`, `ambiguous` or `verified` candidate (onboarding sets `scaffolded`)."""
     from prices.discovery.triage import _now
 
     con = connect(ctx.obj["db_path"])
     with con:
         cur = con.execute(
-            """UPDATE candidates SET status = ?, reason = ?, kind = COALESCE(?, kind), updated_at = ?
-               WHERE country = ? AND domain = ? AND status IN ('discovered', 'ambiguous')""",
-            (status, reason, kind, _now(), country, domain),
+            """UPDATE candidates SET status = ?, reason = ?, kind = COALESCE(?, kind),
+                   source_config = COALESCE(?, source_config), updated_at = ?
+               WHERE country = ? AND domain = ?
+                 AND status IN ('discovered', 'ambiguous', 'verified')""",
+            (status, reason, kind, source_config, _now(), country, domain),
         )
     if not cur.rowcount:
-        raise click.ClickException(f"no discovered/ambiguous candidate ({country}, {domain})")
+        raise click.ClickException(
+            f"no discovered/ambiguous/verified candidate ({country}, {domain})"
+        )
     click.echo(f"{country} {domain} -> {status}")
 
 
