@@ -145,13 +145,29 @@ _EXPLODE_DROP = [
 
 
 def _explode_nodes(rows: pd.DataFrame) -> pd.DataFrame:
-    """One row per (observation, ancestor node) so every tree level aggregates."""
-    codes = rows.coicop_code.unique()
-    ladder = pd.DataFrame(
-        [(c, n) for c in codes for n in _levels(c)], columns=["coicop_code", "node"]
-    )
-    slim = rows.drop(columns=_EXPLODE_DROP, errors="ignore")
-    return slim.merge(ladder, on="coicop_code", how="inner")
+    """One row per (observation, ancestor node) so every tree level aggregates.
+
+    Built by position, not by merging against the ladder: the merge's join
+    indexers and its copy of every column were ~6 GB on top of a ~14 GB result
+    on a 36M-row build, which a 26 GB box could not hold (W40, 2026-10-02).
+    Same rows, columns and order as the inner merge it replaces."""
+    code_of, codes = pd.factorize(rows.coicop_code)
+    ladders = [_levels(c) for c in codes]
+    depth = np.array([len(lad) for lad in ladders], dtype=np.int64)
+    first = np.concatenate([[0], np.cumsum(depth)[:-1]])
+    nodes = np.array([n for lad in ladders for n in lad], dtype=object)
+    reps = np.where(code_of < 0, 0, depth[code_of])
+    take = np.repeat(np.arange(len(rows)), reps)
+    within = np.arange(len(take)) - np.repeat(np.cumsum(reps) - reps, reps)
+    node = nodes[np.repeat(first[np.maximum(code_of, 0)], reps) + within]
+    del reps, within
+    out = {
+        col: rows[col].array.take(take) for col in rows.columns if col not in _EXPLODE_DROP
+    }
+    out["node"] = node
+    # copy=False also skips consolidating same-dtype columns into one block,
+    # which would hold the ~11 GB result twice while it copied.
+    return pd.DataFrame(out, copy=False)
 
 
 def _fill_rows(fills: pd.DataFrame, like: pd.DataFrame) -> pd.DataFrame:
@@ -213,7 +229,8 @@ def _concat_rows(a: pd.DataFrame, b: pd.DataFrame) -> pd.DataFrame:
         if right.dtype != left.dtype:
             right = right.astype(left.dtype)
         out[col] = pd.concat([left, right], ignore_index=True)
-    return pd.DataFrame(out, columns=cols)
+    # copy=False: consolidating the columns into blocks would copy them all.
+    return pd.DataFrame(out, columns=cols, copy=False)
 
 
 def _pool(
