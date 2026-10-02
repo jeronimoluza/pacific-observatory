@@ -135,3 +135,58 @@ def refresh(
     save_cache(combined, cache_path)
     logger.info("Refreshed %s rows into %s", len(fetched), cache_path)
     return int(len(fetched))
+
+
+#: Codes the provider serves only from a cutover date: earlier dates are the
+#: predecessor's rate, rescaled. MRU replaced MRO at 10:1 on 2018-01-01. SSP
+#: replaced SDG at par in 2011-07, but v2 serves SSP only from 2013-01-21.
+SUCCESSORS = {"MRU": ("MRO", 10.0, "2018-01-01"), "SSP": ("SDG", 1.0, "2013-01-21")}
+
+#: Until Myanmar floated the kyat on 2012-04-01 the provider serves the
+#: official peg (~6.4 per USD) against a market rate of 800-1,300, and prices
+#: are quoted at market. Before the float MMK comes from the World Bank RTFX
+#: panel instead: the monthly median of `c_exchange_rate_unofficial` across
+#: Myanmar's ~300 markets, held for every day of its month.
+MMK_FLOAT = "2012-04-01"
+RTFX_CSV = Path.home() / "data/wb_rtdi/WLD_2023_RTFX_v01_M/WLD_RTFX_mkt_2026-08-24.csv"
+SOURCE_RTFX_MMK = "wb_rtfx:unofficial-median"
+
+
+def _daily(monthly: pd.Series) -> pd.DataFrame:
+    days = pd.date_range(monthly.index.min(), monthly.index.max() + pd.offsets.MonthEnd(0))
+    rate = monthly.reindex(days.to_period("M").to_timestamp()).to_numpy()
+    return pd.DataFrame({"date": days, "rate_usd_to_local": rate})
+
+
+def _mmk_market(start: str, rtfx_csv: Path = RTFX_CSV) -> pd.DataFrame:
+    df = pd.read_csv(rtfx_csv, usecols=["ISO3", "DATES", "c_exchange_rate_unofficial"])
+    df = df[df["ISO3"].eq("MMR")]
+    monthly = df.groupby(pd.to_datetime(df["DATES"]))["c_exchange_rate_unofficial"].median()
+    monthly = monthly[(monthly.index >= pd.Timestamp(start)) & (monthly.index < pd.Timestamp(MMK_FLOAT))]
+    return _daily(monthly).assign(currency="MMK", source=SOURCE_RTFX_MMK)
+
+
+def backfill(cache_path: Path = PRICES_FX_CACHE, start: str = FX_HISTORY_FLOOR) -> int:
+    """Extend ``cache_path`` BACKWARD to ``start``. Add-only: a ``(currency,
+    date)`` already cached is never touched. Returns the number of rows added.
+    """
+    cache_path = Path(cache_path)
+    existing = load_cache(cache_path)
+    first = existing.groupby("currency")["date"].min()
+    plain = sorted(set(existing["currency"].dropna()) - set(SUCCESSORS))
+    end = (first.min() - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+    frames = [fetch_frame(plain, start=start, end=end)]
+    for code, (old, ratio, cutover) in SUCCESSORS.items():
+        last = (pd.Timestamp(cutover) - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+        prior = fetch_frame([old], start=start, end=last)
+        prior["rate_usd_to_local"] = prior["rate_usd_to_local"] / ratio
+        frames.append(prior.assign(currency=code, source=f"derived:{old}/{ratio:g}"))
+    added = pd.concat(frames, ignore_index=True)
+    added = added[~(added["currency"].eq("MMK") & (added["date"] < pd.Timestamp(MMK_FLOAT)))]
+    added = pd.concat([added, _mmk_market(start)], ignore_index=True)
+    # Existing rows go last so they win every overlap: a backfill never edits.
+    combined = merge_rows(added, existing)
+    save_cache(combined, cache_path)
+    n = len(combined) - len(existing)
+    logger.info("Backfilled %s rows into %s", n, cache_path)
+    return n

@@ -13,4 +13,4 @@ PRICES_FX_CACHE = REPO_ROOT / "data" / "prices" / "_fx" / "fx_cache.csv"
 #: The corpus's usable history starts here. This is a real floor now: it is
 #: the start of the price corpus, not -- as the old 2024-03-06 value was --
 #: whatever the shipped fetcher happened to reach.
-FX_HISTORY_FLOOR = "2013-01-01"
+FX_HISTORY_FLOOR = "2006-11-01"
