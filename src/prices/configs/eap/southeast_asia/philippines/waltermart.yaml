@@ -8,6 +8,8 @@ archive_prefix: "www.waltermartdelivery.com.ph/"
 archive_path_re: '/p/\d+$'
 language: en
 currency: PHP
+# CC rows parsed before 665749bc carry the Freshop page's USD label.
+restamp_archive_currency: true
 cadence: daily
 channel: supermarket
 active: true
