@@ -802,12 +802,6 @@ cameroon:
   currency: XAF
   languages: [en, fr]
 
-canada:
-  name: Canada
-  iso3: CAN
-  currency: CAD
-  languages: [en, fr]
-
 central_african_republic:
   name: Central African Republic
   iso3: CAF
