@@ -28,8 +28,9 @@ BANKS_DIR = HERE / "banks"
 COUNTRIES_YAML = HERE.parents[1] / "configs" / "countries.yaml"
 CLDR = json.loads((HERE / "cldr_languages.json").read_text(encoding="utf-8"))["by_iso3"]
 
-# term -> candidate kind. Retail terms are searched per city; the rest only
-# at country level, since tariffs and bulletins are national.
+# term -> candidate kind. Deep queries name the country, never a city: on the
+# CAR dry run (2026-10-02) 14 city queries gave 1 real find the country-wide
+# queries missed, and the top-20 already carries a few capital-city shapes.
 RETAIL = (
     "online_shop",
     "supermarket",
@@ -173,8 +174,6 @@ def expand(country: str, vocab: dict) -> list[dict]:
             if not terms.get(term):
                 continue
             add(f"{terms[term]} {s['name']}", lang, term, "deep")
-            for city in vocab["cities"]:
-                add(f"{terms[term]} {city}", lang, f"{term}_city", "deep")
             if terms.get("price"):
                 add(f"{terms[term]} {s['name']} {terms['price']}", lang, f"{term}_price", "deep")
         for term in NATIONAL:
