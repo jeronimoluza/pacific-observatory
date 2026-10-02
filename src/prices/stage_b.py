@@ -116,6 +116,7 @@ def month_fx(pm: pd.DataFrame, local: str) -> pd.DataFrame:
     other shop, blended in, and was trusted). One with no rate is left as
     quoted and marked `fx_suspect`.
     """
+    pm = pm.assign(currency=pm["currency"].map(fx.normalize_currency_safe))
     known = pm["month"].dropna()
     start = pd.to_datetime(known.min(), format="%Y-%m")
     end = pd.to_datetime(known.max(), format="%Y-%m") + pd.offsets.MonthEnd(0)
@@ -286,7 +287,10 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     if len(pm) != n or pm["_row"].duplicated().any():
         raise RuntimeError(f"product-month count moved: {n} in, {len(pm)} out")
     own = pm["source"].isin(trust.official_sources()) & pm["basis_ok"] & pm["unit_value_local"].gt(0)
-    med = pm[own].groupby("input_hash")["unit_value_local"].transform("median")
+    # Against the same month's official quotes, not the product's whole
+    # history: South Sudan RTDI runs 4 -> 12,725 SSP over 2007-2026, and a
+    # whole-history median put every early and late year out.
+    med = pm[own].groupby(["source", *trust.CELL, "month"], dropna=False)["unit_value_local"].transform("median")
     pm.loc[own, "qa_level"] = np.where(
         (pm.loc[own, "unit_value_local"] / med).between(*OFFICIAL_BOUNDS), "official", "out"
     )

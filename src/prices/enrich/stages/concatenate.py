@@ -441,6 +441,10 @@ def _iter_rows(files: list[tuple[str, Path]], stats: Counter) -> Iterator[dict]:
         for row in rows:
             row["origin"] = origin
             row["scraped_at"] = scraped_at
+            # Live rakuten and yahoo_shopping records carry no timestamp at
+            # all; the fetch run's time is the only date they have.
+            if not row.get("date"):
+                row["date"] = scraped_at
             yield row
 
 
