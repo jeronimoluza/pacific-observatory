@@ -57,3 +57,5 @@ notes: |
   defaults) -- Tesco runs a real anti-bot stack and getting banned here
   risks the sibling CZ/IE/UK probes too.
 timeout: 28800
+# Archived rows parsed before FORCE_CURRENCY reached the CC path say GBP.
+restamp_archive_currency: true

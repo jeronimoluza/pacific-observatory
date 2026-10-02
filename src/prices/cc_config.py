@@ -235,7 +235,14 @@ def declared_currency_for(spider: str) -> str:
     if declared:
         return declared
     cls = _spider_class(spider)
-    if cls is None or callable(getattr(cls, "parse_html", None)):
+    if cls is None:
+        return ""
+    # FORCE_CURRENCY says the page's own currency is wrong (tesco_hu's JSON-LD
+    # reads GBP on HUF prices); that holds on an archived page too, hook or not.
+    forced = str(getattr(cls, "FORCE_CURRENCY", "") or "").strip().upper()
+    if forced:
+        return forced
+    if callable(getattr(cls, "parse_html", None)):
         return ""
     return str(getattr(cls, "currency", "") or "").strip().upper()
 
