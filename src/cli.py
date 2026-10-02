@@ -458,6 +458,7 @@ from prices.gate import gate_group as _prices_gate  # noqa: E402
 from prices.enrich.rulecheck import rulecheck_group as _prices_rulecheck  # noqa: E402
 from prices.uv_report import uv_report as _prices_uv_report  # noqa: E402
 from prices.stage_b import stage_b as _prices_stage_b  # noqa: E402
+from prices.dashboards import dashboards as _prices_dashboards  # noqa: E402
 from prices.drop_ledger import drop_ledger as _prices_drop_ledger  # noqa: E402
 from prices.sanity import sanity_command as _prices_sanity  # noqa: E402
 from prices.source_sanity import (  # noqa: E402
@@ -494,6 +495,7 @@ prices.add_command(_prices_stage_b, name="stage-b")
 prices.add_command(_prices_drop_ledger, name="drop-ledger")
 prices.add_command(_prices_cc_ledger, name="cc-ledger")
 prices.add_command(_prices_cc_exhaustion, name="cc-exhaustion")
+prices.add_command(_prices_dashboards, name="dashboards")
 
 
 @prices.command("build")
