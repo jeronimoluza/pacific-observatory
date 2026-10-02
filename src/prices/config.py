@@ -55,6 +55,11 @@ class PriceSourceConfig(BaseModel):
     archive_also: list[dict[str, str]] | None = None
     coicop_classification: str | None = None
     currency: str | None = None
+    # Opt-in: `concatenate` re-applies the declared archive currency
+    # (`cc_config.declared_currency_for`) to archived rows already on disk, which
+    # were parsed before that currency was stamped at fetch time. Not a default:
+    # many sources' archives legitimately carry other currencies (IRT, BGN->EUR).
+    restamp_archive_currency: bool = False
     inactive_reason: str | None = None
 
     # Declared in prices, enforced only in the `fuel` pipeline

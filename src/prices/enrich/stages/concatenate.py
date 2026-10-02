@@ -68,7 +68,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import yaml
 
-from prices import lineage, partition
+from prices import cc_config, lineage, partition
 from prices.enrich import config, shards
 
 logger = logging.getLogger(__name__)
@@ -568,6 +568,7 @@ def _finalise_shard(
     """Pass 2: stream the spill back, apply the modal back-fill and the
     required-field screen, and write the shard. Returns (written, dropped)."""
     channel = _channel_for(country, source)
+    restamp = cc_config.restamped_archive_currencies().get((country, source))
     n_rows = n_dropped = 0
     writer = None
     try:
@@ -575,6 +576,11 @@ def _finalise_shard(
             df = batch.to_pandas()
             for col in float_cols:
                 df[col] = _as_float_text(df[col])
+
+            # Archived rows parsed before the fetcher stamped the declared
+            # currency still carry the page's own (wrong) label; re-apply it.
+            if restamp:
+                df["currency"] = df["currency"].where(df["origin"] == "live", restamp)
 
             # Back-fill currency for rows that lack it, using the modal currency
             # observed in this source's other rows.

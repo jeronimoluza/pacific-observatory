@@ -18,7 +18,7 @@ import logging
 import re
 import subprocess
 from functools import lru_cache
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -238,3 +238,23 @@ def declared_currency_for(spider: str) -> str:
     if cls is None or callable(getattr(cls, "parse_html", None)):
         return ""
     return str(getattr(cls, "currency", "") or "").strip().upper()
+
+
+@lru_cache(maxsize=1)
+def restamped_archive_currencies() -> Dict[Tuple[str, str], str]:
+    """``{(country, source): currency}`` for manifests that set
+    ``restamp_archive_currency: true``, the currency being the one the fetcher
+    stamps today (:func:`declared_currency_for`)."""
+    from prices.config import PriceSourceConfig, discover_prices_configs
+
+    out: Dict[Tuple[str, str], str] = {}
+    for path in discover_prices_configs():
+        try:
+            cfg = PriceSourceConfig.load(path)
+        except Exception:  # noqa: BLE001 - unloadable manifest, as above
+            continue
+        if cfg.restamp_archive_currency and cfg.spider:
+            currency = declared_currency_for(cfg.spider)
+            if currency:
+                out[(cfg.country, cfg.source)] = currency
+    return out
