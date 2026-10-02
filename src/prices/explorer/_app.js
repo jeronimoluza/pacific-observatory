@@ -920,8 +920,7 @@ function renderRanking() {
       " (world = 100) · " + r.level_n + " matched items · " + r.src + " sources · " +
       r.obs.toLocaleString() + " observations" +
       (r.imp > 0 ? " · rests partly on imputed months" : "") + '">' +
-      '<div class="n">' + (i + 1) + '</div><div class="nm">' + esc(r.name) +
-      (r.imp > 0 ? ' <span class="impm">◇</span>' : "") + "</div>" +
+      '<div class="n">' + (i + 1) + '</div><div class="nm">' + esc(r.name) + "</div>" +
       '<div class="tr">' +
       '<div class="f" style="left:' + pos(a) + "%;width:" + (pos(b) - pos(a)) + "%;background:" +
       (up ? EXPENSIVE : CHEAP) + '"></div></div>' +
@@ -933,9 +932,7 @@ function renderRanking() {
      still in its hover title, which is where a reader who wants it looks. */
   document.getElementById("rankLegend").innerHTML =
     '<span><i class="sw" style="background:' + EXPENSIVE + '"></i>above the world median</span>' +
-    '<span><i class="sw" style="background:' + CHEAP + '"></i>below it</span>' +
-    (rows.some(function (r) { return r.imp > 0; })
-      ? '<span><span class="impm">◇</span> rests partly on imputed months</span>' : "");
+    '<span><i class="sw" style="background:' + CHEAP + '"></i>below it</span>';
 }
 /* ---------------------------------------------------------------------
    World time series — one category compared across regions, subregions
