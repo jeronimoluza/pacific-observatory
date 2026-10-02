@@ -28,6 +28,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from prices.build.trust import K
 from prices.enrich import config
 from prices.enrich.stages import decisions_store
 
@@ -70,6 +71,10 @@ def _with_old_columns(obs: pd.DataFrame, country: str, classifier: pd.DataFrame)
     obs = obs.assign(country=country)
     obs["qa_status"] = np.where(obs["trusted"], "trusted", obs["stage_b_status"])
     obs["mass_source"] = obs["size_source"].map(MASS_SOURCE)
+    # William's rule on its own: |robust z| <= 5 on the log-MAD band. Null where
+    # the band could not score the row.
+    z = obs["uv_robust_z"]
+    obs["log_mad_pass"] = z.abs().le(K).astype("boolean").mask(z.isna())
     # The old files hold naive UTC timestamps; consumers compare against those.
     obs["observation_date"] = obs["observation_date"].dt.tz_convert("UTC").dt.tz_localize(None)
     n = len(obs)
@@ -86,6 +91,7 @@ def _schema(first: Path) -> pa.Schema:
         ("country", pa.string()),
         ("qa_status", pa.string()),
         ("mass_source", pa.string()),
+        ("log_mad_pass", pa.bool_()),
         ("confidence", pa.float64()),
         ("trust_level", pa.string()),
     ]:
