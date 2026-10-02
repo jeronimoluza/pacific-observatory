@@ -253,6 +253,13 @@ def normalize_price(raw: Any, currency: str | None = None) -> str | None:
     m = re.search(r"[-\d]", s)
     if m and re.search(r"[^\s.,]", s[: m.start()]):
         s = s[m.start() :]
+    # The number ends at the first symbol after it. A unit suffix used to be
+    # stripped and glued on: xalkiadakis "1.82€/τεμ." read as "1.82." -> 182,
+    # and "5.40€/500gr" as "5.40500" -> 5.405.
+    m = re.search(r"\d", s)
+    end = re.search(r"[^\d.,\-\s'’]", s[m.end() :]) if m else None
+    if end:
+        s = s[: m.end() + end.start()]
     s = re.sub(r"[^\d.,\-]", "", s)
     if not s:
         return None
