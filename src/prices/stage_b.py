@@ -47,9 +47,10 @@ OUT_ROOT = config.REPO_ROOT / "outputs" / "prices" / "stage_b"
 RATIO_BOUNDS = (0.5, 2.0)
 # Human-owned: an official series (`official_sources.csv`) is judged against
 # its own history instead. A product-month outside this factor of the
-# product's median over its months, or a dated row outside it of its
-# product-month median, is out.
+# product's median over the OFFICIAL_WINDOW months either side, or a dated
+# row outside it of its product-month median, is out.
 OFFICIAL_BOUNDS = (0.2, 5.0)
+OFFICIAL_WINDOW = 6
 
 _PRODUCT_COLS = [
     "input_hash", "product_name_original", "product_url", "category",
@@ -287,10 +288,16 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     if len(pm) != n or pm["_row"].duplicated().any():
         raise RuntimeError(f"product-month count moved: {n} in, {len(pm)} out")
     own = pm["source"].isin(trust.official_sources()) & pm["basis_ok"] & pm["unit_value_local"].gt(0)
-    # Against the same month's official quotes, not the product's whole
-    # history: South Sudan RTDI runs 4 -> 12,725 SSP over 2007-2026, and a
-    # whole-history median put every early and late year out.
-    med = pm[own].groupby(["source", *trust.CELL, "month"], dropna=False)["unit_value_local"].transform("median")
+    # Against the product's own median within OFFICIAL_WINDOW months, not its
+    # whole history: South Sudan RTDI runs 4 -> 12,725 SSP over 2007-2026, and
+    # a whole-history median put every early and late year out. Not the cell's
+    # month median either: Chad's dried-vegetable leaf holds cassava cossettes
+    # at 0.17x dried okra, and a cross-product median put them out.
+    o = pm.loc[own, ["input_hash", "month", "unit_value_local"]]
+    o = o.assign(_ord=pd.PeriodIndex(o["month"], freq="M").asi8)
+    lent = pd.concat([o.assign(_ord=o["_ord"] + d) for d in range(-OFFICIAL_WINDOW, OFFICIAL_WINDOW + 1)])
+    near = lent.groupby(["input_hash", "_ord"])["unit_value_local"].median().rename("_near")
+    med = o.join(near, on=["input_hash", "_ord"])["_near"]
     pm.loc[own, "qa_level"] = np.where(
         (pm.loc[own, "unit_value_local"] / med).between(*OFFICIAL_BOUNDS), "official", "out"
     )
