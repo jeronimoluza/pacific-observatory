@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from types import SimpleNamespace
 
 import click
 import pandas as pd
@@ -64,10 +65,17 @@ def _rebase(old: Path, new: Path) -> None:
 
 def _point_at(build_dir: Path, out_dir: Path, variant: str, region: str | None) -> None:
     publish, _, _, sources, config = _modules()
+    from prices.rtcal import fills
+
     tag = f"_{region}" if region else ""
     sources.SUPPRESSED_PARQUET = out_dir / f"explorer_suppressed_units{tag}.parquet"
     publish.SUPPRESSED_PARQUET = out_dir / f"global_prices_suppressed_units{tag}.parquet"
     publish.read_observations = _trusted_observations
+    publish.fills_mod = SimpleNamespace(
+        CELL_KEY=fills.CELL_KEY,
+        load_pruned_cells=fills.load_pruned_cells,
+        load_released_fills=_released_fills,
+    )
     # `trusted` points the loaders at files that do not exist, which is the
     # loaders' own "RT-CAL has not run" path: empty fills, nothing pruned.
     rtcal = build_dir / "rtcal" if variant == "rtcal" else out_dir / "_no_rtcal"
@@ -76,9 +84,18 @@ def _point_at(build_dir: Path, out_dir: Path, variant: str, region: str | None) 
 
 
 def _trusted_observations(path: Path) -> pd.DataFrame:
-    return pq.read_table(
-        path, columns=_PUBLISH_COLS, filters=[("qa_status", "==", "trusted")]
-    ).to_pandas()
+    from prices.explorer.stream import EXCLUDED_COUNTRIES
+
+    keep = [("qa_status", "==", "trusted"), ("country", "not in", sorted(EXCLUDED_COUNTRIES))]
+    return pq.read_table(path, columns=_PUBLISH_COLS, filters=keep).to_pandas()
+
+
+def _released_fills() -> pd.DataFrame:
+    from prices.explorer.stream import EXCLUDED_COUNTRIES
+    from prices.rtcal import fills
+
+    f = fills.load_released_fills()
+    return f[~f.country.isin(EXCLUDED_COUNTRIES)]
 
 
 @click.command("dashboards")

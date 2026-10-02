@@ -53,6 +53,10 @@ logger = logging.getLogger(__name__)
 # Trusted rows per batch of countries. A batch explodes to roughly five times
 # this up the ladder; a country holding more than this is a batch on its own.
 BATCH_ROWS = 3_000_000
+# Left out of both dashboards. `bahamas` is a second config directory for the
+# Bahamas beside `bahamas_the`, the slug regions.yaml and countries.yaml carry,
+# so its rows would show as a second Bahamas.
+EXCLUDED_COUNTRIES = frozenset({"bahamas"})
 # Rows per chunk of the narrow first pass.
 SCAN_ROWS = 4_000_000
 _NARROW = [
@@ -107,6 +111,7 @@ def _scan(chunks, pruned: pd.DataFrame) -> tuple[pd.DataFrame, set]:
     seen: set = set()
     parts = []
     for df in chunks:
+        df = df[~df.country.isin(EXCLUDED_COUNTRIES)]
         seen.update(df.country.unique())
         _fold_piece_units(df)
         t = df[
@@ -300,6 +305,7 @@ def collect(region: str | None, tax: dict, countries: dict, load) -> SimpleNames
     # is the other half of what the method is for: the historical view is full of
     # points that are wrong on their face, and they should stop being drawn.
     fills = load_released_fills()
+    fills = fills[~fills.country.isin(EXCLUDED_COUNTRIES)]
     pruned = load_pruned_cells()
     tm_csv = leaf_typical_mass.TYPICAL_MASS_CSV
     typical_mass = pd.read_csv(tm_csv) if tm_csv.exists() else pd.DataFrame()
