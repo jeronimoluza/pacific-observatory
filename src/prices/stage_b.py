@@ -105,17 +105,13 @@ def load_months(country: str, hashes: pd.Series) -> pd.DataFrame:
     return months
 
 
-def month_fx(pm: pd.DataFrame, local: str) -> pd.DataFrame:
-    """Each product-month at its month's rate, repriced into `local`.
+def month_rates(pm: pd.DataFrame, local: str) -> pd.DataFrame:
+    """Mean rate and `fx_suspect` per (currency, month) over `pm`'s months.
 
     The month's rate is the mean of its daily USD->local rates, forward-filled
     by `build_fx_table`; the month is `fx_suspect` when any of those days' rate
-    is implausible. A month quoted in another currency is repriced via USD
-    (livingcost quotes New Zealand in USD: banded as NZD it sat at ~0.6x every
-    other shop, blended in, and was trusted). One with no rate is left as
-    quoted and marked `fx_suspect`.
+    is implausible.
     """
-    pm = pm.assign(currency=pm["currency"].map(fx.normalize_currency_safe))
     known = pm["month"].dropna()
     start = pd.to_datetime(known.min(), format="%Y-%m")
     end = pd.to_datetime(known.max(), format="%Y-%m") + pd.offsets.MonthEnd(0)
@@ -126,9 +122,22 @@ def month_fx(pm: pd.DataFrame, local: str) -> pd.DataFrame:
     table = fx._mark_suspect_rates(fx.build_fx_table(days), fx.PRICES_FX_CACHE)
     table["fx_rate"] = pd.to_numeric(table["fx_rate"], errors="coerce")
     table["month"] = month_of(pd.to_datetime(table["observation_date"]))
-    rates = table.groupby(["currency", "month"]).agg(
+    return table.groupby(["currency", "month"]).agg(
         fx_rate=("fx_rate", "mean"), fx_suspect=("fx_suspect", "any")
     )
+
+
+def month_fx(pm: pd.DataFrame, local: str, rates: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Each product-month at its month's rate (`month_rates`), repriced into `local`.
+
+    A month quoted in another currency is repriced via USD
+    (livingcost quotes New Zealand in USD: banded as NZD it sat at ~0.6x every
+    other shop, blended in, and was trusted). One with no rate is left as
+    quoted and marked `fx_suspect`.
+    """
+    pm = pm.assign(currency=pm["currency"].map(fx.normalize_currency_safe))
+    if rates is None:
+        rates = month_rates(pm, local)
 
     def at(currency: pd.Series) -> tuple[pd.Series, pd.Series]:
         key = pd.MultiIndex.from_arrays([currency, pm["month"]])
@@ -175,10 +184,11 @@ def extract_products(products: pd.DataFrame, codes: pd.DataFrame) -> pd.DataFram
     return ex[["input_hash", *EXTRACTION_FIELDS, "qa_uv_category"]]
 
 
-def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """(dated rows, product-months) for `country`, each with its verdict."""
-    products = load_products(country)
-    local = products["currency"].mode().iloc[0]
+def run(country: str, products=None, local=None, rates=None) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """(dated rows, product-months) for `country`; `stage_b_stream` passes one leaf chunk."""
+    if products is None:
+        products = load_products(country)
+    local = local or products["currency"].mode().iloc[0]
 
     # Step 1, product grain: extraction and the basis check.
     ex = extract_products(products, products[["input_hash", "coicop_code"]])
@@ -212,7 +222,7 @@ def run(country: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     # Step 2, product x month: FX at the month's rate, unit value.
     months = load_months(country, prod["input_hash"])
     rows = months.merge(prod, on="input_hash", how="left", validate="many_to_one")
-    rows = month_fx(rows, local)
+    rows = month_fx(rows, local, rates)
     rows["observation_date"] = pd.to_datetime(rows["month"], format="%Y-%m", errors="coerce")
     n = len(rows)
     rows["_row"] = np.arange(n)
@@ -467,6 +477,11 @@ def write(country: str, out: pd.DataFrame, pm: pd.DataFrame) -> None:
     out.to_parquet(root / "observations.parquet", index=False)
     out[out["trusted"]].to_parquet(root / "trusted_observations.parquet", index=False)
     pm.to_parquet(root / "product_months.parquet", index=False)
+    write_checks(root, out, pm)
+
+
+def write_checks(root, out: pd.DataFrame, pm: pd.DataFrame) -> None:
+    """report.txt and the hand-check sample CSVs."""
     (root / "report.txt").write_text(report(out, pm))
     # Hand-check samples (spec evaluation step 2): 100 A/B rows, 50 imputed.
     ab = out[out["trusted"] & out["qa_level"].isin(["A", "B"])]
