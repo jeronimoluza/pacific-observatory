@@ -475,7 +475,7 @@ def load_country_meta() -> dict[str, dict]:
     return out
 
 
-def load_observations() -> pd.DataFrame:
+def load_observations(countries: list[str] | None = None) -> pd.DataFrame:
     cols = [
         "country",
         "currency",
@@ -500,7 +500,8 @@ def load_observations() -> pd.DataFrame:
     # cross product. `currency` qualifies because its one groupby (aggregate.py
     # :94) already passes it.
     cats = ["source", "qa_status", "mass_source", "currency", "pricing_basis"]
-    df = pq.read_table(OBS_PATH, columns=cols).to_pandas(categories=cats)
+    where = None if countries is None else [("country", "in", list(countries))]
+    df = pq.read_table(OBS_PATH, columns=cols, filters=where).to_pandas(categories=cats)
     # Match on the ~170 categories, not on 19M rows: `.str.lower()` over a
     # categorical materialises the object array this conversion just avoided.
     modelled = [c for c in df.source.cat.categories if c.lower() in MODELLED_SOURCES]

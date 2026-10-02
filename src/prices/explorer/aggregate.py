@@ -18,8 +18,6 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from prices.build import unit_collapse
-from prices.build.leaf_typical_mass import TYPICAL_MASS_CSV
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 from prices.coicop import residual_leaves
 from prices.explorer.cpi import DIVISION_OF, SERIES_LABEL, load_official
@@ -32,7 +30,6 @@ from prices.explorer.sources import (
     CHANGE_LAGS,
     COMPARABLE_UNITS,
     CURRENCY_ALIASES,
-    SUPPRESSED_PARQUET,
     FE_MIN_PAIRS,
     FX_EXCURSION_MAX_RUN,
     FX_EXCURSION_RATIO,
@@ -62,8 +59,6 @@ from prices.explorer.sources import (
     load_observations,
     load_taxonomy,
 )
-
-from prices.rtcal.fills import drop_pruned, load_pruned_cells, load_released_fills
 
 __all__ = ["REPO_ROOT", "build_payload", "write_payload"]
 
@@ -261,7 +256,7 @@ def _pool(
 
 
 def _cell_window(
-    trusted: pd.DataFrame, fills: pd.DataFrame
+    trusted: pd.DataFrame, fills: pd.DataFrame, end: pd.Timestamp | None = None
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """The last CELL_WINDOW_DAYS of the corpus -- observations and fills alike.
 
@@ -276,10 +271,14 @@ def _cell_window(
     window ending mid-month therefore admits that month's fill and the previous
     month's, and the cell median pools both. Admitting them on a date they do
     not have would have dropped every fill from the grid.
+
+    `end` is that last observation, passed in when it was found over more rows
+    than `trusted` holds -- a batch of countries windows on the whole build's.
     """
-    if trusted.empty:
-        return trusted, fills
-    end = trusted.observation_date.max()
+    if end is None:
+        if trusted.empty:
+            return trusted, fills
+        end = trusted.observation_date.max()
     start = end - pd.Timedelta(days=CELL_WINDOW_DAYS)
     tw = trusted[trusted.observation_date >= start]
     if fills is None or fills.empty:
@@ -346,8 +345,9 @@ def _publishable(agg: pd.DataFrame) -> pd.Series:
     return (agg.n >= MIN_CELL_OBS) | (agg.nimp > 0)
 
 
-def _cells(exploded: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
-    """Current-window medians per (country, node, unit) plus quality flags.
+def _cell_groups(exploded: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Current-window medians per (country, node, unit), and the per-currency
+    medians the dominant-currency vote in `_cells` is taken over.
 
     THE WINDOW IS THE CALLER'S: `exploded` here is the pooled last
     CELL_WINDOW_DAYS, not the whole corpus. This used to be the whole corpus
@@ -355,6 +355,9 @@ def _cells(exploded: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
     single reading -- the newest month a cell happened to be scraped in was
     often only days old. Pooling a fixed window instead means every cell reports
     over the same stretch of time, whatever month it happens to fall in.
+
+    Everything here groups on `country`, so a batch of countries builds its own
+    two tables; the vote runs once, in `_cells`, over all of them.
     """
     keys = ["country", "node", "standard_unit"]
     cur = exploded
@@ -377,13 +380,25 @@ def _cells(exploded: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
     # `period` is a LABEL -- the newest month this cell was seen in -- not the
     # slice the median was taken over. The median is over the whole window.
     agg = agg.merge(latest, on=keys, how="left")
-
-    # Local currency medians key on the cell's dominant currency, never country.
     dom = (
         cur.groupby(keys + ["currency"], observed=True)
         .unit_value_local.agg(["median", "size"])
         .reset_index()
-        .sort_values("size", ascending=False)
+    )
+    return agg, dom
+
+
+def _cells(agg: pd.DataFrame, dom: pd.DataFrame, ex_fill: pd.DataFrame) -> pd.DataFrame:
+    """The cells, from `_cell_groups`' two tables over every country in the build.
+
+    The vote is a sort over the whole per-currency table, and a sort that breaks
+    ties by position, so it needs every country's rows in the order one groupby
+    over the whole build would have produced them.
+    """
+    keys = ["country", "node", "standard_unit"]
+    # Local currency medians key on the cell's dominant currency, never country.
+    dom = (
+        dom.sort_values("size", ascending=False)
         .drop_duplicates(keys)
         .rename(columns={"median": "local", "size": "n_local"})
     )
@@ -1016,6 +1031,12 @@ def _fx_table(obs: pd.DataFrame, countries: dict[str, dict]) -> dict[str, dict]:
     missing rate and draws an honest gap, but a series built from the wrong unit
     draws a confident wrong line.
     """
+    return _fx_report(_fx_rates(obs, countries), set(obs.country.unique()), countries)
+
+
+def _fx_rates(obs: pd.DataFrame, countries: dict[str, dict]) -> dict[str, dict]:
+    """`_fx_table`'s per-country entries, with no warnings. Per country, so a
+    batch of countries can build its own."""
     declared = {c: (m.get("currency") or "").upper() for c, m in countries.items()}
     fxr = obs.dropna(subset=["fx_rate"])
     ccy = fxr.currency.astype(str).str.upper().map(lambda c: CURRENCY_ALIASES.get(c, c))
@@ -1028,8 +1049,13 @@ def _fx_table(obs: pd.DataFrame, countries: dict[str, dict]) -> dict[str, dict]:
     fx: dict[str, dict] = {}
     for c, g in fx_tbl.sort_values("period").groupby("country"):
         fx[c] = {"p": g.period.tolist(), "r": [round(v, 6) for v in g.fx_rate]}
+    return fx
 
-    dropped = sorted(set(obs.country.unique()) - set(fx))
+
+def _fx_report(fx: dict[str, dict], seen: set, countries: dict[str, dict]) -> dict:
+    """Warn about every country in `seen` that got no rate, then about the rates."""
+    declared = {c: (m.get("currency") or "").upper() for c, m in countries.items()}
+    dropped = sorted(set(seen) - set(fx))
     if dropped:
         logger.warning(
             "FX: %d countries have no observation in their declared currency and "
@@ -1141,6 +1167,22 @@ def _warn_on_fx_excursion(fx: dict[str, dict]) -> None:
             i += 1
 
 
+def _country_rows(trusted: pd.DataFrame) -> dict[str, dict]:
+    """The `cty` fields read off a country's own trusted rows."""
+    out: dict[str, dict] = {}
+    for slug, g in trusted.groupby("country", observed=True):
+        retail = g[~g.is_modelled]
+        out[slug] = {
+            "obs": int(len(g)),
+            "src": int(g.source.nunique()),
+            "retail_src": int(retail.source.nunique()),
+            "cur": sorted(g.currency.dropna().unique().tolist()),
+            "leaves": int(g.coicop_code.nunique()),
+            "last": str(g.period.max()),
+        }
+    return out
+
+
 def build_payload(region: str | None = None) -> dict:
     """Aggregate the corpus, optionally restricted to one region's countries.
 
@@ -1168,170 +1210,15 @@ def build_payload(region: str | None = None) -> dict:
             for sk, sm in (m.get("subregions") or {}).items()
         }
     )
-    obs = load_observations()
-    # Both empty unless `prices rtcal run` has been executed.
-    #
-    # FILLS NOW REACH EVERYTHING: the cells, the chain, the changes, the basket,
-    # the geography series, the regional and world medians. The old split --
-    # draw a modelled point, but never let it move an index -- kept every
-    # aggregate above the leaf exactly as blank as it was before, which is what
-    # the dashboard was being asked about. What replaces the exclusion is
-    # measurement: every figure derived from a fill carries the share of itself
-    # that was imputed, so a client can show, dim or hide it.
-    #
-    # PRUNED CELLS ARE DIFFERENT and come out everywhere, at the observation
-    # level, before anything aggregates. Removing a value our own screen calls an
-    # obvious error is a correction, not an imputation, and it would be incoherent
-    # for the chain to keep pricing a cell the series view refuses to draw. This
-    # is the other half of what the method is for: the historical view is full of
-    # points that are wrong on their face, and they should stop being drawn.
-    fills = load_released_fills()
-    pruned = load_pruned_cells()
+    from prices.explorer.stream import collect
 
-    # Counted BEFORE the fold, and carried as a COLUMN rather than a scalar:
-    # the honesty panel reports this scoped to the countries in THIS payload,
-    # and that scope is not known until `cmeta` exists, hundreds of lines below
-    # -- by which time the fold has relabelled these very rows as `unit` and the
-    # count can no longer be recovered. One bool over 18.9M rows is ~19 MB.
-    obs["item_basis"] = obs.standard_unit.eq("item")
-    _fold_piece_units(obs)
-
-    is_trusted = obs.qa_status.eq("trusted")
-    # No `.copy()`: boolean-mask indexing already returns a frame that owns its
-    # data, so the copy was a second 9 GB allocation taken at the one moment the
-    # full `obs` was still alive -- the peak that got the render killed. Nothing
-    # below writes to `trusted`; it is only read, merged, grouped and reassigned.
-    trusted = obs[
-        is_trusted & obs.standard_unit.isin(COMPARABLE_UNITS) & obs.unit_value_usd.gt(0)
-    ]
-    del is_trusted
-
-    # PROJECTED, not freed. The scope-aware QA counts and `_fx_table` both still
-    # need every ROW of the unfiltered frame, so it cannot be released here the
-    # way it was when those counts were global -- but between them they read
-    # nine of its thirteen columns, and none of the wide object ones. Held whole
-    # to the end, `obs` (11 GB, nine object columns over 18.9M rows) sat
-    # alongside `trusted` and the exploded ladder and the render was OOM-killed
-    # at 23.4 GB. This is also why `_fx_table`'s `dropna` is now cheap: it
-    # copies a narrow frame instead of the whole corpus.
-    obs = obs[_OBS_TAIL_COLS]
-
-    # Pruned AFTER the projection, not before: `drop_pruned` returns a filtered
-    # frame that owns its data, so this never holds two full copies.
-    before = len(trusted)
-    trusted = drop_pruned(trusted, pruned)
-    if len(trusted) != before:
-        logger.info(
-            "rtcal pruning dropped %d of %d trusted rows (%d rejected cells)",
-            before - len(trusted),
-            before,
-            len(pruned),
-        )
-
-    fills = fills[fills.standard_unit.isin(COMPARABLE_UNITS)]
-
-    # ONE DISPLAY UNIT PER LEAF, the same collapse `publish.py` has applied
-    # since 2026-09-04 and the explorer never grew. Without it a leaf's rows sit
-    # in whatever units they were extracted in, and two things break. A per-piece
-    # price is ranked against a per-PIECE world median, so Japanese milk reads
-    # +2305% as a carton and +16% as a litre, and 13 of the 15 "most expensive"
-    # items on the screen are pieces. And a country's leaves scatter across the
-    # kg/lt/unit buckets, so American Samoa's three dairy leaves -- two priced by
-    # the piece, one by the kilo -- clear no bucket's three-leaf floor and the
-    # class cell renders empty when the data is there.
-    #
-    # Here, and not on `obs`: `collapse` copies the rows it keeps, and the
-    # unfiltered 18.9M-row frame cannot be copied on this box. By this line it
-    # has been projected down to `_OBS_TAIL_COLS` and `trusted` is the only large
-    # object alive. This also lands before `_pool`, so every median, series,
-    # chain and `gmed` below is computed on collapsed units.
-    #
-    # The piece fold above already ran, which matters: `unit_collapse` votes on
-    # unit LABELS, and `item`/`unit` are two spellings of one piece price on the
-    # allowlisted leaves, so voting before the fold could hand a leaf to the loser.
-    #
-    # Fills are collapsed against the units the OBSERVATIONS voted for rather
-    # than voting again on their own rows. Voting twice can give one leaf two
-    # display units -- the split row this exists to remove -- and a modelled row
-    # should never get a say in how a commodity is sold.
-    typical_mass = (
-        pd.read_csv(TYPICAL_MASS_CSV) if TYPICAL_MASS_CSV.exists() else pd.DataFrame()
-    )
-    if typical_mass.empty:
-        logger.warning("%s missing -- piece rows cannot convert", TYPICAL_MASS_CSV)
-    before = len(trusted)
-    trusted, suppressed = unit_collapse.collapse(trusted, typical_mass)
-    display = (
-        trusted.groupby("coicop_code")["standard_unit"]
-        .agg(lambda s: s.iloc[0])
-        .to_dict()
-    )
-    fills, _ = unit_collapse.collapse(
-        fills, typical_mass, value_cols=("usd",), canonical=display
-    )
-    logger.info(
-        "unit collapse: %d trusted rows -> %d in %d display units, "
-        "dropped %d unconvertible over %d leaves",
-        before,
-        len(trusted),
-        trusted.standard_unit.nunique(),
-        len(suppressed),
-        suppressed.coicop_code.nunique(),
-    )
-    # `collapse` already hands back the dropped rows carrying `drop_reason` and
-    # the `display_unit` they could not reach. Discarding that was the whole
-    # cost of "the explorer writes no suppression audit": the count reached the
-    # log and the evidence reached nothing.
-    if not suppressed.empty:
-        SUPPRESSED_PARQUET.parent.mkdir(parents=True, exist_ok=True)
-        suppressed.to_parquet(SUPPRESSED_PARQUET, index=False)
-        logger.info(
-            "wrote %d suppressed rows over %d leaves -> %s",
-            len(suppressed),
-            suppressed.coicop_code.nunique(),
-            SUPPRESSED_PARQUET,
-        )
-    # The provenance column has done its job by here, and the suppression audit
-    # above has already taken its copy. Carried on, `_explode_nodes` would multiply an object
-    # column by every row's ancestor count.
-    trusted = trusted.drop(columns="display_unit_source")
-
-    # The global pass, over every country in the corpus. It settles the two
-    # things a regional payload must NOT settle for itself -- the eligible
-    # basket and the world median -- and it is thrown away immediately
-    # afterwards, because the exploded frame is the largest object here.
-    world_ex, world_ex_fill = _pool(trusted, fills)
-    # A SECOND, SMALL POOL rather than a flag on the big one. The current grid
-    # needs a CELL_WINDOW_DAYS slice; the series needs all of history. Carrying a marker
-    # per row on the exploded frame would cost a byte across ~90M rows, so the
-    # window is exploded on its own and thrown away as soon as the grid is out.
-    _cw_ex, _cw_fill = _pool(*_cell_window(trusted, fills))
-    world_cells = _cells(_cw_ex, _cw_fill)
-    del _cw_ex, _cw_fill
+    # Every row-level step runs a batch of countries at a time, in `stream`.
+    # What comes back is the small per-country tables, already concatenated.
+    p = collect(region, tax, countries, load_observations)
+    fills, cells, world_cells = p.fills, p.cells, p.world_cells
     reference = basket_reference(world_cells, tax)
     n_ref_countries = world_cells.country.nunique()
-
-    if region:
-        label = _region_label(region)
-        keep = {s for s, m in countries.items() if m["region"] == label}
-        del world_ex, world_ex_fill
-        trusted = trusted[trusted.country.isin(keep)].copy()
-        fills = fills[fills.country.isin(keep)]
-        if trusted.empty:
-            raise SystemExit(f"no trusted observations for region {region!r} ({label})")
-        exploded, ex_fill = _pool(trusted, fills)
-        _cw_ex, _cw_fill = _pool(*_cell_window(trusted, fills))
-        cells = _cells(_cw_ex, _cw_fill)
-        del _cw_ex, _cw_fill
-    else:
-        # Identical inputs, so the global build does this exactly once. It used
-        # to explode and aggregate the whole corpus twice for the same answer.
-        exploded, ex_fill = world_ex, world_ex_fill
-        cells = world_cells
-
-    series = _series(exploded, ex_fill)
-    chained = _chained_index(exploded, tax, ex_fill)
-    changed = _lagged_changes(exploded, tax, ex_fill)
+    series, chained, changed = p.series, p.chained, p.changed
     basket_w, wmeta = default_weights(tax, BASKET_WEIGHT_LEVEL)
     basket_cty: dict[str, dict] = {}
     levels = _basket_levels(cells, tax, basket_w, basket_cty, reference=reference)
@@ -1349,8 +1236,7 @@ def build_payload(region: str | None = None) -> dict:
     cov_map = dict(zip(levels.country, levels.covered))
     imp_map = dict(zip(levels.country, levels.imp))
     fill_n = fills.groupby("country").size().to_dict() if not fills.empty else {}
-    grp = trusted.groupby("country", observed=True)
-    for slug, g in grp:
+    for slug, g in p.stats.items():
         base = countries.get(
             slug,
             {
@@ -1360,17 +1246,16 @@ def build_payload(region: str | None = None) -> dict:
                 "subregion": "Unassigned",
             },
         )
-        retail = g[~g.is_modelled]
         cmeta[slug] = {
             "name": base["name"],
             "iso3": base["iso3"],
             "region": base["region"],
             "subregion": base["subregion"],
-            "obs": int(len(g)),
-            "src": int(g.source.nunique()),
-            "retail_src": int(retail.source.nunique()),
-            "cur": sorted(g.currency.dropna().unique().tolist()),
-            "leaves": int(g.coicop_code.nunique()),
+            "obs": g["obs"],
+            "src": g["src"],
+            "retail_src": g["retail_src"],
+            "cur": g["cur"],
+            "leaves": g["leaves"],
             "level": round(float(lvl_map[slug]), 1) if slug in lvl_map else None,
             "level_n": int(nleaf_map.get(slug, 0)),
             "level_ok": bool(ok_map.get(slug, False)),
@@ -1400,7 +1285,7 @@ def build_payload(region: str | None = None) -> dict:
             # these.
             "n_imp": int(fill_n.get(slug, 0)),
             "defect": round(float(defect_map.get(slug, 0.0) or 0.0), 3),
-            "last": str(g.period.max()),
+            "last": g["last"],
         }
 
     # ---- node meta: dominant unit + volume ----------------------------
@@ -1411,12 +1296,9 @@ def build_payload(region: str | None = None) -> dict:
     # rather than rebuilt, because the group-by over ~90M rows is the expensive
     # half and the fills are a rounding error beside it.
     nodemeta: dict[str, dict] = {}
-    nu = exploded.groupby(["node", "standard_unit"], observed=True).size()
-    if not ex_fill.empty:
-        nu = nu.subtract(
-            ex_fill.groupby(["node", "standard_unit"], observed=True).size(),
-            fill_value=0,
-        ).astype("int64")
+    nu = p.nu
+    if p.nf is not None:
+        nu = nu.subtract(p.nf, fill_value=0).astype("int64")
         nu = nu[nu > 0]
     for node, sub in nu.groupby(level=0):
         by_unit = {u: int(v) for (_, u), v in sub.items()}
@@ -1429,9 +1311,8 @@ def build_payload(region: str | None = None) -> dict:
     # A node nothing measured but something modelled has no observed volume and
     # so no entry above. It still has cells, and dropping it here would throw
     # away exactly the cells this whole change exists to publish.
-    if not ex_fill.empty:
-        nf = ex_fill.groupby(["node", "standard_unit"], observed=True).size()
-        for node, sub in nf.groupby(level=0):
+    if p.nf is not None:
+        for node, sub in p.nf.groupby(level=0):
             if node in nodemeta:
                 continue
             by_unit = {u: int(v) for (_, u), v in sub.items()}
@@ -1530,24 +1411,13 @@ def build_payload(region: str | None = None) -> dict:
     # SCOPED TO THIS PAYLOAD. These four counts used to be taken off the whole
     # unrestricted parquet, so an EAP build reported the world's QA mix beside
     # EAP's prices and a reader comparing them to anything else on the page was
-    # comparing two different populations. `in_scope` is every row of every
-    # status for the countries this payload shows.
-    in_scope = (
-        obs.country.isin(set(cmeta)) if region else pd.Series(True, index=obs.index)
-    )
-    scoped_trusted = in_scope & obs.qa_status.eq("trusted")
+    # comparing two different populations. The scope is every row of every
+    # status for the countries this payload shows, summed per country by `stream`.
     qa = {
-        "status": {
-            k: int(v) for k, v in obs.qa_status[in_scope].value_counts().items()
-        },
-        "mass_source": {
-            str(k): int(v)
-            for k, v in obs.mass_source[scoped_trusted]
-            .value_counts(dropna=False)
-            .items()
-        },
-        "item_basis_rows": int((scoped_trusted & obs.item_basis).sum()),
-        "modelled_rows": int((scoped_trusted & obs.is_modelled).sum()),
+        "status": p.qa["status"],
+        "mass_source": p.qa["mass_source"],
+        "item_basis_rows": p.qa["item_basis_rows"],
+        "modelled_rows": p.qa["modelled_rows"],
         # Every count in this block, and every count in `meta`, describes the
         # countries in THIS payload and nothing wider.
         "scope": {"region": region, "countries": len(cmeta)},
@@ -1652,26 +1522,21 @@ def build_payload(region: str | None = None) -> dict:
         },
     }
 
-    recent = trusted.period.max()
+    recent = p.through
+    last_12m = (
+        pd.PeriodIndex(p.periods.index, freq="M") >= pd.Period(recent, freq="M") - 11
+    )
     qa["history"] = {
         "latest_period": str(recent),
-        "share_latest_period": round(float((trusted.period == recent).mean()), 4),
-        "share_last_12m": round(
-            float(
-                (
-                    pd.PeriodIndex(trusted.period, freq="M")
-                    >= pd.Period(recent, freq="M") - 11
-                ).mean()
-            ),
-            4,
-        ),
+        "share_latest_period": round(float(p.periods[recent] / p.n_obs), 4),
+        "share_last_12m": round(float(p.periods[last_12m].sum() / p.n_obs), 4),
         "min_link_leaves": MIN_LINK_LEAVES,
     }
 
     # ---- FX: local per USD, monthly ------------------------------------
-    fx = _fx_table(obs, countries)
+    fx = _fx_report(p.fx, p.seen, countries)
 
-    gseries_raw, geos = build_geo_series(exploded, tax, cmeta, ex_fill)
+    gseries_raw, geos = build_geo_series(None, tax, cmeta, pair_tables=p.pairs)
 
     official = load_official({s: countries.get(s, {}).get("iso3") for s in cmeta})
     used_series = {k for v in official.values() for k in v}
@@ -1831,7 +1696,7 @@ def build_payload(region: str | None = None) -> dict:
         {
             "key": "obs",
             "label": "Trusted price observations",
-            "value": int(len(trusted)),
+            "value": int(p.n_obs),
             "note": "every shelf price collected for these countries, all of "
             "history, in kilograms, litres or pieces",
         },
@@ -1859,7 +1724,7 @@ def build_payload(region: str | None = None) -> dict:
         {
             "key": "sources",
             "label": "Retail sources",
-            "value": int(trusted.source.nunique()),
+            "value": len(p.sources),
             "note": "distinct scraped sources behind the observations",
         },
         {
@@ -1871,7 +1736,7 @@ def build_payload(region: str | None = None) -> dict:
     ]
 
     samples = {}
-    for k, v in _samples(trusted).items():
+    for k, v in p.samples.items():
         c, code, unit = k.split("|")
         if c in cty_pos and code in node_pos:
             samples[f"{cty_pos[c]}|{node_pos[code]}|{unit_pos[unit]}"] = v
@@ -1879,11 +1744,11 @@ def build_payload(region: str | None = None) -> dict:
     return {
         "meta": {
             "generated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-            "through": str(trusted.period.max()),
-            "n_obs": int(len(trusted)),
+            "through": str(p.through),
+            "n_obs": int(p.n_obs),
             "n_countries": len(cty_idx),
             "n_nodes": len(node_idx),
-            "n_sources": int(trusted.source.nunique()),
+            "n_sources": len(p.sources),
             "min_cell_obs": MIN_CELL_OBS,
             "cell_window_days": CELL_WINDOW_DAYS,
             "geo_min_pairs": FE_MIN_PAIRS,

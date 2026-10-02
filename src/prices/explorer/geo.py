@@ -317,16 +317,20 @@ def _geo_maps(cmeta: dict[str, dict]) -> dict[str, dict[str, str]]:
 
 
 def build_geo_series(
-    exploded: pd.DataFrame,
+    exploded: pd.DataFrame | None,
     tax: dict,
     cmeta: dict[str, dict],
     ex_fill: pd.DataFrame | None = None,
+    pair_tables: dict[str, pd.DataFrame] | None = None,
 ) -> tuple[dict, dict]:
     """Return (series keyed `freq|geo|node|unit`, geography metadata by key).
 
     `exploded` pools observations and RT-CAL fills; `ex_fill` is the fills on
     their own, and every series this builds carries `ish` -- the share of the
     items behind each point that were modelled.
+
+    `pair_tables`, per frequency, is `_pairs` already taken -- per batch of countries
+    and concatenated in its own (PAIR, period) order -- in place of `exploded`.
     """
     maps = _geo_maps(cmeta)
     geos: dict[str, dict] = {}
@@ -351,7 +355,11 @@ def build_geo_series(
 
     out: dict[str, dict] = {}
     for freq in FREQ_MAX_GAP:
-        m = _pairs(exploded, tax, freq, ex_fill)
+        m = (
+            pair_tables[freq]
+            if pair_tables is not None
+            else _pairs(exploded, tax, freq, ex_fill)
+        )
         ladder = pd.DataFrame(
             [(c, n) for c in m.coicop_code.unique() for n in _levels(c)],
             columns=["coicop_code", "node"],
