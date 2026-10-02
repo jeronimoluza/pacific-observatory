@@ -3,3 +3,8 @@ archive_prefix: "aeononlineshopping.com/product/"
 archive_path_re: '^/product/[^/]+/\d+$'
 language: en
 channel: hypermarket
+# Archived storefront pages show USD ("$9.90", wayback 2021-03-05); only the
+# live API returns KHR, via the spider's x-currency header. Without this the
+# spider attribute stamped KHR on 2019-21 USD prices.
+currency: USD
+restamp_archive_currency: true
