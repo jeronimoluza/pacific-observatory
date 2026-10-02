@@ -595,6 +595,169 @@
           {
             "prefix": "vodnog stres"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdensapgādes drošīb"
+          },
+          {
+            "prefix": "ūdens resursu drošīb"
+          },
+          {
+            "prefix": "ūdens nedrošīb"
+          },
+          {
+            "prefix": "ūdens noturīb"
+          },
+          {
+            "prefix": "ūdens resursu noturīb"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "амнияти об"
+          },
+          {
+            "prefix": "амнияти захираҳои об"
+          },
+          {
+            "prefix": "амнияти захирахои об"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv xavfsizlig"
+          },
+          {
+            "prefix": "сув хавфсизлиг"
+          },
+          {
+            "prefix": "suv tanqislig"
+          },
+          {
+            "prefix": "сув танқислиг"
+          },
+          {
+            "prefix": "suv resurslari xavfsizlig"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens saugum"
+          },
+          {
+            "prefix": "vandens išteklių saugum"
+          },
+          {
+            "prefix": "vandens tiekimo saugum"
+          },
+          {
+            "prefix": "apsirūpinimo vandeniu saugum"
+          },
+          {
+            "prefix": "vandens atsparum"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "veejulgeolek"
+          },
+          {
+            "prefix": "veeturvalisus"
+          },
+          {
+            "prefix": "veevarustuse kindlus"
+          },
+          {
+            "prefix": "veevarustuse turvalisus"
+          },
+          {
+            "prefix": "veevarude kindlus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "су қауіпсіздіг"
+          },
+          {
+            "prefix": "су тапшылығ"
+          },
+          {
+            "prefix": "су жетіспеушілі"
+          },
+          {
+            "prefix": "су ресурстарының тапшылығ"
+          },
+          {
+            "prefix": "сумен қамтамасыз ету қауіпсіздіг"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу коопсуздуг"
+          },
+          {
+            "prefix": "суу ресурстарынын коопсуздуг"
+          },
+          {
+            "prefix": "суу тартыштыг"
+          },
+          {
+            "prefix": "суу жетишсиздиг"
+          },
+          {
+            "prefix": "суунун жетишсиздиг"
+          }
+        ],
+        "farsi": [
+          "امنیت آبی",
+          "امنیت آب",
+          "ناامنی آبی",
+          "تنش آبی",
+          "بحران آب",
+          "کم‌آبی",
+          "کم آبی",
+          "کمآبی",
+          "تاب‌آوری آبی",
+          "تاب آوری آبی",
+          "تابآوری آبی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "водная бяспек"
+          },
+          {
+            "prefix": "воднай бяспек"
+          },
+          {
+            "prefix": "водную бяспек"
+          },
+          {
+            "prefix": "водная бясьпек"
+          },
+          {
+            "prefix": "воднай бясьпек"
+          },
+          "дэфіцыт вады",
+          "дэфіцыту вады",
+          "недахоп вады",
+          "недахопу вады",
+          {
+            "prefix": "водны дэфіцыт"
+          },
+          {
+            "prefix": "воднага дэфіцыт"
+          }
+        ],
+        "pap": [
+          "seguridad di awa",
+          "siguridat di awa",
+          "seguridad hidrico",
+          "siguridat hídriko",
+          "inseguridad di awa",
+          "insiguridat di awa",
+          "waterzekerheid",
+          "water security"
         ]
       }
     },
@@ -1020,6 +1183,145 @@
           "vode za piće",
           "vodu za piće",
           "vodom za piće"
+        ],
+        "latvian": [
+          "dzeramais ūdens",
+          {
+            "prefix": "dzeramā ūden"
+          },
+          {
+            "prefix": "dzeramo ūden"
+          },
+          {
+            "prefix": "dzeramajā ūden"
+          },
+          {
+            "prefix": "dzeramajam ūden"
+          },
+          {
+            "prefix": "dzeršanai derīg"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "оби нӯшок"
+          },
+          {
+            "prefix": "оби нушок"
+          },
+          {
+            "prefix": "обҳои нӯшок"
+          },
+          {
+            "prefix": "оби ошомидан"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ichimlik suv"
+          },
+          {
+            "prefix": "ичимлик сув"
+          },
+          {
+            "prefix": "ichiladigan suv"
+          },
+          {
+            "prefix": "ичиладиган сув"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "geriamasis vand"
+          },
+          {
+            "prefix": "geriamojo vand"
+          },
+          {
+            "prefix": "geriamąjį vand"
+          },
+          {
+            "prefix": "geriamuoju vand"
+          },
+          {
+            "prefix": "geriamajam vand"
+          },
+          {
+            "prefix": "geriamo vand"
+          },
+          {
+            "prefix": "geriamas vand"
+          },
+          {
+            "prefix": "geriamą vand"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "joogive"
+          },
+          {
+            "prefix": "joogikõlbulik"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "ауыз су"
+          },
+          {
+            "prefix": "ауызсу"
+          },
+          {
+            "prefix": "ішетін су"
+          },
+          {
+            "prefix": "ішуге жарамды су"
+          }
+        ],
+        "kyrgyz": [
+          "ичүүчү суу",
+          "ичүүчү суунун",
+          "ичүүчү сууну",
+          "ичүүчү сууга",
+          "ичүүчү суусу",
+          "ичүүчү суулар",
+          "ичимдик суу",
+          "ичимдик суунун"
+        ],
+        "farsi": [
+          "آب آشامیدنی",
+          "آب شرب",
+          "آب نوشیدنی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "пітная вад"
+          },
+          {
+            "prefix": "пітной вад"
+          },
+          {
+            "prefix": "пітную вад"
+          },
+          {
+            "prefix": "пітнае водазабеспяч"
+          },
+          {
+            "prefix": "пітнога водазабеспяч"
+          },
+          {
+            "prefix": "пітнога водазабесьпяч"
+          },
+          "вада для піцця",
+          "вады для піцця"
+        ],
+        "pap": [
+          "awa potabel",
+          "awa di bebe",
+          "awa pa bebe",
+          "drinkwater",
+          "drinking water",
+          "potable water"
         ]
       }
     },
@@ -1534,6 +1836,194 @@
             "prefix": "čistu pijaću vod"
           },
           "ispravna za piće"
+        ],
+        "latvian": [
+          "drošs dzeramais ūdens",
+          {
+            "prefix": "droša dzeramā ūden"
+          },
+          {
+            "prefix": "drošu dzeramo ūden"
+          },
+          "tīrs dzeramais ūdens",
+          {
+            "prefix": "tīra dzeramā ūden"
+          },
+          {
+            "prefix": "tīru dzeramo ūden"
+          },
+          "tīrs ūdens",
+          "tīra ūdens",
+          "tīru ūdeni",
+          "tīram ūdenim",
+          "kvalitatīvs dzeramais ūdens",
+          {
+            "prefix": "kvalitatīva dzeramā ūden"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "оби тоза"
+          },
+          {
+            "prefix": "оби бехатар"
+          },
+          {
+            "prefix": "оби нӯшокии бехатар"
+          },
+          {
+            "prefix": "оби нушокии бехатар"
+          },
+          {
+            "prefix": "оби тозаи ошомидан"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "toza ichimlik suv"
+          },
+          {
+            "prefix": "тоза ичимлик сув"
+          },
+          {
+            "prefix": "sifatli ichimlik suv"
+          },
+          {
+            "prefix": "сифатли ичимлик сув"
+          },
+          {
+            "prefix": "xavfsiz ichimlik suv"
+          },
+          {
+            "prefix": "toza suv"
+          },
+          {
+            "prefix": "тоза сув"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "saugus geriamasis vand"
+          },
+          {
+            "prefix": "saugaus geriamojo vand"
+          },
+          {
+            "prefix": "švarus geriamasis vand"
+          },
+          {
+            "prefix": "švaraus geriamojo vand"
+          },
+          {
+            "prefix": "švarus vand"
+          },
+          {
+            "prefix": "švaraus vand"
+          },
+          {
+            "prefix": "švarų vand"
+          },
+          {
+            "prefix": "švariu vand"
+          },
+          {
+            "prefix": "saugaus vand"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "puhas joogive"
+          },
+          {
+            "prefix": "puhta joogive"
+          },
+          {
+            "prefix": "puhast joogive"
+          },
+          {
+            "prefix": "ohutu joogive"
+          },
+          "puhas vesi",
+          {
+            "prefix": "puhta vee"
+          },
+          "puhast vett",
+          "ohutu vesi"
+        ],
+        "kazakh": [
+          {
+            "prefix": "таза ауыз су"
+          },
+          {
+            "prefix": "сапалы ауыз су"
+          },
+          {
+            "prefix": "қауіпсіз ауыз су"
+          },
+          {
+            "prefix": "таза су"
+          },
+          {
+            "prefix": "қауіпсіз су"
+          }
+        ],
+        "kyrgyz": [
+          "таза суу",
+          "таза суунун",
+          "таза сууну",
+          "таза сууга",
+          "таза ичүүчү суу",
+          "коопсуз ичүүчү суу",
+          "коопсуз суу",
+          "таза ичүүчү суунун"
+        ],
+        "farsi": [
+          "آب آشامیدنی سالم",
+          "آب شرب سالم",
+          "آب سالم",
+          "آب آشامیدنی پاک",
+          "آب شرب بهداشتی",
+          "آب آشامیدنی صحی",
+          "آب صحی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "чыстая пітная вад"
+          },
+          {
+            "prefix": "чыстай пітной вад"
+          },
+          {
+            "prefix": "чыстую пітную вад"
+          },
+          {
+            "prefix": "бяспечная пітная вад"
+          },
+          {
+            "prefix": "бяспечнай пітной вад"
+          },
+          {
+            "prefix": "бясьпечная пітная вад"
+          },
+          {
+            "prefix": "якасная пітная вад"
+          },
+          {
+            "prefix": "якаснай пітной вад"
+          },
+          "бяспечная вада",
+          "бяспечнай вады"
+        ],
+        "pap": [
+          "awa limpi",
+          "awa limpi pa bebe",
+          "awa potabel seguro",
+          "awa potabel sigur",
+          "schoon drinkwater",
+          "veilig drinkwater",
+          "schoon water",
+          "clean water",
+          "safe drinking water"
         ]
       }
     },
@@ -2229,6 +2719,261 @@
           "bunara",
           "bunare",
           "bunarima"
+        ],
+        "latvian": [
+          "piekļuve ūdenim",
+          "piekļuvi ūdenim",
+          "piekļuves ūdenim",
+          "piekļuve tīram ūdenim",
+          "piekļuvi tīram ūdenim",
+          "piekļuve dzeramajam ūdenim",
+          "piekļuvi dzeramajam ūdenim",
+          {
+            "prefix": "artēziskā ak"
+          },
+          {
+            "prefix": "artēziskās ak"
+          },
+          {
+            "prefix": "artēzisko ak"
+          },
+          {
+            "prefix": "artēziskais urbum"
+          },
+          {
+            "prefix": "artēziskā urbum"
+          },
+          {
+            "prefix": "artēzisko urbum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "чоҳҳои об"
+          },
+          {
+            "prefix": "лӯлаҳои об"
+          },
+          {
+            "prefix": "оби марказонида"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ichimlik suvi bilan ta'minlan"
+          },
+          {
+            "prefix": "ichimlik suvi bilan taʻminlan"
+          },
+          {
+            "prefix": "ichimlik suvi bilan ta’minlan"
+          },
+          {
+            "prefix": "ichimlik suvi bilan ta‘minlan"
+          },
+          {
+            "prefix": "ичимлик суви билан таъминлан"
+          },
+          {
+            "prefix": "markazlashgan suv ta'minot"
+          },
+          {
+            "prefix": "markazlashgan suv taʻminot"
+          },
+          {
+            "prefix": "markazlashgan suv ta’minot"
+          },
+          {
+            "prefix": "markazlashgan suv ta‘minot"
+          },
+          {
+            "prefix": "марказлашган сув таъминот"
+          },
+          {
+            "prefix": "artezian quduq"
+          },
+          {
+            "prefix": "артезиан қудуқ"
+          },
+          {
+            "prefix": "vodoprovod"
+          },
+          {
+            "prefix": "водопровод"
+          },
+          {
+            "prefix": "suvdan foydalanish imkoniyat"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "prieiga prie vand"
+          },
+          {
+            "prefix": "prieigos prie vand"
+          },
+          {
+            "prefix": "prieigą prie vand"
+          },
+          {
+            "prefix": "vandens prieinamum"
+          },
+          {
+            "prefix": "centralizuotai tiekiamo vand"
+          },
+          {
+            "prefix": "centralizuoto vandentiek"
+          },
+          {
+            "prefix": "centralizuotą vandentiek"
+          },
+          {
+            "prefix": "vandens gręžin"
+          },
+          {
+            "prefix": "artezinis gręžin"
+          },
+          {
+            "prefix": "artezinio gręžin"
+          },
+          {
+            "prefix": "artezinių gręžin"
+          },
+          {
+            "prefix": "vandens kolonėl"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "juurdepääs veele"
+          },
+          {
+            "prefix": "juurdepääs puhtale veele"
+          },
+          {
+            "prefix": "ligipääs veele"
+          },
+          {
+            "prefix": "ligipääs puhtale veele"
+          },
+          {
+            "prefix": "veevõtukoht"
+          },
+          {
+            "prefix": "puurkaev"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "суға қолжетімділі"
+          },
+          {
+            "prefix": "ауыз суға қолжетімділі"
+          },
+          {
+            "prefix": "таза суға қолжетімділі"
+          },
+          {
+            "prefix": "орталықтандырылған сумен жабдықта"
+          },
+          {
+            "prefix": "құбыр су"
+          },
+          {
+            "prefix": "су ұңғыма"
+          },
+          {
+            "prefix": "су тарату колонка"
+          },
+          {
+            "prefix": "су колонка"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "сууга жеткиликтүүлү"
+          },
+          {
+            "prefix": "таза сууга жеткиликтүүлү"
+          },
+          {
+            "prefix": "ичүүчү сууга жеткиликтүүлү"
+          },
+          {
+            "prefix": "таза суу жетпе"
+          },
+          {
+            "prefix": "суу скважина"
+          },
+          {
+            "prefix": "суу колонка"
+          },
+          {
+            "prefix": "суу алуучу жай"
+          }
+        ],
+        "farsi": [
+          "دسترسی به آب",
+          "آب لوله‌کشی",
+          "آب لوله کشی",
+          "آب لولهکشی",
+          "لوله‌کشی آب",
+          "لوله کشی آب",
+          "لولهکشی آب",
+          "آبرسانی سیار",
+          "تانکر آب",
+          "چاه آب",
+          "آب نل",
+          "نل آب"
+        ],
+        "belarusian": [
+          "доступ да вады",
+          "доступу да вады",
+          "доступ да чыстай вады",
+          "доступу да чыстай вады",
+          "доступ да пітной вады",
+          "доступу да пітной вады",
+          {
+            "prefix": "цэнтралізаванае водазабеспяч"
+          },
+          {
+            "prefix": "цэнтралізаванага водазабеспяч"
+          },
+          {
+            "prefix": "шахтавыя калодз"
+          },
+          {
+            "prefix": "шахтавых калодз"
+          },
+          {
+            "prefix": "артэзіянская свідравін"
+          },
+          {
+            "prefix": "артэзіянскія свідравін"
+          },
+          {
+            "prefix": "артэзіянскіх свідравін"
+          },
+          {
+            "prefix": "водаразборная калонк"
+          },
+          {
+            "prefix": "водаразборныя калонк"
+          },
+          {
+            "prefix": "водаразборных калонак"
+          }
+        ],
+        "pap": [
+          "acceso na awa",
+          "akseso na awa",
+          "acceso na awa potabel",
+          "akseso na awa potabel",
+          "conexion di awa",
+          "konekshon di awa",
+          "awa di tubo",
+          "toegang tot water",
+          "access to water"
         ]
       }
     },
@@ -2862,6 +3607,177 @@
           {
             "prefix": "vodovodnu mrež"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdensapgād"
+          },
+          {
+            "prefix": "ūdens piegād"
+          },
+          {
+            "prefix": "ūdens padev"
+          },
+          {
+            "prefix": "ūdens pakalpojum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "обтаъмин"
+          },
+          {
+            "prefix": "таъминоти об"
+          },
+          {
+            "prefix": "таъмини об"
+          },
+          {
+            "prefix": "таъмини аҳолӣ бо об"
+          },
+          {
+            "prefix": "таъмини ахоли бо об"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv ta'minot"
+          },
+          {
+            "prefix": "suv taʻminot"
+          },
+          {
+            "prefix": "suv ta’minot"
+          },
+          {
+            "prefix": "suv ta‘minot"
+          },
+          {
+            "prefix": "сув таъминот"
+          },
+          {
+            "prefix": "ichimlik suvi ta'minot"
+          },
+          {
+            "prefix": "ichimlik suvi taʻminot"
+          },
+          {
+            "prefix": "ichimlik suvi ta’minot"
+          },
+          {
+            "prefix": "ichimlik suvi ta‘minot"
+          },
+          {
+            "prefix": "ичимлик суви таъминот"
+          },
+          {
+            "prefix": "suv bilan ta'minla"
+          },
+          {
+            "prefix": "suv bilan taʻminla"
+          },
+          {
+            "prefix": "suv bilan ta’minla"
+          },
+          {
+            "prefix": "suv bilan ta‘minla"
+          },
+          {
+            "prefix": "сув билан таъминла"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens tiekim"
+          },
+          {
+            "prefix": "vandentiek"
+          },
+          {
+            "prefix": "geriamojo vandens tiekim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "veevarustus"
+          },
+          {
+            "prefix": "ühisveevär"
+          },
+          {
+            "prefix": "veevär"
+          },
+          {
+            "prefix": "veeteenus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "сумен жабдықта"
+          },
+          {
+            "prefix": "сумен қамтамасыз ет"
+          },
+          {
+            "prefix": "сумен қамт"
+          },
+          {
+            "prefix": "су жабдықтау"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу менен камсызд"
+          },
+          {
+            "prefix": "суу менен камсыз кыл"
+          },
+          {
+            "prefix": "суу менен жабду"
+          },
+          {
+            "prefix": "суу өткөргүч"
+          },
+          {
+            "prefix": "суу түтүк тармаг"
+          },
+          {
+            "prefix": "суу түтүк тармак"
+          }
+        ],
+        "farsi": [
+          "تأمین آب",
+          "تامین آب",
+          "آبرسانی",
+          "آب‌رسانی",
+          "آب رسانی",
+          "خدمات آب",
+          "عرضه آب"
+        ],
+        "belarusian": [
+          {
+            "prefix": "водазабеспяч"
+          },
+          {
+            "prefix": "водазабесьпяч"
+          },
+          {
+            "prefix": "водаправод"
+          },
+          "падача вады",
+          "падачы вады",
+          "падачу вады"
+        ],
+        "pap": [
+          "suministro di awa",
+          "suministronan di awa",
+          "distribucion di awa",
+          "distribushon di awa",
+          "servicio di awa",
+          "servisio di awa",
+          "watervoorziening",
+          "waterlevering",
+          "water supply"
         ]
       }
     },
@@ -3613,6 +4529,265 @@
           {
             "prefix": "nestašici vod"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens piegādes pārtraukum"
+          },
+          {
+            "prefix": "ūdensapgādes pārtraukum"
+          },
+          {
+            "prefix": "ūdens padeves pārtraukum"
+          },
+          {
+            "prefix": "ūdens padeves traucējum"
+          },
+          {
+            "prefix": "ūdensapgādes traucējum"
+          },
+          {
+            "prefix": "ūdens piegādes traucējum"
+          },
+          {
+            "prefix": "ūdens atslēgšan"
+          },
+          {
+            "prefix": "ūdens atslēgum"
+          },
+          "paliks bez ūdens",
+          "palika bez ūdens",
+          "paliek bez ūdens",
+          "palikuši bez ūdens"
+        ],
+        "tajik": [
+          {
+            "prefix": "қатъ шудани об"
+          },
+          {
+            "prefix": "қатъ гардидани об"
+          },
+          {
+            "prefix": "об қатъ"
+          },
+          {
+            "prefix": "қатъи обтаъмин"
+          },
+          {
+            "prefix": "бе об монд"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv o'chiril"
+          },
+          {
+            "prefix": "suv oʻchiril"
+          },
+          {
+            "prefix": "suv o’chiril"
+          },
+          {
+            "prefix": "suv o‘chiril"
+          },
+          {
+            "prefix": "сув ўчирил"
+          },
+          {
+            "prefix": "suv uzil"
+          },
+          {
+            "prefix": "suv ta'minotidagi uzilish"
+          },
+          {
+            "prefix": "suv taʻminotidagi uzilish"
+          },
+          {
+            "prefix": "suv ta’minotidagi uzilish"
+          },
+          {
+            "prefix": "suv ta‘minotidagi uzilish"
+          },
+          {
+            "prefix": "сув таъминотидаги узилиш"
+          },
+          {
+            "prefix": "suv berilmay"
+          },
+          {
+            "prefix": "сув берилмай"
+          },
+          {
+            "prefix": "suvsiz qol"
+          },
+          {
+            "prefix": "сувсиз қол"
+          },
+          {
+            "prefix": "suv ta'minoti to'xtatil"
+          },
+          {
+            "prefix": "suv taʻminoti toʻxtatil"
+          },
+          {
+            "prefix": "suv ta’minoti to’xtatil"
+          },
+          {
+            "prefix": "suv ta‘minoti to‘xtatil"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens tiekimo sutrik"
+          },
+          {
+            "prefix": "vandens tiekimo nutrauk"
+          },
+          {
+            "prefix": "vandens tiekimo pertrauk"
+          },
+          {
+            "prefix": "vandens tiekimas nutraukt"
+          },
+          {
+            "prefix": "vandens tiekimas bus nutraukt"
+          },
+          {
+            "prefix": "nutrauktas vandens tiekim"
+          },
+          {
+            "prefix": "nutrauks vandens tiekim"
+          },
+          "liko be vandens",
+          "liks be vandens",
+          "be vandens liko",
+          {
+            "prefix": "vandens atjungim"
+          },
+          "išjungtas vanduo"
+        ],
+        "estonian": [
+          {
+            "prefix": "veekatkestus"
+          },
+          {
+            "prefix": "vee katkestus"
+          },
+          {
+            "prefix": "veevarustuse katkestus"
+          },
+          {
+            "prefix": "veevarustuse häire"
+          },
+          {
+            "prefix": "vee väljalülitami"
+          },
+          "jäi veeta",
+          "jäid veeta",
+          "jäävad veeta"
+        ],
+        "kazakh": [
+          {
+            "prefix": "суды өшір"
+          },
+          {
+            "prefix": "судың өшірілу"
+          },
+          {
+            "prefix": "су өшіріл"
+          },
+          {
+            "prefix": "су беру тоқтат"
+          },
+          {
+            "prefix": "сумен жабдықтау тоқтат"
+          },
+          {
+            "prefix": "сумен жабдықтаудағы үзіліс"
+          },
+          {
+            "prefix": "сусыз қал"
+          },
+          {
+            "prefix": "суды уақытша тоқтат"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу берилбей"
+          },
+          {
+            "prefix": "суу убактылуу берилбе"
+          },
+          {
+            "prefix": "суу токтотул"
+          },
+          {
+            "prefix": "суу берүү токтотул"
+          },
+          {
+            "prefix": "сууну өчүр"
+          },
+          {
+            "prefix": "суу өчүрүл"
+          },
+          {
+            "prefix": "суусуз кал"
+          },
+          {
+            "prefix": "суу менен камсыздоонун үзгүлтүк"
+          }
+        ],
+        "farsi": [
+          "قطعی آب",
+          "قطع آب",
+          "قطع جریان آب",
+          "افت فشار آب",
+          "بی‌آبی",
+          "بی آبی",
+          "بیآبی",
+          "اختلال در آبرسانی",
+          "اختلال در تأمین آب",
+          "اختلال در تامین آب"
+        ],
+        "belarusian": [
+          "адключэнне вады",
+          "адключэння вады",
+          "адключэнні вады",
+          "адключэньне вады",
+          "адключылі ваду",
+          "адключаць ваду",
+          "адключаюць ваду",
+          "адключэнне гарачай вады",
+          "адключэння гарачай вады",
+          "засталіся без вады",
+          "застануцца без вады",
+          "перабоі з вадой",
+          "перабояў з вадой",
+          {
+            "prefix": "перабоі ў водазабеспяч"
+          },
+          {
+            "prefix": "перабояў у водазабеспяч"
+          },
+          {
+            "prefix": "перабоі з водазабеспяч"
+          }
+        ],
+        "pap": [
+          "interupcion di awa",
+          "interrupcion di awa",
+          "interupshon di awa",
+          "interupcion den suministro di awa",
+          "interupshon den suministro di awa",
+          "corte di awa",
+          "korte di awa",
+          "kortamentu di awa",
+          "korta awa",
+          "no tin awa",
+          "waterafsluiting",
+          "storing in de watervoorziening",
+          "water outage"
         ]
       }
     },
@@ -4194,6 +5369,171 @@
           {
             "prefix": "ograničenje potrošnje vod"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens normēšan"
+          },
+          {
+            "prefix": "ūdens racionēšan"
+          },
+          {
+            "prefix": "ūdens lietošanas ierobežojum"
+          },
+          {
+            "prefix": "ūdens patēriņa ierobežojum"
+          },
+          {
+            "prefix": "ūdens ierobežojum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "маҳдудияти истифодаи об"
+          },
+          {
+            "prefix": "маҳдудиятҳои истифодаи об"
+          },
+          {
+            "prefix": "ҷудокунии меъёрии об"
+          },
+          {
+            "prefix": "об бо ҷадвал"
+          },
+          {
+            "prefix": "додани об бо ҷадвал"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv grafik asosida"
+          },
+          {
+            "prefix": "сув график асосида"
+          },
+          {
+            "prefix": "suvni grafik asosida"
+          },
+          {
+            "prefix": "suvdan foydalanishni cheklash"
+          },
+          {
+            "prefix": "сувдан фойдаланишни чеклаш"
+          },
+          {
+            "prefix": "suvni ratsionlashtir"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens normavim"
+          },
+          {
+            "prefix": "vandens ribojim"
+          },
+          {
+            "prefix": "vandens naudojimo apribojim"
+          },
+          {
+            "prefix": "vandens naudojimo ribojim"
+          },
+          {
+            "prefix": "vandens suvartojimo ribojim"
+          },
+          {
+            "prefix": "laistymo draudim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "vee ratsioneeri"
+          },
+          {
+            "prefix": "veepiirang"
+          },
+          {
+            "prefix": "veekasutuse piirang"
+          },
+          {
+            "prefix": "kastmiskeel"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "суды кестемен бер"
+          },
+          {
+            "prefix": "су беру кестес"
+          },
+          {
+            "prefix": "суды үнемдеу режим"
+          },
+          {
+            "prefix": "суды пайдалануды шектеу"
+          },
+          {
+            "prefix": "су пайдалануға шектеу"
+          },
+          {
+            "prefix": "суды лимитпен бер"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу график менен"
+          },
+          {
+            "prefix": "суу график боюнча"
+          },
+          {
+            "prefix": "сууну график менен"
+          },
+          {
+            "prefix": "сууну чектө"
+          },
+          {
+            "prefix": "суу пайдаланууну чектө"
+          },
+          {
+            "prefix": "суу берүүнү чектө"
+          },
+          {
+            "prefix": "сууну нормала"
+          }
+        ],
+        "farsi": [
+          "جیره‌بندی آب",
+          "جیره بندی آب",
+          "جیرهبندی آب",
+          "سهمیه‌بندی آب",
+          "سهمیه بندی آب",
+          "سهمیهبندی آب",
+          "محدودیت مصرف آب",
+          "محدودیت آب",
+          "مدیریت فشار آب"
+        ],
+        "belarusian": [
+          "нарміраванне вады",
+          "нарміравання вады",
+          "нарміраваньне вады",
+          "абмежаванні на выкарыстанне вады",
+          "абмежаванне спажывання вады",
+          "вада па графіку",
+          "ваду па графіку",
+          "падача вады па графіку"
+        ],
+        "pap": [
+          "racionamento di awa",
+          "racionamiento di awa",
+          "rashonamentu di awa",
+          "restriccion di awa",
+          "restrikshon di awa",
+          "restriccion riba uso di awa",
+          "restrikshon riba uzo di awa",
+          "waterrantsoenering",
+          "waterbeperking",
+          "waterbeperkingen",
+          "water rationing"
         ]
       }
     },
@@ -4671,6 +6011,132 @@
           "analize vode",
           "analizu vode",
           "analizama vode"
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens kvalitāt"
+          },
+          {
+            "prefix": "ūdens testēšan"
+          },
+          {
+            "prefix": "ūdens analīz"
+          },
+          {
+            "prefix": "peldūdens kvalitāt"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "таҳлили оби"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv sifat"
+          },
+          {
+            "prefix": "сув сифат"
+          },
+          {
+            "prefix": "ichimlik suvi sifat"
+          },
+          {
+            "prefix": "ичимлик суви сифат"
+          },
+          {
+            "prefix": "suvning sifat"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens kokyb"
+          },
+          {
+            "prefix": "vandens tyrim"
+          },
+          {
+            "prefix": "vandens mėgini"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "veekvalitee"
+          },
+          {
+            "prefix": "vee kvalitee"
+          },
+          {
+            "prefix": "joogivee kvalitee"
+          },
+          {
+            "prefix": "suplusvee kvalitee"
+          },
+          {
+            "prefix": "veeproov"
+          },
+          {
+            "prefix": "veeanalüüs"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "су сапас"
+          },
+          {
+            "prefix": "судың сапас"
+          },
+          {
+            "prefix": "су сынама"
+          },
+          {
+            "prefix": "судың сынама"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суунун сапат"
+          },
+          {
+            "prefix": "суу сапат"
+          },
+          {
+            "prefix": "суунун сынам"
+          },
+          {
+            "prefix": "сууну текшерүү"
+          },
+          {
+            "prefix": "суунун курамын текшер"
+          }
+        ],
+        "farsi": [
+          "کیفیت آب",
+          "آزمایش آب",
+          "استاندارد آب",
+          "وضعیت کیفی آب"
+        ],
+        "belarusian": [
+          "якасць вады",
+          "якасці вады",
+          "якасьць вады",
+          "якасьці вады",
+          "якасць пітной вады",
+          "якасці пітной вады",
+          "якасьці пітной вады",
+          "аналізы вады",
+          "аналіз вады",
+          "нарматывы якасці вады"
+        ],
+        "pap": [
+          "calidad di awa",
+          "kalidat di awa",
+          "calidad di awa potabel",
+          "kalidat di awa potabel",
+          "control di calidad di awa",
+          "kontrol di kalidat di awa",
+          "waterkwaliteit",
+          "water quality"
         ]
       }
     },
@@ -5435,6 +6901,194 @@
           "prokuvavanje vode",
           "prokuvati vodu",
           "prokuvavati vodu"
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens piesārņojum"
+          },
+          "piesārņots ūdens",
+          {
+            "prefix": "piesārņota ūden"
+          },
+          {
+            "prefix": "piesārņotu ūden"
+          },
+          "piesārņotais ūdens",
+          {
+            "prefix": "piesārņotā ūden"
+          },
+          {
+            "prefix": "piesārņoto ūden"
+          },
+          {
+            "prefix": "dzeršanai nederīg"
+          },
+          "ūdeni ieteicams uzvārīt",
+          "ūdens jāuzvāra"
+        ],
+        "tajik": [
+          {
+            "prefix": "оби ифлос"
+          },
+          {
+            "prefix": "ифлосшавии об"
+          },
+          {
+            "prefix": "олудашавии об"
+          },
+          {
+            "prefix": "оби олуда"
+          },
+          {
+            "prefix": "оби нобехатар"
+          },
+          {
+            "prefix": "обро ҷӯшонида"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ifloslangan suv"
+          },
+          {
+            "prefix": "ифлосланган сув"
+          },
+          {
+            "prefix": "ifloslangan ichimlik suv"
+          },
+          {
+            "prefix": "suvning ifloslan"
+          },
+          {
+            "prefix": "сувнинг ифлослан"
+          },
+          {
+            "prefix": "suv manbalarining ifloslan"
+          },
+          {
+            "prefix": "suvni qaynatib ich"
+          },
+          {
+            "prefix": "сувни қайнатиб ич"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens užterš"
+          },
+          {
+            "prefix": "vandens tarš"
+          },
+          {
+            "prefix": "užterštas vand"
+          },
+          {
+            "prefix": "užteršto vand"
+          },
+          {
+            "prefix": "užterštą vand"
+          },
+          {
+            "prefix": "užterštu vand"
+          },
+          {
+            "prefix": "užterštas geriamasis vand"
+          },
+          "vandenį būtina virinti",
+          "vandenį reikia virinti",
+          "virinti vandenį"
+        ],
+        "estonian": [
+          {
+            "prefix": "saastunud ve"
+          },
+          {
+            "prefix": "saastunud joogive"
+          },
+          {
+            "prefix": "reostunud ve"
+          },
+          {
+            "prefix": "vee reostus"
+          },
+          {
+            "prefix": "veereostus"
+          },
+          {
+            "prefix": "joogivee reostus"
+          },
+          {
+            "prefix": "joogivee saastumi"
+          },
+          "enne joomist keeta"
+        ],
+        "kazakh": [
+          {
+            "prefix": "ластанған су"
+          },
+          {
+            "prefix": "судың ластану"
+          },
+          {
+            "prefix": "сапасыз су"
+          },
+          {
+            "prefix": "лас су"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суунун булган"
+          },
+          {
+            "prefix": "суу булган"
+          },
+          {
+            "prefix": "булганган суу"
+          },
+          "сапатсыз суу",
+          "сапатсыз ичүүчү суу",
+          {
+            "prefix": "сууну кайнатып ич"
+          }
+        ],
+        "farsi": [
+          "آلودگی آب",
+          "آب آلوده",
+          "آب ناسالم",
+          "آب آشامیدنی آلوده",
+          "آب شرب آلوده",
+          "آلوده شدن آب",
+          "آب را بجوشانید",
+          "جوشاندن آب"
+        ],
+        "belarusian": [
+          "забруджванне вады",
+          "забруджвання вады",
+          "забруджваньне вады",
+          "забруджаная вада",
+          "забруджанай вады",
+          "забруджаную ваду",
+          "забруджванне пітной вады",
+          "забруджаная пітная вада",
+          "неякасная вада",
+          "неякаснай вады",
+          "неякасную ваду",
+          "кіпяціць ваду"
+        ],
+        "pap": [
+          "contaminacion di awa",
+          "kontaminashon di awa",
+          "awa contamina",
+          "awa kontaminá",
+          "awa kontamina",
+          "awa potabel contamina",
+          "awa potabel kontaminá",
+          "waterverontreiniging",
+          "verontreinigd water",
+          "kookadvies",
+          "contaminated water",
+          "boil water advisory"
         ]
       }
     },
@@ -6098,6 +7752,211 @@
           {
             "prefix": "prečišćene vod"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens attīrīšan"
+          },
+          {
+            "prefix": "ūdens sagatavošan"
+          },
+          {
+            "prefix": "ūdens filtrēšan"
+          },
+          {
+            "prefix": "ūdens dezinfekcij"
+          },
+          {
+            "prefix": "hlorēšan"
+          },
+          {
+            "prefix": "atdzelžošan"
+          },
+          "attīrīts ūdens",
+          "attīrīta ūdens"
+        ],
+        "tajik": [
+          "тозакунии об",
+          {
+            "prefix": "тозакунии оби"
+          },
+          {
+            "prefix": "обтозакун"
+          },
+          {
+            "prefix": "иншооти обтозакун"
+          },
+          {
+            "prefix": "хлоронидани об"
+          },
+          {
+            "prefix": "хлоркунии об"
+          },
+          {
+            "prefix": "оби тозашуда"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv tozalash"
+          },
+          {
+            "prefix": "сув тозалаш"
+          },
+          {
+            "prefix": "suvni tozalash"
+          },
+          {
+            "prefix": "сувни тозалаш"
+          },
+          {
+            "prefix": "xlorlash"
+          },
+          {
+            "prefix": "хлорлаш"
+          },
+          {
+            "prefix": "tozalangan suv"
+          },
+          {
+            "prefix": "suvni filtrla"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens valym"
+          },
+          {
+            "prefix": "vandens ruošim"
+          },
+          {
+            "prefix": "vandenruoš"
+          },
+          {
+            "prefix": "vandens gerinimo įrengin"
+          },
+          {
+            "prefix": "geležies šalinimo stot"
+          },
+          {
+            "prefix": "vandens filtravim"
+          },
+          {
+            "prefix": "vandens chlorinim"
+          },
+          {
+            "prefix": "vandens dezinfekcij"
+          },
+          {
+            "prefix": "išvalytas vand"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "veepuhastus"
+          },
+          {
+            "prefix": "vee puhastami"
+          },
+          {
+            "prefix": "veetöötlus"
+          },
+          {
+            "prefix": "vee filtreeri"
+          },
+          {
+            "prefix": "veefiltr"
+          },
+          {
+            "prefix": "vee kloori"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "суды тазарт"
+          },
+          {
+            "prefix": "су тазарт"
+          },
+          {
+            "prefix": "тазартылған су"
+          },
+          {
+            "prefix": "суды хлорла"
+          },
+          {
+            "prefix": "суды сүзу"
+          },
+          {
+            "prefix": "суды залалсыздандыр"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "сууну тазал"
+          },
+          {
+            "prefix": "суу тазало"
+          },
+          {
+            "prefix": "суу тазалагыч"
+          },
+          {
+            "prefix": "сууну хлорло"
+          },
+          {
+            "prefix": "хлорло"
+          },
+          "тазаланган суу"
+        ],
+        "farsi": [
+          "تصفیه آب",
+          "تصفیه‌خانه آب",
+          "تصفیه خانه آب",
+          "تصفیهخانه آب",
+          "تصفیه‌خانه‌های آب",
+          "تصفیه خانه های آب",
+          "تصفیهخانههای آب",
+          "آب تصفیه",
+          "کلرزنی",
+          "فیلتراسیون آب"
+        ],
+        "belarusian": [
+          {
+            "prefix": "водападрыхтоўк"
+          },
+          {
+            "prefix": "абезжалезван"
+          },
+          {
+            "prefix": "абезжалезваньн"
+          },
+          {
+            "prefix": "водаачышчальн"
+          },
+          "ачыстка вады",
+          "ачысткі вады",
+          "ачыстку вады",
+          "ачыстцы вады",
+          "хлараванне вады",
+          {
+            "prefix": "хларыраван"
+          },
+          "фільтрацыя вады",
+          "ачышчаная вада",
+          "ачышчанай вады"
+        ],
+        "pap": [
+          "tratamento di awa",
+          "tratamentu di awa",
+          "planta di tratamento di awa",
+          "planta di tratamentu di awa",
+          "purificacion di awa",
+          "purifikashon di awa",
+          "clorinacion",
+          "klorinashon",
+          "waterzuivering",
+          "water treatment"
         ]
       }
     },
@@ -6581,6 +8440,165 @@
           {
             "prefix": "reverznom osmoz"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "atsāļo"
+          },
+          {
+            "prefix": "reversā osmoz"
+          },
+          {
+            "prefix": "reversās osmoz"
+          },
+          {
+            "prefix": "reverso osmoz"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "ширин кардани оби шӯр"
+          },
+          {
+            "prefix": "ширин кардани оби баҳр"
+          },
+          {
+            "prefix": "шӯрзудоии об"
+          },
+          {
+            "prefix": "десалинатсия"
+          },
+          {
+            "prefix": "осмоси баръакс"
+          },
+          {
+            "prefix": "осмоси муқобил"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "tuzsizlantir"
+          },
+          {
+            "prefix": "тузсизлантир"
+          },
+          {
+            "prefix": "chuchuklashtir"
+          },
+          {
+            "prefix": "чучуклаштир"
+          },
+          {
+            "prefix": "teskari osmos"
+          },
+          {
+            "prefix": "тескари осмос"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "gėlinim"
+          },
+          {
+            "prefix": "nudruskin"
+          },
+          {
+            "prefix": "atvirkštinis osmos"
+          },
+          {
+            "prefix": "atvirkštinio osmos"
+          },
+          {
+            "prefix": "atvirkštinė osmoz"
+          },
+          {
+            "prefix": "atvirkštinės osmoz"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "magestami"
+          },
+          {
+            "prefix": "magestatud ve"
+          },
+          {
+            "prefix": "magestusjaam"
+          },
+          {
+            "prefix": "pöördosmoos"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "тұщыландыр"
+          },
+          {
+            "prefix": "теңіз суын тұщы"
+          },
+          {
+            "prefix": "кері осмос"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "тузсуздандыр"
+          },
+          {
+            "prefix": "сууну туздан тазала"
+          },
+          {
+            "prefix": "тескери осмос"
+          }
+        ],
+        "farsi": [
+          "آب‌شیرین‌کن",
+          "آب شیرین کن",
+          "آبشیرینکن",
+          "شیرین‌سازی آب",
+          "شیرین سازی آب",
+          "شیرینسازی آب",
+          "نمک‌زدایی",
+          "نمک زدایی",
+          "نمکزدایی",
+          "اسمز معکوس"
+        ],
+        "belarusian": [
+          {
+            "prefix": "апраснен"
+          },
+          {
+            "prefix": "апрасьнен"
+          },
+          {
+            "prefix": "апрасняльн"
+          },
+          {
+            "prefix": "адваротны осмас"
+          },
+          {
+            "prefix": "адваротнага осмас"
+          },
+          {
+            "prefix": "зваротны осмас"
+          },
+          {
+            "prefix": "зваротнага осмас"
+          }
+        ],
+        "pap": [
+          "desalinisacion",
+          "desalinizacion",
+          "desalinisashon",
+          "planta di desalinisacion",
+          "planta di desalinisashon",
+          "osmosis reverso",
+          "ósmosis inverso",
+          "omgekeerde osmose",
+          "ontzilting",
+          "ontziltingsinstallatie",
+          "desalination",
+          "reverse osmosis"
         ]
       }
     },
@@ -7113,6 +9131,203 @@
           {
             "prefix": "akvifer"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "gruntsūde"
+          },
+          {
+            "prefix": "pazemes ūde"
+          },
+          {
+            "prefix": "ūdens nesējslān"
+          },
+          {
+            "prefix": "ūdensnesējslān"
+          },
+          {
+            "prefix": "akvifer"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "обҳои зеризамин"
+          },
+          {
+            "prefix": "обхои зеризамин"
+          },
+          {
+            "prefix": "оби зеризамин"
+          },
+          {
+            "prefix": "қабати обдор"
+          },
+          {
+            "prefix": "обҳои грунт"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "yer osti suv"
+          },
+          {
+            "prefix": "ер ости сув"
+          },
+          {
+            "prefix": "grunt suv"
+          },
+          {
+            "prefix": "грунт сув"
+          },
+          {
+            "prefix": "suvli qatlam"
+          },
+          {
+            "prefix": "akvifer"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "požeminis vand"
+          },
+          {
+            "prefix": "požeminio vand"
+          },
+          {
+            "prefix": "požeminį vand"
+          },
+          {
+            "prefix": "požeminiu vand"
+          },
+          {
+            "prefix": "požeminiai vand"
+          },
+          {
+            "prefix": "požeminių vand"
+          },
+          {
+            "prefix": "požeminius vand"
+          },
+          {
+            "prefix": "gruntinis vand"
+          },
+          {
+            "prefix": "gruntinio vand"
+          },
+          {
+            "prefix": "gruntiniai vand"
+          },
+          {
+            "prefix": "gruntinių vand"
+          },
+          {
+            "prefix": "vandeningasis sluoksn"
+          },
+          {
+            "prefix": "vandeningojo sluoksn"
+          },
+          {
+            "prefix": "vandeningų sluoksn"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "põhjave"
+          },
+          "maa-alune vesi",
+          "maa-aluse vee"
+        ],
+        "kazakh": [
+          {
+            "prefix": "жерасты су"
+          },
+          {
+            "prefix": "жер асты су"
+          },
+          {
+            "prefix": "сулы горизонт"
+          },
+          {
+            "prefix": "сулы қабат"
+          },
+          {
+            "prefix": "грунт су"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "жер астындагы суу"
+          },
+          {
+            "prefix": "жер алдындагы суу"
+          },
+          {
+            "prefix": "жер астынын суу"
+          },
+          {
+            "prefix": "грунт суу"
+          },
+          {
+            "prefix": "аквифер"
+          },
+          {
+            "prefix": "суу катмар"
+          }
+        ],
+        "farsi": [
+          "آب زیرزمینی",
+          "آب‌های زیرزمینی",
+          "آب های زیرزمینی",
+          "آبهای زیرزمینی",
+          "آبخوان",
+          "سفره آب زیرزمینی",
+          "سفره‌های آب زیرزمینی",
+          "سفره های آب زیرزمینی",
+          "سفرههای آب زیرزمینی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "падземныя вод"
+          },
+          {
+            "prefix": "падземных вод"
+          },
+          {
+            "prefix": "падземным водам"
+          },
+          {
+            "prefix": "падземнымі водамі"
+          },
+          {
+            "prefix": "падземная вад"
+          },
+          {
+            "prefix": "падземнай вад"
+          },
+          {
+            "prefix": "грунтавыя вод"
+          },
+          {
+            "prefix": "грунтавых вод"
+          },
+          {
+            "prefix": "грунтавымі водамі"
+          },
+          {
+            "prefix": "ваданосн"
+          }
+        ],
+        "pap": [
+          "awa subteraneo",
+          "awa subterraneo",
+          "awa subterráneo",
+          "awa di pos",
+          "acuifero",
+          "akuífero",
+          "akuifero",
+          "grondwater",
+          "groundwater",
+          "aquifer"
         ]
       }
     },
@@ -7735,6 +9950,216 @@
           {
             "prefix": "iscrpljivanje akvifer"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "gruntsūdens līmeņa pazemināšan"
+          },
+          {
+            "prefix": "gruntsūdeņu līmeņa pazemināšan"
+          },
+          {
+            "prefix": "gruntsūdens līmeņa kritum"
+          },
+          {
+            "prefix": "gruntsūdeņu izsīkšan"
+          },
+          {
+            "prefix": "pazemes ūdeņu izsīkšan"
+          },
+          {
+            "prefix": "pazemes ūdens resursu izsīkšan"
+          },
+          {
+            "prefix": "pazemes ūdeņu pārmērīg"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "коҳиши обҳои зеризамин"
+          },
+          {
+            "prefix": "коҳиши сатҳи обҳои зеризамин"
+          },
+          {
+            "prefix": "паст шудани сатҳи обҳои зеризамин"
+          },
+          {
+            "prefix": "тамомшавии обҳои зеризамин"
+          },
+          {
+            "prefix": "истихроҷи аз ҳад зиёди обҳои зеризамин"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "yer osti suvlarining kamay"
+          },
+          {
+            "prefix": "ер ости сувларининг камай"
+          },
+          {
+            "prefix": "yer osti suvlari sathining pasay"
+          },
+          {
+            "prefix": "ер ости сувлари сатҳининг пасай"
+          },
+          {
+            "prefix": "yer osti suvlari sathi pasay"
+          },
+          {
+            "prefix": "yer osti suvlarining tugab"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "požeminio vandens išsekim"
+          },
+          {
+            "prefix": "požeminių vandenų išsekim"
+          },
+          {
+            "prefix": "požeminio vandens lygio mažėjim"
+          },
+          {
+            "prefix": "požeminio vandens lygio kritim"
+          },
+          {
+            "prefix": "požeminio vandens lygio sumažėjim"
+          },
+          {
+            "prefix": "vandeningojo sluoksnio išsekim"
+          },
+          {
+            "prefix": "požeminio vandens pereikvojim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "põhjavee alanemi"
+          },
+          {
+            "prefix": "põhjaveetaseme langu"
+          },
+          {
+            "prefix": "põhjavee taseme langu"
+          },
+          {
+            "prefix": "põhjavee ammendumi"
+          },
+          {
+            "prefix": "põhjaveevarude ammendumi"
+          },
+          {
+            "prefix": "põhjavee ülekasutus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "жерасты суларының азаю"
+          },
+          {
+            "prefix": "жер асты суларының азаю"
+          },
+          {
+            "prefix": "жерасты суларының сарқыл"
+          },
+          {
+            "prefix": "жер асты суларының сарқыл"
+          },
+          {
+            "prefix": "жерасты суларының деңгейі төмен"
+          },
+          {
+            "prefix": "жер асты суларының деңгейі төмен"
+          },
+          {
+            "prefix": "сулы горизонттың сарқыл"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "жер астындагы суулардын азай"
+          },
+          {
+            "prefix": "жер астындагы суулардын түгөн"
+          },
+          {
+            "prefix": "жер астындагы суулардын деңгээлинин төмөндө"
+          },
+          {
+            "prefix": "грунт сууларынын деңгээлинин төмөндө"
+          },
+          {
+            "prefix": "грунт сууларынын азай"
+          },
+          {
+            "prefix": "жер астындагы сууларды ашыкча пайдалан"
+          }
+        ],
+        "farsi": [
+          "افت سطح آب زیرزمینی",
+          "افت آب‌های زیرزمینی",
+          "افت آب های زیرزمینی",
+          "افت آبهای زیرزمینی",
+          "افت سطح ایستابی",
+          "برداشت بی‌رویه آب",
+          "برداشت بی رویه آب",
+          "برداشت بیرویه آب",
+          "برداشت بی‌رویه از آب",
+          "برداشت بی رویه از آب",
+          "برداشت بیرویه از آب",
+          "تخلیه آبخوان",
+          "کسری مخزن آب",
+          "بیلان منفی آب",
+          "فرونشست زمین",
+          "فرونشست دشت",
+          "چاه‌های غیرمجاز",
+          "چاه های غیرمجاز",
+          "چاههای غیرمجاز"
+        ],
+        "belarusian": [
+          {
+            "prefix": "зніжэнне ўзроўню падземных вод"
+          },
+          {
+            "prefix": "зніжэння ўзроўню падземных вод"
+          },
+          {
+            "prefix": "зніжэнне ўзроўню грунтавых вод"
+          },
+          {
+            "prefix": "зніжэння ўзроўню грунтавых вод"
+          },
+          {
+            "prefix": "зьніжэньне ўзроўню грунтавых вод"
+          },
+          {
+            "prefix": "зьніжэньне ўзроўню падземных вод"
+          },
+          {
+            "prefix": "падзенне ўзроўню грунтавых вод"
+          },
+          {
+            "prefix": "вычарпанне падземных вод"
+          },
+          {
+            "prefix": "вычарпання падземных вод"
+          },
+          {
+            "prefix": "вычарпанне запасаў падземных вод"
+          },
+          {
+            "prefix": "памяншэнне запасаў падземных вод"
+          }
+        ],
+        "pap": [
+          "agotamento di awa subteraneo",
+          "agotamentu di awa subterráneo",
+          "nivel di awa subteraneo ta baha",
+          "daling van de grondwaterstand",
+          "grondwateruitputting",
+          "groundwater depletion"
         ]
       }
     },
@@ -8354,6 +10779,216 @@
             "prefix": "nivoa Skadarskog jezer"
           },
           "protok rijeke"
+        ],
+        "latvian": [
+          {
+            "prefix": "virszemes ūde"
+          },
+          {
+            "prefix": "ūdenslīmen"
+          },
+          "ūdens līmenis upēs",
+          "ūdens līmeni upēs",
+          {
+            "prefix": "upju caurplūdum"
+          },
+          {
+            "prefix": "upes caurplūdum"
+          },
+          {
+            "prefix": "ezeru līmen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "обҳои рӯизамин"
+          },
+          {
+            "prefix": "обхои руизамин"
+          },
+          {
+            "prefix": "оби рӯизамин"
+          },
+          {
+            "prefix": "обҳои сатҳ"
+          },
+          {
+            "prefix": "сатҳи оби дарё"
+          },
+          {
+            "prefix": "сатҳи оби кӯл"
+          },
+          {
+            "prefix": "сатҳи об дар дарё"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "yer usti suv"
+          },
+          {
+            "prefix": "ер усти сув"
+          },
+          {
+            "prefix": "daryolardagi suv sath"
+          },
+          {
+            "prefix": "дарёлардаги сув сатҳ"
+          },
+          {
+            "prefix": "daryo oqim"
+          },
+          {
+            "prefix": "дарё оқим"
+          },
+          {
+            "prefix": "ko'l sath"
+          },
+          {
+            "prefix": "koʻl sath"
+          },
+          {
+            "prefix": "ko’l sath"
+          },
+          {
+            "prefix": "ko‘l sath"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "paviršinis vand"
+          },
+          {
+            "prefix": "paviršinio vand"
+          },
+          {
+            "prefix": "paviršiniai vand"
+          },
+          {
+            "prefix": "paviršinių vand"
+          },
+          {
+            "prefix": "paviršiniuose vand"
+          },
+          {
+            "prefix": "paviršinį vand"
+          },
+          "vandens lygis upėse",
+          "vandens lygio upėse",
+          {
+            "prefix": "upių debit"
+          },
+          {
+            "prefix": "upių vandens lyg"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "pinnave"
+          },
+          {
+            "prefix": "jõgede veetase"
+          },
+          {
+            "prefix": "jõe veetase"
+          },
+          {
+            "prefix": "järve veetase"
+          },
+          {
+            "prefix": "Peipsi veetase"
+          },
+          {
+            "prefix": "jõgede vooluhul"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "жерүсті су"
+          },
+          {
+            "prefix": "жер үсті су"
+          },
+          {
+            "prefix": "өзен деңгей"
+          },
+          {
+            "prefix": "өзеннің деңгей"
+          },
+          {
+            "prefix": "өзендегі су деңгей"
+          },
+          {
+            "prefix": "өзендердің су деңгей"
+          },
+          {
+            "prefix": "көл деңгей"
+          },
+          {
+            "prefix": "көлдің деңгей"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "жер үстүндөгү суу"
+          },
+          {
+            "prefix": "жер үстүнкү суу"
+          },
+          {
+            "prefix": "дарыялардын деңгээл"
+          },
+          {
+            "prefix": "дарыянын деңгээл"
+          },
+          {
+            "prefix": "көлдүн деңгээл"
+          },
+          {
+            "prefix": "дарыялардын агым"
+          },
+          {
+            "prefix": "дарыялардагы суунун деңгээл"
+          }
+        ],
+        "farsi": [
+          "آب‌های سطحی",
+          "آب های سطحی",
+          "آبهای سطحی",
+          "آب سطحی",
+          "سطح آب رودخانه",
+          "سطح آب دریاچه",
+          "دبی رودخانه",
+          "جریان رودخانه"
+        ],
+        "belarusian": [
+          {
+            "prefix": "паверхневыя вод"
+          },
+          {
+            "prefix": "паверхневых вод"
+          },
+          {
+            "prefix": "паверхневым водам"
+          },
+          {
+            "prefix": "паверхневымі водамі"
+          },
+          "узровень вады ў рэках",
+          "узроўню вады ў рэках",
+          "узровень вады ў рацэ",
+          "узроўню вады ў рацэ",
+          "узровень вады ў азёрах",
+          "узровень вады ў возеры",
+          "узроўню вады ў возеры"
+        ],
+        "pap": [
+          "awa di superficie",
+          "awa superficial",
+          "nivel di lago",
+          "nivel di riu",
+          "oppervlaktewater",
+          "surface water"
         ]
       }
     },
@@ -8931,6 +11566,156 @@
           {
             "prefix": "sanitarne zaštite izvorišt"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "sateces basein"
+          },
+          {
+            "prefix": "sateces teritorij"
+          },
+          {
+            "prefix": "sateces apgabal"
+          },
+          {
+            "prefix": "ūdensšķirtn"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "ҳавзаи обҷамъшав"
+          },
+          {
+            "prefix": "ҳавзаи обғунд"
+          },
+          {
+            "prefix": "ҳавзаи обгир"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv yig'ish havza"
+          },
+          {
+            "prefix": "suv yigʻish havza"
+          },
+          {
+            "prefix": "suv yig’ish havza"
+          },
+          {
+            "prefix": "suv yig‘ish havza"
+          },
+          {
+            "prefix": "сув йиғиш ҳавза"
+          },
+          {
+            "prefix": "suv to'plash havza"
+          },
+          {
+            "prefix": "suv toʻplash havza"
+          },
+          {
+            "prefix": "suv to’plash havza"
+          },
+          {
+            "prefix": "suv to‘plash havza"
+          },
+          {
+            "prefix": "suv havzasini muhofaza"
+          },
+          {
+            "prefix": "сув ҳавзасини муҳофаза"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens surinkimo basein"
+          },
+          {
+            "prefix": "vandenskyr"
+          },
+          {
+            "prefix": "vandensaugos zon"
+          },
+          {
+            "prefix": "pakrančių apsaugos juost"
+          },
+          {
+            "prefix": "baseino apsaug"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "valgla"
+          },
+          {
+            "prefix": "veehaardeala"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "су жинау алаб"
+          },
+          {
+            "prefix": "су жинау аудан"
+          },
+          {
+            "prefix": "су жинау бассейн"
+          },
+          {
+            "prefix": "су қорғау аймақ"
+          },
+          {
+            "prefix": "су қорғау белдеу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу чогулуучу аймак"
+          },
+          {
+            "prefix": "суу жыйноочу аймак"
+          },
+          {
+            "prefix": "суу топтоочу аймак"
+          },
+          {
+            "prefix": "суу бөлгүч"
+          }
+        ],
+        "farsi": [
+          "آبخیز",
+          "حوضه آبریز",
+          "حوزه آبریز"
+        ],
+        "belarusian": [
+          {
+            "prefix": "вадазбор"
+          },
+          {
+            "prefix": "вадападзел"
+          },
+          {
+            "prefix": "вадаахоўная зон"
+          },
+          {
+            "prefix": "вадаахоўнай зон"
+          },
+          {
+            "prefix": "вадаахоўныя зон"
+          },
+          {
+            "prefix": "вадаахоўных зон"
+          }
+        ],
+        "pap": [
+          "cuenca hidrografico",
+          "kuenka hidrográfiko",
+          "area di captacion",
+          "area di kaptashon",
+          "area di captacion di awa",
+          "stroomgebied",
+          "watershed"
         ]
       }
     },
@@ -9568,6 +12353,211 @@
           "Okvirna direktiva o vodama",
           "Okvirne direktive o vodama",
           "Okvirnom direktivom o vodama"
+        ],
+        "latvian": [
+          {
+            "prefix": "upju baseinu apsaimniekošan"
+          },
+          {
+            "prefix": "upju baseinu apgabal"
+          },
+          {
+            "prefix": "upes baseina apsaimniekošan"
+          },
+          {
+            "prefix": "integrētā ūdens resursu apsaimniekošan"
+          },
+          {
+            "prefix": "integrētās ūdens resursu apsaimniekošan"
+          },
+          "IWRM"
+        ],
+        "tajik": [
+          {
+            "prefix": "идоракунии ҳавзаи дарё"
+          },
+          {
+            "prefix": "идоракунии хавзаи дарё"
+          },
+          {
+            "prefix": "идоракунии ҳавзав"
+          },
+          {
+            "prefix": "идоракунии ҳамгирои захираҳои об"
+          },
+          {
+            "prefix": "идоракунии маҷмӯии захираҳои об"
+          },
+          {
+            "prefix": "шӯрои ҳавзаи дарё"
+          },
+          {
+            "prefix": "ташкилоти ҳавзаи дарё"
+          },
+          "IWRM"
+        ],
+        "uzbek": [
+          {
+            "prefix": "irrigatsiya tizimlari havza boshqarma"
+          },
+          {
+            "prefix": "ирригация тизимлари ҳавза бошқарма"
+          },
+          {
+            "prefix": "daryo havzasini boshqarish"
+          },
+          {
+            "prefix": "дарё ҳавзасини бошқариш"
+          },
+          {
+            "prefix": "suv resurslarini integratsiyalashgan boshqarish"
+          },
+          {
+            "prefix": "сув ресурсларини интеграциялашган бошқариш"
+          },
+          "IWRM"
+        ],
+        "lithuanian": [
+          {
+            "prefix": "upių baseinų valdym"
+          },
+          {
+            "prefix": "upės baseino valdym"
+          },
+          {
+            "prefix": "upių baseinų rajon"
+          },
+          {
+            "prefix": "integruotas vandens išteklių valdym"
+          },
+          {
+            "prefix": "integruoto vandens išteklių valdym"
+          },
+          {
+            "prefix": "Vandens pagrindų direktyv"
+          },
+          "IWRM"
+        ],
+        "estonian": [
+          {
+            "prefix": "vesikond"
+          },
+          {
+            "prefix": "vesikonna"
+          },
+          {
+            "prefix": "veemajanduskava"
+          },
+          {
+            "prefix": "veeressursside kompleksne majandami"
+          },
+          {
+            "prefix": "veeressursside integreeritud"
+          },
+          "IWRM"
+        ],
+        "kazakh": [
+          {
+            "prefix": "бассейндік инспекция"
+          },
+          {
+            "prefix": "бассейндік кеңес"
+          },
+          {
+            "prefix": "бассейндік басқару"
+          },
+          {
+            "prefix": "өзен бассейндерін басқару"
+          },
+          {
+            "prefix": "су ресурстарын кешенді басқару"
+          },
+          {
+            "prefix": "су ресурстарын интеграцияланған басқару"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "бассейндик суу башкарма"
+          },
+          {
+            "prefix": "бассейндик башкар"
+          },
+          {
+            "prefix": "бассейндик кеңеш"
+          },
+          {
+            "prefix": "дарыя бассейнин башкар"
+          },
+          {
+            "prefix": "дарыянын бассейнин башкар"
+          },
+          {
+            "prefix": "суу ресурстарын интеграцияланган башкар"
+          }
+        ],
+        "farsi": [
+          "مدیریت حوضه آبریز",
+          "مدیریت حوزه آبریز",
+          "مدیریت حوضه رودخانه",
+          "مدیریت جامع منابع آب",
+          "مدیریت یکپارچه منابع آب",
+          "IWRM"
+        ],
+        "belarusian": [
+          {
+            "prefix": "кіраванне рачнымі басейнамі"
+          },
+          {
+            "prefix": "кіравання рачнымі басейнамі"
+          },
+          {
+            "prefix": "план кіравання басейнам"
+          },
+          {
+            "prefix": "плана кіравання басейнам"
+          },
+          {
+            "prefix": "планы кіравання басейнам"
+          },
+          {
+            "prefix": "планаў кіравання басейнам"
+          },
+          {
+            "prefix": "басейнавы прынцып"
+          },
+          {
+            "prefix": "басейнавага прынцып"
+          },
+          {
+            "prefix": "басейнавы савет"
+          },
+          {
+            "prefix": "басейнавага савет"
+          },
+          {
+            "prefix": "басейнавыя савет"
+          },
+          {
+            "prefix": "інтэграванае кіраванне воднымі рэсурс"
+          },
+          {
+            "prefix": "інтэграванага кіравання воднымі рэсурс"
+          },
+          {
+            "prefix": "комплекснае кіраванне воднымі рэсурс"
+          },
+          "IWRM"
+        ],
+        "pap": [
+          "maneho di cuenca",
+          "manehu di kuenka",
+          "gestion integral di recurso di awa",
+          "manehu integral di rekursonan di awa",
+          "stroomgebiedbeheer",
+          "integraal waterbeheer",
+          "integrated water resources management",
+          "IWRM"
         ]
       }
     },
@@ -10072,6 +13062,215 @@
           },
           "prikupljanje kišne vode",
           "sakupljanje kišne vode"
+        ],
+        "latvian": [
+          {
+            "prefix": "lietusūdens savākšan"
+          },
+          {
+            "prefix": "lietus ūdens savākšan"
+          },
+          {
+            "prefix": "lietusūdeņu savākšan"
+          },
+          {
+            "prefix": "lietusūdens uzkrāšan"
+          },
+          {
+            "prefix": "lietusūdens izmantošan"
+          },
+          {
+            "prefix": "lietus ūdens izmantošan"
+          },
+          {
+            "prefix": "lietusūdens tvertn"
+          },
+          {
+            "prefix": "lietus ūdens tvertn"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "ҷамъоварии оби борон"
+          },
+          {
+            "prefix": "чамъоварии оби борон"
+          },
+          {
+            "prefix": "ҷамъ кардани оби борон"
+          },
+          {
+            "prefix": "захираи оби борон"
+          },
+          {
+            "prefix": "обанбори оби борон"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "yomg'ir suvini yig'ish"
+          },
+          {
+            "prefix": "yomgʻir suvini yigʻish"
+          },
+          {
+            "prefix": "yomg’ir suvini yig’ish"
+          },
+          {
+            "prefix": "yomg‘ir suvini yig‘ish"
+          },
+          {
+            "prefix": "ёмғир сувини йиғиш"
+          },
+          {
+            "prefix": "yomg'ir suvini to'plash"
+          },
+          {
+            "prefix": "yomgʻir suvini toʻplash"
+          },
+          {
+            "prefix": "yomg’ir suvini to’plash"
+          },
+          {
+            "prefix": "yomg‘ir suvini to‘plash"
+          },
+          {
+            "prefix": "yomg'ir suvlarini yig'ish"
+          },
+          {
+            "prefix": "yomgʻir suvlarini yigʻish"
+          },
+          {
+            "prefix": "yomg’ir suvlarini yig’ish"
+          },
+          {
+            "prefix": "yomg‘ir suvlarini yig‘ish"
+          },
+          {
+            "prefix": "yomg'ir suvidan foydalanish"
+          },
+          {
+            "prefix": "yomgʻir suvidan foydalanish"
+          },
+          {
+            "prefix": "yomg’ir suvidan foydalanish"
+          },
+          {
+            "prefix": "yomg‘ir suvidan foydalanish"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "lietaus vandens surinkim"
+          },
+          {
+            "prefix": "lietaus vandens kaupim"
+          },
+          {
+            "prefix": "lietaus vandens rinkim"
+          },
+          {
+            "prefix": "lietaus vandens talp"
+          },
+          {
+            "prefix": "lietaus vandens rezervuar"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "vihmavee kogumi"
+          },
+          {
+            "prefix": "vihmaveemahuti"
+          },
+          {
+            "prefix": "vihmavee mahuti"
+          },
+          {
+            "prefix": "vihmavee taaskasutus"
+          },
+          {
+            "prefix": "sademevee kogumi"
+          },
+          {
+            "prefix": "vihmaveetünn"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "жаңбыр суын жина"
+          },
+          {
+            "prefix": "жаңбыр суын пайдалан"
+          },
+          {
+            "prefix": "жауын-шашын суын жина"
+          },
+          {
+            "prefix": "жаңбыр суын жинайтын"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "жамгыр суусун чогулт"
+          },
+          {
+            "prefix": "жамгыр сууларын чогулт"
+          },
+          {
+            "prefix": "жамгыр суусун топто"
+          },
+          {
+            "prefix": "жамгыр суусун жыйна"
+          },
+          {
+            "prefix": "жаан-чачын сууларын чогулт"
+          }
+        ],
+        "farsi": [
+          "استحصال آب باران",
+          "جمع‌آوری آب باران",
+          "جمع آوری آب باران",
+          "جمعآوری آب باران",
+          "ذخیره آب باران",
+          "مخزن آب باران",
+          "سطوح آبگیر باران"
+        ],
+        "belarusian": [
+          {
+            "prefix": "збор дажджавой вады"
+          },
+          {
+            "prefix": "збору дажджавой вады"
+          },
+          {
+            "prefix": "збор дажджавых вод"
+          },
+          {
+            "prefix": "збору дажджавых вод"
+          },
+          {
+            "prefix": "выкарыстанне дажджавой вады"
+          },
+          {
+            "prefix": "выкарыстання дажджавой вады"
+          },
+          {
+            "prefix": "ёмістасць для дажджавой вады"
+          },
+          {
+            "prefix": "ёмістасці для дажджавой вады"
+          }
+        ],
+        "pap": [
+          "coleccion di awa di yobida",
+          "kolekshon di awa di yobida",
+          "kolekshon di awa di áwaseru",
+          "recogi awa di yobida",
+          "tanki di awa di yobida",
+          "regenwateropvang",
+          "regenwater opvangen",
+          "rainwater harvesting"
         ]
       }
     },
@@ -10729,6 +13928,249 @@
           {
             "prefix": "komisije za sliv rijeke Sav"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "pārrobežu ūde"
+          },
+          "pārrobežu upe",
+          "pārrobežu upes",
+          "pārrobežu upju",
+          "pārrobežu upēm",
+          {
+            "prefix": "kopīgie ūdens resurs"
+          },
+          {
+            "prefix": "kopīgo ūdens resurs"
+          },
+          {
+            "prefix": "ūdens koplietošanas līgum"
+          },
+          {
+            "prefix": "ūdens sadales līgum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "обҳои фаромарз"
+          },
+          {
+            "prefix": "обхои фаромарз"
+          },
+          {
+            "prefix": "оби фаромарз"
+          },
+          {
+            "prefix": "дарёҳои фаромарз"
+          },
+          {
+            "prefix": "дарёхои фаромарз"
+          },
+          {
+            "prefix": "Комиссияи байнидавлатии ҳамоҳангсозии об"
+          },
+          {
+            "prefix": "Хазинаи байналмилалии наҷоти Арал"
+          },
+          "МКВК"
+        ],
+        "uzbek": [
+          {
+            "prefix": "transchegaraviy suv"
+          },
+          {
+            "prefix": "трансчегаравий сув"
+          },
+          {
+            "prefix": "transchegaraviy daryo"
+          },
+          {
+            "prefix": "трансчегаравий дарё"
+          },
+          {
+            "prefix": "Qo'shtepa kanal"
+          },
+          {
+            "prefix": "Qoʻshtepa kanal"
+          },
+          {
+            "prefix": "Qo’shtepa kanal"
+          },
+          {
+            "prefix": "Qo‘shtepa kanal"
+          },
+          {
+            "prefix": "Қўштепа канал"
+          },
+          {
+            "prefix": "Orolni qutqarish xalqaro jamg'arma"
+          },
+          {
+            "prefix": "Orolni qutqarish xalqaro jamgʻarma"
+          },
+          {
+            "prefix": "Orolni qutqarish xalqaro jamg’arma"
+          },
+          {
+            "prefix": "Orolni qutqarish xalqaro jamg‘arma"
+          },
+          {
+            "prefix": "Оролни қутқариш халқаро жамғарма"
+          },
+          {
+            "prefix": "suv taqsimoti bo'yicha kelishuv"
+          },
+          {
+            "prefix": "suv taqsimoti boʻyicha kelishuv"
+          },
+          {
+            "prefix": "suv taqsimoti bo’yicha kelishuv"
+          },
+          {
+            "prefix": "suv taqsimoti bo‘yicha kelishuv"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "tarpvalstybinės up"
+          },
+          {
+            "prefix": "tarpvalstybinių up"
+          },
+          {
+            "prefix": "tarpvalstybinė up"
+          },
+          {
+            "prefix": "tarpvalstybiniai vand"
+          },
+          {
+            "prefix": "tarpvalstybinių vand"
+          },
+          {
+            "prefix": "bendri vandens ištekli"
+          },
+          {
+            "prefix": "bendrų vandens ištekli"
+          },
+          {
+            "prefix": "vandens dalijimosi susitarim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "piiriveekogu"
+          },
+          {
+            "prefix": "piiriülene veekogu"
+          },
+          {
+            "prefix": "piiriülese veekogu"
+          },
+          {
+            "prefix": "piiriülesed veekogu"
+          },
+          {
+            "prefix": "piiriüleste veekogu"
+          },
+          "piiriülene jõgi",
+          "piiriülese jõe",
+          "piiriülesed jõed",
+          "piiriüleste jõgede"
+        ],
+        "kazakh": [
+          {
+            "prefix": "трансшекаралық су"
+          },
+          {
+            "prefix": "трансшекаралық өзен"
+          },
+          {
+            "prefix": "ортақ су ресурс"
+          },
+          {
+            "prefix": "су бөлісу келісім"
+          },
+          {
+            "prefix": "су бөлу туралы келісім"
+          },
+          {
+            "prefix": "Арал теңізін құтқарудың халықаралық қор"
+          },
+          {
+            "prefix": "Шу-Талас комиссия"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "трансчекаралык суу"
+          },
+          {
+            "prefix": "трансчекаралык дарыя"
+          },
+          {
+            "prefix": "суу бөлүштүрүү боюнча келишим"
+          },
+          {
+            "prefix": "суу боюнча келишим"
+          },
+          {
+            "prefix": "Чүй-Талас комиссия"
+          },
+          {
+            "prefix": "Мамлекеттер аралык суу чарба"
+          }
+        ],
+        "farsi": [
+          "آب‌های فرامرزی",
+          "آب های فرامرزی",
+          "آبهای فرامرزی",
+          "آب فرامرزی",
+          "رودخانه‌های فرامرزی",
+          "رودخانه های فرامرزی",
+          "رودخانههای فرامرزی",
+          "رودخانه فرامرزی",
+          "رودخانه‌های مشترک",
+          "رودخانه های مشترک",
+          "رودخانههای مشترک",
+          "منابع آب مشترک",
+          "حقابه هیرمند",
+          "حقابه ایران",
+          "معاهده هیرمند",
+          "معاهده آب هیرمند",
+          "کانال قوش تپه"
+        ],
+        "belarusian": [
+          {
+            "prefix": "трансгранічныя рэк"
+          },
+          {
+            "prefix": "трансгранічных рэк"
+          },
+          {
+            "prefix": "трансгранічная рак"
+          },
+          {
+            "prefix": "трансгранічнай рак"
+          },
+          {
+            "prefix": "трансгранічныя вод"
+          },
+          {
+            "prefix": "трансгранічных вод"
+          },
+          {
+            "prefix": "трансгранічным вод"
+          }
+        ],
+        "pap": [
+          "awa transfronterizo",
+          "riu comparti",
+          "riunan kompartí",
+          "tratado di awa",
+          "akuerdo pa kompartí awa",
+          "grensoverschrijdend water",
+          "transboundary water",
+          "water treaty"
         ]
       }
     },
@@ -11245,6 +14687,207 @@
           "rat za vodu",
           "ratovi za vodu",
           "rata za vodu"
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens konflikt"
+          },
+          "konflikts par ūdeni",
+          "konflikti par ūdeni",
+          "konfliktu par ūdeni",
+          "strīds par ūdeni",
+          "strīdi par ūdeni",
+          "strīdu par ūdeni",
+          {
+            "prefix": "ūdens strīd"
+          },
+          "ūdens karš",
+          "ūdens kari",
+          "ūdens karu"
+        ],
+        "tajik": [
+          {
+            "prefix": "низоъ бар сари об"
+          },
+          {
+            "prefix": "низоъҳо бар сари об"
+          },
+          {
+            "prefix": "баҳс бар сари об"
+          },
+          {
+            "prefix": "моҷаро бар сари об"
+          },
+          {
+            "prefix": "низои об"
+          },
+          {
+            "prefix": "ҷанги об"
+          },
+          {
+            "prefix": "чанги об"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv uchun nizo"
+          },
+          {
+            "prefix": "сув учун низо"
+          },
+          {
+            "prefix": "suv bo'yicha nizo"
+          },
+          {
+            "prefix": "suv boʻyicha nizo"
+          },
+          {
+            "prefix": "suv bo’yicha nizo"
+          },
+          {
+            "prefix": "suv bo‘yicha nizo"
+          },
+          {
+            "prefix": "сув бўйича низо"
+          },
+          {
+            "prefix": "suv nizo"
+          },
+          {
+            "prefix": "suv uchun urush"
+          },
+          {
+            "prefix": "suv uchun to'qnashuv"
+          },
+          {
+            "prefix": "suv uchun toʻqnashuv"
+          },
+          {
+            "prefix": "suv uchun to’qnashuv"
+          },
+          {
+            "prefix": "suv uchun to‘qnashuv"
+          }
+        ],
+        "lithuanian": [
+          "konfliktas dėl vandens",
+          "konflikto dėl vandens",
+          "konfliktai dėl vandens",
+          "konfliktų dėl vandens",
+          "ginčas dėl vandens",
+          "ginčai dėl vandens",
+          "ginčų dėl vandens",
+          "vandens karas",
+          "vandens karai",
+          "vandens karų"
+        ],
+        "estonian": [
+          {
+            "prefix": "veekonflikt"
+          },
+          {
+            "prefix": "veevaidlus"
+          },
+          "konflikt vee pärast",
+          "veesõda",
+          "veesõja",
+          "veesõjad",
+          "veesõdade"
+        ],
+        "kazakh": [
+          {
+            "prefix": "су үшін қақтығыс"
+          },
+          {
+            "prefix": "су үшін дау"
+          },
+          {
+            "prefix": "су дау"
+          },
+          {
+            "prefix": "су қақтығыс"
+          },
+          {
+            "prefix": "су үшін соғыс"
+          },
+          {
+            "prefix": "суға байланысты дау"
+          },
+          {
+            "prefix": "суға байланысты қақтығыс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу талаш"
+          },
+          {
+            "prefix": "суу үчүн чыр"
+          },
+          {
+            "prefix": "суу боюнча чыр"
+          },
+          {
+            "prefix": "суу үчүн талаш"
+          },
+          {
+            "prefix": "суу боюнча талаш"
+          },
+          {
+            "prefix": "суу үчүн согуш"
+          },
+          {
+            "prefix": "суудан улам чыр"
+          }
+        ],
+        "farsi": [
+          "منازعه آبی",
+          "منازعات آبی",
+          "مناقشه آبی",
+          "مناقشات آبی",
+          "اختلافات آبی",
+          "جنگ آبی",
+          "جنگ‌های آبی",
+          "جنگ های آبی",
+          "جنگهای آبی",
+          "جنگ بر سر آب",
+          "درگیری بر سر آب",
+          "اختلاف بر سر آب",
+          "نزاع بر سر آب"
+        ],
+        "belarusian": [
+          "канфлікт з-за вады",
+          "канфлікты з-за вады",
+          "канфліктаў з-за вады",
+          "спрэчка з-за вады",
+          "спрэчкі з-за вады",
+          {
+            "prefix": "водны канфлікт"
+          },
+          {
+            "prefix": "воднага канфлікт"
+          },
+          {
+            "prefix": "водныя канфлікт"
+          },
+          {
+            "prefix": "водных канфлікт"
+          },
+          {
+            "prefix": "водныя спрэчк"
+          },
+          "водныя войны"
+        ],
+        "pap": [
+          "conflicto di awa",
+          "konflikto di awa",
+          "conflicto pa awa",
+          "konflikto riba awa",
+          "disputa pa awa",
+          "disputa riba awa",
+          "guera pa awa",
+          "waterconflict",
+          "water conflict"
         ]
       }
     },
@@ -11906,6 +15549,200 @@
           },
           "zahvatanje vode",
           "zahvatanja vode"
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens resursu sadal"
+          },
+          "ūdens sadale",
+          "ūdens sadales",
+          {
+            "prefix": "ūdens resursu lietošanas atļauj"
+          },
+          {
+            "prefix": "ūdens lietošanas atļauj"
+          },
+          {
+            "prefix": "ūdens ieguves atļauj"
+          },
+          {
+            "prefix": "ūdens ņemšan"
+          },
+          {
+            "prefix": "ūdens kvot"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "тақсимоти об"
+          },
+          {
+            "prefix": "таксимоти об"
+          },
+          {
+            "prefix": "тақсими об"
+          },
+          {
+            "prefix": "ҳуқуқи истифодаи об"
+          },
+          {
+            "prefix": "иҷозатномаи истифодаи об"
+          },
+          {
+            "prefix": "лимити об"
+          },
+          {
+            "prefix": "квотаи об"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv taqsimot"
+          },
+          {
+            "prefix": "сув тақсимот"
+          },
+          {
+            "prefix": "suv limit"
+          },
+          {
+            "prefix": "сув лимит"
+          },
+          {
+            "prefix": "suvni taqsimla"
+          },
+          {
+            "prefix": "suvdan foydalanish huquq"
+          },
+          {
+            "prefix": "suv olish limit"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens paskirstym"
+          },
+          {
+            "prefix": "vandens išteklių paskirstym"
+          },
+          {
+            "prefix": "vandens naudojimo teis"
+          },
+          {
+            "prefix": "vandens paėmim"
+          },
+          {
+            "prefix": "vandens išgavim"
+          },
+          {
+            "prefix": "požeminio vandens gavyb"
+          },
+          {
+            "prefix": "vandens naudojimo leidim"
+          },
+          {
+            "prefix": "vandens kvot"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "vee jaotami"
+          },
+          {
+            "prefix": "vee jaotus"
+          },
+          {
+            "prefix": "vee erikasutus"
+          },
+          "veeluba",
+          "veeloa",
+          "veevõtt",
+          "veevõttu",
+          "veevõtu"
+        ],
+        "kazakh": [
+          {
+            "prefix": "су бөлу"
+          },
+          {
+            "prefix": "суды бөлу"
+          },
+          {
+            "prefix": "су пайдалану құқ"
+          },
+          {
+            "prefix": "су пайдалануға рұқсат"
+          },
+          {
+            "prefix": "су алу лимит"
+          },
+          {
+            "prefix": "су квота"
+          },
+          {
+            "prefix": "су лимит"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "сууну бөлүштүр"
+          },
+          {
+            "prefix": "суу бөлүштүр"
+          },
+          {
+            "prefix": "суу ресурстарын бөлүштүр"
+          },
+          {
+            "prefix": "суу пайдалануу укуг"
+          },
+          {
+            "prefix": "суу пайдаланууга уруксат"
+          },
+          {
+            "prefix": "суу лимит"
+          },
+          {
+            "prefix": "суу квота"
+          }
+        ],
+        "farsi": [
+          "تخصیص آب",
+          "حقابه",
+          "حق‌آبه",
+          "حق آبه",
+          "حقآبه",
+          "سهمیه آب",
+          "مجوز برداشت آب",
+          "حقوق آبی"
+        ],
+        "belarusian": [
+          "размеркаванне вады",
+          "размеркавання вады",
+          "размеркаванне водных рэсурсаў",
+          "размеркавання водных рэсурсаў",
+          {
+            "prefix": "спецыяльнае водакарыстан"
+          },
+          {
+            "prefix": "спецыяльнага водакарыстан"
+          },
+          {
+            "prefix": "права водакарыстан"
+          },
+          "правы на ваду",
+          "забор вады",
+          "забору вады"
+        ],
+        "pap": [
+          "asignacion di awa",
+          "asignashon di awa",
+          "derecho di awa",
+          "derechonan di awa",
+          "waterrechten",
+          "toewijzing van water",
+          "water allocation",
+          "water rights"
         ]
       }
     },
@@ -12683,6 +16520,272 @@
           },
           "Strategija upravljanja vodama",
           "Strategije upravljanja vodama"
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens politik"
+          },
+          {
+            "prefix": "ūdens resursu apsaimniekošan"
+          },
+          {
+            "prefix": "ūdens resursu pārvaldīb"
+          },
+          {
+            "prefix": "ūdens apsaimniekošan"
+          },
+          {
+            "prefix": "ūdens pārvaldīb"
+          },
+          {
+            "prefix": "ūdenssaimniecības politik"
+          },
+          {
+            "prefix": "ūdens sektora reform"
+          },
+          {
+            "prefix": "Ūdens struktūrdirektīv"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "идоракунии захираҳои об"
+          },
+          {
+            "prefix": "идоракунии захирахои об"
+          },
+          {
+            "prefix": "Кодекси об"
+          },
+          {
+            "prefix": "ислоҳоти бахши об"
+          },
+          {
+            "prefix": "ислоҳоти соҳаи об"
+          },
+          {
+            "prefix": "Вазорати энергетика ва захираҳои об"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv xo'jaligi vazirlig"
+          },
+          {
+            "prefix": "suv xoʻjaligi vazirlig"
+          },
+          {
+            "prefix": "suv xo’jaligi vazirlig"
+          },
+          {
+            "prefix": "suv xo‘jaligi vazirlig"
+          },
+          {
+            "prefix": "сув хўжалиги вазирлиг"
+          },
+          {
+            "prefix": "suv resurslarini boshqarish"
+          },
+          {
+            "prefix": "сув ресурсларини бошқариш"
+          },
+          {
+            "prefix": "suv siyosat"
+          },
+          {
+            "prefix": "suv va suvdan foydalanish to'g'risida"
+          },
+          {
+            "prefix": "suv va suvdan foydalanish toʻgʻrisida"
+          },
+          {
+            "prefix": "suv va suvdan foydalanish to’g’risida"
+          },
+          {
+            "prefix": "suv va suvdan foydalanish to‘g‘risida"
+          },
+          {
+            "prefix": "сув ва сувдан фойдаланиш тўғрисида"
+          },
+          {
+            "prefix": "suv xo'jaligini isloh"
+          },
+          {
+            "prefix": "suv xoʻjaligini isloh"
+          },
+          {
+            "prefix": "suv xo’jaligini isloh"
+          },
+          {
+            "prefix": "suv xo‘jaligini isloh"
+          },
+          {
+            "prefix": "suv xo'jaligini boshqarish"
+          },
+          {
+            "prefix": "suv xoʻjaligini boshqarish"
+          },
+          {
+            "prefix": "suv xo’jaligini boshqarish"
+          },
+          {
+            "prefix": "suv xo‘jaligini boshqarish"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens politik"
+          },
+          {
+            "prefix": "vandens valdym"
+          },
+          {
+            "prefix": "vandens išteklių valdym"
+          },
+          {
+            "prefix": "Vandens įstatym"
+          },
+          {
+            "prefix": "Geriamojo vandens tiekimo ir nuotekų tvarkymo įstatym"
+          },
+          {
+            "prefix": "vandens sektoriaus reform"
+          },
+          {
+            "prefix": "vandentvarkos sektori"
+          },
+          {
+            "prefix": "vandentvarkos reform"
+          },
+          {
+            "prefix": "vandens ūk"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "veepoliitik"
+          },
+          {
+            "prefix": "veeseadus"
+          },
+          {
+            "prefix": "veemajandus"
+          },
+          {
+            "prefix": "veeressursside majandami"
+          },
+          {
+            "prefix": "veeressursside haldami"
+          },
+          {
+            "prefix": "veesektori reform"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "су саясат"
+          },
+          {
+            "prefix": "су ресурстарын басқару"
+          },
+          {
+            "prefix": "су шаруашылығын басқару"
+          },
+          {
+            "prefix": "суды басқару"
+          },
+          {
+            "prefix": "Су кодекс"
+          },
+          {
+            "prefix": "су секторын реформала"
+          },
+          {
+            "prefix": "Су ресурстары және ирригация министрліг"
+          },
+          {
+            "prefix": "су заңнама"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу саясат"
+          },
+          {
+            "prefix": "суу ресурстарын башкар"
+          },
+          {
+            "prefix": "суу чарбасын башкар"
+          },
+          {
+            "prefix": "Суу кодекс"
+          },
+          {
+            "prefix": "суу тармагындагы реформа"
+          },
+          {
+            "prefix": "Суу ресурстары кызмат"
+          },
+          {
+            "prefix": "Суу ресурстары, айыл чарба"
+          }
+        ],
+        "farsi": [
+          "حکمرانی آب",
+          "سیاست آبی",
+          "سیاست‌های آبی",
+          "سیاست های آبی",
+          "سیاستهای آبی",
+          "قانون آب",
+          "قانون توزیع عادلانه آب",
+          "مدیریت منابع آب",
+          "مدیریت آب",
+          "وزارت انرژی و آب"
+        ],
+        "belarusian": [
+          {
+            "prefix": "водная палітык"
+          },
+          {
+            "prefix": "воднай палітык"
+          },
+          {
+            "prefix": "водную палітык"
+          },
+          {
+            "prefix": "Водны кодэкс"
+          },
+          {
+            "prefix": "Воднага кодэкс"
+          },
+          {
+            "prefix": "Водным кодэкс"
+          },
+          {
+            "prefix": "водная стратэгі"
+          },
+          {
+            "prefix": "воднай стратэгі"
+          },
+          {
+            "prefix": "кіраванне воднымі рэсурс"
+          },
+          {
+            "prefix": "кіравання воднымі рэсурс"
+          }
+        ],
+        "pap": [
+          "maneho di awa",
+          "manehu di awa",
+          "politica di awa",
+          "polítika di awa",
+          "ley di awa",
+          "lei di awa",
+          "gestion di awa",
+          "waterbeleid",
+          "waterbeheer",
+          "water management",
+          "water governance"
         ]
       }
     },
@@ -13355,6 +17458,227 @@
           "Vodovoda",
           "Vodovodu",
           "Vodovodom"
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdensapgādes uzņēmum"
+          },
+          {
+            "prefix": "ūdenssaimniecības uzņēmum"
+          },
+          {
+            "prefix": "ūdenssaimniecības komersant"
+          },
+          {
+            "prefix": "ūdenssaimniecības pakalpojumu sniedzēj"
+          },
+          {
+            "prefix": "ūdens uzņēmum"
+          },
+          {
+            "prefix": "Rīgas ūden"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "Обу корез"
+          },
+          {
+            "prefix": "ширкати обтаъмин"
+          },
+          {
+            "prefix": "корхонаи обтаъмин"
+          },
+          {
+            "prefix": "корхонаҳои обтаъмин"
+          },
+          {
+            "prefix": "водоканал"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "O'zsuvta'minot"
+          },
+          {
+            "prefix": "Oʻzsuvtaʻminot"
+          },
+          {
+            "prefix": "O’zsuvta’minot"
+          },
+          {
+            "prefix": "O‘zsuvta‘minot"
+          },
+          {
+            "prefix": "Ўзсувтаъминот"
+          },
+          {
+            "prefix": "Suvsoz"
+          },
+          {
+            "prefix": "Сувсоз"
+          },
+          {
+            "prefix": "suv ta'minoti korxona"
+          },
+          {
+            "prefix": "suv taʻminoti korxona"
+          },
+          {
+            "prefix": "suv ta’minoti korxona"
+          },
+          {
+            "prefix": "suv ta‘minoti korxona"
+          },
+          {
+            "prefix": "сув таъминоти корхона"
+          },
+          {
+            "prefix": "suv ta'minoti tashkilot"
+          },
+          {
+            "prefix": "suv taʻminoti tashkilot"
+          },
+          {
+            "prefix": "suv ta’minoti tashkilot"
+          },
+          {
+            "prefix": "suv ta‘minoti tashkilot"
+          },
+          {
+            "prefix": "vodokanal"
+          },
+          {
+            "prefix": "водоканал"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens tiekėj"
+          },
+          {
+            "prefix": "vandentvarkos įmon"
+          },
+          {
+            "prefix": "vandens tiekimo įmon"
+          },
+          {
+            "prefix": "vandentiekio įmon"
+          },
+          "Vilniaus vandenys",
+          "Vilniaus vandenų",
+          "Kauno vandenys",
+          "Kauno vandenų",
+          "Klaipėdos vanduo",
+          "Šiaulių vandenys",
+          "Šiaulių vandenų"
+        ],
+        "estonian": [
+          {
+            "prefix": "vee-ettevõt"
+          },
+          {
+            "prefix": "veevärgi ettevõt"
+          },
+          "Tallinna Vesi",
+          "Tallinna Vee",
+          "Tallinna Veele",
+          "Tallinna Veest",
+          {
+            "prefix": "Tartu Veevär"
+          },
+          "Pärnu Vesi",
+          "Pärnu Vee"
+        ],
+        "kazakh": [
+          {
+            "prefix": "водоканал"
+          },
+          {
+            "prefix": "Астана Су Арна"
+          },
+          {
+            "prefix": "су шаруашылығы кәсіпорн"
+          },
+          {
+            "prefix": "сумен жабдықтау кәсіпорн"
+          },
+          {
+            "prefix": "сумен жабдықтаушы ұйым"
+          },
+          {
+            "prefix": "сумен жабдықтаушы кәсіпорын"
+          },
+          {
+            "prefix": "Қазсушар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "Бишкекводоканал"
+          },
+          {
+            "prefix": "водоканал"
+          },
+          {
+            "prefix": "суу чарба ишкана"
+          },
+          {
+            "prefix": "суу пайдалануучулардын бирикме"
+          },
+          {
+            "prefix": "суу пайдалануучулар ассоциация"
+          },
+          {
+            "prefix": "суу пайдалануучулардын ассоциация"
+          }
+        ],
+        "farsi": [
+          "شرکت آب و فاضلاب",
+          "آبفا",
+          "آب منطقه‌ای",
+          "آب منطقه ای",
+          "آب منطقهای",
+          "اداره آب",
+          "سازمان آب",
+          "اداره آبرسانی",
+          "آبرسانی و کانالیزاسیون"
+        ],
+        "belarusian": [
+          {
+            "prefix": "водаканал"
+          },
+          {
+            "prefix": "Мінскводаканал"
+          },
+          {
+            "prefix": "Гомельводаканал"
+          },
+          {
+            "prefix": "Брэстводаканал"
+          },
+          {
+            "prefix": "Віцебскводаканал"
+          },
+          {
+            "prefix": "Магілёўводаканал"
+          },
+          {
+            "prefix": "водаправодна-каналізацыйн"
+          }
+        ],
+        "pap": [
+          "WEB Aruba",
+          "W.E.B. Aruba",
+          "Water en Energiebedrijf Aruba",
+          "Utilities Aruba",
+          "Aqualectra",
+          "WEB Bonaire",
+          "compania di awa",
+          "kompania di awa",
+          "waterbedrijf",
+          "drinkwaterbedrijf",
+          "water utility"
         ]
       }
     },
@@ -13971,6 +18295,196 @@
           "kubika vode",
           "poskupljenje vode",
           "poskupljenja vode"
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens tarif"
+          },
+          {
+            "prefix": "ūdenssaimniecības tarif"
+          },
+          {
+            "prefix": "ūdensapgādes tarif"
+          },
+          {
+            "prefix": "ūdens un kanalizācijas tarif"
+          },
+          {
+            "prefix": "ūdens rēķin"
+          },
+          "ūdens cena",
+          "ūdens cenas",
+          "ūdens cenu",
+          "maksa par ūdeni",
+          "maksu par ūdeni"
+        ],
+        "tajik": [
+          "нархи об",
+          {
+            "prefix": "ҳаққи истифодаи об"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv tarif"
+          },
+          {
+            "prefix": "сув тариф"
+          },
+          {
+            "prefix": "ichimlik suvi tarif"
+          },
+          {
+            "prefix": "ичимлик суви тариф"
+          },
+          {
+            "prefix": "suv narx"
+          },
+          {
+            "prefix": "ichimlik suvi narx"
+          },
+          {
+            "prefix": "suv uchun to'lov"
+          },
+          {
+            "prefix": "suv uchun toʻlov"
+          },
+          {
+            "prefix": "suv uchun to’lov"
+          },
+          {
+            "prefix": "suv uchun to‘lov"
+          },
+          {
+            "prefix": "сув учун тўлов"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens kain"
+          },
+          {
+            "prefix": "vandens tarif"
+          },
+          {
+            "prefix": "vandens kainodar"
+          },
+          "sąskaita už vandenį",
+          "sąskaitos už vandenį",
+          "sąskaitų už vandenį",
+          "mokestis už vandenį",
+          "mokesčiai už vandenį"
+        ],
+        "estonian": [
+          {
+            "prefix": "veehin"
+          },
+          {
+            "prefix": "veearve"
+          },
+          {
+            "prefix": "veetariif"
+          },
+          {
+            "prefix": "veeteenuse hin"
+          },
+          {
+            "prefix": "vee- ja kanalisatsiooniteenuse hin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "су тариф"
+          },
+          {
+            "prefix": "суға тариф"
+          },
+          {
+            "prefix": "сумен жабдықтау тариф"
+          },
+          {
+            "prefix": "судың баға"
+          },
+          {
+            "prefix": "суға баға"
+          },
+          {
+            "prefix": "су үшін төлем"
+          },
+          {
+            "prefix": "судың құн"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу тариф"
+          },
+          {
+            "prefix": "суунун тариф"
+          },
+          {
+            "prefix": "суу үчүн тариф"
+          },
+          {
+            "prefix": "суу үчүн төлөм"
+          },
+          {
+            "prefix": "суу үчүн акы"
+          },
+          {
+            "prefix": "суунун баа"
+          }
+        ],
+        "farsi": [
+          "تعرفه آب",
+          "نرخ آب",
+          "قبض آب",
+          "قیمت آب",
+          "آب‌بها",
+          "آب بها",
+          "آببها",
+          "بهای آب",
+          "هزینه آب",
+          "قیمت‌گذاری آب",
+          "قیمت گذاری آب",
+          "قیمتگذاری آب"
+        ],
+        "belarusian": [
+          "тарыф на ваду",
+          "тарыфы на ваду",
+          "тарыфаў на ваду",
+          {
+            "prefix": "тарыф на водазабеспяч"
+          },
+          {
+            "prefix": "тарыфы на водазабеспяч"
+          },
+          {
+            "prefix": "тарыфаў на водазабеспяч"
+          },
+          "плата за ваду",
+          "платы за ваду",
+          "аплата за ваду",
+          "рахунак за ваду",
+          "рахункі за ваду",
+          "кошт вады",
+          "кошту вады",
+          "цэны на ваду"
+        ],
+        "pap": [
+          "tarifa di awa",
+          "tarifanan di awa",
+          "prijs di awa",
+          "preis di awa",
+          "precio di awa",
+          "cuenta di awa",
+          "kuenta di awa",
+          "watertarief",
+          "watertarieven",
+          "waterrekening",
+          "waterprijs",
+          "water tariff",
+          "water bill"
         ]
       }
     },
@@ -14414,6 +18928,129 @@
           {
             "prefix": "nenaplaćene vod"
           }
+        ],
+        "latvian": [
+          "neuzskaitītais ūdens",
+          "neuzskaitīts ūdens",
+          {
+            "prefix": "neuzskaitītā ūden"
+          },
+          {
+            "prefix": "neuzskaitīto ūden"
+          },
+          "ieņēmumus nenesošais ūdens",
+          "non-revenue water"
+        ],
+        "tajik": [
+          {
+            "prefix": "оби ҳисобнашуда"
+          },
+          {
+            "prefix": "оби бе ҳисоб"
+          },
+          {
+            "prefix": "талафоти ғайриҳисобии об"
+          },
+          "non-revenue water"
+        ],
+        "uzbek": [
+          {
+            "prefix": "hisobga olinmagan suv"
+          },
+          {
+            "prefix": "ҳисобга олинмаган сув"
+          },
+          {
+            "prefix": "daromad keltirmaydigan suv"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "neapskaitytas vand"
+          },
+          {
+            "prefix": "neapskaityto vand"
+          },
+          {
+            "prefix": "neapskaitytą vand"
+          },
+          {
+            "prefix": "nepajamuojamas vand"
+          },
+          {
+            "prefix": "nepajamuojamo vand"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "arvestamata ve"
+          },
+          {
+            "prefix": "arveldamata ve"
+          },
+          {
+            "prefix": "mittetulundav ve"
+          },
+          {
+            "prefix": "mittetulundava ve"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "есепке алынбаған су"
+          },
+          {
+            "prefix": "есептелмеген су"
+          },
+          {
+            "prefix": "ақы төленбеген су"
+          },
+          {
+            "prefix": "коммерциялық емес су шығын"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "эсепке алынбаган суу"
+          },
+          {
+            "prefix": "акы төлөнбөгөн суу"
+          },
+          {
+            "prefix": "суунун коммерциялык жоготу"
+          },
+          {
+            "prefix": "киреше алып келбеген суу"
+          }
+        ],
+        "farsi": [
+          "آب بدون درآمد",
+          "آب به حساب نیامده",
+          "آب فاقد درآمد",
+          "انشعاب غیرمجاز آب",
+          "انشعابات غیرمجاز آب"
+        ],
+        "belarusian": [
+          {
+            "prefix": "неўлічаная вад"
+          },
+          {
+            "prefix": "неўлічанай вад"
+          },
+          "неўлічаныя расходы вады",
+          "неўлічаных расходаў вады",
+          "непрадукцыйныя страты вады",
+          "непрадукцыйных страт вады",
+          "non-revenue water"
+        ],
+        "pap": [
+          "awa no factura",
+          "awa no fakturá",
+          "awa sin factura",
+          "awa sin faktura",
+          "niet-gefactureerd water",
+          "non-revenue water",
+          "nonrevenue water"
         ]
       }
     },
@@ -15086,6 +19723,201 @@
           {
             "prefix": "kvara na vodovodnoj mrež"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdens noplūd"
+          },
+          {
+            "prefix": "ūdensvada avārij"
+          },
+          {
+            "prefix": "ūdensvada plīsum"
+          },
+          {
+            "prefix": "ūdensvada bojājum"
+          },
+          {
+            "prefix": "ūdens zudum"
+          },
+          "plīsis ūdensvads",
+          "plīsa ūdensvads"
+        ],
+        "tajik": [
+          {
+            "prefix": "талафоти об"
+          },
+          {
+            "prefix": "кафидани қубури об"
+          },
+          {
+            "prefix": "кафидани лӯлаи об"
+          },
+          {
+            "prefix": "садамаи қубури об"
+          },
+          {
+            "prefix": "садама дар қубури об"
+          },
+          {
+            "prefix": "садама дар шабакаи обтаъмин"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv yo'qotish"
+          },
+          {
+            "prefix": "suv yoʻqotish"
+          },
+          {
+            "prefix": "suv yo’qotish"
+          },
+          {
+            "prefix": "suv yo‘qotish"
+          },
+          {
+            "prefix": "сув йўқотиш"
+          },
+          {
+            "prefix": "suv quvuri yoril"
+          },
+          {
+            "prefix": "сув қувури ёрил"
+          },
+          {
+            "prefix": "suv quvurining yoril"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens nuotėk"
+          },
+          {
+            "prefix": "vandens nuostoli"
+          },
+          {
+            "prefix": "vandentiekio avarij"
+          },
+          {
+            "prefix": "vandentiekio gedim"
+          },
+          {
+            "prefix": "trūko vandentiekio vamzd"
+          },
+          {
+            "prefix": "vandentiekio vamzdžio trūkim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "veelek"
+          },
+          {
+            "prefix": "torulek"
+          },
+          {
+            "prefix": "toruavarii"
+          },
+          {
+            "prefix": "veeavarii"
+          },
+          {
+            "prefix": "veetoru purune"
+          },
+          {
+            "prefix": "veetorustiku avarii"
+          },
+          {
+            "prefix": "lekkivad toru"
+          },
+          "veekadu",
+          "veekao",
+          "veekaod"
+        ],
+        "kazakh": [
+          {
+            "prefix": "су құбыры жарыл"
+          },
+          {
+            "prefix": "су құбырындағы апат"
+          },
+          {
+            "prefix": "су құбырындағы ақау"
+          },
+          {
+            "prefix": "судың ағып кету"
+          },
+          {
+            "prefix": "құбырлардан су ағу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суунун агып кет"
+          },
+          {
+            "prefix": "суу түтүгү жарыл"
+          },
+          {
+            "prefix": "суу түтүктөрү жарыл"
+          },
+          {
+            "prefix": "суу түтүгүнүн жарыл"
+          },
+          {
+            "prefix": "суу түтүгү бузул"
+          },
+          {
+            "prefix": "суу түтүгүндөгү авария"
+          },
+          {
+            "prefix": "суу түтүгүндө авария"
+          },
+          {
+            "prefix": "суунун жоготу"
+          }
+        ],
+        "farsi": [
+          "نشت آب",
+          "نشتی آب",
+          "هدررفت آب",
+          "هدر رفت آب",
+          "شکستگی لوله آب",
+          "ترکیدگی لوله آب",
+          "شکستگی خط انتقال آب",
+          "تلفات آب"
+        ],
+        "belarusian": [
+          "уцечка вады",
+          "уцечкі вады",
+          "уцечак вады",
+          "уцечку вады",
+          "страты вады ў сетках",
+          "страт вады ў сетках",
+          {
+            "prefix": "прарыў водаправод"
+          },
+          {
+            "prefix": "прарыву водаправод"
+          },
+          {
+            "prefix": "прарывы водаправод"
+          }
+        ],
+        "pap": [
+          "lek di awa",
+          "leknan di awa",
+          "tubo di awa kibra",
+          "tubonan di awa kibra",
+          "pèrdida di awa",
+          "perdida di awa",
+          "waterlek",
+          "waterlekkage",
+          "leidingbreuk",
+          "gesprongen waterleiding",
+          "water leaks",
+          "burst pipe"
         ]
       }
     },
@@ -15828,6 +20660,239 @@
             "prefix": "poljskih toalet"
           },
           "WASH"
+        ],
+        "latvian": [
+          {
+            "prefix": "sanitārij"
+          },
+          "sanitārais mezgls",
+          {
+            "prefix": "sanitārā mezgl"
+          },
+          {
+            "prefix": "sanitārie mezgl"
+          },
+          {
+            "prefix": "sanitāro mezgl"
+          },
+          {
+            "prefix": "sanitārajos mezgl"
+          },
+          {
+            "prefix": "sabiedriskās tualet"
+          },
+          {
+            "prefix": "sabiedrisko tualet"
+          },
+          {
+            "prefix": "publiskās tualet"
+          },
+          {
+            "prefix": "publisko tualet"
+          },
+          {
+            "prefix": "āra tualet"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "ҳоҷатхона"
+          },
+          {
+            "prefix": "хочатхона"
+          },
+          {
+            "prefix": "об, беҳдошт ва гигиена"
+          },
+          "санитария",
+          "санитарияи",
+          {
+            "prefix": "иншооти санитар"
+          },
+          "WASH"
+        ],
+        "uzbek": [
+          {
+            "prefix": "sanitariya sharoit"
+          },
+          {
+            "prefix": "санитария шароит"
+          },
+          {
+            "prefix": "sanitariya-gigiyena sharoit"
+          },
+          {
+            "prefix": "suv, sanitariya va gigiyena"
+          },
+          {
+            "prefix": "сув, санитария ва гигиена"
+          },
+          {
+            "prefix": "hojatxona"
+          },
+          {
+            "prefix": "ҳожатхона"
+          },
+          {
+            "prefix": "sanitariya inshoot"
+          },
+          "WASH"
+        ],
+        "lithuanian": [
+          {
+            "prefix": "sanitarinių mazg"
+          },
+          {
+            "prefix": "sanitarinis mazg"
+          },
+          {
+            "prefix": "sanitariniai mazg"
+          },
+          {
+            "prefix": "sanitarinio mazg"
+          },
+          {
+            "prefix": "vandens, sanitarijos ir higien"
+          },
+          {
+            "prefix": "lauko tualet"
+          },
+          {
+            "prefix": "viešieji tualet"
+          },
+          {
+            "prefix": "viešųjų tualet"
+          },
+          {
+            "prefix": "viešasis tualet"
+          },
+          {
+            "prefix": "viešąjį tualet"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "sanitaartingimus"
+          },
+          {
+            "prefix": "käimla"
+          },
+          {
+            "prefix": "kuivkäimla"
+          },
+          {
+            "prefix": "välikäimla"
+          },
+          {
+            "prefix": "avalik tualett"
+          },
+          {
+            "prefix": "avaliku tualeti"
+          },
+          {
+            "prefix": "avalikud tualetid"
+          },
+          {
+            "prefix": "avalike tualett"
+          }
+        ],
+        "kazakh": [
+          "санитария",
+          "санитарияға",
+          "санитарияның",
+          "санитарияны",
+          {
+            "prefix": "су, санитария және гигиена"
+          },
+          {
+            "prefix": "дәретхана"
+          },
+          {
+            "prefix": "әжетхана"
+          },
+          {
+            "prefix": "санитариялық торап"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "санитария"
+          },
+          {
+            "prefix": "ажаткана"
+          },
+          {
+            "prefix": "даараткана"
+          },
+          {
+            "prefix": "суу, санитария жана гигиена"
+          },
+          "WASH"
+        ],
+        "farsi": [
+          "سرویس بهداشتی",
+          "سرویس‌های بهداشتی",
+          "سرویس های بهداشتی",
+          "سرویسهای بهداشتی",
+          "توالت",
+          "مستراح",
+          "دستشویی عمومی",
+          "تشناب",
+          "آب، بهداشت و بهسازی",
+          "بهسازی محیط"
+        ],
+        "belarusian": [
+          "санітарыя",
+          "санітарыі",
+          "санітарыю",
+          {
+            "prefix": "грамадскія прыбіральн"
+          },
+          {
+            "prefix": "грамадскіх прыбіральн"
+          },
+          {
+            "prefix": "грамадскай прыбіральн"
+          },
+          {
+            "prefix": "грамадзкія прыбіральн"
+          },
+          {
+            "prefix": "грамадскія туалет"
+          },
+          {
+            "prefix": "грамадскіх туалет"
+          },
+          {
+            "prefix": "публічныя туалет"
+          },
+          {
+            "prefix": "вулічны туалет"
+          },
+          {
+            "prefix": "вулічныя туалет"
+          },
+          {
+            "prefix": "вулічных туалет"
+          },
+          "вада, санітарыя і гігіена",
+          "WASH"
+        ],
+        "pap": [
+          "facilidad sanitario",
+          "facilidadnan sanitario",
+          "fasilidat sanitario",
+          "fasilidatnan sanitario",
+          "servicio sanitario",
+          "servisio sanitario",
+          "baño publico",
+          "baño públiko",
+          "baño publiko",
+          "letrina",
+          "letrinanan",
+          "sanitaire voorzieningen",
+          "openbare toiletten",
+          "sanitation"
         ]
       }
     },
@@ -16398,6 +21463,171 @@
           {
             "prefix": "bez sanitarnog čvor"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "pamata sanitārij"
+          },
+          {
+            "prefix": "uzlabota sanitārij"
+          },
+          "piekļuve sanitārijai",
+          "piekļuvi sanitārijai",
+          "piekļuve kanalizācijai",
+          "piekļuvi kanalizācijai",
+          "pieslēgums kanalizācijai",
+          "pieslēgties kanalizācijai",
+          "pieslēgties centralizētajai kanalizācijai",
+          "pieslēgumi centralizētajai kanalizācijai"
+        ],
+        "tajik": [
+          {
+            "prefix": "дастрасӣ ба хизматрасониҳои санитар"
+          },
+          {
+            "prefix": "дастрасӣ ба ҳоҷатхона"
+          },
+          {
+            "prefix": "дастрасӣ ба санитария"
+          },
+          {
+            "prefix": "санитарияи беҳтаргардида"
+          },
+          {
+            "prefix": "ҳоҷатхонаҳои беҳтар"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "yaxshilangan sanitariya"
+          },
+          {
+            "prefix": "яхшиланган санитария"
+          },
+          {
+            "prefix": "asosiy sanitariya"
+          },
+          {
+            "prefix": "sanitariya bilan ta'minlan"
+          },
+          {
+            "prefix": "sanitariya bilan taʻminlan"
+          },
+          {
+            "prefix": "sanitariya bilan ta’minlan"
+          },
+          {
+            "prefix": "sanitariya bilan ta‘minlan"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "prieiga prie sanitarij"
+          },
+          {
+            "prefix": "prieigos prie sanitarij"
+          },
+          {
+            "prefix": "pagerinta sanitarij"
+          },
+          {
+            "prefix": "pagerintos sanitarij"
+          },
+          {
+            "prefix": "bazinė sanitarij"
+          },
+          {
+            "prefix": "bazinės sanitarij"
+          },
+          {
+            "prefix": "neturi vidaus tualet"
+          },
+          "be tualeto patalpoje"
+        ],
+        "estonian": [
+          {
+            "prefix": "põhilised sanitaartingimus"
+          },
+          {
+            "prefix": "esmased sanitaartingimus"
+          },
+          {
+            "prefix": "parandatud sanitaar"
+          },
+          {
+            "prefix": "juurdepääs sanitaar"
+          },
+          {
+            "prefix": "ligipääs sanitaar"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "санитарияға қолжетімділі"
+          },
+          {
+            "prefix": "базалық санитария"
+          },
+          {
+            "prefix": "жақсартылған санитария"
+          },
+          {
+            "prefix": "санитариямен қамту"
+          },
+          {
+            "prefix": "жақсартылған дәретхана"
+          },
+          {
+            "prefix": "абаттандырылған дәретхана"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "санитарияга жеткиликтүүлү"
+          },
+          {
+            "prefix": "санитариялык шарттарга жеткиликтүүлү"
+          },
+          {
+            "prefix": "жакшыртылган санитария"
+          },
+          {
+            "prefix": "жакшыртылган ажаткана"
+          },
+          {
+            "prefix": "базалык санитария"
+          },
+          {
+            "prefix": "санитария менен камсыз"
+          }
+        ],
+        "farsi": [
+          "دسترسی به سرویس بهداشتی",
+          "دسترسی به توالت",
+          "دسترسی به خدمات بهسازی",
+          "پوشش بهسازی",
+          "توالت بهداشتی",
+          "تشناب صحی"
+        ],
+        "belarusian": [
+          "доступ да санітарыі",
+          "доступу да санітарыі",
+          "доступ да каналізацыі",
+          "доступу да каналізацыі",
+          "базавая санітарыя",
+          "базавай санітарыі",
+          "палепшаная санітарыя",
+          "палепшанай санітарыі"
+        ],
+        "pap": [
+          "saneamento basico",
+          "saneamentu básiko",
+          "saneamentu basiko",
+          "acceso na saneamento",
+          "akseso na saneamentu",
+          "acceso na baño",
+          "akseso na baño",
+          "basic sanitation"
         ]
       }
     },
@@ -16893,6 +22123,158 @@
           {
             "prefix": "fekalna vod"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "kanalizācij"
+          },
+          {
+            "prefix": "neattīrīti notekūd"
+          },
+          {
+            "prefix": "neattīrītie notekūd"
+          },
+          {
+            "prefix": "neattīrītu notekūd"
+          },
+          {
+            "prefix": "neattīrīto notekūd"
+          },
+          {
+            "prefix": "neattīrītus notekūd"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "канализатси"
+          },
+          "корез",
+          "корезҳо",
+          "корези",
+          "корезӣ",
+          {
+            "prefix": "шабакаи корез"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "kanalizatsi"
+          },
+          {
+            "prefix": "канализаци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kanalizacij"
+          },
+          {
+            "prefix": "kanalizacin"
+          },
+          {
+            "prefix": "nevalytos nuotek"
+          },
+          {
+            "prefix": "nevalytų nuotek"
+          },
+          {
+            "prefix": "neišvalytos nuotek"
+          },
+          {
+            "prefix": "neišvalytų nuotek"
+          },
+          {
+            "prefix": "buitinės nuotek"
+          },
+          {
+            "prefix": "buitinių nuotek"
+          },
+          {
+            "prefix": "nuotekų tinkl"
+          },
+          {
+            "prefix": "nuotekų surinkim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "kanalisatsioon"
+          },
+          {
+            "prefix": "ühiskanalisatsioon"
+          },
+          {
+            "prefix": "puhastamata reove"
+          },
+          {
+            "prefix": "solgive"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "кәріз"
+          },
+          {
+            "prefix": "канализация"
+          },
+          {
+            "prefix": "тазартылмаған ағынды су"
+          },
+          {
+            "prefix": "нәжіс су"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "канализац"
+          },
+          {
+            "prefix": "саркынды суу"
+          },
+          {
+            "prefix": "кир суу агуучу"
+          }
+        ],
+        "farsi": [
+          "فاضلاب",
+          "کانالیزاسیون"
+        ],
+        "belarusian": [
+          {
+            "prefix": "каналізацы"
+          },
+          {
+            "prefix": "водаадвядзен"
+          },
+          {
+            "prefix": "неачышчаныя сцёк"
+          },
+          {
+            "prefix": "неачышчаных сцёк"
+          },
+          {
+            "prefix": "фекальныя сцёк"
+          },
+          {
+            "prefix": "гаспадарча-бытавыя сцёк"
+          },
+          {
+            "prefix": "гаспадарча-бытавых сцёк"
+          }
+        ],
+        "pap": [
+          "rioleria",
+          "riolería",
+          "sistema di rioleria",
+          "sistema di riolería",
+          "awa sushi",
+          "awa sucia",
+          "riool",
+          "riolering",
+          "rioolstelsel",
+          "rioolwater",
+          "sewage",
+          "sewer"
         ]
       }
     },
@@ -17473,6 +22855,185 @@
             "prefix": "отпадних вод"
           },
           "PPOV"
+        ],
+        "latvian": [
+          {
+            "prefix": "notekūdeņu attīrīšan"
+          },
+          {
+            "prefix": "notekūde"
+          },
+          {
+            "prefix": "bioloģiskās attīrīšanas iekārt"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "обҳои партов"
+          },
+          {
+            "prefix": "обхои партов"
+          },
+          {
+            "prefix": "оби партов"
+          },
+          {
+            "prefix": "тозакунии обҳои партов"
+          },
+          {
+            "prefix": "тозакунии оби партов"
+          },
+          {
+            "prefix": "обҳои корез"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "oqova suv"
+          },
+          {
+            "prefix": "оқова сув"
+          },
+          {
+            "prefix": "oqava suv"
+          },
+          {
+            "prefix": "оқава сув"
+          },
+          {
+            "prefix": "chiqindi suv"
+          },
+          {
+            "prefix": "чиқинди сув"
+          },
+          {
+            "prefix": "aeratsiya stansiya"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "nuotek"
+          },
+          {
+            "prefix": "nuotekų valym"
+          },
+          {
+            "prefix": "nuotekų valykl"
+          },
+          {
+            "prefix": "nuotekų tvarkym"
+          },
+          {
+            "prefix": "nuotekų išleidim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "reove"
+          },
+          {
+            "prefix": "heitve"
+          },
+          {
+            "prefix": "biopuhasti"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "ағынды суларды тазарт"
+          },
+          {
+            "prefix": "ағынды суды тазарт"
+          },
+          {
+            "prefix": "лас суларды тазарт"
+          },
+          {
+            "prefix": "тазарту құрылғы"
+          },
+          {
+            "prefix": "тазарту құрылыс"
+          },
+          {
+            "prefix": "кәріз-тазарту құрылыс"
+          },
+          {
+            "prefix": "ағынды су"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "агынды суу"
+          },
+          {
+            "prefix": "агынды сууларды тазал"
+          },
+          {
+            "prefix": "саркынды сууларды тазал"
+          },
+          {
+            "prefix": "тазалоочу курулма"
+          }
+        ],
+        "farsi": [
+          "تصفیه فاضلاب",
+          "تصفیه‌خانه فاضلاب",
+          "تصفیه خانه فاضلاب",
+          "تصفیهخانه فاضلاب",
+          "تصفیه‌خانه‌های فاضلاب",
+          "تصفیه خانه های فاضلاب",
+          "تصفیهخانههای فاضلاب",
+          "پساب",
+          "تصفیه پساب"
+        ],
+        "belarusian": [
+          {
+            "prefix": "ачышчальныя збудаван"
+          },
+          {
+            "prefix": "ачышчальных збудаван"
+          },
+          {
+            "prefix": "ачышчальнымі збудаван"
+          },
+          {
+            "prefix": "ачышчальная станцы"
+          },
+          {
+            "prefix": "ачышчальнай станцы"
+          },
+          {
+            "prefix": "ачышчальных станцы"
+          },
+          {
+            "prefix": "ачыстка сцёк"
+          },
+          {
+            "prefix": "ачысткі сцёк"
+          },
+          {
+            "prefix": "сцёкавыя вод"
+          },
+          {
+            "prefix": "сцёкавых вод"
+          },
+          {
+            "prefix": "сцёкавымі водамі"
+          }
+        ],
+        "pap": [
+          "tratamento di awa sushi",
+          "tratamentu di awa sushi",
+          "planta di tratamento di awa sushi",
+          "planta di tratamentu di awa sushi",
+          "tratamento di awa sucia",
+          "rioolwaterzuivering",
+          "rioolwaterzuiveringsinstallatie",
+          "RWZI",
+          "afvalwater",
+          "afvalwaterzuivering",
+          "wastewater",
+          "wastewater treatment"
         ]
       }
     },
@@ -17822,6 +23383,110 @@
           "vršenja nužde na otvorenom",
           "nužda na otvorenom",
           "ODF"
+        ],
+        "latvian": [
+          {
+            "prefix": "atklāta defekācij"
+          },
+          {
+            "prefix": "atklātā defekācij"
+          },
+          {
+            "prefix": "atklātas defekācij"
+          },
+          "ODF"
+        ],
+        "tajik": [
+          {
+            "prefix": "ҳоҷатбарорӣ дар ҳавои кушод"
+          },
+          {
+            "prefix": "ҳоҷатбарорӣ дар фазои кушод"
+          },
+          {
+            "prefix": "ҳоҷатбарории кушод"
+          },
+          "ODF"
+        ],
+        "uzbek": [
+          {
+            "prefix": "ochiq joyda hojat"
+          },
+          {
+            "prefix": "очиқ жойда ҳожат"
+          },
+          "ODF"
+        ],
+        "lithuanian": [
+          "tuštinimasis lauke",
+          "tuštinimosi lauke",
+          {
+            "prefix": "tuštinimasis atvirame"
+          },
+          {
+            "prefix": "tuštinimosi atvirame"
+          },
+          "ODF"
+        ],
+        "estonian": [
+          {
+            "prefix": "vabas õhus roojami"
+          },
+          {
+            "prefix": "väljas roojami"
+          },
+          {
+            "prefix": "avalikus kohas roojami"
+          },
+          "ODF"
+        ],
+        "kazakh": [
+          {
+            "prefix": "ашық дефекация"
+          },
+          {
+            "prefix": "ашық жерде дәрет сындыр"
+          },
+          {
+            "prefix": "ашық жерде дәретке отыр"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "ачык жерде дааратка"
+          },
+          {
+            "prefix": "ачык абада дааратка"
+          },
+          "ODF"
+        ],
+        "farsi": [
+          "اجابت مزاج در فضای باز",
+          "دفع در فضای باز",
+          "قضای حاجت در فضای باز",
+          "رفع حاجت در فضای باز",
+          "ODF"
+        ],
+        "belarusian": [
+          {
+            "prefix": "адкрытая дэфекацы"
+          },
+          {
+            "prefix": "адкрытай дэфекацы"
+          },
+          {
+            "prefix": "дэфекацыя пад адкрытым небам"
+          },
+          {
+            "prefix": "дэфекацыі пад адкрытым небам"
+          },
+          "ODF"
+        ],
+        "pap": [
+          "defecacion na aire liber",
+          "defekashon na aire liber",
+          "defecacion abierto",
+          "open defecation"
         ]
       }
     },
@@ -18568,6 +24233,196 @@
           {
             "prefix": "crpljenje septičk"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "septiķ"
+          },
+          {
+            "prefix": "asenizācij"
+          },
+          {
+            "prefix": "krājtvertn"
+          },
+          {
+            "prefix": "izsmeļamā bedr"
+          },
+          {
+            "prefix": "izsmeļamās bedr"
+          },
+          {
+            "prefix": "izsmeļamo bedr"
+          },
+          {
+            "prefix": "notekūdeņu dūņ"
+          },
+          {
+            "prefix": "decentralizētās kanalizācijas sistēm"
+          },
+          {
+            "prefix": "decentralizēto kanalizācijas sistēm"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "чоҳи септик"
+          },
+          {
+            "prefix": "чохи септик"
+          },
+          {
+            "prefix": "чоҳҳои септик"
+          },
+          {
+            "prefix": "чоҳи ҳоҷатхона"
+          },
+          {
+            "prefix": "лойқаи фекал"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "septik"
+          },
+          {
+            "prefix": "септик"
+          },
+          {
+            "prefix": "assenizatsiya"
+          },
+          {
+            "prefix": "ассенизация"
+          },
+          {
+            "prefix": "hojatxona chuqur"
+          },
+          {
+            "prefix": "fekal"
+          },
+          {
+            "prefix": "фекал"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "nuotekų dumbl"
+          },
+          {
+            "prefix": "fekalij"
+          },
+          {
+            "prefix": "išgriebimo duob"
+          },
+          {
+            "prefix": "nuotekų kaupykl"
+          },
+          {
+            "prefix": "asenizacij"
+          },
+          {
+            "prefix": "asenizator"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "reoveeset"
+          },
+          {
+            "prefix": "septik"
+          },
+          {
+            "prefix": "kogumiskaev"
+          },
+          {
+            "prefix": "purgimi"
+          },
+          {
+            "prefix": "fekaalimuda"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "нәжіс шлам"
+          },
+          {
+            "prefix": "фекальды шлам"
+          },
+          "септик",
+          "септиктер",
+          "септикке",
+          "септиктерді",
+          "септиктің",
+          {
+            "prefix": "ассениза"
+          }
+        ],
+        "kyrgyz": [
+          "септик",
+          "септиктер",
+          "септикти",
+          "септиктин",
+          "септиктерди",
+          {
+            "prefix": "фекалдык"
+          },
+          {
+            "prefix": "ассениза"
+          },
+          {
+            "prefix": "даараткана чуңкур"
+          }
+        ],
+        "farsi": [
+          "لجن فاضلاب",
+          "لجن مدفوع",
+          "سپتیک",
+          "چاه جذبی",
+          "تخلیه چاه فاضلاب",
+          "تخلیه چاه‌های فاضلاب",
+          "تخلیه چاه های فاضلاب",
+          "تخلیه چاههای فاضلاب"
+        ],
+        "belarusian": [
+          {
+            "prefix": "выграбная ям"
+          },
+          {
+            "prefix": "выграбной ям"
+          },
+          {
+            "prefix": "выграбныя ям"
+          },
+          {
+            "prefix": "выграбных ям"
+          },
+          {
+            "prefix": "септык"
+          },
+          {
+            "prefix": "асенізацы"
+          },
+          {
+            "prefix": "асенізатар"
+          },
+          {
+            "prefix": "фекальны асадак"
+          },
+          {
+            "prefix": "фекальнага асадк"
+          }
+        ],
+        "pap": [
+          "tanki septico",
+          "tankinan septico",
+          "tanki séptiko",
+          "tankinan séptiko",
+          "pos ciego",
+          "beerput",
+          "beerputten",
+          "septictank",
+          "lodo fecal",
+          "septic tank",
+          "fecal sludge"
         ]
       }
     },
@@ -18982,6 +24837,130 @@
           {
             "prefix": "хигијен"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "higiēn"
+          },
+          {
+            "prefix": "personīgā higiēn"
+          },
+          {
+            "prefix": "higiēnas komplekt"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "гигиен"
+          },
+          {
+            "prefix": "беҳдошти шахс"
+          },
+          {
+            "prefix": "беҳдошти фард"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "gigiyen"
+          },
+          {
+            "prefix": "gigien"
+          },
+          {
+            "prefix": "гигиен"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "asmens higien"
+          },
+          {
+            "prefix": "higienos priemon"
+          },
+          {
+            "prefix": "higienos įgūdž"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hügieen"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "гигиена"
+          },
+          {
+            "prefix": "жеке бас гигиена"
+          },
+          {
+            "prefix": "жеке гигиена"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "гигиена"
+          }
+        ],
+        "farsi": [
+          "بهداشت فردی",
+          "بهداشت شخصی",
+          "اقلام بهداشتی",
+          "بسته‌های بهداشتی",
+          "بسته های بهداشتی",
+          "بستههای بهداشتی",
+          "ترویج بهداشت",
+          "حفظ‌الصحه",
+          "حفظ الصحه",
+          "حفظالصحه"
+        ],
+        "belarusian": [
+          {
+            "prefix": "асабістая гігіен"
+          },
+          {
+            "prefix": "асабістай гігіен"
+          },
+          {
+            "prefix": "асабістую гігіен"
+          },
+          {
+            "prefix": "правілы гігіен"
+          },
+          {
+            "prefix": "правілаў гігіен"
+          },
+          {
+            "prefix": "сродкі гігіен"
+          },
+          {
+            "prefix": "сродкаў гігіен"
+          },
+          {
+            "prefix": "санітарна-гігіенічн"
+          },
+          {
+            "prefix": "гігіенічныя набор"
+          },
+          {
+            "prefix": "гігіенічных набор"
+          },
+          {
+            "prefix": "гігіенічныя практык"
+          }
+        ],
+        "pap": [
+          "higiena",
+          "higiene",
+          "higienico",
+          "higiéniko",
+          "higieniko",
+          "higiena personal",
+          "higiene personal",
+          "hygiëne",
+          "hygiënisch",
+          "hygiene"
         ]
       }
     },
@@ -19430,6 +25409,198 @@
           "higijene ruku",
           "dezinfekcija ruku",
           "dezinfekcije ruku"
+        ],
+        "latvian": [
+          {
+            "prefix": "roku mazgāšan"
+          },
+          {
+            "prefix": "roku higiēn"
+          },
+          "mazgāt rokas",
+          "mazgājiet rokas",
+          "nomazgāt rokas",
+          "mazgā rokas",
+          "rokas mazgāt"
+        ],
+        "tajik": [
+          {
+            "prefix": "шустани даст"
+          },
+          {
+            "prefix": "дастшӯ"
+          },
+          {
+            "prefix": "дастҳоро шӯ"
+          },
+          {
+            "prefix": "дастхоро шу"
+          },
+          {
+            "prefix": "дастҳоятонро шӯ"
+          },
+          {
+            "prefix": "гигиенаи даст"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "qo'l yuvish"
+          },
+          {
+            "prefix": "qoʻl yuvish"
+          },
+          {
+            "prefix": "qo’l yuvish"
+          },
+          {
+            "prefix": "qo‘l yuvish"
+          },
+          {
+            "prefix": "қўл ювиш"
+          },
+          {
+            "prefix": "qo'llarni yuv"
+          },
+          {
+            "prefix": "qoʻllarni yuv"
+          },
+          {
+            "prefix": "qo’llarni yuv"
+          },
+          {
+            "prefix": "qo‘llarni yuv"
+          },
+          {
+            "prefix": "қўлларни юв"
+          },
+          {
+            "prefix": "qo'lni yuv"
+          },
+          {
+            "prefix": "qoʻlni yuv"
+          },
+          {
+            "prefix": "qo’lni yuv"
+          },
+          {
+            "prefix": "qo‘lni yuv"
+          },
+          {
+            "prefix": "qo'l gigiyena"
+          },
+          {
+            "prefix": "qoʻl gigiyena"
+          },
+          {
+            "prefix": "qo’l gigiyena"
+          },
+          {
+            "prefix": "qo‘l gigiyena"
+          },
+          {
+            "prefix": "қўл гигиена"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "rankų plovim"
+          },
+          {
+            "prefix": "rankų higien"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "kätepes"
+          },
+          {
+            "prefix": "käte pes"
+          },
+          {
+            "prefix": "kätehügieen"
+          },
+          "pese käsi",
+          "peske käsi",
+          "pesta käsi",
+          "pesema käsi",
+          "käsi pesta",
+          "käsi pesema"
+        ],
+        "kazakh": [
+          {
+            "prefix": "қол жу"
+          },
+          {
+            "prefix": "қолды жу"
+          },
+          {
+            "prefix": "қолыңызды жу"
+          },
+          {
+            "prefix": "қолдарын жу"
+          },
+          {
+            "prefix": "қолын жу"
+          },
+          {
+            "prefix": "қол гигиена"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "кол жуу"
+          },
+          {
+            "prefix": "колду жуу"
+          },
+          {
+            "prefix": "колдорду жуу"
+          },
+          {
+            "prefix": "колуңарды жуу"
+          },
+          {
+            "prefix": "колуңузду жуу"
+          },
+          {
+            "prefix": "колдун гигиена"
+          }
+        ],
+        "farsi": [
+          "شستن دست",
+          "شستشوی دست",
+          "شست‌وشوی دست",
+          "شست وشوی دست",
+          "شستوشوی دست",
+          "دست‌ها را بشویید",
+          "دست ها را بشویید",
+          "دستها را بشویید",
+          "بهداشت دست"
+        ],
+        "belarusian": [
+          "мыццё рук",
+          "мыцця рук",
+          "мыцьцё рук",
+          "мыцьця рук",
+          "мыць рукі",
+          "мыйце рукі",
+          "мыюць рукі",
+          "памыць рукі",
+          "гігіена рук",
+          "гігіены рук"
+        ],
+        "pap": [
+          "laba man",
+          "laba bo man",
+          "laba nan man",
+          "laba mannan",
+          "lavamento di man",
+          "labamentu di man",
+          "handen wassen",
+          "handhygiëne",
+          "handwashing",
+          "hand hygiene"
         ]
       }
     },
@@ -20125,6 +26296,217 @@
           {
             "prefix": "menstrualnih proizvod"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "menstruālā higiēn"
+          },
+          {
+            "prefix": "menstruālās higiēn"
+          },
+          {
+            "prefix": "menstruālo higiēn"
+          },
+          {
+            "prefix": "menstruālā veselīb"
+          },
+          {
+            "prefix": "menstruālās veselīb"
+          },
+          {
+            "prefix": "menstruālā nabadzīb"
+          },
+          {
+            "prefix": "menstruālās nabadzīb"
+          },
+          {
+            "prefix": "higiēniskās pake"
+          },
+          {
+            "prefix": "higiēnisko pake"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "гигиенаи ҳайз"
+          },
+          {
+            "prefix": "гигиенаи хайз"
+          },
+          {
+            "prefix": "беҳдошти ҳайз"
+          },
+          {
+            "prefix": "гигиенаи менструал"
+          },
+          {
+            "prefix": "воситаҳои гигиении занон"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "menstrual gigiyena"
+          },
+          {
+            "prefix": "hayz gigiyena"
+          },
+          {
+            "prefix": "ҳайз гигиена"
+          },
+          {
+            "prefix": "hayz davri gigiyena"
+          },
+          {
+            "prefix": "gigiyenik prokladka"
+          },
+          {
+            "prefix": "гигиеник прокладка"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "menstruacijų higien"
+          },
+          {
+            "prefix": "menstruacinė higien"
+          },
+          {
+            "prefix": "menstruacinės higien"
+          },
+          {
+            "prefix": "menstruacinis skurd"
+          },
+          {
+            "prefix": "menstruacinio skurd"
+          },
+          {
+            "prefix": "menstruacinės priemon"
+          },
+          {
+            "prefix": "menstruacinių priemon"
+          },
+          {
+            "prefix": "menstruacinė sveikat"
+          },
+          {
+            "prefix": "menstruacinės sveikat"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "menstruatsioonihügieen"
+          },
+          {
+            "prefix": "menstruaalhügieen"
+          },
+          {
+            "prefix": "menstruaaltervis"
+          },
+          {
+            "prefix": "perioodivaesus"
+          },
+          {
+            "prefix": "menstruatsioonivaesus"
+          },
+          {
+            "prefix": "hügieenisidem"
+          },
+          {
+            "prefix": "menstruatsioonitoot"
+          },
+          {
+            "prefix": "menstruaaltoot"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "етеккір"
+          },
+          {
+            "prefix": "гигиеналық төсеме"
+          },
+          {
+            "prefix": "гигиеналық прокладка"
+          },
+          {
+            "prefix": "гигиеналық құралдар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "менструал"
+          },
+          "этек кир",
+          {
+            "prefix": "гигиеналык таңгыч"
+          },
+          {
+            "prefix": "гигиеналык прокладка"
+          }
+        ],
+        "farsi": [
+          "بهداشت قاعدگی",
+          "بهداشت دوران قاعدگی",
+          "سلامت قاعدگی",
+          "فقر قاعدگی",
+          "پد بهداشتی",
+          "نوار بهداشتی",
+          "بهداشت عادت ماهوار"
+        ],
+        "belarusian": [
+          {
+            "prefix": "менструальная гігіен"
+          },
+          {
+            "prefix": "менструальнай гігіен"
+          },
+          {
+            "prefix": "мэнструальная гігіен"
+          },
+          {
+            "prefix": "мэнструальнай гігіен"
+          },
+          {
+            "prefix": "менструальнае здароў"
+          },
+          {
+            "prefix": "менструальнага здароў"
+          },
+          {
+            "prefix": "менструальная беднас"
+          },
+          {
+            "prefix": "менструальнай беднас"
+          },
+          {
+            "prefix": "мэнструальная беднас"
+          },
+          {
+            "prefix": "гігіенічныя пракладк"
+          },
+          {
+            "prefix": "гігіенічных пракладак"
+          },
+          {
+            "prefix": "менструальныя сродк"
+          },
+          {
+            "prefix": "менструальных сродк"
+          }
+        ],
+        "pap": [
+          "higiena menstrual",
+          "higiene menstrual",
+          "salud menstrual",
+          "salú menstrual",
+          "pobresa menstrual",
+          "pobresa di periodo",
+          "producto menstrual",
+          "productonan menstrual",
+          "produktonan menstrual",
+          "maandverband",
+          "menstruatiearmoede",
+          "period poverty"
         ]
       }
     },
@@ -21009,6 +27391,218 @@
           {
             "prefix": "irigacion"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "apūdeņo"
+          },
+          {
+            "prefix": "irigācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "системаи обёр"
+          },
+          {
+            "prefix": "системаҳои обёр"
+          },
+          {
+            "prefix": "системаи обер"
+          },
+          {
+            "prefix": "шабакаи обёр"
+          },
+          {
+            "prefix": "шабакаҳои обёр"
+          },
+          {
+            "prefix": "канали обёр"
+          },
+          {
+            "prefix": "каналҳои обёр"
+          },
+          {
+            "prefix": "иншооти обёр"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "irrigatsiya tizim"
+          },
+          {
+            "prefix": "ирригация тизим"
+          },
+          {
+            "prefix": "sug'orish tizim"
+          },
+          {
+            "prefix": "sugʻorish tizim"
+          },
+          {
+            "prefix": "sug’orish tizim"
+          },
+          {
+            "prefix": "sug‘orish tizim"
+          },
+          {
+            "prefix": "суғориш тизим"
+          },
+          {
+            "prefix": "irrigatsiya kanal"
+          },
+          {
+            "prefix": "sug'orish kanal"
+          },
+          {
+            "prefix": "sugʻorish kanal"
+          },
+          {
+            "prefix": "sug’orish kanal"
+          },
+          {
+            "prefix": "sug‘orish kanal"
+          },
+          {
+            "prefix": "irrigatsiya tarmoq"
+          },
+          {
+            "prefix": "irrigatsiya inshoot"
+          },
+          {
+            "prefix": "магистрал канал"
+          },
+          {
+            "prefix": "magistral kanal"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "drėkinimo sistem"
+          },
+          {
+            "prefix": "drėkinimo kanal"
+          },
+          {
+            "prefix": "drėkinimo infrastruktūr"
+          },
+          {
+            "prefix": "drėkinimo tinkl"
+          },
+          {
+            "prefix": "drėkinimo įrengin"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "niisutussüsteem"
+          },
+          {
+            "prefix": "niisutuskanal"
+          },
+          {
+            "prefix": "niisutusvõrk"
+          },
+          {
+            "prefix": "niisutustaristu"
+          },
+          {
+            "prefix": "niisutusrajatis"
+          },
+          {
+            "prefix": "kastmissüsteem"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "ирригация"
+          },
+          {
+            "prefix": "суару жүйе"
+          },
+          {
+            "prefix": "суару канал"
+          },
+          {
+            "prefix": "суару желі"
+          },
+          {
+            "prefix": "суармалы канал"
+          },
+          {
+            "prefix": "магистральдық канал"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "сугат систем"
+          },
+          {
+            "prefix": "сугат канал"
+          },
+          {
+            "prefix": "сугат тарма"
+          },
+          {
+            "prefix": "сугат инфраструктура"
+          },
+          {
+            "prefix": "сугаруу систем"
+          },
+          {
+            "prefix": "сугаруу канал"
+          },
+          {
+            "prefix": "ирригациялык"
+          }
+        ],
+        "farsi": [
+          "شبکه آبیاری",
+          "شبکه‌های آبیاری",
+          "شبکه های آبیاری",
+          "شبکههای آبیاری",
+          "کانال آبیاری",
+          "کانال‌های آبیاری",
+          "کانال های آبیاری",
+          "کانالهای آبیاری",
+          "سامانه آبیاری",
+          "سیستم آبیاری",
+          "آبیاری تحت فشار",
+          "زیرساخت آبیاری"
+        ],
+        "belarusian": [
+          {
+            "prefix": "арашальн"
+          },
+          {
+            "prefix": "арашэн"
+          },
+          {
+            "prefix": "меліярацыйныя сістэм"
+          },
+          {
+            "prefix": "меліярацыйных сістэм"
+          },
+          {
+            "prefix": "меліярацыйныя канал"
+          },
+          {
+            "prefix": "меліярацыйных канал"
+          },
+          {
+            "prefix": "мэліярацыйных сыстэм"
+          }
+        ],
+        "pap": [
+          "sistema di irigacion",
+          "sistema di irrigacion",
+          "sistema di irigashon",
+          "sistemanan di irigashon",
+          "canal di irigacion",
+          "kanal di irigashon",
+          "irrigatiesysteem",
+          "irrigatiekanaal",
+          "irrigation system"
         ]
       }
     },
@@ -21652,6 +28246,304 @@
           "osmatranje brane",
           "osmatranja brane",
           "osmatranje brana"
+        ],
+        "latvian": [
+          {
+            "prefix": "dambju drošīb"
+          },
+          {
+            "prefix": "dambja drošīb"
+          },
+          {
+            "prefix": "aizsprostu drošīb"
+          },
+          {
+            "prefix": "hidrotehnisko būvju drošīb"
+          },
+          {
+            "prefix": "dambja pārrāv"
+          },
+          {
+            "prefix": "aizsprosta pārrāv"
+          },
+          {
+            "prefix": "dambja sabrukum"
+          },
+          {
+            "prefix": "aizsprosta sabrukum"
+          },
+          {
+            "prefix": "dambja avārij"
+          },
+          {
+            "prefix": "dambju pārbaud"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "бехатарии сарбанд"
+          },
+          {
+            "prefix": "шикастани сарбанд"
+          },
+          {
+            "prefix": "вайрон шудани сарбанд"
+          },
+          {
+            "prefix": "рахнаи сарбанд"
+          },
+          {
+            "prefix": "садама дар сарбанд"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "to'g'on xavfsizlig"
+          },
+          {
+            "prefix": "toʻgʻon xavfsizlig"
+          },
+          {
+            "prefix": "to’g’on xavfsizlig"
+          },
+          {
+            "prefix": "to‘g‘on xavfsizlig"
+          },
+          {
+            "prefix": "тўғон хавфсизлиг"
+          },
+          {
+            "prefix": "to'g'on yoril"
+          },
+          {
+            "prefix": "toʻgʻon yoril"
+          },
+          {
+            "prefix": "to’g’on yoril"
+          },
+          {
+            "prefix": "to‘g‘on yoril"
+          },
+          {
+            "prefix": "тўғон ёрил"
+          },
+          {
+            "prefix": "to'g'onning yoril"
+          },
+          {
+            "prefix": "toʻgʻonning yoril"
+          },
+          {
+            "prefix": "to’g’onning yoril"
+          },
+          {
+            "prefix": "to‘g‘onning yoril"
+          },
+          {
+            "prefix": "to'g'on buzil"
+          },
+          {
+            "prefix": "toʻgʻon buzil"
+          },
+          {
+            "prefix": "to’g’on buzil"
+          },
+          {
+            "prefix": "to‘g‘on buzil"
+          },
+          {
+            "prefix": "to'g'onning buzil"
+          },
+          {
+            "prefix": "toʻgʻonning buzil"
+          },
+          {
+            "prefix": "to’g’onning buzil"
+          },
+          {
+            "prefix": "to‘g‘onning buzil"
+          },
+          {
+            "prefix": "to'g'on qula"
+          },
+          {
+            "prefix": "toʻgʻon qula"
+          },
+          {
+            "prefix": "to’g’on qula"
+          },
+          {
+            "prefix": "to‘g‘on qula"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "užtvankos saugum"
+          },
+          {
+            "prefix": "užtvankų saugum"
+          },
+          {
+            "prefix": "užtvankos griūt"
+          },
+          {
+            "prefix": "užtvankos pralauž"
+          },
+          {
+            "prefix": "užtvankos pratrūkim"
+          },
+          "užtvanka pratrūko",
+          "pratrūko užtvanka",
+          {
+            "prefix": "užtvankos avarij"
+          },
+          {
+            "prefix": "užtvankų avarij"
+          },
+          {
+            "prefix": "užtvankos sugriuv"
+          },
+          {
+            "prefix": "užtvankos patikrinim"
+          },
+          {
+            "prefix": "hidrotechninių statinių saugum"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "tammi ohutus"
+          },
+          {
+            "prefix": "tammi purune"
+          },
+          {
+            "prefix": "tammi varis"
+          },
+          {
+            "prefix": "tammi läbimur"
+          },
+          {
+            "prefix": "tammi ülevaatus"
+          },
+          {
+            "prefix": "paisu ohutus"
+          },
+          {
+            "prefix": "paisu purune"
+          },
+          "tamm purunes",
+          "pais purunes"
+        ],
+        "kazakh": [
+          {
+            "prefix": "бөгеттің қауіпсіздіг"
+          },
+          {
+            "prefix": "бөгет қауіпсіздіг"
+          },
+          {
+            "prefix": "бөгет бұзыл"
+          },
+          {
+            "prefix": "бөгеттің бұзыл"
+          },
+          {
+            "prefix": "бөгеттің опырыл"
+          },
+          {
+            "prefix": "дамба бұзыл"
+          },
+          {
+            "prefix": "дамбаның бұзыл"
+          },
+          {
+            "prefix": "гидротехникалық құрылыстардың қауіпсіздіг"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "дамбанын коопсуздуг"
+          },
+          {
+            "prefix": "плотинанын коопсуздуг"
+          },
+          {
+            "prefix": "дамба бузул"
+          },
+          {
+            "prefix": "дамбанын бузул"
+          },
+          {
+            "prefix": "дамбасы бузул"
+          },
+          {
+            "prefix": "дамбанын жарыл"
+          },
+          {
+            "prefix": "плотина жарыл"
+          },
+          {
+            "prefix": "плотинанын бузул"
+          }
+        ],
+        "farsi": [
+          "ایمنی سد",
+          "فروریختن سد",
+          "فروریزش سد",
+          "فروپاشی سد",
+          "تخریب سد",
+          "بازرسی سد",
+          "ترک خوردن سد"
+        ],
+        "belarusian": [
+          {
+            "prefix": "прарыў дамб"
+          },
+          {
+            "prefix": "прарыву дамб"
+          },
+          {
+            "prefix": "прарыў плацін"
+          },
+          {
+            "prefix": "прарыву плацін"
+          },
+          {
+            "prefix": "разбурэнне плацін"
+          },
+          {
+            "prefix": "разбурэння плацін"
+          },
+          {
+            "prefix": "падрыў плацін"
+          },
+          {
+            "prefix": "абвал плацін"
+          },
+          {
+            "prefix": "бяспека плацін"
+          },
+          {
+            "prefix": "бяспекі плацін"
+          },
+          {
+            "prefix": "бяспека гідратэхнічных збудаван"
+          },
+          {
+            "prefix": "бяспекі гідратэхнічных збудаван"
+          }
+        ],
+        "pap": [
+          "seguridad di dam",
+          "siguridat di dam",
+          "dam a kibra",
+          "kibramentu di dam",
+          "colapso di dam",
+          "kolapso di dam",
+          "dambreuk",
+          "dam failure",
+          "dam collapse"
         ]
       }
     },
@@ -22435,6 +29327,221 @@
           {
             "prefix": "nivoa Pivskog jezer"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ūdenskrātuves līmen"
+          },
+          {
+            "prefix": "ūdenskrātuvju līmen"
+          },
+          {
+            "prefix": "ūdenskrātuves apsaimniekošan"
+          },
+          {
+            "prefix": "ūdenskrātuvju apsaimniekošan"
+          },
+          {
+            "prefix": "ūdenskrātuves ietilp"
+          },
+          {
+            "prefix": "aizvaru atvēršan"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "сатҳи об дар обанбор"
+          },
+          {
+            "prefix": "сатҳи оби обанбор"
+          },
+          {
+            "prefix": "сатхи оби обанбор"
+          },
+          {
+            "prefix": "идоракунии обанбор"
+          },
+          {
+            "prefix": "ҳаҷми об дар обанбор"
+          },
+          {
+            "prefix": "партофтани об аз обанбор"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "suv omboridagi suv"
+          },
+          {
+            "prefix": "сув омборидаги сув"
+          },
+          {
+            "prefix": "suv omborlaridagi suv"
+          },
+          {
+            "prefix": "сув омборларидаги сув"
+          },
+          {
+            "prefix": "suv ombori sath"
+          },
+          {
+            "prefix": "suv omborining hajm"
+          },
+          {
+            "prefix": "suv omborlarini boshqarish"
+          },
+          {
+            "prefix": "suv omborining to'lish"
+          },
+          {
+            "prefix": "suv omborining toʻlish"
+          },
+          {
+            "prefix": "suv omborining to’lish"
+          },
+          {
+            "prefix": "suv omborining to‘lish"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vandens saugykl"
+          },
+          {
+            "prefix": "tvenkinio vandens lyg"
+          },
+          {
+            "prefix": "vandens lygis tvenkin"
+          },
+          {
+            "prefix": "vandens lygio tvenkin"
+          },
+          {
+            "prefix": "Kauno marių vandens lyg"
+          },
+          "vandens lygis Kauno mariose",
+          {
+            "prefix": "tvenkinių valdym"
+          },
+          {
+            "prefix": "tvenkinio valdym"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "veehoidla veetase"
+          },
+          {
+            "prefix": "veehoidlate veetase"
+          },
+          {
+            "prefix": "veehoidla täituvus"
+          },
+          {
+            "prefix": "veehoidlate täituvus"
+          },
+          {
+            "prefix": "veehoidla haldami"
+          },
+          {
+            "prefix": "veehoidla mahut"
+          },
+          {
+            "prefix": "veehoidlate mahut"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "су қоймасының деңгей"
+          },
+          {
+            "prefix": "су қоймаларының деңгей"
+          },
+          {
+            "prefix": "су қоймасындағы су деңгей"
+          },
+          {
+            "prefix": "су қоймаларының толу"
+          },
+          {
+            "prefix": "су қоймасынан су жібер"
+          },
+          {
+            "prefix": "су қоймасын басқару"
+          },
+          {
+            "prefix": "су қоймаларын басқару"
+          },
+          {
+            "prefix": "су қоймасының сыйымдылы"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суу сактагычтагы суу"
+          },
+          {
+            "prefix": "суу сактагычтын деңгээл"
+          },
+          {
+            "prefix": "суу сактагычтарды башкар"
+          },
+          {
+            "prefix": "суу сактагычтын толтурул"
+          },
+          {
+            "prefix": "Токтогул суу сактагыч"
+          },
+          {
+            "prefix": "суу агызыл"
+          },
+          {
+            "prefix": "сууну агызуу"
+          }
+        ],
+        "farsi": [
+          "مخزن سد",
+          "مخازن سد",
+          "حجم آب سد",
+          "سطح آب سد",
+          "ذخایر سد",
+          "پرشدگی سد",
+          "رهاسازی آب",
+          "مدیریت مخزن"
+        ],
+        "belarusian": [
+          {
+            "prefix": "узровень вады ў вадасховішч"
+          },
+          {
+            "prefix": "узроўню вады ў вадасховішч"
+          },
+          {
+            "prefix": "напаўненне вадасховішч"
+          },
+          {
+            "prefix": "напаўнення вадасховішч"
+          },
+          {
+            "prefix": "кіраванне вадасховішч"
+          },
+          {
+            "prefix": "кіравання вадасховішч"
+          },
+          "скід вады",
+          "скіду вады",
+          "скіды вады"
+        ],
+        "pap": [
+          "nivel di reservoir",
+          "nivel di dam",
+          "nivel di embalse",
+          "capacidad di reservoir",
+          "kapasidat di reservoir",
+          "waterstand in het reservoir",
+          "reservoir level",
+          "reservoir levels",
+          "dam levels"
         ]
       }
     },
@@ -23061,6 +30168,183 @@
           },
           "voda-energija-hrana",
           "Buk Bijela"
+        ],
+        "latvian": [
+          {
+            "prefix": "HES ūdenskrātuv"
+          },
+          {
+            "prefix": "hidroelektrostacijas ūdenskrātuv"
+          },
+          {
+            "prefix": "hidroelektrostaciju ūdenskrātuv"
+          },
+          {
+            "prefix": "ūdens un enerģijas sasaist"
+          },
+          {
+            "prefix": "ūdens, enerģijas un pārtikas sasaist"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "обанбори нерӯгоҳ"
+          },
+          {
+            "prefix": "обанбори неругох"
+          },
+          {
+            "prefix": "обанборҳои нерӯгоҳ"
+          },
+          {
+            "prefix": "обанбори НБО"
+          },
+          {
+            "prefix": "обу энергетик"
+          },
+          {
+            "prefix": "об, энергетика ва озуқа"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "GES suv ombor"
+          },
+          {
+            "prefix": "ГЭС сув омбор"
+          },
+          {
+            "prefix": "suv-energetika"
+          },
+          {
+            "prefix": "сув-энергетика"
+          },
+          {
+            "prefix": "suv-energiya-oziq-ovqat"
+          },
+          {
+            "prefix": "Rog'un GES"
+          },
+          {
+            "prefix": "Rogʻun GES"
+          },
+          {
+            "prefix": "Rog’un GES"
+          },
+          {
+            "prefix": "Rog‘un GES"
+          },
+          {
+            "prefix": "Роғун ГЭС"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "hidroelektrinės tvenkin"
+          },
+          {
+            "prefix": "hidroelektrinių tvenkin"
+          },
+          {
+            "prefix": "HE tvenkin"
+          },
+          {
+            "prefix": "vandens ir energetikos sąsaj"
+          },
+          {
+            "prefix": "vandens, energijos ir maisto sąsaj"
+          },
+          {
+            "prefix": "vandens hidroenergetik"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hüdroelektrijaama veehoidla"
+          },
+          {
+            "prefix": "hüdroelektrijaamade veehoidla"
+          },
+          {
+            "prefix": "hüdroenergia veehoidla"
+          },
+          {
+            "prefix": "vee-energia-toidu"
+          },
+          {
+            "prefix": "vee ja energia seos"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "ГЭС су қойма"
+          },
+          {
+            "prefix": "су электр станциясының су қойма"
+          },
+          {
+            "prefix": "су-энергетика"
+          },
+          {
+            "prefix": "ГЭС үшін су"
+          },
+          {
+            "prefix": "Тоқтағұл су қойма"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "ГЭСтин суу сактагыч"
+          },
+          {
+            "prefix": "ГЭС суу сактагыч"
+          },
+          {
+            "prefix": "гидроэлектростанциянын суу сактагыч"
+          },
+          {
+            "prefix": "суу-энергетика"
+          },
+          {
+            "prefix": "суу, энергия жана азык-түлүк"
+          }
+        ],
+        "farsi": [
+          "سد برق‌آبی",
+          "سد برق آبی",
+          "سد برقآبی",
+          "سدهای برق‌آبی",
+          "سدهای برق آبی",
+          "سدهای برقآبی",
+          "مخازن برق‌آبی",
+          "مخازن برق آبی",
+          "مخازن برقآبی",
+          "پیوند آب و انرژی",
+          "پیوند آب، انرژی و غذا",
+          "بند برق"
+        ],
+        "belarusian": [
+          "вадасховішча ГЭС",
+          "вадасховішчы ГЭС",
+          "вадасховішчаў ГЭС",
+          "вадасховішчам ГЭС",
+          {
+            "prefix": "вадасховішча гідраэлектрастанц"
+          },
+          {
+            "prefix": "вадасховішчы гідраэлектрастанц"
+          },
+          "water-energy nexus"
+        ],
+        "pap": [
+          "represa hidroelectrico",
+          "represa hidroeléktriko",
+          "reservoir hidroelectrico",
+          "reservoir hidroeléktriko",
+          "nexo awa-energia",
+          "nexo di awa i energia",
+          "water-energy nexus",
+          "hydropower reservoir"
         ]
       }
     },
@@ -23895,6 +31179,258 @@
           {
             "prefix": "sistema za odvodnjavanj"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "lietusūdens kanalizācij"
+          },
+          {
+            "prefix": "lietus ūdens kanalizācij"
+          },
+          {
+            "prefix": "lietusūdeņu kanalizācij"
+          },
+          {
+            "prefix": "lietus kanalizācij"
+          },
+          {
+            "prefix": "lietusūdens novadīšan"
+          },
+          {
+            "prefix": "lietus ūdens novadīšan"
+          },
+          {
+            "prefix": "lietusūdeņu novadīšan"
+          },
+          {
+            "prefix": "drenāžas sistēm"
+          },
+          "aizsērējušas notekas"
+        ],
+        "tajik": [
+          {
+            "prefix": "системаи заҳкаш"
+          },
+          {
+            "prefix": "шабакаи заҳкаш"
+          },
+          {
+            "prefix": "заҳкашҳои шаҳр"
+          },
+          {
+            "prefix": "канализатсияи борон"
+          },
+          {
+            "prefix": "басташавии заҳкаш"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "drenaj tizim"
+          },
+          {
+            "prefix": "дренаж тизим"
+          },
+          {
+            "prefix": "drenaj tarmoq"
+          },
+          {
+            "prefix": "yomg'ir suvlarini oqizish"
+          },
+          {
+            "prefix": "yomgʻir suvlarini oqizish"
+          },
+          {
+            "prefix": "yomg’ir suvlarini oqizish"
+          },
+          {
+            "prefix": "yomg‘ir suvlarini oqizish"
+          },
+          {
+            "prefix": "yomg'ir kanalizatsiya"
+          },
+          {
+            "prefix": "yomgʻir kanalizatsiya"
+          },
+          {
+            "prefix": "yomg’ir kanalizatsiya"
+          },
+          {
+            "prefix": "yomg‘ir kanalizatsiya"
+          },
+          {
+            "prefix": "ёмғир канализация"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "lietaus nuotek"
+          },
+          {
+            "prefix": "paviršinių nuotek"
+          },
+          {
+            "prefix": "paviršinės nuotek"
+          },
+          {
+            "prefix": "paviršinėmis nuotek"
+          },
+          {
+            "prefix": "lietaus kanalizacij"
+          },
+          {
+            "prefix": "lietaus vandens tvarkym"
+          },
+          {
+            "prefix": "lietaus nuotakyn"
+          },
+          {
+            "prefix": "lietaus surinktuv"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "sademeve"
+          },
+          {
+            "prefix": "sadeve"
+          },
+          {
+            "prefix": "vihmaveekanalisatsioon"
+          },
+          {
+            "prefix": "drenaažisüsteem"
+          },
+          {
+            "prefix": "ummistunud truup"
+          },
+          {
+            "prefix": "ummistunud kraav"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "нөсер кәріз"
+          },
+          {
+            "prefix": "жаңбыр кәріз"
+          },
+          {
+            "prefix": "дренаж жүйе"
+          },
+          {
+            "prefix": "дренаждық жүйе"
+          },
+          {
+            "prefix": "ливневка"
+          },
+          {
+            "prefix": "су бұру жүйе"
+          },
+          {
+            "prefix": "арықтардың бітелу"
+          },
+          {
+            "prefix": "кәріздің бітелу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "дренаж"
+          },
+          {
+            "prefix": "нөшөр канализац"
+          },
+          {
+            "prefix": "ливнев"
+          },
+          {
+            "prefix": "ливнёв"
+          },
+          {
+            "prefix": "жамгыр суусун агызуучу"
+          }
+        ],
+        "farsi": [
+          "زهکشی شهری",
+          "شبکه زهکشی",
+          "سیستم زهکشی",
+          "کانال‌های زهکشی",
+          "کانال های زهکشی",
+          "کانالهای زهکشی",
+          "رواناب",
+          "روان‌آب",
+          "روان آب",
+          "روانآب",
+          "جمع‌آوری آب‌های سطحی",
+          "جمع آوری آب های سطحی",
+          "جمعآوری آبهای سطحی",
+          "دفع آب‌های سطحی",
+          "دفع آب های سطحی",
+          "دفع آبهای سطحی",
+          "آبگرفتگی معابر"
+        ],
+        "belarusian": [
+          {
+            "prefix": "ліўневая каналізацы"
+          },
+          {
+            "prefix": "ліўневай каналізацы"
+          },
+          {
+            "prefix": "ліўнёвая каналізацы"
+          },
+          {
+            "prefix": "ліўнёвай каналізацы"
+          },
+          {
+            "prefix": "ліўнёўк"
+          },
+          {
+            "prefix": "ліўнёвак"
+          },
+          {
+            "prefix": "ліўневыя сцёк"
+          },
+          {
+            "prefix": "ліўневых сцёк"
+          },
+          {
+            "prefix": "ліўнёвыя сцёк"
+          },
+          {
+            "prefix": "ліўнёвых сцёк"
+          },
+          {
+            "prefix": "дажджавая каналізацы"
+          },
+          {
+            "prefix": "дажджавой каналізацы"
+          },
+          {
+            "prefix": "дрэнажная сістэм"
+          },
+          {
+            "prefix": "дрэнажнай сістэм"
+          },
+          {
+            "prefix": "дрэнажныя сістэм"
+          }
+        ],
+        "pap": [
+          "drenahe",
+          "drenaje",
+          "sistema di drenahe",
+          "sistema di drenaje",
+          "canal di drenahe",
+          "kanal di drenahe",
+          "drenahe tapa",
+          "drenahe tapá",
+          "afwatering",
+          "hemelwaterafvoer",
+          "afwateringskanaal",
+          "drainage system",
+          "storm drains"
         ]
       }
     },
@@ -24819,6 +32355,272 @@
           {
             "prefix": "regulaciju korit"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "pretplūdu"
+          },
+          {
+            "prefix": "plūdu aizsardzīb"
+          },
+          {
+            "prefix": "aizsargdamb"
+          },
+          {
+            "prefix": "plūdu barjer"
+          },
+          {
+            "prefix": "plūdu kontrol"
+          },
+          {
+            "prefix": "polderu sūkņu stacij"
+          },
+          {
+            "prefix": "krasta nostiprinājum"
+          },
+          {
+            "prefix": "krasta aizsardzības būv"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "соҳилмустаҳкамкун"
+          },
+          {
+            "prefix": "сохилмустахкамкун"
+          },
+          {
+            "prefix": "соҳилҳимоя"
+          },
+          {
+            "prefix": "иншооти муҳофизатӣ аз обхез"
+          },
+          {
+            "prefix": "муҳофизат аз обхез"
+          },
+          {
+            "prefix": "селгузар"
+          },
+          "дамба",
+          "дамбаҳо",
+          "дамбаи"
+        ],
+        "uzbek": [
+          {
+            "prefix": "selga qarshi"
+          },
+          {
+            "prefix": "селга қарши"
+          },
+          {
+            "prefix": "sel oqimlariga qarshi"
+          },
+          {
+            "prefix": "toshqinga qarshi"
+          },
+          {
+            "prefix": "тошқинга қарши"
+          },
+          {
+            "prefix": "suv toshqiniga qarshi"
+          },
+          {
+            "prefix": "himoya damba"
+          },
+          "damba",
+          "dambalar",
+          "дамба",
+          {
+            "prefix": "selxona"
+          },
+          {
+            "prefix": "sel ombor"
+          },
+          {
+            "prefix": "qirg'oqni mustahkamla"
+          },
+          {
+            "prefix": "qirgʻoqni mustahkamla"
+          },
+          {
+            "prefix": "qirg’oqni mustahkamla"
+          },
+          {
+            "prefix": "qirg‘oqni mustahkamla"
+          }
+        ],
+        "lithuanian": [
+          "apsauga nuo potvynių",
+          "apsaugos nuo potvynių",
+          "apsaugą nuo potvynių",
+          {
+            "prefix": "priešpotvyni"
+          },
+          {
+            "prefix": "apsauginis pylim"
+          },
+          {
+            "prefix": "apsauginiai pylim"
+          },
+          {
+            "prefix": "apsauginių pylim"
+          },
+          {
+            "prefix": "apsauginio pylim"
+          },
+          {
+            "prefix": "polder"
+          },
+          {
+            "prefix": "potvynių kontrol"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "üleujutustõrje"
+          },
+          {
+            "prefix": "üleujutuste tõrje"
+          },
+          {
+            "prefix": "üleujutuskaitse"
+          },
+          {
+            "prefix": "üleujutustõk"
+          },
+          {
+            "prefix": "tulvatõrje"
+          },
+          {
+            "prefix": "tõkkeval"
+          },
+          {
+            "prefix": "kaitsetamm"
+          },
+          {
+            "prefix": "lainemurdja"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "су тасқынына қарсы"
+          },
+          {
+            "prefix": "су тасқынынан қорға"
+          },
+          {
+            "prefix": "тасқынға қарсы"
+          },
+          {
+            "prefix": "қорғаныш бөгет"
+          },
+          {
+            "prefix": "қорғаныс дамба"
+          },
+          "дамба",
+          "дамбалар",
+          "дамбаны",
+          "дамбаның",
+          "дамбаға",
+          "дамбаларды",
+          {
+            "prefix": "жағалауды бекіт"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "селден корго"
+          },
+          {
+            "prefix": "суу ташкынынан корго"
+          },
+          {
+            "prefix": "ташкындан корго"
+          },
+          {
+            "prefix": "коргоочу дамба"
+          },
+          {
+            "prefix": "селге каршы"
+          },
+          {
+            "prefix": "жээкти бекемде"
+          },
+          {
+            "prefix": "жээк бекемде"
+          },
+          {
+            "prefix": "сел өткөргүч"
+          }
+        ],
+        "farsi": [
+          "کنترل سیل",
+          "مهار سیل",
+          "سیل‌بند",
+          "سیل بند",
+          "سیلبند",
+          "سیل‌گیر",
+          "سیل گیر",
+          "سیلگیر",
+          "دیوار ساحلی",
+          "سد تأخیری",
+          "سد تاخیری",
+          "کانال هدایت سیلاب",
+          "دیوار استنادی",
+          "دریچه سیلاب"
+        ],
+        "belarusian": [
+          {
+            "prefix": "проціпаводкав"
+          },
+          {
+            "prefix": "супрацьпаводкав"
+          },
+          {
+            "prefix": "ахоўная дамб"
+          },
+          {
+            "prefix": "ахоўнай дамб"
+          },
+          {
+            "prefix": "ахоўныя дамб"
+          },
+          {
+            "prefix": "ахоўных дамб"
+          },
+          "дамба",
+          "дамбы",
+          "дамбу",
+          "дамбе",
+          "дамбаў",
+          {
+            "prefix": "абвалаван"
+          },
+          {
+            "prefix": "берагаўмацаван"
+          },
+          {
+            "prefix": "абарона ад павод"
+          },
+          {
+            "prefix": "абароны ад павод"
+          },
+          {
+            "prefix": "ахова ад павод"
+          }
+        ],
+        "pap": [
+          "control di inundacion",
+          "kontrol di inundashon",
+          "proteccion contra inundacion",
+          "protekshon kontra inundashon",
+          "muraya di laman",
+          "muraya kontra laman",
+          "waterkering",
+          "zeewering",
+          "stormvloedkering",
+          "flood control",
+          "seawall"
         ]
       }
     }

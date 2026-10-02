@@ -559,6 +559,158 @@
           {
             "prefix": "мигрант"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "migrācij"
+          },
+          {
+            "prefix": "migrant"
+          },
+          {
+            "prefix": "migrācijas plūsm"
+          },
+          {
+            "prefix": "migrantu plūsm"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷир"
+          },
+          {
+            "prefix": "мухочир"
+          },
+          {
+            "prefix": "мигрант"
+          },
+          {
+            "prefix": "миграси"
+          },
+          {
+            "prefix": "миграци"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "migratsi"
+          },
+          {
+            "prefix": "миграци"
+          },
+          {
+            "prefix": "migrant"
+          },
+          {
+            "prefix": "мигрант"
+          },
+          {
+            "prefix": "muhojir"
+          },
+          {
+            "prefix": "муҳожир"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "migracij"
+          },
+          {
+            "prefix": "migrant"
+          },
+          {
+            "prefix": "migracin"
+          },
+          {
+            "prefix": "imigracij"
+          },
+          {
+            "prefix": "imigrant"
+          },
+          {
+            "prefix": "migracijos sraut"
+          },
+          {
+            "prefix": "migrantų sraut"
+          }
+        ],
+        "estonian": [
+          "ränne",
+          "rände",
+          "rännet",
+          "rändes",
+          "rändest",
+          "rändele",
+          "rändega",
+          {
+            "prefix": "migratsioon"
+          },
+          {
+            "prefix": "migran"
+          },
+          {
+            "prefix": "rändevoo"
+          },
+          {
+            "prefix": "rändesurve"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "көші-қон"
+          },
+          {
+            "prefix": "миграци"
+          },
+          {
+            "prefix": "мигрант"
+          },
+          {
+            "prefix": "көшіп-қонушы"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "миграци"
+          },
+          {
+            "prefix": "мигрант"
+          },
+          {
+            "prefix": "миграциялык агым"
+          },
+          {
+            "prefix": "мигранттардын агым"
+          }
+        ],
+        "farsi": [
+          "مهاجرت",
+          "مهاجر",
+          "موج مهاجرت",
+          "جریان مهاجرت",
+          "جریان‌های مهاجرتی",
+          "جریان های مهاجرتی",
+          "جریانهای مهاجرتی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "міграцы"
+          },
+          {
+            "prefix": "мігрант"
+          },
+          "міграцыйныя патокі",
+          "міграцыйных патокаў"
+        ],
+        "pap": [
+          "migracion",
+          "migrante",
+          "migrantenan",
+          "flujo di migrante",
+          "migrashon",
+          "fluho di migrante",
+          "migratie",
+          "migranten"
         ]
       }
     },
@@ -1190,6 +1342,195 @@
           {
             "prefix": "iseljavanja sa sjever"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "iekšējā migrācij"
+          },
+          {
+            "prefix": "iekšējās migrācij"
+          },
+          {
+            "prefix": "iekšējo migrācij"
+          },
+          {
+            "prefix": "iekšzemes migrācij"
+          },
+          {
+            "prefix": "iekšējie migrant"
+          },
+          {
+            "prefix": "iekšējo migrant"
+          },
+          "migrācija valsts iekšienē"
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷирати дохил"
+          },
+          {
+            "prefix": "мухочирати дохил"
+          },
+          {
+            "prefix": "муҳоҷирони дохил"
+          },
+          {
+            "prefix": "миграсияи дохил"
+          },
+          {
+            "prefix": "муҳоҷирати байниминтақав"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ichki migratsi"
+          },
+          {
+            "prefix": "ички миграци"
+          },
+          {
+            "prefix": "ichki migrant"
+          },
+          {
+            "prefix": "ички мигрант"
+          },
+          {
+            "prefix": "ichki muhojir"
+          },
+          {
+            "prefix": "ички муҳожир"
+          },
+          {
+            "prefix": "mamlakat ichidagi migratsi"
+          },
+          {
+            "prefix": "мамлакат ичидаги миграци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vidaus migracij"
+          },
+          {
+            "prefix": "vidaus migrant"
+          },
+          {
+            "prefix": "vidinė migracij"
+          },
+          {
+            "prefix": "vidinės migracij"
+          },
+          {
+            "prefix": "vidinę migracij"
+          },
+          {
+            "prefix": "migracija šalies viduje"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "siserän"
+          },
+          "riigisisene ränne",
+          "riigisisese rände",
+          "riigisisest rännet",
+          {
+            "prefix": "sisemigratsioon"
+          },
+          {
+            "prefix": "sisemigran"
+          },
+          {
+            "prefix": "maakondadevaheli"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "ішкі көші-қон"
+          },
+          {
+            "prefix": "ішкі миграци"
+          },
+          {
+            "prefix": "ішкі мигрант"
+          },
+          {
+            "prefix": "өңіраралық көші-қон"
+          },
+          {
+            "prefix": "өңіраралық миграци"
+          },
+          {
+            "prefix": "ел ішіндегі көші-қон"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "ички миграци"
+          },
+          {
+            "prefix": "ички мигрант"
+          },
+          {
+            "prefix": "өлкө ичиндеги миграци"
+          },
+          {
+            "prefix": "региондор аралык миграци"
+          },
+          {
+            "prefix": "аймактар аралык миграци"
+          }
+        ],
+        "farsi": [
+          "مهاجرت داخلی",
+          "مهاجران داخلی",
+          "مهاجرین داخلی",
+          "مهاجرت بین‌استانی",
+          "مهاجرت بین استانی",
+          "مهاجرت بیناستانی",
+          "مهاجرت درون‌کشوری",
+          "مهاجرت درون کشوری",
+          "مهاجرت درونکشوری",
+          "مهاجرت بین ولایات",
+          "مهاجرت بین‌ولایتی",
+          "مهاجرت بین ولایتی",
+          "مهاجرت بینولایتی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "унутраная міграцы"
+          },
+          {
+            "prefix": "ўнутраная міграцы"
+          },
+          {
+            "prefix": "унутранай міграцы"
+          },
+          {
+            "prefix": "ўнутранай міграцы"
+          },
+          {
+            "prefix": "унутраную міграцы"
+          },
+          {
+            "prefix": "унутраныя мігрант"
+          },
+          {
+            "prefix": "унутраных мігрант"
+          },
+          {
+            "prefix": "міжрэгіянальная міграцы"
+          },
+          {
+            "prefix": "міжрэгіянальнай міграцы"
+          }
+        ],
+        "pap": [
+          "migracion interno",
+          "migracion entre isla",
+          "migrashon interno",
+          "migrashon entre isla",
+          "binnenlandse migratie"
         ]
       }
     },
@@ -1818,6 +2159,200 @@
           {
             "prefix": "migracija u inostranstv"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "starptautiskā migrācij"
+          },
+          {
+            "prefix": "starptautiskās migrācij"
+          },
+          {
+            "prefix": "starptautisko migrācij"
+          },
+          {
+            "prefix": "starptautiskie migrant"
+          },
+          {
+            "prefix": "starptautisko migrant"
+          },
+          {
+            "prefix": "pārrobežu migrācij"
+          },
+          {
+            "prefix": "ārējā migrācij"
+          },
+          {
+            "prefix": "ārējās migrācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷирати байналмилал"
+          },
+          {
+            "prefix": "мухочирати байналмилал"
+          },
+          {
+            "prefix": "муҳоҷирони байналмилал"
+          },
+          {
+            "prefix": "муҳоҷирати хориҷ"
+          },
+          {
+            "prefix": "муҳоҷирати беруна"
+          },
+          {
+            "prefix": "муҳоҷират ба хориҷ"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "xalqaro migratsi"
+          },
+          {
+            "prefix": "халқаро миграци"
+          },
+          {
+            "prefix": "xalqaro migrant"
+          },
+          {
+            "prefix": "халқаро мигрант"
+          },
+          {
+            "prefix": "tashqi migratsi"
+          },
+          {
+            "prefix": "ташқи миграци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "tarptautinė migracij"
+          },
+          {
+            "prefix": "tarptautinės migracij"
+          },
+          {
+            "prefix": "tarptautinę migracij"
+          },
+          {
+            "prefix": "tarptautinei migracij"
+          },
+          {
+            "prefix": "tarptautiniai migrant"
+          },
+          {
+            "prefix": "tarptautinių migrant"
+          },
+          "migracija į užsienį",
+          "migracijos į užsienį"
+        ],
+        "estonian": [
+          "rahvusvaheline ränne",
+          "rahvusvahelise rände",
+          "rahvusvahelist rännet",
+          {
+            "prefix": "rahvusvaheline migratsioon"
+          },
+          {
+            "prefix": "rahvusvahelise migratsioon"
+          },
+          {
+            "prefix": "välisrän"
+          },
+          {
+            "prefix": "sisserän"
+          },
+          {
+            "prefix": "immigratsioon"
+          },
+          {
+            "prefix": "immigran"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "халықаралық көші-қон"
+          },
+          {
+            "prefix": "халықаралық миграци"
+          },
+          {
+            "prefix": "халықаралық мигрант"
+          },
+          {
+            "prefix": "сыртқы көші-қон"
+          },
+          {
+            "prefix": "сыртқы миграци"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "эл аралык миграци"
+          },
+          {
+            "prefix": "эл аралык мигрант"
+          },
+          {
+            "prefix": "тышкы миграци"
+          },
+          {
+            "prefix": "чет өлкөгө миграци"
+          },
+          {
+            "prefix": "чет өлкөлөргө миграци"
+          }
+        ],
+        "farsi": [
+          "مهاجرت بین‌المللی",
+          "مهاجرت بین المللی",
+          "مهاجرت بینالمللی",
+          "مهاجران بین‌المللی",
+          "مهاجران بین المللی",
+          "مهاجران بینالمللی",
+          "مهاجرت فرامرزی",
+          "مهاجرت برون‌مرزی",
+          "مهاجرت برون مرزی",
+          "مهاجرت برونمرزی",
+          "مهاجرت به خارج"
+        ],
+        "belarusian": [
+          {
+            "prefix": "міжнародная міграцы"
+          },
+          {
+            "prefix": "міжнароднай міграцы"
+          },
+          {
+            "prefix": "міжнародную міграцы"
+          },
+          {
+            "prefix": "міжнародныя мігрант"
+          },
+          {
+            "prefix": "міжнародных мігрант"
+          },
+          {
+            "prefix": "знешняя міграцы"
+          },
+          {
+            "prefix": "знешняй міграцы"
+          },
+          {
+            "prefix": "трансгранічная міграцы"
+          },
+          {
+            "prefix": "трансгранічнай міграцы"
+          }
+        ],
+        "pap": [
+          "migracion internacional",
+          "migrante internacional",
+          "migrashon internashonal",
+          "migrante internashonal",
+          "internationale migratie"
         ]
       }
     },
@@ -2389,6 +2924,155 @@
           {
             "prefix": "migracije u gradov"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "migrācija no laukiem uz pilsēt"
+          },
+          {
+            "prefix": "migrācijas no laukiem uz pilsēt"
+          },
+          {
+            "prefix": "pārcelšanās no laukiem uz pilsēt"
+          },
+          {
+            "prefix": "pārceļas no laukiem uz pilsēt"
+          },
+          {
+            "prefix": "migrācija uz pilsēt"
+          },
+          {
+            "prefix": "aizplūšana uz pilsēt"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷират аз деҳа ба шаҳр"
+          },
+          {
+            "prefix": "муҳоҷират аз деҳот ба шаҳр"
+          },
+          {
+            "prefix": "кӯчидан аз деҳот ба шаҳр"
+          },
+          {
+            "prefix": "кӯчидан аз деҳа ба шаҳр"
+          },
+          {
+            "prefix": "кӯчидани аҳолии деҳот ба шаҳр"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "qishloqdan shaharga migratsi"
+          },
+          {
+            "prefix": "қишлоқдан шаҳарга миграци"
+          },
+          {
+            "prefix": "qishloqdan shaharga ko'ch"
+          },
+          {
+            "prefix": "qishloqdan shaharga koʻch"
+          },
+          {
+            "prefix": "qishloqdan shaharga ko’ch"
+          },
+          {
+            "prefix": "qishloqdan shaharga ko‘ch"
+          },
+          {
+            "prefix": "қишлоқдан шаҳарга кўч"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "iš kaimų į miest"
+          },
+          {
+            "prefix": "iš kaimo į miest"
+          },
+          {
+            "prefix": "iš regionų į didmiesč"
+          },
+          {
+            "prefix": "iš regionų į didžiuosius miest"
+          },
+          {
+            "prefix": "kaimo gyventojų kėlim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "maalt linna"
+          },
+          {
+            "prefix": "linnadesse koli"
+          },
+          {
+            "prefix": "linnadesse rän"
+          },
+          "ränne linnadesse",
+          "rände linnadesse"
+        ],
+        "kazakh": [
+          {
+            "prefix": "ауылдан қалаға көш"
+          },
+          {
+            "prefix": "ауылдан қалаға қоныс"
+          },
+          {
+            "prefix": "ауылдан қалаға миграци"
+          },
+          {
+            "prefix": "ауыл-қала көші-қон"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "айылдан шаарга миграци"
+          },
+          {
+            "prefix": "айылдан шаарга көч"
+          },
+          {
+            "prefix": "айылдардан шаарларга көч"
+          },
+          {
+            "prefix": "айылдардан шаарларга миграци"
+          },
+          {
+            "prefix": "шаарларга миграци"
+          },
+          {
+            "prefix": "шаарга миграци"
+          }
+        ],
+        "farsi": [
+          "مهاجرت روستا به شهر",
+          "مهاجرت از روستا به شهر",
+          "مهاجرت روستاییان به شهر",
+          "مهاجرت روستایی-شهری",
+          "مهاجرت به شهرها",
+          "مهاجرت از قریه"
+        ],
+        "belarusian": [
+          "міграцыя з вёскі ў горад",
+          "міграцыі з вёскі ў горад",
+          "міграцыя з вёсак у гарады",
+          "міграцыі з вёсак у гарады",
+          "пераезд з вёскі ў горад",
+          "міграцыя ў гарады",
+          "міграцыі ў гарады",
+          "з сельскай мясцовасці ў гарады"
+        ],
+        "pap": [
+          "migracion rural-urbano",
+          "migracion di campo pa stad",
+          "migrashon rural-urbano",
+          "migrashon di kunuku pa stat",
+          "trek naar de stad"
         ]
       }
     },
@@ -3091,6 +3775,231 @@
           {
             "prefix": "исељавањ"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "emigrācij"
+          },
+          {
+            "prefix": "emigrant"
+          },
+          {
+            "prefix": "emigrē"
+          },
+          {
+            "prefix": "izceļošan"
+          },
+          {
+            "prefix": "izceļotāj"
+          },
+          {
+            "prefix": "smadzeņu aizplūš"
+          },
+          {
+            "prefix": "darbaspēka aizplūš"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "эмигратси"
+          },
+          {
+            "prefix": "эмиграци"
+          },
+          {
+            "prefix": "эмигрант"
+          },
+          {
+            "prefix": "фирори мағз"
+          },
+          {
+            "prefix": "фирори зеҳн"
+          },
+          {
+            "prefix": "кӯчидан ба хориҷ"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "emigratsi"
+          },
+          {
+            "prefix": "эмиграци"
+          },
+          {
+            "prefix": "emigrant"
+          },
+          {
+            "prefix": "эмигрант"
+          },
+          {
+            "prefix": "intellektual migratsi"
+          },
+          {
+            "prefix": "интеллектуал миграци"
+          },
+          {
+            "prefix": "kadrlar oqib ket"
+          },
+          {
+            "prefix": "кадрлар оқиб кет"
+          },
+          {
+            "prefix": "chet elga ko'chib ket"
+          },
+          {
+            "prefix": "chet elga koʻchib ket"
+          },
+          {
+            "prefix": "chet elga ko’chib ket"
+          },
+          {
+            "prefix": "chet elga ko‘chib ket"
+          },
+          {
+            "prefix": "чет элга кўчиб кет"
+          },
+          {
+            "prefix": "xorijga ko'chib ket"
+          },
+          {
+            "prefix": "xorijga koʻchib ket"
+          },
+          {
+            "prefix": "xorijga ko’chib ket"
+          },
+          {
+            "prefix": "xorijga ko‘chib ket"
+          },
+          {
+            "prefix": "хорижга кўчиб кет"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "emigracij"
+          },
+          {
+            "prefix": "emigrant"
+          },
+          {
+            "prefix": "emigrav"
+          },
+          {
+            "prefix": "emigruo"
+          },
+          {
+            "prefix": "emigracin"
+          },
+          {
+            "prefix": "protų nutekėjim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "väljarän"
+          },
+          {
+            "prefix": "emigratsioon"
+          },
+          {
+            "prefix": "emigran"
+          },
+          {
+            "prefix": "emigreeru"
+          },
+          {
+            "prefix": "ajude äravool"
+          },
+          {
+            "prefix": "ajude väljavool"
+          },
+          {
+            "prefix": "välismaale koli"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "эмиграци"
+          },
+          {
+            "prefix": "эмигрант"
+          },
+          {
+            "prefix": "елден көшіп кет"
+          },
+          {
+            "prefix": "ақыл-ой ағын"
+          },
+          {
+            "prefix": "ақыл-ойдың кет"
+          },
+          {
+            "prefix": "мамандардың шетелге кет"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "эмиграци"
+          },
+          {
+            "prefix": "эмигрант"
+          },
+          {
+            "prefix": "чет өлкөгө көч"
+          },
+          {
+            "prefix": "чет өлкөгө туруктуу жашоого кет"
+          },
+          {
+            "prefix": "мээ агым"
+          },
+          {
+            "prefix": "мээлердин агым"
+          },
+          {
+            "prefix": "адистердин агып кет"
+          },
+          {
+            "prefix": "кадрлардын агып кет"
+          }
+        ],
+        "farsi": [
+          "فرار مغزها",
+          "مهاجرت نخبگان",
+          "مهاجرت متخصصان",
+          "مهاجرت از کشور",
+          "مهاجرت از ایران",
+          "مهاجرت از افغانستان",
+          "ترک وطن",
+          "مهاجرت به خارج"
+        ],
+        "belarusian": [
+          {
+            "prefix": "эміграцы"
+          },
+          {
+            "prefix": "эмігрант"
+          },
+          {
+            "prefix": "эміграва"
+          },
+          "уцечка мазгоў",
+          "уцечкі мазгоў",
+          "ўцечка мазгоў",
+          "ўцечкі мазгоў",
+          "адток мазгоў",
+          "адтоку мазгоў"
+        ],
+        "pap": [
+          "emigracion",
+          "emigrante",
+          "emigrantenan",
+          "fuga di cerebro",
+          "emigrashon",
+          "fuga di serebro",
+          "emigratie",
+          "brain drain"
         ]
       }
     },
@@ -4080,6 +4989,240 @@
           {
             "prefix": "pečalbar"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "darbaspēka migrācij"
+          },
+          {
+            "prefix": "darba migrācij"
+          },
+          {
+            "prefix": "darba migrant"
+          },
+          {
+            "prefix": "darbaspēka mobilitāt"
+          },
+          {
+            "prefix": "viesstrādniek"
+          },
+          {
+            "prefix": "ārvalstu darbaspēk"
+          },
+          {
+            "prefix": "ārvalstu strādniek"
+          },
+          {
+            "prefix": "ārzemju strādniek"
+          },
+          {
+            "prefix": "ārvalstu darba ņēmēj"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷирати меҳнат"
+          },
+          {
+            "prefix": "мухочирати мехнат"
+          },
+          {
+            "prefix": "муҳоҷирони меҳнат"
+          },
+          {
+            "prefix": "мухочирони мехнат"
+          },
+          {
+            "prefix": "муҳоҷири меҳнат"
+          },
+          {
+            "prefix": "коргарони хориҷ"
+          },
+          {
+            "prefix": "қувваи кории хориҷ"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "mehnat migratsi"
+          },
+          {
+            "prefix": "меҳнат миграци"
+          },
+          {
+            "prefix": "mehnat migrant"
+          },
+          {
+            "prefix": "меҳнат мигрант"
+          },
+          {
+            "prefix": "mehnat muhojir"
+          },
+          {
+            "prefix": "меҳнат муҳожир"
+          },
+          {
+            "prefix": "xorijiy ishchi"
+          },
+          {
+            "prefix": "хорижий ишчи"
+          },
+          {
+            "prefix": "chet ellik ishchi"
+          },
+          {
+            "prefix": "чет эллик ишчи"
+          },
+          {
+            "prefix": "gastarbayter"
+          },
+          {
+            "prefix": "гастарбайтер"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "darbo migracij"
+          },
+          {
+            "prefix": "darbo migrant"
+          },
+          {
+            "prefix": "darbo jėgos migracij"
+          },
+          {
+            "prefix": "užsienio darbuotoj"
+          },
+          {
+            "prefix": "užsieniečiai darbuotoj"
+          },
+          {
+            "prefix": "užsieniečių darbuotoj"
+          },
+          {
+            "prefix": "trečiųjų šalių darbuotoj"
+          },
+          {
+            "prefix": "trečiųjų šalių piliečių įdarbinim"
+          },
+          {
+            "prefix": "darbo jėgos judum"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "töörän"
+          },
+          {
+            "prefix": "tööjõu rän"
+          },
+          {
+            "prefix": "tööjõumigratsioon"
+          },
+          {
+            "prefix": "töömigran"
+          },
+          {
+            "prefix": "võõrtööli"
+          },
+          {
+            "prefix": "välistööjõ"
+          },
+          {
+            "prefix": "välistööta"
+          },
+          {
+            "prefix": "tööjõu liikuvu"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "еңбек көші-қон"
+          },
+          {
+            "prefix": "еңбек миграци"
+          },
+          {
+            "prefix": "еңбек мигрант"
+          },
+          {
+            "prefix": "шетелдік жұмыс күш"
+          },
+          {
+            "prefix": "шетелдік жұмыскер"
+          },
+          {
+            "prefix": "шетелдік жұмысшы"
+          },
+          {
+            "prefix": "гастарбайтер"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "эмгек миграци"
+          },
+          {
+            "prefix": "эмгек мигрант"
+          },
+          {
+            "prefix": "чет элдик жумушчу"
+          },
+          {
+            "prefix": "чет өлкөлүк жумушчу"
+          },
+          {
+            "prefix": "чет өлкөдө иштеген жарандар"
+          },
+          {
+            "prefix": "чет өлкөдө иштеген мекендеш"
+          }
+        ],
+        "farsi": [
+          "مهاجرت کاری",
+          "مهاجرت نیروی کار",
+          "مهاجرت کارگری",
+          "کارگران مهاجر",
+          "کارگر مهاجر",
+          "نیروی کار مهاجر",
+          "اعزام نیروی کار"
+        ],
+        "belarusian": [
+          {
+            "prefix": "працоўная міграцы"
+          },
+          {
+            "prefix": "працоўнай міграцы"
+          },
+          {
+            "prefix": "працоўную міграцы"
+          },
+          {
+            "prefix": "працоўныя мігрант"
+          },
+          {
+            "prefix": "працоўных мігрант"
+          },
+          {
+            "prefix": "працоўным мігрант"
+          },
+          "замежныя работнікі",
+          "замежных работнікаў",
+          "замежная рабочая сіла",
+          "замежнай рабочай сілы",
+          {
+            "prefix": "гастарбайтэр"
+          }
+        ],
+        "pap": [
+          "migracion laboral",
+          "trahado stranhero",
+          "trahadonan stranhero",
+          "migrashon laboral",
+          "trahadó stranhero",
+          "trahadónan stranhero",
+          "arbeidsmigratie",
+          "buitenlandse werknemers"
         ]
       }
     },
@@ -4717,6 +5860,199 @@
           {
             "prefix": "privremenih migranat"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cirkulārā migrācij"
+          },
+          {
+            "prefix": "cirkulārās migrācij"
+          },
+          {
+            "prefix": "cirkulāro migrācij"
+          },
+          {
+            "prefix": "pagaidu migrācij"
+          },
+          {
+            "prefix": "pagaidu migrant"
+          },
+          {
+            "prefix": "īslaicīgā migrācij"
+          },
+          {
+            "prefix": "īslaicīgās migrācij"
+          },
+          {
+            "prefix": "īstermiņa migrācij"
+          }
+        ],
+        "tajik": [
+          "муҳоҷирати даврӣ",
+          "муҳоҷирати даврии",
+          {
+            "prefix": "муҳоҷирати муваққат"
+          },
+          {
+            "prefix": "мухочирати муваккат"
+          },
+          {
+            "prefix": "муҳоҷирони муваққат"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "vaqtinchalik migratsi"
+          },
+          {
+            "prefix": "вақтинчалик миграци"
+          },
+          {
+            "prefix": "vaqtinchalik migrant"
+          },
+          {
+            "prefix": "вақтинчалик мигрант"
+          },
+          {
+            "prefix": "tsiklik migratsi"
+          },
+          {
+            "prefix": "циклик миграци"
+          },
+          {
+            "prefix": "aylanma migratsi"
+          },
+          {
+            "prefix": "айланма миграци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "cirkuliacinė migracij"
+          },
+          {
+            "prefix": "cirkuliacinės migracij"
+          },
+          {
+            "prefix": "laikinoji migracij"
+          },
+          {
+            "prefix": "laikinosios migracij"
+          },
+          {
+            "prefix": "laikina migracij"
+          },
+          {
+            "prefix": "laikinos migracij"
+          },
+          {
+            "prefix": "laikinieji migrant"
+          },
+          {
+            "prefix": "laikinųjų migrant"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "ringrän"
+          },
+          {
+            "prefix": "pendelrän"
+          },
+          "ajutine ränne",
+          "ajutise rände",
+          "ajutist rännet",
+          {
+            "prefix": "ajutine migratsioon"
+          },
+          {
+            "prefix": "ajutise migratsioon"
+          },
+          {
+            "prefix": "ajutised migran"
+          },
+          {
+            "prefix": "ajutiste migran"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "уақытша көші-қон"
+          },
+          {
+            "prefix": "уақытша миграци"
+          },
+          {
+            "prefix": "уақытша мигрант"
+          },
+          {
+            "prefix": "айналмалы көші-қон"
+          },
+          {
+            "prefix": "циркулярлық миграци"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "циркулярдык миграци"
+          },
+          {
+            "prefix": "убактылуу миграци"
+          },
+          {
+            "prefix": "убактылуу мигрант"
+          },
+          {
+            "prefix": "кайталанма миграци"
+          }
+        ],
+        "farsi": [
+          "مهاجرت چرخشی",
+          "مهاجرت موقت",
+          "مهاجران موقت",
+          "مهاجرین موقت",
+          "مهاجرت دوره‌ای",
+          "مهاجرت دوره ای",
+          "مهاجرت دورهای",
+          "مهاجرت رفت و برگشتی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "цыркулярная міграцы"
+          },
+          {
+            "prefix": "цыркулярнай міграцы"
+          },
+          {
+            "prefix": "часовая міграцы"
+          },
+          {
+            "prefix": "часовай міграцы"
+          },
+          {
+            "prefix": "часовую міграцы"
+          },
+          {
+            "prefix": "часовыя мігрант"
+          },
+          {
+            "prefix": "часовых мігрант"
+          },
+          {
+            "prefix": "маятнікавая міграцы"
+          },
+          {
+            "prefix": "маятнікавай міграцы"
+          }
+        ],
+        "pap": [
+          "migracion circular",
+          "migracion temporal",
+          "migrante temporal",
+          "migrashon sirkular",
+          "migrashon temporal",
+          "migrantenan temporal",
+          "tijdelijke migratie"
         ]
       }
     },
@@ -5342,6 +6678,191 @@
           {
             "prefix": "sezonskih migranat"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "sezonālā migrācij"
+          },
+          {
+            "prefix": "sezonālās migrācij"
+          },
+          {
+            "prefix": "sezonas migrācij"
+          },
+          {
+            "prefix": "sezonālie migrant"
+          },
+          {
+            "prefix": "sezonas strādniek"
+          },
+          {
+            "prefix": "sezonālie strādniek"
+          },
+          {
+            "prefix": "sezonālo strādniek"
+          },
+          {
+            "prefix": "sezonas darba vīz"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷирати мавсим"
+          },
+          {
+            "prefix": "мухочирати мавсим"
+          },
+          {
+            "prefix": "муҳоҷирони мавсим"
+          },
+          {
+            "prefix": "коргарони мавсим"
+          },
+          {
+            "prefix": "раводиди кори мавсим"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "mavsumiy migratsi"
+          },
+          {
+            "prefix": "мавсумий миграци"
+          },
+          {
+            "prefix": "mavsumiy migrant"
+          },
+          {
+            "prefix": "мавсумий мигрант"
+          },
+          {
+            "prefix": "mavsumiy ishchi"
+          },
+          {
+            "prefix": "мавсумий ишчи"
+          },
+          {
+            "prefix": "mavsumiy ish viza"
+          },
+          {
+            "prefix": "мавсумий иш виза"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "sezoninė migracij"
+          },
+          {
+            "prefix": "sezoninės migracij"
+          },
+          {
+            "prefix": "sezoninę migracij"
+          },
+          {
+            "prefix": "sezoniniai migrant"
+          },
+          {
+            "prefix": "sezoninių migrant"
+          },
+          {
+            "prefix": "sezoniniai darbuotoj"
+          },
+          {
+            "prefix": "sezoninių darbuotoj"
+          },
+          {
+            "prefix": "sezoninius darbuotoj"
+          },
+          {
+            "prefix": "sezoninio darbo viz"
+          }
+        ],
+        "estonian": [
+          "hooajaline ränne",
+          "hooajalise rände",
+          "hooajalist rännet",
+          {
+            "prefix": "hooajaline migratsioon"
+          },
+          {
+            "prefix": "hooajalise migratsioon"
+          },
+          {
+            "prefix": "hooajalised võõrtööli"
+          },
+          {
+            "prefix": "hooajaliste võõrtööli"
+          },
+          {
+            "prefix": "hooajatöö viisa"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "маусымдық көші-қон"
+          },
+          {
+            "prefix": "маусымдық миграци"
+          },
+          {
+            "prefix": "маусымдық мигрант"
+          },
+          {
+            "prefix": "маусымдық жұмыскер"
+          },
+          {
+            "prefix": "маусымдық жұмысшы"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "сезондук миграци"
+          },
+          {
+            "prefix": "сезондук мигрант"
+          },
+          {
+            "prefix": "сезондук эмгек мигрант"
+          },
+          {
+            "prefix": "сезондук жумушчу"
+          },
+          {
+            "prefix": "сезондук иш визас"
+          }
+        ],
+        "farsi": [
+          "مهاجرت فصلی",
+          "مهاجران فصلی",
+          "مهاجرین فصلی",
+          "ویزای کار فصلی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "сезонная міграцы"
+          },
+          {
+            "prefix": "сезоннай міграцы"
+          },
+          {
+            "prefix": "сезонную міграцы"
+          },
+          {
+            "prefix": "сезонныя мігрант"
+          },
+          {
+            "prefix": "сезонных мігрант"
+          },
+          "сезонныя работнікі",
+          "сезонных работнікаў"
+        ],
+        "pap": [
+          "migracion di temporada",
+          "trahado di temporada",
+          "migrashon di temporada",
+          "trahadó di temporada",
+          "seizoensarbeid",
+          "seizoensarbeiders"
         ]
       }
     },
@@ -6065,6 +7586,215 @@
           {
             "prefix": "repatrijacija radnik"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "remigrācij"
+          },
+          {
+            "prefix": "remigrant"
+          },
+          {
+            "prefix": "reemigrācij"
+          },
+          {
+            "prefix": "reemigrant"
+          },
+          {
+            "prefix": "repatriācij"
+          },
+          {
+            "prefix": "repatriant"
+          },
+          {
+            "prefix": "atgriešanās dzimten"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷирони баргашт"
+          },
+          {
+            "prefix": "муҳоҷирони бозгашт"
+          },
+          {
+            "prefix": "бозгашти муҳоҷир"
+          },
+          {
+            "prefix": "бозгашти мухочир"
+          },
+          {
+            "prefix": "баргашти муҳоҷир"
+          },
+          {
+            "prefix": "муҳоҷирати бозгашт"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "qaytib kelgan migrant"
+          },
+          {
+            "prefix": "қайтиб келган мигрант"
+          },
+          {
+            "prefix": "qaytgan migrant"
+          },
+          {
+            "prefix": "қайтган мигрант"
+          },
+          {
+            "prefix": "qaytib kelgan muhojir"
+          },
+          {
+            "prefix": "қайтиб келган муҳожир"
+          },
+          {
+            "prefix": "migrantlarning qayt"
+          },
+          {
+            "prefix": "мигрантларнинг қайт"
+          },
+          {
+            "prefix": "muhojirlarning qayt"
+          },
+          {
+            "prefix": "муҳожирларнинг қайт"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "grįžtamoji migracij"
+          },
+          {
+            "prefix": "grįžtamosios migracij"
+          },
+          {
+            "prefix": "grįžtamąją migracij"
+          },
+          {
+            "prefix": "reemigracij"
+          },
+          {
+            "prefix": "reemigrant"
+          },
+          {
+            "prefix": "grįžtantys emigrant"
+          },
+          {
+            "prefix": "grįžtančių emigrant"
+          },
+          {
+            "prefix": "grįžę emigrant"
+          },
+          {
+            "prefix": "grįžusių emigrant"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "tagasirän"
+          },
+          {
+            "prefix": "remigratsioon"
+          },
+          "Talendid koju",
+          {
+            "prefix": "Eestisse tagasipöördu"
+          },
+          {
+            "prefix": "kodumaale naas"
+          },
+          {
+            "prefix": "Eestisse naas"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "кері көші-қон"
+          },
+          {
+            "prefix": "кері миграци"
+          },
+          {
+            "prefix": "оралған мигрант"
+          },
+          {
+            "prefix": "мигранттардың оралу"
+          },
+          {
+            "prefix": "қандас"
+          },
+          {
+            "prefix": "оралман"
+          },
+          {
+            "prefix": "репатриант"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "кайтып келген мигрант"
+          },
+          {
+            "prefix": "кайтып келе жаткан мигрант"
+          },
+          {
+            "prefix": "мигранттардын кайтып кел"
+          },
+          {
+            "prefix": "мигранттардын мекенге кайт"
+          },
+          {
+            "prefix": "мекенине кайткан мигрант"
+          },
+          {
+            "prefix": "кайра миграци"
+          },
+          {
+            "prefix": "кайтуу миграция"
+          },
+          {
+            "prefix": "кайрылман"
+          }
+        ],
+        "farsi": [
+          "بازگشت مهاجران",
+          "بازگشت مهاجرین",
+          "مهاجران بازگشتی",
+          "عودت مهاجرین",
+          "عودت‌کنندگان",
+          "عودت کنندگان",
+          "عودتکنندگان",
+          "مهاجرت معکوس"
+        ],
+        "belarusian": [
+          {
+            "prefix": "зваротная міграцы"
+          },
+          {
+            "prefix": "зваротнай міграцы"
+          },
+          {
+            "prefix": "зваротную міграцы"
+          },
+          {
+            "prefix": "рээміграцы"
+          },
+          "вяртанне мігрантаў",
+          "вяртання мігрантаў",
+          "вяртаньне мігрантаў",
+          "вяртанне эмігрантаў",
+          "вяртання эмігрантаў",
+          "вяртаньне эмігрантаў"
+        ],
+        "pap": [
+          "remigracion",
+          "migracion di retorno",
+          "remigrashon",
+          "migrashon di retorno",
+          "remigratie",
+          "remigranten"
         ]
       }
     },
@@ -7097,6 +8827,313 @@
           {
             "prefix": "nedozvoljeni prelaz državne granic"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "nelegālā migrācij"
+          },
+          {
+            "prefix": "nelegālās migrācij"
+          },
+          {
+            "prefix": "nelegālo migrācij"
+          },
+          {
+            "prefix": "nelegālajai migrācij"
+          },
+          {
+            "prefix": "nelegālie migrant"
+          },
+          {
+            "prefix": "nelegālo migrant"
+          },
+          {
+            "prefix": "nelegālajiem migrant"
+          },
+          {
+            "prefix": "nelegālā imigrācij"
+          },
+          {
+            "prefix": "nelegālās imigrācij"
+          },
+          {
+            "prefix": "nelegālie imigrant"
+          },
+          {
+            "prefix": "nelegālo imigrant"
+          },
+          {
+            "prefix": "neregulārā migrācij"
+          },
+          {
+            "prefix": "neregulārās migrācij"
+          },
+          {
+            "prefix": "nelikumīgi šķērsot robež"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷирати ғайриқонун"
+          },
+          {
+            "prefix": "мухочирати гайриконун"
+          },
+          {
+            "prefix": "муҳоҷирони ғайриқонун"
+          },
+          {
+            "prefix": "мухочирони гайриконун"
+          },
+          {
+            "prefix": "муҳоҷири ғайриқонун"
+          },
+          {
+            "prefix": "муҳоҷирати ғайрирасм"
+          },
+          {
+            "prefix": "муҳоҷирони ғайрирасм"
+          },
+          {
+            "prefix": "муҳоҷирати номунтазам"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "noqonuniy migratsi"
+          },
+          {
+            "prefix": "ноқонуний миграци"
+          },
+          {
+            "prefix": "noqonuniy migrant"
+          },
+          {
+            "prefix": "ноқонуний мигрант"
+          },
+          {
+            "prefix": "noqonuniy muhojir"
+          },
+          {
+            "prefix": "ноқонуний муҳожир"
+          },
+          {
+            "prefix": "noqonuniy immigratsi"
+          },
+          {
+            "prefix": "ноқонуний иммиграци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "nelegali migracij"
+          },
+          {
+            "prefix": "nelegalios migracij"
+          },
+          {
+            "prefix": "nelegalią migracij"
+          },
+          {
+            "prefix": "nelegaliai migracij"
+          },
+          {
+            "prefix": "nelegalūs migrant"
+          },
+          {
+            "prefix": "nelegalių migrant"
+          },
+          {
+            "prefix": "nelegalius migrant"
+          },
+          {
+            "prefix": "nelegaliems migrant"
+          },
+          {
+            "prefix": "nelegalūs imigrant"
+          },
+          {
+            "prefix": "nelegalių imigrant"
+          },
+          {
+            "prefix": "neteisėta migracij"
+          },
+          {
+            "prefix": "neteisėtos migracij"
+          },
+          {
+            "prefix": "neteisėtą migracij"
+          },
+          {
+            "prefix": "neteisėti migrant"
+          },
+          {
+            "prefix": "neteisėtų migrant"
+          },
+          {
+            "prefix": "nereguliari migracij"
+          },
+          {
+            "prefix": "nereguliarios migracij"
+          },
+          {
+            "prefix": "neteisėtai sieną kirt"
+          }
+        ],
+        "estonian": [
+          "ebaseaduslik ränne",
+          "ebaseadusliku rände",
+          "ebaseaduslikku rännet",
+          {
+            "prefix": "ebaseaduslik migratsioon"
+          },
+          {
+            "prefix": "ebaseadusliku migratsioon"
+          },
+          {
+            "prefix": "ebaseaduslik sisserän"
+          },
+          {
+            "prefix": "ebaseadusliku sisserän"
+          },
+          {
+            "prefix": "ebaseaduslikud migran"
+          },
+          {
+            "prefix": "ebaseaduslike migran"
+          },
+          {
+            "prefix": "illegaalne immigratsioon"
+          },
+          {
+            "prefix": "illegaalsed immigran"
+          },
+          {
+            "prefix": "illegaalsed migran"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "заңсыз көші-қон"
+          },
+          {
+            "prefix": "заңсыз миграци"
+          },
+          {
+            "prefix": "заңсыз мигрант"
+          },
+          {
+            "prefix": "заңсыз иммиграци"
+          },
+          {
+            "prefix": "заңсыз иммигрант"
+          },
+          {
+            "prefix": "көші-қон заңнамасын бұз"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "мыйзамсыз миграци"
+          },
+          {
+            "prefix": "мыйзамсыз мигрант"
+          },
+          {
+            "prefix": "мыйзамсыз иммиграци"
+          },
+          {
+            "prefix": "мыйзамсыз иммигрант"
+          },
+          {
+            "prefix": "иррегулярдык миграци"
+          },
+          {
+            "prefix": "легалдуу эмес миграци"
+          }
+        ],
+        "farsi": [
+          "مهاجرت غیر‌قانونی",
+          "مهاجرت غیر قانونی",
+          "مهاجرت غیرقانونی",
+          "مهاجران غیر‌قانونی",
+          "مهاجران غیر قانونی",
+          "مهاجران غیرقانونی",
+          "مهاجرین غیر‌قانونی",
+          "مهاجرین غیر قانونی",
+          "مهاجرین غیرقانونی",
+          "مهاجرت غیر‌مجاز",
+          "مهاجرت غیر مجاز",
+          "مهاجرت غیرمجاز",
+          "مهاجران غیر‌مجاز",
+          "مهاجران غیر مجاز",
+          "مهاجران غیرمجاز",
+          "مهاجرین غیر‌مجاز",
+          "مهاجرین غیر مجاز",
+          "مهاجرین غیرمجاز",
+          "اتباع غیر‌مجاز",
+          "اتباع غیر مجاز",
+          "اتباع غیرمجاز",
+          "مهاجرت نامنظم"
+        ],
+        "belarusian": [
+          {
+            "prefix": "нелегальная міграцы"
+          },
+          {
+            "prefix": "нелегальнай міграцы"
+          },
+          {
+            "prefix": "нелегальную міграцы"
+          },
+          {
+            "prefix": "нелегальныя мігрант"
+          },
+          {
+            "prefix": "нелегальных мігрант"
+          },
+          {
+            "prefix": "нелегальным мігрант"
+          },
+          {
+            "prefix": "нелегальная іміграцы"
+          },
+          {
+            "prefix": "нелегальнай іміграцы"
+          },
+          {
+            "prefix": "нелегальныя імігрант"
+          },
+          {
+            "prefix": "нелегальных імігрант"
+          },
+          {
+            "prefix": "незаконная міграцы"
+          },
+          {
+            "prefix": "незаконнай міграцы"
+          },
+          {
+            "prefix": "нерэгулярная міграцы"
+          },
+          {
+            "prefix": "міграцыйны крызіс"
+          },
+          {
+            "prefix": "міграцыйнага крызіс"
+          }
+        ],
+        "pap": [
+          "migracion ilegal",
+          "inmigracion ilegal",
+          "migrante ilegal",
+          "migrantenan ilegal",
+          "migracion irregular",
+          "migrashon ilegal",
+          "imigrashon ilegal",
+          "migrashon iregular",
+          "illegale immigratie",
+          "illegale migranten"
         ]
       }
     },
@@ -7718,6 +9755,171 @@
           {
             "prefix": "bez regulisanog boravk"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "migranti bez dokument"
+          },
+          {
+            "prefix": "migrantu bez dokument"
+          },
+          {
+            "prefix": "nedokumentētie migrant"
+          },
+          {
+            "prefix": "nedokumentēto migrant"
+          },
+          {
+            "prefix": "nedokumentētā migrācij"
+          },
+          {
+            "prefix": "bez derīgiem ceļošanas dokument"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷирони бе ҳуҷҷат"
+          },
+          {
+            "prefix": "мухочирони бе хуччат"
+          },
+          {
+            "prefix": "муҳоҷирони беҳуҷҷат"
+          },
+          {
+            "prefix": "муҳоҷирони бидуни ҳуҷҷат"
+          },
+          {
+            "prefix": "хориҷиёни бе ҳуҷҷат"
+          },
+          {
+            "prefix": "коргарони бе ҳуҷҷат"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "hujjatsiz migrant"
+          },
+          {
+            "prefix": "ҳужжатсиз мигрант"
+          },
+          {
+            "prefix": "hujjatsiz muhojir"
+          },
+          {
+            "prefix": "ҳужжатсиз муҳожир"
+          },
+          {
+            "prefix": "hujjatsiz ishchi"
+          },
+          {
+            "prefix": "ҳужжатсиз ишчи"
+          },
+          {
+            "prefix": "hujjatsiz chet el fuqaro"
+          },
+          {
+            "prefix": "ҳужжатсиз чет эл фуқаро"
+          }
+        ],
+        "lithuanian": [
+          "migrantai be dokumentų",
+          "migrantų be dokumentų",
+          "užsieniečiai be dokumentų",
+          "užsieniečių be dokumentų",
+          "darbuotojai be dokumentų",
+          {
+            "prefix": "nedokumentuoti migrant"
+          },
+          {
+            "prefix": "nedokumentuotų migrant"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "dokumentideta migran"
+          },
+          {
+            "prefix": "dokumentideta sisserän"
+          },
+          {
+            "prefix": "dokumentideta tööta"
+          },
+          {
+            "prefix": "dokumentideta välismaala"
+          },
+          {
+            "prefix": "seadusliku aluseta viibi"
+          },
+          {
+            "prefix": "ebaseaduslikult riigis viibi"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "құжатсыз мигрант"
+          },
+          {
+            "prefix": "құжатсыз көші-қон"
+          },
+          {
+            "prefix": "құжатсыз иммигрант"
+          },
+          {
+            "prefix": "құжатсыз шетелдік"
+          },
+          {
+            "prefix": "құжатсыз жұмысшы"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "документсиз мигрант"
+          },
+          {
+            "prefix": "документсиз миграци"
+          },
+          {
+            "prefix": "документтери жок мигрант"
+          },
+          {
+            "prefix": "документсиз чет элдик"
+          },
+          {
+            "prefix": "документсиз жумушчу"
+          }
+        ],
+        "farsi": [
+          "مهاجران فاقد مدرک",
+          "مهاجرین فاقد مدرک",
+          "مهاجرین فاقد اسناد",
+          "مهاجران فاقد اسناد",
+          "اتباع فاقد مدرک",
+          "اتباع فاقد مدارک",
+          "فاقد مدارک اقامتی",
+          "مهاجران بدون مدرک"
+        ],
+        "belarusian": [
+          "мігранты без дакументаў",
+          "мігрантаў без дакументаў",
+          "імігранты без дакументаў",
+          "імігрантаў без дакументаў",
+          "замежнікі без дакументаў",
+          "замежнікаў без дакументаў",
+          {
+            "prefix": "недакументаваныя мігрант"
+          },
+          {
+            "prefix": "недакументаваных мігрант"
+          }
+        ],
+        "pap": [
+          "migrante sin documento",
+          "migrantenan sin documento",
+          "stranhero sin documento",
+          "stranheronan sin documento",
+          "migrante indokumentá",
+          "ongedocumenteerde migranten"
         ]
       }
     },
@@ -8384,6 +10586,213 @@
           {
             "prefix": "prisilnog raseljavanj"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "pārvietotās person"
+          },
+          {
+            "prefix": "pārvietoto person"
+          },
+          {
+            "prefix": "pārvietotajām person"
+          },
+          {
+            "prefix": "iekšzemē pārvietot"
+          },
+          {
+            "prefix": "iekšēji pārvietot"
+          },
+          {
+            "prefix": "pārvietotie iedzīvotāj"
+          },
+          {
+            "prefix": "pārvietoto iedzīvotāj"
+          },
+          {
+            "prefix": "piespiedu pārvietot"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "муҳоҷирони иҷбор"
+          },
+          {
+            "prefix": "муҳоҷирати иҷбор"
+          },
+          {
+            "prefix": "гурезагони дохил"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "majburiy ko'chirilgan"
+          },
+          {
+            "prefix": "majburiy koʻchirilgan"
+          },
+          {
+            "prefix": "majburiy ko’chirilgan"
+          },
+          {
+            "prefix": "majburiy ko‘chirilgan"
+          },
+          {
+            "prefix": "мажбурий кўчирилган"
+          },
+          {
+            "prefix": "majburan ko'chirilgan"
+          },
+          {
+            "prefix": "majburan koʻchirilgan"
+          },
+          {
+            "prefix": "majburan ko’chirilgan"
+          },
+          {
+            "prefix": "majburan ko‘chirilgan"
+          },
+          {
+            "prefix": "мажбуран кўчирилган"
+          },
+          {
+            "prefix": "ichki ko'chirilgan shaxs"
+          },
+          {
+            "prefix": "ichki koʻchirilgan shaxs"
+          },
+          {
+            "prefix": "ichki ko’chirilgan shaxs"
+          },
+          {
+            "prefix": "ichki ko‘chirilgan shaxs"
+          },
+          {
+            "prefix": "ички кўчирилган шахс"
+          },
+          {
+            "prefix": "majburiy migratsi"
+          },
+          {
+            "prefix": "мажбурий миграци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "perkeltieji asmen"
+          },
+          {
+            "prefix": "perkeltųjų asmen"
+          },
+          {
+            "prefix": "viduje perkelt"
+          },
+          {
+            "prefix": "priverstinai perkelt"
+          },
+          {
+            "prefix": "priverstinis gyventojų perkėlim"
+          },
+          {
+            "prefix": "priverstinio gyventojų perkėlim"
+          },
+          {
+            "prefix": "priverstinai išvietint"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "sundrän"
+          },
+          {
+            "prefix": "ümberasustatud isik"
+          },
+          {
+            "prefix": "riigisisesed põgeni"
+          },
+          {
+            "prefix": "riigisiseste põgeni"
+          },
+          {
+            "prefix": "sõjapõgeni"
+          },
+          {
+            "prefix": "kodust lahkuma sunnitud"
+          },
+          {
+            "prefix": "kodudest lahkuma sunnitud"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "мәжбүрлі қоныс аудар"
+          },
+          {
+            "prefix": "мәжбүрлі көш"
+          },
+          {
+            "prefix": "ішкі қоныс аударушы"
+          },
+          {
+            "prefix": "ығыстырылған адам"
+          },
+          {
+            "prefix": "қоныс аударуға мәжбүр"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "мажбурлап көчүрүл"
+          },
+          {
+            "prefix": "көчүрүлгөн адамдар"
+          },
+          {
+            "prefix": "көчүрүлгөн калк"
+          },
+          {
+            "prefix": "калкты көчүрүү"
+          },
+          {
+            "prefix": "калктын массалык көч"
+          },
+          {
+            "prefix": "качкындар"
+          }
+        ],
+        "farsi": [
+          "آوارگی",
+          "آوارگان",
+          "آواره شده",
+          "آواره شدند",
+          "بی‌جاشد",
+          "بی جاشد",
+          "بیجاشد",
+          "جابه‌جایی جمعیت",
+          "جابه جایی جمعیت",
+          "جابهجایی جمعیت",
+          "جابجایی جمعیت"
+        ],
+        "belarusian": [
+          "вымушаныя перасяленцы",
+          "вымушаных перасяленцаў",
+          "вымушана перамешчаныя асобы",
+          "вымушана перамешчаных асоб",
+          "унутрана перамешчаныя асобы",
+          "ўнутрана перамешчаныя асобы",
+          "перамешчаныя асобы",
+          "перамешчаных асоб",
+          "вымушанае перасяленне",
+          "вымушанага перасялення",
+          "вымушанае перасяленьне"
+        ],
+        "pap": [
+          "hende desplasa",
+          "poblacion desplasa",
+          "hende desplasá",
+          "poblashon desplasá",
+          "ontheemden",
+          "ontheemding"
         ]
       }
     },
@@ -8970,6 +11379,143 @@
           },
           "трговина људима",
           "трговине људима"
+        ],
+        "latvian": [
+          {
+            "prefix": "cilvēku tirdzniecīb"
+          },
+          {
+            "prefix": "cilvēktirdzniecīb"
+          },
+          {
+            "prefix": "cilvēku tirgotāj"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "савдои одам"
+          },
+          {
+            "prefix": "савдои инсон"
+          },
+          {
+            "prefix": "хариду фурӯши одам"
+          },
+          {
+            "prefix": "хариду фуруши одам"
+          },
+          {
+            "prefix": "трафикинг"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "odam savdo"
+          },
+          {
+            "prefix": "одам савдо"
+          },
+          {
+            "prefix": "odamlar savdo"
+          },
+          {
+            "prefix": "одамлар савдо"
+          },
+          {
+            "prefix": "inson savdo"
+          },
+          {
+            "prefix": "инсон савдо"
+          }
+        ],
+        "lithuanian": [
+          "prekyba žmonėmis",
+          "prekybos žmonėmis",
+          "prekybą žmonėmis",
+          "prekybai žmonėmis",
+          "prekeivis žmonėmis",
+          "prekeiviai žmonėmis",
+          "prekeivių žmonėmis",
+          "prekeiviais žmonėmis"
+        ],
+        "estonian": [
+          {
+            "prefix": "inimkaubandu"
+          },
+          {
+            "prefix": "inimkaubits"
+          },
+          {
+            "prefix": "inimestega kaubitse"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "адам саудас"
+          },
+          {
+            "prefix": "адам саудасының құрбан"
+          },
+          {
+            "prefix": "трафикинг"
+          },
+          {
+            "prefix": "құлдыққа сат"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "адам сатуу"
+          },
+          {
+            "prefix": "адамдарды сатуу"
+          },
+          {
+            "prefix": "адам сатуучу"
+          },
+          {
+            "prefix": "трафикинг"
+          },
+          {
+            "prefix": "секс-кулчулук"
+          },
+          {
+            "prefix": "эмгек кулчулуг"
+          },
+          {
+            "prefix": "мажбурлап эмгектендир"
+          }
+        ],
+        "farsi": [
+          "قاچاق انسان",
+          "قاچاق زنان",
+          "قاچاق کودکان",
+          "قاچاق اشخاص",
+          "قاچاق افراد",
+          "قربانیان قاچاق",
+          "خرید و فروش انسان"
+        ],
+        "belarusian": [
+          "гандаль людзьмі",
+          "гандлю людзьмі",
+          "гандлем людзьмі",
+          {
+            "prefix": "трафікінг"
+          },
+          "гандаль жанчынамі",
+          "гандлю жанчынамі",
+          "гандаль дзецьмі",
+          "гандлю дзецьмі"
+        ],
+        "pap": [
+          "trafico humano",
+          "trafico di persona",
+          "trata di persona",
+          "victima di trafico humano",
+          "trafiko humano",
+          "trafiko di persona",
+          "víktima di trafiko humano",
+          "mensenhandel"
         ]
       }
     },
@@ -9578,6 +12124,199 @@
           {
             "prefix": "švercera migran"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cilvēku kontraband"
+          },
+          {
+            "prefix": "migrantu kontraband"
+          },
+          {
+            "prefix": "migrantu pārvadāš"
+          },
+          {
+            "prefix": "migrantu pārvadātāj"
+          },
+          {
+            "prefix": "nelegālo migrantu pārvad"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "қочоқи муҳоҷир"
+          },
+          {
+            "prefix": "қочоқи одам"
+          },
+          {
+            "prefix": "кочоки одам"
+          },
+          {
+            "prefix": "қочоқбарони одам"
+          },
+          {
+            "prefix": "интиқоли ғайриқонунии муҳоҷир"
+          },
+          {
+            "prefix": "гузаронидани ғайриқонунии муҳоҷир"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "migrantlarni noqonuniy olib o't"
+          },
+          {
+            "prefix": "migrantlarni noqonuniy olib oʻt"
+          },
+          {
+            "prefix": "migrantlarni noqonuniy olib o’t"
+          },
+          {
+            "prefix": "migrantlarni noqonuniy olib o‘t"
+          },
+          {
+            "prefix": "мигрантларни ноқонуний олиб ўт"
+          },
+          {
+            "prefix": "odamlarni noqonuniy olib o't"
+          },
+          {
+            "prefix": "odamlarni noqonuniy olib oʻt"
+          },
+          {
+            "prefix": "odamlarni noqonuniy olib o’t"
+          },
+          {
+            "prefix": "odamlarni noqonuniy olib o‘t"
+          },
+          {
+            "prefix": "одамларни ноқонуний олиб ўт"
+          },
+          {
+            "prefix": "chegaradan noqonuniy olib o't"
+          },
+          {
+            "prefix": "chegaradan noqonuniy olib oʻt"
+          },
+          {
+            "prefix": "chegaradan noqonuniy olib o’t"
+          },
+          {
+            "prefix": "chegaradan noqonuniy olib o‘t"
+          },
+          {
+            "prefix": "чегарадан ноқонуний олиб ўт"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "migrantų gabenim"
+          },
+          {
+            "prefix": "migrantų gabentoj"
+          },
+          {
+            "prefix": "užsieniečių gabenim"
+          },
+          {
+            "prefix": "užsieniečių gabentoj"
+          },
+          {
+            "prefix": "migrantų kontraband"
+          },
+          {
+            "prefix": "žmonių kontraband"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "inimsmuugel"
+          },
+          {
+            "prefix": "inimeste smuugelda"
+          },
+          {
+            "prefix": "migrantide smuugelda"
+          },
+          {
+            "prefix": "inimeste smugelda"
+          },
+          {
+            "prefix": "migrantide smugelda"
+          },
+          {
+            "prefix": "migrantide salave"
+          },
+          {
+            "prefix": "inimeste salave"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "мигранттарды заңсыз өткіз"
+          },
+          {
+            "prefix": "заңсыз мигранттарды өткіз"
+          },
+          {
+            "prefix": "адамдарды шекарадан заңсыз өткіз"
+          },
+          {
+            "prefix": "адамдарды заңсыз өткіз"
+          },
+          {
+            "prefix": "заңсыз көші-қонды ұйымдастыр"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "мигранттарды мыйзамсыз өткөр"
+          },
+          {
+            "prefix": "адамдарды мыйзамсыз өткөр"
+          },
+          {
+            "prefix": "чек арадан мыйзамсыз өткөр"
+          },
+          {
+            "prefix": "мигранттарды контрабанда"
+          },
+          {
+            "prefix": "адам контрабанда"
+          }
+        ],
+        "farsi": [
+          "قاچاق مهاجر",
+          "قاچاق انسان",
+          "قاچاقچیان انسان",
+          "قاچاقچی انسان",
+          "قاچاقبران انسان",
+          "قاچاقبر انسان",
+          "قاچاق اتباع"
+        ],
+        "belarusian": [
+          "кантрабанда мігрантаў",
+          "кантрабанды мігрантаў",
+          "незаконны перавоз мігрантаў",
+          "незаконнага перавозу мігрантаў",
+          {
+            "prefix": "арганізацыя незаконнай міграцы"
+          },
+          {
+            "prefix": "арганізацыю незаконнай міграцы"
+          },
+          {
+            "prefix": "арганізацыі незаконнай міграцы"
+          }
+        ],
+        "pap": [
+          "smokkel di persona",
+          "smokkel di migrante",
+          "trafico di migrante",
+          "trafiko di migrante",
+          "mensensmokkel",
+          "mensensmokkelaars"
         ]
       }
     },
@@ -10556,6 +13295,247 @@
           "Frontex",
           "Frontexa",
           "Frontex-a"
+        ],
+        "latvian": [
+          {
+            "prefix": "robežkontrol"
+          },
+          {
+            "prefix": "robežas kontrol"
+          },
+          {
+            "prefix": "robežas apsardz"
+          },
+          {
+            "prefix": "robežapsardz"
+          },
+          {
+            "prefix": "robežsardz"
+          },
+          {
+            "prefix": "robežsarg"
+          },
+          {
+            "prefix": "robežas drošīb"
+          },
+          {
+            "prefix": "robežas aizsardzīb"
+          },
+          "Frontex"
+        ],
+        "tajik": [
+          {
+            "prefix": "назорати сарҳад"
+          },
+          {
+            "prefix": "ҳифзи сарҳад"
+          },
+          {
+            "prefix": "хифзи сархад"
+          },
+          {
+            "prefix": "амнияти сарҳад"
+          },
+          {
+            "prefix": "идоракунии сарҳад"
+          },
+          {
+            "prefix": "посгоҳи сарҳад"
+          },
+          {
+            "prefix": "посгоҳҳои сарҳад"
+          },
+          {
+            "prefix": "қӯшунҳои сарҳад"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "chegara nazorat"
+          },
+          {
+            "prefix": "чегара назорат"
+          },
+          {
+            "prefix": "chegara xavfsizlig"
+          },
+          {
+            "prefix": "чегара хавфсизлиг"
+          },
+          {
+            "prefix": "chegarani qo'riqla"
+          },
+          {
+            "prefix": "chegarani qoʻriqla"
+          },
+          {
+            "prefix": "chegarani qo’riqla"
+          },
+          {
+            "prefix": "chegarani qo‘riqla"
+          },
+          {
+            "prefix": "чегарани қўриқла"
+          },
+          {
+            "prefix": "nazorat-o'tkazish punkt"
+          },
+          {
+            "prefix": "nazorat-oʻtkazish punkt"
+          },
+          {
+            "prefix": "nazorat-o’tkazish punkt"
+          },
+          {
+            "prefix": "nazorat-o‘tkazish punkt"
+          },
+          {
+            "prefix": "назорат-ўтказиш пункт"
+          },
+          {
+            "prefix": "chegarachi"
+          },
+          {
+            "prefix": "чегарачи"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "sienos apsaug"
+          },
+          {
+            "prefix": "sienų apsaug"
+          },
+          {
+            "prefix": "sienos kontrol"
+          },
+          {
+            "prefix": "pasienio kontrol"
+          },
+          {
+            "prefix": "sienos stebėsen"
+          },
+          "VSAT",
+          {
+            "prefix": "pasienieč"
+          },
+          "pasienietis"
+        ],
+        "estonian": [
+          {
+            "prefix": "piirikontroll"
+          },
+          {
+            "prefix": "piirivalvur"
+          },
+          {
+            "prefix": "piirikaitse"
+          },
+          {
+            "prefix": "piirijulgeolek"
+          },
+          {
+            "prefix": "piirihaldu"
+          },
+          {
+            "prefix": "piiripunkt"
+          },
+          {
+            "prefix": "piiri valva"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "шекаралық бақылау"
+          },
+          {
+            "prefix": "шекара бақылау"
+          },
+          {
+            "prefix": "шекараны күзет"
+          },
+          {
+            "prefix": "шекара күзет"
+          },
+          {
+            "prefix": "шекара қауіпсіздіг"
+          },
+          {
+            "prefix": "Шекара қызмет"
+          },
+          {
+            "prefix": "шекаралық өткізу пункт"
+          },
+          {
+            "prefix": "шекарадағы өткізу пункт"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "чек ара көзөмөл"
+          },
+          {
+            "prefix": "чек араны көзөмөлдө"
+          },
+          {
+            "prefix": "чек ара коопсуздуг"
+          },
+          {
+            "prefix": "чек араны коргоо"
+          },
+          {
+            "prefix": "чек ара кызмат"
+          },
+          {
+            "prefix": "чек ара бекет"
+          },
+          {
+            "prefix": "чек арадагы өткөрүү пункт"
+          },
+          {
+            "prefix": "чек араны башкаруу"
+          }
+        ],
+        "farsi": [
+          "کنترل مرز",
+          "مدیریت مرز",
+          "امنیت مرز",
+          "مرزبانی",
+          "انسداد مرز",
+          "دیوار مرزی",
+          "پاسگاه مرزی",
+          "پولیس سرحدی"
+        ],
+        "belarusian": [
+          "пагранічны кантроль",
+          "пагранічнага кантролю",
+          "памежны кантроль",
+          "памежнага кантролю",
+          "ахова дзяржаўнай мяжы",
+          "аховы дзяржаўнай мяжы",
+          "ахова мяжы",
+          "аховы мяжы",
+          "Дзяржаўны пагранічны камітэт",
+          "Дзяржаўнага пагранічнага камітэта",
+          {
+            "prefix": "Дзяржпагранкамітэт"
+          },
+          "пункт пропуску",
+          "пункты пропуску",
+          "пунктаў пропуску",
+          "пункце пропуску",
+          "пагранічнікі",
+          "пагранічнікаў",
+          "памежнікі",
+          "памежнікаў"
+        ],
+        "pap": [
+          "control di frontera",
+          "seguridad di frontera",
+          "kontrol di frontera",
+          "siguridat di frontera",
+          "grenscontrole",
+          "grensbewaking"
         ]
       }
     },
@@ -11170,6 +14150,201 @@
           {
             "prefix": "prinudni povratak migranat"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "izraidīšana no valst"
+          },
+          {
+            "prefix": "izraidīt no valst"
+          },
+          {
+            "prefix": "izraidīti no valst"
+          },
+          {
+            "prefix": "izraidīts no valst"
+          },
+          {
+            "prefix": "migrantu izraidīšan"
+          },
+          {
+            "prefix": "lēmums par izraidīšan"
+          },
+          {
+            "prefix": "migrantu deportācij"
+          },
+          {
+            "prefix": "imigrantu deportācij"
+          },
+          {
+            "prefix": "ārzemnieku deportācij"
+          },
+          {
+            "prefix": "patvēruma meklētāju deportācij"
+          },
+          {
+            "prefix": "izraidīšanu no valst"
+          },
+          {
+            "prefix": "ārzemnieku izraidīšan"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "депортатси"
+          },
+          {
+            "prefix": "депортаци"
+          },
+          {
+            "prefix": "депорт шуд"
+          },
+          {
+            "prefix": "ихроҷи муҳоҷир"
+          },
+          {
+            "prefix": "ихрочи мухочир"
+          },
+          {
+            "prefix": "аз кишвар ихроҷ"
+          },
+          {
+            "prefix": "бадарға"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "deportatsi"
+          },
+          {
+            "prefix": "депортаци"
+          },
+          {
+            "prefix": "deport qil"
+          },
+          {
+            "prefix": "депорт қил"
+          },
+          {
+            "prefix": "mamlakatdan chiqarib yubor"
+          },
+          {
+            "prefix": "мамлакатдан чиқариб юбор"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "migrantų deportacij"
+          },
+          {
+            "prefix": "užsieniečių deportacij"
+          },
+          {
+            "prefix": "deportuoti migrant"
+          },
+          {
+            "prefix": "deportuotų migrant"
+          },
+          {
+            "prefix": "deportuoti užsieniet"
+          },
+          {
+            "prefix": "migrantų išsiuntim"
+          },
+          {
+            "prefix": "užsieniečių išsiuntim"
+          },
+          {
+            "prefix": "migrantų grąžinim"
+          },
+          {
+            "prefix": "grąžinti į kilmės šal"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "deporteeri"
+          },
+          {
+            "prefix": "deportatsioon"
+          },
+          {
+            "prefix": "riigist väljasaatmi"
+          },
+          {
+            "prefix": "riigist välja saade"
+          },
+          {
+            "prefix": "lahkumisettekirjutus"
+          },
+          {
+            "prefix": "migrantide väljasaatmi"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "депорт"
+          },
+          {
+            "prefix": "елден шығарыл"
+          },
+          {
+            "prefix": "елден шығарып жібер"
+          },
+          {
+            "prefix": "мигранттарды шығар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "депортаци"
+          },
+          {
+            "prefix": "депортт"
+          },
+          {
+            "prefix": "мигранттарды өлкөдөн чыгар"
+          },
+          {
+            "prefix": "мигранттарды чыгаруу"
+          },
+          {
+            "prefix": "өлкөдөн чыгарылган мигрант"
+          }
+        ],
+        "farsi": [
+          "اخراج مهاجر",
+          "اخراج اتباع",
+          "اخراج اجباری مهاجر",
+          "اخراج افغان",
+          "دیپورت",
+          "رد مرز شد",
+          "رد مرز اتباع",
+          "رد مرز مهاجر"
+        ],
+        "belarusian": [
+          {
+            "prefix": "дэпартацы"
+          },
+          {
+            "prefix": "дэпартава"
+          },
+          {
+            "prefix": "выдварэн"
+          },
+          "высылка мігрантаў",
+          "высылкі мігрантаў"
+        ],
+        "pap": [
+          "deportacion",
+          "deportacionnan",
+          "deporta",
+          "deportado",
+          "deportadonan",
+          "deportashon",
+          "deportashonnan",
+          "deportá",
+          "expulsion di migrante"
         ]
       }
     },
@@ -11844,6 +15019,178 @@
           {
             "prefix": "detencija migranat"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "aizturēto ārzemnieku izmitināšanas centr"
+          },
+          {
+            "prefix": "ārzemnieku aizturēšanas centr"
+          },
+          {
+            "prefix": "aizturētie migrant"
+          },
+          {
+            "prefix": "aizturētos migrant"
+          },
+          {
+            "prefix": "aizturēto migrant"
+          },
+          {
+            "prefix": "migrantu aizturēšan"
+          },
+          {
+            "prefix": "ārzemnieku aizturēšan"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "боздошти муҳоҷир"
+          },
+          {
+            "prefix": "боздошти мухочир"
+          },
+          {
+            "prefix": "ҳабси муҳоҷир"
+          },
+          {
+            "prefix": "муҳоҷирони боздошт"
+          },
+          {
+            "prefix": "маркази нигоҳдории муваққатии"
+          },
+          {
+            "prefix": "маркази нигаҳдории муваққатии"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "hibsga olingan migrant"
+          },
+          {
+            "prefix": "ҳибсга олинган мигрант"
+          },
+          {
+            "prefix": "migrantlarni hibsga ol"
+          },
+          {
+            "prefix": "мигрантларни ҳибсга ол"
+          },
+          {
+            "prefix": "ushlangan migrant"
+          },
+          {
+            "prefix": "ушланган мигрант"
+          },
+          {
+            "prefix": "muhojirlarni hibsga ol"
+          },
+          {
+            "prefix": "муҳожирларни ҳибсга ол"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "užsieniečių registracijos centr"
+          },
+          {
+            "prefix": "migrantų sulaikym"
+          },
+          {
+            "prefix": "užsieniečių sulaikym"
+          },
+          {
+            "prefix": "sulaikyti migrant"
+          },
+          {
+            "prefix": "sulaikytų migrant"
+          },
+          {
+            "prefix": "sulaikytieji migrant"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "väljasaadetavate kinnipidamiskesk"
+          },
+          {
+            "prefix": "Harku kinnipidamiskesk"
+          },
+          {
+            "prefix": "kinnipeetud migran"
+          },
+          {
+            "prefix": "migrantide kinnipidami"
+          },
+          {
+            "prefix": "rändajate kinnipidami"
+          },
+          {
+            "prefix": "välismaalaste kinnipidami"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "мигранттарды ұста"
+          },
+          {
+            "prefix": "ұсталған мигрант"
+          },
+          {
+            "prefix": "заңсыз мигранттарды ұста"
+          },
+          {
+            "prefix": "шетелдіктерді уақытша орналастыру"
+          },
+          {
+            "prefix": "шетел азаматтарын уақытша орналастыру"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "мигранттарды кармоо"
+          },
+          {
+            "prefix": "кармалган мигрант"
+          },
+          {
+            "prefix": "мигранттарды убактылуу кармоо борбор"
+          },
+          {
+            "prefix": "чет элдиктерди убактылуу кармоо борбор"
+          },
+          {
+            "prefix": "чет элдик жарандарды убактылуу кармоо"
+          }
+        ],
+        "farsi": [
+          "بازداشت مهاجر",
+          "بازداشتگاه مهاجر",
+          "بازداشت اتباع",
+          "بازداشت پناهجو",
+          "مرکز نگهداری اتباع",
+          "مراکز نگهداری اتباع",
+          "اردوگاه اتباع",
+          "بازداشتگاه اتباع"
+        ],
+        "belarusian": [
+          "затрыманыя мігранты",
+          "затрыманых мігрантаў",
+          "затрыманне мігрантаў",
+          "затрымання мігрантаў",
+          "затрыманьне мігрантаў",
+          "цэнтр утрымання мігрантаў",
+          "цэнтры ўтрымання мігрантаў",
+          "цэнтраў утрымання мігрантаў"
+        ],
+        "pap": [
+          "detencion di migrante",
+          "migrante deteni",
+          "centro di detencion pa migrante",
+          "detenshon di migrante",
+          "migrante detení",
+          "sentro di detenshon pa migrante",
+          "vreemdelingenbewaring"
         ]
       }
     },
@@ -12684,6 +16031,212 @@
           {
             "prefix": "paktu o migracij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "migrācijas politik"
+          },
+          {
+            "prefix": "migrācijas likum"
+          },
+          {
+            "prefix": "migrācijas pārvaldīb"
+          },
+          {
+            "prefix": "migrācijas regulējum"
+          },
+          {
+            "prefix": "migrācijas reform"
+          },
+          {
+            "prefix": "migrācijas pakt"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "сиёсати муҳоҷир"
+          },
+          {
+            "prefix": "сиёсати мухочир"
+          },
+          {
+            "prefix": "қонун дар бораи муҳоҷир"
+          },
+          {
+            "prefix": "қонунгузории муҳоҷир"
+          },
+          {
+            "prefix": "идоракунии муҳоҷир"
+          },
+          {
+            "prefix": "ислоҳоти муҳоҷир"
+          },
+          {
+            "prefix": "Хадамоти муҳоҷир"
+          },
+          {
+            "prefix": "стратегияи миллии муҳоҷир"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "migratsiya siyosat"
+          },
+          {
+            "prefix": "миграция сиёсат"
+          },
+          {
+            "prefix": "migratsiya qonun"
+          },
+          {
+            "prefix": "миграция қонун"
+          },
+          {
+            "prefix": "migratsiya islohot"
+          },
+          {
+            "prefix": "миграция ислоҳот"
+          },
+          {
+            "prefix": "migratsiyani boshqar"
+          },
+          {
+            "prefix": "миграцияни бошқар"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "migracijos politik"
+          },
+          {
+            "prefix": "migracijos įstatym"
+          },
+          {
+            "prefix": "migracijos valdym"
+          },
+          {
+            "prefix": "migracijos reform"
+          },
+          {
+            "prefix": "migracinė politik"
+          },
+          {
+            "prefix": "migracinės politik"
+          },
+          {
+            "prefix": "Migracijos departament"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "rändepoliitik"
+          },
+          {
+            "prefix": "migratsioonipoliitik"
+          },
+          {
+            "prefix": "rändepakt"
+          },
+          {
+            "prefix": "rändehaldu"
+          },
+          {
+            "prefix": "rändereform"
+          },
+          {
+            "prefix": "rändeseadus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "көші-қон саясат"
+          },
+          {
+            "prefix": "миграциялық саясат"
+          },
+          {
+            "prefix": "көші-қон заң"
+          },
+          {
+            "prefix": "көші-қон туралы заң"
+          },
+          {
+            "prefix": "көші-қон реформа"
+          },
+          {
+            "prefix": "көші-қон процестерін басқар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "миграциялык саясат"
+          },
+          {
+            "prefix": "миграция саясат"
+          },
+          {
+            "prefix": "миграциялык мыйзам"
+          },
+          {
+            "prefix": "миграция жөнүндө мыйзам"
+          },
+          {
+            "prefix": "миграция боюнча мыйзам"
+          },
+          {
+            "prefix": "миграцияны башкаруу"
+          },
+          {
+            "prefix": "миграциялык реформ"
+          }
+        ],
+        "farsi": [
+          "سیاست مهاجرت",
+          "سیاست‌های مهاجرتی",
+          "سیاست های مهاجرتی",
+          "سیاستهای مهاجرتی",
+          "قانون مهاجرت",
+          "قوانین مهاجرت",
+          "مدیریت مهاجرت",
+          "حکمرانی مهاجرت",
+          "سازمان ملی مهاجرت",
+          "وزارت امور مهاجرین"
+        ],
+        "belarusian": [
+          {
+            "prefix": "міграцыйная палітык"
+          },
+          {
+            "prefix": "міграцыйнай палітык"
+          },
+          {
+            "prefix": "міграцыйную палітык"
+          },
+          {
+            "prefix": "міграцыйнае заканадаўств"
+          },
+          {
+            "prefix": "міграцыйнага заканадаўств"
+          },
+          {
+            "prefix": "міграцыйным заканадаўств"
+          },
+          "кіраванне міграцыяй",
+          "кіравання міграцыяй",
+          "кіраваньне міграцыяй",
+          "па грамадзянстве і міграцыі",
+          "міграцыйная служба",
+          "міграцыйнай службы"
+        ],
+        "pap": [
+          "maneho di migracion",
+          "politica di migracion",
+          "ley di migracion",
+          "reforma di migracion",
+          "maneho di migrashon",
+          "polítika di migrashon",
+          "lei di migrashon",
+          "migratiebeleid"
         ]
       }
     },
@@ -13618,6 +17171,225 @@
           {
             "prefix": "Zakonom o strancim"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "imigrācijas politik"
+          },
+          {
+            "prefix": "imigrācijas likum"
+          },
+          {
+            "prefix": "imigrācijas noteikum"
+          },
+          {
+            "prefix": "imigrācijas reform"
+          },
+          {
+            "prefix": "imigrācijas ierobežo"
+          },
+          {
+            "prefix": "vīzu politik"
+          },
+          {
+            "prefix": "vīzu režīm"
+          },
+          {
+            "prefix": "vīzu noteikum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "сиёсати раводид"
+          },
+          {
+            "prefix": "режими раводид"
+          },
+          {
+            "prefix": "низоми раводид"
+          },
+          {
+            "prefix": "қоидаҳои раводид"
+          },
+          {
+            "prefix": "сахтгирии муҳоҷир"
+          },
+          {
+            "prefix": "қонунгузории муҳоҷиратии Русия"
+          },
+          {
+            "prefix": "қонунгузории муҳоҷиратии Федератсияи Рус"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "immigratsiya siyosat"
+          },
+          {
+            "prefix": "иммиграция сиёсат"
+          },
+          {
+            "prefix": "immigratsiya qonun"
+          },
+          {
+            "prefix": "иммиграция қонун"
+          },
+          {
+            "prefix": "immigratsiya qoida"
+          },
+          {
+            "prefix": "иммиграция қоида"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "imigracijos politik"
+          },
+          {
+            "prefix": "imigracijos įstatym"
+          },
+          {
+            "prefix": "imigracijos reform"
+          },
+          {
+            "prefix": "imigracijos taisykl"
+          },
+          {
+            "prefix": "imigracijos kvot"
+          },
+          {
+            "prefix": "vizų politik"
+          },
+          {
+            "prefix": "vizų taisykl"
+          },
+          "užsieniečių teisinės padėties"
+        ],
+        "estonian": [
+          {
+            "prefix": "sisserändepoliitik"
+          },
+          {
+            "prefix": "immigratsioonipoliitik"
+          },
+          {
+            "prefix": "sisserände piirarv"
+          },
+          {
+            "prefix": "välismaalaste seadus"
+          },
+          {
+            "prefix": "viisapoliitik"
+          },
+          {
+            "prefix": "viisareegl"
+          },
+          {
+            "prefix": "sisserände karmista"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "иммиграциялық саясат"
+          },
+          {
+            "prefix": "иммиграция саясат"
+          },
+          {
+            "prefix": "иммиграциялық заң"
+          },
+          {
+            "prefix": "иммиграциялық ереже"
+          },
+          {
+            "prefix": "визалық саясат"
+          },
+          {
+            "prefix": "визалық режим"
+          },
+          {
+            "prefix": "визасыз режим"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "иммиграциялык саясат"
+          },
+          {
+            "prefix": "иммиграция саясат"
+          },
+          {
+            "prefix": "иммиграциялык мыйзам"
+          },
+          {
+            "prefix": "иммиграциялык эреже"
+          },
+          {
+            "prefix": "визалык саясат"
+          },
+          {
+            "prefix": "виза саясат"
+          },
+          {
+            "prefix": "визалык режим"
+          },
+          {
+            "prefix": "визалык эрежелер"
+          }
+        ],
+        "farsi": [
+          "سیاست مهاجرپذیری",
+          "سیاست ویزا",
+          "سیاست روادید",
+          "قوانین روادید",
+          "مقررات ویزا",
+          "قانون ورود و اقامت اتباع خارجی",
+          "سخت‌گیری‌های مهاجرتی",
+          "سخت گیری های مهاجرتی",
+          "سختگیریهای مهاجرتی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "іміграцыйная палітык"
+          },
+          {
+            "prefix": "іміграцыйнай палітык"
+          },
+          {
+            "prefix": "іміграцыйную палітык"
+          },
+          {
+            "prefix": "іміграцыйнае заканадаўств"
+          },
+          {
+            "prefix": "іміграцыйнага заканадаўств"
+          },
+          {
+            "prefix": "іміграцыйныя правіл"
+          },
+          {
+            "prefix": "візавая палітык"
+          },
+          {
+            "prefix": "візавай палітык"
+          },
+          {
+            "prefix": "візавы рэжым"
+          },
+          {
+            "prefix": "візавага рэжым"
+          }
+        ],
+        "pap": [
+          "maneho di inmigracion",
+          "politica di inmigracion",
+          "ley di inmigracion",
+          "maneho di imigrashon",
+          "polítika di imigrashon",
+          "lei di imigrashon",
+          "vreemdelingenbeleid",
+          "Landsverordening Toelating en Uitzetting",
+          "Departamento di Integracion, Maneho y Admision di Stranhero"
         ]
       }
     },
@@ -14235,6 +18007,191 @@
           {
             "prefix": "inkluzija migranat"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "migrantu integrācij"
+          },
+          {
+            "prefix": "imigrantu integrācij"
+          },
+          {
+            "prefix": "ārzemnieku integrācij"
+          },
+          {
+            "prefix": "trešo valstu pilsoņu integrācij"
+          },
+          {
+            "prefix": "bēgļu integrācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "ҳамгироии муҳоҷир"
+          },
+          {
+            "prefix": "хамгироии мухочир"
+          },
+          {
+            "prefix": "мутобиқшавии муҳоҷир"
+          },
+          {
+            "prefix": "мутобиқгардонии муҳоҷир"
+          },
+          {
+            "prefix": "интегратсияи муҳоҷир"
+          },
+          {
+            "prefix": "адаптатсияи муҳоҷир"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "migrantlar integratsiya"
+          },
+          {
+            "prefix": "migrantlarning integratsiya"
+          },
+          {
+            "prefix": "мигрантларнинг интеграция"
+          },
+          {
+            "prefix": "migrantlarni integratsiya"
+          },
+          {
+            "prefix": "мигрантларни интеграция"
+          },
+          {
+            "prefix": "migrantlarning adaptatsiya"
+          },
+          {
+            "prefix": "мигрантларнинг адаптация"
+          },
+          {
+            "prefix": "muhojirlarning integratsiya"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "migrantų integracij"
+          },
+          {
+            "prefix": "migrantų integravim"
+          },
+          {
+            "prefix": "imigrantų integracij"
+          },
+          {
+            "prefix": "užsieniečių integracij"
+          },
+          {
+            "prefix": "užsieniečių integravim"
+          },
+          {
+            "prefix": "migrantų įtrauk"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "lõimumi"
+          },
+          {
+            "prefix": "lõimimi"
+          },
+          {
+            "prefix": "uussisseränd"
+          },
+          {
+            "prefix": "kohanemisprogramm"
+          },
+          {
+            "prefix": "Integratsiooni Sihtasutu"
+          },
+          {
+            "prefix": "sisserändajate integreeri"
+          },
+          {
+            "prefix": "migrantide integreeri"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "мигранттардың интеграци"
+          },
+          {
+            "prefix": "мигранттарды интеграцияла"
+          },
+          {
+            "prefix": "мигранттардың бейімдел"
+          },
+          {
+            "prefix": "мигранттарды бейімде"
+          },
+          {
+            "prefix": "мигранттарды ықпалдастыр"
+          },
+          {
+            "prefix": "қандастарды бейімде"
+          },
+          {
+            "prefix": "қандастардың бейімдел"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "мигранттардын интеграция"
+          },
+          {
+            "prefix": "мигранттарды интеграциялоо"
+          },
+          {
+            "prefix": "иммигранттардын интеграция"
+          },
+          {
+            "prefix": "мигранттардын адаптация"
+          },
+          {
+            "prefix": "мигранттарды адаптациялоо"
+          }
+        ],
+        "farsi": [
+          "ادغام مهاجر",
+          "ادغام اجتماعی مهاجر",
+          "یکپارچگی مهاجر",
+          "سازگاری مهاجر",
+          "ادغام اتباع",
+          "همگرایی اجتماعی مهاجر"
+        ],
+        "belarusian": [
+          {
+            "prefix": "інтэграцыя мігрант"
+          },
+          {
+            "prefix": "інтэграцыі мігрант"
+          },
+          {
+            "prefix": "інтэграцыю мігрант"
+          },
+          {
+            "prefix": "інтэграцыя імігрант"
+          },
+          {
+            "prefix": "інтэграцыі імігрант"
+          },
+          {
+            "prefix": "адаптацыя мігрант"
+          },
+          {
+            "prefix": "адаптацыі мігрант"
+          }
+        ],
+        "pap": [
+          "integracion di migrante",
+          "integracion di stranhero",
+          "integrashon di migrante",
+          "integrashon di stranhero",
+          "integratie van migranten",
+          "inburgering"
         ]
       }
     },
@@ -14899,6 +18856,201 @@
           {
             "prefix": "novca iz dijaspor"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "migrantu naudas pārvedum"
+          },
+          {
+            "prefix": "emigrantu naudas pārvedum"
+          },
+          {
+            "prefix": "naudas pārvedumi no ārzem"
+          },
+          {
+            "prefix": "naudas pārvedumu no ārzem"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "интиқоли пулии муҳоҷир"
+          },
+          {
+            "prefix": "интиколи пулии мухочир"
+          },
+          {
+            "prefix": "интиқолҳои пулии муҳоҷир"
+          },
+          {
+            "prefix": "маблағҳои интиқолии муҳоҷир"
+          },
+          {
+            "prefix": "пулҳои муҳоҷир"
+          },
+          {
+            "prefix": "интиқоли пул аз хориҷ"
+          },
+          {
+            "prefix": "интиқолҳои пулӣ аз хориҷ"
+          },
+          {
+            "prefix": "интиқолҳои пулӣ ба Тоҷикистон"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "xorijdan pul o'tkazma"
+          },
+          {
+            "prefix": "xorijdan pul oʻtkazma"
+          },
+          {
+            "prefix": "xorijdan pul o’tkazma"
+          },
+          {
+            "prefix": "xorijdan pul o‘tkazma"
+          },
+          {
+            "prefix": "хориждан пул ўтказма"
+          },
+          {
+            "prefix": "migrantlarning pul o'tkazma"
+          },
+          {
+            "prefix": "migrantlarning pul oʻtkazma"
+          },
+          {
+            "prefix": "migrantlarning pul o’tkazma"
+          },
+          {
+            "prefix": "migrantlarning pul o‘tkazma"
+          },
+          {
+            "prefix": "мигрантларнинг пул ўтказма"
+          },
+          {
+            "prefix": "chet eldan pul o'tkazma"
+          },
+          {
+            "prefix": "chet eldan pul oʻtkazma"
+          },
+          {
+            "prefix": "chet eldan pul o’tkazma"
+          },
+          {
+            "prefix": "chet eldan pul o‘tkazma"
+          },
+          {
+            "prefix": "чет элдан пул ўтказма"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "emigrantų perlaid"
+          },
+          {
+            "prefix": "emigrantų pinigų perlaid"
+          },
+          {
+            "prefix": "migrantų perlaid"
+          },
+          {
+            "prefix": "emigrantų siunčiam"
+          },
+          "perlaidos iš užsienio",
+          "perlaidų iš užsienio",
+          "perlaidomis iš užsienio"
+        ],
+        "estonian": [
+          {
+            "prefix": "migrantide rahaülekan"
+          },
+          {
+            "prefix": "võõrtööliste rahaülekan"
+          },
+          "rahaülekanded kodumaale",
+          "rahaülekannete kodumaale",
+          {
+            "prefix": "kodumaale saadetud raha"
+          },
+          {
+            "prefix": "kodumaale saadetav raha"
+          },
+          {
+            "prefix": "koju saadetud raha"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "мигранттардың ақша аударым"
+          },
+          {
+            "prefix": "еңбек мигранттарының ақша аударым"
+          },
+          {
+            "prefix": "еңбек мигранттарының аударым"
+          },
+          {
+            "prefix": "шетелден ақша аударым"
+          },
+          {
+            "prefix": "шетелден келген ақша аударым"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "мигранттардын акча которуу"
+          },
+          {
+            "prefix": "эмгек мигранттарынын акча которуу"
+          },
+          {
+            "prefix": "мигранттардын которуулар"
+          },
+          {
+            "prefix": "мигранттар жөнөткөн акча"
+          },
+          {
+            "prefix": "чет өлкөдөн акча которуу"
+          },
+          {
+            "prefix": "чет өлкөдөн келген акча которуу"
+          },
+          {
+            "prefix": "ремиттанс"
+          }
+        ],
+        "farsi": [
+          "وجوه ارسالی مهاجر",
+          "وجوه ارسالی کارگران",
+          "پول‌های ارسالی مهاجر",
+          "پول های ارسالی مهاجر",
+          "پولهای ارسالی مهاجر",
+          "حواله‌های مهاجر",
+          "حواله های مهاجر",
+          "حوالههای مهاجر",
+          "حواله‌های ارزی مهاجر",
+          "حواله های ارزی مهاجر",
+          "حوالههای ارزی مهاجر",
+          "ارسال پول به افغانستان"
+        ],
+        "belarusian": [
+          "грашовыя пераводы з-за мяжы",
+          "грашовых пераводаў з-за мяжы",
+          "пераводы мігрантаў",
+          "пераводаў мігрантаў",
+          "пераводы працоўных мігрантаў",
+          "пераводаў працоўных мігрантаў",
+          "трансгранічныя пераводы фізічных асоб",
+          "трансгранічных пераводаў фізічных асоб"
+        ],
+        "pap": [
+          "remesa",
+          "remesanan",
+          "placa manda pa famia",
+          "plaka manda pa famia",
+          "geldovermakingen",
+          "remittances"
         ]
       }
     },
@@ -15412,6 +19564,152 @@
           {
             "prefix": "demografskog prozor"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "demogrāfiskā dividend"
+          },
+          {
+            "prefix": "demogrāfiskās dividend"
+          },
+          {
+            "prefix": "demogrāfisko dividend"
+          },
+          {
+            "prefix": "demogrāfiskais bonus"
+          },
+          {
+            "prefix": "demogrāfiskais log"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "дивиденди демограф"
+          },
+          {
+            "prefix": "фоидаи демограф"
+          },
+          {
+            "prefix": "бонуси демограф"
+          },
+          {
+            "prefix": "равзанаи демограф"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "demografik dividend"
+          },
+          {
+            "prefix": "демографик дивиденд"
+          },
+          {
+            "prefix": "demografik bonus"
+          },
+          {
+            "prefix": "демографик бонус"
+          },
+          {
+            "prefix": "demografik oyna"
+          },
+          {
+            "prefix": "демографик ойна"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "demografinis dividend"
+          },
+          {
+            "prefix": "demografinio dividend"
+          },
+          {
+            "prefix": "demografinį dividend"
+          },
+          {
+            "prefix": "demografinis lang"
+          },
+          {
+            "prefix": "demografinio lang"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "demograafiline dividend"
+          },
+          {
+            "prefix": "demograafilise dividend"
+          },
+          {
+            "prefix": "demograafiline boonus"
+          },
+          {
+            "prefix": "demograafilise boonus"
+          },
+          "demograafiline aken",
+          "demograafilise akna"
+        ],
+        "kazakh": [
+          {
+            "prefix": "демографиялық дивиденд"
+          },
+          {
+            "prefix": "демографиялық бонус"
+          },
+          {
+            "prefix": "демографиялық терезе"
+          },
+          {
+            "prefix": "демографиялық мүмкіндік терезе"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "демографиялык дивиденд"
+          },
+          {
+            "prefix": "демографиялык бонус"
+          },
+          {
+            "prefix": "демографиялык терезе"
+          },
+          {
+            "prefix": "демографиялык мүмкүнчүлүк терезе"
+          }
+        ],
+        "farsi": [
+          "پنجره جمعیتی",
+          "پنجره طلایی جمعیتی",
+          "پنجره فرصت جمعیتی",
+          "سود جمعیتی",
+          "فرصت جمعیتی",
+          "موهبت جمعیتی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "дэмаграфічны дывідэнд"
+          },
+          {
+            "prefix": "дэмаграфічнага дывідэнд"
+          },
+          {
+            "prefix": "дэмаграфічным дывідэнд"
+          },
+          {
+            "prefix": "дэмаграфічны бонус"
+          },
+          {
+            "prefix": "дэмаграфічнага бонус"
+          },
+          "дэмаграфічнае акно",
+          "дэмаграфічнага акна"
+        ],
+        "pap": [
+          "dividendo demografico",
+          "bono demografico",
+          "dividendo demográfiko",
+          "bono demográfiko",
+          "demografisch dividend"
         ]
       }
     },
@@ -15929,6 +20227,146 @@
           {
             "prefix": "odnos penzionera i zaposlen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "demogrāfiskā slodz"
+          },
+          {
+            "prefix": "demogrāfiskās slodz"
+          },
+          {
+            "prefix": "demogrāfisko slodz"
+          },
+          {
+            "prefix": "atkarības koeficient"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "сарбории демограф"
+          },
+          {
+            "prefix": "бори демограф"
+          },
+          {
+            "prefix": "коэффисиенти вобастаг"
+          },
+          {
+            "prefix": "коэффитсиенти вобастаг"
+          },
+          {
+            "prefix": "сарбории аҳолии корношоям"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "demografik yuk"
+          },
+          {
+            "prefix": "демографик юк"
+          },
+          {
+            "prefix": "qaramlik koeffitsi"
+          },
+          {
+            "prefix": "қарамлик коэффициент"
+          },
+          {
+            "prefix": "qaramlik nisbat"
+          },
+          {
+            "prefix": "қарамлик нисбат"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "priklausomybės koeficient"
+          },
+          {
+            "prefix": "senatvės priklausomybės koeficient"
+          },
+          {
+            "prefix": "demografinės senatvės koeficient"
+          },
+          {
+            "prefix": "dirbančiųjų ir pensininkų santyk"
+          },
+          {
+            "prefix": "pensininkų ir dirbančiųjų santyk"
+          },
+          {
+            "prefix": "išlaikomų gyventojų santyk"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "ülalpeetavate määr"
+          },
+          {
+            "prefix": "ülalpeetavate suhtarv"
+          },
+          {
+            "prefix": "sõltuvusmäär"
+          },
+          {
+            "prefix": "demograafiline koormus"
+          },
+          {
+            "prefix": "demograafilise koormus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "демографиялық жүктеме"
+          },
+          {
+            "prefix": "тәуелділік коэффициент"
+          },
+          {
+            "prefix": "демографиялық тәуелділік"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "демографиялык жүк"
+          },
+          {
+            "prefix": "демографиялык жүктөм"
+          },
+          {
+            "prefix": "көз карандылык коэффициент"
+          },
+          {
+            "prefix": "калктын демографиялык жүг"
+          }
+        ],
+        "farsi": [
+          "نسبت وابستگی",
+          "بار تکفل"
+        ],
+        "belarusian": [
+          {
+            "prefix": "дэмаграфічная нагрузк"
+          },
+          {
+            "prefix": "дэмаграфічнай нагрузк"
+          },
+          {
+            "prefix": "дэмаграфічную нагрузк"
+          },
+          "нагрузка на працаздольнае насельніцтва",
+          "нагрузкі на працаздольнае насельніцтва",
+          "каэфіцыент залежнасці",
+          "каэфіцыента залежнасці"
+        ],
+        "pap": [
+          "ratio di dependencia",
+          "tasa di dependencia",
+          "ratio di dependensia",
+          "tasa di dependensia",
+          "afhankelijkheidsratio",
+          "grijze druk"
         ]
       }
     },
@@ -16304,6 +20742,110 @@
           {
             "prefix": "veliki udio mladih u stanovništv"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "jauniešu īpatsvara pieaugum"
+          },
+          {
+            "prefix": "liels jauniešu īpatsvar"
+          },
+          {
+            "prefix": "lielais jauniešu īpatsvar"
+          },
+          {
+            "prefix": "jauna iedzīvotāju vecuma struktūr"
+          },
+          "youth bulge"
+        ],
+        "tajik": [
+          {
+            "prefix": "аҳолии ҷавон"
+          },
+          {
+            "prefix": "ахолии чавон"
+          },
+          {
+            "prefix": "ҳиссаи ҷавонон дар аҳол"
+          },
+          {
+            "prefix": "шумораи зиёди ҷавонон"
+          },
+          {
+            "prefix": "аксарияти аҳолиро ҷавонон"
+          }
+        ],
+        "uzbek": [
+          "aholining aksariyati yoshlar",
+          "аҳолининг аксарияти ёшлар"
+        ],
+        "lithuanian": [
+          {
+            "prefix": "jaunimo pertekl"
+          },
+          {
+            "prefix": "jauna populiacij"
+          },
+          {
+            "prefix": "jaunos populiacij"
+          },
+          {
+            "prefix": "jauna visuomen"
+          },
+          {
+            "prefix": "jaunos visuomen"
+          },
+          {
+            "prefix": "jaunų gyventojų gaus"
+          }
+        ],
+        "estonian": [
+          "noor rahvastik",
+          "noore rahvastiku",
+          "noort rahvastikku",
+          {
+            "prefix": "noorte suur osakaal"
+          },
+          {
+            "prefix": "noorterohke rahvastik"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "жастардың жоғары үлес"
+          },
+          {
+            "prefix": "жастар үлесінің жоғары"
+          },
+          "жас халық",
+          {
+            "prefix": "жастар санының өс"
+          }
+        ],
+        "kyrgyz": [
+          "калкы жаш",
+          {
+            "prefix": "жаштардын жогорку үлүш"
+          },
+          {
+            "prefix": "жаштардын үлүшүнүн жогорулуг"
+          }
+        ],
+        "farsi": [
+          "جمعیت جوان",
+          "جوانی جمعیت",
+          "نفوس جوان",
+          "ساختار جوان جمعیت"
+        ],
+        "belarusian": [
+          "маладое насельніцтва",
+          "маладога насельніцтва",
+          "маладым насельніцтвам",
+          "высокая доля моладзі",
+          "высокай долі моладзі"
+        ],
+        "pap": [
+          "youth bulge"
         ]
       }
     },
@@ -16998,6 +21540,197 @@
           {
             "prefix": "starenje nacij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "sabiedrības novecošan"
+          },
+          {
+            "prefix": "iedzīvotāju novecošan"
+          },
+          {
+            "prefix": "demogrāfiskā novecošan"
+          },
+          {
+            "prefix": "populācijas novecošan"
+          },
+          {
+            "prefix": "novecojoša sabiedrīb"
+          },
+          {
+            "prefix": "novecojošā sabiedrīb"
+          },
+          {
+            "prefix": "novecojošās sabiedrīb"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "пиршавии аҳол"
+          },
+          {
+            "prefix": "пиршавии ахол"
+          },
+          {
+            "prefix": "куҳансолшавии аҳол"
+          },
+          {
+            "prefix": "аҳолии солхӯрда"
+          },
+          {
+            "prefix": "аҳолии пиршаванда"
+          },
+          {
+            "prefix": "ҷомеаи пиршаванда"
+          },
+          {
+            "prefix": "пиршавии ҷомеа"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "aholining qari"
+          },
+          {
+            "prefix": "аҳолининг қари"
+          },
+          {
+            "prefix": "qariyotgan aholi"
+          },
+          {
+            "prefix": "қариётган аҳоли"
+          },
+          {
+            "prefix": "aholining keksay"
+          },
+          {
+            "prefix": "аҳолининг кексай"
+          },
+          {
+            "prefix": "demografik qarish"
+          },
+          {
+            "prefix": "демографик қариш"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "visuomenės senėjim"
+          },
+          {
+            "prefix": "gyventojų senėjim"
+          },
+          {
+            "prefix": "demografinis senėjim"
+          },
+          {
+            "prefix": "demografinio senėjim"
+          },
+          {
+            "prefix": "senėjanti visuomen"
+          },
+          {
+            "prefix": "senėjančios visuomen"
+          },
+          {
+            "prefix": "senėjančią visuomen"
+          },
+          {
+            "prefix": "senstanti visuomen"
+          },
+          {
+            "prefix": "senstančios visuomen"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "rahvastiku vanane"
+          },
+          {
+            "prefix": "vananev rahvastik"
+          },
+          {
+            "prefix": "vananeva rahvastik"
+          },
+          {
+            "prefix": "vananev ühiskon"
+          },
+          {
+            "prefix": "vananeva ühiskon"
+          },
+          {
+            "prefix": "ühiskonna vanane"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "халықтың қартаю"
+          },
+          {
+            "prefix": "қартаюшы халық"
+          },
+          {
+            "prefix": "қартайған халық"
+          },
+          {
+            "prefix": "қоғамның қартаю"
+          },
+          {
+            "prefix": "қартайған қоғам"
+          },
+          {
+            "prefix": "демографиялық қартаю"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "калктын картаю"
+          },
+          {
+            "prefix": "картайып бараткан калк"
+          },
+          {
+            "prefix": "картайган калк"
+          },
+          {
+            "prefix": "картайган коом"
+          },
+          {
+            "prefix": "картаюучу коом"
+          },
+          {
+            "prefix": "демографиялык картаю"
+          },
+          {
+            "prefix": "улгайган калктын үлүш"
+          }
+        ],
+        "farsi": [
+          "سالمندی جمعیت",
+          "پیری جمعیت",
+          "سالخوردگی جمعیت",
+          "پیر شدن جمعیت",
+          "جمعیت سالمند",
+          "جامعه سالمند",
+          "سونامی سالمندی"
+        ],
+        "belarusian": [
+          "старэнне насельніцтва",
+          "старэння насельніцтва",
+          "старэньне насельніцтва",
+          "старэньня насельніцтва",
+          "старэючае насельніцтва",
+          "старэючага насельніцтва",
+          "дэмаграфічнае старэнне",
+          "дэмаграфічнага старэння"
+        ],
+        "pap": [
+          "envehecimento di poblacion",
+          "poblacion ta envehece",
+          "envehesimentu di poblashon",
+          "poblashon ta envehesé",
+          "vergrijzing",
+          "vergrijzende bevolking"
         ]
       }
     },
@@ -17737,6 +22470,205 @@
           "bijele kuge",
           "bijelu kugu",
           "bijeloj kugi"
+        ],
+        "latvian": [
+          {
+            "prefix": "iedzīvotāju skaita samazin"
+          },
+          {
+            "prefix": "iedzīvotāju skaita kritum"
+          },
+          {
+            "prefix": "iedzīvotāju skaita sarukum"
+          },
+          {
+            "prefix": "iedzīvotāju skaits samazin"
+          },
+          "iedzīvotāju skaits sarūk",
+          "iedzīvotāju skaits sarucis",
+          "iedzīvotāju skaits krītas",
+          {
+            "prefix": "depopulācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "коҳиши аҳол"
+          },
+          {
+            "prefix": "кохиши ахол"
+          },
+          {
+            "prefix": "коҳиши шумораи аҳол"
+          },
+          {
+            "prefix": "кам шудани аҳол"
+          },
+          {
+            "prefix": "кам шудани шумораи аҳол"
+          },
+          {
+            "prefix": "депопулятси"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "aholi soni kamay"
+          },
+          {
+            "prefix": "аҳоли сони камай"
+          },
+          {
+            "prefix": "aholi sonining kamay"
+          },
+          {
+            "prefix": "аҳоли сонининг камай"
+          },
+          {
+            "prefix": "aholi sonining qisqar"
+          },
+          {
+            "prefix": "аҳоли сонининг қисқар"
+          },
+          {
+            "prefix": "depopulyatsi"
+          },
+          {
+            "prefix": "депопуляци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "gyventojų mažėjim"
+          },
+          {
+            "prefix": "gyventojų sumažėjim"
+          },
+          {
+            "prefix": "gyventojų skaičiaus mažėjim"
+          },
+          {
+            "prefix": "gyventojų skaičiaus sumažėjim"
+          },
+          "gyventojų skaičius mažėja",
+          "gyventojų skaičius sumažėjo",
+          {
+            "prefix": "mažėjantis gyventojų skaič"
+          },
+          {
+            "prefix": "mažėjančio gyventojų skaič"
+          },
+          {
+            "prefix": "depopuliacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "rahvaarvu vähene"
+          },
+          {
+            "prefix": "rahvaarvu kahane"
+          },
+          {
+            "prefix": "rahvaarvu lang"
+          },
+          {
+            "prefix": "rahvaarv vähene"
+          },
+          {
+            "prefix": "rahvaarv kahane"
+          },
+          {
+            "prefix": "rahvastiku vähene"
+          },
+          {
+            "prefix": "rahvastiku kahane"
+          },
+          {
+            "prefix": "kahanev rahvastik"
+          },
+          {
+            "prefix": "kahaneva rahvastik"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "халық санының азаю"
+          },
+          {
+            "prefix": "халық санының қысқару"
+          },
+          {
+            "prefix": "халық санының төмендеу"
+          },
+          {
+            "prefix": "халық санының кему"
+          },
+          {
+            "prefix": "халықтың азаю"
+          },
+          {
+            "prefix": "депопуляци"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "калктын азаю"
+          },
+          {
+            "prefix": "калктын санынын азаю"
+          },
+          {
+            "prefix": "калктын саны азай"
+          },
+          {
+            "prefix": "калктын кыскар"
+          },
+          {
+            "prefix": "калктын санынын кыскар"
+          },
+          {
+            "prefix": "депопуляци"
+          }
+        ],
+        "farsi": [
+          "کاهش جمعیت",
+          "رشد منفی جمعیت",
+          "افت جمعیت",
+          "کوچک شدن جمعیت",
+          "جمعیت رو به کاهش",
+          "کاهش نفوس"
+        ],
+        "belarusian": [
+          "скарачэнне насельніцтва",
+          "скарачэння насельніцтва",
+          "скарачэньне насельніцтва",
+          "скарачэньня насельніцтва",
+          "скарачэнне колькасці насельніцтва",
+          "скарачэння колькасці насельніцтва",
+          "змяншэнне колькасці насельніцтва",
+          "змяншэння колькасці насельніцтва",
+          "убыль насельніцтва",
+          "ўбыль насельніцтва",
+          {
+            "prefix": "дэпапуляцы"
+          },
+          {
+            "prefix": "дэмаграфічны крызіс"
+          },
+          {
+            "prefix": "дэмаграфічнага крызіс"
+          }
+        ],
+        "pap": [
+          "disminucion di poblacion",
+          "poblacion ta baha",
+          "despoblacion",
+          "disminushon di poblashon",
+          "poblashon ta baha",
+          "despoblashon",
+          "bevolkingskrimp",
+          "bevolkingsdaling"
         ]
       }
     },
@@ -18132,6 +23064,155 @@
           {
             "prefix": "urbane populacij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "pilsētu iedzīvotāju skaita pieaugum"
+          },
+          {
+            "prefix": "pilsētu iedzīvotāju skaita palielin"
+          },
+          {
+            "prefix": "pilsētu iedzīvotāju skaits pieaug"
+          },
+          {
+            "prefix": "pilsētu iedzīvotāju īpatsvar"
+          },
+          {
+            "prefix": "urbanizācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "аҳолии шаҳрнишин"
+          },
+          {
+            "prefix": "ахолии шахрнишин"
+          },
+          {
+            "prefix": "афзоиши аҳолии шаҳр"
+          },
+          {
+            "prefix": "урбанизатси"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "shahar aholisining o's"
+          },
+          {
+            "prefix": "shahar aholisining oʻs"
+          },
+          {
+            "prefix": "shahar aholisining o’s"
+          },
+          {
+            "prefix": "shahar aholisining o‘s"
+          },
+          {
+            "prefix": "шаҳар аҳолисининг ўс"
+          },
+          {
+            "prefix": "shahar aholisi ulush"
+          },
+          {
+            "prefix": "шаҳар аҳолиси улуш"
+          },
+          {
+            "prefix": "urbanizatsi"
+          },
+          {
+            "prefix": "урбанизаци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "miestų gyventojų skaičiaus augim"
+          },
+          {
+            "prefix": "miesto gyventojų skaičiaus augim"
+          },
+          {
+            "prefix": "miestų gyventojų daugėj"
+          },
+          {
+            "prefix": "didmiesčių gyventojų daugėj"
+          },
+          {
+            "prefix": "miestų gyventojų dal"
+          },
+          {
+            "prefix": "miestų populiacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "linnarahvastik"
+          },
+          {
+            "prefix": "linnaelanike arv"
+          },
+          {
+            "prefix": "linnade rahvaarv"
+          },
+          {
+            "prefix": "linnade elanikkonna kasv"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "қала халқының өс"
+          },
+          {
+            "prefix": "қалалық халық"
+          },
+          {
+            "prefix": "қала тұрғындарының саны өс"
+          },
+          {
+            "prefix": "урбанизаци"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "шаар калкы"
+          },
+          {
+            "prefix": "шаар калкынын өсүш"
+          },
+          {
+            "prefix": "шаардык калк"
+          },
+          {
+            "prefix": "шаарлардын калкы"
+          },
+          {
+            "prefix": "шаар тургундарынын саны"
+          }
+        ],
+        "farsi": [
+          "جمعیت شهری",
+          "جمعیت شهرنشین",
+          "رشد جمعیت شهرها",
+          "افزایش جمعیت شهرها",
+          "رشد شهرنشینی",
+          "نفوس شهری"
+        ],
+        "belarusian": [
+          "гарадское насельніцтва",
+          "гарадскога насельніцтва",
+          "гарадскім насельніцтвам",
+          "рост гарадскога насельніцтва",
+          {
+            "prefix": "урбанізацы"
+          }
+        ],
+        "pap": [
+          "poblacion urbano",
+          "crecimento di poblacion urbano",
+          "poblashon urbano",
+          "kresementu di poblashon urbano",
+          "stedelijke bevolking"
         ]
       }
     },
@@ -18869,6 +23950,211 @@
           {
             "prefix": "smanjenje seoskog stanovništv"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "lauku iztukšošan"
+          },
+          {
+            "prefix": "lauku teritoriju iztukšošan"
+          },
+          {
+            "prefix": "reģionu iztukšošan"
+          },
+          {
+            "prefix": "lauku depopulācij"
+          },
+          {
+            "prefix": "lauku iedzīvotāju skaita samazin"
+          },
+          {
+            "prefix": "lauku iedzīvotāju aizplūš"
+          },
+          {
+            "prefix": "izmirstošie ciem"
+          },
+          {
+            "prefix": "spoku ciem"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "холӣ шудани деҳа"
+          },
+          {
+            "prefix": "холӣ шудани деҳот"
+          },
+          {
+            "prefix": "холи шудани деха"
+          },
+          {
+            "prefix": "коҳиши аҳолии деҳот"
+          },
+          {
+            "prefix": "коҳиши аҳолии деҳа"
+          },
+          {
+            "prefix": "деҳаҳои холӣ"
+          },
+          {
+            "prefix": "деҳаҳои партофта"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "qishloq aholisining kamay"
+          },
+          {
+            "prefix": "қишлоқ аҳолисининг камай"
+          },
+          {
+            "prefix": "qishloq aholisi soni kamay"
+          },
+          {
+            "prefix": "қишлоқ аҳолиси сони камай"
+          },
+          {
+            "prefix": "qishloqlar bo'shab"
+          },
+          {
+            "prefix": "qishloqlar boʻshab"
+          },
+          {
+            "prefix": "qishloqlar bo’shab"
+          },
+          {
+            "prefix": "qishloqlar bo‘shab"
+          },
+          {
+            "prefix": "қишлоқлар бўшаб"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kaimų nykim"
+          },
+          {
+            "prefix": "kaimo nykim"
+          },
+          {
+            "prefix": "kaimų tuštėjim"
+          },
+          {
+            "prefix": "kaimo tuštėjim"
+          },
+          {
+            "prefix": "regionų tuštėjim"
+          },
+          {
+            "prefix": "regionų nykim"
+          },
+          {
+            "prefix": "kaimo gyventojų mažėjim"
+          },
+          {
+            "prefix": "kaimų gyventojų mažėjim"
+          },
+          {
+            "prefix": "ištuštėję kaim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "ääremaastu"
+          },
+          {
+            "prefix": "maapiirkondade tühjene"
+          },
+          {
+            "prefix": "maa tühjene"
+          },
+          {
+            "prefix": "külade tühjene"
+          },
+          {
+            "prefix": "maaelu hääbu"
+          },
+          {
+            "prefix": "maarahvastiku vähene"
+          },
+          {
+            "prefix": "väljasurevad küla"
+          },
+          {
+            "prefix": "maapiirkondadest lahku"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "ауылдардың босау"
+          },
+          {
+            "prefix": "ауылдың босау"
+          },
+          {
+            "prefix": "ауыл халқының азаю"
+          },
+          {
+            "prefix": "ауыл халқының кему"
+          },
+          {
+            "prefix": "перспективасыз ауыл"
+          },
+          {
+            "prefix": "бос қалған ауыл"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "айылдардын бошоп калыш"
+          },
+          {
+            "prefix": "айылдардын ээн калыш"
+          },
+          {
+            "prefix": "айыл калкынын азаю"
+          },
+          {
+            "prefix": "айыл калкынын кыскар"
+          },
+          {
+            "prefix": "ээн калган айыл"
+          },
+          {
+            "prefix": "бош калган айыл"
+          },
+          {
+            "prefix": "айылдардын депопуляция"
+          }
+        ],
+        "farsi": [
+          "روستاگریزی",
+          "خالی شدن روستا",
+          "روستاهای خالی از سکنه",
+          "خالی از سکنه شدن روستا",
+          "کاهش جمعیت روستا",
+          "روستاهای متروکه"
+        ],
+        "belarusian": [
+          "выміранне вёскі",
+          "вымірання вёскі",
+          "выміраньне вёскі",
+          "выміранне вёсак",
+          "адток насельніцтва з вёскі",
+          "адтоку насельніцтва з вёскі",
+          "скарачэнне сельскага насельніцтва",
+          "скарачэння сельскага насельніцтва",
+          "скарачэньне сельскага насельніцтва",
+          "пустыя вёскі",
+          "пустых вёсак"
+        ],
+        "pap": [
+          "despoblacion rural",
+          "exodo rural",
+          "despoblashon rural",
+          "éksodo rural",
+          "eksodo rural",
+          "ontvolking van het platteland"
         ]
       }
     },
@@ -19512,6 +24798,178 @@
           {
             "prefix": "osnivanje domaćinstv"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "jaunas mājsaimniecīb"
+          },
+          {
+            "prefix": "jauno mājsaimniecīb"
+          },
+          {
+            "prefix": "mājsaimniecību veidošan"
+          },
+          {
+            "prefix": "mājsaimniecību skait"
+          },
+          {
+            "prefix": "mājsaimniecības lielum"
+          },
+          {
+            "prefix": "mājsaimniecību lielum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "шумораи хонавода"
+          },
+          {
+            "prefix": "шумораи аъзои хонавода"
+          },
+          {
+            "prefix": "андозаи хонавода"
+          },
+          {
+            "prefix": "ҳаҷми хонавода"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "uy xo'jaliklari son"
+          },
+          {
+            "prefix": "uy xoʻjaliklari son"
+          },
+          {
+            "prefix": "uy xo’jaliklari son"
+          },
+          {
+            "prefix": "uy xo‘jaliklari son"
+          },
+          {
+            "prefix": "уй хўжаликлари сон"
+          },
+          {
+            "prefix": "oila a'zolarining o'rtacha son"
+          },
+          {
+            "prefix": "oila aʻzolarining oʻrtacha son"
+          },
+          {
+            "prefix": "oila a’zolarining o’rtacha son"
+          },
+          {
+            "prefix": "oila a‘zolarining o‘rtacha son"
+          },
+          {
+            "prefix": "оила аъзоларининг ўртача сон"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "namų ūkių skaič"
+          },
+          {
+            "prefix": "namų ūkio dyd"
+          },
+          {
+            "prefix": "namų ūkių dyd"
+          },
+          {
+            "prefix": "naujų namų ūk"
+          },
+          {
+            "prefix": "namų ūkių kūrim"
+          },
+          {
+            "prefix": "namų ūkių daugėj"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "leibkondade arv"
+          },
+          {
+            "prefix": "leibkonna suuru"
+          },
+          {
+            "prefix": "leibkondade suuru"
+          },
+          {
+            "prefix": "uued leibkon"
+          },
+          {
+            "prefix": "uute leibkondade"
+          },
+          {
+            "prefix": "leibkondade moodusta"
+          },
+          {
+            "prefix": "leibkondade kasv"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "үй шаруашылықтарының сан"
+          },
+          {
+            "prefix": "үй шаруашылығының мөлшер"
+          },
+          {
+            "prefix": "үй шаруашылықтарының мөлшер"
+          },
+          {
+            "prefix": "жаңа үй шаруашылық"
+          },
+          {
+            "prefix": "отбасының орташа мөлшер"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "үй чарбаларынын сан"
+          },
+          {
+            "prefix": "үй чарбаларынын көлөм"
+          },
+          {
+            "prefix": "үй чарбасынын көлөм"
+          },
+          {
+            "prefix": "жаңы үй чарбалар"
+          },
+          {
+            "prefix": "үй-бүлөнүн орточо курам"
+          },
+          {
+            "prefix": "үй чарбасынын орточо курам"
+          }
+        ],
+        "farsi": [
+          "تشکیل خانوار",
+          "بعد خانوار",
+          "خانوارهای جدید",
+          "اندازه خانوار"
+        ],
+        "belarusian": [
+          "колькасць хатніх гаспадарак",
+          "колькасці хатніх гаспадарак",
+          "колькасьць хатніх гаспадарак",
+          "памер хатніх гаспадарак",
+          "памеры хатніх гаспадарак",
+          "новыя хатнія гаспадаркі",
+          "новых хатніх гаспадарак",
+          "сярэдні памер сям'і",
+          "сярэдні памер сям’і"
+        ],
+        "pap": [
+          "cantidad di hogar",
+          "tamaño di hogar",
+          "hogarnan nobo",
+          "kantidat di hogar",
+          "huishoudensgrootte",
+          "aantal huishoudens",
+          "nieuwe huishoudens"
         ]
       }
     },
@@ -20079,6 +25537,175 @@
           {
             "prefix": "пописа становништв"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "tautas skaitīšan"
+          },
+          {
+            "prefix": "iedzīvotāju skaitīšan"
+          },
+          {
+            "prefix": "iedzīvotāju un mājokļu skaitīšan"
+          },
+          {
+            "prefix": "tautas skaitītāj"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "барӯйхатгирии аҳол"
+          },
+          {
+            "prefix": "баруйхатгирии ахол"
+          },
+          {
+            "prefix": "барӯйхатгирии навбатии аҳол"
+          },
+          {
+            "prefix": "барӯйхатгирии умумимилл"
+          },
+          {
+            "prefix": "рӯйхатгирии аҳол"
+          },
+          {
+            "prefix": "руйхатгирии ахол"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "aholini ro'yxatga ol"
+          },
+          {
+            "prefix": "aholini roʻyxatga ol"
+          },
+          {
+            "prefix": "aholini ro’yxatga ol"
+          },
+          {
+            "prefix": "aholini ro‘yxatga ol"
+          },
+          {
+            "prefix": "аҳолини рўйхатга ол"
+          },
+          {
+            "prefix": "aholi ro'yxatga ol"
+          },
+          {
+            "prefix": "aholi roʻyxatga ol"
+          },
+          {
+            "prefix": "aholi ro’yxatga ol"
+          },
+          {
+            "prefix": "aholi ro‘yxatga ol"
+          },
+          {
+            "prefix": "аҳоли рўйхатга ол"
+          },
+          {
+            "prefix": "aholi va uy-joy fondini ro'yxatga ol"
+          },
+          {
+            "prefix": "aholi va uy-joy fondini roʻyxatga ol"
+          },
+          {
+            "prefix": "aholi va uy-joy fondini ro’yxatga ol"
+          },
+          {
+            "prefix": "aholi va uy-joy fondini ro‘yxatga ol"
+          },
+          {
+            "prefix": "аҳоли ва уй-жой фондини рўйхатга ол"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "gyventojų surašym"
+          },
+          {
+            "prefix": "gyventojų ir būstų surašym"
+          },
+          {
+            "prefix": "surašymo duomen"
+          },
+          {
+            "prefix": "surašinėtoj"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "rahvaloend"
+          },
+          {
+            "prefix": "rahva ja eluruumide loendu"
+          },
+          "REL 2021",
+          "REL2021"
+        ],
+        "kazakh": [
+          {
+            "prefix": "халық санағ"
+          },
+          {
+            "prefix": "ұлттық санақ"
+          },
+          {
+            "prefix": "халықты санау"
+          },
+          {
+            "prefix": "санақшы"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "калкты каттоо"
+          },
+          {
+            "prefix": "калкты жана турак жай фондун каттоо"
+          },
+          {
+            "prefix": "калкты жана турак-жай фондун каттоо"
+          },
+          {
+            "prefix": "эл каттоо"
+          },
+          {
+            "prefix": "калкты жалпы каттоо"
+          },
+          {
+            "prefix": "улуттук эл каттоо"
+          }
+        ],
+        "farsi": [
+          "سرشماری",
+          "سرشماری نفوس",
+          "سرشماری جمعیت",
+          "سرشماری عمومی",
+          "سرشماران"
+        ],
+        "belarusian": [
+          {
+            "prefix": "перапіс насельніцтв"
+          },
+          {
+            "prefix": "перапісу насельніцтв"
+          },
+          {
+            "prefix": "перапісе насельніцтв"
+          },
+          {
+            "prefix": "перапісам насельніцтв"
+          },
+          {
+            "prefix": "перапішчык"
+          }
+        ],
+        "pap": [
+          "censo di poblacion",
+          "censo di poblacion y vivienda",
+          "senso di poblashon",
+          "volkstelling"
         ]
       }
     }

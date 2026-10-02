@@ -584,6 +584,14 @@ PREFIX_LANGUAGES = frozenset(
         "armenian",
         "georgian",
         "azerbaijani",
+        "belarusian",
+        "kazakh",
+        "kyrgyz",
+        "uzbek",
+        "tajik",
+        "latvian",
+        "lithuanian",
+        "estonian",
     }
 )
 CONCEPTS_DIR = Path(__file__).parent / "keywords" / "concepts"

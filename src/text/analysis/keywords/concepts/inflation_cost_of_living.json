@@ -527,6 +527,149 @@
           {
             "prefix": "godišnje inflacij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "inflācij"
+          },
+          {
+            "prefix": "inflatīv"
+          },
+          {
+            "prefix": "gada inflācij"
+          },
+          {
+            "prefix": "patēriņa cenu inflācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "таваррум"
+          },
+          {
+            "prefix": "инфлятси"
+          },
+          {
+            "prefix": "инфляци"
+          },
+          {
+            "prefix": "сатҳи таваррум"
+          },
+          {
+            "prefix": "сатхи таваррум"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "inflyatsi"
+          },
+          {
+            "prefix": "inflyasi"
+          },
+          {
+            "prefix": "inflatsi"
+          },
+          {
+            "prefix": "инфляци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "infliacij"
+          },
+          {
+            "prefix": "infliacin"
+          },
+          {
+            "prefix": "metinė infliacij"
+          },
+          {
+            "prefix": "metinės infliacij"
+          },
+          {
+            "prefix": "vartotojų kainų infliacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "inflatsioon"
+          },
+          {
+            "prefix": "aastainflatsioon"
+          },
+          {
+            "prefix": "üldinflatsioon"
+          },
+          {
+            "prefix": "tarbijahinnainflatsioon"
+          },
+          {
+            "prefix": "tarbijahindade tõus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "инфляци"
+          },
+          {
+            "prefix": "жылдық инфляци"
+          },
+          {
+            "prefix": "инфляция деңгей"
+          },
+          {
+            "prefix": "инфляциялық қысым"
+          },
+          {
+            "prefix": "тұтыну инфляци"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "инфляци"
+          },
+          {
+            "prefix": "жылдык инфляци"
+          },
+          {
+            "prefix": "инфляциянын деңгээл"
+          },
+          {
+            "prefix": "инфляциялык басым"
+          }
+        ],
+        "farsi": [
+          "تورم",
+          "نرخ تورم",
+          "تورم سالانه",
+          "تورم نقطه به نقطه",
+          "تورم ماهانه",
+          "فشارهای تورمی",
+          "تورم مصرف‌کننده",
+          "تورم مصرف کننده",
+          "تورم مصرفکننده"
+        ],
+        "belarusian": [
+          {
+            "prefix": "інфляцы"
+          },
+          "гадавая інфляцыя",
+          "гадавой інфляцыі",
+          "узровень інфляцыі",
+          "ўзровень інфляцыі",
+          "тэмпы інфляцыі"
+        ],
+        "pap": [
+          "inflacion",
+          "tasa di inflacion",
+          "inflacion anual",
+          "inflacionario",
+          "preshon inflacionario",
+          "inflashon",
+          "tasa di inflashon",
+          "inflashon anual",
+          "inflashonario",
+          "inflatie"
         ]
       }
     },
@@ -1016,6 +1159,144 @@
           {
             "prefix": "inflacija bez hrane i energij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "pamatinflācij"
+          },
+          {
+            "prefix": "bāzes inflācij"
+          },
+          {
+            "prefix": "pamata inflācij"
+          },
+          "core inflation"
+        ],
+        "tajik": [
+          {
+            "prefix": "таварруми асос"
+          },
+          "таварруми аслӣ",
+          {
+            "prefix": "таварруми асли"
+          },
+          {
+            "prefix": "таварруми базав"
+          },
+          {
+            "prefix": "инфлятсияи базав"
+          },
+          {
+            "prefix": "инфлятсияи асос"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "bazaviy inflyatsi"
+          },
+          {
+            "prefix": "базавий инфляци"
+          },
+          {
+            "prefix": "asosiy inflyatsi"
+          },
+          {
+            "prefix": "асосий инфляци"
+          },
+          {
+            "prefix": "tayanch inflyatsi"
+          },
+          {
+            "prefix": "таянч инфляци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "bazinė infliacij"
+          },
+          {
+            "prefix": "bazinės infliacij"
+          },
+          {
+            "prefix": "bazinę infliacij"
+          },
+          {
+            "prefix": "bazinei infliacij"
+          },
+          {
+            "prefix": "grynoji infliacij"
+          },
+          {
+            "prefix": "grynosios infliacij"
+          },
+          {
+            "prefix": "pagrindinė infliacij"
+          },
+          {
+            "prefix": "pagrindinės infliacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "baasinflatsioon"
+          },
+          {
+            "prefix": "alusinflatsioon"
+          },
+          {
+            "prefix": "põhiinflatsioon"
+          },
+          {
+            "prefix": "tuuminflatsioon"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "базалық инфляци"
+          },
+          {
+            "prefix": "негізгі инфляци"
+          },
+          {
+            "prefix": "іргелі инфляци"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "базалык инфляци"
+          },
+          {
+            "prefix": "өзөктүк инфляци"
+          }
+        ],
+        "farsi": [
+          "تورم هسته",
+          "تورم پایه",
+          "تورم زیربنایی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "базавая інфляцы"
+          },
+          {
+            "prefix": "базавай інфляцы"
+          },
+          {
+            "prefix": "базавую інфляцы"
+          },
+          "базавы ІСЦ",
+          "базавага ІСЦ",
+          "базавы індэкс спажывецкіх цэн"
+        ],
+        "pap": [
+          "inflacion subyacente",
+          "inflacion basico",
+          "inflacion core",
+          "inflashon subyasente",
+          "inflashon básiko",
+          "inflashon basiko",
+          "kerninflatie",
+          "core inflation"
         ]
       }
     },
@@ -1511,6 +1792,192 @@
           {
             "prefix": "потрошачких цијен"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "patēriņa cen"
+          },
+          {
+            "prefix": "patēriņa preču un pakalpojumu cen"
+          },
+          {
+            "prefix": "saskaņotais patēriņa cenu indeks"
+          },
+          {
+            "prefix": "saskaņotā patēriņa cenu indeks"
+          },
+          "SPCI"
+        ],
+        "tajik": [
+          {
+            "prefix": "индекси нархҳои истеъмол"
+          },
+          {
+            "prefix": "индекси нархи истеъмол"
+          },
+          {
+            "prefix": "нархҳои истеъмол"
+          },
+          {
+            "prefix": "нархои истеъмол"
+          },
+          {
+            "prefix": "нархи истеъмол"
+          },
+          {
+            "prefix": "нархҳои молҳои истеъмол"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "iste'mol narxlari indeks"
+          },
+          {
+            "prefix": "isteʻmol narxlari indeks"
+          },
+          {
+            "prefix": "iste’mol narxlari indeks"
+          },
+          {
+            "prefix": "iste‘mol narxlari indeks"
+          },
+          {
+            "prefix": "истеъмол нархлари индекс"
+          },
+          {
+            "prefix": "iste'mol narx"
+          },
+          {
+            "prefix": "isteʻmol narx"
+          },
+          {
+            "prefix": "iste’mol narx"
+          },
+          {
+            "prefix": "iste‘mol narx"
+          },
+          {
+            "prefix": "истеъмол нарх"
+          },
+          {
+            "prefix": "iste'mol savat"
+          },
+          {
+            "prefix": "isteʻmol savat"
+          },
+          {
+            "prefix": "iste’mol savat"
+          },
+          {
+            "prefix": "iste‘mol savat"
+          },
+          {
+            "prefix": "истеъмол сават"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vartotojų kain"
+          },
+          "SVKI",
+          {
+            "prefix": "suderintasis vartotojų kainų indeks"
+          },
+          {
+            "prefix": "vartojimo prekių ir paslaugų kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "tarbijahinnaindeks"
+          },
+          {
+            "prefix": "tarbijahin"
+          },
+          "THI",
+          {
+            "prefix": "tarbijakorv"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "тұтыну бағалар"
+          },
+          {
+            "prefix": "тұтыну бағасы"
+          },
+          {
+            "prefix": "тұтыну баға индекс"
+          },
+          {
+            "prefix": "тұтыну бағаларының индекс"
+          },
+          "ТБИ"
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "керектөө бааларынын индекс"
+          },
+          {
+            "prefix": "керектөө баа индекс"
+          },
+          {
+            "prefix": "керектөөчүлүк баалардын индекс"
+          },
+          {
+            "prefix": "керектөөчүлүк баа индекс"
+          },
+          {
+            "prefix": "керектөө баалар"
+          },
+          {
+            "prefix": "керектөөчүлүк баалар"
+          },
+          "КБИ"
+        ],
+        "farsi": [
+          "شاخص قیمت مصرف‌کننده",
+          "شاخص قیمت مصرف کننده",
+          "شاخص قیمت مصرفکننده",
+          "شاخص بهای مصرف‌کننده",
+          "شاخص بهای مصرف کننده",
+          "شاخص بهای مصرفکننده",
+          "شاخص قیمت کالاها و خدمات مصرفی",
+          "شاخص قیمت‌های مصرفی",
+          "شاخص قیمت های مصرفی",
+          "شاخص قیمتهای مصرفی",
+          "شاخص قیمت‌های مصرف‌کننده",
+          "شاخص قیمت های مصرف کننده",
+          "شاخص قیمتهای مصرفکننده",
+          "قیمت‌های مصرف‌کننده",
+          "قیمت های مصرف کننده",
+          "قیمتهای مصرفکننده",
+          "CPI"
+        ],
+        "belarusian": [
+          "індэкс спажывецкіх цэн",
+          "індэкса спажывецкіх цэн",
+          "індэксу спажывецкіх цэн",
+          "індэксе спажывецкіх цэн",
+          "індэксы спажывецкіх цэн",
+          "індэкс спажывецкіх цэнаў",
+          "ІСЦ",
+          "спажывецкія цэны",
+          "спажывецкіх цэн",
+          "спажывецкіх цэнаў",
+          "спажывецкім цэнам",
+          "спажывецкімі цэнамі"
+        ],
+        "pap": [
+          "indice di prijs pa consumidor",
+          "indice di prijs di consumidor",
+          "prijs di consumidor",
+          "prijsnan di consumidor",
+          "Indise di Preis di Konsumidó",
+          "preis di konsumidó",
+          "preisnan di konsumidó",
+          "consumentenprijsindex",
+          "CPI"
         ]
       }
     },
@@ -1999,6 +2466,148 @@
           {
             "prefix": "cijena proizvođača industrijskih proizvod"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ražotāju cen"
+          },
+          {
+            "prefix": "rūpniecības produkcijas ražotāju cen"
+          },
+          {
+            "prefix": "ražotāja cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "нархҳои истеҳсолкунанда"
+          },
+          {
+            "prefix": "нархи истеҳсолкунанда"
+          },
+          {
+            "prefix": "нархои истехсолкунанда"
+          },
+          {
+            "prefix": "индекси нархҳои истеҳсолкунанда"
+          },
+          {
+            "prefix": "таварруми истеҳсолкунанда"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ishlab chiqaruvchilar narx"
+          },
+          {
+            "prefix": "ishlab chiqaruvchi narx"
+          },
+          {
+            "prefix": "ишлаб чиқарувчилар нарх"
+          },
+          {
+            "prefix": "ишлаб чиқарувчи нарх"
+          },
+          {
+            "prefix": "sanoat ishlab chiqaruvchilari narx"
+          },
+          {
+            "prefix": "саноат ишлаб чиқарувчилари нарх"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "gamintojų kain"
+          },
+          {
+            "prefix": "pramonės produkcijos kain"
+          },
+          {
+            "prefix": "pramonės gaminių kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "tootjahinnaindeks"
+          },
+          {
+            "prefix": "tootjahin"
+          },
+          {
+            "prefix": "tootjahinnainflatsioon"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "өндіруші бағалар"
+          },
+          {
+            "prefix": "өндірушілер бағалар"
+          },
+          {
+            "prefix": "өндірушілердің бағалар"
+          },
+          {
+            "prefix": "өндіруші баға индекс"
+          },
+          {
+            "prefix": "өндірушілер бағаларының индекс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "өндүрүүчүлөрдүн бааларынын индекс"
+          },
+          {
+            "prefix": "өндүрүүчүлөрдүн баалар"
+          },
+          {
+            "prefix": "өндүрүүчүлөрдүн баасы"
+          },
+          {
+            "prefix": "өндүрүүчү баалар"
+          },
+          {
+            "prefix": "өнөр жай өндүрүүчүлөрүнүн баалар"
+          }
+        ],
+        "farsi": [
+          "شاخص قیمت تولید‌کننده",
+          "شاخص قیمت تولید کننده",
+          "شاخص قیمت تولیدکننده",
+          "شاخص بهای تولید‌کننده",
+          "شاخص بهای تولید کننده",
+          "شاخص بهای تولیدکننده",
+          "قیمت تولید‌کننده",
+          "قیمت تولید کننده",
+          "قیمت تولیدکننده",
+          "قیمت‌های تولید‌کننده",
+          "قیمت های تولید کننده",
+          "قیمتهای تولیدکننده",
+          "تورم تولید‌کننده",
+          "تورم تولید کننده",
+          "تورم تولیدکننده",
+          "PPI"
+        ],
+        "belarusian": [
+          "цэны вытворцаў",
+          "цэн вытворцаў",
+          "цэнаў вытворцаў",
+          "цэнам вытворцаў",
+          "цэнах вытворцаў",
+          "цэнамі вытворцаў",
+          "адпускныя цэны вытворцаў",
+          "адпускных цэн вытворцаў"
+        ],
+        "pap": [
+          "indice di prijs di productor",
+          "prijs di productor",
+          "prijsnan di productor",
+          "indise di preis di produktor",
+          "preis di produktor",
+          "preisnan di produktor",
+          "producentenprijsindex",
+          "producentenprijzen"
         ]
       }
     },
@@ -2553,6 +3162,176 @@
           {
             "prefix": "cijene uvoznih proizvod"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "importētā inflācij"
+          },
+          {
+            "prefix": "importētās inflācij"
+          },
+          {
+            "prefix": "importēto inflācij"
+          },
+          {
+            "prefix": "importētajai inflācij"
+          },
+          {
+            "prefix": "importa cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "таварруми ворид"
+          },
+          {
+            "prefix": "инфлятсияи ворид"
+          },
+          {
+            "prefix": "нархҳои воридот"
+          },
+          {
+            "prefix": "нархои воридот"
+          },
+          {
+            "prefix": "нархи молҳои воридот"
+          },
+          {
+            "prefix": "нархҳои молҳои воридот"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "import qilinadigan inflyatsi"
+          },
+          {
+            "prefix": "импорт қилинадиган инфляци"
+          },
+          {
+            "prefix": "import narx"
+          },
+          {
+            "prefix": "импорт нарх"
+          },
+          {
+            "prefix": "import qilinadigan mahsulotlar narx"
+          },
+          {
+            "prefix": "импорт қилинадиган маҳсулотлар нарх"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "importuota infliacij"
+          },
+          {
+            "prefix": "importuotos infliacij"
+          },
+          {
+            "prefix": "importuotą infliacij"
+          },
+          {
+            "prefix": "importuojama infliacij"
+          },
+          {
+            "prefix": "importuojamos infliacij"
+          },
+          {
+            "prefix": "importo kain"
+          },
+          {
+            "prefix": "importuojamų prekių kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "imporditud inflatsioon"
+          },
+          {
+            "prefix": "imporditav inflatsioon"
+          },
+          {
+            "prefix": "imporditava inflatsioon"
+          },
+          {
+            "prefix": "impordihin"
+          },
+          {
+            "prefix": "impordihinnaindeks"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "импорттық инфляци"
+          },
+          {
+            "prefix": "импортталатын инфляци"
+          },
+          {
+            "prefix": "импорттық бағалар"
+          },
+          {
+            "prefix": "импорт бағалар"
+          },
+          {
+            "prefix": "импортталатын тауарлар бағалар"
+          },
+          {
+            "prefix": "импортталатын тауарлардың бағалар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "импорттолгон инфляци"
+          },
+          {
+            "prefix": "импорттук инфляци"
+          },
+          {
+            "prefix": "импорттолуучу инфляци"
+          },
+          {
+            "prefix": "импорттук баалар"
+          },
+          {
+            "prefix": "импорттук товарлардын баалар"
+          }
+        ],
+        "farsi": [
+          "تورم وارداتی",
+          "قیمت کالاهای وارداتی",
+          "قیمت واردات",
+          "عبور نرخ ارز",
+          "انتقال نرخ ارز به تورم",
+          "اثر نرخ ارز بر تورم",
+          "تورم ناشی از نرخ ارز"
+        ],
+        "belarusian": [
+          {
+            "prefix": "імпартаваная інфляцы"
+          },
+          {
+            "prefix": "імпартаванай інфляцы"
+          },
+          {
+            "prefix": "імпартаваную інфляцы"
+          },
+          "імпартныя цэны",
+          "імпартных цэн",
+          "імпартных цэнаў",
+          "цэны на імпарт",
+          "цэн на імпарт"
+        ],
+        "pap": [
+          "inflacion importa",
+          "inflacion importa di exterior",
+          "prijs di importacion",
+          "prijsnan di importacion",
+          "inflashon importá",
+          "inflashon importa",
+          "preisnan di importashon",
+          "geïmporteerde inflatie",
+          "importprijzen"
         ]
       }
     },
@@ -3183,6 +3962,196 @@
           {
             "prefix": "prognoze inflacij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "inflācijas gaid"
+          },
+          {
+            "prefix": "inflācijas prognoz"
+          },
+          {
+            "prefix": "inflācijas perspektīv"
+          },
+          {
+            "prefix": "sagaidāmā inflācij"
+          },
+          {
+            "prefix": "sagaidāmās inflācij"
+          },
+          {
+            "prefix": "sagaidāmo inflācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "интизориҳои таваррум"
+          },
+          {
+            "prefix": "интизорихои таваррум"
+          },
+          {
+            "prefix": "интизории таваррум"
+          },
+          {
+            "prefix": "интизориҳои инфлятси"
+          },
+          {
+            "prefix": "пешбинии таваррум"
+          },
+          {
+            "prefix": "дурнамои таваррум"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "inflyatsion kutilma"
+          },
+          {
+            "prefix": "инфляцион кутилма"
+          },
+          {
+            "prefix": "inflyatsiya kutilma"
+          },
+          {
+            "prefix": "инфляция кутилма"
+          },
+          {
+            "prefix": "kutilayotgan inflyatsi"
+          },
+          {
+            "prefix": "кутилаётган инфляци"
+          },
+          {
+            "prefix": "inflyatsiya prognoz"
+          },
+          {
+            "prefix": "инфляция прогноз"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "infliacijos lūkesč"
+          },
+          {
+            "prefix": "infliaciniai lūkesč"
+          },
+          {
+            "prefix": "infliacinių lūkesč"
+          },
+          {
+            "prefix": "infliacinius lūkesč"
+          },
+          {
+            "prefix": "infliacijos prognoz"
+          },
+          {
+            "prefix": "infliacijos perspektyv"
+          },
+          {
+            "prefix": "tikėtina infliacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "inflatsiooniootus"
+          },
+          {
+            "prefix": "inflatsiooni ootus"
+          },
+          {
+            "prefix": "oodatav inflatsioon"
+          },
+          {
+            "prefix": "oodatava inflatsioon"
+          },
+          {
+            "prefix": "inflatsiooniprognoos"
+          },
+          {
+            "prefix": "inflatsiooni prognoos"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "инфляциялық күту"
+          },
+          {
+            "prefix": "инфляция бойынша күту"
+          },
+          {
+            "prefix": "күтілетін инфляци"
+          },
+          {
+            "prefix": "инфляция болжам"
+          },
+          {
+            "prefix": "инфляция бойынша болжам"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "инфляциялык күтүү"
+          },
+          {
+            "prefix": "инфляциялык күтүлүш"
+          },
+          {
+            "prefix": "күтүлгөн инфляци"
+          },
+          {
+            "prefix": "инфляциянын болжол"
+          },
+          {
+            "prefix": "инфляция боюнча болжол"
+          }
+        ],
+        "farsi": [
+          "انتظارات تورمی",
+          "انتظار تورم",
+          "تورم انتظاری",
+          "تورم مورد انتظار",
+          "پیش‌بینی تورم",
+          "پیش بینی تورم",
+          "پیشبینی تورم",
+          "چشم‌انداز تورم",
+          "چشم انداز تورم",
+          "چشمانداز تورم"
+        ],
+        "belarusian": [
+          {
+            "prefix": "інфляцыйныя чакан"
+          },
+          {
+            "prefix": "інфляцыйных чакан"
+          },
+          {
+            "prefix": "інфляцыйным чакан"
+          },
+          {
+            "prefix": "інфляцыйнымі чакан"
+          },
+          "чаканая інфляцыя",
+          "чаканай інфляцыі",
+          {
+            "prefix": "прагноз інфляцы"
+          },
+          {
+            "prefix": "прагнозу інфляцы"
+          },
+          {
+            "prefix": "прагнозы інфляцы"
+          }
+        ],
+        "pap": [
+          "expectativa di inflacion",
+          "expectativanan di inflacion",
+          "perspectiva di inflacion",
+          "ekspektativa di inflashon",
+          "ekspektativanan di inflashon",
+          "perspektiva di inflashon",
+          "inflatieverwachting",
+          "inflatieverwachtingen"
         ]
       }
     },
@@ -3688,6 +4657,154 @@
           {
             "prefix": "spirala cijena i zarad"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "algu un cenu spirāl"
+          },
+          {
+            "prefix": "cenu un algu spirāl"
+          },
+          {
+            "prefix": "algu-cenu spirāl"
+          },
+          {
+            "prefix": "cenu-algu spirāl"
+          },
+          {
+            "prefix": "otrās kārtas efekt"
+          },
+          {
+            "prefix": "otrās kārtas ietekm"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "спирали нарх"
+          },
+          {
+            "prefix": "спирали музд"
+          },
+          {
+            "prefix": "спирали таваррум"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ish haqi va narxlar spiral"
+          },
+          {
+            "prefix": "иш ҳақи ва нархлар спирал"
+          },
+          {
+            "prefix": "ish haqi-narx spiral"
+          },
+          {
+            "prefix": "иш ҳақи-нарх спирал"
+          },
+          {
+            "prefix": "inflyatsion spiral"
+          },
+          {
+            "prefix": "инфляцион спирал"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "atlyginimų ir kainų spiral"
+          },
+          {
+            "prefix": "kainų ir atlyginimų spiral"
+          },
+          {
+            "prefix": "darbo užmokesčio ir kainų spiral"
+          },
+          {
+            "prefix": "kainų ir darbo užmokesčio spiral"
+          },
+          {
+            "prefix": "antrojo etapo poveik"
+          },
+          {
+            "prefix": "antrinio poveikio infliacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "palga-hinna spiraal"
+          },
+          {
+            "prefix": "palga-hinnaspiraal"
+          },
+          {
+            "prefix": "hinna-palga spiraal"
+          },
+          {
+            "prefix": "hinna-palgaspiraal"
+          },
+          {
+            "prefix": "palkade ja hindade spiraal"
+          },
+          {
+            "prefix": "teise ringi mõju"
+          },
+          {
+            "prefix": "teise ringi efekt"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "жалақы-баға спирал"
+          },
+          {
+            "prefix": "баға-жалақы спирал"
+          },
+          {
+            "prefix": "жалақы мен баға спирал"
+          },
+          {
+            "prefix": "баға мен жалақы спирал"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "инфляциялык спирал"
+          },
+          {
+            "prefix": "баа-эмгек акы спирал"
+          },
+          {
+            "prefix": "эмгек акы-баа спирал"
+          },
+          {
+            "prefix": "экинчи айлампадагы эффект"
+          },
+          {
+            "prefix": "экинчи айлампадагы таасир"
+          }
+        ],
+        "farsi": [
+          "مارپیچ دستمزد و قیمت",
+          "مارپیچ قیمت و دستمزد",
+          "مارپیچ دستمزد-قیمت",
+          "چرخه دستمزد و قیمت"
+        ],
+        "belarusian": [
+          "спіраль заробкаў і цэн",
+          "спіралі заробкаў і цэн",
+          "спіраль цэн і заробкаў",
+          "спіралі цэн і заробкаў",
+          "інфляцыйная спіраль",
+          "інфляцыйнай спіралі"
+        ],
+        "pap": [
+          "espiral di salario i prijs",
+          "espiral di prijs i salario",
+          "espiral di salario y prijs",
+          "spiral di salario i preis",
+          "loon-prijsspiraal",
+          "loonprijsspiraal",
+          "tweederonde-effecten"
         ]
       }
     },
@@ -4333,6 +5450,179 @@
           {
             "prefix": "troškova sirovin"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ražošanas izmaks"
+          },
+          {
+            "prefix": "ražošanas izdevum"
+          },
+          {
+            "prefix": "ražošanas pašizmaks"
+          },
+          {
+            "prefix": "izejvielu izmaks"
+          },
+          {
+            "prefix": "ražošanas resursu cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "хароҷоти истеҳсол"
+          },
+          {
+            "prefix": "харочоти истехсол"
+          },
+          {
+            "prefix": "хароҷоти ашёи хом"
+          },
+          {
+            "prefix": "нархи воситаҳои истеҳсол"
+          },
+          {
+            "prefix": "нархҳои воситаҳои истеҳсол"
+          },
+          {
+            "prefix": "арзиши аслии маҳсулот"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ishlab chiqarish xarajat"
+          },
+          {
+            "prefix": "ишлаб чиқариш харажат"
+          },
+          {
+            "prefix": "tannarx"
+          },
+          {
+            "prefix": "таннарх"
+          },
+          {
+            "prefix": "xomashyo xarajat"
+          },
+          {
+            "prefix": "хомашё харажат"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "gamybos sąnaud"
+          },
+          {
+            "prefix": "gamybos kašt"
+          },
+          {
+            "prefix": "gamybos savikain"
+          },
+          {
+            "prefix": "sąnaudų infliacij"
+          },
+          {
+            "prefix": "žaliavų sąnaud"
+          },
+          {
+            "prefix": "žaliavų kašt"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "sisendhin"
+          },
+          {
+            "prefix": "sisendkulu"
+          },
+          {
+            "prefix": "tootmiskulu"
+          },
+          {
+            "prefix": "toorainekulu"
+          },
+          {
+            "prefix": "tootmissisendite hin"
+          },
+          {
+            "prefix": "sisendite hin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "өндіріс шығын"
+          },
+          {
+            "prefix": "өндірістік шығын"
+          },
+          {
+            "prefix": "өндіріс құн"
+          },
+          {
+            "prefix": "өзіндік құн"
+          },
+          {
+            "prefix": "шикізат құн"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "өндүрүштүк чыгымдар"
+          },
+          {
+            "prefix": "өндүрүштүк чыгашалар"
+          },
+          {
+            "prefix": "өндүрүш чыгымдар"
+          },
+          {
+            "prefix": "өндүрүштүн өздүк нарк"
+          },
+          {
+            "prefix": "өздүк нарк"
+          },
+          {
+            "prefix": "чийки заттын баалар"
+          },
+          {
+            "prefix": "чийки зат баалар"
+          }
+        ],
+        "farsi": [
+          "هزینه تولید",
+          "هزینه‌های تولید",
+          "هزینه های تولید",
+          "هزینههای تولید",
+          "قیمت نهاده",
+          "هزینه نهاده",
+          "هزینه مواد اولیه",
+          "قیمت تمام‌شده",
+          "قیمت تمام شده",
+          "قیمت تمامشده",
+          "بهای تمام‌شده",
+          "بهای تمام شده",
+          "بهای تمامشده"
+        ],
+        "belarusian": [
+          {
+            "prefix": "сабекошт"
+          },
+          "вытворчыя выдаткі",
+          "вытворчых выдаткаў",
+          "выдаткі вытворчасці",
+          "выдаткаў вытворчасці",
+          "выдаткі на вытворчасць",
+          "выдаткі на сыравіну",
+          "выдаткаў на сыравіну"
+        ],
+        "pap": [
+          "costo di produccion",
+          "costonan di produccion",
+          "costo di materia prima",
+          "kosto di produkshon",
+          "kostonan di produkshon",
+          "kosto di materia prima",
+          "productiekosten"
         ]
       }
     },
@@ -4711,6 +6001,115 @@
           {
             "prefix": "pada potrošačkih cijen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "deflācij"
+          },
+          {
+            "prefix": "patēriņa cenu kritum"
+          },
+          {
+            "prefix": "patēriņa cenu samazinājum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "дефлятси"
+          },
+          {
+            "prefix": "дефляци"
+          },
+          {
+            "prefix": "коҳиши нархҳои истеъмол"
+          },
+          {
+            "prefix": "паст шудани нархҳои истеъмол"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "deflyatsi"
+          },
+          {
+            "prefix": "дефляци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "defliacij"
+          },
+          {
+            "prefix": "defliacin"
+          },
+          {
+            "prefix": "krintančios vartotojų kain"
+          },
+          {
+            "prefix": "mažėjančios vartotojų kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "deflatsioon"
+          },
+          {
+            "prefix": "tarbijahindade lang"
+          },
+          {
+            "prefix": "tarbijahinnad lang"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "дефляци"
+          },
+          {
+            "prefix": "тұтыну бағаларының төмендеу"
+          },
+          {
+            "prefix": "тұтыну бағаларының түсу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "дефляци"
+          },
+          {
+            "prefix": "керектөө бааларынын төмөндө"
+          },
+          {
+            "prefix": "керектөө баалары төмөндө"
+          }
+        ],
+        "farsi": [
+          "تورم منفی",
+          "دفلاسیون",
+          "کاهش سطح عمومی قیمت‌ها",
+          "کاهش سطح عمومی قیمت ها",
+          "کاهش سطح عمومی قیمتها",
+          "افت سطح عمومی قیمت‌ها",
+          "افت سطح عمومی قیمت ها",
+          "افت سطح عمومی قیمتها",
+          "کاهش قیمت‌های مصرف‌کننده",
+          "کاهش قیمت های مصرف کننده",
+          "کاهش قیمتهای مصرفکننده"
+        ],
+        "belarusian": [
+          {
+            "prefix": "дэфляцы"
+          },
+          "падзенне спажывецкіх цэн",
+          "падзеньне спажывецкіх цэнаў",
+          "зніжэнне спажывецкіх цэн",
+          "зьніжэньне спажывецкіх цэнаў"
+        ],
+        "pap": [
+          "deflacion",
+          "deflacionario",
+          "deflashon",
+          "deflashonario",
+          "deflatie"
         ]
       }
     },
@@ -5401,6 +6800,208 @@
           "inflacija je usporila",
           "inflacija usporava",
           "inflacija je pala"
+        ],
+        "latvian": [
+          {
+            "prefix": "dezinflācij"
+          },
+          {
+            "prefix": "inflācijas palēnināš"
+          },
+          {
+            "prefix": "inflācijas mazināš"
+          },
+          {
+            "prefix": "inflācijas tempa palēnināš"
+          },
+          "inflācija palēninājās",
+          "inflācija samazinājās",
+          "inflācija mazinājās",
+          {
+            "prefix": "inflācijas samazināš"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "дезинфлятси"
+          },
+          {
+            "prefix": "коҳиши таваррум"
+          },
+          {
+            "prefix": "кохиши таваррум"
+          },
+          {
+            "prefix": "коҳиши сатҳи таваррум"
+          },
+          {
+            "prefix": "сустшавии таваррум"
+          },
+          {
+            "prefix": "паст шудани таваррум"
+          },
+          {
+            "prefix": "паст шудани сатҳи таваррум"
+          },
+          {
+            "prefix": "таваррум коҳиш"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "dezinflyatsi"
+          },
+          {
+            "prefix": "дезинфляци"
+          },
+          {
+            "prefix": "inflyatsiya sekinlash"
+          },
+          {
+            "prefix": "инфляция секинлаш"
+          },
+          {
+            "prefix": "inflyatsiyaning sekinlash"
+          },
+          {
+            "prefix": "инфляциянинг секинлаш"
+          },
+          {
+            "prefix": "inflyatsiya pasay"
+          },
+          {
+            "prefix": "инфляция пасай"
+          },
+          {
+            "prefix": "inflyatsiyaning pasay"
+          },
+          {
+            "prefix": "инфляциянинг пасай"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "dezinfliacij"
+          },
+          "infliacija lėtėja",
+          "infliacija sulėtėjo",
+          "infliacija mažėja",
+          "infliacija sumažėjo",
+          "infliacija slūgsta",
+          {
+            "prefix": "infliacijos lėtėjim"
+          },
+          {
+            "prefix": "infliacijos sulėtėjim"
+          },
+          {
+            "prefix": "infliacijos mažėjim"
+          },
+          {
+            "prefix": "lėtėjanti infliacij"
+          },
+          {
+            "prefix": "lėtėjančios infliacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "disinflatsioon"
+          },
+          {
+            "prefix": "inflatsioon aeglustu"
+          },
+          {
+            "prefix": "inflatsiooni aeglustu"
+          },
+          {
+            "prefix": "inflatsioon rauge"
+          },
+          {
+            "prefix": "inflatsiooni rauge"
+          },
+          {
+            "prefix": "inflatsiooni taandu"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "дезинфляци"
+          },
+          {
+            "prefix": "инфляцияның баяула"
+          },
+          {
+            "prefix": "инфляция баяула"
+          },
+          {
+            "prefix": "инфляцияның бәсеңде"
+          },
+          {
+            "prefix": "инфляция бәсеңде"
+          },
+          {
+            "prefix": "инфляцияның төмендеу"
+          },
+          {
+            "prefix": "инфляция төменде"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "дезинфляци"
+          },
+          {
+            "prefix": "инфляциянын басаңда"
+          },
+          {
+            "prefix": "инфляция басаңда"
+          },
+          {
+            "prefix": "инфляциянын төмөндө"
+          },
+          {
+            "prefix": "инфляция төмөндө"
+          },
+          {
+            "prefix": "инфляциянын жайла"
+          }
+        ],
+        "farsi": [
+          "کاهش تورم",
+          "کاهش نرخ تورم",
+          "کاهش شتاب تورم",
+          "کندی تورم",
+          "افت تورم",
+          "فروکش تورم",
+          "تورم کاهش یافت",
+          "روند کاهشی تورم"
+        ],
+        "belarusian": [
+          {
+            "prefix": "дэзінфляцы"
+          },
+          "запавольванне інфляцыі",
+          "запавольвання інфляцыі",
+          "запавольваньне інфляцыі",
+          "запавольваньня інфляцыі",
+          "зніжэнне інфляцыі",
+          "зніжэння інфляцыі",
+          "зьніжэньне інфляцыі",
+          "зьніжэньня інфляцыі",
+          "інфляцыя запаволілася",
+          "інфляцыя знізілася",
+          "інфляцыя зьнізілася"
+        ],
+        "pap": [
+          "desinflacion",
+          "inflacion a baha",
+          "inflacion ta baha",
+          "bahada di inflacion",
+          "desinflashon",
+          "inflashon a baha",
+          "inflashon ta baha",
+          "bahada di inflashon"
         ]
       }
     },
@@ -5878,6 +7479,163 @@
           {
             "prefix": "хиперинфлациј"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "hiperinflācij"
+          },
+          {
+            "prefix": "galopējošā inflācij"
+          },
+          {
+            "prefix": "galopējoša inflācij"
+          },
+          {
+            "prefix": "galopējošas inflācij"
+          },
+          {
+            "prefix": "galopējošo inflācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "гиперинфлятси"
+          },
+          {
+            "prefix": "гиперинфляци"
+          },
+          {
+            "prefix": "гипертаваррум"
+          },
+          {
+            "prefix": "таварруми шадид"
+          },
+          {
+            "prefix": "таварруми бениҳоят баланд"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "giperinflyatsi"
+          },
+          {
+            "prefix": "гиперинфляци"
+          },
+          {
+            "prefix": "giper inflyatsi"
+          },
+          {
+            "prefix": "гипер инфляци"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "hiperinfliacij"
+          },
+          {
+            "prefix": "hiperinfliacin"
+          },
+          {
+            "prefix": "šuoliuojanti infliacij"
+          },
+          {
+            "prefix": "šuoliuojančios infliacij"
+          },
+          {
+            "prefix": "galopuojanti infliacij"
+          },
+          {
+            "prefix": "galopuojančios infliacij"
+          },
+          {
+            "prefix": "nevaldoma infliacij"
+          },
+          {
+            "prefix": "nevaldomos infliacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hüperinflatsioon"
+          },
+          {
+            "prefix": "hüper-inflatsioon"
+          },
+          {
+            "prefix": "galopeeriv inflatsioon"
+          },
+          {
+            "prefix": "galopeeriva inflatsioon"
+          },
+          {
+            "prefix": "kontrollimatu inflatsioon"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "гиперинфляци"
+          },
+          {
+            "prefix": "гипер-инфляци"
+          },
+          {
+            "prefix": "бақылаусыз инфляци"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "гиперинфляци"
+          },
+          {
+            "prefix": "гипер-инфляци"
+          },
+          {
+            "prefix": "чектен ашкан инфляци"
+          },
+          {
+            "prefix": "көзөмөлсүз инфляци"
+          }
+        ],
+        "farsi": [
+          "ابر‌تورم",
+          "ابر تورم",
+          "ابرتورم",
+          "تورم افسار‌گسیخته",
+          "تورم افسار گسیخته",
+          "تورم افسارگسیخته",
+          "تورم لجام‌گسیخته",
+          "تورم لجام گسیخته",
+          "تورم لجامگسیخته",
+          "تورم سرسام‌آور",
+          "تورم سرسام آور",
+          "تورم سرسامآور",
+          "تورم چهاررقمی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "гіперінфляцы"
+          },
+          {
+            "prefix": "гіпэрінфляцы"
+          },
+          {
+            "prefix": "галапуючая інфляцы"
+          },
+          {
+            "prefix": "галапуючай інфляцы"
+          },
+          {
+            "prefix": "шалёная інфляцы"
+          },
+          {
+            "prefix": "шалёнай інфляцы"
+          }
+        ],
+        "pap": [
+          "hiperinflacion",
+          "hiperinflashon",
+          "hyperinflatie",
+          "hyperinflation"
         ]
       }
     },
@@ -6714,6 +8472,276 @@
           {
             "prefix": "раст цијен"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu kāpum"
+          },
+          {
+            "prefix": "cenu pieaugum"
+          },
+          {
+            "prefix": "cenu celšan"
+          },
+          {
+            "prefix": "cenu lēcien"
+          },
+          {
+            "prefix": "cenas pieaug"
+          },
+          "cenas kāpj",
+          {
+            "prefix": "sadārdzināj"
+          },
+          {
+            "prefix": "sadārdzināš"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "афзоиши нарх"
+          },
+          {
+            "prefix": "болоравии нарх"
+          },
+          {
+            "prefix": "баландшавии нарх"
+          },
+          {
+            "prefix": "баланд шудани нарх"
+          },
+          {
+            "prefix": "боло рафтани нарх"
+          },
+          {
+            "prefix": "қимматшавии нарх"
+          },
+          {
+            "prefix": "гароншавии нарх"
+          },
+          {
+            "prefix": "нархҳо боло рафт"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "qimmatlash"
+          },
+          {
+            "prefix": "қимматлаш"
+          },
+          {
+            "prefix": "narxlar osh"
+          },
+          {
+            "prefix": "narxlarning osh"
+          },
+          {
+            "prefix": "нархлар ош"
+          },
+          {
+            "prefix": "нархларнинг ош"
+          },
+          {
+            "prefix": "narxlar o's"
+          },
+          {
+            "prefix": "narxlar oʻs"
+          },
+          {
+            "prefix": "narxlar o’s"
+          },
+          {
+            "prefix": "narxlar o‘s"
+          },
+          {
+            "prefix": "narxlarning o's"
+          },
+          {
+            "prefix": "narxlarning oʻs"
+          },
+          {
+            "prefix": "narxlarning o’s"
+          },
+          {
+            "prefix": "narxlarning o‘s"
+          },
+          {
+            "prefix": "нархлар ўс"
+          },
+          {
+            "prefix": "нархларнинг ўс"
+          },
+          {
+            "prefix": "narxlar ko'taril"
+          },
+          {
+            "prefix": "narxlar koʻtaril"
+          },
+          {
+            "prefix": "narxlar ko’taril"
+          },
+          {
+            "prefix": "narxlar ko‘taril"
+          },
+          {
+            "prefix": "нархлар кўтарил"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų augim"
+          },
+          {
+            "prefix": "kainų kilim"
+          },
+          {
+            "prefix": "kainų didėjim"
+          },
+          {
+            "prefix": "kainų didinim"
+          },
+          {
+            "prefix": "kainų šuol"
+          },
+          {
+            "prefix": "kylančios kain"
+          },
+          {
+            "prefix": "kylančių kain"
+          },
+          {
+            "prefix": "brangim"
+          },
+          {
+            "prefix": "pabrangim"
+          },
+          "kainos kyla",
+          "kainos išaugo",
+          "kainos pakilo"
+        ],
+        "estonian": [
+          {
+            "prefix": "hinnatõus"
+          },
+          {
+            "prefix": "hinnatõst"
+          },
+          {
+            "prefix": "hindade tõus"
+          },
+          {
+            "prefix": "hinnad tõus"
+          },
+          {
+            "prefix": "hindade kerki"
+          },
+          {
+            "prefix": "hinnad kerki"
+          },
+          {
+            "prefix": "kallinemi"
+          },
+          {
+            "prefix": "kallines"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "бағаның өсу"
+          },
+          {
+            "prefix": "бағалардың өсу"
+          },
+          {
+            "prefix": "баға өсім"
+          },
+          {
+            "prefix": "бағаның көтерілу"
+          },
+          {
+            "prefix": "бағалардың көтерілу"
+          },
+          {
+            "prefix": "қымбатта"
+          },
+          {
+            "prefix": "қымбатшылы"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "баалардын өсүш"
+          },
+          {
+            "prefix": "бааларынын өсүш"
+          },
+          {
+            "prefix": "баанын өсүш"
+          },
+          {
+            "prefix": "баалардын көтөрүл"
+          },
+          {
+            "prefix": "баанын көтөрүл"
+          },
+          {
+            "prefix": "баалар көтөрүл"
+          },
+          {
+            "prefix": "баалардын жогорула"
+          },
+          {
+            "prefix": "кымбатта"
+          },
+          {
+            "prefix": "кымбаттоо"
+          }
+        ],
+        "farsi": [
+          "افزایش قیمت",
+          "گرانی",
+          "گران شدن",
+          "گران‌تر",
+          "گران تر",
+          "گرانتر",
+          "رشد قیمت",
+          "جهش قیمت",
+          "بالا رفتن قیمت",
+          "بلند رفتن قیمت"
+        ],
+        "belarusian": [
+          "рост цэн",
+          "росту цэн",
+          "ростам цэн",
+          "рост цэнаў",
+          "росту цэнаў",
+          "павышэнне цэн",
+          "павышэння цэн",
+          "павышэньне цэнаў",
+          "павышэньня цэнаў",
+          {
+            "prefix": "падаражан"
+          },
+          {
+            "prefix": "падаражэ"
+          },
+          "цэны растуць",
+          "цэны выраслі"
+        ],
+        "pap": [
+          "aumento di prijs",
+          "aumento di prijsnan",
+          "subida di prijs",
+          "prijsnan ta subi",
+          "oumento di preis",
+          "subida di preis",
+          "subimentu di preis",
+          "preisnan ta subi",
+          "prijsstijging",
+          "prijsverhoging",
+          "prijsstijgingen",
+          "prijsverhogingen"
         ]
       }
     },
@@ -7416,6 +9444,213 @@
           },
           "cijene su pale",
           "cijene padaju"
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu kritum"
+          },
+          {
+            "prefix": "cenu samazinājum"
+          },
+          {
+            "prefix": "cenu samazināšan"
+          },
+          {
+            "prefix": "cenu krišan"
+          },
+          "cenas krītas",
+          "cenas kritās",
+          "cenas samazinājās"
+        ],
+        "tajik": [
+          {
+            "prefix": "коҳиши нарх"
+          },
+          {
+            "prefix": "кохиши нарх"
+          },
+          {
+            "prefix": "паст шудани нарх"
+          },
+          {
+            "prefix": "пастшавии нарх"
+          },
+          {
+            "prefix": "поёнравии нарх"
+          },
+          {
+            "prefix": "арзоншавии нарх"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "arzonlash"
+          },
+          {
+            "prefix": "арзонлаш"
+          },
+          {
+            "prefix": "narxlar pasay"
+          },
+          {
+            "prefix": "narxlarning pasay"
+          },
+          {
+            "prefix": "нархлар пасай"
+          },
+          {
+            "prefix": "нархларнинг пасай"
+          },
+          {
+            "prefix": "narxlar tush"
+          },
+          {
+            "prefix": "нархлар туш"
+          },
+          {
+            "prefix": "narxlarni pasaytir"
+          },
+          {
+            "prefix": "нархларни пасайтир"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų krit"
+          },
+          {
+            "prefix": "kainų mažėjim"
+          },
+          {
+            "prefix": "kainų sumažėjim"
+          },
+          {
+            "prefix": "kainų mažinim"
+          },
+          {
+            "prefix": "kainų sumažinim"
+          },
+          {
+            "prefix": "pigim"
+          },
+          {
+            "prefix": "atpigim"
+          },
+          {
+            "prefix": "krintančios kain"
+          },
+          {
+            "prefix": "krintančių kain"
+          },
+          "kainos krenta",
+          "kainos sumažėjo",
+          "kainos nukrito"
+        ],
+        "estonian": [
+          {
+            "prefix": "hinnalangus"
+          },
+          {
+            "prefix": "hinnalanguse"
+          },
+          {
+            "prefix": "hindade lang"
+          },
+          {
+            "prefix": "hinnad lang"
+          },
+          {
+            "prefix": "odavnemi"
+          },
+          {
+            "prefix": "odavnes"
+          },
+          {
+            "prefix": "hinnaalandus"
+          },
+          {
+            "prefix": "hinnalangetus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "бағаның төмендеу"
+          },
+          {
+            "prefix": "бағалардың төмендеу"
+          },
+          {
+            "prefix": "бағаның түсу"
+          },
+          {
+            "prefix": "бағалардың түсу"
+          },
+          {
+            "prefix": "бағасы төменде"
+          },
+          {
+            "prefix": "арзанда"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "баалардын төмөндө"
+          },
+          {
+            "prefix": "бааларынын төмөндө"
+          },
+          {
+            "prefix": "баанын төмөндө"
+          },
+          {
+            "prefix": "баалар төмөндө"
+          },
+          {
+            "prefix": "баалардын түшүш"
+          },
+          {
+            "prefix": "арзанда"
+          },
+          {
+            "prefix": "арзандоо"
+          }
+        ],
+        "farsi": [
+          "کاهش قیمت",
+          "افت قیمت",
+          "ریزش قیمت",
+          "سقوط قیمت",
+          "نزول قیمت",
+          "ارزان شدن",
+          "پایین آمدن قیمت"
+        ],
+        "belarusian": [
+          "зніжэнне цэн",
+          "зніжэння цэн",
+          "зьніжэньне цэнаў",
+          "зьніжэньня цэнаў",
+          "падзенне цэн",
+          "падзення цэн",
+          "падзеньне цэнаў",
+          "падзеньня цэнаў",
+          {
+            "prefix": "патанне"
+          },
+          {
+            "prefix": "патаньне"
+          },
+          "цэны знізіліся",
+          "цэны зьнізіліся"
+        ],
+        "pap": [
+          "bahada di prijs",
+          "reduccion di prijs",
+          "prijsnan ta baha",
+          "bahada di preis",
+          "redukshon di preis",
+          "preisnan ta baha",
+          "prijsdaling",
+          "prijsverlaging"
         ]
       }
     },
@@ -8053,6 +10288,202 @@
           {
             "prefix": "nestabilne cijen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu svārstīb"
+          },
+          {
+            "prefix": "cenu nestabilitāt"
+          },
+          {
+            "prefix": "cenu volatilitāt"
+          },
+          {
+            "prefix": "svārstīgās cen"
+          },
+          {
+            "prefix": "svārstīgas cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "ноустувории нарх"
+          },
+          {
+            "prefix": "навасони нарх"
+          },
+          {
+            "prefix": "навасонҳои нарх"
+          },
+          {
+            "prefix": "тағйирпазирии нарх"
+          },
+          {
+            "prefix": "баланду пастшавии нарх"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "narxlar o'zgaruvchan"
+          },
+          {
+            "prefix": "narxlar oʻzgaruvchan"
+          },
+          {
+            "prefix": "narxlar o’zgaruvchan"
+          },
+          {
+            "prefix": "narxlar o‘zgaruvchan"
+          },
+          {
+            "prefix": "narxlarning o'zgaruvchan"
+          },
+          {
+            "prefix": "narxlarning oʻzgaruvchan"
+          },
+          {
+            "prefix": "narxlarning o’zgaruvchan"
+          },
+          {
+            "prefix": "narxlarning o‘zgaruvchan"
+          },
+          {
+            "prefix": "нархлар ўзгарувчан"
+          },
+          {
+            "prefix": "нархларнинг ўзгарувчан"
+          },
+          {
+            "prefix": "narxlar tebran"
+          },
+          {
+            "prefix": "narxlarning tebran"
+          },
+          {
+            "prefix": "нархлар тебран"
+          },
+          {
+            "prefix": "нархларнинг тебран"
+          },
+          {
+            "prefix": "narxlarning beqaror"
+          },
+          {
+            "prefix": "нархларнинг беқарор"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų svyravim"
+          },
+          {
+            "prefix": "kainų nepastovum"
+          },
+          {
+            "prefix": "kainų nestabilum"
+          },
+          {
+            "prefix": "kainų kintamum"
+          },
+          {
+            "prefix": "kainų volatilum"
+          },
+          {
+            "prefix": "svyruojančios kain"
+          },
+          {
+            "prefix": "svyruojančių kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hinnakõikum"
+          },
+          {
+            "prefix": "hindade kõikum"
+          },
+          {
+            "prefix": "hinnavolatiilsus"
+          },
+          {
+            "prefix": "hindade volatiilsus"
+          },
+          "kõikuvad hinnad",
+          "kõikuvate hindade",
+          {
+            "prefix": "hinnaheitlikkus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "бағаның құбылмалы"
+          },
+          {
+            "prefix": "бағалардың құбылмалы"
+          },
+          {
+            "prefix": "баға құбылмалы"
+          },
+          {
+            "prefix": "бағаның ауытқу"
+          },
+          {
+            "prefix": "баға ауытқу"
+          },
+          {
+            "prefix": "бағаның тұрақсызды"
+          },
+          {
+            "prefix": "бағаның құбылу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "баалардын өзгөрмөлүүлүг"
+          },
+          {
+            "prefix": "баалардын туруксуздуг"
+          },
+          {
+            "prefix": "баанын туруксуздуг"
+          },
+          {
+            "prefix": "баалардын термел"
+          },
+          {
+            "prefix": "баалардын кескин өзгөр"
+          }
+        ],
+        "farsi": [
+          "نوسان قیمت",
+          "نوسانات قیمت",
+          "بی‌ثباتی قیمت",
+          "بی ثباتی قیمت",
+          "بیثباتی قیمت",
+          "تلاطم قیمت",
+          "نوسان شدید قیمت"
+        ],
+        "belarusian": [
+          "валатыльнасць цэн",
+          "валатыльнасці цэн",
+          "валятыльнасьць цэнаў",
+          "ваганні цэн",
+          "ваганняў цэн",
+          "ваганьні цэнаў",
+          "ваганьняў цэнаў",
+          "цэнавыя ваганні",
+          "нестабільнасць цэн",
+          "нестабільнасьць цэнаў"
+        ],
+        "pap": [
+          "volatilidad di prijs",
+          "fluctuacion di prijs",
+          "fluctuacion di prijsnan",
+          "volatilidat di preis",
+          "fluktuashon di preis",
+          "prijsschommelingen",
+          "prijsschommeling"
         ]
       }
     },
@@ -8502,6 +10933,151 @@
           "cijene na veliko",
           "cijena na veliko",
           "cijenama na veliko"
+        ],
+        "latvian": [
+          {
+            "prefix": "vairumtirdzniecības cen"
+          },
+          {
+            "prefix": "vairumcen"
+          },
+          {
+            "prefix": "vairumtirgus cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "нархҳои яклухт"
+          },
+          {
+            "prefix": "нархи яклухт"
+          },
+          {
+            "prefix": "нархои яклухт"
+          },
+          {
+            "prefix": "нархҳои савдои яклухт"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ulgurji narx"
+          },
+          {
+            "prefix": "улгуржи нарх"
+          },
+          {
+            "prefix": "ulgurji savdo narx"
+          },
+          {
+            "prefix": "улгуржи савдо нарх"
+          },
+          {
+            "prefix": "ulgurji bozor narx"
+          },
+          {
+            "prefix": "улгуржи бозор нарх"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "didmeninė kain"
+          },
+          {
+            "prefix": "didmeninės kain"
+          },
+          {
+            "prefix": "didmeninių kain"
+          },
+          {
+            "prefix": "didmeninę kain"
+          },
+          {
+            "prefix": "didmeninėms kain"
+          },
+          {
+            "prefix": "didmeninėmis kain"
+          },
+          {
+            "prefix": "didmeninės prekybos kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hulgihin"
+          },
+          {
+            "prefix": "hulgimüügihin"
+          },
+          {
+            "prefix": "hulgituru hin"
+          },
+          {
+            "prefix": "hulgihinnaindeks"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "көтерме баға"
+          },
+          {
+            "prefix": "көтерме сауда баға"
+          },
+          {
+            "prefix": "көтерме инфляци"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "дүң баалар"
+          },
+          {
+            "prefix": "дүң баасы"
+          },
+          {
+            "prefix": "дүң соодадагы баалар"
+          },
+          {
+            "prefix": "дүң сатуу баалар"
+          }
+        ],
+        "farsi": [
+          "قیمت عمده‌فروشی",
+          "قیمت عمده فروشی",
+          "قیمت عمدهفروشی",
+          "قیمت‌های عمده‌فروشی",
+          "قیمت های عمده فروشی",
+          "قیمتهای عمدهفروشی",
+          "نرخ عمده‌فروشی",
+          "نرخ عمده فروشی",
+          "نرخ عمدهفروشی",
+          "شاخص عمده‌فروشی",
+          "شاخص عمده فروشی",
+          "شاخص عمدهفروشی",
+          "تورم عمده‌فروشی",
+          "تورم عمده فروشی",
+          "تورم عمدهفروشی",
+          "قیمت عمده"
+        ],
+        "belarusian": [
+          "аптовыя цэны",
+          "аптовых цэн",
+          "аптовых цэнаў",
+          "аптовым цэнам",
+          "аптовымі цэнамі",
+          "аптовая цана",
+          "аптовай цаны",
+          "оптавыя цэны",
+          "оптавых цэн"
+        ],
+        "pap": [
+          "prijs di mayorista",
+          "prijsnan di mayorista",
+          "prijs na por mayor",
+          "preis di mayorista",
+          "preisnan di mayorista",
+          "groothandelsprijzen",
+          "groothandelsprijs"
         ]
       }
     },
@@ -8968,6 +11544,156 @@
           "cijene na malo",
           "cijena na malo",
           "cijenama na malo"
+        ],
+        "latvian": [
+          {
+            "prefix": "mazumtirdzniecības cen"
+          },
+          {
+            "prefix": "mazumcen"
+          },
+          "cenas veikalos",
+          {
+            "prefix": "veikalu cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "нархҳои чакана"
+          },
+          {
+            "prefix": "нархи чакана"
+          },
+          {
+            "prefix": "нархои чакана"
+          },
+          {
+            "prefix": "нархҳои фурӯши чакана"
+          },
+          {
+            "prefix": "нархи фурӯши чакана"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "chakana narx"
+          },
+          {
+            "prefix": "чакана нарх"
+          },
+          {
+            "prefix": "chakana savdo narx"
+          },
+          {
+            "prefix": "чакана савдо нарх"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "mažmeninė kain"
+          },
+          {
+            "prefix": "mažmeninės kain"
+          },
+          {
+            "prefix": "mažmeninių kain"
+          },
+          {
+            "prefix": "mažmeninę kain"
+          },
+          {
+            "prefix": "mažmeninėms kain"
+          },
+          {
+            "prefix": "mažmeninėmis kain"
+          },
+          {
+            "prefix": "mažmeninės prekybos kain"
+          },
+          {
+            "prefix": "lentynų kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "jaehin"
+          },
+          {
+            "prefix": "jaemüügihin"
+          },
+          {
+            "prefix": "poehin"
+          },
+          {
+            "prefix": "riiulihin"
+          },
+          {
+            "prefix": "jaehinnaindeks"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "бөлшек баға"
+          },
+          {
+            "prefix": "бөлшек сауда баға"
+          },
+          {
+            "prefix": "бөлшек саудадағы баға"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "чекене баалар"
+          },
+          {
+            "prefix": "чекене баасы"
+          },
+          {
+            "prefix": "чекене соодадагы баалар"
+          },
+          {
+            "prefix": "чекене сатуу баалар"
+          }
+        ],
+        "farsi": [
+          "قیمت خرده‌فروشی",
+          "قیمت خرده فروشی",
+          "قیمت خردهفروشی",
+          "قیمت‌های خرده‌فروشی",
+          "قیمت های خرده فروشی",
+          "قیمتهای خردهفروشی",
+          "نرخ خرده‌فروشی",
+          "نرخ خرده فروشی",
+          "نرخ خردهفروشی",
+          "شاخص خرده‌فروشی",
+          "شاخص خرده فروشی",
+          "شاخص خردهفروشی",
+          "تورم خرده‌فروشی",
+          "تورم خرده فروشی",
+          "تورم خردهفروشی",
+          "قیمت پرچون",
+          "نرخ پرچون"
+        ],
+        "belarusian": [
+          "роздрыбныя цэны",
+          "роздрыбных цэн",
+          "роздрыбных цэнаў",
+          "роздрыбным цэнам",
+          "роздрыбнымі цэнамі",
+          "роздрыбная цана",
+          "роздрыбнай цаны",
+          "роздрыбную цану"
+        ],
+        "pap": [
+          "prijs di detalle",
+          "prijsnan di detalle",
+          "prijs den supermercado",
+          "preis di detaye",
+          "preis den supermerkado",
+          "preisnan den supermerkado",
+          "winkelprijzen",
+          "prijzen in de supermarkt"
         ]
       }
     },
@@ -9512,6 +12238,153 @@
           {
             "prefix": "cijene berzanskih rob"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "izejvielu cen"
+          },
+          {
+            "prefix": "izejvielu tirg"
+          },
+          {
+            "prefix": "biržas preču cen"
+          },
+          {
+            "prefix": "pamatpreču cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "нархҳои ашёи хом"
+          },
+          {
+            "prefix": "нархи ашёи хом"
+          },
+          {
+            "prefix": "нархои ашёи хом"
+          },
+          {
+            "prefix": "бозори ашёи хом"
+          },
+          {
+            "prefix": "бозорҳои ашёи хом"
+          },
+          {
+            "prefix": "нархҳои маводи хом"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "xomashyo narx"
+          },
+          {
+            "prefix": "хомашё нарх"
+          },
+          {
+            "prefix": "xom ashyo narx"
+          },
+          {
+            "prefix": "birja tovarlari narx"
+          },
+          {
+            "prefix": "биржа товарлари нарх"
+          },
+          {
+            "prefix": "xomashyo bozor"
+          },
+          {
+            "prefix": "хомашё бозор"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "žaliavų kain"
+          },
+          {
+            "prefix": "žaliavų rink"
+          },
+          {
+            "prefix": "biržos prekių kain"
+          },
+          {
+            "prefix": "pasaulinės žaliavų kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "toormehin"
+          },
+          {
+            "prefix": "toorainehin"
+          },
+          {
+            "prefix": "tooraine hin"
+          },
+          {
+            "prefix": "toorainete hin"
+          },
+          {
+            "prefix": "toorainetur"
+          },
+          {
+            "prefix": "toormetur"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "шикізат баға"
+          },
+          {
+            "prefix": "шикізат тауарларының баға"
+          },
+          {
+            "prefix": "шикізат нары"
+          },
+          {
+            "prefix": "биржалық тауарлардың баға"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "чийки заттардын баалар"
+          },
+          {
+            "prefix": "чийки заттын баалар"
+          },
+          {
+            "prefix": "чийки зат баалар"
+          },
+          {
+            "prefix": "биржалык товарлардын баалар"
+          },
+          {
+            "prefix": "дүйнөлүк товардык рынокт"
+          }
+        ],
+        "farsi": [
+          "قیمت مواد اولیه",
+          "قیمت مواد خام",
+          "قیمت کالاهای پایه",
+          "قیمت جهانی کالا",
+          "کامودیتی",
+          "قیمت کالاهای اولیه"
+        ],
+        "belarusian": [
+          "цэны на сыравіну",
+          "цэн на сыравіну",
+          "цэнаў на сыравіну",
+          "цэнамі на сыравіну",
+          "сыравінныя рынкі",
+          "сыравінных рынкаў"
+        ],
+        "pap": [
+          "prijs di materia prima",
+          "prijsnan di materia prima",
+          "prijsnan di commodity",
+          "preis di materia prima",
+          "preisnan di materia prima",
+          "grondstofprijzen",
+          "commodity prices"
         ]
       }
     },
@@ -9976,6 +12849,181 @@
           },
           "трошкови живота",
           "трошкова живота"
+        ],
+        "latvian": [
+          {
+            "prefix": "dzīves dārdzīb"
+          },
+          {
+            "prefix": "dzīves izmaks"
+          },
+          {
+            "prefix": "dzīvošanas izmaks"
+          },
+          {
+            "prefix": "iztikas izmaks"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "хароҷоти зиндаг"
+          },
+          {
+            "prefix": "харочоти зиндаг"
+          },
+          {
+            "prefix": "арзиши зиндаг"
+          },
+          {
+            "prefix": "гаронии зиндаг"
+          },
+          {
+            "prefix": "қимматии зиндаг"
+          },
+          {
+            "prefix": "хароҷоти рӯзгор"
+          },
+          {
+            "prefix": "гаронии рӯзгор"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "yashash xarajat"
+          },
+          {
+            "prefix": "яшаш харажат"
+          },
+          {
+            "prefix": "tirikchilik xarajat"
+          },
+          {
+            "prefix": "тирикчилик харажат"
+          },
+          {
+            "prefix": "yashash qiymat"
+          },
+          {
+            "prefix": "яшаш қиймат"
+          },
+          {
+            "prefix": "minimal iste'mol xarajat"
+          },
+          {
+            "prefix": "minimal isteʻmol xarajat"
+          },
+          {
+            "prefix": "minimal iste’mol xarajat"
+          },
+          {
+            "prefix": "minimal iste‘mol xarajat"
+          },
+          {
+            "prefix": "минимал истеъмол харажат"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "pragyvenimo kašt"
+          },
+          {
+            "prefix": "pragyvenimo išlaid"
+          },
+          {
+            "prefix": "pragyvenimo brangim"
+          },
+          {
+            "prefix": "gyvenimo brangim"
+          },
+          {
+            "prefix": "brangstantis pragyvenim"
+          },
+          {
+            "prefix": "brangstančio pragyvenim"
+          },
+          {
+            "prefix": "brangstančiu pragyvenim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "elukallidu"
+          },
+          {
+            "prefix": "elamiskulu"
+          },
+          {
+            "prefix": "elu kallinemi"
+          },
+          {
+            "prefix": "elukalliduskriis"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "өмір сүру құн"
+          },
+          {
+            "prefix": "өмір сүру шығын"
+          },
+          {
+            "prefix": "күнкөріс құн"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "жашоо нарк"
+          },
+          {
+            "prefix": "жашоонун нарк"
+          },
+          {
+            "prefix": "турмуш нарк"
+          },
+          {
+            "prefix": "жашоо чыгымдар"
+          },
+          {
+            "prefix": "турмуштун кымбатта"
+          }
+        ],
+        "farsi": [
+          "هزینه زندگی",
+          "هزینه‌های زندگی",
+          "هزینه های زندگی",
+          "هزینههای زندگی",
+          "هزینه معیشت",
+          "هزینه‌های معیشت",
+          "هزینه های معیشت",
+          "هزینههای معیشت",
+          "مخارج زندگی",
+          "بحران معیشت",
+          "مصارف زندگی"
+        ],
+        "belarusian": [
+          "кошт жыцця",
+          "кошту жыцця",
+          "кошце жыцця",
+          "кошт жыцьця",
+          "кошту жыцьця",
+          {
+            "prefix": "дарагоўл"
+          },
+          {
+            "prefix": "дарагавізн"
+          },
+          "выдаткі на жыццё",
+          "выдаткі на жыцьцё"
+        ],
+        "pap": [
+          "costo di bida",
+          "costo di vida",
+          "costonan di bida",
+          "crisis di costo di bida",
+          "kosto di bida",
+          "krisis di kosto di bida",
+          "kosten van levensonderhoud",
+          "duurte"
         ]
       }
     },
@@ -10764,6 +13812,233 @@
           {
             "prefix": "izdataka domaćinstv"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "mājsaimniecību izdevum"
+          },
+          {
+            "prefix": "mājsaimniecības izdevum"
+          },
+          {
+            "prefix": "mājsaimniecību izmaks"
+          },
+          {
+            "prefix": "mājsaimniecību budžet"
+          },
+          {
+            "prefix": "mājsaimniecības budžet"
+          },
+          {
+            "prefix": "ģimenes budžet"
+          },
+          {
+            "prefix": "ģimeņu budžet"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "хароҷоти хонавод"
+          },
+          {
+            "prefix": "хароҷоти оила"
+          },
+          {
+            "prefix": "харочоти оила"
+          },
+          {
+            "prefix": "буҷети оила"
+          },
+          {
+            "prefix": "буҷаи оила"
+          },
+          {
+            "prefix": "буҷети хонавод"
+          },
+          {
+            "prefix": "буҷаи хонавод"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "oila byudjet"
+          },
+          {
+            "prefix": "oila budjet"
+          },
+          {
+            "prefix": "oilaviy byudjet"
+          },
+          {
+            "prefix": "oilaviy budjet"
+          },
+          {
+            "prefix": "оила бюджет"
+          },
+          {
+            "prefix": "оилавий бюджет"
+          },
+          {
+            "prefix": "uy xo'jaliklari xarajat"
+          },
+          {
+            "prefix": "uy xoʻjaliklari xarajat"
+          },
+          {
+            "prefix": "uy xo’jaliklari xarajat"
+          },
+          {
+            "prefix": "uy xo‘jaliklari xarajat"
+          },
+          {
+            "prefix": "уй хўжаликлари харажат"
+          },
+          {
+            "prefix": "oila xarajat"
+          },
+          {
+            "prefix": "оила харажат"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "namų ūkių išlaid"
+          },
+          {
+            "prefix": "namų ūkio išlaid"
+          },
+          {
+            "prefix": "namų ūkių biudžet"
+          },
+          {
+            "prefix": "namų ūkio biudžet"
+          },
+          {
+            "prefix": "šeimos biudžet"
+          },
+          {
+            "prefix": "šeimų biudžet"
+          },
+          {
+            "prefix": "buities išlaid"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "leibkonna kulu"
+          },
+          {
+            "prefix": "leibkondade kulu"
+          },
+          {
+            "prefix": "majapidamiskulu"
+          },
+          {
+            "prefix": "kodumajapidamiste kulu"
+          },
+          {
+            "prefix": "pere-eelarve"
+          },
+          {
+            "prefix": "perede eelarve"
+          },
+          {
+            "prefix": "leibkonna eelarve"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "үй шаруашылықтарының шығыс"
+          },
+          {
+            "prefix": "үй шаруашылықтарының шығын"
+          },
+          {
+            "prefix": "үй шаруашылығының шығыс"
+          },
+          {
+            "prefix": "үй шаруашылығының шығын"
+          },
+          {
+            "prefix": "отбасы бюджет"
+          },
+          {
+            "prefix": "отбасылық бюджет"
+          },
+          {
+            "prefix": "отбасының бюджет"
+          },
+          {
+            "prefix": "тұрмыстық шығын"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "үй-бүлөлүк бюджет"
+          },
+          {
+            "prefix": "үй-бүлөнүн бюджет"
+          },
+          {
+            "prefix": "үй-бүлөлөрдүн бюджет"
+          },
+          {
+            "prefix": "үй чарбаларынын чыгымдар"
+          },
+          {
+            "prefix": "үй чарбаларынын чыгашалар"
+          },
+          {
+            "prefix": "үй-бүлөнүн чыгымдар"
+          },
+          {
+            "prefix": "үй-бүлөлөрдүн чыгымдар"
+          }
+        ],
+        "farsi": [
+          "هزینه خانوار",
+          "هزینه‌های خانوار",
+          "هزینه های خانوار",
+          "هزینههای خانوار",
+          "بودجه خانوار",
+          "مخارج خانوار",
+          "سفره خانوار",
+          "هزینه خانواده",
+          "مصارف خانواده",
+          "بودجه خانواده"
+        ],
+        "belarusian": [
+          {
+            "prefix": "сямейны бюджэт"
+          },
+          {
+            "prefix": "сямейнага бюджэт"
+          },
+          {
+            "prefix": "сямейным бюджэт"
+          },
+          {
+            "prefix": "сямейныя бюджэт"
+          },
+          {
+            "prefix": "сямейных бюджэт"
+          },
+          "выдаткі хатніх гаспадарак",
+          "выдаткаў хатніх гаспадарак",
+          "выдаткі сем'яў",
+          "выдаткі сем’яў",
+          "бюджэт сям'і",
+          "бюджэт сям’і"
+        ],
+        "pap": [
+          "gasto di cas",
+          "gastonan di cas",
+          "gastonan di famia",
+          "presupuesto di famia",
+          "gastu di kas",
+          "gastunan di kas",
+          "gastunan di famia",
+          "huishoudbudget"
         ]
       }
     },
@@ -11156,6 +14431,132 @@
           "kupovnom moći",
           "куповна моћ",
           "куповне моћи"
+        ],
+        "latvian": [
+          {
+            "prefix": "pirktspēj"
+          },
+          {
+            "prefix": "pirkšanas spēj"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "қобилияти харид"
+          },
+          {
+            "prefix": "кобилияти харид"
+          },
+          {
+            "prefix": "қудрати харид"
+          },
+          {
+            "prefix": "иқтидори харид"
+          },
+          {
+            "prefix": "тавоноии харид"
+          },
+          {
+            "prefix": "қувваи харид"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "xarid qobiliyat"
+          },
+          {
+            "prefix": "харид қобилият"
+          },
+          {
+            "prefix": "sotib olish qobiliyat"
+          },
+          {
+            "prefix": "сотиб олиш қобилият"
+          },
+          {
+            "prefix": "xaridorlik qobiliyat"
+          },
+          {
+            "prefix": "харидорлик қобилият"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "perkamoji gali"
+          },
+          {
+            "prefix": "perkamosios gali"
+          },
+          {
+            "prefix": "perkamąją gali"
+          },
+          {
+            "prefix": "perkamajai gali"
+          },
+          {
+            "prefix": "perkamąja gali"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "ostujõ"
+          },
+          {
+            "prefix": "ostujõu vähene"
+          },
+          {
+            "prefix": "ostujõu lang"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "сатып алу қабілет"
+          },
+          {
+            "prefix": "сатып алу қуат"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "сатып алуу жөндөм"
+          },
+          {
+            "prefix": "сатып алуучулук жөндөм"
+          },
+          {
+            "prefix": "сатып алуу кубаттуулуг"
+          },
+          {
+            "prefix": "сатып алуу мүмкүнчүлүг"
+          }
+        ],
+        "farsi": [
+          "قدرت خرید",
+          "توان خرید",
+          "توانایی خرید"
+        ],
+        "belarusian": [
+          {
+            "prefix": "пакупніцкая здольнас"
+          },
+          {
+            "prefix": "пакупніцкай здольнас"
+          },
+          {
+            "prefix": "пакупніцкую здольнас"
+          },
+          {
+            "prefix": "купляздольнас"
+          }
+        ],
+        "pap": [
+          "poder di compra",
+          "perdida di poder di compra",
+          "poder di kompra",
+          "pèrdida di poder di kompra",
+          "perdida di poder di kompra",
+          "koopkracht",
+          "koopkrachtverlies"
         ]
       }
     },
@@ -11759,6 +15160,202 @@
           },
           "realni dohodak",
           "realnog dohotka"
+        ],
+        "latvian": [
+          {
+            "prefix": "reālā alg"
+          },
+          {
+            "prefix": "reālās alg"
+          },
+          {
+            "prefix": "reālo alg"
+          },
+          {
+            "prefix": "reālā darba samaks"
+          },
+          {
+            "prefix": "reālās darba samaks"
+          },
+          {
+            "prefix": "reālie ienākum"
+          },
+          {
+            "prefix": "reālo ienākum"
+          },
+          {
+            "prefix": "reālajiem ienākum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "музди меҳнати воқе"
+          },
+          {
+            "prefix": "музди мехнати воке"
+          },
+          {
+            "prefix": "музди воқеии меҳнат"
+          },
+          {
+            "prefix": "маоши воқе"
+          },
+          {
+            "prefix": "даромади воқе"
+          },
+          {
+            "prefix": "даромадҳои воқе"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "real ish haq"
+          },
+          {
+            "prefix": "реал иш ҳақ"
+          },
+          {
+            "prefix": "real daromad"
+          },
+          {
+            "prefix": "реал даромад"
+          },
+          {
+            "prefix": "real maosh"
+          },
+          {
+            "prefix": "реал маош"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "realusis darbo užmokes"
+          },
+          {
+            "prefix": "realiojo darbo užmokes"
+          },
+          {
+            "prefix": "realųjį darbo užmokes"
+          },
+          {
+            "prefix": "realus darbo užmokes"
+          },
+          {
+            "prefix": "realaus darbo užmokes"
+          },
+          {
+            "prefix": "realų darbo užmokes"
+          },
+          {
+            "prefix": "realieji atlyginim"
+          },
+          {
+            "prefix": "realiųjų atlyginim"
+          },
+          {
+            "prefix": "realūs atlyginim"
+          },
+          {
+            "prefix": "realių atlyginim"
+          },
+          {
+            "prefix": "realiosios pajam"
+          },
+          {
+            "prefix": "realiųjų pajam"
+          },
+          {
+            "prefix": "realios pajam"
+          },
+          {
+            "prefix": "realių pajam"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "reaalpal"
+          },
+          {
+            "prefix": "reaaltulu"
+          },
+          {
+            "prefix": "reaalsissetulek"
+          },
+          {
+            "prefix": "inflatsiooniga korrigeeritud pal"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "нақты жалақ"
+          },
+          {
+            "prefix": "нақты табыс"
+          },
+          {
+            "prefix": "нақты кіріс"
+          },
+          {
+            "prefix": "нақты ақшалай кіріс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "реалдуу эмгек акы"
+          },
+          {
+            "prefix": "реалдуу айлык"
+          },
+          {
+            "prefix": "реалдуу киреше"
+          },
+          {
+            "prefix": "реалдуу маяна"
+          }
+        ],
+        "farsi": [
+          "دستمزد واقعی",
+          "دستمزدهای واقعی",
+          "مزد واقعی",
+          "دستمزد حقیقی",
+          "درآمد واقعی",
+          "درآمد حقیقی",
+          "معاش واقعی"
+        ],
+        "belarusian": [
+          "рэальныя заробкі",
+          "рэальных заробкаў",
+          "рэальны заробак",
+          "рэальнага заробку",
+          {
+            "prefix": "рэальная зарплат"
+          },
+          {
+            "prefix": "рэальнай зарплат"
+          },
+          {
+            "prefix": "рэальная заработная плат"
+          },
+          {
+            "prefix": "рэальнай заработнай плат"
+          },
+          "рэальныя даходы",
+          "рэальных даходаў",
+          {
+            "prefix": "рэальныя располагальныя"
+          },
+          {
+            "prefix": "рэальных располагальных"
+          }
+        ],
+        "pap": [
+          "salario real",
+          "salarionan real",
+          "salario rial",
+          "salarionan rial",
+          "reële lonen",
+          "reëel loon",
+          "reële loongroei"
         ]
       }
     },
@@ -12644,6 +16241,250 @@
           {
             "prefix": "poskupljenje struj"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "komunālo pakalpojumu tarif"
+          },
+          {
+            "prefix": "komunālo pakalpojumu rēķin"
+          },
+          {
+            "prefix": "komunālie maksājum"
+          },
+          {
+            "prefix": "komunālo maksājum"
+          },
+          {
+            "prefix": "komunālos maksājum"
+          },
+          {
+            "prefix": "elektroenerģijas tarif"
+          },
+          {
+            "prefix": "siltumenerģijas tarif"
+          },
+          {
+            "prefix": "apkures tarif"
+          },
+          {
+            "prefix": "apkures rēķin"
+          },
+          {
+            "prefix": "elektrības rēķin"
+          }
+        ],
+        "tajik": [
+          "нархи барқ",
+          "нархи барк",
+          "тарифи барқ",
+          "тарифҳои барқ",
+          "тарифи нерӯи барқ",
+          "тарифҳои нерӯи барқ",
+          "нархи нерӯи барқ",
+          {
+            "prefix": "тарифҳои коммунал"
+          },
+          {
+            "prefix": "пардохтҳои коммунал"
+          },
+          {
+            "prefix": "пардохти хизматрасониҳои коммунал"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "kommunal tarif"
+          },
+          {
+            "prefix": "коммунал тариф"
+          },
+          {
+            "prefix": "kommunal to'lov"
+          },
+          {
+            "prefix": "kommunal toʻlov"
+          },
+          {
+            "prefix": "kommunal to’lov"
+          },
+          {
+            "prefix": "kommunal to‘lov"
+          },
+          {
+            "prefix": "коммунал тўлов"
+          },
+          {
+            "prefix": "kommunal xizmatlar narx"
+          },
+          {
+            "prefix": "коммунал хизматлар нарх"
+          },
+          {
+            "prefix": "kommunal xizmatlar tarif"
+          },
+          {
+            "prefix": "коммунал хизматлар тариф"
+          },
+          {
+            "prefix": "elektr energiyasi tarif"
+          },
+          {
+            "prefix": "электр энергияси тариф"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "komunalinių paslaugų kain"
+          },
+          {
+            "prefix": "komunalinių paslaugų tarif"
+          },
+          {
+            "prefix": "komunalinės sąskait"
+          },
+          {
+            "prefix": "komunalinių sąskait"
+          },
+          {
+            "prefix": "komunalines sąskait"
+          },
+          {
+            "prefix": "elektros tarif"
+          },
+          {
+            "prefix": "elektros kain"
+          },
+          {
+            "prefix": "šilumos kain"
+          },
+          {
+            "prefix": "šildymo kain"
+          },
+          {
+            "prefix": "šildymo sąskait"
+          },
+          {
+            "prefix": "dujų tarif"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "kommunaalkulu"
+          },
+          {
+            "prefix": "kommunaalarve"
+          },
+          {
+            "prefix": "kommunaalteenuste hin"
+          },
+          {
+            "prefix": "elektrihin"
+          },
+          {
+            "prefix": "elektritariif"
+          },
+          {
+            "prefix": "elektriarve"
+          },
+          {
+            "prefix": "võrgutasu"
+          },
+          {
+            "prefix": "kaugkütte hin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "коммуналдық тариф"
+          },
+          {
+            "prefix": "коммуналдық қызметтер тариф"
+          },
+          {
+            "prefix": "коммуналдық қызметтерге тариф"
+          },
+          {
+            "prefix": "коммуналдық төлем"
+          },
+          {
+            "prefix": "коммуналдық қызметтерге төлем"
+          },
+          {
+            "prefix": "электр энергиясына тариф"
+          },
+          {
+            "prefix": "электр энергиясы тариф"
+          },
+          {
+            "prefix": "жылуға тариф"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "коммуналдык тарифтер"
+          },
+          {
+            "prefix": "коммуналдык кызматтардын тариф"
+          },
+          {
+            "prefix": "коммуналдык төлөмдөр"
+          },
+          {
+            "prefix": "коммуналдык акы"
+          },
+          {
+            "prefix": "электр энергиясынын тариф"
+          },
+          {
+            "prefix": "электр энергиясына тариф"
+          },
+          {
+            "prefix": "электр тарифтер"
+          },
+          {
+            "prefix": "жылуулук тарифтер"
+          }
+        ],
+        "farsi": [
+          "تعرفه برق",
+          "تعرفه آب",
+          "تعرفه گاز",
+          "قبض برق",
+          "قبض آب",
+          "قبض گاز",
+          "قبوض آب",
+          "قبوض برق",
+          "قبوض گاز",
+          "قیمت برق"
+        ],
+        "belarusian": [
+          "камунальныя тарыфы",
+          "камунальных тарыфаў",
+          "тарыфы на ЖКП",
+          "тарыфаў на ЖКП",
+          "тарыфы на камунальныя паслугі",
+          "тарыфаў на камунальныя паслугі",
+          "тарыфы на электраэнергію",
+          "тарыфаў на электраэнергію",
+          "камунальныя плацяжы",
+          "камунальных плацяжоў",
+          "плата за камунальныя паслугі",
+          "платы за камунальныя паслугі"
+        ],
+        "pap": [
+          "tarifa di coriente",
+          "tarifanan di coriente",
+          "tarifa di awa i coriente",
+          "tarifa di Elmar",
+          "tarifa di WEB",
+          "cuenta di coriente",
+          "tarifa di kurente",
+          "tarifanan di kurente",
+          "kuenta di kurente",
+          "tarifa di Aqualectra",
+          "elektriciteitstarief",
+          "elektriciteitstarieven"
         ]
       }
     },
@@ -13381,6 +17222,207 @@
           {
             "prefix": "poskupljenja prevoz"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "sabiedriskā transporta biļet"
+          },
+          {
+            "prefix": "sabiedriskā transporta tarif"
+          },
+          {
+            "prefix": "transporta biļešu cen"
+          },
+          {
+            "prefix": "braukšanas maks"
+          },
+          {
+            "prefix": "braukšanas biļet"
+          },
+          {
+            "prefix": "taksometru cen"
+          },
+          {
+            "prefix": "taksometra cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "роҳкиро"
+          },
+          {
+            "prefix": "рохкиро"
+          },
+          {
+            "prefix": "кирояи нақлиёт"
+          },
+          {
+            "prefix": "нархи хизматрасонии нақлиёт"
+          },
+          {
+            "prefix": "кирояи таксӣ"
+          },
+          {
+            "prefix": "кирояи автобус"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "yo'l haq"
+          },
+          {
+            "prefix": "yoʻl haq"
+          },
+          {
+            "prefix": "yo’l haq"
+          },
+          {
+            "prefix": "yo‘l haq"
+          },
+          {
+            "prefix": "йўл ҳақ"
+          },
+          {
+            "prefix": "jamoat transporti tarif"
+          },
+          {
+            "prefix": "жамоат транспорти тариф"
+          },
+          {
+            "prefix": "jamoat transporti narx"
+          },
+          {
+            "prefix": "жамоат транспорти нарх"
+          },
+          {
+            "prefix": "taksi narx"
+          },
+          {
+            "prefix": "такси нарх"
+          },
+          {
+            "prefix": "taksi tarif"
+          },
+          {
+            "prefix": "такси тариф"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "viešojo transporto bilietų kain"
+          },
+          {
+            "prefix": "viešojo transporto bilieto kain"
+          },
+          {
+            "prefix": "viešojo transporto kain"
+          },
+          {
+            "prefix": "autobusų bilietų kain"
+          },
+          {
+            "prefix": "autobuso bilieto kain"
+          },
+          {
+            "prefix": "taksi paslaugų kain"
+          },
+          {
+            "prefix": "taksi kain"
+          },
+          {
+            "prefix": "važiavimo kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "ühistranspordi pilet"
+          },
+          {
+            "prefix": "ühistranspordi hin"
+          },
+          {
+            "prefix": "bussipilet"
+          },
+          {
+            "prefix": "sõidupileti hin"
+          },
+          {
+            "prefix": "taksohin"
+          },
+          {
+            "prefix": "sõiduhin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "жол ақы"
+          },
+          {
+            "prefix": "жолақы"
+          },
+          {
+            "prefix": "жол жүру ақы"
+          },
+          {
+            "prefix": "жол жүру құн"
+          },
+          {
+            "prefix": "қоғамдық көлік тариф"
+          },
+          {
+            "prefix": "такси баға"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "транспорт тарифтер"
+          },
+          {
+            "prefix": "жүргүнчү ташуу тариф"
+          },
+          {
+            "prefix": "коомдук транспорттун тариф"
+          },
+          {
+            "prefix": "такси баалар"
+          },
+          {
+            "prefix": "такси кызматынын баа"
+          }
+        ],
+        "farsi": [
+          "کرایه تاکسی",
+          "کرایه اتوبوس",
+          "کرایه مترو",
+          "کرایه حمل و نقل عمومی",
+          "کرایه حمل‌ونقل عمومی",
+          "کرایه حمل ونقل عمومی",
+          "کرایه حملونقل عمومی",
+          "کرایه وسایط نقلیه",
+          "کرایه موتر",
+          "بلیت مترو"
+        ],
+        "belarusian": [
+          "кошт праезду",
+          "кошту праезду",
+          "цана праезду",
+          "цаны праезду",
+          "плата за праезд",
+          "платы за праезд",
+          "тарыфы на праезд",
+          "тарыфаў на праезд",
+          "тарыфы на таксі",
+          "тарыфаў на таксі"
+        ],
+        "pap": [
+          "tarifa di bus",
+          "tarifanan di bus",
+          "prijs di bus",
+          "tarifa di Arubus",
+          "tarifa di taxi",
+          "tarifa di transporte publico",
+          "preis di bus",
+          "tarifa di transporte públiko"
         ]
       }
     },
@@ -14056,6 +18098,191 @@
           {
             "prefix": "rast zakupnin"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "īres maks"
+          },
+          {
+            "prefix": "īres cen"
+          },
+          {
+            "prefix": "īres izmaks"
+          },
+          {
+            "prefix": "īres sadārdzināj"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "иҷорапул"
+          },
+          {
+            "prefix": "нархи иҷора"
+          },
+          {
+            "prefix": "нархи ичора"
+          },
+          {
+            "prefix": "нархҳои иҷора"
+          },
+          {
+            "prefix": "кирояи манзил"
+          },
+          {
+            "prefix": "кирояи хона"
+          },
+          {
+            "prefix": "афзоиши иҷора"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ijara narx"
+          },
+          {
+            "prefix": "ижара нарх"
+          },
+          {
+            "prefix": "ijara haq"
+          },
+          {
+            "prefix": "ижара ҳақ"
+          },
+          {
+            "prefix": "ijara to'lov"
+          },
+          {
+            "prefix": "ijara toʻlov"
+          },
+          {
+            "prefix": "ijara to’lov"
+          },
+          {
+            "prefix": "ijara to‘lov"
+          },
+          {
+            "prefix": "ижара тўлов"
+          },
+          {
+            "prefix": "ijara qimmatlash"
+          },
+          {
+            "prefix": "ижара қимматлаш"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "nuomos kain"
+          },
+          {
+            "prefix": "nuomos mokesč"
+          },
+          {
+            "prefix": "nuomos brangim"
+          },
+          {
+            "prefix": "nuomos išlaid"
+          },
+          {
+            "prefix": "būsto nuomos kašt"
+          },
+          "nuoma brangsta",
+          "nuoma pabrango"
+        ],
+        "estonian": [
+          {
+            "prefix": "üürihin"
+          },
+          {
+            "prefix": "üüritõus"
+          },
+          {
+            "prefix": "üüride tõus"
+          },
+          {
+            "prefix": "üürid tõus"
+          },
+          {
+            "prefix": "üüri tõus"
+          },
+          {
+            "prefix": "üürikulu"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "жалдау ақы"
+          },
+          {
+            "prefix": "жалдау баға"
+          },
+          {
+            "prefix": "жалға алу баға"
+          },
+          {
+            "prefix": "жалға алу құн"
+          },
+          {
+            "prefix": "пәтер жалдау баға"
+          },
+          {
+            "prefix": "пәтерақы"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "ижара акы"
+          },
+          {
+            "prefix": "ижара баалар"
+          },
+          {
+            "prefix": "ижаранын баа"
+          },
+          {
+            "prefix": "ижаранын кымбатта"
+          },
+          {
+            "prefix": "батир ижара"
+          },
+          {
+            "prefix": "батирдин ижара"
+          }
+        ],
+        "farsi": [
+          "اجاره‌بها",
+          "اجاره بها",
+          "اجارهبها",
+          "افزایش اجاره",
+          "نرخ اجاره",
+          "تورم اجاره",
+          "قیمت اجاره",
+          "اجاره خانه",
+          "کرایه خانه",
+          "کرایه منزل"
+        ],
+        "belarusian": [
+          "арэндная плата",
+          "арэнднай платы",
+          "арэндную плату",
+          "кошт арэнды",
+          "кошту арэнды",
+          "цэны на арэнду",
+          "цэн на арэнду",
+          "цэнаў на арэнду",
+          "стаўкі арэнды",
+          "ставак арэнды"
+        ],
+        "pap": [
+          "aumento di huur",
+          "subida di huur",
+          "prijs di huur",
+          "oumento di huur",
+          "preis di huur",
+          "huurverhoging",
+          "huurverhogingen",
+          "huurprijzen"
         ]
       }
     },
@@ -14715,6 +18942,229 @@
           {
             "prefix": "cijena zdravstvenih uslug"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "veselības aprūpes izmaks"
+          },
+          {
+            "prefix": "veselības aprūpes cen"
+          },
+          {
+            "prefix": "ārstniecības izmaks"
+          },
+          {
+            "prefix": "ārstēšanas izmaks"
+          },
+          {
+            "prefix": "medicīnas pakalpojumu cen"
+          },
+          {
+            "prefix": "medikamentu cen"
+          },
+          {
+            "prefix": "zāļu cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "нархи дору"
+          },
+          {
+            "prefix": "нархҳои дору"
+          },
+          {
+            "prefix": "нархои дору"
+          },
+          {
+            "prefix": "гаронии дору"
+          },
+          {
+            "prefix": "хароҷоти табобат"
+          },
+          {
+            "prefix": "хароҷоти тибб"
+          },
+          {
+            "prefix": "нархи хизматрасониҳои тибб"
+          },
+          {
+            "prefix": "нархи хизматрасонии тибб"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "dori narx"
+          },
+          {
+            "prefix": "дори нарх"
+          },
+          {
+            "prefix": "dorilar narx"
+          },
+          {
+            "prefix": "дорилар нарх"
+          },
+          {
+            "prefix": "dori-darmon narx"
+          },
+          {
+            "prefix": "дори-дармон нарх"
+          },
+          {
+            "prefix": "dori vositalari narx"
+          },
+          {
+            "prefix": "дори воситалари нарх"
+          },
+          {
+            "prefix": "tibbiy xizmatlar narx"
+          },
+          {
+            "prefix": "тиббий хизматлар нарх"
+          },
+          {
+            "prefix": "davolanish xarajat"
+          },
+          {
+            "prefix": "даволаниш харажат"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "vaistų kain"
+          },
+          {
+            "prefix": "gydymo išlaid"
+          },
+          {
+            "prefix": "gydymo kain"
+          },
+          {
+            "prefix": "sveikatos priežiūros išlaid"
+          },
+          {
+            "prefix": "sveikatos priežiūros kain"
+          },
+          {
+            "prefix": "medicinos paslaugų kain"
+          },
+          {
+            "prefix": "kompensuojamųjų vaistų kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "ravimihin"
+          },
+          {
+            "prefix": "ravimite hin"
+          },
+          {
+            "prefix": "tervishoiukulu"
+          },
+          {
+            "prefix": "ravikulu"
+          },
+          {
+            "prefix": "tervishoiuteenuste hin"
+          },
+          {
+            "prefix": "arstiabi hin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "медициналық қызметтердің баға"
+          },
+          {
+            "prefix": "медициналық қызметтер құн"
+          },
+          {
+            "prefix": "медициналық шығын"
+          },
+          {
+            "prefix": "дәрі баға"
+          },
+          {
+            "prefix": "дәрілердің баға"
+          },
+          {
+            "prefix": "дәрі-дәрмек баға"
+          },
+          {
+            "prefix": "дәрі-дәрмектің баға"
+          },
+          {
+            "prefix": "дәрілік заттардың баға"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "дары-дармектердин баа"
+          },
+          {
+            "prefix": "дары-дармек баалар"
+          },
+          {
+            "prefix": "дарылардын баа"
+          },
+          {
+            "prefix": "дарылардын кымбатта"
+          },
+          {
+            "prefix": "медициналык кызматтардын баа"
+          },
+          {
+            "prefix": "медициналык чыгымдар"
+          },
+          {
+            "prefix": "дарылануу чыгымдар"
+          },
+          {
+            "prefix": "дарылануунун нарк"
+          }
+        ],
+        "farsi": [
+          "تورم پزشکی",
+          "تورم بخش سلامت",
+          "هزینه درمان",
+          "هزینه‌های درمان",
+          "هزینه های درمان",
+          "هزینههای درمان",
+          "هزینه‌های پزشکی",
+          "هزینه های پزشکی",
+          "هزینههای پزشکی",
+          "قیمت دارو",
+          "گرانی دارو",
+          "تعرفه‌های پزشکی",
+          "تعرفه های پزشکی",
+          "تعرفههای پزشکی",
+          "مصارف صحی"
+        ],
+        "belarusian": [
+          "цэны на лекі",
+          "цэн на лекі",
+          "цэнаў на лекі",
+          "кошт лекаў",
+          "падаражанне лекаў",
+          "падаражаньне лекаў",
+          "кошт лячэння",
+          "кошту лячэння",
+          "кошт лячэньня",
+          "цэны на медыцынскія паслугі",
+          "цэн на медыцынскія паслугі"
+        ],
+        "pap": [
+          "costo di salud",
+          "costo di cuido di salud",
+          "prijs di remedi",
+          "prijsnan di remedi",
+          "kosto di salú",
+          "kosto di kuido di salú",
+          "preis di remedi",
+          "zorgkosten",
+          "medicijnprijzen"
         ]
       }
     },
@@ -15308,6 +19758,189 @@
           {
             "prefix": "cijena udžbenik"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "izglītības izmaks"
+          },
+          {
+            "prefix": "izglītības izdevum"
+          },
+          {
+            "prefix": "mācību maks"
+          },
+          {
+            "prefix": "studiju maks"
+          },
+          {
+            "prefix": "skolas izdevum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "хароҷоти таҳсил"
+          },
+          {
+            "prefix": "ҳаққи таҳсил"
+          },
+          {
+            "prefix": "хакки тахсил"
+          },
+          {
+            "prefix": "пардохти таҳсил"
+          },
+          {
+            "prefix": "нархи таҳсил"
+          },
+          {
+            "prefix": "арзиши таҳсил"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "o'qish narx"
+          },
+          {
+            "prefix": "oʻqish narx"
+          },
+          {
+            "prefix": "o’qish narx"
+          },
+          {
+            "prefix": "o‘qish narx"
+          },
+          {
+            "prefix": "ўқиш нарх"
+          },
+          {
+            "prefix": "ta'lim xarajat"
+          },
+          {
+            "prefix": "taʻlim xarajat"
+          },
+          {
+            "prefix": "ta’lim xarajat"
+          },
+          {
+            "prefix": "ta‘lim xarajat"
+          },
+          {
+            "prefix": "таълим харажат"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "studijų kain"
+          },
+          {
+            "prefix": "studijų mokesč"
+          },
+          {
+            "prefix": "studijų išlaid"
+          },
+          {
+            "prefix": "mokslo kain"
+          },
+          {
+            "prefix": "mokslo mokesč"
+          },
+          {
+            "prefix": "švietimo išlaid"
+          },
+          {
+            "prefix": "mokymosi išlaid"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hariduskulu"
+          },
+          {
+            "prefix": "õppemaks"
+          },
+          {
+            "prefix": "õppetasu"
+          },
+          {
+            "prefix": "koolikulu"
+          },
+          {
+            "prefix": "kooliminekukulu"
+          },
+          {
+            "prefix": "koolitarvete hin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "оқу ақы"
+          },
+          {
+            "prefix": "оқу құн"
+          },
+          {
+            "prefix": "білім алу құн"
+          },
+          {
+            "prefix": "білім алу шығын"
+          },
+          {
+            "prefix": "оқуға кететін шығын"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "окуу акы"
+          },
+          {
+            "prefix": "окуунун баасы"
+          },
+          {
+            "prefix": "окуунун нарк"
+          },
+          {
+            "prefix": "билим алуу чыгымдар"
+          },
+          {
+            "prefix": "окуу чыгымдар"
+          },
+          {
+            "prefix": "контракттык окуунун баа"
+          }
+        ],
+        "farsi": [
+          "هزینه تحصیل",
+          "هزینه‌های تحصیل",
+          "هزینه های تحصیل",
+          "هزینههای تحصیل",
+          "هزینه‌های آموزشی",
+          "هزینه های آموزشی",
+          "هزینههای آموزشی",
+          "شهریه",
+          "هزینه مدرسه",
+          "فیس مکتب",
+          "مصارف تحصیل"
+        ],
+        "belarusian": [
+          "кошт навучання",
+          "кошту навучання",
+          "кошт навучаньня",
+          "кошту навучаньня",
+          "плата за навучанне",
+          "платы за навучанне",
+          "плата за навучаньне",
+          "кошт адукацыі",
+          "кошту адукацыі"
+        ],
+        "pap": [
+          "costo di educacion",
+          "gastonan di educacion",
+          "costo di scol",
+          "kosto di edukashon",
+          "gastunan di edukashon",
+          "kosto di skol",
+          "schoolgeld",
+          "collegegeld"
         ]
       }
     },
@@ -15996,6 +20629,221 @@
           {
             "prefix": "zamrznutih cijen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu kontrol"
+          },
+          {
+            "prefix": "cenu regulēšan"
+          },
+          {
+            "prefix": "cenu regulējum"
+          },
+          {
+            "prefix": "regulētās cen"
+          },
+          {
+            "prefix": "regulētas cen"
+          },
+          {
+            "prefix": "regulēto cen"
+          },
+          {
+            "prefix": "cenu iesaldēšan"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "танзими нарх"
+          },
+          {
+            "prefix": "танзими давлатии нарх"
+          },
+          {
+            "prefix": "назорати нарх"
+          },
+          {
+            "prefix": "нархҳои танзимшаванда"
+          },
+          {
+            "prefix": "нархҳои назоратшаванда"
+          },
+          {
+            "prefix": "ях кардани нарх"
+          },
+          {
+            "prefix": "яхкунии нарх"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "narxlarni tartibga sol"
+          },
+          {
+            "prefix": "нархларни тартибга сол"
+          },
+          {
+            "prefix": "tartibga solinadigan narx"
+          },
+          {
+            "prefix": "тартибга солинадиган нарх"
+          },
+          {
+            "prefix": "narx nazorat"
+          },
+          {
+            "prefix": "нарх назорат"
+          },
+          {
+            "prefix": "narxlarni muzlat"
+          },
+          {
+            "prefix": "нархларни музлат"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų kontrol"
+          },
+          {
+            "prefix": "kainų reguliavim"
+          },
+          {
+            "prefix": "reguliuojamos kain"
+          },
+          {
+            "prefix": "reguliuojamų kain"
+          },
+          {
+            "prefix": "reguliuojamas kain"
+          },
+          {
+            "prefix": "kontroliuojamos kain"
+          },
+          {
+            "prefix": "kainų įšald"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hinnaregulatsioon"
+          },
+          {
+            "prefix": "hinnakontroll"
+          },
+          {
+            "prefix": "reguleeritud hin"
+          },
+          {
+            "prefix": "hindade reguleeri"
+          },
+          {
+            "prefix": "hinnakülmutu"
+          },
+          {
+            "prefix": "hindade külmuta"
+          },
+          {
+            "prefix": "hinnad külmuta"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "баға реттеу"
+          },
+          {
+            "prefix": "бағаны реттеу"
+          },
+          {
+            "prefix": "бағаларды реттеу"
+          },
+          {
+            "prefix": "реттелетін баға"
+          },
+          {
+            "prefix": "баға бақылау"
+          },
+          {
+            "prefix": "бағаны мұздат"
+          },
+          {
+            "prefix": "бағаларды мұздат"
+          },
+          {
+            "prefix": "баға мұздат"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "бааны жөнгө салуу"
+          },
+          {
+            "prefix": "бааларды жөнгө салуу"
+          },
+          {
+            "prefix": "баа жөнгө салуу"
+          },
+          {
+            "prefix": "баалардын жөнгө салын"
+          },
+          {
+            "prefix": "жөнгө салынуучу баалар"
+          },
+          {
+            "prefix": "баа контрол"
+          },
+          {
+            "prefix": "бааларды тоңдуруу"
+          },
+          {
+            "prefix": "бааны тоңдуруу"
+          }
+        ],
+        "farsi": [
+          "کنترل قیمت",
+          "کنترول قیمت",
+          "قیمت‌گذاری دستوری",
+          "قیمت گذاری دستوری",
+          "قیمتگذاری دستوری",
+          "قیمت‌گذاری تکلیفی",
+          "قیمت گذاری تکلیفی",
+          "قیمتگذاری تکلیفی",
+          "سرکوب قیمت",
+          "ممنوعیت افزایش قیمت",
+          "انجماد قیمت",
+          "قیمت‌های کنترل‌شده",
+          "قیمت های کنترل شده",
+          "قیمتهای کنترلشده"
+        ],
+        "belarusian": [
+          "кантроль цэн",
+          "кантролю цэн",
+          "кантроль цэнаў",
+          "кантроль за цэнамі",
+          "кантролю за цэнамі",
+          "рэгуляванне цэн",
+          "рэгулявання цэн",
+          "рэгуляваньне цэнаў",
+          "рэгуляваньня цэнаў",
+          "рэгуляваныя цэны",
+          "рэгуляваных цэн",
+          "замарожванне цэн",
+          "замарожвання цэн",
+          "замарожваньне цэнаў",
+          "мараторый на павышэнне цэн"
+        ],
+        "pap": [
+          "control di prijs",
+          "control di prijsnan",
+          "congelamento di prijs",
+          "kontrol di preis",
+          "kontrol di preisnan",
+          "prijscontrole",
+          "prijsbeheersing",
+          "prijsregulering",
+          "prijsbevriezing",
+          "prijzenbesluit"
         ]
       }
     },
@@ -16566,6 +21414,169 @@
           {
             "prefix": "gornju granicu cijen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu griest"
+          },
+          {
+            "prefix": "maksimālā mazumtirdzniecības cen"
+          },
+          {
+            "prefix": "maksimālās mazumtirdzniecības cen"
+          },
+          {
+            "prefix": "maksimāli pieļaujamā cen"
+          },
+          {
+            "prefix": "maksimāli pieļaujamās cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "ҳадди аксари нарх"
+          },
+          {
+            "prefix": "хадди аксари нарх"
+          },
+          {
+            "prefix": "ҳадди болоии нарх"
+          },
+          {
+            "prefix": "нархи ҳадди аксар"
+          },
+          {
+            "prefix": "нархҳои ҳадди аксар"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "narxning yuqori chegara"
+          },
+          {
+            "prefix": "нархнинг юқори чегара"
+          },
+          {
+            "prefix": "narxlarning yuqori chegara"
+          },
+          {
+            "prefix": "нархларнинг юқори чегара"
+          },
+          {
+            "prefix": "maksimal narx"
+          },
+          {
+            "prefix": "максимал нарх"
+          },
+          {
+            "prefix": "maksimal chakana narx"
+          },
+          {
+            "prefix": "максимал чакана нарх"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų lub"
+          },
+          {
+            "prefix": "didžiausia leistina kain"
+          },
+          {
+            "prefix": "didžiausios leistinos kain"
+          },
+          {
+            "prefix": "didžiausią leistiną kain"
+          },
+          {
+            "prefix": "kainų viršutinė rib"
+          },
+          {
+            "prefix": "kainų viršutinės rib"
+          },
+          {
+            "prefix": "maksimali mažmeninė kain"
+          }
+        ],
+        "estonian": [
+          "hinnalagi",
+          "hinnalae",
+          "hinnalage",
+          "hinnalaele",
+          "hinnalaest",
+          "hinnalaega",
+          {
+            "prefix": "maksimumhin"
+          },
+          {
+            "prefix": "piirhin"
+          },
+          {
+            "prefix": "hinna ülempiir"
+          },
+          {
+            "prefix": "hindade ülempiir"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "шекті баға"
+          },
+          {
+            "prefix": "шекті бөлшек баға"
+          },
+          {
+            "prefix": "бағаның шекті деңгей"
+          },
+          {
+            "prefix": "бағаның жоғарғы шег"
+          },
+          {
+            "prefix": "ең жоғары бөлшек баға"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "баанын жогорку чег"
+          },
+          {
+            "prefix": "баалардын жогорку чег"
+          },
+          {
+            "prefix": "чектик баа"
+          },
+          {
+            "prefix": "максималдуу баа"
+          },
+          {
+            "prefix": "эң жогорку чекене баа"
+          }
+        ],
+        "farsi": [
+          "سقف قیمت",
+          "قیمت سقف",
+          "حداکثر قیمت",
+          "بالاترین قیمت مجاز"
+        ],
+        "belarusian": [
+          "гранічныя цэны",
+          "гранічных цэн",
+          "гранічная цана",
+          "гранічнай цаны",
+          "гранічную цану",
+          "максімальныя цэны",
+          "максімальных цэн",
+          "максімальная роздрыбная цана",
+          "максімальнай роздрыбнай цаны"
+        ],
+        "pap": [
+          "prijs maximo",
+          "prijsnan maximo",
+          "preis máksimo",
+          "preis maksimo",
+          "preisnan maksimo",
+          "maximumprijs",
+          "maximumprijzen"
         ]
       }
     },
@@ -17187,6 +22198,164 @@
           {
             "prefix": "ograničene marž"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu griest"
+          },
+          {
+            "prefix": "cenu ierobežojum"
+          },
+          {
+            "prefix": "cenu ierobežošan"
+          },
+          {
+            "prefix": "cenu plafon"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "маҳдудияти нарх"
+          },
+          {
+            "prefix": "махдудияти нарх"
+          },
+          {
+            "prefix": "маҳдудиятҳои нарх"
+          },
+          {
+            "prefix": "маҳдуд кардани нарх"
+          },
+          {
+            "prefix": "маҳдудкунии нарх"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "narx chegara"
+          },
+          {
+            "prefix": "нарх чегара"
+          },
+          {
+            "prefix": "narxlarga chegara"
+          },
+          {
+            "prefix": "нархларга чегара"
+          },
+          {
+            "prefix": "narxlarga cheklov"
+          },
+          {
+            "prefix": "нархларга чеклов"
+          },
+          {
+            "prefix": "narxlarni chekla"
+          },
+          {
+            "prefix": "нархларни чекла"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų ribojim"
+          },
+          {
+            "prefix": "kainų apribojim"
+          },
+          {
+            "prefix": "apribotos kain"
+          },
+          {
+            "prefix": "apribotų kain"
+          },
+          {
+            "prefix": "riboti kain"
+          },
+          {
+            "prefix": "apriboti kain"
+          }
+        ],
+        "estonian": [
+          "hinnalagi",
+          "hinnalae",
+          "hinnalage",
+          "hinnalaele",
+          "hinnalaest",
+          "hinnalaega",
+          {
+            "prefix": "hinnapiirang"
+          },
+          {
+            "prefix": "hindade piira"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "бағаға шектеу"
+          },
+          {
+            "prefix": "бағаларға шектеу"
+          },
+          {
+            "prefix": "баға шектеу"
+          },
+          {
+            "prefix": "бағаны шектеу"
+          },
+          {
+            "prefix": "бағаларды шектеу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "баа чег"
+          },
+          {
+            "prefix": "бааларды чектөө"
+          },
+          {
+            "prefix": "бааны чектөө"
+          },
+          {
+            "prefix": "баа чектөө"
+          },
+          {
+            "prefix": "баалардын чектелиш"
+          },
+          {
+            "prefix": "баанын чектелиш"
+          }
+        ],
+        "farsi": [
+          "سقف قیمت",
+          "سقف‌گذاری قیمت",
+          "سقف گذاری قیمت",
+          "سقفگذاری قیمت",
+          "سقف‌گذاری بر قیمت",
+          "سقف گذاری بر قیمت",
+          "سقفگذاری بر قیمت",
+          "تعیین سقف برای قیمت"
+        ],
+        "belarusian": [
+          "столь цэн",
+          "столі цэн",
+          "цэнавая столь",
+          "цэнавай столі",
+          "гранічныя надбаўкі",
+          "гранічных надбавак",
+          "гранічныя гандлёвыя надбаўкі",
+          "гранічных гандлёвых надбавак",
+          "абмежаванне надбавак",
+          "абмежаванні надбавак"
+        ],
+        "pap": [
+          "tope di prijs",
+          "limite di prijs",
+          "limite riba prijs",
+          "limite di preis",
+          "limite riba preis",
+          "prijsplafond"
         ]
       }
     },
@@ -17713,6 +22882,158 @@
           {
             "prefix": "obuzdavanja rasta cijen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu stabilizācij"
+          },
+          {
+            "prefix": "cenu stabilizēšan"
+          },
+          {
+            "prefix": "stabilizēt cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "устувории нарх"
+          },
+          {
+            "prefix": "суботи нарх"
+          },
+          {
+            "prefix": "устуворгардонии нарх"
+          },
+          {
+            "prefix": "устувор нигоҳ доштани нарх"
+          },
+          {
+            "prefix": "мӯътадил нигоҳ доштани нарх"
+          },
+          {
+            "prefix": "муътадил нигох доштани нарх"
+          },
+          {
+            "prefix": "мӯътадилгардонии нарх"
+          },
+          {
+            "prefix": "ба эътидол овардани нарх"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "narxlarni barqaror"
+          },
+          {
+            "prefix": "нархларни барқарор"
+          },
+          {
+            "prefix": "narx barqarorlig"
+          },
+          {
+            "prefix": "нарх барқарорлиг"
+          },
+          {
+            "prefix": "narxlar barqarorlig"
+          },
+          {
+            "prefix": "нархлар барқарорлиг"
+          },
+          {
+            "prefix": "narxlarning barqarorlig"
+          },
+          {
+            "prefix": "нархларнинг барқарорлиг"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų stabilizavim"
+          },
+          {
+            "prefix": "stabilizuoti kain"
+          },
+          {
+            "prefix": "stabilizuoja kain"
+          },
+          {
+            "prefix": "stabilizuotų kain"
+          },
+          {
+            "prefix": "kainų stabilizacij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hindade stabiliseeri"
+          },
+          {
+            "prefix": "hindade stabiliseeru"
+          },
+          {
+            "prefix": "hinnad stabiliseeru"
+          },
+          {
+            "prefix": "hinnastabiliseeri"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "бағаны тұрақтандыр"
+          },
+          {
+            "prefix": "бағаларды тұрақтандыр"
+          },
+          {
+            "prefix": "баға тұрақтандыр"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "бааларды турукташтыруу"
+          },
+          {
+            "prefix": "бааны турукташтыруу"
+          },
+          {
+            "prefix": "баа туруктуулуг"
+          },
+          {
+            "prefix": "баалардын туруктуулуг"
+          },
+          {
+            "prefix": "баалардын турукташ"
+          },
+          {
+            "prefix": "бааларды стабилдештирүү"
+          }
+        ],
+        "farsi": [
+          "تثبیت قیمت",
+          "ثبات قیمت",
+          "ثبات نسبی قیمت",
+          "ستاد تنظیم بازار"
+        ],
+        "belarusian": [
+          "стабілізацыя цэн",
+          "стабілізацыі цэн",
+          "стабілізацыю цэн",
+          "стабілізацыя цэнаў",
+          "стабілізацыі цэнаў",
+          "стабілізаваць цэны",
+          "стабільнасць цэн",
+          "стабільнасці цэн",
+          "стабільнасьць цэнаў",
+          "цэнавая стабільнасць",
+          "цэнавай стабільнасці"
+        ],
+        "pap": [
+          "stabilisacion di prijs",
+          "fondo di stabilisacion di prijs",
+          "estabilisashon di preis",
+          "fondo di estabilisashon di preis",
+          "prijsstabilisatie",
+          "prijsstabilisatiefonds"
         ]
       }
     },
@@ -18266,6 +23587,189 @@
           {
             "prefix": "nadzora nad cijen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu monitoring"
+          },
+          {
+            "prefix": "cenu uzraudzīb"
+          },
+          {
+            "prefix": "cenu pārraudzīb"
+          },
+          {
+            "prefix": "cenu pārbaud"
+          },
+          {
+            "prefix": "cenu novērošan"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "мониторинги нарх"
+          },
+          {
+            "prefix": "мушоҳидаи нарх"
+          },
+          {
+            "prefix": "санҷиши нарх"
+          },
+          {
+            "prefix": "санчиши нарх"
+          },
+          {
+            "prefix": "назорат аз болои нарх"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "narx monitoring"
+          },
+          {
+            "prefix": "нарх мониторинг"
+          },
+          {
+            "prefix": "narxlar monitoring"
+          },
+          {
+            "prefix": "нархлар мониторинг"
+          },
+          {
+            "prefix": "narxlarni monitoring"
+          },
+          {
+            "prefix": "нархларни мониторинг"
+          },
+          {
+            "prefix": "narxlar ustidan nazorat"
+          },
+          {
+            "prefix": "нархлар устидан назорат"
+          },
+          {
+            "prefix": "narxlarni kuzat"
+          },
+          {
+            "prefix": "нархларни кузат"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų stebėsen"
+          },
+          {
+            "prefix": "kainų stebėjim"
+          },
+          {
+            "prefix": "kainų monitoring"
+          },
+          {
+            "prefix": "kainų patikrin"
+          },
+          {
+            "prefix": "kainų tikrinim"
+          },
+          {
+            "prefix": "stebėti kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hinnaseire"
+          },
+          {
+            "prefix": "hindade seire"
+          },
+          {
+            "prefix": "hindade jälgi"
+          },
+          {
+            "prefix": "hinnamonitooring"
+          },
+          {
+            "prefix": "hindade monitoori"
+          },
+          {
+            "prefix": "hinnavaatlu"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "баға мониторинг"
+          },
+          {
+            "prefix": "бағалар мониторинг"
+          },
+          {
+            "prefix": "бағаларды мониторинг"
+          },
+          {
+            "prefix": "бағаға мониторинг"
+          },
+          {
+            "prefix": "бағаны бақылау"
+          },
+          {
+            "prefix": "бағаларды бақылау"
+          },
+          {
+            "prefix": "бағаларды тексер"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "баа мониторинг"
+          },
+          {
+            "prefix": "баалардын мониторинг"
+          },
+          {
+            "prefix": "бааларга мониторинг"
+          },
+          {
+            "prefix": "бааларды мониторинг"
+          },
+          {
+            "prefix": "бааларды көзөмөлдөө"
+          },
+          {
+            "prefix": "бааларга көзөмөл"
+          },
+          {
+            "prefix": "баалардын көзөмөл"
+          },
+          {
+            "prefix": "бааларды текшерүү"
+          }
+        ],
+        "farsi": [
+          "نظارت بر قیمت",
+          "پایش قیمت",
+          "بازرسی قیمت",
+          "بازرسی بازار",
+          "سازمان حمایت مصرف‌کنندگان و تولید‌کنندگان",
+          "سازمان حمایت مصرف کنندگان و تولید کنندگان",
+          "سازمان حمایت مصرفکنندگان و تولیدکنندگان"
+        ],
+        "belarusian": [
+          "маніторынг цэн",
+          "маніторынгу цэн",
+          "маніторынг цэнаў",
+          "маніторынгу цэнаў",
+          "праверка цэн",
+          "праверкі цэн",
+          "сачэнне за цэнамі",
+          "назіранне за цэнамі",
+          "назіраньне за цэнамі"
+        ],
+        "pap": [
+          "monitoreo di prijs",
+          "inspeccion di prijs",
+          "monitoreo di preis",
+          "inspekshon di preis",
+          "prijsmonitoring",
+          "prijsinspectie"
         ]
       }
     },
@@ -18805,6 +24309,186 @@
           {
             "prefix": "cijene koje propisuje vlad"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "administratīvi regulētās cen"
+          },
+          {
+            "prefix": "administratīvi regulētas cen"
+          },
+          {
+            "prefix": "administratīvi regulēto cen"
+          },
+          {
+            "prefix": "administratīvi regulējamās cen"
+          },
+          {
+            "prefix": "administratīvi regulējamo cen"
+          },
+          {
+            "prefix": "administrētās cen"
+          },
+          {
+            "prefix": "valsts noteiktās cen"
+          },
+          {
+            "prefix": "valsts regulētās cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "нархҳои муқарраркардаи давлат"
+          },
+          {
+            "prefix": "нархҳои муқарраршудаи давлат"
+          },
+          {
+            "prefix": "нархҳои аз ҷониби давлат муқаррар"
+          },
+          {
+            "prefix": "нархҳои аз ҷониби давлат танзим"
+          },
+          {
+            "prefix": "нархҳои танзимшавандаи давлат"
+          },
+          {
+            "prefix": "нархҳои маъмур"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "davlat tomonidan belgilanadigan narx"
+          },
+          {
+            "prefix": "давлат томонидан белгиланадиган нарх"
+          },
+          {
+            "prefix": "davlat tomonidan tartibga solinadigan narx"
+          },
+          {
+            "prefix": "давлат томонидан тартибга солинадиган нарх"
+          },
+          {
+            "prefix": "davlat belgilagan narx"
+          },
+          {
+            "prefix": "давлат белгилаган нарх"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "administruojamos kain"
+          },
+          {
+            "prefix": "administruojamų kain"
+          },
+          {
+            "prefix": "administruojamas kain"
+          },
+          {
+            "prefix": "valstybės reguliuojamos kain"
+          },
+          {
+            "prefix": "valstybės reguliuojamų kain"
+          },
+          {
+            "prefix": "valstybės nustatytos kain"
+          },
+          {
+            "prefix": "valstybės nustatytų kain"
+          },
+          {
+            "prefix": "Vyriausybės nustatytos kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "administratiivsed hin"
+          },
+          {
+            "prefix": "administratiivsete hin"
+          },
+          {
+            "prefix": "administreeritud hin"
+          },
+          {
+            "prefix": "riiklikult reguleeritud hin"
+          },
+          {
+            "prefix": "riigi kehtestatud hin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "мемлекет белгілеген баға"
+          },
+          {
+            "prefix": "мемлекет реттейтін баға"
+          },
+          {
+            "prefix": "мемлекеттік реттелетін баға"
+          },
+          {
+            "prefix": "әкімшілік реттелетін баға"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "администрацияланган баалар"
+          },
+          {
+            "prefix": "администрациялык баалар"
+          },
+          {
+            "prefix": "мамлекет белгилеген баа"
+          },
+          {
+            "prefix": "өкмөт белгилеген баа"
+          },
+          {
+            "prefix": "мамлекет тарабынан белгиленген баа"
+          },
+          {
+            "prefix": "өкмөт тарабынан белгиленген баа"
+          },
+          {
+            "prefix": "расмий баалар"
+          }
+        ],
+        "farsi": [
+          "قیمت مصوب",
+          "قیمت‌های مصوب",
+          "قیمت های مصوب",
+          "قیمتهای مصوب",
+          "نرخ مصوب",
+          "قیمت دولتی",
+          "قیمت‌های دولتی",
+          "قیمت های دولتی",
+          "قیمتهای دولتی",
+          "قیمت‌گذاری دولتی",
+          "قیمت گذاری دولتی",
+          "قیمتگذاری دولتی"
+        ],
+        "belarusian": [
+          "рэгулюемыя цэны",
+          "рэгулюемых цэн",
+          "рэгулюемым цэнам",
+          "адміністрацыйныя цэны",
+          "адміністрацыйных цэн",
+          "адміністрацыйна рэгуляваныя цэны",
+          "адміністрацыйна рэгуляваных цэн",
+          "дзяржаўныя цэны",
+          "дзяржаўных цэн"
+        ],
+        "pap": [
+          "prijs oficial",
+          "prijsnan oficial",
+          "prijs fiha pa gobierno",
+          "preis ofisial",
+          "preisnan ofisial",
+          "preis fiha pa gobièrnu",
+          "gereguleerde prijzen"
         ]
       }
     },
@@ -19485,6 +25169,203 @@
           {
             "prefix": "subvencionisanih proizvod"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu subsīdij"
+          },
+          {
+            "prefix": "patērētāju subsīdij"
+          },
+          {
+            "prefix": "subsidētās cen"
+          },
+          {
+            "prefix": "subsidētas cen"
+          },
+          {
+            "prefix": "subsidēto cen"
+          },
+          {
+            "prefix": "energoresursu cenu kompensācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "субсидияи нарх"
+          },
+          {
+            "prefix": "субсидияҳои нарх"
+          },
+          {
+            "prefix": "нархҳои субсидия"
+          },
+          {
+            "prefix": "молҳои субсидия"
+          },
+          {
+            "prefix": "субсидия ба истеъмолкунанда"
+          },
+          {
+            "prefix": "субсидияҳои истеъмол"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "subsidiyalangan narx"
+          },
+          {
+            "prefix": "субсидияланган нарх"
+          },
+          {
+            "prefix": "narx subsidiya"
+          },
+          {
+            "prefix": "нарх субсидия"
+          },
+          {
+            "prefix": "iste'molchilarga subsidiya"
+          },
+          {
+            "prefix": "isteʻmolchilarga subsidiya"
+          },
+          {
+            "prefix": "iste’molchilarga subsidiya"
+          },
+          {
+            "prefix": "iste‘molchilarga subsidiya"
+          },
+          {
+            "prefix": "истеъмолчиларга субсидия"
+          },
+          {
+            "prefix": "subsidiyalangan mahsulot"
+          },
+          {
+            "prefix": "субсидияланган маҳсулот"
+          },
+          {
+            "prefix": "imtiyozli narx"
+          },
+          {
+            "prefix": "имтиёзли нарх"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų subsidij"
+          },
+          {
+            "prefix": "kainų kompensavim"
+          },
+          {
+            "prefix": "kainų kompensacij"
+          },
+          {
+            "prefix": "subsidijuojamos kain"
+          },
+          {
+            "prefix": "subsidijuojamų kain"
+          },
+          {
+            "prefix": "subsidijuojamos prek"
+          },
+          {
+            "prefix": "subsidijuojamų prek"
+          },
+          {
+            "prefix": "vartotojų subsidij"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hinnatoetu"
+          },
+          {
+            "prefix": "tarbijatoetu"
+          },
+          {
+            "prefix": "subsideeritud hin"
+          },
+          {
+            "prefix": "doteeritud hin"
+          },
+          {
+            "prefix": "hinnahüvitis"
+          },
+          {
+            "prefix": "energiatoetu"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "субсидияланған баға"
+          },
+          {
+            "prefix": "субсидияланатын баға"
+          },
+          {
+            "prefix": "субсидияланған тауар"
+          },
+          {
+            "prefix": "бағаны субсидиялау"
+          },
+          {
+            "prefix": "тұтынушыларға субсидия"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "баа субсидия"
+          },
+          {
+            "prefix": "баалык субсидия"
+          },
+          {
+            "prefix": "керектөөчүлөргө субсидия"
+          },
+          {
+            "prefix": "субсидияланган баалар"
+          },
+          {
+            "prefix": "субсидияланган товар"
+          },
+          {
+            "prefix": "субсидиялык баалар"
+          }
+        ],
+        "farsi": [
+          "یارانه‌ای",
+          "یارانه ای",
+          "یارانهای",
+          "یارانه کالا",
+          "یارانه مصرف‌کننده",
+          "یارانه مصرف کننده",
+          "یارانه مصرفکننده",
+          "یارانه قیمتی",
+          "یارانه پنهان",
+          "کالابرگ"
+        ],
+        "belarusian": [
+          "цэнавыя субсідыі",
+          "цэнавых субсідый",
+          "спажывецкія субсідыі",
+          "спажывецкіх субсідый",
+          "субсідзіраванне тарыфаў",
+          "субсідзіравання тарыфаў",
+          "перакрыжаванае субсідзіраванне",
+          "перакрыжаванага субсідзіравання",
+          "субсідзіраваныя цэны",
+          "субсідзіраваных цэн"
+        ],
+        "pap": [
+          "subsidio riba prijs",
+          "subsidio di prijs",
+          "subsidio pa consumidor",
+          "subsidio riba preis",
+          "subsidio pa konsumidó",
+          "prijssubsidie",
+          "gesubsidieerde prijzen"
         ]
       }
     },
@@ -19993,6 +25874,190 @@
           },
           {
             "prefix": "uticaj PDV-a na cijen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "таъсири андоз ба нарх"
+          },
+          {
+            "prefix": "таъсири ААИ ба нарх"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "QQSning narxlarga ta'sir"
+          },
+          {
+            "prefix": "QQSning narxlarga taʻsir"
+          },
+          {
+            "prefix": "QQSning narxlarga ta’sir"
+          },
+          {
+            "prefix": "QQSning narxlarga ta‘sir"
+          },
+          {
+            "prefix": "ҚҚСнинг нархларга таъсир"
+          },
+          {
+            "prefix": "soliqning narxlarga ta'sir"
+          },
+          {
+            "prefix": "soliqning narxlarga taʻsir"
+          },
+          {
+            "prefix": "soliqning narxlarga ta’sir"
+          },
+          {
+            "prefix": "soliqning narxlarga ta‘sir"
+          },
+          {
+            "prefix": "солиқнинг нархларга таъсир"
+          }
+        ],
+        "lithuanian": [
+          "perkelti vartotojams",
+          "perkels vartotojams",
+          "perkelia vartotojams",
+          "perkėlė vartotojams",
+          "perkeliama vartotojams",
+          "perkelta vartotojams",
+          {
+            "prefix": "PVM perkėlim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "tarbijate kanda"
+          },
+          {
+            "prefix": "tarbijatele edasi"
+          },
+          {
+            "prefix": "hindadesse kandu"
+          },
+          {
+            "prefix": "hindadesse jõu"
+          },
+          {
+            "prefix": "käibemaksutõusu mõju hin"
+          },
+          {
+            "prefix": "käibemaksu tõusu mõju hin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "тұтынушылардың мойнына"
+          },
+          {
+            "prefix": "тұтынушының мойнына"
+          },
+          {
+            "prefix": "ҚҚС-ның бағаға әсер"
+          },
+          {
+            "prefix": "салықтың бағаға әсер"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "керектөөчүлөргө которул"
+          },
+          {
+            "prefix": "керектөөчүгө которул"
+          },
+          {
+            "prefix": "КНСтин баага таасир"
+          },
+          {
+            "prefix": "салыктын баага таасир"
+          }
+        ],
+        "farsi": [
+          "به مصرف‌کننده منتقل",
+          "به مصرف کننده منتقل",
+          "به مصرفکننده منتقل",
+          "به مصرف‌کنندگان منتقل",
+          "به مصرف کنندگان منتقل",
+          "به مصرفکنندگان منتقل",
+          "بر دوش مصرف‌کننده",
+          "بر دوش مصرف کننده",
+          "بر دوش مصرفکننده",
+          "بر دوش مصرف‌کنندگان",
+          "بر دوش مصرف کنندگان",
+          "بر دوش مصرفکنندگان",
+          "انتقال مالیات به مصرف‌کننده",
+          "انتقال مالیات به مصرف کننده",
+          "انتقال مالیات به مصرفکننده",
+          "انتقال بار مالیاتی",
+          "سرشکن شدن مالیات"
+        ],
+        "belarusian": [
+          {
+            "prefix": "павышэнне ПДВ"
+          },
+          {
+            "prefix": "павышэння ПДВ"
+          },
+          {
+            "prefix": "павышэнне стаўкі ПДВ"
+          },
+          {
+            "prefix": "павышэння стаўкі ПДВ"
+          },
+          {
+            "prefix": "уплыў ПДВ на цэн"
+          },
+          {
+            "prefix": "уплыву ПДВ на цэн"
+          },
+          {
+            "prefix": "павышэнне акцыз"
+          },
+          {
+            "prefix": "павышэння акцыз"
+          },
+          {
+            "prefix": "рост акцыз"
+          }
+        ],
+        "pap": [
+          "BBO riba prijs",
+          "BBO riba prijsnan",
+          "efecto di BBO riba prijs",
+          "BBO pasa riba consumidor",
+          "BAVP riba prijs",
+          "OB riba preis",
+          "OB pasa riba konsumidó",
+          "doorberekening van BBO",
+          "doorberekening van de omzetbelasting"
+        ],
+        "latvian": [
+          {
+            "prefix": "PVN pieauguma ietekm"
+          },
+          {
+            "prefix": "PVN palielināšanas ietekm"
+          },
+          {
+            "prefix": "PVN celšanas ietekm"
+          },
+          {
+            "prefix": "PVN samazināšanas ietekm"
+          },
+          {
+            "prefix": "PVN izmaiņu ietekm"
+          },
+          {
+            "prefix": "akcīzes nodokļa pieauguma ietekm"
+          },
+          {
+            "prefix": "akcīzes nodokļa palielināšanas ietekm"
+          },
+          {
+            "prefix": "akcīzes pieauguma ietekm"
           }
         ]
       }
@@ -20638,6 +26703,241 @@
           {
             "prefix": "zelenaške cijen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "cenu uzskrūvēšan"
+          },
+          {
+            "prefix": "uzskrūvē cen"
+          },
+          {
+            "prefix": "uzskrūvēja cen"
+          },
+          {
+            "prefix": "nepamatoti augstas cen"
+          },
+          {
+            "prefix": "nepamatoti augstās cen"
+          },
+          {
+            "prefix": "nepamatots cenu kāpum"
+          },
+          {
+            "prefix": "pārmērīgi augstas cen"
+          },
+          {
+            "prefix": "negodīgas cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "баланд бардоштани беасоси нарх"
+          },
+          {
+            "prefix": "беасос баланд бардоштани нарх"
+          },
+          {
+            "prefix": "афзоиши беасоси нарх"
+          },
+          {
+            "prefix": "афзоиши сунъии нарх"
+          },
+          {
+            "prefix": "баланд бардоштани сунъии нарх"
+          },
+          {
+            "prefix": "нархгузории беадолат"
+          },
+          {
+            "prefix": "гаронфурӯш"
+          },
+          {
+            "prefix": "қимматфурӯш"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "narxlarni sun'iy oshir"
+          },
+          {
+            "prefix": "narxlarni sunʻiy oshir"
+          },
+          {
+            "prefix": "narxlarni sun’iy oshir"
+          },
+          {
+            "prefix": "narxlarni sun‘iy oshir"
+          },
+          {
+            "prefix": "нархларни сунъий ошир"
+          },
+          {
+            "prefix": "narxlarni sun'iy ko'tar"
+          },
+          {
+            "prefix": "narxlarni sunʻiy koʻtar"
+          },
+          {
+            "prefix": "narxlarni sun’iy ko’tar"
+          },
+          {
+            "prefix": "narxlarni sun‘iy ko‘tar"
+          },
+          {
+            "prefix": "нархларни сунъий кўтар"
+          },
+          {
+            "prefix": "narxlarni asossiz oshir"
+          },
+          {
+            "prefix": "нархларни асоссиз ошир"
+          },
+          {
+            "prefix": "asossiz narx oshir"
+          },
+          {
+            "prefix": "асоссиз нарх ошир"
+          },
+          "sun'iy qimmatchilik",
+          "sunʻiy qimmatchilik",
+          "sun’iy qimmatchilik",
+          "sun‘iy qimmatchilik",
+          "сунъий қимматчилик"
+        ],
+        "lithuanian": [
+          {
+            "prefix": "kainų užkėlim"
+          },
+          {
+            "prefix": "užkeltos kain"
+          },
+          {
+            "prefix": "užkeltų kain"
+          },
+          {
+            "prefix": "nepagrįstai aukštos kain"
+          },
+          {
+            "prefix": "nepagrįstai aukštų kain"
+          },
+          {
+            "prefix": "nepagrįstai išaugusios kain"
+          },
+          {
+            "prefix": "nesąžiningos kain"
+          },
+          {
+            "prefix": "lupikiškos kain"
+          },
+          {
+            "prefix": "lupikiškų kain"
+          },
+          {
+            "prefix": "išpūstos kain"
+          },
+          {
+            "prefix": "išpūstų kain"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "ülehinnastami"
+          },
+          {
+            "prefix": "hindade kruvi"
+          },
+          {
+            "prefix": "hinnad üles kruvi"
+          },
+          {
+            "prefix": "ebaõiglane hinnastami"
+          },
+          {
+            "prefix": "ebaõiglase hinnastami"
+          },
+          {
+            "prefix": "röövhin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "бағаны негізсіз көтер"
+          },
+          {
+            "prefix": "бағаларды негізсіз көтер"
+          },
+          {
+            "prefix": "негізсіз қымбатта"
+          },
+          {
+            "prefix": "бағаны шамадан тыс көтер"
+          },
+          {
+            "prefix": "бағаны әдейі көтер"
+          },
+          {
+            "prefix": "монополиялық жоғары баға"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "бааны негизсиз көтөр"
+          },
+          {
+            "prefix": "бааларды негизсиз көтөр"
+          },
+          {
+            "prefix": "баанын негизсиз көтөрүл"
+          },
+          {
+            "prefix": "баалардын негизсиз көтөрүл"
+          },
+          {
+            "prefix": "бааны жасалма көтөр"
+          },
+          {
+            "prefix": "бааларды жасалма көтөр"
+          },
+          {
+            "prefix": "негизсиз кымбатта"
+          }
+        ],
+        "farsi": [
+          "گران‌فروش",
+          "گران فروش",
+          "گرانفروش",
+          "قیمت‌گذاری غیر‌منصفانه",
+          "قیمت گذاری غیر منصفانه",
+          "قیمتگذاری غیرمنصفانه",
+          "قیمت‌های گزاف",
+          "قیمت های گزاف",
+          "قیمتهای گزاف",
+          "قیمت گزاف",
+          "افزایش خودسرانه قیمت",
+          "بلند بردن خودسرانه قیمت"
+        ],
+        "belarusian": [
+          "завышэнне цэн",
+          "завышэння цэн",
+          "завышэньне цэнаў",
+          "завышаныя цэны",
+          "завышаных цэн",
+          "завышанымі цэнамі",
+          "неабгрунтаваны рост цэн",
+          "неабгрунтаванага росту цэн",
+          "неабгрунтаванае павышэнне цэн",
+          "неабгрунтаванага павышэння цэн"
+        ],
+        "pap": [
+          "prijs exagera",
+          "prijsnan exagera",
+          "abuso di prijs",
+          "preis eksagerá",
+          "preisnan eksagerá",
+          "abuzo di preis",
+          "woekerprijzen",
+          "prijsopdrijving"
         ]
       }
     },
@@ -21007,6 +27307,148 @@
           "profiteri",
           "profitera",
           "profiterima",
+          "greedflation"
+        ],
+        "latvian": [
+          {
+            "prefix": "virspeļņ"
+          },
+          {
+            "prefix": "negodīga peļņ"
+          },
+          {
+            "prefix": "pārmērīga peļņ"
+          },
+          {
+            "prefix": "pārmērīgu peļņ"
+          },
+          {
+            "prefix": "alkatības inflācij"
+          },
+          "greedflation"
+        ],
+        "tajik": [
+          {
+            "prefix": "спекулятси"
+          },
+          {
+            "prefix": "спекулянт"
+          },
+          {
+            "prefix": "фоидаи аз ҳад зиёд"
+          },
+          {
+            "prefix": "фоидаи беасос"
+          },
+          {
+            "prefix": "фоидаҷӯии беасос"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "chayqov"
+          },
+          {
+            "prefix": "чайқов"
+          },
+          {
+            "prefix": "olibsotar"
+          },
+          {
+            "prefix": "olib-sotar"
+          },
+          {
+            "prefix": "олибсотар"
+          },
+          {
+            "prefix": "спекулянт"
+          },
+          {
+            "prefix": "spekulyant"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "pelnagaud"
+          },
+          {
+            "prefix": "godumo infliacij"
+          },
+          {
+            "prefix": "gobšumo infliacij"
+          },
+          "greedflation",
+          {
+            "prefix": "pasipelnymas iš kriz"
+          },
+          {
+            "prefix": "pasipelnyti iš kriz"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "liigkasum"
+          },
+          {
+            "prefix": "kasumiahnu"
+          },
+          {
+            "prefix": "kasumiinflatsioon"
+          },
+          "greedflation",
+          {
+            "prefix": "ahnflatsioon"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "алыпсатар"
+          },
+          {
+            "prefix": "пайдакүнем"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "баа спекуляция"
+          },
+          {
+            "prefix": "баалар менен спекуляция"
+          },
+          {
+            "prefix": "спекулянт"
+          },
+          {
+            "prefix": "алып сатарлык"
+          },
+          {
+            "prefix": "алып-сатарлык"
+          },
+          "greedflation"
+        ],
+        "farsi": [
+          "سودجو",
+          "سوء‌استفاده از شرایط بازار",
+          "سوء استفاده از شرایط بازار",
+          "سوءاستفاده از شرایط بازار",
+          "فرصت‌طلبی اقتصادی",
+          "فرصت طلبی اقتصادی",
+          "فرصتطلبی اقتصادی"
+        ],
+        "belarusian": [
+          "спекулянт",
+          "спекулянты",
+          "спекулянтаў",
+          "спекулянтамі",
+          "спекуляцыя на цэнах",
+          "грыдфляцыя",
+          "грыдфляцыі",
+          "нажыва на крызісе"
+        ],
+        "pap": [
+          "ganashi eksesivo",
+          "woekerwinst",
+          "woekerwinsten",
           "greedflation"
         ]
       }
@@ -21483,6 +27925,186 @@
           },
           {
             "prefix": "skrivanje robe"
+          }
+        ],
+        "latvian": [
+          {
+            "prefix": "preču uzkrāšan"
+          },
+          {
+            "prefix": "preču uzpirkšan"
+          },
+          {
+            "prefix": "spekulatīva uzkrāšan"
+          },
+          {
+            "prefix": "spekulatīvā uzkrāšan"
+          },
+          {
+            "prefix": "pārtikas uzkrāšan"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "эҳтикор"
+          },
+          {
+            "prefix": "эхтикор"
+          },
+          {
+            "prefix": "пинҳон кардани мол"
+          },
+          {
+            "prefix": "ниҳон доштани мол"
+          },
+          {
+            "prefix": "андӯхтани мол"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "tovarlarni yashir"
+          },
+          {
+            "prefix": "товарларни яшир"
+          },
+          {
+            "prefix": "mahsulotlarni yashir"
+          },
+          {
+            "prefix": "маҳсулотларни яшир"
+          },
+          {
+            "prefix": "tovarlarni g'aml"
+          },
+          {
+            "prefix": "tovarlarni gʻaml"
+          },
+          {
+            "prefix": "tovarlarni g’aml"
+          },
+          {
+            "prefix": "tovarlarni g‘aml"
+          },
+          {
+            "prefix": "товарларни ғамл"
+          },
+          {
+            "prefix": "mahsulotlarni g'aml"
+          },
+          {
+            "prefix": "mahsulotlarni gʻaml"
+          },
+          {
+            "prefix": "mahsulotlarni g’aml"
+          },
+          {
+            "prefix": "mahsulotlarni g‘aml"
+          },
+          {
+            "prefix": "маҳсулотларни ғамл"
+          },
+          {
+            "prefix": "sun'iy taqchil"
+          },
+          {
+            "prefix": "sunʻiy taqchil"
+          },
+          {
+            "prefix": "sun’iy taqchil"
+          },
+          {
+            "prefix": "sun‘iy taqchil"
+          },
+          {
+            "prefix": "сунъий тақчил"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "spekuliacinis kaupim"
+          },
+          {
+            "prefix": "spekuliacinio kaupim"
+          },
+          {
+            "prefix": "panikos apsipirkim"
+          },
+          {
+            "prefix": "panikos pirkim"
+          },
+          "šluoja lentynas",
+          "iššlavė lentynas",
+          {
+            "prefix": "prekių slėpim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "hamsterda"
+          },
+          {
+            "prefix": "paanikaost"
+          },
+          {
+            "prefix": "kaupade kuhja"
+          },
+          {
+            "prefix": "varude kuhja"
+          },
+          {
+            "prefix": "toidu kokkuost"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "жасалма тартыштык"
+          },
+          {
+            "prefix": "жасалма дефицит"
+          },
+          {
+            "prefix": "товарларды кампаларда кармап"
+          }
+        ],
+        "farsi": [
+          "احتکار",
+          "محتکر"
+        ],
+        "belarusian": [
+          "ажыятажны попыт",
+          "ажыятажнага попыту",
+          "ажыятажныя закупкі",
+          "ажыятажных закупак",
+          "прыхоўванне тавараў",
+          "утойванне тавараў"
+        ],
+        "pap": [
+          "hamsteren",
+          "hamsterwoede",
+          "hamsteraars"
+        ],
+        "kazakh": [
+          {
+            "prefix": "жасанды тапшылық"
+          },
+          {
+            "prefix": "жасанды тапшылықты"
+          },
+          {
+            "prefix": "тауарды жасырып ұста"
+          },
+          {
+            "prefix": "тауарларды жасырып ұста"
+          },
+          {
+            "prefix": "өнімді жасырып ұста"
+          },
+          {
+            "prefix": "қоймада жасырып ұста"
+          },
+          {
+            "prefix": "тауарларды қоймаларда ұстап отыр"
           }
         ]
       }
@@ -21977,6 +28599,150 @@
           {
             "prefix": "crnoberzijanskih cijen"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "melnā tirgus cen"
+          },
+          {
+            "prefix": "melnā tirgus kurs"
+          },
+          "cenas melnajā tirgū",
+          {
+            "prefix": "ēnu tirgus cen"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "нархи бозори сиёҳ"
+          },
+          {
+            "prefix": "нархи бозори сиёх"
+          },
+          {
+            "prefix": "нархҳои бозори сиёҳ"
+          },
+          {
+            "prefix": "қурби бозори сиёҳ"
+          },
+          {
+            "prefix": "бозори сиёҳи асъор"
+          },
+          {
+            "prefix": "қурби ғайрирасм"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "qora bozor narx"
+          },
+          {
+            "prefix": "қора бозор нарх"
+          },
+          {
+            "prefix": "qora bozordagi narx"
+          },
+          {
+            "prefix": "қора бозордаги нарх"
+          },
+          {
+            "prefix": "qora bozor kurs"
+          },
+          {
+            "prefix": "қора бозор курс"
+          },
+          {
+            "prefix": "qora bozordagi kurs"
+          },
+          {
+            "prefix": "қора бозордаги курс"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "juodosios rinkos kain"
+          },
+          {
+            "prefix": "juodosios rinkos kurs"
+          },
+          {
+            "prefix": "šešėlinės rinkos kain"
+          },
+          "kaina juodojoje rinkoje",
+          "kainos juodojoje rinkoje",
+          "kainomis juodojoje rinkoje",
+          "kursas juodojoje rinkoje"
+        ],
+        "estonian": [
+          {
+            "prefix": "musta turu hin"
+          },
+          {
+            "prefix": "musta turu kurs"
+          },
+          {
+            "prefix": "musta turu vahetuskurs"
+          },
+          {
+            "prefix": "mustal turul hin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "қара нарықтағы баға"
+          },
+          {
+            "prefix": "қара нарық баға"
+          },
+          {
+            "prefix": "көлеңкелі нарықтағы баға"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "кара базардагы баа"
+          },
+          {
+            "prefix": "кара рыноктогу баа"
+          },
+          {
+            "prefix": "кара базардын баа"
+          },
+          {
+            "prefix": "кара базардагы курс"
+          },
+          {
+            "prefix": "кара рыноктогу курс"
+          },
+          {
+            "prefix": "көмүскө рыноктогу баа"
+          }
+        ],
+        "farsi": [
+          "بازار سیاه",
+          "نرخ بازار آزاد",
+          "قیمت بازار آزاد",
+          "بازار موازی",
+          "نرخ غیر‌رسمی",
+          "نرخ غیر رسمی",
+          "نرخ غیررسمی",
+          "دلار آزاد"
+        ],
+        "belarusian": [
+          "цэны на чорным рынку",
+          "цэн на чорным рынку",
+          "цэнаў на чорным рынку",
+          "цэны чорнага рынку",
+          "чорнарынкавыя цэны"
+        ],
+        "pap": [
+          "prijs di mercado negro",
+          "prijsnan di mercado negro",
+          "tasa di mercado negro",
+          "preis di merkado pretu",
+          "preisnan di merkado pretu",
+          "zwartemarktprijs",
+          "zwartemarktprijzen"
         ]
       }
     }

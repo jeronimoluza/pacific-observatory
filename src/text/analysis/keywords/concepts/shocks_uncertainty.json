@@ -1066,6 +1066,328 @@
           {
             "prefix": "глобалне криз"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "globālā krīz"
+          },
+          {
+            "prefix": "globālās krīz"
+          },
+          {
+            "prefix": "globālo krīz"
+          },
+          {
+            "prefix": "pasaules krīz"
+          },
+          {
+            "prefix": "globālā ekonomiskā krīz"
+          },
+          {
+            "prefix": "globālās ekonomiskās krīz"
+          },
+          {
+            "prefix": "globālā finanšu krīz"
+          },
+          {
+            "prefix": "globālās finanšu krīz"
+          },
+          {
+            "prefix": "pasaules ekonomiskā krīz"
+          },
+          {
+            "prefix": "pasaules ekonomiskās krīz"
+          },
+          {
+            "prefix": "pasaules finanšu krīz"
+          },
+          "GFC"
+        ],
+        "tajik": [
+          {
+            "prefix": "буҳрони ҷаҳон"
+          },
+          {
+            "prefix": "бӯҳрони ҷаҳон"
+          },
+          {
+            "prefix": "бухрони чахон"
+          },
+          {
+            "prefix": "буҳрони иқтисодии ҷаҳон"
+          },
+          {
+            "prefix": "бӯҳрони иқтисодии ҷаҳон"
+          },
+          {
+            "prefix": "буҳрони молиявии ҷаҳон"
+          },
+          {
+            "prefix": "бӯҳрони молиявии ҷаҳон"
+          },
+          {
+            "prefix": "буҳрони глобал"
+          },
+          {
+            "prefix": "буҳронҳои ҷаҳон"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "jahon inqiroz"
+          },
+          {
+            "prefix": "жаҳон инқироз"
+          },
+          {
+            "prefix": "global inqiroz"
+          },
+          {
+            "prefix": "глобал инқироз"
+          },
+          {
+            "prefix": "jahon iqtisodiy inqiroz"
+          },
+          {
+            "prefix": "жаҳон иқтисодий инқироз"
+          },
+          {
+            "prefix": "jahon moliyaviy inqiroz"
+          },
+          {
+            "prefix": "жаҳон молиявий инқироз"
+          },
+          {
+            "prefix": "global moliyaviy inqiroz"
+          },
+          {
+            "prefix": "глобал молиявий инқироз"
+          },
+          {
+            "prefix": "global iqtisodiy inqiroz"
+          },
+          {
+            "prefix": "глобал иқтисодий инқироз"
+          },
+          {
+            "prefix": "jahon moliya inqiroz"
+          },
+          {
+            "prefix": "жаҳон молия инқироз"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "pasaulinė kriz"
+          },
+          {
+            "prefix": "pasaulinės kriz"
+          },
+          {
+            "prefix": "pasaulinę kriz"
+          },
+          {
+            "prefix": "pasaulinei kriz"
+          },
+          {
+            "prefix": "pasaulinių kriz"
+          },
+          {
+            "prefix": "pasaulinė finansų kriz"
+          },
+          {
+            "prefix": "pasaulinės finansų kriz"
+          },
+          {
+            "prefix": "pasaulinę finansų kriz"
+          },
+          {
+            "prefix": "pasaulinė ekonomikos kriz"
+          },
+          {
+            "prefix": "pasaulinės ekonomikos kriz"
+          },
+          {
+            "prefix": "pasaulinę ekonomikos kriz"
+          },
+          {
+            "prefix": "pasaulinė ekonominė kriz"
+          },
+          {
+            "prefix": "pasaulinės ekonominės kriz"
+          },
+          {
+            "prefix": "globali kriz"
+          },
+          {
+            "prefix": "globalios kriz"
+          },
+          {
+            "prefix": "globalią kriz"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "ülemaailmne kriis"
+          },
+          {
+            "prefix": "ülemaailmse kriis"
+          },
+          {
+            "prefix": "ülemaailmset kriis"
+          },
+          {
+            "prefix": "globaalne kriis"
+          },
+          {
+            "prefix": "globaalse kriis"
+          },
+          {
+            "prefix": "ülemaailmne majanduskriis"
+          },
+          {
+            "prefix": "ülemaailmse majanduskriis"
+          },
+          {
+            "prefix": "ülemaailmne finantskriis"
+          },
+          {
+            "prefix": "ülemaailmse finantskriis"
+          },
+          {
+            "prefix": "globaalne finantskriis"
+          },
+          {
+            "prefix": "globaalse finantskriis"
+          },
+          {
+            "prefix": "maailmamajanduse kriis"
+          },
+          "GFC"
+        ],
+        "kazakh": [
+          {
+            "prefix": "жаһандық дағдарыс"
+          },
+          {
+            "prefix": "әлемдік дағдарыс"
+          },
+          {
+            "prefix": "жаһандық экономикалық дағдарыс"
+          },
+          {
+            "prefix": "әлемдік экономикалық дағдарыс"
+          },
+          {
+            "prefix": "жаһандық қаржы дағдарыс"
+          },
+          {
+            "prefix": "әлемдік қаржы дағдарыс"
+          },
+          {
+            "prefix": "жаһандық қаржылық дағдарыс"
+          },
+          {
+            "prefix": "әлемдік қаржылық дағдарыс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "глобалдык кризис"
+          },
+          {
+            "prefix": "глобалдык экономикалык кризис"
+          },
+          {
+            "prefix": "глобалдык финансылык кризис"
+          },
+          {
+            "prefix": "дүйнөлүк кризис"
+          },
+          {
+            "prefix": "дүйнөлүк экономикалык кризис"
+          },
+          {
+            "prefix": "дүйнөлүк финансылык кризис"
+          }
+        ],
+        "farsi": [
+          "بحران جهانی",
+          "بحران‌های جهانی",
+          "بحران های جهانی",
+          "بحرانهای جهانی",
+          "بحران اقتصادی جهانی",
+          "بحران مالی جهانی",
+          "بحران اقتصاد جهانی",
+          "بحران مالی ۲۰۰۸",
+          "بحران مالی سال ۲۰۰۸",
+          "بحران بین‌المللی",
+          "بحران بین المللی",
+          "بحران بینالمللی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "глабальны крызіс"
+          },
+          {
+            "prefix": "глабальнага крызіс"
+          },
+          {
+            "prefix": "глабальным крызіс"
+          },
+          {
+            "prefix": "глабальныя крызіс"
+          },
+          {
+            "prefix": "глабальных крызіс"
+          },
+          {
+            "prefix": "сусветны крызіс"
+          },
+          {
+            "prefix": "сусветнага крызіс"
+          },
+          {
+            "prefix": "сусьветны крызіс"
+          },
+          {
+            "prefix": "сусьветнага крызіс"
+          },
+          {
+            "prefix": "сусветны фінансавы крызіс"
+          },
+          {
+            "prefix": "сусветнага фінансавага крызіс"
+          },
+          {
+            "prefix": "сусветны эканамічны крызіс"
+          },
+          {
+            "prefix": "сусветнага эканамічнага крызіс"
+          },
+          {
+            "prefix": "глабальны фінансавы крызіс"
+          },
+          {
+            "prefix": "глабальнага фінансавага крызіс"
+          },
+          {
+            "prefix": "глабальны эканамічны крызіс"
+          },
+          {
+            "prefix": "глабальнага эканамічнага крызіс"
+          }
+        ],
+        "pap": [
+          "crisis global",
+          "crisis mundial",
+          "crisis economico global",
+          "crisis financiero global",
+          "krisis global",
+          "krisis mundial",
+          "krisis ekonómiko global",
+          "krisis finansiero global",
+          "kredietcrisis"
         ]
       }
     },
@@ -1961,6 +2283,223 @@
           {
             "prefix": "економске криз"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ekonomiskā krīz"
+          },
+          {
+            "prefix": "ekonomiskās krīz"
+          },
+          {
+            "prefix": "ekonomisko krīz"
+          },
+          {
+            "prefix": "ekonomiskajā krīz"
+          },
+          {
+            "prefix": "ekonomiskajai krīz"
+          },
+          {
+            "prefix": "ekonomikas krīz"
+          },
+          {
+            "prefix": "ekonomikas sabrukum"
+          },
+          {
+            "prefix": "ekonomiskais sabrukum"
+          },
+          {
+            "prefix": "ekonomiskā sabrukum"
+          },
+          {
+            "prefix": "ekonomiskie satricinājum"
+          },
+          {
+            "prefix": "ekonomiskais satricinājum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "буҳрони иқтисод"
+          },
+          {
+            "prefix": "бӯҳрони иқтисод"
+          },
+          {
+            "prefix": "бухрони иктисод"
+          },
+          {
+            "prefix": "буҳронҳои иқтисод"
+          },
+          {
+            "prefix": "бӯҳронҳои иқтисод"
+          },
+          {
+            "prefix": "фурӯпошии иқтисод"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "iqtisodiy inqiroz"
+          },
+          {
+            "prefix": "иқтисодий инқироз"
+          },
+          {
+            "prefix": "iqtisodiy tanazzul"
+          },
+          {
+            "prefix": "иқтисодий таназзул"
+          },
+          {
+            "prefix": "inqirozga uchragan iqtisodiyot"
+          },
+          {
+            "prefix": "инқирозга учраган иқтисодиёт"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "ekonomikos kriz"
+          },
+          {
+            "prefix": "ekonominė kriz"
+          },
+          {
+            "prefix": "ekonominės kriz"
+          },
+          {
+            "prefix": "ekonominę kriz"
+          },
+          {
+            "prefix": "ekonominei kriz"
+          },
+          {
+            "prefix": "ekonominių kriz"
+          },
+          {
+            "prefix": "ekonomikos žlugim"
+          },
+          {
+            "prefix": "ekonomikos griūt"
+          },
+          {
+            "prefix": "ekonominė suirut"
+          },
+          {
+            "prefix": "ekonominės suirut"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "majanduskriis"
+          },
+          {
+            "prefix": "majanduslik kriis"
+          },
+          {
+            "prefix": "majandusliku kriis"
+          },
+          {
+            "prefix": "majanduslikku kriis"
+          },
+          {
+            "prefix": "majanduse kokkuvarisemi"
+          },
+          {
+            "prefix": "majanduse kollaps"
+          },
+          {
+            "prefix": "majanduskollaps"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "экономикалық дағдарыс"
+          },
+          {
+            "prefix": "экономикадағы дағдарыс"
+          },
+          {
+            "prefix": "экономикалық күйзеліс"
+          },
+          {
+            "prefix": "экономиканың күйре"
+          },
+          {
+            "prefix": "экономикалық күйре"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "экономикалык кризис"
+          },
+          {
+            "prefix": "экономикадагы кризис"
+          },
+          {
+            "prefix": "экономикалык кыйроо"
+          },
+          {
+            "prefix": "экономиканын кулашы"
+          },
+          {
+            "prefix": "экономикалык туңгуюк"
+          }
+        ],
+        "farsi": [
+          "بحران اقتصادی",
+          "بحران‌های اقتصادی",
+          "بحران های اقتصادی",
+          "بحرانهای اقتصادی",
+          "فروپاشی اقتصادی",
+          "فروپاشی اقتصاد",
+          "آشفتگی اقتصادی",
+          "تلاطم اقتصادی",
+          "ورشکستگی اقتصادی",
+          "اقتصاد بحران‌زده",
+          "اقتصاد بحران زده",
+          "اقتصاد بحرانزده"
+        ],
+        "belarusian": [
+          {
+            "prefix": "эканамічны крызіс"
+          },
+          {
+            "prefix": "эканамічнага крызіс"
+          },
+          {
+            "prefix": "эканамічным крызіс"
+          },
+          {
+            "prefix": "эканамічныя крызіс"
+          },
+          {
+            "prefix": "эканамічных крызіс"
+          },
+          {
+            "prefix": "крызіс у эканоміц"
+          },
+          {
+            "prefix": "крызісу ў эканоміц"
+          },
+          "калапс эканомікі",
+          "калапсу эканомікі",
+          "абвал эканомікі",
+          "абвалу эканомікі",
+          "крах эканомікі",
+          "краху эканомікі"
+        ],
+        "pap": [
+          "crisis economico",
+          "crisisnan economico",
+          "colapso economico",
+          "krisis ekonómiko",
+          "krisis ekonomiko",
+          "krisisnan ekonómiko",
+          "kolapso ekonómiko",
+          "economische crisis"
         ]
       }
     },
@@ -2694,6 +3233,212 @@
           {
             "prefix": "финансијске криз"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "finanšu krīz"
+          },
+          {
+            "prefix": "finansiālā krīz"
+          },
+          {
+            "prefix": "finansiālās krīz"
+          },
+          {
+            "prefix": "finanšu sabrukum"
+          },
+          {
+            "prefix": "finanšu satricinājum"
+          },
+          {
+            "prefix": "finanšu panik"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "буҳрони молияв"
+          },
+          {
+            "prefix": "бӯҳрони молияв"
+          },
+          {
+            "prefix": "бухрони молияв"
+          },
+          {
+            "prefix": "буҳронҳои молияв"
+          },
+          {
+            "prefix": "бӯҳронҳои молияв"
+          },
+          {
+            "prefix": "ваҳмаи молияв"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "moliyaviy inqiroz"
+          },
+          {
+            "prefix": "молиявий инқироз"
+          },
+          {
+            "prefix": "moliya inqiroz"
+          },
+          {
+            "prefix": "молия инқироз"
+          },
+          {
+            "prefix": "moliyaviy tanazzul"
+          },
+          {
+            "prefix": "молиявий таназзул"
+          },
+          {
+            "prefix": "moliyaviy vahima"
+          },
+          {
+            "prefix": "молиявий ваҳима"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "finansų kriz"
+          },
+          {
+            "prefix": "finansinė kriz"
+          },
+          {
+            "prefix": "finansinės kriz"
+          },
+          {
+            "prefix": "finansinę kriz"
+          },
+          {
+            "prefix": "finansinei kriz"
+          },
+          {
+            "prefix": "finansinių kriz"
+          },
+          {
+            "prefix": "finansų rinkų suirut"
+          },
+          {
+            "prefix": "finansinė suirut"
+          },
+          {
+            "prefix": "finansinės suirut"
+          },
+          {
+            "prefix": "finansų panik"
+          },
+          {
+            "prefix": "finansinė panik"
+          },
+          {
+            "prefix": "finansinės panik"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "finantskriis"
+          },
+          {
+            "prefix": "rahanduskriis"
+          },
+          {
+            "prefix": "finantspaanika"
+          },
+          {
+            "prefix": "finantsturgude segadus"
+          },
+          {
+            "prefix": "finantssüsteemi kokkuvarisemi"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "қаржы дағдарыс"
+          },
+          {
+            "prefix": "қаржылық дағдарыс"
+          },
+          {
+            "prefix": "қаржылық күйзеліс"
+          },
+          {
+            "prefix": "қаржы күйзеліс"
+          },
+          {
+            "prefix": "қаржы нарығындағы дүрбелең"
+          },
+          {
+            "prefix": "қаржылық дүрбелең"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "финансылык кризис"
+          },
+          {
+            "prefix": "каржылык кризис"
+          },
+          {
+            "prefix": "финансы кризис"
+          },
+          {
+            "prefix": "финансылык дүрбөлөң"
+          },
+          {
+            "prefix": "финансылык башаламандык"
+          },
+          {
+            "prefix": "финансылык кыйроо"
+          }
+        ],
+        "farsi": [
+          "بحران مالی",
+          "بحران‌های مالی",
+          "بحران های مالی",
+          "بحرانهای مالی",
+          "فروپاشی مالی",
+          "آشفتگی مالی",
+          "تلاطم مالی",
+          "هراس مالی",
+          "وحشت مالی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "фінансавы крызіс"
+          },
+          {
+            "prefix": "фінансавага крызіс"
+          },
+          {
+            "prefix": "фінансавым крызіс"
+          },
+          {
+            "prefix": "фінансавыя крызіс"
+          },
+          {
+            "prefix": "фінансавых крызіс"
+          },
+          {
+            "prefix": "фінансавая панік"
+          },
+          {
+            "prefix": "фінансавай панік"
+          },
+          "фінансавы крах",
+          "фінансавага краху"
+        ],
+        "pap": [
+          "crisis financiero",
+          "colapso financiero",
+          "panico financiero",
+          "krisis finansiero",
+          "kolapso finansiero",
+          "pániko finansiero",
+          "financiële crisis"
         ]
       }
     },
@@ -3338,6 +4083,154 @@
           "krize suverenog duga",
           "kriza spoljnog duga",
           "krize spoljnog duga"
+        ],
+        "latvian": [
+          {
+            "prefix": "parādu krīz"
+          },
+          {
+            "prefix": "parāda krīz"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "буҳрони қарз"
+          },
+          {
+            "prefix": "бӯҳрони қарз"
+          },
+          {
+            "prefix": "бухрони карз"
+          },
+          {
+            "prefix": "буҳронҳои қарз"
+          },
+          {
+            "prefix": "бӯҳронҳои қарз"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "qarz inqiroz"
+          },
+          {
+            "prefix": "қарз инқироз"
+          },
+          {
+            "prefix": "qarzdorlik inqiroz"
+          },
+          {
+            "prefix": "қарздорлик инқироз"
+          },
+          {
+            "prefix": "suveren qarz inqiroz"
+          },
+          {
+            "prefix": "суверен қарз инқироз"
+          },
+          {
+            "prefix": "tashqi qarz inqiroz"
+          },
+          {
+            "prefix": "ташқи қарз инқироз"
+          },
+          {
+            "prefix": "davlat qarzi inqiroz"
+          },
+          {
+            "prefix": "давлат қарзи инқироз"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "skolų kriz"
+          },
+          {
+            "prefix": "skolos kriz"
+          },
+          {
+            "prefix": "įsiskolinimo kriz"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "võlakriis"
+          },
+          {
+            "prefix": "riigivõlakriis"
+          },
+          {
+            "prefix": "välisvõla kriis"
+          },
+          {
+            "prefix": "välisvõlakriis"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "қарыз дағдарыс"
+          },
+          {
+            "prefix": "борыш дағдарыс"
+          },
+          {
+            "prefix": "қарыздық дағдарыс"
+          },
+          {
+            "prefix": "борыштық дағдарыс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "карыз кризис"
+          },
+          {
+            "prefix": "карыздык кризис"
+          },
+          {
+            "prefix": "карыз боюнча кризис"
+          }
+        ],
+        "farsi": [
+          "بحران بدهی",
+          "بحران قرض",
+          "بحران قروض"
+        ],
+        "belarusian": [
+          {
+            "prefix": "даўгавы крызіс"
+          },
+          {
+            "prefix": "даўгавога крызіс"
+          },
+          {
+            "prefix": "даўгавым крызіс"
+          },
+          {
+            "prefix": "даўгавыя крызіс"
+          },
+          {
+            "prefix": "даўгавых крызіс"
+          },
+          {
+            "prefix": "доўгавы крызіс"
+          },
+          {
+            "prefix": "доўгавага крызіс"
+          },
+          "крызіс сувярэннага доўгу",
+          "крызісу сувярэннага доўгу",
+          "крызіс дзяржаўнага доўгу",
+          "крызісу дзяржаўнага доўгу",
+          "крызіс знешняга доўгу",
+          "крызісу знешняга доўгу"
+        ],
+        "pap": [
+          "crisis di deuda",
+          "crisis di deuda soberano",
+          "krisis di deuda",
+          "krisis di deuda soberano",
+          "schuldencrisis"
         ]
       }
     },
@@ -4032,6 +4925,222 @@
           {
             "prefix": "bankarska panik"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "banku krīz"
+          },
+          {
+            "prefix": "banku sektora krīz"
+          },
+          {
+            "prefix": "banku sistēmas krīz"
+          },
+          {
+            "prefix": "banku panik"
+          },
+          {
+            "prefix": "banku krah"
+          },
+          {
+            "prefix": "Parex bankas krah"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "буҳрони бонк"
+          },
+          {
+            "prefix": "бӯҳрони бонк"
+          },
+          {
+            "prefix": "бухрони бонк"
+          },
+          {
+            "prefix": "буҳрони низоми бонк"
+          },
+          {
+            "prefix": "буҳрони бахши бонк"
+          },
+          {
+            "prefix": "бӯҳрони бахши бонк"
+          },
+          {
+            "prefix": "ваҳмаи бонк"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "bank inqiroz"
+          },
+          {
+            "prefix": "банк инқироз"
+          },
+          {
+            "prefix": "bank sektori inqiroz"
+          },
+          {
+            "prefix": "банк сектори инқироз"
+          },
+          {
+            "prefix": "bank sektoridagi inqiroz"
+          },
+          {
+            "prefix": "банк секторидаги инқироз"
+          },
+          {
+            "prefix": "bank tizimidagi inqiroz"
+          },
+          {
+            "prefix": "банк тизимидаги инқироз"
+          },
+          {
+            "prefix": "bank vahima"
+          },
+          {
+            "prefix": "банк ваҳима"
+          },
+          {
+            "prefix": "tizimli bank inqiroz"
+          },
+          {
+            "prefix": "тизимли банк инқироз"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "bankų kriz"
+          },
+          {
+            "prefix": "bankinė kriz"
+          },
+          {
+            "prefix": "bankinės kriz"
+          },
+          {
+            "prefix": "bankinę kriz"
+          },
+          {
+            "prefix": "bankų sektoriaus kriz"
+          },
+          {
+            "prefix": "bankų sistemos kriz"
+          },
+          {
+            "prefix": "bankų panik"
+          },
+          {
+            "prefix": "bankinė panik"
+          },
+          {
+            "prefix": "bankinės panik"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "pangakriis"
+          },
+          {
+            "prefix": "panganduskriis"
+          },
+          {
+            "prefix": "pangandussektori kriis"
+          },
+          {
+            "prefix": "pankade kriis"
+          },
+          {
+            "prefix": "pangapaanika"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "банк дағдарыс"
+          },
+          {
+            "prefix": "банктік дағдарыс"
+          },
+          {
+            "prefix": "банк секторындағы дағдарыс"
+          },
+          {
+            "prefix": "банк жүйесіндегі дағдарыс"
+          },
+          {
+            "prefix": "банк дүрбелең"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "банк кризис"
+          },
+          {
+            "prefix": "банктык кризис"
+          },
+          {
+            "prefix": "банк секторундагы кризис"
+          },
+          {
+            "prefix": "банк системасындагы кризис"
+          },
+          {
+            "prefix": "банктардагы дүрбөлөң"
+          },
+          {
+            "prefix": "банк дүрбөлөң"
+          }
+        ],
+        "farsi": [
+          "بحران بانک",
+          "بحران نظام بانکی",
+          "بحران سیستم بانکی",
+          "بحران بخش بانکی",
+          "بحران سیستمی بانکی",
+          "هجوم بانکی",
+          "هجوم به بانک‌ها",
+          "هجوم به بانک ها",
+          "هجوم به بانکها"
+        ],
+        "belarusian": [
+          {
+            "prefix": "банкаўскі крызіс"
+          },
+          {
+            "prefix": "банкаўскага крызіс"
+          },
+          {
+            "prefix": "банкаўскім крызіс"
+          },
+          {
+            "prefix": "банкаўскія крызіс"
+          },
+          {
+            "prefix": "банкаўскіх крызіс"
+          },
+          {
+            "prefix": "крызіс банкаўскага сектар"
+          },
+          {
+            "prefix": "крызісу банкаўскага сектар"
+          },
+          {
+            "prefix": "крызіс банкаўскага сэктар"
+          },
+          {
+            "prefix": "банкаўская панік"
+          },
+          {
+            "prefix": "банкаўскай панік"
+          }
+        ],
+        "pap": [
+          "crisis bancario",
+          "crisis di banco",
+          "panico bancario",
+          "krisis bankario",
+          "krisis di banko",
+          "pániko bankario",
+          "bankencrisis"
         ]
       }
     },
@@ -4843,6 +5952,251 @@
           {
             "prefix": "višestruke šokov"
           }
+        ],
+        "latvian": [
+          "vairākas krīzes",
+          "vairāku krīžu",
+          "vairākām krīzēm",
+          "pārklājošās krīzes",
+          "pārklājošas krīzes",
+          "savstarpēji saistītas krīzes",
+          {
+            "prefix": "krīžu kaskād"
+          },
+          "vairāki šoki",
+          "vairāku šoku",
+          "krīze pēc krīzes"
+        ],
+        "tajik": [
+          {
+            "prefix": "буҳронҳои ҳамзамон"
+          },
+          {
+            "prefix": "бӯҳронҳои ҳамзамон"
+          },
+          {
+            "prefix": "буҳронҳои сершумор"
+          },
+          {
+            "prefix": "буҳронҳои мураккаб"
+          },
+          {
+            "prefix": "буҳронҳои печида"
+          },
+          {
+            "prefix": "зарбаҳои ҳамзамон"
+          },
+          {
+            "prefix": "зарбаҳои сершумор"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "bir nechta inqiroz"
+          },
+          {
+            "prefix": "бир нечта инқироз"
+          },
+          {
+            "prefix": "ko'plab inqiroz"
+          },
+          {
+            "prefix": "koʻplab inqiroz"
+          },
+          {
+            "prefix": "ko’plab inqiroz"
+          },
+          {
+            "prefix": "ko‘plab inqiroz"
+          },
+          {
+            "prefix": "кўплаб инқироз"
+          },
+          {
+            "prefix": "ustma-ust inqiroz"
+          },
+          {
+            "prefix": "устма-уст инқироз"
+          },
+          {
+            "prefix": "ketma-ket inqiroz"
+          },
+          {
+            "prefix": "кетма-кет инқироз"
+          },
+          {
+            "prefix": "bir-biriga ulangan inqiroz"
+          },
+          {
+            "prefix": "бир-бирига уланган инқироз"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "daugialypė kriz"
+          },
+          {
+            "prefix": "daugialypės kriz"
+          },
+          {
+            "prefix": "daugialypę kriz"
+          },
+          "kelios krizės",
+          "kelių krizių",
+          "daugybinės krizės",
+          "daugybinių krizių",
+          "persidengiančios krizės",
+          "persidengiančių krizių",
+          "susipynusios krizės",
+          "susipynusių krizių",
+          "krizė po krizės",
+          "keli sukrėtimai",
+          "kelių sukrėtimų",
+          "daugybiniai sukrėtimai",
+          "daugybinių sukrėtimų",
+          "persidengiantys sukrėtimai",
+          "persidengiančių sukrėtimų"
+        ],
+        "estonian": [
+          {
+            "prefix": "kriiside kuhjum"
+          },
+          {
+            "prefix": "kuhjuvad kriis"
+          },
+          {
+            "prefix": "kuhjuvate kriis"
+          },
+          {
+            "prefix": "kattuvad kriis"
+          },
+          {
+            "prefix": "kattuvate kriis"
+          },
+          "mitu kriisi korraga",
+          "mitme kriisi",
+          "mitmed kriisid",
+          {
+            "prefix": "liitkriis"
+          },
+          "mitmed šokid",
+          "mitme šoki",
+          "kattuvad šokid"
+        ],
+        "kazakh": [
+          {
+            "prefix": "бірнеше дағдарыс"
+          },
+          {
+            "prefix": "қатар келген дағдарыс"
+          },
+          {
+            "prefix": "қабаттасқан дағдарыс"
+          },
+          {
+            "prefix": "тізбекті дағдарыс"
+          },
+          {
+            "prefix": "бірнеше дүмпу"
+          },
+          {
+            "prefix": "қатар келген дүмпу"
+          },
+          {
+            "prefix": "қабаттасқан дүмпу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "бир нече кризис"
+          },
+          {
+            "prefix": "көп кырдуу кризис"
+          },
+          {
+            "prefix": "катмарланган кризис"
+          },
+          {
+            "prefix": "кайчылаш кризис"
+          },
+          {
+            "prefix": "бир нече шок"
+          }
+        ],
+        "farsi": [
+          "بحران‌های چندگانه",
+          "بحران های چندگانه",
+          "بحرانهای چندگانه",
+          "بحران‌های همزمان",
+          "بحران های همزمان",
+          "بحرانهای همزمان",
+          "بحران‌های هم‌زمان",
+          "بحران های هم زمان",
+          "بحران‌های متعدد",
+          "بحران های متعدد",
+          "بحرانهای متعدد",
+          "بحران‌های درهم‌تنیده",
+          "بحران های درهم تنیده",
+          "بحرانهای درهمتنیده",
+          "بحران‌های پیاپی",
+          "بحران های پیاپی",
+          "بحرانهای پیاپی",
+          "بحران‌های متوالی",
+          "بحران های متوالی",
+          "بحرانهای متوالی",
+          "بحران‌های مرکب",
+          "بحران های مرکب",
+          "بحرانهای مرکب",
+          "شوک‌های چندگانه",
+          "شوک های چندگانه",
+          "شوکهای چندگانه",
+          "شوک‌های همزمان",
+          "شوک های همزمان",
+          "شوکهای همزمان",
+          "شوک‌های متعدد",
+          "شوک های متعدد",
+          "شوکهای متعدد"
+        ],
+        "belarusian": [
+          "шматлікія крызісы",
+          "шматлікіх крызісаў",
+          {
+            "prefix": "адначасовыя крызіс"
+          },
+          {
+            "prefix": "адначасовых крызіс"
+          },
+          {
+            "prefix": "узаемазвязаныя крызіс"
+          },
+          {
+            "prefix": "узаемазвязаных крызіс"
+          },
+          {
+            "prefix": "каскадныя крызіс"
+          },
+          {
+            "prefix": "каскадных крызіс"
+          },
+          "накладанне крызісаў",
+          "накладаньне крызісаў",
+          "шматлікія шокі",
+          "шматлікіх шокаў",
+          {
+            "prefix": "адначасовыя шок"
+          },
+          {
+            "prefix": "адначасовых шок"
+          }
+        ],
+        "pap": [
+          "crisis multiple",
+          "crisisnan simultaneo",
+          "krisis múltiple",
+          "krisisnan simultáneo",
+          "shocknan multiple",
+          "shoknan múltiple",
+          "meerdere crises"
         ]
       }
     },
@@ -5246,6 +6600,127 @@
           {
             "prefix": "permakriz"
           },
+          "polycrisis",
+          "permacrisis"
+        ],
+        "latvian": [
+          {
+            "prefix": "polikrīz"
+          },
+          {
+            "prefix": "permakrīz"
+          },
+          "polycrisis",
+          "permacrisis"
+        ],
+        "tajik": [
+          {
+            "prefix": "поликризис"
+          },
+          {
+            "prefix": "полибуҳрон"
+          },
+          {
+            "prefix": "полибӯҳрон"
+          },
+          {
+            "prefix": "пермакризис"
+          },
+          "polycrisis",
+          "permacrisis"
+        ],
+        "uzbek": [
+          {
+            "prefix": "polikrizis"
+          },
+          {
+            "prefix": "поликризис"
+          },
+          {
+            "prefix": "poliinqiroz"
+          },
+          {
+            "prefix": "полиинқироз"
+          },
+          {
+            "prefix": "permakrizis"
+          },
+          {
+            "prefix": "пермакризис"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "polikriz"
+          },
+          {
+            "prefix": "poli-kriz"
+          },
+          {
+            "prefix": "permakriz"
+          },
+          "polycrisis",
+          "permacrisis"
+        ],
+        "estonian": [
+          {
+            "prefix": "polükriis"
+          },
+          {
+            "prefix": "permakriis"
+          },
+          {
+            "prefix": "püsikriis"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "поликризис"
+          },
+          {
+            "prefix": "полидағдарыс"
+          },
+          {
+            "prefix": "пермакризис"
+          },
+          "polycrisis"
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "поликризис"
+          },
+          {
+            "prefix": "пермакризис"
+          },
+          "polycrisis",
+          "permacrisis"
+        ],
+        "farsi": [
+          "چندبحرانی",
+          "پلی‌کرایسیس",
+          "پلی کرایسیس",
+          "پلیکرایسیس",
+          "ابربحران",
+          "بحران دائمی",
+          "polycrisis",
+          "permacrisis"
+        ],
+        "belarusian": [
+          {
+            "prefix": "полікрызіс"
+          },
+          {
+            "prefix": "полі-крызіс"
+          },
+          {
+            "prefix": "пермакрызіс"
+          },
+          "polycrisis",
+          "permacrisis"
+        ],
+        "pap": [
+          "policrisis",
+          "polikrisis",
           "polycrisis",
           "permacrisis"
         ]
@@ -5892,6 +7367,221 @@
           "nagli pad cijena sirovina",
           "nagli rast cijena sirovina",
           "volatilnost cijena sirovina"
+        ],
+        "latvian": [
+          {
+            "prefix": "izejvielu cenu šok"
+          },
+          {
+            "prefix": "izejvielu šok"
+          },
+          {
+            "prefix": "preču cenu šok"
+          },
+          {
+            "prefix": "izejvielu cenu sabrukum"
+          },
+          {
+            "prefix": "izejvielu cenu kritum"
+          },
+          {
+            "prefix": "izejvielu cenu svārstīb"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи нархҳои ашёи хом"
+          },
+          {
+            "prefix": "зарбаи нархи ашёи хом"
+          },
+          {
+            "prefix": "фурӯпошии нархи ашёи хом"
+          },
+          {
+            "prefix": "фурӯпошии нархҳои ашёи хом"
+          },
+          {
+            "prefix": "шоки нархҳои ашёи хом"
+          },
+          {
+            "prefix": "зарбаи нархҳои моли аввалия"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "tovar zarba"
+          },
+          {
+            "prefix": "товар зарба"
+          },
+          {
+            "prefix": "xomashyo narxlari zarba"
+          },
+          {
+            "prefix": "хомашё нархлари зарба"
+          },
+          {
+            "prefix": "xom ashyo narxlari zarba"
+          },
+          {
+            "prefix": "хом ашё нархлари зарба"
+          },
+          {
+            "prefix": "xomashyo narxlarining keskin"
+          },
+          {
+            "prefix": "хомашё нархларининг кескин"
+          },
+          {
+            "prefix": "xom ashyo narxlarining keskin"
+          },
+          {
+            "prefix": "хом ашё нархларининг кескин"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "žaliavų kainų šok"
+          },
+          {
+            "prefix": "žaliavų šok"
+          },
+          {
+            "prefix": "žaliavų kainų sukrėtim"
+          },
+          {
+            "prefix": "žaliavų sukrėtim"
+          },
+          {
+            "prefix": "žaliavų kainų kritim"
+          },
+          {
+            "prefix": "žaliavų kainų smuk"
+          },
+          {
+            "prefix": "žaliavų kainų svyravim"
+          },
+          {
+            "prefix": "žaliavų kainų žlugim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "toormešok"
+          },
+          {
+            "prefix": "toorainešok"
+          },
+          {
+            "prefix": "toormehinnašok"
+          },
+          {
+            "prefix": "toormehindade šok"
+          },
+          {
+            "prefix": "toormehinna šok"
+          },
+          {
+            "prefix": "toormehindade kokkuvarisemi"
+          },
+          {
+            "prefix": "toormehindade järsk"
+          },
+          {
+            "prefix": "toormehindade kõikum"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "тауар дүмпу"
+          },
+          {
+            "prefix": "шикізат дүмпу"
+          },
+          {
+            "prefix": "шикізат бағасының күрт"
+          },
+          {
+            "prefix": "шикізат бағаларының күрт"
+          },
+          {
+            "prefix": "шикізат бағасының құлдыра"
+          },
+          {
+            "prefix": "шикізат бағаларының құлдыра"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "товардык шок"
+          },
+          {
+            "prefix": "товардык шог"
+          },
+          {
+            "prefix": "чийки зат баасынын шог"
+          },
+          {
+            "prefix": "товар баасынын шог"
+          },
+          {
+            "prefix": "чийки зат рыногундагы шок"
+          },
+          {
+            "prefix": "чийки зат баасынын кулашы"
+          },
+          {
+            "prefix": "чийки зат бааларынын кулашы"
+          },
+          {
+            "prefix": "чийки зат бааларынын кескин өзгөр"
+          }
+        ],
+        "farsi": [
+          "شوک کالایی",
+          "شوک قیمت کالا",
+          "شوک قیمت مواد اولیه",
+          "سقوط قیمت کالا",
+          "سقوط قیمت مواد خام",
+          "نوسانات شدید قیمت کالا"
+        ],
+        "belarusian": [
+          {
+            "prefix": "сыравінны шок"
+          },
+          {
+            "prefix": "сыравіннага шок"
+          },
+          {
+            "prefix": "сыравінныя шок"
+          },
+          {
+            "prefix": "сыравінных шок"
+          },
+          "шок сыравінных цэн",
+          "шоку сыравінных цэн",
+          {
+            "prefix": "абвал цэн на сыравін"
+          },
+          {
+            "prefix": "абвалу цэн на сыравін"
+          },
+          "абвал сыравінных цэн",
+          "абвалу сыравінных цэн",
+          {
+            "prefix": "ваганні цэн на сыравін"
+          },
+          {
+            "prefix": "ваганняў цэн на сыравін"
+          }
+        ],
+        "pap": [
+          "shock di comodidad",
+          "shok di komodidat",
+          "shock di prijs di materia prima",
+          "shok di preis di materia prima",
+          "grondstoffenschok"
         ]
       }
     },
@@ -6753,6 +8443,257 @@
           "kolaps cijena nafte",
           "krah cijena nafte",
           "strmoglavljivanje cijena nafte"
+        ],
+        "latvian": [
+          {
+            "prefix": "naftas cenu šok"
+          },
+          {
+            "prefix": "naftas šok"
+          },
+          {
+            "prefix": "naftas cenu lēc"
+          },
+          {
+            "prefix": "naftas cenu straujš kāpum"
+          },
+          {
+            "prefix": "naftas cenu sabrukum"
+          },
+          {
+            "prefix": "naftas cenu krah"
+          },
+          {
+            "prefix": "naftas cenu straujš kritum"
+          },
+          {
+            "prefix": "naftas krīz"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи нархи нафт"
+          },
+          {
+            "prefix": "зарбаи нафт"
+          },
+          {
+            "prefix": "шоки нафт"
+          },
+          {
+            "prefix": "фурӯпошии нархи нафт"
+          },
+          {
+            "prefix": "суқути нархи нафт"
+          },
+          {
+            "prefix": "якбора боло рафтани нархи нафт"
+          },
+          {
+            "prefix": "афзоиши якбораи нархи нафт"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "neft zarba"
+          },
+          {
+            "prefix": "нефть зарба"
+          },
+          {
+            "prefix": "нефт зарба"
+          },
+          {
+            "prefix": "neft narxlari zarba"
+          },
+          {
+            "prefix": "нефть нархлари зарба"
+          },
+          {
+            "prefix": "neft narxlarining keskin"
+          },
+          {
+            "prefix": "нефть нархларининг кескин"
+          },
+          {
+            "prefix": "neft narxining keskin"
+          },
+          {
+            "prefix": "нефть нархининг кескин"
+          },
+          {
+            "prefix": "neft inqiroz"
+          },
+          {
+            "prefix": "нефть инқироз"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "naftos kainų šok"
+          },
+          {
+            "prefix": "naftos šok"
+          },
+          {
+            "prefix": "naftos kainų sukrėtim"
+          },
+          {
+            "prefix": "naftos sukrėtim"
+          },
+          {
+            "prefix": "naftos kainų šuol"
+          },
+          {
+            "prefix": "naftos kainų žlugim"
+          },
+          {
+            "prefix": "naftos kainų kritim"
+          },
+          {
+            "prefix": "naftos kainų smuk"
+          },
+          {
+            "prefix": "naftos kriz"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "naftašok"
+          },
+          {
+            "prefix": "naftahinnašok"
+          },
+          {
+            "prefix": "naftahinna šok"
+          },
+          {
+            "prefix": "naftahindade šok"
+          },
+          {
+            "prefix": "naftahinna järsk"
+          },
+          {
+            "prefix": "naftahindade järsk"
+          },
+          {
+            "prefix": "naftahinna kokkuvarisemi"
+          },
+          {
+            "prefix": "naftahindade kokkuvarisemi"
+          },
+          {
+            "prefix": "naftahinna hüpe"
+          },
+          {
+            "prefix": "naftahindade hüpe"
+          },
+          {
+            "prefix": "naftakriis"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "мұнай дүмпу"
+          },
+          {
+            "prefix": "мұнай бағасының күрт"
+          },
+          {
+            "prefix": "мұнай бағаларының күрт"
+          },
+          {
+            "prefix": "мұнай бағасының құлдыра"
+          },
+          {
+            "prefix": "мұнай бағаларының құлдыра"
+          },
+          {
+            "prefix": "мұнай бағасының шарықта"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "мунай шок"
+          },
+          {
+            "prefix": "мунай шог"
+          },
+          {
+            "prefix": "мунайзат шок"
+          },
+          {
+            "prefix": "мунайзат шог"
+          },
+          {
+            "prefix": "мунайдын баасынын кескин"
+          },
+          {
+            "prefix": "мунай бааларынын кескин"
+          },
+          {
+            "prefix": "мунайдын баасынын кулашы"
+          },
+          {
+            "prefix": "мунай бааларынын кулашы"
+          }
+        ],
+        "farsi": [
+          "شوک نفتی",
+          "شوک‌های نفتی",
+          "شوک های نفتی",
+          "شوکهای نفتی",
+          "شوک قیمت نفت",
+          "جهش قیمت نفت",
+          "سقوط قیمت نفت",
+          "فروپاشی قیمت نفت",
+          "افزایش شدید قیمت نفت",
+          "کاهش شدید قیمت نفت"
+        ],
+        "belarusian": [
+          {
+            "prefix": "нафтавы шок"
+          },
+          {
+            "prefix": "нафтавага шок"
+          },
+          {
+            "prefix": "нафтавыя шок"
+          },
+          {
+            "prefix": "нафтавых шок"
+          },
+          {
+            "prefix": "абвал цэн на нафт"
+          },
+          {
+            "prefix": "абвалу цэн на нафт"
+          },
+          "абвал нафтавых цэн",
+          "абвалу нафтавых цэн",
+          "шок нафтавых цэн",
+          {
+            "prefix": "рэзкі рост цэн на нафт"
+          },
+          {
+            "prefix": "рэзкага росту цэн на нафт"
+          },
+          {
+            "prefix": "скачок цэн на нафт"
+          },
+          {
+            "prefix": "скачка цэн на нафт"
+          }
+        ],
+        "pap": [
+          "shock di prijs di petroleo",
+          "shock di petroleo",
+          "colapso di prijs di petroleo",
+          "shok di preis di petroleo",
+          "shok di petroleo",
+          "kolapso di preis di petroleo",
+          "oliecrisis",
+          "olieschok"
         ]
       }
     },
@@ -7571,6 +9512,295 @@
           {
             "prefix": "енергетске криз"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "energoresursu cenu šok"
+          },
+          {
+            "prefix": "enerģijas cenu šok"
+          },
+          {
+            "prefix": "energocenu šok"
+          },
+          {
+            "prefix": "enerģijas šok"
+          },
+          {
+            "prefix": "energoresursu cenu lēc"
+          },
+          {
+            "prefix": "enerģijas cenu lēc"
+          },
+          {
+            "prefix": "energoresursu cenu straujš kāpum"
+          },
+          {
+            "prefix": "energokrīz"
+          },
+          {
+            "prefix": "enerģētikas krīz"
+          },
+          {
+            "prefix": "enerģētiskā krīz"
+          },
+          {
+            "prefix": "enerģētiskās krīz"
+          },
+          {
+            "prefix": "energoresursu krīz"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи нархи энерги"
+          },
+          {
+            "prefix": "зарбаи нархҳои энерги"
+          },
+          {
+            "prefix": "зарбаи энергетик"
+          },
+          {
+            "prefix": "шоки энергетик"
+          },
+          {
+            "prefix": "буҳрони энерге"
+          },
+          {
+            "prefix": "бӯҳрони энерге"
+          },
+          {
+            "prefix": "бухрони энерге"
+          },
+          {
+            "prefix": "буҳрони энерги"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "energiya narxlari zarba"
+          },
+          {
+            "prefix": "энергия нархлари зарба"
+          },
+          {
+            "prefix": "energiya narxlarining keskin"
+          },
+          {
+            "prefix": "энергия нархларининг кескин"
+          },
+          {
+            "prefix": "energetika inqiroz"
+          },
+          {
+            "prefix": "энергетика инқироз"
+          },
+          {
+            "prefix": "energiya inqiroz"
+          },
+          {
+            "prefix": "энергия инқироз"
+          },
+          {
+            "prefix": "energetik inqiroz"
+          },
+          {
+            "prefix": "энергетик инқироз"
+          },
+          {
+            "prefix": "energetik zarba"
+          },
+          {
+            "prefix": "энергетик зарба"
+          },
+          {
+            "prefix": "energiya zarba"
+          },
+          {
+            "prefix": "энергия зарба"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "energijos kainų šok"
+          },
+          {
+            "prefix": "energetikos kainų šok"
+          },
+          {
+            "prefix": "energijos išteklių kainų šok"
+          },
+          {
+            "prefix": "energijos kainų sukrėtim"
+          },
+          {
+            "prefix": "energetinis šok"
+          },
+          {
+            "prefix": "energetinio šok"
+          },
+          {
+            "prefix": "energijos šok"
+          },
+          {
+            "prefix": "energijos kainų šuol"
+          },
+          {
+            "prefix": "energetikos kriz"
+          },
+          {
+            "prefix": "energetinė kriz"
+          },
+          {
+            "prefix": "energetinės kriz"
+          },
+          {
+            "prefix": "energetinę kriz"
+          },
+          {
+            "prefix": "energijos kriz"
+          },
+          {
+            "prefix": "energijos kainų kriz"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "energiašok"
+          },
+          {
+            "prefix": "energiahinnašok"
+          },
+          {
+            "prefix": "energiahinna šok"
+          },
+          {
+            "prefix": "energiahindade šok"
+          },
+          {
+            "prefix": "energiakriis"
+          },
+          {
+            "prefix": "energiahindade järsk"
+          },
+          {
+            "prefix": "energiahinna järsk"
+          },
+          {
+            "prefix": "energiahindade hüpe"
+          },
+          {
+            "prefix": "energiahinna hüpe"
+          },
+          {
+            "prefix": "energiahindade plahvatuslik"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "энергетикалық дағдарыс"
+          },
+          {
+            "prefix": "энергия дағдарыс"
+          },
+          {
+            "prefix": "энергетикалық дүмпу"
+          },
+          {
+            "prefix": "энергетикалық күйзеліс"
+          },
+          {
+            "prefix": "энергия бағасының күрт"
+          },
+          {
+            "prefix": "энергия бағаларының күрт"
+          },
+          {
+            "prefix": "энергия тасымалдаушылар бағасының күрт"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "энергетикалык шок"
+          },
+          {
+            "prefix": "энергетикалык шог"
+          },
+          {
+            "prefix": "энергетикалык кризис"
+          },
+          {
+            "prefix": "энергия кризис"
+          },
+          {
+            "prefix": "энергия бааларынын кескин"
+          },
+          {
+            "prefix": "энергия ташуучулардын баасынын кескин"
+          }
+        ],
+        "farsi": [
+          "شوک انرژی",
+          "شوک‌های انرژی",
+          "شوک های انرژی",
+          "شوکهای انرژی",
+          "شوک قیمت انرژی",
+          "جهش قیمت انرژی",
+          "بحران انرژی",
+          "افزایش شدید قیمت انرژی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "энергетычны шок"
+          },
+          {
+            "prefix": "энергетычнага шок"
+          },
+          {
+            "prefix": "энэргетычны шок"
+          },
+          {
+            "prefix": "энергетычны крызіс"
+          },
+          {
+            "prefix": "энергетычнага крызіс"
+          },
+          {
+            "prefix": "энергетычным крызіс"
+          },
+          {
+            "prefix": "энэргетычны крызіс"
+          },
+          {
+            "prefix": "энэргетычнага крызіс"
+          },
+          {
+            "prefix": "рэзкі рост цэн на энерганосьбіт"
+          },
+          {
+            "prefix": "рэзкага росту цэн на энерганосьбіт"
+          },
+          {
+            "prefix": "скачок цэн на энерганосьбіт"
+          },
+          {
+            "prefix": "скачок цэн на энерг"
+          },
+          {
+            "prefix": "шок цэн на энерг"
+          }
+        ],
+        "pap": [
+          "crisis di energia",
+          "crisis energetico",
+          "shock di energia",
+          "shock di prijs di energia",
+          "krisis di energia",
+          "krisis energétiko",
+          "shok di energia",
+          "shok di preis di energia",
+          "energiecrisis"
         ]
       }
     },
@@ -8075,6 +10305,151 @@
           "šok odnosa razmjene",
           "pogoršanje uslova trgovine",
           "pogoršanja uslova trgovine"
+        ],
+        "latvian": [
+          {
+            "prefix": "tirdzniecības nosacījumu šok"
+          },
+          {
+            "prefix": "tirdzniecības nosacījumu pasliktināšan"
+          },
+          {
+            "prefix": "tirdzniecības nosacījumu pasliktinājum"
+          },
+          {
+            "prefix": "tirdzniecības nosacījumu satricinājum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "бадшавии шароити савдо"
+          },
+          {
+            "prefix": "бад шудани шароити савдо"
+          },
+          {
+            "prefix": "бадтар шудани шароити савдо"
+          },
+          {
+            "prefix": "зарбаи шароити савдо"
+          },
+          {
+            "prefix": "бадшавии таносуби нархҳои содирот"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "savdo shartlari zarba"
+          },
+          {
+            "prefix": "савдо шартлари зарба"
+          },
+          {
+            "prefix": "savdo shartlarining yomonlash"
+          },
+          {
+            "prefix": "савдо шартларининг ёмонлаш"
+          },
+          {
+            "prefix": "savdo shartlari yomonlash"
+          },
+          {
+            "prefix": "савдо шартлари ёмонлаш"
+          },
+          {
+            "prefix": "tashqi savdo shartlarining yomonlash"
+          },
+          {
+            "prefix": "ташқи савдо шартларининг ёмонлаш"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "prekybos sąlygų šok"
+          },
+          {
+            "prefix": "prekybos sąlygų sukrėtim"
+          },
+          {
+            "prefix": "prekybos sąlygų blogėjim"
+          },
+          {
+            "prefix": "prekybos sąlygų pablogėjim"
+          },
+          {
+            "prefix": "prekybos sąlygų suprastėjim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "vahetustingimuste šok"
+          },
+          {
+            "prefix": "vahetustingimuste halvenemi"
+          },
+          {
+            "prefix": "kaubandustingimuste šok"
+          },
+          {
+            "prefix": "kaubandustingimuste halvenemi"
+          },
+          {
+            "prefix": "vahetustingimused halvene"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "сауда шарттарының нашарла"
+          },
+          {
+            "prefix": "сауда шарттарының төмендеу"
+          },
+          {
+            "prefix": "сауда шарттарының дүмпу"
+          },
+          {
+            "prefix": "сауда шарттарының күйзеліс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "соода шарттарынын начарла"
+          },
+          {
+            "prefix": "соода шарттарынын төмөндө"
+          },
+          {
+            "prefix": "соода шарттарынын шок"
+          },
+          {
+            "prefix": "соода шарттарынын шог"
+          }
+        ],
+        "farsi": [
+          "شوک رابطه مبادله",
+          "شوک نسبت مبادله",
+          "بدتر شدن رابطه مبادله",
+          "وخامت رابطه مبادله",
+          "تضعیف رابطه مبادله",
+          "کاهش رابطه مبادله",
+          "افت رابطه مبادله"
+        ],
+        "belarusian": [
+          "шок умоў гандлю",
+          "шоку ўмоў гандлю",
+          "пагаршэнне ўмоў гандлю",
+          "пагаршэньне ўмоў гандлю",
+          "пагаршэння ўмоў гандлю",
+          "пагаршэньня ўмоў гандлю",
+          "умовы гандлю пагоршыліся"
+        ],
+        "pap": [
+          "terminonan di intercambio",
+          "deterioro di terminonan di intercambio",
+          "términonan di interkambio",
+          "deterioro di términonan di interkambio",
+          "ruilvoet",
+          "terms of trade"
         ]
       }
     },
@@ -8802,6 +11177,208 @@
           "slabije inostrane tražnje",
           "smanjena spoljna tražnja",
           "smanjene spoljne tražnje"
+        ],
+        "latvian": [
+          {
+            "prefix": "ārējā pieprasījuma šok"
+          },
+          {
+            "prefix": "ārējā pieprasījuma kritum"
+          },
+          {
+            "prefix": "ārējā pieprasījuma samazinājum"
+          },
+          {
+            "prefix": "ārējā pieprasījuma vājināšan"
+          },
+          {
+            "prefix": "vājš ārējais pieprasījum"
+          },
+          {
+            "prefix": "vāja ārējā pieprasījum"
+          },
+          {
+            "prefix": "eksporta pieprasījuma šok"
+          },
+          {
+            "prefix": "eksporta pieprasījuma kritum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "коҳиши талаботи берун"
+          },
+          {
+            "prefix": "кохиши талаботи берун"
+          },
+          {
+            "prefix": "зарбаи талаботи берун"
+          },
+          {
+            "prefix": "талаботи заифи берун"
+          },
+          {
+            "prefix": "паст шудани талаботи берун"
+          },
+          {
+            "prefix": "коҳиши талабот ба содирот"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "tashqi talab zarba"
+          },
+          {
+            "prefix": "ташқи талаб зарба"
+          },
+          {
+            "prefix": "tashqi talabning pasay"
+          },
+          {
+            "prefix": "ташқи талабнинг пасай"
+          },
+          {
+            "prefix": "tashqi talabning kamay"
+          },
+          {
+            "prefix": "ташқи талабнинг камай"
+          },
+          {
+            "prefix": "tashqi talabning sust"
+          },
+          {
+            "prefix": "ташқи талабнинг суст"
+          },
+          {
+            "prefix": "eksportga talabning pasay"
+          },
+          {
+            "prefix": "экспортга талабнинг пасай"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "išorės paklausos šok"
+          },
+          {
+            "prefix": "išorės paklausos sukrėtim"
+          },
+          {
+            "prefix": "išorės paklausos sumažėjim"
+          },
+          {
+            "prefix": "išorės paklausos smuk"
+          },
+          "silpna išorės paklausa",
+          "silpnos išorės paklausos",
+          "silpnesnė išorės paklausa",
+          "silpnesnės išorės paklausos",
+          "mažėjanti išorės paklausa",
+          "mažėjančios išorės paklausos",
+          {
+            "prefix": "eksporto paklausos šok"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "välisnõudluse šok"
+          },
+          {
+            "prefix": "välisnõudluse langus"
+          },
+          {
+            "prefix": "välisnõudluse vähenemi"
+          },
+          {
+            "prefix": "välisnõudluse kahanemi"
+          },
+          {
+            "prefix": "välisnõudluse nõrkus"
+          },
+          "nõrk välisnõudlus",
+          "nõrga välisnõudluse",
+          "nõrka välisnõudlust",
+          {
+            "prefix": "ekspordinõudluse šok"
+          },
+          {
+            "prefix": "ekspordinõudluse langus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "сыртқы сұраныстың төменде"
+          },
+          {
+            "prefix": "сыртқы сұраныстың әлсіре"
+          },
+          {
+            "prefix": "сыртқы сұраныстың құлдыра"
+          },
+          {
+            "prefix": "сыртқы сұраныстың азай"
+          },
+          {
+            "prefix": "әлсіз сыртқы сұраныс"
+          },
+          {
+            "prefix": "сыртқы сұраныс дүмпу"
+          },
+          {
+            "prefix": "экспортқа сұраныстың төменде"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "тышкы суроо-талаптын азай"
+          },
+          {
+            "prefix": "тышкы суроо-талаптын төмөндө"
+          },
+          {
+            "prefix": "тышкы суроо-талаптын начарла"
+          },
+          {
+            "prefix": "тышкы суроо-талаптын шог"
+          },
+          {
+            "prefix": "начар тышкы суроо-талап"
+          },
+          {
+            "prefix": "экспортко суроо-талаптын азай"
+          }
+        ],
+        "farsi": [
+          "شوک تقاضای خارجی",
+          "کاهش تقاضای خارجی",
+          "افت تقاضای خارجی",
+          "ضعف تقاضای خارجی",
+          "تقاضای خارجی ضعیف",
+          "شوک تقاضای صادراتی",
+          "کاهش تقاضای صادراتی"
+        ],
+        "belarusian": [
+          "шок знешняга попыту",
+          "шоку знешняга попыту",
+          "падзенне знешняга попыту",
+          "падзеньне знешняга попыту",
+          "падзення знешняга попыту",
+          "слабы знешні попыт",
+          "слабага знешняга попыту",
+          "скарачэнне знешняга попыту",
+          "скарачэньне знешняга попыту",
+          "скарачэння знешняга попыту",
+          "зніжэнне знешняга попыту",
+          "зніжэння знешняга попыту",
+          "падзенне экспартнага попыту"
+        ],
+        "pap": [
+          "shock di demanda externo",
+          "caida di demanda externo",
+          "demanda externo debil",
+          "shok di demanda èksterno",
+          "kaida di demanda èksterno",
+          "demanda èksterno débil"
         ]
       }
     },
@@ -9627,6 +12204,255 @@
           {
             "prefix": "poremećaji u lancima nabavk"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "piegādes ķēžu šok"
+          },
+          {
+            "prefix": "piegāžu ķēžu šok"
+          },
+          {
+            "prefix": "piegādes ķēdes šok"
+          },
+          {
+            "prefix": "piegāžu ķēžu traucējum"
+          },
+          {
+            "prefix": "piegādes ķēžu traucējum"
+          },
+          {
+            "prefix": "piegādes ķēdes traucējum"
+          },
+          {
+            "prefix": "piegāžu ķēžu pārrāvum"
+          },
+          {
+            "prefix": "piegādes ķēžu pārrāvum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи занҷираи таъмин"
+          },
+          {
+            "prefix": "зарба ба занҷираҳои таъмин"
+          },
+          {
+            "prefix": "халалёбии занҷираи таъмин"
+          },
+          {
+            "prefix": "халалёбии занҷираҳои таъмин"
+          },
+          {
+            "prefix": "халалёбии занчираи таъмин"
+          },
+          {
+            "prefix": "вайроншавии занҷираҳои таъмин"
+          },
+          {
+            "prefix": "қатъи занҷираҳои таъмин"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "ta'minot zanjirlaridagi uzil"
+          },
+          {
+            "prefix": "taʻminot zanjirlaridagi uzil"
+          },
+          {
+            "prefix": "ta’minot zanjirlaridagi uzil"
+          },
+          {
+            "prefix": "ta‘minot zanjirlaridagi uzil"
+          },
+          {
+            "prefix": "таъминот занжирларидаги узил"
+          },
+          {
+            "prefix": "ta'minot zanjiridagi uzil"
+          },
+          {
+            "prefix": "taʻminot zanjiridagi uzil"
+          },
+          {
+            "prefix": "ta’minot zanjiridagi uzil"
+          },
+          {
+            "prefix": "ta‘minot zanjiridagi uzil"
+          },
+          {
+            "prefix": "таъминот занжиридаги узил"
+          },
+          {
+            "prefix": "ta'minot zanjirlari zarba"
+          },
+          {
+            "prefix": "taʻminot zanjirlari zarba"
+          },
+          {
+            "prefix": "ta’minot zanjirlari zarba"
+          },
+          {
+            "prefix": "ta‘minot zanjirlari zarba"
+          },
+          {
+            "prefix": "таъминот занжирлари зарба"
+          },
+          {
+            "prefix": "yetkazib berish zanjirlaridagi uzil"
+          },
+          {
+            "prefix": "етказиб бериш занжирларидаги узил"
+          },
+          {
+            "prefix": "yetkazib berish zanjiridagi uzil"
+          },
+          {
+            "prefix": "етказиб бериш занжиридаги узил"
+          },
+          {
+            "prefix": "global ta'minot zanjir"
+          },
+          {
+            "prefix": "global taʻminot zanjir"
+          },
+          {
+            "prefix": "global ta’minot zanjir"
+          },
+          {
+            "prefix": "global ta‘minot zanjir"
+          },
+          {
+            "prefix": "глобал таъминот занжир"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "tiekimo grandinių šok"
+          },
+          {
+            "prefix": "tiekimo grandinės šok"
+          },
+          {
+            "prefix": "tiekimo grandinių sukrėtim"
+          },
+          {
+            "prefix": "tiekimo grandinės sukrėtim"
+          },
+          {
+            "prefix": "tiekimo grandinių sutrikim"
+          },
+          {
+            "prefix": "tiekimo grandinės sutrikim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "tarneahela šok"
+          },
+          {
+            "prefix": "tarneahelate šok"
+          },
+          {
+            "prefix": "tarneahelašok"
+          },
+          {
+            "prefix": "tarneahelate kriis"
+          },
+          {
+            "prefix": "tarneahelakriis"
+          },
+          {
+            "prefix": "tarneahelate häire"
+          },
+          {
+            "prefix": "tarneahela häire"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "жеткізу тізбегіндегі үзіл"
+          },
+          {
+            "prefix": "жеткізу тізбектеріндегі үзіл"
+          },
+          {
+            "prefix": "жеткізу тізбегінің үзіл"
+          },
+          {
+            "prefix": "жеткізу тізбектерінің үзіл"
+          },
+          {
+            "prefix": "жеткізу тізбегіндегі іркіл"
+          },
+          {
+            "prefix": "жеткізу тізбегіндегі дүмпу"
+          },
+          {
+            "prefix": "жеткізу тізбегінің бұзыл"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "жеткирүү чынжырларынын бузул"
+          },
+          {
+            "prefix": "жеткирүү чынжырынын бузул"
+          },
+          {
+            "prefix": "жеткирүү чынжырларынын үзүл"
+          },
+          {
+            "prefix": "жеткирүү чынжырынын үзүл"
+          },
+          {
+            "prefix": "жеткирүү чынжырындагы үзгүлтүк"
+          },
+          {
+            "prefix": "жеткирүү чынжырларындагы шок"
+          },
+          {
+            "prefix": "логистикалык чынжырлардын бузул"
+          }
+        ],
+        "farsi": [
+          "شوک زنجیره تأمین",
+          "شوک زنجیره تامین",
+          "اختلال در زنجیره تأمین",
+          "اختلال در زنجیره تامین",
+          "اختلال زنجیره تأمین",
+          "اختلال زنجیره تامین",
+          "اختلالات زنجیره تأمین",
+          "اختلالات زنجیره تامین",
+          "اختلال در زنجیره عرضه"
+        ],
+        "belarusian": [
+          "шок ланцужкоў паставак",
+          "шоку ланцужкоў паставак",
+          "шок ланцугоў паставак",
+          "парушэнне ланцужкоў паставак",
+          "парушэньне ланцужкоў паставак",
+          "парушэння ланцужкоў паставак",
+          "парушэнні ланцужкоў паставак",
+          "парушэнне ланцугоў паставак",
+          "парушэння ланцугоў паставак",
+          "разрыў ланцужкоў паставак",
+          "разрыву ланцужкоў паставак",
+          "разрывы ланцужкоў паставак",
+          "збоі ў ланцужках паставак",
+          "збоі ў ланцугах паставак"
+        ],
+        "pap": [
+          "interupcion di cadena di suministro",
+          "shock di cadena di suministro",
+          "problema den cadena di suministro",
+          "interupshon di kadena di suministro",
+          "shok di kadena di suministro",
+          "problema den kadena di suministro",
+          "verstoring van de toeleveringsketen",
+          "supply chain shock"
         ]
       }
     },
@@ -10128,6 +12954,119 @@
           "šok na strani ponude",
           "šokovi na strani ponude",
           "šokova na strani ponude"
+        ],
+        "latvian": [
+          {
+            "prefix": "piedāvājuma šok"
+          },
+          {
+            "prefix": "piedāvājuma puses šok"
+          },
+          {
+            "prefix": "piegāžu šok"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи таъминот"
+          },
+          {
+            "prefix": "зарбаҳои таъминот"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "taklif zarba"
+          },
+          {
+            "prefix": "таклиф зарба"
+          },
+          {
+            "prefix": "taklif tomonidagi zarba"
+          },
+          {
+            "prefix": "таклиф томонидаги зарба"
+          },
+          {
+            "prefix": "taklif shok"
+          },
+          {
+            "prefix": "таклиф шок"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "pasiūlos šok"
+          },
+          {
+            "prefix": "pasiūlos sukrėtim"
+          },
+          {
+            "prefix": "pasiūlos pusės šok"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "pakkumisšok"
+          },
+          {
+            "prefix": "pakkumise šok"
+          },
+          {
+            "prefix": "pakkumispoole šok"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "ұсыныс дүмпу"
+          },
+          {
+            "prefix": "ұсыныс тарапындағы дүмпу"
+          },
+          {
+            "prefix": "ұсыныс күйзеліс"
+          },
+          {
+            "prefix": "ұсыныстың күрт қысқар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "сунуш шок"
+          },
+          {
+            "prefix": "сунуш шог"
+          },
+          {
+            "prefix": "сунуштун шог"
+          },
+          {
+            "prefix": "сунуш тараптагы шок"
+          }
+        ],
+        "farsi": [
+          "شوک عرضه",
+          "شوک‌های عرضه",
+          "شوک های عرضه",
+          "شوکهای عرضه",
+          "شوک سمت عرضه",
+          "شوک طرف عرضه",
+          "تکانه عرضه"
+        ],
+        "belarusian": [
+          "шок прапановы",
+          "шоку прапановы",
+          "шокі прапановы",
+          "шокаў прапановы",
+          "шок з боку прапановы",
+          "шокі з боку прапановы"
+        ],
+        "pap": [
+          "shock di oferta",
+          "shock di suministro",
+          "shok di ofèrta",
+          "shok di suministro",
+          "aanbodschok"
         ]
       }
     },
@@ -10780,6 +13719,165 @@
           "urušavanje tražnje",
           "drastičan pad tražnje",
           "drastičnog pada tražnje"
+        ],
+        "latvian": [
+          {
+            "prefix": "pieprasījuma šok"
+          },
+          {
+            "prefix": "pieprasījuma puses šok"
+          },
+          {
+            "prefix": "pieprasījuma sabrukum"
+          },
+          {
+            "prefix": "pieprasījuma krah"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи талабот"
+          },
+          {
+            "prefix": "шоки талабот"
+          },
+          {
+            "prefix": "зарбаҳои талабот"
+          },
+          {
+            "prefix": "фурӯпошии талабот"
+          },
+          {
+            "prefix": "коҳиши якбораи талабот"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "talab zarba"
+          },
+          {
+            "prefix": "талаб зарба"
+          },
+          {
+            "prefix": "talab tomonidagi zarba"
+          },
+          {
+            "prefix": "талаб томонидаги зарба"
+          },
+          {
+            "prefix": "talab shok"
+          },
+          {
+            "prefix": "талаб шок"
+          },
+          {
+            "prefix": "talabning keskin pasay"
+          },
+          {
+            "prefix": "талабнинг кескин пасай"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "paklausos šok"
+          },
+          {
+            "prefix": "paklausos sukrėtim"
+          },
+          {
+            "prefix": "paklausos pusės šok"
+          },
+          {
+            "prefix": "paklausos žlugim"
+          },
+          {
+            "prefix": "paklausos griūt"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "nõudlusšok"
+          },
+          {
+            "prefix": "nõudluse šok"
+          },
+          {
+            "prefix": "nõudluspoole šok"
+          },
+          {
+            "prefix": "nõudluse kokkuvarisemi"
+          },
+          {
+            "prefix": "nõudluse kollaps"
+          },
+          "nõudluse järsk langus",
+          "nõudluse järsu languse"
+        ],
+        "kazakh": [
+          {
+            "prefix": "сұраныс дүмпу"
+          },
+          {
+            "prefix": "сұраныс тарапындағы дүмпу"
+          },
+          {
+            "prefix": "сұраныстың күрт төменде"
+          },
+          {
+            "prefix": "сұраныстың күрт құлдыра"
+          },
+          {
+            "prefix": "сұраныстың құлдыра"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "суроо-талап шок"
+          },
+          {
+            "prefix": "суроо-талап шог"
+          },
+          {
+            "prefix": "суроо-талаптын шог"
+          },
+          {
+            "prefix": "суроо-талаптын кескин азай"
+          },
+          {
+            "prefix": "суроо-талаптын кескин төмөндө"
+          },
+          {
+            "prefix": "суроо-талаптын кулашы"
+          }
+        ],
+        "farsi": [
+          "شوک تقاضا",
+          "شوک‌های تقاضا",
+          "شوک های تقاضا",
+          "شوکهای تقاضا",
+          "شوک سمت تقاضا",
+          "شوک طرف تقاضا",
+          "فروپاشی تقاضا",
+          "سقوط تقاضا",
+          "تکانه تقاضا"
+        ],
+        "belarusian": [
+          "шок попыту",
+          "шоку попыту",
+          "шокі попыту",
+          "шокаў попыту",
+          "шок з боку попыту",
+          "абвал попыту",
+          "абвалу попыту",
+          "рэзкае падзенне попыту",
+          "рэзкага падзення попыту"
+        ],
+        "pap": [
+          "shock di demanda",
+          "colapso di demanda",
+          "shok di demanda",
+          "kolapso di demanda",
+          "vraagschok"
         ]
       }
     },
@@ -11437,6 +14535,235 @@
           "ostalo bez prihoda",
           "pad prihoda domaćinstava",
           "pada prihoda domaćinstava"
+        ],
+        "latvian": [
+          {
+            "prefix": "ienākumu šok"
+          },
+          {
+            "prefix": "ienākumu zudum"
+          },
+          {
+            "prefix": "ienākumu zaudējum"
+          },
+          {
+            "prefix": "zaudētie ienākum"
+          },
+          {
+            "prefix": "zaudēto ienākum"
+          },
+          "zaudēja ienākumus",
+          "zaudējuši ienākumus"
+        ],
+        "tajik": [
+          {
+            "prefix": "аз даст додани даромад"
+          },
+          {
+            "prefix": "талафи даромад"
+          },
+          {
+            "prefix": "зарбаи даромад"
+          },
+          {
+            "prefix": "маҳрум шудан аз даромад"
+          },
+          {
+            "prefix": "даромадҳои аздастрафта"
+          },
+          {
+            "prefix": "даромади аздастрафта"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "daromad yo'qot"
+          },
+          {
+            "prefix": "daromad yoʻqot"
+          },
+          {
+            "prefix": "daromad yo’qot"
+          },
+          {
+            "prefix": "daromad yo‘qot"
+          },
+          {
+            "prefix": "даромад йўқот"
+          },
+          {
+            "prefix": "daromadini yo'qot"
+          },
+          {
+            "prefix": "daromadini yoʻqot"
+          },
+          {
+            "prefix": "daromadini yo’qot"
+          },
+          {
+            "prefix": "daromadini yo‘qot"
+          },
+          {
+            "prefix": "даромадини йўқот"
+          },
+          {
+            "prefix": "daromadlarini yo'qot"
+          },
+          {
+            "prefix": "daromadlarini yoʻqot"
+          },
+          {
+            "prefix": "daromadlarini yo’qot"
+          },
+          {
+            "prefix": "daromadlarini yo‘qot"
+          },
+          {
+            "prefix": "даромадларини йўқот"
+          },
+          {
+            "prefix": "daromad zarba"
+          },
+          {
+            "prefix": "даромад зарба"
+          },
+          {
+            "prefix": "daromaddan mahrum"
+          },
+          {
+            "prefix": "даромаддан маҳрум"
+          },
+          {
+            "prefix": "daromadlarning keskin kamay"
+          },
+          {
+            "prefix": "даромадларнинг кескин камай"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "pajamų šok"
+          },
+          {
+            "prefix": "pajamų sukrėtim"
+          },
+          {
+            "prefix": "pajamų praradim"
+          },
+          {
+            "prefix": "pajamų netekim"
+          },
+          "neteko pajamų",
+          "netekę pajamų",
+          "netenka pajamų",
+          "prarastos pajamos",
+          "prarastų pajamų"
+        ],
+        "estonian": [
+          {
+            "prefix": "sissetulekušok"
+          },
+          {
+            "prefix": "sissetulekute šok"
+          },
+          {
+            "prefix": "sissetuleku kaotus"
+          },
+          {
+            "prefix": "sissetulekute kaotus"
+          },
+          "sissetuleku kadu",
+          "sissetuleku kao",
+          "sissetulekute kadu",
+          {
+            "prefix": "saamata jäänud sissetulek"
+          },
+          {
+            "prefix": "kaotatud sissetulek"
+          },
+          {
+            "prefix": "sissetulekust ilma jää"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "табысынан айырыл"
+          },
+          {
+            "prefix": "табыстан айырыл"
+          },
+          {
+            "prefix": "табысын жоғалт"
+          },
+          {
+            "prefix": "табыстың жоғал"
+          },
+          {
+            "prefix": "табыс көзінен айырыл"
+          },
+          {
+            "prefix": "кірісінен айырыл"
+          },
+          {
+            "prefix": "табыс дүмпу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "киреше шок"
+          },
+          {
+            "prefix": "киреше шог"
+          },
+          {
+            "prefix": "кирешесин жогот"
+          },
+          {
+            "prefix": "кирешелерин жогот"
+          },
+          {
+            "prefix": "кирешесинен ажыра"
+          },
+          {
+            "prefix": "кирешеден ажыра"
+          },
+          {
+            "prefix": "киреше жоготу"
+          },
+          {
+            "prefix": "кирешенин жоготу"
+          }
+        ],
+        "farsi": [
+          "شوک درآمد",
+          "شوک‌های درآمدی",
+          "شوک های درآمدی",
+          "شوکهای درآمدی",
+          "تکانه درآمدی",
+          "زیان درآمدی"
+        ],
+        "belarusian": [
+          "шок даходаў",
+          "шоку даходаў",
+          "шок даходу",
+          "страта даходу",
+          "страты даходу",
+          "страту даходу",
+          "страта даходаў",
+          "страты даходаў",
+          "страчаны даход",
+          "страчаных даходаў",
+          "страта заробку",
+          "страты заробку"
+        ],
+        "pap": [
+          "perdida di entrada",
+          "perdida di ingreso",
+          "shock di entrada",
+          "pèrdida di entrada",
+          "pèrdida di ingreso",
+          "shok di entrada",
+          "inkomensverlies"
         ]
       }
     },
@@ -12052,6 +15379,174 @@
           "talas otkaza",
           "masovna otpuštanja",
           "masovnih otpuštanja"
+        ],
+        "latvian": [
+          {
+            "prefix": "nodarbinātības šok"
+          },
+          {
+            "prefix": "darba tirgus šok"
+          },
+          {
+            "prefix": "darba tirgus satricinājum"
+          },
+          {
+            "prefix": "darbavietu šok"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарба ба бозори меҳнат"
+          },
+          {
+            "prefix": "зарбаи бозори меҳнат"
+          },
+          {
+            "prefix": "зарба ба шуғл"
+          },
+          {
+            "prefix": "зарбаи шуғл"
+          },
+          {
+            "prefix": "талафи оммавии ҷойҳои кор"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "mehnat bozori zarba"
+          },
+          {
+            "prefix": "меҳнат бозори зарба"
+          },
+          {
+            "prefix": "mehnat bozoriga zarba"
+          },
+          {
+            "prefix": "меҳнат бозорига зарба"
+          },
+          {
+            "prefix": "bandlik zarba"
+          },
+          {
+            "prefix": "бандлик зарба"
+          },
+          {
+            "prefix": "bandlikka zarba"
+          },
+          {
+            "prefix": "бандликка зарба"
+          },
+          {
+            "prefix": "mehnat bozoridagi shok"
+          },
+          {
+            "prefix": "меҳнат бозоридаги шок"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "užimtumo šok"
+          },
+          {
+            "prefix": "užimtumo sukrėtim"
+          },
+          {
+            "prefix": "darbo rinkos šok"
+          },
+          {
+            "prefix": "darbo rinkos sukrėtim"
+          },
+          {
+            "prefix": "darbo vietų šok"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "tööhõivešok"
+          },
+          {
+            "prefix": "tööhõive šok"
+          },
+          {
+            "prefix": "tööturušok"
+          },
+          {
+            "prefix": "tööturu šok"
+          },
+          {
+            "prefix": "tööturgu tabanud šok"
+          },
+          "töökohtade kadu",
+          "töökohtade kao",
+          {
+            "prefix": "töökohtade kaotus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "еңбек нарығындағы дүмпу"
+          },
+          {
+            "prefix": "еңбек нарығындағы күйзеліс"
+          },
+          {
+            "prefix": "еңбек нарығына соққы"
+          },
+          {
+            "prefix": "жұмыспен қамтуға соққы"
+          },
+          {
+            "prefix": "жұмыс орындарының жаппай"
+          },
+          {
+            "prefix": "жаппай жұмыстан шығар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "эмгек рыногундагы шок"
+          },
+          {
+            "prefix": "эмгек рыногуна шок"
+          },
+          {
+            "prefix": "эмгек рыногунун шог"
+          },
+          {
+            "prefix": "жумуш орундарынын кескин кыскар"
+          },
+          {
+            "prefix": "жумуш орундарынын массалык жоготу"
+          }
+        ],
+        "farsi": [
+          "شوک اشتغال",
+          "شوک بازار کار",
+          "شوک‌های بازار کار",
+          "شوک های بازار کار",
+          "شوکهای بازار کار",
+          "تکانه بازار کار",
+          "شوک بیکاری",
+          "موج بیکاری",
+          "موج اخراج"
+        ],
+        "belarusian": [
+          "шок на рынку працы",
+          "шоку на рынку працы",
+          "шокі на рынку працы",
+          "шок занятасці",
+          "шоку занятасці",
+          "шок занятасьці",
+          "шок для рынку працы",
+          "шоку для рынку працы"
+        ],
+        "pap": [
+          "shock di empleo",
+          "shock den mercado laboral",
+          "perdida masivo di trabou",
+          "shok di empleo",
+          "shok den merkado laboral",
+          "pèrdida masivo di trabou"
         ]
       }
     },
@@ -12984,6 +16479,244 @@
           "panika na tržištima",
           "panika na berzama",
           "panike na tržištima"
+        ],
+        "latvian": [
+          {
+            "prefix": "tirgus traucējum"
+          },
+          {
+            "prefix": "tirgu traucējum"
+          },
+          {
+            "prefix": "tirgus satricinājum"
+          },
+          {
+            "prefix": "tirgu satricinājum"
+          },
+          {
+            "prefix": "tirgus turbulenc"
+          },
+          {
+            "prefix": "tirgus sabrukum"
+          },
+          {
+            "prefix": "tirgus krah"
+          },
+          {
+            "prefix": "tirgus panik"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "нооромии бозор"
+          },
+          {
+            "prefix": "нооромиҳо дар бозор"
+          },
+          {
+            "prefix": "фурӯпошии бозор"
+          },
+          {
+            "prefix": "суқути бозор"
+          },
+          {
+            "prefix": "халалёбии бозор"
+          },
+          {
+            "prefix": "ташаннуҷ дар бозор"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "bozordagi notinchli"
+          },
+          {
+            "prefix": "бозордаги нотинчли"
+          },
+          {
+            "prefix": "bozorlardagi notinchli"
+          },
+          {
+            "prefix": "бозорлардаги нотинчли"
+          },
+          {
+            "prefix": "bozorlardagi turbulent"
+          },
+          {
+            "prefix": "бозорлардаги турбулент"
+          },
+          {
+            "prefix": "bozorlardagi vahima"
+          },
+          {
+            "prefix": "бозорлардаги ваҳима"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "rinkos sutrikim"
+          },
+          {
+            "prefix": "rinkų sutrikim"
+          },
+          {
+            "prefix": "rinkos suirut"
+          },
+          {
+            "prefix": "rinkų suirut"
+          },
+          {
+            "prefix": "rinkos turbulencij"
+          },
+          {
+            "prefix": "rinkų turbulencij"
+          },
+          {
+            "prefix": "rinkos griūt"
+          },
+          {
+            "prefix": "rinkų griūt"
+          },
+          {
+            "prefix": "rinkos krach"
+          },
+          {
+            "prefix": "rinkų krach"
+          },
+          {
+            "prefix": "biržos krach"
+          },
+          {
+            "prefix": "rinkos sumaišt"
+          },
+          {
+            "prefix": "rinkų sumaišt"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "turuhäire"
+          },
+          {
+            "prefix": "turgude häire"
+          },
+          {
+            "prefix": "turgude segadus"
+          },
+          {
+            "prefix": "turusegadus"
+          },
+          {
+            "prefix": "turgude turbulents"
+          },
+          {
+            "prefix": "turuturbulents"
+          },
+          {
+            "prefix": "turukrahh"
+          },
+          {
+            "prefix": "börsikrahh"
+          },
+          {
+            "prefix": "turgude kokkuvarisemi"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "нарықтағы дүрбелең"
+          },
+          {
+            "prefix": "нарықтардағы дүрбелең"
+          },
+          {
+            "prefix": "нарықтағы күйзеліс"
+          },
+          {
+            "prefix": "нарықтағы толқу"
+          },
+          {
+            "prefix": "нарықтардағы толқу"
+          },
+          {
+            "prefix": "нарықтың күрт құлдыра"
+          },
+          {
+            "prefix": "қор нарығының құлдыра"
+          },
+          {
+            "prefix": "биржалардағы дүрбелең"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "рыноктогу башаламандык"
+          },
+          {
+            "prefix": "рыноктордогу башаламандык"
+          },
+          {
+            "prefix": "рыноктун кулашы"
+          },
+          {
+            "prefix": "рыноктордун кулашы"
+          },
+          {
+            "prefix": "рыноктогу дүрбөлөң"
+          },
+          {
+            "prefix": "биржанын кулашы"
+          },
+          {
+            "prefix": "рыноктогу турбуленттүүлү"
+          },
+          {
+            "prefix": "рыноктордогу турбуленттүүлү"
+          }
+        ],
+        "farsi": [
+          "اختلال در بازار",
+          "اختلال بازار",
+          "اختلالات بازار",
+          "آشفتگی بازار",
+          "تلاطم بازار",
+          "آشوب بازار",
+          "سقوط بازار",
+          "ریزش شدید بازار"
+        ],
+        "belarusian": [
+          "абвал рынку",
+          "абвалу рынку",
+          "абвал рынкаў",
+          "абвалу рынкаў",
+          "абвал фондавага рынку",
+          "абвалу фондавага рынку",
+          {
+            "prefix": "турбулентнасць на рынк"
+          },
+          {
+            "prefix": "турбулентнасьць на рынк"
+          },
+          {
+            "prefix": "турбулентнасці на рынк"
+          },
+          "паніка на рынках",
+          "панікі на рынках",
+          "паніка на рынку",
+          "крах рынку",
+          "краху рынку",
+          "біржавы крах",
+          "біржавога краху",
+          "абвал на біржы"
+        ],
+        "pap": [
+          "turbulencia den mercado",
+          "colapso di mercado",
+          "interupcion di mercado",
+          "turbulensia den merkado",
+          "kolapso di merkado",
+          "interupshon di merkado",
+          "beurskrach"
         ]
       }
     },
@@ -13669,6 +17402,224 @@
           {
             "prefix": "javnozdravstvene vanredne situacij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "veselības šok"
+          },
+          {
+            "prefix": "veselības ārkārtas situācij"
+          },
+          {
+            "prefix": "veselības krīz"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "ҳолати фавқулодда дар соҳаи тандуруст"
+          },
+          {
+            "prefix": "ҳолатҳои фавқулодда дар соҳаи тандуруст"
+          },
+          {
+            "prefix": "вазъияти фавқулодда дар соҳаи тандуруст"
+          },
+          {
+            "prefix": "холати фавкулодда дар сохаи тандуруст"
+          },
+          {
+            "prefix": "ҳолати фавқулоддаи тандуруст"
+          },
+          {
+            "prefix": "зарбаҳои марбут ба саломат"
+          },
+          {
+            "prefix": "зарбаи саломат"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "sog'liqni saqlash sohasidagi favqulodda"
+          },
+          {
+            "prefix": "sogʻliqni saqlash sohasidagi favqulodda"
+          },
+          {
+            "prefix": "sog’liqni saqlash sohasidagi favqulodda"
+          },
+          {
+            "prefix": "sog‘liqni saqlash sohasidagi favqulodda"
+          },
+          {
+            "prefix": "соғлиқни сақлаш соҳасидаги фавқулодда"
+          },
+          {
+            "prefix": "sog'liqni saqlash favqulodda"
+          },
+          {
+            "prefix": "sogʻliqni saqlash favqulodda"
+          },
+          {
+            "prefix": "sog’liqni saqlash favqulodda"
+          },
+          {
+            "prefix": "sog‘liqni saqlash favqulodda"
+          },
+          {
+            "prefix": "соғлиқни сақлаш фавқулодда"
+          },
+          {
+            "prefix": "jamoat salomatligi sohasidagi favqulodda"
+          },
+          {
+            "prefix": "жамоат саломатлиги соҳасидаги фавқулодда"
+          },
+          {
+            "prefix": "favqulodda sanitariya-epidemiologik"
+          },
+          {
+            "prefix": "фавқулодда санитария-эпидемиологик"
+          },
+          {
+            "prefix": "sog'liq bilan bog'liq zarba"
+          },
+          {
+            "prefix": "sogʻliq bilan bogʻliq zarba"
+          },
+          {
+            "prefix": "sog’liq bilan bog’liq zarba"
+          },
+          {
+            "prefix": "sog‘liq bilan bog‘liq zarba"
+          },
+          {
+            "prefix": "соғлиқ билан боғлиқ зарба"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "sveikatos šok"
+          },
+          {
+            "prefix": "sveikatos sukrėtim"
+          },
+          {
+            "prefix": "ekstremalioji sveikatos situacij"
+          },
+          {
+            "prefix": "ekstremaliosios sveikatos situacij"
+          },
+          {
+            "prefix": "ekstremalioji visuomenės sveikatos situacij"
+          },
+          {
+            "prefix": "ekstremaliosios visuomenės sveikatos situacij"
+          },
+          {
+            "prefix": "sveikatos kriz"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "tervisešok"
+          },
+          {
+            "prefix": "tervisekriis"
+          },
+          {
+            "prefix": "rahvatervise hädaolukor"
+          },
+          {
+            "prefix": "tervisealane hädaolukor"
+          },
+          {
+            "prefix": "tervisehädaolukor"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "денсаулық сақтау саласындағы төтенше жағдай"
+          },
+          {
+            "prefix": "денсаулық сақтау төтенше жағдай"
+          },
+          {
+            "prefix": "санитариялық-эпидемиологиялық төтенше"
+          },
+          {
+            "prefix": "медициналық төтенше жағдай"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "ден соолукка байланыштуу шок"
+          },
+          {
+            "prefix": "саламаттык сактоо жаатындагы өзгөчө кырдаал"
+          },
+          {
+            "prefix": "саламаттыкты сактоо тармагындагы өзгөчө"
+          },
+          {
+            "prefix": "коомдук саламаттык жаатындагы өзгөчө"
+          },
+          {
+            "prefix": "санитардык-эпидемиологиялык өзгөчө"
+          },
+          {
+            "prefix": "ден соолукту сактоо боюнча өзгөчө абал"
+          }
+        ],
+        "farsi": [
+          "شوک سلامت",
+          "شوک بهداشتی",
+          "شوک‌های سلامت",
+          "شوک های سلامت",
+          "شوکهای سلامت",
+          "وضعیت اضطراری بهداشتی",
+          "وضعیت اضطراری سلامت",
+          "اضطرار بهداشتی",
+          "فوریت بهداشت عمومی",
+          "بحران بهداشتی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "надзвычайная сітуацыя ў галіне грамадскага здароў"
+          },
+          {
+            "prefix": "надзвычайнай сітуацыі ў галіне грамадскага здароў"
+          },
+          {
+            "prefix": "надзвычайная сітуацыя ў сферы аховы здароў"
+          },
+          {
+            "prefix": "надзвычайнай сітуацыі ў сферы аховы здароў"
+          },
+          {
+            "prefix": "санітарны крызіс"
+          },
+          {
+            "prefix": "санітарнага крызіс"
+          },
+          {
+            "prefix": "крызіс аховы здароў"
+          },
+          {
+            "prefix": "крызісу аховы здароў"
+          },
+          {
+            "prefix": "крызіс у ахове здароў"
+          }
+        ],
+        "pap": [
+          "emergencia di salud",
+          "emergencianan di salud",
+          "emergencia di salud publico",
+          "shock di salud",
+          "emergensia di salú",
+          "emergensianan di salú",
+          "emergensia di salú públiko",
+          "shok di salú"
         ]
       }
     },
@@ -14488,6 +18439,259 @@
           {
             "prefix": "udara pandemij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "pandēmijas šok"
+          },
+          {
+            "prefix": "pandēmijas izraisītais šok"
+          },
+          {
+            "prefix": "pandēmijas izraisītā šok"
+          },
+          {
+            "prefix": "pandēmijas triecien"
+          },
+          {
+            "prefix": "COVID-19 šok"
+          },
+          {
+            "prefix": "COVID šok"
+          },
+          {
+            "prefix": "kovida šok"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи пандеми"
+          },
+          {
+            "prefix": "шоки пандеми"
+          },
+          {
+            "prefix": "зарбаи коронавирус"
+          },
+          {
+            "prefix": "зарбаи ковид"
+          },
+          "зарбаи COVID",
+          "зарбаи COVID-19"
+        ],
+        "uzbek": [
+          {
+            "prefix": "pandemiya zarba"
+          },
+          {
+            "prefix": "пандемия зарба"
+          },
+          {
+            "prefix": "pandemiya keltirgan zarba"
+          },
+          {
+            "prefix": "пандемия келтирган зарба"
+          },
+          {
+            "prefix": "pandemiya bilan bog'liq zarba"
+          },
+          {
+            "prefix": "pandemiya bilan bogʻliq zarba"
+          },
+          {
+            "prefix": "pandemiya bilan bog’liq zarba"
+          },
+          {
+            "prefix": "pandemiya bilan bog‘liq zarba"
+          },
+          {
+            "prefix": "пандемия билан боғлиқ зарба"
+          },
+          {
+            "prefix": "pandemiya shok"
+          },
+          {
+            "prefix": "пандемия шок"
+          },
+          {
+            "prefix": "koronavirus zarba"
+          },
+          {
+            "prefix": "коронавирус зарба"
+          },
+          {
+            "prefix": "covid zarba"
+          },
+          {
+            "prefix": "covid-19 zarba"
+          },
+          {
+            "prefix": "ковид зарба"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "pandemijos šok"
+          },
+          {
+            "prefix": "pandemijos sukrėtim"
+          },
+          {
+            "prefix": "pandemijos sukeltas šok"
+          },
+          {
+            "prefix": "pandemijos sukelto šok"
+          },
+          {
+            "prefix": "pandemijos sukeltas sukrėtim"
+          },
+          {
+            "prefix": "pandemijos sukelto sukrėtim"
+          },
+          {
+            "prefix": "COVID-19 šok"
+          },
+          {
+            "prefix": "COVID šok"
+          },
+          {
+            "prefix": "COVID-19 sukrėtim"
+          },
+          {
+            "prefix": "koronaviruso šok"
+          },
+          {
+            "prefix": "koronaviruso sukrėtim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "pandeemiašok"
+          },
+          {
+            "prefix": "pandeemia šok"
+          },
+          {
+            "prefix": "pandeemiast tingitud šok"
+          },
+          {
+            "prefix": "pandeemiaga seotud šok"
+          },
+          {
+            "prefix": "pandeemia põhjustatud šok"
+          },
+          {
+            "prefix": "koroonašok"
+          },
+          {
+            "prefix": "covid-šok"
+          },
+          {
+            "prefix": "COVID-19 šok"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "пандемия дүмпу"
+          },
+          {
+            "prefix": "пандемия соққы"
+          },
+          {
+            "prefix": "пандемияның соққы"
+          },
+          {
+            "prefix": "пандемия тудырған дағдарыс"
+          },
+          {
+            "prefix": "пандемиядан туындаған дағдарыс"
+          },
+          {
+            "prefix": "пандемиялық дағдарыс"
+          },
+          {
+            "prefix": "коронавирус дағдарыс"
+          },
+          {
+            "prefix": "коронавирустық дағдарыс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "пандемиянын шог"
+          },
+          {
+            "prefix": "пандемия шог"
+          },
+          {
+            "prefix": "пандемия шок"
+          },
+          {
+            "prefix": "пандемиялык шок"
+          },
+          {
+            "prefix": "пандемиядан келип чыккан шок"
+          },
+          {
+            "prefix": "пандемиянын сокку"
+          },
+          {
+            "prefix": "ковид шог"
+          },
+          {
+            "prefix": "COVID-19 шог"
+          }
+        ],
+        "farsi": [
+          "شوک همه‌گیری",
+          "شوک همه گیری",
+          "شوک همهگیری",
+          "شوک پاندمی",
+          "شوک کرونا",
+          "شوک کووید",
+          "شوک ناشی از همه‌گیری",
+          "شوک ناشی از همه گیری",
+          "شوک ناشی از همهگیری",
+          "شوک ناشی از کرونا",
+          "شوک ناشی از پاندمی",
+          "تکانه کرونا"
+        ],
+        "belarusian": [
+          "шок пандэміі",
+          "шоку пандэміі",
+          {
+            "prefix": "пандэмічны шок"
+          },
+          {
+            "prefix": "пандэмічнага шок"
+          },
+          "шок ад пандэміі",
+          "шоку ад пандэміі",
+          {
+            "prefix": "ковідны шок"
+          },
+          {
+            "prefix": "ковіднага шок"
+          },
+          "шок COVID",
+          "шок ад COVID",
+          {
+            "prefix": "каранавірусны шок"
+          },
+          {
+            "prefix": "каранавіруснага шок"
+          }
+        ],
+        "pap": [
+          "shock di pandemia",
+          "shock di COVID",
+          "shock di COVID-19",
+          "crisis di COVID",
+          "shok di pandemia",
+          "shok di COVID",
+          "shok di COVID-19",
+          "krisis di COVID",
+          "coronacrisis"
         ]
       }
     },
@@ -15035,6 +19239,156 @@
           {
             "prefix": "udar epidemij"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "epidēmijas šok"
+          },
+          {
+            "prefix": "epidēmijas izraisītais šok"
+          },
+          {
+            "prefix": "epidēmijas triecien"
+          },
+          {
+            "prefix": "uzliesmojuma šok"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи эпидеми"
+          },
+          {
+            "prefix": "шоки эпидеми"
+          },
+          {
+            "prefix": "зарбаи хуруҷи бемор"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "epidemiya zarba"
+          },
+          {
+            "prefix": "эпидемия зарба"
+          },
+          {
+            "prefix": "epidemiya keltirgan zarba"
+          },
+          {
+            "prefix": "эпидемия келтирган зарба"
+          },
+          {
+            "prefix": "epidemiya bilan bog'liq zarba"
+          },
+          {
+            "prefix": "epidemiya bilan bogʻliq zarba"
+          },
+          {
+            "prefix": "epidemiya bilan bog’liq zarba"
+          },
+          {
+            "prefix": "epidemiya bilan bog‘liq zarba"
+          },
+          {
+            "prefix": "эпидемия билан боғлиқ зарба"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "epidemijos šok"
+          },
+          {
+            "prefix": "epidemijos sukrėtim"
+          },
+          {
+            "prefix": "protrūkio šok"
+          },
+          {
+            "prefix": "su epidemija susijęs šok"
+          },
+          {
+            "prefix": "su epidemija susijęs sukrėtim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "epideemiašok"
+          },
+          {
+            "prefix": "epideemia šok"
+          },
+          {
+            "prefix": "epideemiaga seotud šok"
+          },
+          {
+            "prefix": "epideemiast tingitud šok"
+          },
+          {
+            "prefix": "haiguspuhangu šok"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "эпидемия дүмпу"
+          },
+          {
+            "prefix": "эпидемияның соққы"
+          },
+          {
+            "prefix": "індеттің соққы"
+          },
+          {
+            "prefix": "эпидемиядан туындаған дағдарыс"
+          },
+          {
+            "prefix": "індет тудырған дағдарыс"
+          },
+          {
+            "prefix": "індеттен туындаған дағдарыс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "эпидемиянын шог"
+          },
+          {
+            "prefix": "эпидемия шог"
+          },
+          {
+            "prefix": "эпидемиялык шок"
+          },
+          {
+            "prefix": "эпидемиянын сокку"
+          },
+          {
+            "prefix": "эпидемияга байланыштуу шок"
+          }
+        ],
+        "farsi": [
+          "شوک اپیدمی",
+          "شوک ناشی از اپیدمی",
+          "شوک شیوع بیماری",
+          "شوک ناشی از شیوع"
+        ],
+        "belarusian": [
+          "шок эпідэміі",
+          "шоку эпідэміі",
+          {
+            "prefix": "эпідэмічны шок"
+          },
+          {
+            "prefix": "эпідэмічнага шок"
+          },
+          "шок ад эпідэміі",
+          "шоку ад эпідэміі",
+          "шок ад успышкі"
+        ],
+        "pap": [
+          "shock di epidemia",
+          "impacto di epidemia",
+          "shok di epidemia",
+          "impakto di epidemia"
         ]
       }
     },
@@ -15721,6 +20075,251 @@
           {
             "prefix": "vremenskih šokov"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "klimata šok"
+          },
+          {
+            "prefix": "klimatiskais šok"
+          },
+          {
+            "prefix": "klimatiskie šok"
+          },
+          {
+            "prefix": "klimatisko šok"
+          },
+          {
+            "prefix": "ar klimatu saistītie šok"
+          },
+          {
+            "prefix": "ar klimatu saistītais šok"
+          },
+          {
+            "prefix": "laikapstākļu šok"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаҳои иқлим"
+          },
+          {
+            "prefix": "зарбаи иқлим"
+          },
+          {
+            "prefix": "зарбахои иклим"
+          },
+          {
+            "prefix": "зарбаҳои марбут ба иқлим"
+          },
+          {
+            "prefix": "зарбаҳои обу ҳаво"
+          },
+          {
+            "prefix": "шоки иқлим"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "iqlim zarba"
+          },
+          {
+            "prefix": "иқлим зарба"
+          },
+          {
+            "prefix": "iqlim bilan bog'liq zarba"
+          },
+          {
+            "prefix": "iqlim bilan bogʻliq zarba"
+          },
+          {
+            "prefix": "iqlim bilan bog’liq zarba"
+          },
+          {
+            "prefix": "iqlim bilan bog‘liq zarba"
+          },
+          {
+            "prefix": "иқлим билан боғлиқ зарба"
+          },
+          {
+            "prefix": "iqlimiy zarba"
+          },
+          {
+            "prefix": "иқлимий зарба"
+          },
+          {
+            "prefix": "ob-havo zarba"
+          },
+          {
+            "prefix": "об-ҳаво зарба"
+          },
+          {
+            "prefix": "iqlim shok"
+          },
+          {
+            "prefix": "иқлим шок"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "klimato šok"
+          },
+          {
+            "prefix": "klimato sukrėtim"
+          },
+          {
+            "prefix": "su klimatu susijęs šok"
+          },
+          {
+            "prefix": "su klimatu susiję šok"
+          },
+          {
+            "prefix": "su klimatu susijusių šok"
+          },
+          {
+            "prefix": "su klimatu susiję sukrėtim"
+          },
+          {
+            "prefix": "su klimatu susijusių sukrėtim"
+          },
+          {
+            "prefix": "klimatinis šok"
+          },
+          {
+            "prefix": "klimatinio šok"
+          },
+          {
+            "prefix": "klimatiniai šok"
+          },
+          {
+            "prefix": "klimatinių šok"
+          },
+          {
+            "prefix": "oro sąlygų šok"
+          },
+          {
+            "prefix": "oro sąlygų sukrėtim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "kliimašok"
+          },
+          {
+            "prefix": "kliimaga seotud šok"
+          },
+          {
+            "prefix": "kliimast tingitud šok"
+          },
+          {
+            "prefix": "ilmastikušok"
+          },
+          {
+            "prefix": "ilmastikuga seotud šok"
+          },
+          {
+            "prefix": "ilmašok"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "климаттық дүмпу"
+          },
+          {
+            "prefix": "климаттық соққы"
+          },
+          {
+            "prefix": "климаттық күйзеліс"
+          },
+          {
+            "prefix": "климатқа байланысты дүмпу"
+          },
+          {
+            "prefix": "ауа райы дүмпу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "климаттык шок"
+          },
+          {
+            "prefix": "климаттык шог"
+          },
+          {
+            "prefix": "климаттык сокку"
+          },
+          {
+            "prefix": "климатка байланыштуу шок"
+          },
+          {
+            "prefix": "аба ырайы шог"
+          },
+          {
+            "prefix": "аба ырайынын шог"
+          }
+        ],
+        "farsi": [
+          "شوک اقلیمی",
+          "شوک‌های اقلیمی",
+          "شوک های اقلیمی",
+          "شوکهای اقلیمی",
+          "شوک آب و هوایی",
+          "شوک‌های آب و هوایی",
+          "شوک های آب و هوایی",
+          "شوکهای آب و هوایی",
+          "شوک آب‌وهوایی",
+          "شوک آب وهوایی",
+          "شوک آبوهوایی",
+          "شوک‌های آب‌وهوایی",
+          "شوک های آب وهوایی",
+          "شوکهای آبوهوایی",
+          "تکانه‌های اقلیمی",
+          "تکانه های اقلیمی",
+          "تکانههای اقلیمی",
+          "شوک ناشی از تغییرات اقلیمی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "кліматычны шок"
+          },
+          {
+            "prefix": "кліматычнага шок"
+          },
+          {
+            "prefix": "кліматычныя шок"
+          },
+          {
+            "prefix": "кліматычных шок"
+          },
+          {
+            "prefix": "кліматычным шок"
+          },
+          {
+            "prefix": "пагодны шок"
+          },
+          {
+            "prefix": "пагоднага шок"
+          },
+          {
+            "prefix": "пагодныя шок"
+          },
+          {
+            "prefix": "пагодных шок"
+          },
+          {
+            "prefix": "шокі, звязаныя з клімат"
+          },
+          {
+            "prefix": "шокаў, звязаных з клімат"
+          }
+        ],
+        "pap": [
+          "shock climatico",
+          "shock di clima",
+          "evento climatico extremo",
+          "shok klimátiko",
+          "shok di klima",
+          "evento klimátiko ekstremo"
         ]
       }
     },
@@ -16322,6 +20921,194 @@
           },
           "šok zbog rata",
           "šok rata"
+        ],
+        "latvian": [
+          {
+            "prefix": "konflikta šok"
+          },
+          {
+            "prefix": "konfliktu šok"
+          },
+          {
+            "prefix": "kara šok"
+          },
+          {
+            "prefix": "kara izraisītais šok"
+          },
+          {
+            "prefix": "ar konfliktu saistītie šok"
+          }
+        ],
+        "tajik": [
+          "зарбаи низоъ",
+          "зарбаҳои низоъ",
+          "зарбаҳои марбут ба низоъ",
+          {
+            "prefix": "зарбаи низои мусаллаҳ"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "mojaro zarba"
+          },
+          {
+            "prefix": "можаро зарба"
+          },
+          {
+            "prefix": "mojaro bilan bog'liq zarba"
+          },
+          {
+            "prefix": "mojaro bilan bogʻliq zarba"
+          },
+          {
+            "prefix": "mojaro bilan bog’liq zarba"
+          },
+          {
+            "prefix": "mojaro bilan bog‘liq zarba"
+          },
+          {
+            "prefix": "можаро билан боғлиқ зарба"
+          },
+          {
+            "prefix": "urush keltirgan zarba"
+          },
+          {
+            "prefix": "уруш келтирган зарба"
+          },
+          {
+            "prefix": "urush bilan bog'liq zarba"
+          },
+          {
+            "prefix": "urush bilan bogʻliq zarba"
+          },
+          {
+            "prefix": "urush bilan bog’liq zarba"
+          },
+          {
+            "prefix": "urush bilan bog‘liq zarba"
+          },
+          {
+            "prefix": "уруш билан боғлиқ зарба"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "konflikto šok"
+          },
+          {
+            "prefix": "konfliktų šok"
+          },
+          {
+            "prefix": "konflikto sukrėtim"
+          },
+          {
+            "prefix": "su konfliktu susijęs šok"
+          },
+          {
+            "prefix": "su konfliktu susiję sukrėtim"
+          },
+          {
+            "prefix": "karo šok"
+          },
+          {
+            "prefix": "karo sukrėtim"
+          },
+          {
+            "prefix": "karo sukeltas šok"
+          },
+          {
+            "prefix": "karo sukelto šok"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "konfliktišok"
+          },
+          {
+            "prefix": "konfliktiga seotud šok"
+          },
+          {
+            "prefix": "konfliktist tingitud šok"
+          },
+          {
+            "prefix": "sõjašok"
+          },
+          {
+            "prefix": "sõjast tingitud šok"
+          },
+          {
+            "prefix": "sõja põhjustatud šok"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "қақтығыс дүмпу"
+          },
+          {
+            "prefix": "соғыс дүмпу"
+          },
+          {
+            "prefix": "қақтығысқа байланысты дүмпу"
+          },
+          {
+            "prefix": "соғыстан туындаған дүмпу"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "чыр-чатактын шог"
+          },
+          {
+            "prefix": "чыр-чатак шог"
+          },
+          {
+            "prefix": "чыр-чатакка байланыштуу шок"
+          },
+          {
+            "prefix": "согуштун шог"
+          },
+          {
+            "prefix": "согуш шог"
+          }
+        ],
+        "farsi": [
+          "شوک جنگ",
+          "شوک ناشی از جنگ",
+          "شوک‌های ناشی از جنگ",
+          "شوک های ناشی از جنگ",
+          "شوکهای ناشی از جنگ",
+          "شوک درگیری",
+          "شوک ناشی از درگیری",
+          "شوک منازعه",
+          "تکانه جنگ"
+        ],
+        "belarusian": [
+          "шок ад канфлікту",
+          "шоку ад канфлікту",
+          "шок ад вайны",
+          "шоку ад вайны",
+          {
+            "prefix": "ваенны шок"
+          },
+          {
+            "prefix": "ваеннага шок"
+          },
+          {
+            "prefix": "вайсковы шок"
+          },
+          {
+            "prefix": "вайсковага шок"
+          },
+          "шок, выкліканы вайной",
+          "шок, звязаны з вайной"
+        ],
+        "pap": [
+          "shock di guera",
+          "shock di conflicto",
+          "shok di guera",
+          "shok di konflikto",
+          "impacto di guera",
+          "impakto di guera"
         ]
       }
     },
@@ -17004,6 +21791,228 @@
           "politička previranja",
           "političkih previranja",
           "političkim previranjima"
+        ],
+        "latvian": [
+          {
+            "prefix": "politiskais šok"
+          },
+          {
+            "prefix": "politiskā šok"
+          },
+          {
+            "prefix": "politiskie šok"
+          },
+          {
+            "prefix": "politisko šok"
+          },
+          {
+            "prefix": "politiskais satricinājum"
+          },
+          {
+            "prefix": "politiskā satricinājum"
+          },
+          {
+            "prefix": "politiskie satricinājum"
+          },
+          {
+            "prefix": "politisko satricinājum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "зарбаи сиёс"
+          },
+          {
+            "prefix": "шоки сиёс"
+          },
+          {
+            "prefix": "табаддулоти сиёс"
+          },
+          {
+            "prefix": "ларзишҳои сиёс"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "siyosiy shok"
+          },
+          {
+            "prefix": "сиёсий шок"
+          },
+          {
+            "prefix": "siyosiy larza"
+          },
+          {
+            "prefix": "сиёсий ларза"
+          },
+          {
+            "prefix": "siyosiy g'alayon"
+          },
+          {
+            "prefix": "siyosiy gʻalayon"
+          },
+          {
+            "prefix": "siyosiy g’alayon"
+          },
+          {
+            "prefix": "siyosiy g‘alayon"
+          },
+          {
+            "prefix": "сиёсий ғалаён"
+          },
+          {
+            "prefix": "siyosiy to'ntarilish"
+          },
+          {
+            "prefix": "siyosiy toʻntarilish"
+          },
+          {
+            "prefix": "siyosiy to’ntarilish"
+          },
+          {
+            "prefix": "siyosiy to‘ntarilish"
+          },
+          {
+            "prefix": "сиёсий тўнтарилиш"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "politinis šok"
+          },
+          {
+            "prefix": "politinio šok"
+          },
+          {
+            "prefix": "politiniai šok"
+          },
+          {
+            "prefix": "politinių šok"
+          },
+          {
+            "prefix": "politinis sukrėtim"
+          },
+          {
+            "prefix": "politinio sukrėtim"
+          },
+          {
+            "prefix": "politiniai sukrėtim"
+          },
+          {
+            "prefix": "politinių sukrėtim"
+          },
+          {
+            "prefix": "politinė suirut"
+          },
+          {
+            "prefix": "politinės suirut"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "poliitiline šok"
+          },
+          {
+            "prefix": "poliitilise šok"
+          },
+          {
+            "prefix": "poliitilist šok"
+          },
+          {
+            "prefix": "poliitiline murrang"
+          },
+          {
+            "prefix": "poliitilise murrangu"
+          },
+          {
+            "prefix": "poliitiline maavärin"
+          },
+          {
+            "prefix": "poliitilise maavärin"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "саяси дүмпу"
+          },
+          {
+            "prefix": "саяси сілкініс"
+          },
+          {
+            "prefix": "саяси төңкеріс"
+          },
+          {
+            "prefix": "саяси соққы"
+          },
+          {
+            "prefix": "саяси күйзеліс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "саясий шок"
+          },
+          {
+            "prefix": "саясий шог"
+          },
+          {
+            "prefix": "саясий дүрбөлөң"
+          },
+          {
+            "prefix": "саясий силкин"
+          },
+          {
+            "prefix": "саясий төңкөрүш"
+          }
+        ],
+        "farsi": [
+          "شوک سیاسی",
+          "شوک‌های سیاسی",
+          "شوک های سیاسی",
+          "شوکهای سیاسی",
+          "زلزله سیاسی",
+          "آشوب سیاسی",
+          "تلاطم سیاسی",
+          "تکانه سیاسی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "палітычны шок"
+          },
+          {
+            "prefix": "палітычнага шок"
+          },
+          {
+            "prefix": "палітычныя шок"
+          },
+          {
+            "prefix": "палітычных шок"
+          },
+          {
+            "prefix": "палітычныя ўзрушэн"
+          },
+          {
+            "prefix": "палітычных узрушэн"
+          },
+          {
+            "prefix": "палітычнае ўзрушэн"
+          },
+          {
+            "prefix": "палітычнага ўзрушэн"
+          },
+          {
+            "prefix": "палітычныя катаклізм"
+          },
+          {
+            "prefix": "палітычных катаклізм"
+          }
+        ],
+        "pap": [
+          "shock politico",
+          "terremoto politico",
+          "shok polítiko",
+          "teremoto polítiko",
+          "politieke aardverschuiving"
         ]
       }
     },
@@ -17635,6 +22644,219 @@
             "prefix": "nedosljednost javnih politik"
           },
           "česte promjene politika"
+        ],
+        "latvian": [
+          {
+            "prefix": "politikas nenoteiktīb"
+          },
+          {
+            "prefix": "politikas neprognozējamīb"
+          },
+          {
+            "prefix": "neprognozējama politik"
+          },
+          {
+            "prefix": "neprognozējamā politik"
+          },
+          {
+            "prefix": "politikas svārstīb"
+          },
+          {
+            "prefix": "politikas nekonsekvenc"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "номуайянии сиёсат"
+          },
+          {
+            "prefix": "пешгӯинашавандагии сиёсат"
+          },
+          {
+            "prefix": "сиёсати пешгӯинашаванда"
+          },
+          {
+            "prefix": "ноустувории сиёсат"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "siyosatdagi noaniq"
+          },
+          {
+            "prefix": "сиёсатдаги ноаниқ"
+          },
+          {
+            "prefix": "siyosat noaniq"
+          },
+          {
+            "prefix": "сиёсат ноаниқ"
+          },
+          {
+            "prefix": "siyosatning oldindan aytib bo'lmas"
+          },
+          {
+            "prefix": "siyosatning oldindan aytib boʻlmas"
+          },
+          {
+            "prefix": "siyosatning oldindan aytib bo’lmas"
+          },
+          {
+            "prefix": "siyosatning oldindan aytib bo‘lmas"
+          },
+          {
+            "prefix": "сиёсатнинг олдиндан айтиб бўлмас"
+          },
+          {
+            "prefix": "oldindan aytib bo'lmaydigan siyosat"
+          },
+          {
+            "prefix": "oldindan aytib boʻlmaydigan siyosat"
+          },
+          {
+            "prefix": "oldindan aytib bo’lmaydigan siyosat"
+          },
+          {
+            "prefix": "oldindan aytib bo‘lmaydigan siyosat"
+          },
+          {
+            "prefix": "олдиндан айтиб бўлмайдиган сиёсат"
+          },
+          {
+            "prefix": "siyosatning beqaror"
+          },
+          {
+            "prefix": "сиёсатнинг беқарор"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "politikos neapibrėžtum"
+          },
+          {
+            "prefix": "politikos nenuspėjamum"
+          },
+          {
+            "prefix": "politikos netikrum"
+          },
+          "nenuspėjama politika",
+          "nenuspėjamos politikos",
+          "nenuspėjamą politiką",
+          {
+            "prefix": "politikos svyravim"
+          },
+          {
+            "prefix": "politikos blaškym"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "poliitika ettearvamatus"
+          },
+          {
+            "prefix": "poliitika ebakindlus"
+          },
+          {
+            "prefix": "poliitikate ebakindlus"
+          },
+          {
+            "prefix": "poliitika ebaselgus"
+          },
+          {
+            "prefix": "ettearvamatu poliitika"
+          },
+          {
+            "prefix": "valitsuse otsuste ettearvamatus"
+          },
+          {
+            "prefix": "poliitika kõikumi"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "саясаттағы белгісіздік"
+          },
+          {
+            "prefix": "саясаттың болжамсыз"
+          },
+          {
+            "prefix": "саясаттың болжанбау"
+          },
+          {
+            "prefix": "болжамсыз саясат"
+          },
+          {
+            "prefix": "болжап болмайтын саясат"
+          },
+          {
+            "prefix": "саяси шешімдердің болжамсыз"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "саясаттагы белгисизди"
+          },
+          {
+            "prefix": "саясаттын белгисизди"
+          },
+          {
+            "prefix": "саясаттын туруксузду"
+          },
+          {
+            "prefix": "саясаттын болжолсуз"
+          },
+          {
+            "prefix": "саясий чечимдердин белгисизди"
+          }
+        ],
+        "farsi": [
+          "نااطمینانی سیاستی",
+          "عدم قطعیت سیاستی",
+          "عدم اطمینان سیاستی",
+          "بی‌ثباتی سیاستی",
+          "بی ثباتی سیاستی",
+          "بیثباتی سیاستی",
+          "ابهام سیاستی",
+          "پیش‌بینی‌ناپذیری سیاست‌ها",
+          "پیش بینی ناپذیری سیاست ها",
+          "پیشبینیناپذیری سیاستها",
+          "بی‌ثباتی در سیاست‌گذاری",
+          "بی ثباتی در سیاست گذاری",
+          "بیثباتی در سیاستگذاری",
+          "تغییرات مکرر سیاست‌ها",
+          "تغییرات مکرر سیاست ها",
+          "تغییرات مکرر سیاستها"
+        ],
+        "belarusian": [
+          "нявызначанасць палітыкі",
+          "нявызначанасьць палітыкі",
+          "нявызначанасці палітыкі",
+          "нявызначанасьці палітыкі",
+          "непрадказальнасць палітыкі",
+          "непрадказальнасьць палітыкі",
+          "непрадказальнасці палітыкі",
+          {
+            "prefix": "непрадказальная палітык"
+          },
+          {
+            "prefix": "непрадказальнай палітык"
+          },
+          {
+            "prefix": "непаслядоўная палітык"
+          },
+          {
+            "prefix": "непаслядоўнай палітык"
+          },
+          "непаслядоўнасць палітыкі",
+          "непаслядоўнасці палітыкі"
+        ],
+        "pap": [
+          "inseguridad di maneho",
+          "maneho imprevisibel",
+          "insiguridat di maneho",
+          "insiguridat di manehu",
+          "manehu imprevisibel",
+          "beleidsonzekerheid"
         ]
       }
     },
@@ -18409,6 +23631,282 @@
           },
           "neizvjesnost oko carina",
           "neizvjesnosti oko carina"
+        ],
+        "latvian": [
+          {
+            "prefix": "ekonomiskās politikas nenoteiktīb"
+          },
+          {
+            "prefix": "ekonomikas politikas nenoteiktīb"
+          },
+          {
+            "prefix": "fiskālās politikas nenoteiktīb"
+          },
+          {
+            "prefix": "monetārās politikas nenoteiktīb"
+          },
+          {
+            "prefix": "tirdzniecības politikas nenoteiktīb"
+          },
+          {
+            "prefix": "nodokļu politikas nenoteiktīb"
+          },
+          {
+            "prefix": "nodokļu politikas neprognozējamīb"
+          },
+          {
+            "prefix": "nodokļu sistēmas neprognozējamīb"
+          },
+          "nenoteiktība par ekonomisko politiku"
+        ],
+        "tajik": [
+          {
+            "prefix": "номуайянии сиёсати иқтисод"
+          },
+          {
+            "prefix": "номуайянии сиёсати иктисод"
+          },
+          {
+            "prefix": "номуайянии сиёсати фискал"
+          },
+          {
+            "prefix": "номуайянии сиёсати буҷет"
+          },
+          {
+            "prefix": "номуайянии сиёсати пулию қарз"
+          },
+          {
+            "prefix": "номуайянии сиёсати монетар"
+          },
+          {
+            "prefix": "номуайянии сиёсати тиҷорат"
+          },
+          {
+            "prefix": "номуайянии сиёсати андоз"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "iqtisodiy siyosatdagi noaniq"
+          },
+          {
+            "prefix": "иқтисодий сиёсатдаги ноаниқ"
+          },
+          {
+            "prefix": "iqtisodiy siyosat noaniq"
+          },
+          {
+            "prefix": "иқтисодий сиёсат ноаниқ"
+          },
+          {
+            "prefix": "fiskal siyosatdagi noaniq"
+          },
+          {
+            "prefix": "фискал сиёсатдаги ноаниқ"
+          },
+          {
+            "prefix": "pul-kredit siyosatidagi noaniq"
+          },
+          {
+            "prefix": "пул-кредит сиёсатидаги ноаниқ"
+          },
+          {
+            "prefix": "monetar siyosatdagi noaniq"
+          },
+          {
+            "prefix": "монетар сиёсатдаги ноаниқ"
+          },
+          {
+            "prefix": "savdo siyosatidagi noaniq"
+          },
+          {
+            "prefix": "савдо сиёсатидаги ноаниқ"
+          },
+          {
+            "prefix": "soliq siyosatidagi noaniq"
+          },
+          {
+            "prefix": "солиқ сиёсатидаги ноаниқ"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "ekonominės politikos neapibrėžtum"
+          },
+          {
+            "prefix": "ekonomikos politikos neapibrėžtum"
+          },
+          {
+            "prefix": "fiskalinės politikos neapibrėžtum"
+          },
+          {
+            "prefix": "pinigų politikos neapibrėžtum"
+          },
+          {
+            "prefix": "prekybos politikos neapibrėžtum"
+          },
+          {
+            "prefix": "mokesčių politikos neapibrėžtum"
+          },
+          {
+            "prefix": "ekonominės politikos netikrum"
+          },
+          {
+            "prefix": "mokesčių politikos netikrum"
+          },
+          "neapibrėžtumas dėl ekonominės politikos",
+          "neapibrėžtumo dėl ekonominės politikos",
+          "neapibrėžtumas dėl mokesčių politikos",
+          "neapibrėžtumas dėl prekybos politikos"
+        ],
+        "estonian": [
+          {
+            "prefix": "majanduspoliitiline ebakindlus"
+          },
+          {
+            "prefix": "majanduspoliitilise ebakindlus"
+          },
+          {
+            "prefix": "majanduspoliitika ebakindlus"
+          },
+          {
+            "prefix": "majanduspoliitika ettearvamatus"
+          },
+          {
+            "prefix": "eelarvepoliitika ebakindlus"
+          },
+          {
+            "prefix": "rahapoliitika ebakindlus"
+          },
+          {
+            "prefix": "kaubanduspoliitika ebakindlus"
+          },
+          {
+            "prefix": "kaubanduspoliitiline ebakindlus"
+          },
+          {
+            "prefix": "maksupoliitika ebakindlus"
+          },
+          {
+            "prefix": "maksupoliitika ettearvamatus"
+          },
+          {
+            "prefix": "maksukeskkonna ettearvamatus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "экономикалық саясаттағы белгісіздік"
+          },
+          {
+            "prefix": "экономикалық саясатқа қатысты белгісіздік"
+          },
+          {
+            "prefix": "фискалдық саясаттағы белгісіздік"
+          },
+          {
+            "prefix": "ақша-несие саясатындағы белгісіздік"
+          },
+          {
+            "prefix": "монетарлық саясаттағы белгісіздік"
+          },
+          {
+            "prefix": "сауда саясатындағы белгісіздік"
+          },
+          {
+            "prefix": "салық саясатындағы белгісіздік"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "экономикалык саясаттагы белгисизди"
+          },
+          {
+            "prefix": "экономикалык саясаттын белгисизди"
+          },
+          {
+            "prefix": "фискалдык саясаттагы белгисизди"
+          },
+          {
+            "prefix": "монетардык саясаттагы белгисизди"
+          },
+          {
+            "prefix": "акча-кредит саясатындагы белгисизди"
+          },
+          {
+            "prefix": "соода саясатындагы белгисизди"
+          },
+          {
+            "prefix": "салык саясатындагы белгисизди"
+          }
+        ],
+        "farsi": [
+          "نااطمینانی سیاست اقتصادی",
+          "عدم قطعیت سیاست اقتصادی",
+          "نااطمینانی در سیاست‌های اقتصادی",
+          "نااطمینانی در سیاست های اقتصادی",
+          "نااطمینانی در سیاستهای اقتصادی",
+          "عدم قطعیت در سیاست‌های اقتصادی",
+          "عدم قطعیت در سیاست های اقتصادی",
+          "عدم قطعیت در سیاستهای اقتصادی",
+          "عدم اطمینان سیاست‌های اقتصادی",
+          "عدم اطمینان سیاست های اقتصادی",
+          "عدم اطمینان سیاستهای اقتصادی",
+          "بی‌ثباتی سیاست‌های اقتصادی",
+          "بی ثباتی سیاست های اقتصادی",
+          "بیثباتی سیاستهای اقتصادی",
+          "نااطمینانی سیاست پولی",
+          "نااطمینانی سیاست تجاری",
+          "نااطمینانی سیاست مالی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "нявызначанасць эканамічнай палітык"
+          },
+          {
+            "prefix": "нявызначанасьць эканамічнай палітык"
+          },
+          {
+            "prefix": "нявызначанасці эканамічнай палітык"
+          },
+          {
+            "prefix": "нявызначанасьці эканамічнай палітык"
+          },
+          {
+            "prefix": "нявызначанасць фіскальнай палітык"
+          },
+          {
+            "prefix": "нявызначанасці фіскальнай палітык"
+          },
+          {
+            "prefix": "нявызначанасць грашова-крэдытнай палітык"
+          },
+          {
+            "prefix": "нявызначанасці грашова-крэдытнай палітык"
+          },
+          {
+            "prefix": "нявызначанасць манетарнай палітык"
+          },
+          {
+            "prefix": "нявызначанасць гандлёвай палітык"
+          },
+          {
+            "prefix": "нявызначанасці гандлёвай палітык"
+          },
+          {
+            "prefix": "нявызначанасць падатковай палітык"
+          },
+          {
+            "prefix": "нявызначанасці падатковай палітык"
+          }
+        ],
+        "pap": [
+          "inseguridad di maneho economico",
+          "inseguridad di maneho fiscal",
+          "inseguridad di maneho comercial",
+          "insiguridat di maneho ekonómiko",
+          "insiguridat di maneho fiskal",
+          "insiguridat di maneho komersial"
         ]
       }
     },
@@ -19180,6 +24678,246 @@
           "nestabilan regulatorni okvir",
           "česte izmjene propisa",
           "čestih izmjena propisa"
+        ],
+        "latvian": [
+          {
+            "prefix": "regulējuma nenoteiktīb"
+          },
+          {
+            "prefix": "regulatīvā nenoteiktīb"
+          },
+          {
+            "prefix": "regulatīvās nenoteiktīb"
+          },
+          {
+            "prefix": "regulējuma neprognozējamīb"
+          },
+          {
+            "prefix": "regulējuma neskaidrīb"
+          },
+          {
+            "prefix": "tiesiskā nenoteiktīb"
+          },
+          {
+            "prefix": "tiesiskās nenoteiktīb"
+          },
+          {
+            "prefix": "juridiskā nenoteiktīb"
+          },
+          {
+            "prefix": "juridiskās nenoteiktīb"
+          },
+          {
+            "prefix": "tiesiskās noteiktības trūkum"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "номуайянии танзим"
+          },
+          {
+            "prefix": "номуайянии ҳуқуқ"
+          },
+          {
+            "prefix": "номуайянии хукук"
+          },
+          {
+            "prefix": "номуайянии қонунгузор"
+          },
+          {
+            "prefix": "пешгӯинашавандагии танзим"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "tartibga solishdagi noaniq"
+          },
+          {
+            "prefix": "тартибга солишдаги ноаниқ"
+          },
+          {
+            "prefix": "tartibga solish noaniq"
+          },
+          {
+            "prefix": "тартибга солиш ноаниқ"
+          },
+          {
+            "prefix": "huquqiy noaniq"
+          },
+          {
+            "prefix": "ҳуқуқий ноаниқ"
+          },
+          {
+            "prefix": "qonunchilikdagi noaniq"
+          },
+          {
+            "prefix": "қонунчиликдаги ноаниқ"
+          },
+          {
+            "prefix": "normativ-huquqiy noaniq"
+          },
+          {
+            "prefix": "норматив-ҳуқуқий ноаниқ"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "reguliavimo neapibrėžtum"
+          },
+          {
+            "prefix": "reguliacinis neapibrėžtum"
+          },
+          {
+            "prefix": "reguliacinio neapibrėžtum"
+          },
+          {
+            "prefix": "teisinis neapibrėžtum"
+          },
+          {
+            "prefix": "teisinio neapibrėžtum"
+          },
+          {
+            "prefix": "teisinis netikrum"
+          },
+          {
+            "prefix": "teisinio netikrum"
+          },
+          {
+            "prefix": "reguliavimo nenuspėjamum"
+          },
+          {
+            "prefix": "teisinio reguliavimo nestabilum"
+          },
+          {
+            "prefix": "teisinės aplinkos nestabilum"
+          },
+          {
+            "prefix": "reguliavimo neaiškum"
+          },
+          {
+            "prefix": "teisinis neaiškum"
+          },
+          {
+            "prefix": "teisinio neaiškum"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "regulatiivne ebakindlus"
+          },
+          {
+            "prefix": "regulatiivse ebakindlus"
+          },
+          {
+            "prefix": "õiguslik ebakindlus"
+          },
+          {
+            "prefix": "õigusliku ebakindlus"
+          },
+          {
+            "prefix": "õiguskeskkonna ettearvamatus"
+          },
+          {
+            "prefix": "regulatsioonide ettearvamatus"
+          },
+          {
+            "prefix": "regulatsiooni ebaselgus"
+          },
+          {
+            "prefix": "ebaselge õiguskeskkon"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "реттеудегі белгісіздік"
+          },
+          {
+            "prefix": "реттеушілік белгісіздік"
+          },
+          {
+            "prefix": "құқықтық белгісіздік"
+          },
+          {
+            "prefix": "заңнамадағы белгісіздік"
+          },
+          {
+            "prefix": "заңнаманың тұрақсызды"
+          },
+          {
+            "prefix": "заңнаманың жиі өзгер"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "ченемдик белгисизди"
+          },
+          {
+            "prefix": "укуктук белгисизди"
+          },
+          {
+            "prefix": "жөнгө салуудагы белгисизди"
+          },
+          {
+            "prefix": "регулятордук белгисизди"
+          },
+          {
+            "prefix": "мыйзамдардын туруксузду"
+          },
+          {
+            "prefix": "мыйзамдардын тез-тез өзгөр"
+          }
+        ],
+        "farsi": [
+          "نااطمینانی مقرراتی",
+          "عدم قطعیت مقرراتی",
+          "بی‌ثباتی مقررات",
+          "بی ثباتی مقررات",
+          "بیثباتی مقررات",
+          "بی‌ثباتی قوانین",
+          "بی ثباتی قوانین",
+          "بیثباتی قوانین",
+          "ابهام قانونی",
+          "ابهام در قوانین",
+          "تغییرات مکرر قوانین",
+          "نااطمینانی حقوقی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "рэгулятарная нявызначанас"
+          },
+          {
+            "prefix": "рэгулятарнай нявызначанас"
+          },
+          {
+            "prefix": "рэгулятарная непрадказальнас"
+          },
+          {
+            "prefix": "рэгулятарнай непрадказальнас"
+          },
+          {
+            "prefix": "прававая нявызначанас"
+          },
+          {
+            "prefix": "прававой нявызначанас"
+          },
+          {
+            "prefix": "юрыдычная нявызначанас"
+          },
+          {
+            "prefix": "юрыдычнай нявызначанас"
+          },
+          "нестабільнасць заканадаўства",
+          "нестабільнасьць заканадаўства",
+          "нестабільнасці заканадаўства"
+        ],
+        "pap": [
+          "inseguridad legal",
+          "inseguridad huridico",
+          "inseguridad regulatorio",
+          "insiguridat legal",
+          "insiguridat hurídiko",
+          "insiguridat regulatorio",
+          "rechtsonzekerheid"
         ]
       }
     },
@@ -19936,6 +25674,236 @@
           "političkog vakuuma",
           "politički limbo",
           "политичка неизвјесност"
+        ],
+        "latvian": [
+          {
+            "prefix": "politiskā nenoteiktīb"
+          },
+          {
+            "prefix": "politiskās nenoteiktīb"
+          },
+          {
+            "prefix": "politisko nenoteiktīb"
+          },
+          {
+            "prefix": "politiskā neskaidrīb"
+          },
+          {
+            "prefix": "politiskās neskaidrīb"
+          },
+          {
+            "prefix": "vēlēšanu nenoteiktīb"
+          },
+          {
+            "prefix": "pēcvēlēšanu nenoteiktīb"
+          },
+          {
+            "prefix": "neskaidra politiskā situācij"
+          },
+          {
+            "prefix": "neskaidrā politiskā situācij"
+          }
+        ],
+        "tajik": [
+          "номуайянии сиёсӣ",
+          {
+            "prefix": "номуайянии сиёси"
+          },
+          {
+            "prefix": "вазъи номуайяни сиёс"
+          },
+          {
+            "prefix": "фазои номуайяни сиёс"
+          },
+          {
+            "prefix": "номуайянии интихобот"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "siyosiy noaniq"
+          },
+          {
+            "prefix": "сиёсий ноаниқ"
+          },
+          {
+            "prefix": "siyosiy vaziyatdagi noaniq"
+          },
+          {
+            "prefix": "сиёсий вазиятдаги ноаниқ"
+          },
+          {
+            "prefix": "siyosiy vaziyat noaniq"
+          },
+          {
+            "prefix": "сиёсий вазият ноаниқ"
+          },
+          {
+            "prefix": "saylovdagi noaniq"
+          },
+          {
+            "prefix": "сайловдаги ноаниқ"
+          },
+          {
+            "prefix": "saylovlar oldidan noaniq"
+          },
+          {
+            "prefix": "сайловлар олдидан ноаниқ"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "politinis neapibrėžtum"
+          },
+          {
+            "prefix": "politinio neapibrėžtum"
+          },
+          {
+            "prefix": "politinį neapibrėžtum"
+          },
+          {
+            "prefix": "politinis netikrum"
+          },
+          {
+            "prefix": "politinio netikrum"
+          },
+          {
+            "prefix": "neaiški politinė situacij"
+          },
+          {
+            "prefix": "neaiškios politinės situacij"
+          },
+          {
+            "prefix": "politinė aklaviet"
+          },
+          {
+            "prefix": "politinės aklaviet"
+          },
+          {
+            "prefix": "rinkimų neapibrėžtum"
+          },
+          "neapibrėžtumas dėl rinkimų",
+          "neapibrėžtumo dėl rinkimų"
+        ],
+        "estonian": [
+          {
+            "prefix": "poliitiline ebakindlus"
+          },
+          {
+            "prefix": "poliitilise ebakindlus"
+          },
+          {
+            "prefix": "poliitilist ebakindlus"
+          },
+          {
+            "prefix": "ebakindel poliitiline olukor"
+          },
+          {
+            "prefix": "ebakindla poliitilise olukor"
+          },
+          {
+            "prefix": "poliitiline teadmatus"
+          },
+          {
+            "prefix": "poliitilise teadmatus"
+          },
+          {
+            "prefix": "valimistega seotud ebakindlus"
+          },
+          {
+            "prefix": "valimiseelne ebakindlus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "саяси белгісіздік"
+          },
+          {
+            "prefix": "саяси жағдайдың белгісіз"
+          },
+          {
+            "prefix": "саяси ахуалдың белгісіз"
+          },
+          {
+            "prefix": "сайлауға байланысты белгісіздік"
+          },
+          {
+            "prefix": "сайлау алдындағы белгісіздік"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "саясий белгисизди"
+          },
+          {
+            "prefix": "саясий кырдаалдын белгисизди"
+          },
+          {
+            "prefix": "саясий абалдын белгисизди"
+          },
+          {
+            "prefix": "шайлоо алдындагы белгисизди"
+          },
+          {
+            "prefix": "шайлоонун натыйжасынын белгисизди"
+          },
+          {
+            "prefix": "саясий туңгуюк"
+          }
+        ],
+        "farsi": [
+          "نااطمینانی سیاسی",
+          "عدم قطعیت سیاسی",
+          "عدم اطمینان سیاسی",
+          "ابهام سیاسی",
+          "بلاتکلیفی سیاسی",
+          "فضای مبهم سیاسی",
+          "نااطمینانی انتخاباتی",
+          "بلاتکلیفی انتخاباتی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "палітычная нявызначанас"
+          },
+          {
+            "prefix": "палітычнай нявызначанас"
+          },
+          {
+            "prefix": "палітычную нявызначанас"
+          },
+          {
+            "prefix": "нявызначаная палітычная сітуацы"
+          },
+          {
+            "prefix": "нявызначанай палітычнай сітуацы"
+          },
+          {
+            "prefix": "палітычная непрадказальнас"
+          },
+          {
+            "prefix": "палітычнай непрадказальнас"
+          },
+          {
+            "prefix": "выбарчая нявызначанас"
+          },
+          {
+            "prefix": "выбарчай нявызначанас"
+          },
+          {
+            "prefix": "нявызначанасць вакол выбар"
+          },
+          {
+            "prefix": "нявызначанасьць вакол выбар"
+          },
+          "палітычны тупік",
+          "палітычнага тупіку"
+        ],
+        "pap": [
+          "inseguridad politico",
+          "impasse politico",
+          "insiguridat polítiko",
+          "impasse polítiko",
+          "politieke onzekerheid"
         ]
       }
     },
@@ -20817,6 +26785,302 @@
           {
             "prefix": "геополитичке тензиј"
           }
+        ],
+        "latvian": [
+          {
+            "prefix": "ģeopolitiskie risk"
+          },
+          {
+            "prefix": "ģeopolitiskais risk"
+          },
+          {
+            "prefix": "ģeopolitiskā risk"
+          },
+          {
+            "prefix": "ģeopolitisko risk"
+          },
+          {
+            "prefix": "ģeopolitiskā spriedz"
+          },
+          {
+            "prefix": "ģeopolitiskās spriedz"
+          },
+          {
+            "prefix": "ģeopolitisko spriedz"
+          },
+          {
+            "prefix": "ģeopolitiskā nenoteiktīb"
+          },
+          {
+            "prefix": "ģeopolitiskās nenoteiktīb"
+          },
+          {
+            "prefix": "ģeopolitiskā nestabilitāt"
+          },
+          {
+            "prefix": "ģeopolitiskās nestabilitāt"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "хатари геополитик"
+          },
+          {
+            "prefix": "хатарҳои геополитик"
+          },
+          {
+            "prefix": "таниши геополитик"
+          },
+          {
+            "prefix": "тангиҳои геополитик"
+          },
+          {
+            "prefix": "шиддати геополитик"
+          },
+          {
+            "prefix": "ташаннуҷи геополитик"
+          },
+          {
+            "prefix": "номуайянии геополитик"
+          },
+          {
+            "prefix": "ноустувории геополитик"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "geosiyosiy xavf"
+          },
+          {
+            "prefix": "геосиёсий хавф"
+          },
+          {
+            "prefix": "geosiyosiy risk"
+          },
+          {
+            "prefix": "геосиёсий риск"
+          },
+          {
+            "prefix": "geosiyosiy tavakkal"
+          },
+          {
+            "prefix": "геосиёсий таваккал"
+          },
+          {
+            "prefix": "geosiyosiy tarang"
+          },
+          {
+            "prefix": "геосиёсий таранг"
+          },
+          {
+            "prefix": "geosiyosiy keskin"
+          },
+          {
+            "prefix": "геосиёсий кескин"
+          },
+          {
+            "prefix": "geosiyosiy noaniq"
+          },
+          {
+            "prefix": "геосиёсий ноаниқ"
+          },
+          {
+            "prefix": "geosiyosiy beqaror"
+          },
+          {
+            "prefix": "геосиёсий беқарор"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "geopolitinė rizik"
+          },
+          {
+            "prefix": "geopolitinės rizik"
+          },
+          {
+            "prefix": "geopolitinę rizik"
+          },
+          {
+            "prefix": "geopolitinių rizik"
+          },
+          {
+            "prefix": "geopolitinė įtamp"
+          },
+          {
+            "prefix": "geopolitinės įtamp"
+          },
+          {
+            "prefix": "geopolitinę įtamp"
+          },
+          {
+            "prefix": "geopolitinis neapibrėžtum"
+          },
+          {
+            "prefix": "geopolitinio neapibrėžtum"
+          },
+          {
+            "prefix": "geopolitinis nestabilum"
+          },
+          {
+            "prefix": "geopolitinio nestabilum"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "geopoliitiline risk"
+          },
+          {
+            "prefix": "geopoliitilise risk"
+          },
+          {
+            "prefix": "geopoliitilised risk"
+          },
+          {
+            "prefix": "geopoliitiliste risk"
+          },
+          {
+            "prefix": "geopoliitilisi risk"
+          },
+          {
+            "prefix": "geopoliitiline pinge"
+          },
+          {
+            "prefix": "geopoliitilise pinge"
+          },
+          {
+            "prefix": "geopoliitilised pinge"
+          },
+          {
+            "prefix": "geopoliitiliste pinge"
+          },
+          {
+            "prefix": "geopoliitilisi pinge"
+          },
+          {
+            "prefix": "geopoliitiline ebakindlus"
+          },
+          {
+            "prefix": "geopoliitilise ebakindlus"
+          },
+          {
+            "prefix": "geopoliitilist ebakindlus"
+          },
+          {
+            "prefix": "geopoliitiline ebastabiilsus"
+          },
+          {
+            "prefix": "geopoliitilise ebastabiilsus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "геосаяси тәуекел"
+          },
+          {
+            "prefix": "геосаяси шиеленіс"
+          },
+          {
+            "prefix": "геосаяси белгісіздік"
+          },
+          {
+            "prefix": "геосаяси тұрақсызды"
+          },
+          {
+            "prefix": "геосаяси қауіп"
+          },
+          {
+            "prefix": "геосаяси жағдайдың шиеленіс"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "геосаясий тобокелди"
+          },
+          {
+            "prefix": "геосаясий чыңалуу"
+          },
+          {
+            "prefix": "геосаясий белгисизди"
+          },
+          {
+            "prefix": "геосаясий туруксузду"
+          },
+          {
+            "prefix": "геосаясий коркунуч"
+          },
+          {
+            "prefix": "геосаясий кырдаалдын курчу"
+          }
+        ],
+        "farsi": [
+          "ریسک ژئوپلیتیک",
+          "ریسک‌های ژئوپلیتیک",
+          "ریسک های ژئوپلیتیک",
+          "ریسکهای ژئوپلیتیک",
+          "ریسک ژئوپولیتیک",
+          "خطر ژئوپلیتیک",
+          "مخاطرات ژئوپلیتیک",
+          "تنش ژئوپلیتیک",
+          "تنش‌های ژئوپلیتیک",
+          "تنش های ژئوپلیتیک",
+          "تنشهای ژئوپلیتیک",
+          "تنش‌های ژئوپولیتیک",
+          "تنش های ژئوپولیتیک",
+          "تنشهای ژئوپولیتیک",
+          "نااطمینانی ژئوپلیتیک",
+          "بی‌ثباتی ژئوپلیتیک",
+          "بی ثباتی ژئوپلیتیک",
+          "بیثباتی ژئوپلیتیک"
+        ],
+        "belarusian": [
+          {
+            "prefix": "геапалітычныя рызык"
+          },
+          {
+            "prefix": "геапалітычных рызык"
+          },
+          {
+            "prefix": "геапалітычная рызык"
+          },
+          {
+            "prefix": "геапалітычнай рызык"
+          },
+          {
+            "prefix": "геапалітычная напружанас"
+          },
+          {
+            "prefix": "геапалітычнай напружанас"
+          },
+          {
+            "prefix": "геапалітычнае напружан"
+          },
+          {
+            "prefix": "геапалітычнага напружан"
+          },
+          {
+            "prefix": "геапалітычная нявызначанас"
+          },
+          {
+            "prefix": "геапалітычнай нявызначанас"
+          },
+          {
+            "prefix": "геапалітычная нестабільнас"
+          },
+          {
+            "prefix": "геапалітычнай нестабільнас"
+          }
+        ],
+        "pap": [
+          "tension geopolitico",
+          "tensionnan geopolitico",
+          "riesgo geopolitico",
+          "inseguridad geopolitico",
+          "tenshon geopolítiko",
+          "tenshonnan geopolítiko",
+          "riesgo geopolítiko",
+          "insiguridat geopolítiko",
+          "geopolitieke spanningen"
         ]
       }
     },
@@ -21591,6 +27855,218 @@
           },
           "odgovor na krizu",
           "odgovora na krizu"
+        ],
+        "latvian": [
+          {
+            "prefix": "ārkārtas ekonomiskie pasākum"
+          },
+          {
+            "prefix": "ārkārtas ekonomisko pasākum"
+          },
+          {
+            "prefix": "ārkārtas atbalsta pasākum"
+          },
+          {
+            "prefix": "ārkārtas atbalsta paket"
+          },
+          {
+            "prefix": "ārkārtas palīdzības paket"
+          },
+          {
+            "prefix": "krīzes pasākum"
+          },
+          {
+            "prefix": "krīzes atbalsta pasākum"
+          },
+          "reaģēšana uz krīzi",
+          "reaģēšanai uz krīzi"
+        ],
+        "tajik": [
+          {
+            "prefix": "тадбирҳои фавқулодда"
+          },
+          {
+            "prefix": "тадбирхои фавкулодда"
+          },
+          {
+            "prefix": "чораҳои фавқулодда"
+          },
+          {
+            "prefix": "чорахои фавкулодда"
+          },
+          {
+            "prefix": "зиддибуҳрон"
+          },
+          {
+            "prefix": "зиддибӯҳрон"
+          },
+          {
+            "prefix": "вокуниш ба буҳрон"
+          },
+          {
+            "prefix": "вокуниш ба бӯҳрон"
+          },
+          {
+            "prefix": "бастаи кӯмаки фавқулодда"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "inqirozga qarshi"
+          },
+          {
+            "prefix": "инқирозга қарши"
+          },
+          {
+            "prefix": "favqulodda chora"
+          },
+          {
+            "prefix": "фавқулодда чора"
+          },
+          {
+            "prefix": "favqulodda iqtisodiy chora"
+          },
+          {
+            "prefix": "фавқулодда иқтисодий чора"
+          },
+          {
+            "prefix": "favqulodda yordam paket"
+          },
+          {
+            "prefix": "фавқулодда ёрдам пакет"
+          },
+          {
+            "prefix": "inqirozga javob chora"
+          },
+          {
+            "prefix": "инқирозга жавоб чора"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "skubios ekonominės priemon"
+          },
+          {
+            "prefix": "skubių ekonominių priemon"
+          },
+          {
+            "prefix": "skubios pagalbos paket"
+          },
+          {
+            "prefix": "antikrizinės priemon"
+          },
+          {
+            "prefix": "antikrizinių priemon"
+          },
+          {
+            "prefix": "antikrizinis paket"
+          },
+          {
+            "prefix": "antikrizinio paket"
+          },
+          "reagavimas į krizę",
+          "reagavimo į krizę",
+          "atsakas į krizę",
+          "atsako į krizę"
+        ],
+        "estonian": [
+          {
+            "prefix": "erakorralised meetm"
+          },
+          {
+            "prefix": "erakorraliste meetm"
+          },
+          {
+            "prefix": "erakorralisi meetm"
+          },
+          "erakorraline meede",
+          {
+            "prefix": "erakorralise meetm"
+          },
+          "kriisimeede",
+          {
+            "prefix": "kriisimeetm"
+          },
+          {
+            "prefix": "kriisipakett"
+          },
+          {
+            "prefix": "kriisipaketi"
+          },
+          {
+            "prefix": "erakorraline abipakett"
+          },
+          {
+            "prefix": "erakorralise abipaketi"
+          },
+          {
+            "prefix": "kriisile reageerimi"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "шұғыл экономикалық шара"
+          },
+          {
+            "prefix": "дағдарысқа қарсы шара"
+          },
+          {
+            "prefix": "дағдарысқа қарсы әрекет"
+          },
+          {
+            "prefix": "дағдарысқа қарсы пакет"
+          },
+          {
+            "prefix": "дағдарысқа қарсы бағдарлама"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "антикризистик чара"
+          },
+          {
+            "prefix": "кризиске каршы чара"
+          },
+          {
+            "prefix": "антикризистик пакет"
+          },
+          {
+            "prefix": "кризиске жооп"
+          }
+        ],
+        "farsi": [
+          "بسته حمایتی اضطراری",
+          "اقدامات اقتصادی اضطراری"
+        ],
+        "belarusian": [
+          {
+            "prefix": "антыкрызісн"
+          },
+          {
+            "prefix": "рэагаванне на крызіс"
+          },
+          {
+            "prefix": "рэагаваньне на крызіс"
+          },
+          {
+            "prefix": "рэагавання на крызіс"
+          },
+          {
+            "prefix": "пакет экстранай дапамог"
+          },
+          {
+            "prefix": "пакет надзвычайнай дапамог"
+          }
+        ],
+        "pap": [
+          "medida di emergencia",
+          "medidanan di emergencia",
+          "paquete di emergencia",
+          "medida di emergensia",
+          "medidanan di emergensia",
+          "pakete di emergensia",
+          "noodmaatregel",
+          "noodmaatregelen"
         ]
       }
     },
@@ -22357,6 +28833,216 @@
           "koordinisanog odgovora",
           "Nacionalno koordinaciono tijelo",
           "Nacionalnog koordinacionog tijela"
+        ],
+        "latvian": [
+          {
+            "prefix": "krīzes vadīb"
+          },
+          {
+            "prefix": "krīžu vadīb"
+          },
+          {
+            "prefix": "krīzes pārvaldīb"
+          },
+          {
+            "prefix": "krīžu pārvaldīb"
+          },
+          {
+            "prefix": "koordinēta reaģēšan"
+          },
+          {
+            "prefix": "koordinētu reaģēšan"
+          },
+          {
+            "prefix": "krīzes štāb"
+          },
+          {
+            "prefix": "krīzes komitej"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "идоракунии буҳрон"
+          },
+          {
+            "prefix": "идоракунии бӯҳрон"
+          },
+          {
+            "prefix": "идоракунии вазъияти буҳрон"
+          },
+          {
+            "prefix": "ҳамоҳангсозии вокуниш"
+          },
+          {
+            "prefix": "ситоди зиддибуҳрон"
+          },
+          {
+            "prefix": "гурӯҳи кории фавқулодда"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "inqirozni boshqar"
+          },
+          {
+            "prefix": "инқирозни бошқар"
+          },
+          {
+            "prefix": "inqirozga qarshi shtab"
+          },
+          {
+            "prefix": "инқирозга қарши штаб"
+          },
+          {
+            "prefix": "maxsus respublika komissiya"
+          },
+          {
+            "prefix": "махсус республика комиссия"
+          },
+          {
+            "prefix": "respublika maxsus komissiya"
+          },
+          {
+            "prefix": "республика махсус комиссия"
+          },
+          {
+            "prefix": "tezkor shtab"
+          },
+          {
+            "prefix": "тезкор штаб"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "krizių valdym"
+          },
+          {
+            "prefix": "krizės valdym"
+          },
+          {
+            "prefix": "ekstremaliųjų situacijų komisij"
+          },
+          {
+            "prefix": "ekstremaliųjų situacijų operacijų centr"
+          },
+          {
+            "prefix": "krizės štab"
+          },
+          {
+            "prefix": "krizių štab"
+          },
+          {
+            "prefix": "krizių komitet"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "kriisijuhtimi"
+          },
+          {
+            "prefix": "kriisikomisjon"
+          },
+          {
+            "prefix": "kriisikomitee"
+          },
+          {
+            "prefix": "kriisistaap"
+          },
+          {
+            "prefix": "kriisirühm"
+          },
+          {
+            "prefix": "kriisikoordinatsioon"
+          },
+          {
+            "prefix": "koordineeritud reageerimi"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "дағдарысты басқар"
+          },
+          {
+            "prefix": "дағдарыстық басқару"
+          },
+          {
+            "prefix": "дағдарыс штаб"
+          },
+          {
+            "prefix": "дағдарысқа қарсы штаб"
+          },
+          {
+            "prefix": "төтенше жағдайлар жөніндегі комиссия"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "кризистик башкаруу"
+          },
+          {
+            "prefix": "кризисти башкаруу"
+          },
+          {
+            "prefix": "антикризистик штаб"
+          },
+          {
+            "prefix": "кризистик штаб"
+          },
+          {
+            "prefix": "өзгөчө кырдаалдар боюнча комиссия"
+          }
+        ],
+        "farsi": [
+          "مدیریت بحران",
+          "ستاد بحران",
+          "کمیته بحران",
+          "کارگروه بحران",
+          "هماهنگی در بحران"
+        ],
+        "belarusian": [
+          {
+            "prefix": "крызіснае кіраван"
+          },
+          {
+            "prefix": "крызіснага кіраван"
+          },
+          {
+            "prefix": "крызісны менеджмент"
+          },
+          {
+            "prefix": "крызіснага менеджмент"
+          },
+          {
+            "prefix": "крызісны штаб"
+          },
+          {
+            "prefix": "крызіснага штаб"
+          },
+          {
+            "prefix": "антыкрызісны штаб"
+          },
+          {
+            "prefix": "антыкрызіснага штаб"
+          },
+          {
+            "prefix": "скаардынаванае рэагаван"
+          },
+          {
+            "prefix": "скаардынаванага рэагаван"
+          },
+          {
+            "prefix": "антыкрызісная камісі"
+          }
+        ],
+        "pap": [
+          "maneho di crisis",
+          "team di crisis",
+          "comite di crisis",
+          "manehu di krisis",
+          "tim di krisis",
+          "komité di krisis",
+          "crisisbeheersing",
+          "crisisteam"
         ]
       }
     },
@@ -22970,6 +29656,185 @@
           "komunikacija rizika",
           "komunikacije rizika",
           "komunikacija o riziku"
+        ],
+        "latvian": [
+          {
+            "prefix": "krīzes komunikācij"
+          },
+          {
+            "prefix": "krīžu komunikācij"
+          },
+          {
+            "prefix": "ārkārtas komunikācij"
+          },
+          {
+            "prefix": "riska komunikācij"
+          },
+          {
+            "prefix": "risku komunikācij"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "иртиботи буҳрон"
+          },
+          {
+            "prefix": "иртиботи бӯҳрон"
+          },
+          {
+            "prefix": "иртибот дар ҳолатҳои фавқулодда"
+          },
+          {
+            "prefix": "иртиботи хатар"
+          },
+          {
+            "prefix": "коммуникатсияи хатар"
+          },
+          {
+            "prefix": "коммуникатсияи буҳрон"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "inqiroz kommunikats"
+          },
+          {
+            "prefix": "инқироз коммуникац"
+          },
+          {
+            "prefix": "inqirozli kommunikats"
+          },
+          {
+            "prefix": "инқирозли коммуникац"
+          },
+          {
+            "prefix": "risk-kommunikats"
+          },
+          {
+            "prefix": "риск-коммуникац"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "krizių komunikacij"
+          },
+          {
+            "prefix": "krizės komunikacij"
+          },
+          {
+            "prefix": "krizinė komunikacij"
+          },
+          {
+            "prefix": "krizinės komunikacij"
+          },
+          {
+            "prefix": "ekstremaliųjų situacijų komunikacij"
+          },
+          {
+            "prefix": "rizikos komunikacij"
+          },
+          {
+            "prefix": "gyventojų perspėjim"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "kriisikommunikatsioon"
+          },
+          {
+            "prefix": "kriisisuhtlus"
+          },
+          {
+            "prefix": "kriisiteavitus"
+          },
+          {
+            "prefix": "riskikommunikatsioon"
+          },
+          {
+            "prefix": "hädaolukorra teavitus"
+          },
+          {
+            "prefix": "ohuteavitus"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "дағдарыстық коммуникация"
+          },
+          {
+            "prefix": "дағдарыс кезіндегі коммуникация"
+          },
+          {
+            "prefix": "тәуекел коммуникация"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "кризистик коммуникация"
+          },
+          {
+            "prefix": "кризис учурундагы коммуникация"
+          },
+          {
+            "prefix": "тобокелдиктер жөнүндө маалымдоо"
+          },
+          {
+            "prefix": "тобокелдик тууралуу коммуникация"
+          },
+          {
+            "prefix": "өзгөчө кырдаалда маалымдоо"
+          }
+        ],
+        "farsi": [
+          "ارتباطات بحران",
+          "اطلاع‌رسانی در بحران",
+          "اطلاع رسانی در بحران",
+          "اطلاعرسانی در بحران",
+          "اطلاع‌رسانی بحران",
+          "اطلاع رسانی بحران",
+          "اطلاعرسانی بحران",
+          "اطلاع‌رسانی در شرایط بحران",
+          "اطلاع رسانی در شرایط بحران",
+          "اطلاعرسانی در شرایط بحران",
+          "ارتباط در شرایط اضطراری",
+          "اطلاع‌رسانی خطر",
+          "اطلاع رسانی خطر",
+          "اطلاعرسانی خطر",
+          "ارتباطات خطر"
+        ],
+        "belarusian": [
+          {
+            "prefix": "крызісная камунікацы"
+          },
+          {
+            "prefix": "крызіснай камунікацы"
+          },
+          {
+            "prefix": "крызісныя камунікацы"
+          },
+          {
+            "prefix": "крызісных камунікацы"
+          },
+          "камунікацыя рызык",
+          "камунікацыі рызык",
+          {
+            "prefix": "экстраная камунікацы"
+          },
+          {
+            "prefix": "апавяшчэнне аб надзвычайн"
+          },
+          {
+            "prefix": "апавяшчэння аб надзвычайн"
+          }
+        ],
+        "pap": [
+          "comunicacion di crisis",
+          "comunicacion di emergencia",
+          "comunicacion di riesgo",
+          "komunikashon di krisis",
+          "komunikashon di emergensia",
+          "komunikashon di riesgo",
+          "crisiscommunicatie"
         ]
       }
     },
@@ -23825,6 +30690,254 @@
           "hitnu finansijsku pomoć",
           "vanredna finansijska pomoć",
           "vanredne finansijske pomoći"
+        ],
+        "latvian": [
+          {
+            "prefix": "ārkārtas finansējum"
+          },
+          {
+            "prefix": "ārkārtas finansēšan"
+          },
+          {
+            "prefix": "ārkārtas aizdevum"
+          },
+          {
+            "prefix": "ārkārtas kredīt"
+          },
+          {
+            "prefix": "ātrās finansēšanas instrument"
+          },
+          {
+            "prefix": "ātrās kreditēšanas mehānism"
+          },
+          "līdzekļi neparedzētiem gadījumiem",
+          "līdzekļiem neparedzētiem gadījumiem",
+          "līdzekļus neparedzētiem gadījumiem"
+        ],
+        "tajik": [
+          {
+            "prefix": "маблағгузории фавқулодда"
+          },
+          {
+            "prefix": "маблаггузории фавкулодда"
+          },
+          {
+            "prefix": "қарзи фавқулодда"
+          },
+          {
+            "prefix": "қарзҳои фавқулодда"
+          },
+          {
+            "prefix": "кӯмаки молиявии фавқулодда"
+          },
+          {
+            "prefix": "маблағгузории босуръат"
+          },
+          {
+            "prefix": "механизми қарзии босуръат"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "favqulodda moliyalashtir"
+          },
+          {
+            "prefix": "фавқулодда молиялаштир"
+          },
+          {
+            "prefix": "favqulodda kredit"
+          },
+          {
+            "prefix": "фавқулодда кредит"
+          },
+          {
+            "prefix": "favqulodda qarz"
+          },
+          {
+            "prefix": "фавқулодда қарз"
+          },
+          {
+            "prefix": "favqulodda moliyaviy yordam"
+          },
+          {
+            "prefix": "фавқулодда молиявий ёрдам"
+          },
+          {
+            "prefix": "shoshilinch moliyalashtir"
+          },
+          {
+            "prefix": "шошилинч молиялаштир"
+          },
+          {
+            "prefix": "tezkor moliyalashtirish vosita"
+          },
+          {
+            "prefix": "тезкор молиялаштириш восита"
+          },
+          "Rapid Financing Instrument"
+        ],
+        "lithuanian": [
+          {
+            "prefix": "skubus finansavim"
+          },
+          {
+            "prefix": "skubaus finansavim"
+          },
+          {
+            "prefix": "skubų finansavim"
+          },
+          {
+            "prefix": "neatidėliotinas finansavim"
+          },
+          {
+            "prefix": "neatidėliotino finansavim"
+          },
+          {
+            "prefix": "greitojo finansavimo priemon"
+          },
+          {
+            "prefix": "greitojo kreditavimo priemon"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "erakorraline rahastus"
+          },
+          {
+            "prefix": "erakorralise rahastus"
+          },
+          {
+            "prefix": "erakorraline rahastam"
+          },
+          {
+            "prefix": "erakorralise rahastam"
+          },
+          {
+            "prefix": "erakorraline laen"
+          },
+          {
+            "prefix": "erakorralise laen"
+          },
+          {
+            "prefix": "erakorralised laen"
+          },
+          {
+            "prefix": "hädaabilaen"
+          },
+          {
+            "prefix": "kriisilaen"
+          },
+          {
+            "prefix": "erakorraline krediit"
+          },
+          {
+            "prefix": "kiirrahastamisvahend"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "шұғыл қаржыландыр"
+          },
+          {
+            "prefix": "төтенше қаржыландыр"
+          },
+          {
+            "prefix": "шұғыл қаржылық көмек"
+          },
+          {
+            "prefix": "төтенше несие"
+          },
+          {
+            "prefix": "жедел қаржыландыру құрал"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "шашылыш каржылоо"
+          },
+          {
+            "prefix": "өзгөчө каржылоо"
+          },
+          {
+            "prefix": "шашылыш кредит"
+          },
+          {
+            "prefix": "шашылыш насыя"
+          },
+          {
+            "prefix": "тез каржылоо инструмент"
+          },
+          {
+            "prefix": "тез кредиттөө механизм"
+          }
+        ],
+        "farsi": [
+          "تامین مالی اضطراری",
+          "تأمین مالی اضطراری",
+          "وام اضطراری",
+          "وام‌های اضطراری",
+          "وام های اضطراری",
+          "وامهای اضطراری",
+          "کمک مالی اضطراری",
+          "اعتبار اضطراری",
+          "اعتبارات اضطراری",
+          "تسهیلات اضطراری",
+          "ابزار تامین مالی سریع",
+          "ابزار تأمین مالی سریع",
+          "تسهیلات اعتباری سریع"
+        ],
+        "belarusian": [
+          {
+            "prefix": "экстранае фінансаван"
+          },
+          {
+            "prefix": "экстранага фінансаван"
+          },
+          {
+            "prefix": "надзвычайнае фінансаван"
+          },
+          {
+            "prefix": "надзвычайнага фінансаван"
+          },
+          {
+            "prefix": "экстраны крэдыт"
+          },
+          {
+            "prefix": "экстранага крэдыт"
+          },
+          {
+            "prefix": "экстраныя крэдыт"
+          },
+          {
+            "prefix": "экстраных крэдыт"
+          },
+          {
+            "prefix": "экстраная пазык"
+          },
+          {
+            "prefix": "экстранай пазык"
+          },
+          {
+            "prefix": "экстраныя пазык"
+          },
+          {
+            "prefix": "інструмент хуткага фінансаван"
+          },
+          {
+            "prefix": "інструмента хуткага фінансаван"
+          }
+        ],
+        "pap": [
+          "financiamento di emergencia",
+          "fiansa di emergencia",
+          "fondo di emergencia",
+          "sosten di liquidez",
+          "finansiamentu di emergensia",
+          "fiansa di emergensia",
+          "fondo di emergensia",
+          "sosten di likides",
+          "liquiditeitssteun",
+          "noodlening"
         ]
       }
     },
@@ -24604,6 +31717,211 @@
           "krizno planiranje",
           "kriznog planiranja",
           "plan za hitne slučajeve"
+        ],
+        "latvian": [
+          "gatavība krīzēm",
+          "gatavību krīzēm",
+          "sagatavotība krīzēm",
+          "sagatavotību krīzēm",
+          {
+            "prefix": "krīzes gatavīb"
+          },
+          "gatavība ārkārtas situācijām",
+          "gatavību ārkārtas situācijām",
+          {
+            "prefix": "ārkārtas rīcības plān"
+          },
+          {
+            "prefix": "krīzes rīcības plān"
+          },
+          {
+            "prefix": "ārkārtas situāciju plān"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "омодагӣ ба буҳрон"
+          },
+          {
+            "prefix": "омодагӣ ба бӯҳрон"
+          },
+          {
+            "prefix": "омодагӣ ба зарба"
+          },
+          {
+            "prefix": "омодагӣ ба ҳолатҳои фавқулодда"
+          },
+          {
+            "prefix": "омодаги ба холатхои фавкулодда"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "inqirozga tayyor"
+          },
+          {
+            "prefix": "инқирозга тайёр"
+          },
+          {
+            "prefix": "favqulodda vaziyatlarga tayyor"
+          },
+          {
+            "prefix": "фавқулодда вазиятларга тайёр"
+          },
+          {
+            "prefix": "zarbalarga tayyor"
+          },
+          {
+            "prefix": "зарбаларга тайёр"
+          },
+          {
+            "prefix": "kutilmagan holatlar uchun reja"
+          },
+          {
+            "prefix": "кутилмаган ҳолатлар учун режа"
+          }
+        ],
+        "lithuanian": [
+          {
+            "prefix": "pasirengimas kriz"
+          },
+          {
+            "prefix": "pasirengimo kriz"
+          },
+          {
+            "prefix": "pasirengimą kriz"
+          },
+          {
+            "prefix": "pasirengimas ekstremal"
+          },
+          {
+            "prefix": "pasirengimo ekstremal"
+          },
+          {
+            "prefix": "pasirengimą ekstremal"
+          },
+          {
+            "prefix": "pasirengimas sukrėtim"
+          },
+          {
+            "prefix": "pasirengimo sukrėtim"
+          },
+          {
+            "prefix": "nenumatytų atvejų plan"
+          },
+          {
+            "prefix": "ekstremaliųjų situacijų valdymo plan"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "kriisivalmidus"
+          },
+          {
+            "prefix": "kriisideks valmisolek"
+          },
+          "valmisolek kriisideks",
+          {
+            "prefix": "hädaolukorraks valmisolek"
+          },
+          {
+            "prefix": "kriisiks valmistumi"
+          },
+          {
+            "prefix": "hädaolukorra lahendamise plaan"
+          },
+          {
+            "prefix": "kriisiplaan"
+          },
+          {
+            "prefix": "elanikkonnakaitse"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "дағдарысқа дайын"
+          },
+          {
+            "prefix": "төтенше жағдайларға дайын"
+          },
+          {
+            "prefix": "төтенше жағдайға дайын"
+          },
+          {
+            "prefix": "дүмпулерге дайын"
+          },
+          {
+            "prefix": "күтпеген жағдайларға арналған жоспар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "кризиске даярды"
+          },
+          {
+            "prefix": "шокторго даярды"
+          },
+          {
+            "prefix": "өзгөчө кырдаалдарга даярды"
+          },
+          {
+            "prefix": "өзгөчө кырдаалга даярды"
+          },
+          {
+            "prefix": "күтүлбөгөн кырдаалдарга даярды"
+          },
+          {
+            "prefix": "күтүлбөгөн кырдаалдар план"
+          }
+        ],
+        "farsi": [
+          "آمادگی در برابر بحران",
+          "آمادگی مقابله با بحران",
+          "آمادگی برای بحران",
+          "آمادگی در برابر شوک",
+          "آمادگی اضطراری",
+          "آمادگی در شرایط اضطراری"
+        ],
+        "belarusian": [
+          {
+            "prefix": "гатоўнасць да крызіс"
+          },
+          {
+            "prefix": "гатоўнасьць да крызіс"
+          },
+          {
+            "prefix": "гатоўнасці да крызіс"
+          },
+          {
+            "prefix": "гатоўнасць да шок"
+          },
+          {
+            "prefix": "гатоўнасці да шок"
+          },
+          "гатоўнасць да надзвычайных сітуацый",
+          "гатоўнасьць да надзвычайных сытуацый",
+          "гатоўнасці да надзвычайных сітуацый",
+          {
+            "prefix": "план на выпадак надзвычайн"
+          },
+          {
+            "prefix": "планы на выпадак надзвычайн"
+          },
+          {
+            "prefix": "плана на выпадак надзвычайн"
+          }
+        ],
+        "pap": [
+          "preparacion pa crisis",
+          "preparacion pa emergencia",
+          "plan di contingencia",
+          "plannan di contingencia",
+          "preparashon pa krisis",
+          "preparashon pa emergensia",
+          "plan di kontingensia",
+          "plannan di kontingensia",
+          "rampenplan",
+          "crisisplan"
         ]
       }
     },
@@ -25485,6 +32803,285 @@
           "plana za oporavak",
           "paket za oporavak",
           "paketa za oporavak"
+        ],
+        "latvian": [
+          "atveseļošanās pēc krīzes",
+          "atgūšanās pēc krīzes",
+          "atkopšanās pēc krīzes",
+          "atgūšanās no krīzes",
+          {
+            "prefix": "pēckrīzes atveseļošan"
+          },
+          {
+            "prefix": "pēckrīzes atjaunošan"
+          },
+          "atveseļošanās pēc pandēmijas",
+          {
+            "prefix": "pēcpandēmijas atveseļošan"
+          },
+          {
+            "prefix": "atveseļošanas plān"
+          },
+          {
+            "prefix": "atveseļošanās plān"
+          },
+          {
+            "prefix": "atveseļošanas paket"
+          },
+          {
+            "prefix": "Atveseļošanas fond"
+          },
+          {
+            "prefix": "Atveseļošanas un noturības mehānism"
+          }
+        ],
+        "tajik": [
+          {
+            "prefix": "барқароршавӣ пас аз буҳрон"
+          },
+          {
+            "prefix": "барқароршавии пас аз буҳрон"
+          },
+          {
+            "prefix": "барқарорсозии пас аз буҳрон"
+          },
+          {
+            "prefix": "барқароршавӣ пас аз бӯҳрон"
+          },
+          {
+            "prefix": "барқароршавӣ аз буҳрон"
+          },
+          {
+            "prefix": "барқароршавӣ пас аз пандеми"
+          },
+          {
+            "prefix": "барқарорсозии пас аз пандеми"
+          },
+          {
+            "prefix": "нақшаи барқарорсоз"
+          },
+          {
+            "prefix": "бастаи барқарорсоз"
+          }
+        ],
+        "uzbek": [
+          {
+            "prefix": "inqirozdan keyingi tiklan"
+          },
+          {
+            "prefix": "инқироздан кейинги тиклан"
+          },
+          {
+            "prefix": "inqirozdan so'ng tiklan"
+          },
+          {
+            "prefix": "inqirozdan soʻng tiklan"
+          },
+          {
+            "prefix": "inqirozdan so’ng tiklan"
+          },
+          {
+            "prefix": "inqirozdan so‘ng tiklan"
+          },
+          {
+            "prefix": "инқироздан сўнг тиклан"
+          },
+          {
+            "prefix": "inqirozdan chiq"
+          },
+          {
+            "prefix": "инқироздан чиқ"
+          },
+          {
+            "prefix": "pandemiyadan keyingi tiklan"
+          },
+          {
+            "prefix": "пандемиядан кейинги тиклан"
+          },
+          {
+            "prefix": "zarbadan keyin tiklan"
+          },
+          {
+            "prefix": "зарбадан кейин тиклан"
+          }
+        ],
+        "lithuanian": [
+          "atsigavimas po krizės",
+          "atsigavimo po krizės",
+          "atsigavimą po krizės",
+          "atsigavimas po pandemijos",
+          "atsigavimo po pandemijos",
+          "atsigavimą po pandemijos",
+          "atsigavimas po sukrėtimo",
+          "atsigavimo po sukrėtimo",
+          {
+            "prefix": "pokrizin"
+          },
+          {
+            "prefix": "popandeminis atsigavim"
+          },
+          {
+            "prefix": "popandeminio atsigavim"
+          },
+          {
+            "prefix": "atsigavimo plan"
+          },
+          {
+            "prefix": "gaivinimo ir atsparumo didinimo plan"
+          },
+          {
+            "prefix": "Naujos kartos Lietuv"
+          }
+        ],
+        "estonian": [
+          {
+            "prefix": "kriisist taastumi"
+          },
+          {
+            "prefix": "kriisijärgne taastumi"
+          },
+          {
+            "prefix": "kriisijärgse taastumi"
+          },
+          {
+            "prefix": "kriisist väljumi"
+          },
+          {
+            "prefix": "pandeemiajärgne taastumi"
+          },
+          {
+            "prefix": "pandeemiajärgse taastumi"
+          },
+          {
+            "prefix": "šokist taastumi"
+          },
+          {
+            "prefix": "taastekava"
+          },
+          {
+            "prefix": "taastumiskava"
+          },
+          {
+            "prefix": "taastepakett"
+          },
+          {
+            "prefix": "taastefond"
+          },
+          {
+            "prefix": "taaste- ja vastupidavuskava"
+          }
+        ],
+        "kazakh": [
+          {
+            "prefix": "дағдарыстан кейінгі қалпына"
+          },
+          {
+            "prefix": "дағдарыстан шығ"
+          },
+          {
+            "prefix": "пандемиядан кейінгі қалпына"
+          },
+          {
+            "prefix": "пандемиядан кейін қалпына"
+          },
+          {
+            "prefix": "экономиканы қалпына келтіру жоспар"
+          }
+        ],
+        "kyrgyz": [
+          {
+            "prefix": "кризистен кийинки калыбына"
+          },
+          {
+            "prefix": "кризистен кийин калыбына"
+          },
+          {
+            "prefix": "кризистен чыгуу"
+          },
+          {
+            "prefix": "пандемиядан кийинки калыбына"
+          },
+          {
+            "prefix": "шоктон кийинки калыбына"
+          },
+          {
+            "prefix": "экономиканы калыбына келтир"
+          }
+        ],
+        "farsi": [
+          "بهبود پس از بحران",
+          "بازیابی پس از بحران",
+          "بازسازی پس از بحران",
+          "خروج از بحران",
+          "بهبود پس از شوک",
+          "بهبود پس از کرونا",
+          "بازیابی پس از همه‌گیری",
+          "بازیابی پس از همه گیری",
+          "بازیابی پس از همهگیری",
+          "پساکرونا",
+          "برنامه بازیابی اقتصادی",
+          "برنامه بهبود اقتصادی",
+          "بسته بهبود اقتصادی",
+          "بسته احیای اقتصادی"
+        ],
+        "belarusian": [
+          {
+            "prefix": "посткрызіснае аднаўлен"
+          },
+          {
+            "prefix": "посткрызіснага аднаўлен"
+          },
+          {
+            "prefix": "аднаўленне пасля крызіс"
+          },
+          {
+            "prefix": "аднаўленьне пасля крызіс"
+          },
+          {
+            "prefix": "аднаўлення пасля крызіс"
+          },
+          {
+            "prefix": "аднаўленне пасля пандэмі"
+          },
+          {
+            "prefix": "аднаўлення пасля пандэмі"
+          },
+          {
+            "prefix": "аднаўленне пасля шок"
+          },
+          {
+            "prefix": "аднаўлення пасля шок"
+          },
+          {
+            "prefix": "постпандэмічнае аднаўлен"
+          },
+          {
+            "prefix": "постпандэмічнага аднаўлен"
+          },
+          {
+            "prefix": "план аднаўлення экан"
+          },
+          {
+            "prefix": "плана аднаўлення экан"
+          },
+          {
+            "prefix": "план эканамічнага аднаўлен"
+          },
+          {
+            "prefix": "плана эканамічнага аднаўлен"
+          }
+        ],
+        "pap": [
+          "recuperacion di crisis",
+          "recuperacion despues di crisis",
+          "recuperacion despues di pandemia",
+          "plan di recuperacion",
+          "rekuperashon di krisis",
+          "rekuperashon despues di krisis",
+          "rekuperashon despues di pandemia",
+          "plan di rekuperashon",
+          "herstelplan",
+          "landspakket"
         ]
       }
     }
