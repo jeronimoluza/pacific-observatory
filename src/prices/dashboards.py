@@ -63,10 +63,9 @@ def _rebase(old: Path, new: Path) -> None:
 
 
 def _point_at(build_dir: Path, out_dir: Path, variant: str, region: str | None) -> None:
-    publish, _, aggregate, sources, config = _modules()
+    publish, _, _, sources, config = _modules()
     tag = f"_{region}" if region else ""
     sources.SUPPRESSED_PARQUET = out_dir / f"explorer_suppressed_units{tag}.parquet"
-    aggregate.SUPPRESSED_PARQUET = sources.SUPPRESSED_PARQUET
     publish.SUPPRESSED_PARQUET = out_dir / f"global_prices_suppressed_units{tag}.parquet"
     publish.read_observations = _trusted_observations
     # `trusted` points the loaders at files that do not exist, which is the
