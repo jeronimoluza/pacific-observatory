@@ -105,3 +105,41 @@ citycost.org
 xe.com
 wise.com
 exchange-rates.org
+
+# multi-country directories and place listings (W41 onboarding, 2026-10-05):
+# each was rejected in 3 to 8 countries, or passed triage on a page of
+# foreign or generic prices
+360nations.com
+cybo.com
+near-place.com
+findglocal.com
+findhealthclinics.org
+bambaad.com
+trek.zone
+poidata.io
+world-prices.com
+worldplaces.me
+go4worldbusiness.com
+fiwibusiness.com
+arrivalguides.com
+classi4u.com
+vowads.com
+adsvilly.com
+
+# cost-of-living, cost calculators and market reports (W41)
+livingcost.net
+latestcost.com
+sarfrates.com
+averagecostof.living
+welt-preise.de
+housebuildcostcalculator.com
+6wresearch.com
+
+# global eSIM resellers (W41). A country's own operator (esimandorra.ad)
+# is not listed: mobile plans are a real basket item there.
+esim.net
+esimprime.com
+globalesim.app
+numeroesim.com
+esimatic.com
+esimdb.com
