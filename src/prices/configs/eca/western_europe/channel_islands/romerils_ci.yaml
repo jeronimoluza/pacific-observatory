@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: romerils_ci
+url: https://www.romerils.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: home-improvement
+archive_prefix: "romerils.com/products/"
+archive_path_re: '^/products/[^/?]+'
+throttle_group: shopify
+notes: |
+  Romerils, St Helier (JE2 3RL), Jersey hardware/homeware/electricals retailer. Local: Jersey/Guernsey address on site. Priced in GBP.
+  Page family parsed: API (/products.json). Onboarded 2026-10-05 from the Channel Islands discovery list.

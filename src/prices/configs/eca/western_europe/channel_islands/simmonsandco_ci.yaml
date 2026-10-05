@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: simmonsandco_ci
+url: https://simmonsandco.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: home-improvement
+archive_prefix: "simmonsandco.com"
+archive_path_re: '^/[^/?]+'
+notes: |
+  Simmons and Co (JE2 4TR), St Helier. Furniture and beds. Local: Jersey/Guernsey address on site. Priced in GBP.
+  Page family parsed: API (/wp-json/wc/store/v1/products). Onboarded 2026-10-05 from the Channel Islands discovery list.

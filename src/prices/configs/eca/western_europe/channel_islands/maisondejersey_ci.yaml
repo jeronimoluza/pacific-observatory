@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: maisondejersey_ci
+url: https://www.maisondejersey.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "maisondejersey.com/products/"
+archive_path_re: '^/products/[^/?]+'
+throttle_group: shopify
+notes: |
+  Maison de Jersey (JE2 4WF), Jersey food and gift hampers. Local: Jersey/Guernsey address on site. Priced in GBP.
+  Page family parsed: API (/products.json). Onboarded 2026-10-05 from the Channel Islands discovery list.

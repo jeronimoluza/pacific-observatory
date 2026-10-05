@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jerseyoak_ci
+url: https://jerseyoak.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: other
+archive_prefix: "jerseyoak.com/products/"
+archive_path_re: '^/products/[^/?]+'
+throttle_group: shopify
+notes: |
+  Jersey Oak, Jersey (JE3) furniture and gifts. Local: Jersey/Guernsey address on site. Priced in GBP.
+  Page family parsed: API (/products.json). Onboarded 2026-10-05 from the Channel Islands discovery list.
