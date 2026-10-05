@@ -30,6 +30,7 @@ from text.analysis.utils import (
     NON_SPACE_DELIMITED,
     _is_latin_boundary,
     _is_word_boundary,
+    _is_word_char,
     load_all_groups,
     load_concepts,
     load_topics_words,
@@ -222,9 +223,7 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
                 if is_prefix:
                     # A prefix form keeps only the left boundary, so the
                     # suffixes of an agglutinative language still match.
-                    if start_idx > 0 and (
-                        text[start_idx - 1].isalnum() or text[start_idx - 1] == "_"
-                    ):
+                    if start_idx > 0 and _is_word_char(text[start_idx - 1]):
                         continue
                 elif not _is_word_boundary(text, start_idx, end_pos):
                     continue

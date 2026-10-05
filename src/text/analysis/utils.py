@@ -6,6 +6,7 @@ Last modified:
 """
 
 import re
+import unicodedata
 from typing import List, Dict, Tuple, Union
 from functools import lru_cache
 import pandas as pd
@@ -179,16 +180,31 @@ def get_automaton(terms_tuple: tuple, language: str = "en") -> ahocorasick.Autom
     return _build_automaton(list(terms_tuple))
 
 
+def _is_word_char(ch: str) -> bool:
+    """Letter, digit, underscore, combining mark or zero-width (non-)joiner.
+
+    Vowel signs and viramas in Devanagari, Bengali, Sinhala and Thaana are
+    combining marks, which ``str.isalnum`` rejects; without them a word ending
+    in a consonant would match inside every longer word built on it. ZWJ and
+    ZWNJ sit inside Sinhala and Indic words, never between them.
+    """
+    return (
+        ch.isalnum()
+        or ch in "_\u200c\u200d"
+        or unicodedata.category(ch).startswith("M")
+    )
+
+
 def _is_word_boundary(text: str, start: int, end: int) -> bool:
     """
     Check if the match at text[start:end] falls on word boundaries.
 
     Mimics regex \\b behaviour: the character immediately before start
-    and immediately after end-1 must not be alphanumeric/underscore.
+    and immediately after end-1 must not be a word character.
     """
-    if start > 0 and (text[start - 1].isalnum() or text[start - 1] == "_"):
+    if start > 0 and _is_word_char(text[start - 1]):
         return False
-    if end < len(text) and (text[end].isalnum() or text[end] == "_"):
+    if end < len(text) and _is_word_char(text[end]):
         return False
     return True
 
@@ -592,13 +608,29 @@ PREFIX_LANGUAGES = frozenset(
         "latvian",
         "lithuanian",
         "estonian",
+        "sk",
+        "cs",
+        "sl",
+        "hu",
+        "turkmen",
+        "somali",
+        "amharic",
+        "hindi",
+        "bn",
+        "ne",
+        "si",
+        "dv",
     }
 )
+# Concept forms exist for these, but no keyword directory does yet.
+CONCEPT_ONLY_LANGUAGES = frozenset({"bn", "dv", "ne", "si"})
 CONCEPTS_DIR = Path(__file__).parent / "keywords" / "concepts"
 
 
 def _concept_language_ok(lang: str) -> bool:
     base = Path(__file__).parent / "keywords"
+    if lang in CONCEPT_ONLY_LANGUAGES:
+        return True
     return lang != "concepts" and (base / lang).is_dir()
 
 

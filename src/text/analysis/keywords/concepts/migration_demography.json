@@ -711,6 +711,223 @@
           "fluho di migrante",
           "migratie",
           "migranten"
+        ],
+        "urdu": [
+          "نقل مکانی",
+          "ہجرت",
+          "تارکین وطن",
+          "تارک وطن",
+          "مہاجرین",
+          "مائیگریشن",
+          "migration"
+        ],
+        "bn": [
+          {
+            "prefix": "অভিবাসন"
+          },
+          {
+            "prefix": "অভিবাসী"
+          },
+          {
+            "prefix": "মাইগ্রেশন"
+          },
+          {
+            "prefix": "অভিবাসীদের ঢল"
+          },
+          {
+            "prefix": "অভিবাসন প্রবাহ"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "migráci"
+          },
+          {
+            "prefix": "migráns"
+          },
+          {
+            "prefix": "bevándorl"
+          },
+          {
+            "prefix": "migrációs hullám"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "migracij"
+          },
+          {
+            "prefix": "migrant"
+          }
+        ],
+        "somali": [
+          {
+            "prefix": "muhaajir"
+          },
+          "guuritaanka dadka",
+          "socdaalka muhaajiriinta",
+          "hijrada dadka",
+          "IOM",
+          "migration",
+          "migrants"
+        ],
+        "sk": [
+          {
+            "prefix": "migrác"
+          },
+          {
+            "prefix": "migrant"
+          },
+          {
+            "prefix": "migračn"
+          }
+        ],
+        "swahili": [
+          "uhamiaji",
+          "wahamiaji",
+          "mhamiaji",
+          "uhamiaji wa watu",
+          "mtiririko wa wahamiaji",
+          "wimbi la wahamiaji"
+        ],
+        "si": [
+          {
+            "prefix": "සංක්‍රමණ"
+          },
+          {
+            "prefix": "සංක්රමණ"
+          },
+          {
+            "prefix": "සංක්‍රමණය වන"
+          },
+          {
+            "prefix": "සංක්රමණය වන"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "migrasi"
+          },
+          {
+            "prefix": "migrant"
+          },
+          {
+            "prefix": "göçmen"
+          },
+          {
+            "prefix": "göç akym"
+          },
+          {
+            "prefix": "migrasiýa akym"
+          }
+        ],
+        "hindi": [
+          "प्रवासन",
+          "प्रवासी",
+          "प्रवासियों",
+          "पलायन",
+          "माइग्रेशन",
+          "प्रवासन प्रवाह"
+        ],
+        "hebrew": [
+          "הגירה",
+          "הגירת",
+          "מהגרים",
+          "מהגר",
+          "גלי הגירה",
+          "תנועות הגירה",
+          "זרם המהגרים",
+          "עולים חדשים"
+        ],
+        "amharic": [
+          {
+            "prefix": "ፍልሰት"
+          },
+          "ፍልሰቱ",
+          "ፍልሰቶች",
+          {
+            "prefix": "የፍልሰት"
+          },
+          {
+            "prefix": "በፍልሰት"
+          },
+          {
+            "prefix": "ፍልሰተ"
+          },
+          {
+            "prefix": "ስደተ"
+          },
+          {
+            "prefix": "የስደተ"
+          },
+          "ስደት",
+          "ስደቱ",
+          "ስደትን",
+          {
+            "prefix": "የስደት"
+          },
+          "migration",
+          "migrants"
+        ],
+        "cs": [
+          {
+            "prefix": "migrac"
+          },
+          {
+            "prefix": "migrační"
+          },
+          {
+            "prefix": "migrant"
+          }
+        ],
+        "rw": [
+          "abimukira",
+          "umwimukira",
+          "ubwimukira",
+          "iyimuka ry'abaturage",
+          "iyimuka ry’abaturage",
+          "kwimuka kw'abaturage",
+          "kwimuka kw’abaturage",
+          "urujya n'uruza rw'abimukira",
+          "urujya n’uruza rw’abimukira"
+        ],
+        "ne": [
+          {
+            "prefix": "बसाइँसराइ"
+          },
+          {
+            "prefix": "बसाइसराइ"
+          },
+          {
+            "prefix": "बसाईसराई"
+          },
+          {
+            "prefix": "बसाइँ सराइ"
+          },
+          {
+            "prefix": "प्रवासन"
+          },
+          {
+            "prefix": "आप्रवासन"
+          },
+          {
+            "prefix": "आप्रवासी"
+          },
+          "माइग्रेसन"
+        ],
+        "dv": [
+          {
+            "prefix": "މައިގްރޭޝަ"
+          },
+          "މައިގްރަންޓް",
+          "މައިގްރަންޓުން",
+          "މައިގްރަންޓުންގެ",
+          {
+            "prefix": "ހިޖުރަކުރާ މީހު"
+          },
+          {
+            "prefix": "ހިޖުރަކުރާ ބައި"
+          }
         ]
       }
     },
@@ -1531,6 +1748,262 @@
           "migrashon interno",
           "migrashon entre isla",
           "binnenlandse migratie"
+        ],
+        "urdu": [
+          "اندرونی نقل مکانی",
+          "اندرون ملک نقل مکانی",
+          "داخلی نقل مکانی",
+          "اندرونی ہجرت",
+          "اندرون ملک ہجرت",
+          "بین الصوبائی نقل مکانی"
+        ],
+        "bn": [
+          {
+            "prefix": "অভ্যন্তরীণ অভিবাসন"
+          },
+          {
+            "prefix": "অভ্যন্তরীণ অভিবাসী"
+          },
+          {
+            "prefix": "অভ্যন্তরীণ অভিগমন"
+          },
+          {
+            "prefix": "দেশের ভেতরে অভিবাসন"
+          },
+          {
+            "prefix": "দেশের অভ্যন্তরে অভিবাসন"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "belső migráci"
+          },
+          {
+            "prefix": "belföldi migráci"
+          },
+          {
+            "prefix": "belső vándorl"
+          },
+          {
+            "prefix": "belföldi vándorl"
+          },
+          {
+            "prefix": "országon belüli vándorl"
+          },
+          {
+            "prefix": "országon belüli migráci"
+          },
+          {
+            "prefix": "belső migráns"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "notranja migracij"
+          },
+          {
+            "prefix": "notranje migracij"
+          },
+          {
+            "prefix": "notranjih migracij"
+          },
+          {
+            "prefix": "notranjo migracij"
+          },
+          {
+            "prefix": "notranji migrant"
+          },
+          {
+            "prefix": "notranjih migrant"
+          },
+          "notranje selitve",
+          "notranjih selitev",
+          "selitve znotraj države"
+        ],
+        "somali": [
+          "hijrada gudaha",
+          "guuritaanka gudaha dalka",
+          "u guuritaanka gudaha",
+          "muhaajiriinta gudaha",
+          "internal migration"
+        ],
+        "sk": [
+          {
+            "prefix": "vnútorná migrác"
+          },
+          {
+            "prefix": "vnútornej migrác"
+          },
+          {
+            "prefix": "vnútornú migrác"
+          },
+          {
+            "prefix": "vnútornou migrác"
+          },
+          {
+            "prefix": "vnútroštátna migrác"
+          },
+          {
+            "prefix": "vnútroštátnej migrác"
+          },
+          {
+            "prefix": "vnútorní migranti"
+          },
+          {
+            "prefix": "vnútorných migrant"
+          },
+          "migrácia v rámci Slovenska",
+          "migrácie v rámci Slovenska"
+        ],
+        "swahili": [
+          "uhamiaji wa ndani",
+          "wahamiaji wa ndani",
+          "uhamaji wa ndani",
+          "uhamiaji wa ndani ya nchi",
+          "uhamiaji kati ya mikoa"
+        ],
+        "si": [
+          {
+            "prefix": "අභ්‍යන්තර සංක්‍රමණ"
+          },
+          {
+            "prefix": "අභ්යන්තර සංක්රමණ"
+          },
+          {
+            "prefix": "දේශීය සංක්‍රමණ"
+          },
+          {
+            "prefix": "දේශීය සංක්රමණ"
+          },
+          {
+            "prefix": "පළාත් අතර සංක්‍රමණ"
+          },
+          {
+            "prefix": "පළාත් අතර සංක්රමණ"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "içerki migrasi"
+          },
+          {
+            "prefix": "içerki migrant"
+          },
+          {
+            "prefix": "ýurt içindäki migrasi"
+          },
+          {
+            "prefix": "içerki göç"
+          },
+          {
+            "prefix": "welaýatlar arasyndaky göç"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "आंतरिक प्रवास"
+          },
+          "आंतरिक पलायन",
+          {
+            "prefix": "अंतरराज्यीय प्रवास"
+          },
+          {
+            "prefix": "अंतर-राज्यीय प्रवास"
+          },
+          {
+            "prefix": "घरेलू प्रवास"
+          },
+          "दूसरे राज्यों में पलायन"
+        ],
+        "hebrew": [
+          "הגירה פנימית",
+          "הגירה הפנימית",
+          "מהגרים פנימיים",
+          "הגירה בין-מחוזית",
+          "הגירה בין מחוזות",
+          "הגירה בתוך המדינה"
+        ],
+        "amharic": [
+          {
+            "prefix": "የውስጥ ፍልሰ"
+          },
+          {
+            "prefix": "የሀገር ውስጥ ፍልሰ"
+          },
+          {
+            "prefix": "የአገር ውስጥ ፍልሰ"
+          },
+          {
+            "prefix": "ውስጣዊ ፍልሰ"
+          },
+          {
+            "prefix": "የውስጥ ስደተ"
+          },
+          "internal migration"
+        ],
+        "cs": [
+          {
+            "prefix": "vnitřní migrac"
+          },
+          {
+            "prefix": "vnitřní migrant"
+          },
+          {
+            "prefix": "vnitřních migrant"
+          },
+          {
+            "prefix": "vnitrostátní migrac"
+          },
+          {
+            "prefix": "vnitřní stěhování"
+          },
+          {
+            "prefix": "vnitřního stěhování"
+          },
+          {
+            "prefix": "vnitřním stěhování"
+          }
+        ],
+        "rw": [
+          "iyimuka ry'imbere mu gihugu",
+          "iyimuka ry’imbere mu gihugu",
+          "abimukira bo mu gihugu imbere",
+          "abimuka imbere mu gihugu",
+          "kwimukira mu tundi turere"
+        ],
+        "ne": [
+          {
+            "prefix": "आन्तरिक बसाइँसराइ"
+          },
+          {
+            "prefix": "आन्तरिक बसाइसराइ"
+          },
+          {
+            "prefix": "आन्तरिक प्रवासन"
+          },
+          {
+            "prefix": "आन्तरिक आप्रवासन"
+          },
+          {
+            "prefix": "आन्तरिक आप्रवासी"
+          },
+          {
+            "prefix": "देशभित्रै बसाइँसराइ"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "އިންޓަރނަލް މައިގްރޭޝަ"
+          },
+          {
+            "prefix": "ގައުމުގެ ތެރޭގައި ހިޖުރަ"
+          },
+          {
+            "prefix": "ރަށުން ރަށަށް ހިޖުރަ"
+          },
+          {
+            "prefix": "ރާއްޖޭގެ ތެރޭގައި ހިޖުރަ"
+          }
         ]
       }
     },
@@ -2353,6 +2826,267 @@
           "migrashon internashonal",
           "migrante internashonal",
           "internationale migratie"
+        ],
+        "urdu": [
+          "بین الاقوامی نقل مکانی",
+          "بین الاقوامی ہجرت",
+          "بیرون ملک نقل مکانی",
+          "بیرون ملک ہجرت",
+          "سرحد پار نقل مکانی",
+          "بین الاقوامی تارکین وطن"
+        ],
+        "bn": [
+          {
+            "prefix": "আন্তর্জাতিক অভিবাসন"
+          },
+          {
+            "prefix": "আন্তর্জাতিক অভিবাসী"
+          },
+          {
+            "prefix": "আন্তঃসীমান্ত অভিবাসন"
+          },
+          {
+            "prefix": "বৈদেশিক অভিবাসন"
+          },
+          {
+            "prefix": "বিদেশে অভিবাসন"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "nemzetközi migráci"
+          },
+          {
+            "prefix": "nemzetközi vándorl"
+          },
+          {
+            "prefix": "nemzetközi migráns"
+          },
+          {
+            "prefix": "határokon átnyúló migráci"
+          },
+          {
+            "prefix": "határon átnyúló migráci"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "mednarodna migracij"
+          },
+          {
+            "prefix": "mednarodne migracij"
+          },
+          {
+            "prefix": "mednarodnih migracij"
+          },
+          {
+            "prefix": "mednarodno migracij"
+          },
+          {
+            "prefix": "mednarodni migrant"
+          },
+          {
+            "prefix": "mednarodnih migrant"
+          },
+          {
+            "prefix": "čezmejne migracij"
+          },
+          {
+            "prefix": "čezmejnih migracij"
+          }
+        ],
+        "somali": [
+          "hijrada caalamiga ah",
+          "u guuritaanka dibadda",
+          "u haajiridda dibadda",
+          "muhaajiriinta caalamiga ah",
+          "international migration"
+        ],
+        "sk": [
+          {
+            "prefix": "medzinárodná migrác"
+          },
+          {
+            "prefix": "medzinárodnej migrác"
+          },
+          {
+            "prefix": "medzinárodnú migrác"
+          },
+          {
+            "prefix": "medzinárodnou migrác"
+          },
+          {
+            "prefix": "cezhraničná migrác"
+          },
+          {
+            "prefix": "cezhraničnej migrác"
+          },
+          {
+            "prefix": "medzinárodní migranti"
+          },
+          {
+            "prefix": "medzinárodných migrant"
+          },
+          "migrácia do zahraničia",
+          "migrácie do zahraničia"
+        ],
+        "swahili": [
+          "uhamiaji wa kimataifa",
+          "wahamiaji wa kimataifa",
+          "uhamiaji wa kuvuka mipaka",
+          "uhamiaji nje ya nchi"
+        ],
+        "si": [
+          {
+            "prefix": "ජාත්‍යන්තර සංක්‍රමණ"
+          },
+          {
+            "prefix": "ජාත්යන්තර සංක්රමණ"
+          },
+          {
+            "prefix": "විදේශ සංක්‍රමණ"
+          },
+          {
+            "prefix": "විදේශ සංක්රමණ"
+          },
+          {
+            "prefix": "විදෙස් සංක්‍රමණ"
+          },
+          {
+            "prefix": "විදෙස් සංක්රමණ"
+          },
+          {
+            "prefix": "දේශසීමා හරහා සංක්‍රමණ"
+          },
+          {
+            "prefix": "දේශසීමා හරහා සංක්රමණ"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "halkara migrasi"
+          },
+          {
+            "prefix": "halkara migrant"
+          },
+          {
+            "prefix": "daşary ýurtlara migrasi"
+          },
+          {
+            "prefix": "serhetara migrasi"
+          },
+          {
+            "prefix": "daşary ýurtlara göç"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "अंतरराष्ट्रीय प्रवास"
+          },
+          {
+            "prefix": "अंतर्राष्ट्रीय प्रवास"
+          },
+          {
+            "prefix": "सीमा पार प्रवास"
+          },
+          "विदेशों में पलायन",
+          "विदेश पलायन"
+        ],
+        "hebrew": [
+          "הגירה בינלאומית",
+          "הגירה הבינלאומית",
+          "הגירה בין-לאומית",
+          "מהגרים בינלאומיים",
+          "הגירה חוצת גבולות",
+          "הגירה לחו\"ל",
+          "הגירה לחו״ל"
+        ],
+        "amharic": [
+          {
+            "prefix": "ዓለም አቀፍ ፍልሰ"
+          },
+          {
+            "prefix": "አለም አቀፍ ፍልሰ"
+          },
+          {
+            "prefix": "ዓለም አቀፍ ስደተ"
+          },
+          {
+            "prefix": "ድንበር ተሻጋሪ ፍልሰ"
+          },
+          {
+            "prefix": "ወደ ውጭ ሀገር ስደ"
+          },
+          {
+            "prefix": "ወደ ውጭ አገር ስደ"
+          },
+          "international migration"
+        ],
+        "cs": [
+          {
+            "prefix": "mezinárodní migrac"
+          },
+          {
+            "prefix": "mezinárodní migrant"
+          },
+          {
+            "prefix": "mezinárodních migrant"
+          },
+          {
+            "prefix": "přeshraniční migrac"
+          },
+          {
+            "prefix": "zahraniční migrac"
+          },
+          {
+            "prefix": "zahraniční stěhování"
+          },
+          {
+            "prefix": "zahraničního stěhování"
+          },
+          "migrace do zahraničí",
+          "migraci do zahraničí"
+        ],
+        "rw": [
+          "abimukira mpuzamahanga",
+          "iyimuka mpuzamahanga",
+          "kwimukira mu mahanga",
+          "abimukira bambuka imipaka",
+          "kwimuka bambuka imipaka"
+        ],
+        "ne": [
+          {
+            "prefix": "अन्तर्राष्ट्रिय प्रवासन"
+          },
+          {
+            "prefix": "अन्तर्राष्ट्रिय आप्रवासन"
+          },
+          {
+            "prefix": "अन्तर्राष्ट्रिय बसाइँसराइ"
+          },
+          {
+            "prefix": "अन्तर्राष्ट्रिय आप्रवासी"
+          },
+          {
+            "prefix": "विदेशतर्फको बसाइँसराइ"
+          },
+          {
+            "prefix": "विदेश बसाइँसराइ"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "އިންޓަރނޭޝަނަލް މައިގްރޭޝަ"
+          },
+          {
+            "prefix": "ބައިނަލްއަގްވާމީ ހިޖުރަ"
+          },
+          {
+            "prefix": "ބައިނަލްއަގުވާމީ ހިޖުރަ"
+          },
+          {
+            "prefix": "ބޭރުގައުމުތަކަށް ހިޖުރަ"
+          }
         ]
       }
     },
@@ -3073,6 +3807,220 @@
           "migrashon rural-urbano",
           "migrashon di kunuku pa stat",
           "trek naar de stad"
+        ],
+        "urdu": [
+          "دیہی سے شہری نقل مکانی",
+          "دیہات سے شہروں",
+          "دیہی علاقوں سے شہروں",
+          "شہروں کی طرف نقل مکانی",
+          "شہروں کی جانب نقل مکانی",
+          "شہروں کی طرف ہجرت"
+        ],
+        "bn": [
+          {
+            "prefix": "গ্রাম থেকে শহরে অভিবাসন"
+          },
+          {
+            "prefix": "গ্রাম থেকে শহরে স্থানান্তর"
+          },
+          {
+            "prefix": "গ্রাম ছেড়ে শহরে"
+          },
+          {
+            "prefix": "গ্রামীণ-শহুরে অভিবাসন"
+          },
+          {
+            "prefix": "শহরে অভিবাসন"
+          },
+          {
+            "prefix": "নগরে অভিবাসন"
+          },
+          {
+            "prefix": "শহরমুখী অভিবাসন"
+          }
+        ],
+        "hu": [
+          "vidékről városokba",
+          "vidékről a városokba",
+          "falvakból a városokba",
+          "falvakból városokba",
+          {
+            "prefix": "városokba áraml"
+          },
+          {
+            "prefix": "vidék-város migráci"
+          },
+          {
+            "prefix": "falu-város migráci"
+          }
+        ],
+        "sl": [
+          "selitev s podeželja v mesta",
+          "selitve s podeželja v mesta",
+          "selitev iz podeželja v mesta",
+          "migracije s podeželja v mesta",
+          "migracija s podeželja v mesta",
+          "selitev v mesta",
+          "selitve v mesta",
+          "preseljevanje v mesta",
+          "preseljevanja v mesta"
+        ],
+        "somali": [
+          "u guuritaanka magaalooyinka",
+          "u soo guuritaanka magaalooyinka",
+          "ka guuritaanka miyiga",
+          "ka soo guuritaanka miyiga",
+          "ka hijroodka miyiga",
+          "rural-urban migration"
+        ],
+        "sk": [
+          "z vidieka do miest",
+          "z vidieka do mesta",
+          "migrácia do miest",
+          "migrácie do miest",
+          "sťahovanie do miest",
+          "sťahovania do miest"
+        ],
+        "swahili": [
+          "uhamiaji kutoka vijijini kwenda mijini",
+          "uhamiaji wa vijijini kwenda mijini",
+          "kuhama vijijini kwenda mijini",
+          "kuhamia mijini",
+          "kukimbilia mijini",
+          "vijana kukimbilia mijini"
+        ],
+        "si": [
+          {
+            "prefix": "ග්‍රාමීය-නාගරික සංක්‍රමණ"
+          },
+          {
+            "prefix": "ග්රාමීය-නාගරික සංක්රමණ"
+          },
+          {
+            "prefix": "ග්‍රාමීය නාගරික සංක්‍රමණ"
+          },
+          {
+            "prefix": "ග්රාමීය නාගරික සංක්රමණ"
+          },
+          {
+            "prefix": "නගරවලට සංක්‍රමණ"
+          },
+          {
+            "prefix": "නගරවලට සංක්රමණ"
+          },
+          {
+            "prefix": "නගර කරා සංක්‍රමණ"
+          },
+          {
+            "prefix": "නගර කරා සංක්රමණ"
+          },
+          {
+            "prefix": "ගම්වල සිට නගරවලට"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "obadan şähere göç"
+          },
+          {
+            "prefix": "obalardan şäherlere göç"
+          },
+          {
+            "prefix": "oba-şäher migrasi"
+          },
+          {
+            "prefix": "şäherlere göç"
+          }
+        ],
+        "hindi": [
+          "गांवों से शहरों की ओर पलायन",
+          "गाँवों से शहरों की ओर पलायन",
+          "गांव से शहर की ओर पलायन",
+          "शहरों की ओर पलायन",
+          "शहरों में पलायन",
+          {
+            "prefix": "ग्रामीण-शहरी प्रवास"
+          },
+          {
+            "prefix": "शहरों की ओर प्रवास"
+          }
+        ],
+        "hebrew": [
+          "הגירה מהכפר לעיר",
+          "הגירה מהכפרים לערים",
+          "הגירה מכפרים לערים",
+          "הגירה לערים",
+          "נדידה לערים",
+          "מעבר מהכפר לעיר",
+          "הגירה כפרית-עירונית"
+        ],
+        "amharic": [
+          {
+            "prefix": "የገጠር-ከተማ ፍልሰ"
+          },
+          {
+            "prefix": "ወደ ከተሞች የሚደረግ ፍልሰ"
+          },
+          {
+            "prefix": "ወደ ከተማ የሚደረግ ፍልሰ"
+          },
+          {
+            "prefix": "ወደ ከተማ መፍለ"
+          },
+          {
+            "prefix": "ወደ ከተሞች መፍለ"
+          }
+        ],
+        "cs": [
+          "migrace z venkova do měst",
+          "migraci z venkova do měst",
+          "stěhování z venkova do měst",
+          "odchod z venkova do měst",
+          "migrace do měst",
+          "migraci do měst",
+          "stěhování do měst"
+        ],
+        "rw": [
+          "kwimukira mu mijyi",
+          "abimukira mu mijyi",
+          "iyimuka riva mu cyaro rijya mu mujyi",
+          "abava mu cyaro bajya mu mujyi",
+          "kuva mu cyaro ujya mu mujyi",
+          "abimukira bava mu cyaro"
+        ],
+        "ne": [
+          {
+            "prefix": "गाउँबाट सहर"
+          },
+          {
+            "prefix": "गाउँबाट शहर"
+          },
+          {
+            "prefix": "ग्रामीण-सहरी बसाइँसराइ"
+          },
+          {
+            "prefix": "सहरतर्फ बसाइँसराइ"
+          },
+          {
+            "prefix": "शहरतर्फ बसाइँसराइ"
+          },
+          {
+            "prefix": "सहरतर्फको बसाइँसराइ"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ރަށްރަށުން މާލެއަށް ހިޖުރަ"
+          },
+          {
+            "prefix": "މާލެއަށް ހިޖުރަ"
+          },
+          {
+            "prefix": "ސިޓީތަކަށް ހިޖުރަ"
+          },
+          {
+            "prefix": "ރޫރަލް-އާބަން މައިގްރޭޝަ"
+          }
         ]
       }
     },
@@ -4000,6 +4948,271 @@
           "fuga di serebro",
           "emigratie",
           "brain drain"
+        ],
+        "urdu": [
+          "برین ڈرین",
+          "brain drain",
+          "ذہین افراد کا انخلا",
+          "ٹیلنٹ کا انخلا",
+          "ملک چھوڑ",
+          "بیرون ملک منتقل"
+        ],
+        "bn": [
+          {
+            "prefix": "দেশত্যাগ"
+          },
+          {
+            "prefix": "দেশান্তর"
+          },
+          {
+            "prefix": "মেধাপাচার"
+          },
+          {
+            "prefix": "মেধা পাচার"
+          },
+          {
+            "prefix": "ব্রেইন ড্রেন"
+          },
+          "emigration"
+        ],
+        "hu": [
+          {
+            "prefix": "kivándor"
+          },
+          {
+            "prefix": "elvándor"
+          },
+          {
+            "prefix": "emigráci"
+          },
+          {
+            "prefix": "emigráns"
+          },
+          {
+            "prefix": "agyelszív"
+          },
+          {
+            "prefix": "külföldre költöz"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "izseljevanj"
+          },
+          {
+            "prefix": "izseljenc"
+          },
+          "izseljenec",
+          {
+            "prefix": "izseljensk"
+          },
+          {
+            "prefix": "emigracij"
+          },
+          {
+            "prefix": "emigrant"
+          },
+          {
+            "prefix": "beg možganov"
+          },
+          {
+            "prefix": "bega možganov"
+          },
+          {
+            "prefix": "odliv možganov"
+          }
+        ],
+        "somali": [
+          "u qaxitaanka dibadda",
+          "ka haajiridda dalka",
+          "ka tagitaanka dalka",
+          "baxitaanka aqoonyahanada",
+          "lumitaanka maskaxda",
+          "brain drain"
+        ],
+        "sk": [
+          {
+            "prefix": "emigrác"
+          },
+          {
+            "prefix": "emigrant"
+          },
+          {
+            "prefix": "emigrova"
+          },
+          "odliv mozgov",
+          "odlivu mozgov",
+          "odlivom mozgov",
+          {
+            "prefix": "vysťahovalectv"
+          },
+          {
+            "prefix": "vysťahovalc"
+          },
+          "odchod mladých do zahraničia",
+          "odchodu mladých do zahraničia"
+        ],
+        "swahili": [
+          "kuhamia nje ya nchi",
+          "kuhamia ughaibuni",
+          "kuhama nchi",
+          "uhamiaji wa kwenda nje",
+          "kuhama kwa wataalamu",
+          "kukimbia kwa wasomi",
+          "brain drain"
+        ],
+        "si": [
+          "විගමනය",
+          "විගමනයේ",
+          "විගමනයට",
+          "විගමනික",
+          "විගමනිකයන්",
+          "විගමනිකයෝ",
+          {
+            "prefix": "බුද්ධි ගලන"
+          },
+          {
+            "prefix": "මොළ ගලන"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "emigrasi"
+          },
+          {
+            "prefix": "emigrant"
+          },
+          {
+            "prefix": "daşary ýurda göç"
+          },
+          {
+            "prefix": "akyl göç"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "उत्प्रवास"
+          },
+          "प्रतिभा पलायन",
+          "ब्रेन ड्रेन",
+          "विदेश में बसने",
+          "विदेशों में बसने"
+        ],
+        "hebrew": [
+          "הגירה מישראל",
+          "הגירה מהארץ",
+          "ירידה מהארץ",
+          "ירידה מישראל",
+          "בריחת מוחות",
+          "בריחת המוחות",
+          "הגירה החוצה",
+          "הגירה שלילית",
+          "עזיבת הארץ"
+        ],
+        "amharic": [
+          {
+            "prefix": "ወደ ውጭ ሀገር መሰደ"
+          },
+          {
+            "prefix": "ወደ ውጭ አገር መሰደ"
+          },
+          {
+            "prefix": "ወደ ውጭ ሀገር የሚሰደ"
+          },
+          {
+            "prefix": "ወደ ውጭ የሚሰደ"
+          },
+          {
+            "prefix": "ወደ ውጭ መሰደ"
+          },
+          {
+            "prefix": "የአዕምሮ ፍልሰ"
+          },
+          {
+            "prefix": "የአእምሮ ፍልሰ"
+          },
+          {
+            "prefix": "የባለሙያዎች ፍልሰ"
+          },
+          "brain drain"
+        ],
+        "cs": [
+          {
+            "prefix": "emigrac"
+          },
+          {
+            "prefix": "emigrační"
+          },
+          {
+            "prefix": "emigrant"
+          },
+          {
+            "prefix": "emigrova"
+          },
+          {
+            "prefix": "emigruj"
+          },
+          {
+            "prefix": "vystěhovalectv"
+          },
+          "odliv mozků",
+          "odlivu mozků",
+          "odlivem mozků"
+        ],
+        "rw": [
+          "kwimukira mu mahanga",
+          "abajya kuba mu mahanga",
+          "abimukira bajya mu mahanga",
+          "iyimuka ry'abanyabwenge",
+          "iyimuka ry’abanyabwenge",
+          "iyimuka ry'abahanga",
+          "iyimuka ry’abahanga",
+          "brain drain"
+        ],
+        "ne": [
+          {
+            "prefix": "विदेश पलायन"
+          },
+          {
+            "prefix": "युवा पलायन"
+          },
+          {
+            "prefix": "प्रतिभा पलायन"
+          },
+          {
+            "prefix": "बौद्धिक पलायन"
+          },
+          {
+            "prefix": "जनशक्ति पलायन"
+          },
+          {
+            "prefix": "उत्प्रवासन"
+          },
+          {
+            "prefix": "विदेशिने"
+          },
+          {
+            "prefix": "विदेशिए"
+          },
+          "विदेशिँदै"
+        ],
+        "dv": [
+          {
+            "prefix": "އެމިގްރޭޝަ"
+          },
+          "ބްރެއިން ޑްރެއިން",
+          {
+            "prefix": "ބްރެއިން ޑްރެއިނު"
+          },
+          {
+            "prefix": "ބޭރުގައުމުތަކަށް ހިޖުރަ"
+          },
+          {
+            "prefix": "ބޭރުގައުމަށް ހިޖުރަ"
+          },
+          {
+            "prefix": "ރާއްޖެ ދޫކޮށް ބޭރުގައުމުތަކަށް ބަދަލުވު"
+          }
         ]
       }
     },
@@ -5223,6 +6436,364 @@
           "trahadónan stranhero",
           "arbeidsmigratie",
           "buitenlandse werknemers"
+        ],
+        "urdu": [
+          "افرادی قوت کی برآمد",
+          "بیرون ملک ملازمت",
+          "بیرون ملک روزگار",
+          "غیر ملکی کارکن",
+          "اوورسیز ایمپلائمنٹ",
+          "بیورو آف امیگریشن",
+          "لیبر مائیگریشن",
+          "ورک ویزا"
+        ],
+        "bn": [
+          {
+            "prefix": "শ্রম অভিবাসন"
+          },
+          {
+            "prefix": "শ্রমিক অভিবাসন"
+          },
+          {
+            "prefix": "প্রবাসী শ্রমিক"
+          },
+          {
+            "prefix": "প্রবাসী কর্মী"
+          },
+          {
+            "prefix": "অভিবাসী শ্রমিক"
+          },
+          {
+            "prefix": "অভিবাসী কর্মী"
+          },
+          {
+            "prefix": "বিদেশি শ্রমিক"
+          },
+          {
+            "prefix": "বিদেশি কর্মী"
+          },
+          {
+            "prefix": "জনশক্তি রপ্তানি"
+          },
+          {
+            "prefix": "বৈদেশিক কর্মসংস্থান"
+          },
+          {
+            "prefix": "বিদেশে কর্মসংস্থান"
+          },
+          {
+            "prefix": "বৈদেশিক শ্রমবাজার"
+          },
+          "বিএমইটি"
+        ],
+        "hu": [
+          {
+            "prefix": "munkaerő-migráci"
+          },
+          {
+            "prefix": "munkaerő-vándorl"
+          },
+          {
+            "prefix": "munkamigráci"
+          },
+          {
+            "prefix": "vendégmunkás"
+          },
+          {
+            "prefix": "külföldi munkavállal"
+          },
+          {
+            "prefix": "külföldi munkás"
+          },
+          {
+            "prefix": "munkaerő-import"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "delovna migracij"
+          },
+          {
+            "prefix": "delovne migracij"
+          },
+          {
+            "prefix": "delovnih migracij"
+          },
+          {
+            "prefix": "delovni migrant"
+          },
+          {
+            "prefix": "delovnih migrant"
+          },
+          {
+            "prefix": "tuji delav"
+          },
+          {
+            "prefix": "tujih delav"
+          },
+          {
+            "prefix": "tujim delav"
+          },
+          {
+            "prefix": "tuje delav"
+          },
+          {
+            "prefix": "tujimi delav"
+          },
+          {
+            "prefix": "tuja delovna sil"
+          },
+          {
+            "prefix": "tuje delovne sil"
+          },
+          {
+            "prefix": "tujo delovno sil"
+          },
+          "gostujoči delavci",
+          "gostujočih delavcev"
+        ],
+        "somali": [
+          "shaqaale ajnabi ah",
+          "shaqaalaha ajnabiga ah",
+          "shaqaalaha ajaanibta",
+          "shaqaale shisheeye",
+          "shaqaalaha shisheeye",
+          "hijrada shaqada",
+          "u dhoofidda shaqo"
+        ],
+        "sk": [
+          {
+            "prefix": "pracovná migrác"
+          },
+          {
+            "prefix": "pracovnej migrác"
+          },
+          {
+            "prefix": "pracovnú migrác"
+          },
+          {
+            "prefix": "pracovnou migrác"
+          },
+          "zahraniční pracovníci",
+          "zahraničných pracovníkov",
+          "zahraničným pracovníkom",
+          "zahraničnými pracovníkmi",
+          "pracovníci zo zahraničia",
+          "pracovníkov zo zahraničia",
+          "pracovníci z tretích krajín",
+          "pracovníkov z tretích krajín",
+          "zahraničná pracovná sila",
+          "zahraničnej pracovnej sily",
+          "mobilita pracovnej sily",
+          "mobility pracovnej sily"
+        ],
+        "swahili": [
+          "uhamiaji wa wafanyakazi",
+          "wafanyakazi wahamiaji",
+          "mfanyakazi mhamiaji",
+          "wafanyakazi wa kigeni",
+          "mfanyakazi wa kigeni",
+          "ajira nje ya nchi",
+          "kufanya kazi nje ya nchi"
+        ],
+        "si": [
+          {
+            "prefix": "ශ්‍රම සංක්‍රමණ"
+          },
+          {
+            "prefix": "ශ්රම සංක්රමණ"
+          },
+          {
+            "prefix": "විදේශ රැකියා"
+          },
+          {
+            "prefix": "විදෙස් රැකියා"
+          },
+          {
+            "prefix": "විදේශ ශ්‍රමික"
+          },
+          {
+            "prefix": "විදේශ ශ්රමික"
+          },
+          {
+            "prefix": "විදේශගත ශ්‍රමික"
+          },
+          {
+            "prefix": "විදේශගත ශ්රමික"
+          },
+          {
+            "prefix": "සංක්‍රමණික ශ්‍රමික"
+          },
+          {
+            "prefix": "සංක්රමණික ශ්රමික"
+          },
+          {
+            "prefix": "විදේශ සේවා නියුක්ති"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "zähmet migrasi"
+          },
+          {
+            "prefix": "zähmet migrant"
+          },
+          {
+            "prefix": "işçi migrant"
+          },
+          {
+            "prefix": "gastarbaýter"
+          },
+          {
+            "prefix": "daşary ýurtly işçi"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "प्रवासी मजदूर"
+          },
+          {
+            "prefix": "प्रवासी मज़दूर"
+          },
+          {
+            "prefix": "प्रवासी श्रमिक"
+          },
+          {
+            "prefix": "प्रवासी कामगार"
+          },
+          {
+            "prefix": "विदेशी कामगार"
+          },
+          {
+            "prefix": "विदेशी श्रमिक"
+          },
+          "श्रम प्रवास",
+          "मजदूरों का पलायन",
+          "श्रमिकों का पलायन"
+        ],
+        "hebrew": [
+          "עובדים זרים",
+          "עובדים הזרים",
+          "עובד זר",
+          "עובדת זרה",
+          "מהגרי עבודה",
+          "מהגרות עבודה",
+          "הגירת עבודה",
+          "עובדים מחו\"ל",
+          "עובדים מחו״ל"
+        ],
+        "amharic": [
+          {
+            "prefix": "የውጭ ሀገር ሥራ ስምሪ"
+          },
+          {
+            "prefix": "የውጭ አገር ሥራ ስምሪ"
+          },
+          {
+            "prefix": "የውጭ ሀገር ስራ ስምሪ"
+          },
+          {
+            "prefix": "የውጭ አገር ስራ ስምሪ"
+          },
+          {
+            "prefix": "የሠራተኛ ፍልሰ"
+          },
+          {
+            "prefix": "የሠራተኞች ፍልሰ"
+          },
+          {
+            "prefix": "የጉልበት ፍልሰ"
+          },
+          {
+            "prefix": "የጉልበት ሠራተኞች ፍልሰ"
+          }
+        ],
+        "cs": [
+          {
+            "prefix": "pracovní migrac"
+          },
+          {
+            "prefix": "pracovní migrant"
+          },
+          {
+            "prefix": "pracovních migrant"
+          },
+          "zahraniční pracovníci",
+          "zahraničních pracovníků",
+          "zahraničním pracovníkům",
+          "zahraničními pracovníky",
+          "pracovníci ze zahraničí",
+          "pracovníků ze zahraničí",
+          {
+            "prefix": "zaměstnávání cizinc"
+          },
+          {
+            "prefix": "zaměstnanecká kart"
+          },
+          {
+            "prefix": "zaměstnanecké kart"
+          },
+          {
+            "prefix": "zaměstnaneckou kart"
+          },
+          {
+            "prefix": "gastarbeit"
+          }
+        ],
+        "rw": [
+          "abakozi b'abimukira",
+          "abakozi b’abimukira",
+          "abakozi b'abanyamahanga",
+          "abakozi b’abanyamahanga",
+          "abajya gukora mu mahanga",
+          "kujya gushaka akazi mu mahanga",
+          "abakozi boherezwa mu mahanga",
+          "abakozi bajya mu mahanga"
+        ],
+        "ne": [
+          {
+            "prefix": "वैदेशिक रोजगार"
+          },
+          {
+            "prefix": "श्रम आप्रवासन"
+          },
+          {
+            "prefix": "श्रम प्रवासन"
+          },
+          {
+            "prefix": "श्रम स्वीकृति"
+          },
+          {
+            "prefix": "आप्रवासी कामदार"
+          },
+          {
+            "prefix": "प्रवासी कामदार"
+          },
+          {
+            "prefix": "प्रवासी श्रमिक"
+          },
+          {
+            "prefix": "विदेशी कामदार"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ބިދޭސީ މަސައްކަތްތެރި"
+          },
+          "ބިދޭސީ މުވައްޒަފު",
+          "ބިދޭސީ މުވައްޒަފުން",
+          {
+            "prefix": "ބިދޭސީ މުވައްޒަފުންގެ"
+          },
+          {
+            "prefix": "ލޭބަރ މައިގްރޭޝަ"
+          },
+          {
+            "prefix": "ލޭބަރު މައިގްރޭޝަ"
+          },
+          {
+            "prefix": "ބޭރުގެ މަސައްކަތްތެރި"
+          }
         ]
       }
     },
@@ -6053,6 +7624,245 @@
           "migrashon temporal",
           "migrantenan temporal",
           "tijdelijke migratie"
+        ],
+        "urdu": [
+          "عارضی نقل مکانی",
+          "عارضی ہجرت",
+          "عارضی تارکین وطن",
+          "گردشی نقل مکانی",
+          "سرکلر مائیگریشن"
+        ],
+        "bn": [
+          {
+            "prefix": "চক্রাকার অভিবাসন"
+          },
+          {
+            "prefix": "বৃত্তাকার অভিবাসন"
+          },
+          {
+            "prefix": "অস্থায়ী অভিবাসন"
+          },
+          {
+            "prefix": "অস্থায়ী অভিবাসী"
+          },
+          {
+            "prefix": "সার্কুলার মাইগ্রেশন"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "körkörös migráci"
+          },
+          {
+            "prefix": "cirkuláris migráci"
+          },
+          {
+            "prefix": "ideiglenes migráci"
+          },
+          {
+            "prefix": "ideiglenes migráns"
+          },
+          {
+            "prefix": "ideiglenes vándorl"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "krožna migracij"
+          },
+          {
+            "prefix": "krožne migracij"
+          },
+          {
+            "prefix": "krožnih migracij"
+          },
+          {
+            "prefix": "krožno migracij"
+          },
+          {
+            "prefix": "začasna migracij"
+          },
+          {
+            "prefix": "začasne migracij"
+          },
+          {
+            "prefix": "začasnih migracij"
+          },
+          {
+            "prefix": "začasni migrant"
+          },
+          {
+            "prefix": "začasnih migrant"
+          }
+        ],
+        "somali": [
+          "hijrada ku meel gaarka ah",
+          "muhaajiriin ku meel gaar ah",
+          "circular migration",
+          "temporary migration"
+        ],
+        "sk": [
+          {
+            "prefix": "cirkulárna migrác"
+          },
+          {
+            "prefix": "cirkulárnej migrác"
+          },
+          {
+            "prefix": "kruhová migrác"
+          },
+          {
+            "prefix": "kruhovej migrác"
+          },
+          {
+            "prefix": "dočasná migrác"
+          },
+          {
+            "prefix": "dočasnej migrác"
+          },
+          {
+            "prefix": "dočasnú migrác"
+          },
+          {
+            "prefix": "dočasní migranti"
+          },
+          {
+            "prefix": "dočasných migrant"
+          }
+        ],
+        "swahili": [
+          "uhamiaji wa mzunguko",
+          "uhamiaji wa muda",
+          "wahamiaji wa muda"
+        ],
+        "si": [
+          {
+            "prefix": "චක්‍රීය සංක්‍රමණ"
+          },
+          {
+            "prefix": "චක්රීය සංක්රමණ"
+          },
+          {
+            "prefix": "තාවකාලික සංක්‍රමණ"
+          },
+          {
+            "prefix": "තාවකාලික සංක්රමණ"
+          },
+          {
+            "prefix": "තාවකාලික සංක්‍රමණික"
+          },
+          {
+            "prefix": "තාවකාලික සංක්රමණික"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "wagtlaýyn migrasi"
+          },
+          {
+            "prefix": "wagtlaýyn migrant"
+          },
+          {
+            "prefix": "sirkulýar migrasi"
+          },
+          {
+            "prefix": "aýlanyşykly migrasi"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "चक्रीय प्रवास"
+          },
+          {
+            "prefix": "अस्थायी प्रवास"
+          },
+          "अस्थायी पलायन"
+        ],
+        "hebrew": [
+          "הגירה מעגלית",
+          "הגירה זמנית",
+          "הגירה הזמנית",
+          "מהגרים זמניים",
+          "מהגרים מעגליים"
+        ],
+        "amharic": [
+          {
+            "prefix": "ጊዜያዊ ፍልሰ"
+          },
+          {
+            "prefix": "ጊዜያዊ ስደተ"
+          },
+          {
+            "prefix": "ዑደታዊ ፍልሰ"
+          },
+          {
+            "prefix": "ተመላላሽ ፍልሰ"
+          },
+          "circular migration"
+        ],
+        "cs": [
+          {
+            "prefix": "cirkulární migrac"
+          },
+          {
+            "prefix": "cirkulární migrant"
+          },
+          {
+            "prefix": "dočasná migrac"
+          },
+          {
+            "prefix": "dočasné migrac"
+          },
+          {
+            "prefix": "dočasnou migrac"
+          },
+          {
+            "prefix": "dočasní migrant"
+          },
+          {
+            "prefix": "dočasných migrant"
+          }
+        ],
+        "rw": [
+          "iyimuka ry'igihe gito",
+          "iyimuka ry’igihe gito",
+          "abimukira b'igihe gito",
+          "abimukira b’igihe gito",
+          "circular migration"
+        ],
+        "ne": [
+          {
+            "prefix": "चक्रीय प्रवासन"
+          },
+          {
+            "prefix": "चक्रीय बसाइँसराइ"
+          },
+          {
+            "prefix": "अस्थायी बसाइँसराइ"
+          },
+          {
+            "prefix": "अस्थायी प्रवासन"
+          },
+          {
+            "prefix": "अस्थायी आप्रवासी"
+          },
+          {
+            "prefix": "अस्थायी प्रवासी"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ސަރކިއުލަރ މައިގްރޭޝަ"
+          },
+          {
+            "prefix": "ވަގުތީ ހިޖުރަ"
+          },
+          {
+            "prefix": "ޓެމްޕަރަރީ މައިގްރޭޝަ"
+          },
+          {
+            "prefix": "ވަގުތީ މައިގްރަ"
+          }
         ]
       }
     },
@@ -6863,6 +8673,258 @@
           "trahadó di temporada",
           "seizoensarbeid",
           "seizoensarbeiders"
+        ],
+        "urdu": [
+          "موسمی نقل مکانی",
+          "موسمی ہجرت",
+          "موسمی مزدور",
+          "موسمی کارکن",
+          "سیزنل ورک ویزا",
+          "سیزنل ورکر"
+        ],
+        "bn": [
+          {
+            "prefix": "মৌসুমি অভিবাসন"
+          },
+          {
+            "prefix": "মৌসুমি অভিবাসী"
+          },
+          {
+            "prefix": "মৌসুমী অভিবাসন"
+          },
+          {
+            "prefix": "মৌসুমী অভিবাসী"
+          },
+          {
+            "prefix": "মৌসুমি শ্রমিক"
+          },
+          {
+            "prefix": "মৌসুমী শ্রমিক"
+          },
+          {
+            "prefix": "মৌসুমি কর্মী"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "szezonális migráci"
+          },
+          {
+            "prefix": "szezonális migráns"
+          },
+          {
+            "prefix": "idénymunk"
+          },
+          {
+            "prefix": "szezonális munkavállal"
+          },
+          {
+            "prefix": "szezonális munkás"
+          },
+          {
+            "prefix": "szezonmunkás"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "sezonska migracij"
+          },
+          {
+            "prefix": "sezonske migracij"
+          },
+          {
+            "prefix": "sezonskih migracij"
+          },
+          {
+            "prefix": "sezonski migrant"
+          },
+          {
+            "prefix": "sezonskih migrant"
+          },
+          {
+            "prefix": "sezonski delav"
+          },
+          {
+            "prefix": "sezonskih delav"
+          },
+          {
+            "prefix": "sezonske delav"
+          },
+          {
+            "prefix": "sezonskim delav"
+          },
+          "dovoljenje za sezonsko delo"
+        ],
+        "somali": [
+          "hijrada xilliyeed",
+          "shaqaale xilliyeed",
+          "shaqaalaha xilliyeedka",
+          "seasonal workers",
+          "seasonal migration"
+        ],
+        "sk": [
+          {
+            "prefix": "sezónna migrác"
+          },
+          {
+            "prefix": "sezónnej migrác"
+          },
+          {
+            "prefix": "sezónnu migrác"
+          },
+          "sezónni pracovníci",
+          "sezónnych pracovníkov",
+          "sezónnym pracovníkom",
+          "sezónnymi pracovníkmi",
+          {
+            "prefix": "sezónni migranti"
+          },
+          {
+            "prefix": "sezónnych migrant"
+          }
+        ],
+        "swahili": [
+          "uhamiaji wa msimu",
+          "uhamiaji wa kimsimu",
+          "wahamiaji wa msimu"
+        ],
+        "si": [
+          {
+            "prefix": "සෘතුමය සංක්‍රමණ"
+          },
+          {
+            "prefix": "සෘතුමය සංක්රමණ"
+          },
+          {
+            "prefix": "සෘතුමය ශ්‍රමික"
+          },
+          {
+            "prefix": "සෘතුමය ශ්රමික"
+          },
+          {
+            "prefix": "සෘතුමය සේවක"
+          },
+          {
+            "prefix": "සෘතුමය රැකියා වීසා"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "möwsümleýin migrasi"
+          },
+          {
+            "prefix": "möwsümleýin migrant"
+          },
+          {
+            "prefix": "möwsümleýin iş wiza"
+          },
+          {
+            "prefix": "möwsümleýin zähmet migrant"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "मौसमी प्रवास"
+          },
+          "मौसमी पलायन",
+          {
+            "prefix": "मौसमी मजदूर"
+          },
+          {
+            "prefix": "मौसमी श्रमिक"
+          }
+        ],
+        "hebrew": [
+          "הגירה עונתית",
+          "עובדים עונתיים",
+          "מהגרים עונתיים",
+          "עובדי עונה",
+          "אשרת עבודה עונתית",
+          "עובדים זרים עונתיים"
+        ],
+        "amharic": [
+          {
+            "prefix": "ወቅታዊ ፍልሰ"
+          },
+          {
+            "prefix": "ወቅታዊ የሠራተኞች ፍልሰ"
+          },
+          {
+            "prefix": "ወቅትን ጠብቆ የሚደረግ ፍልሰ"
+          },
+          {
+            "prefix": "ወቅታዊ የጉልበት ፍልሰ"
+          },
+          "seasonal migration"
+        ],
+        "cs": [
+          {
+            "prefix": "sezónní migrac"
+          },
+          {
+            "prefix": "sezonní migrac"
+          },
+          {
+            "prefix": "sezónní migrant"
+          },
+          {
+            "prefix": "sezónních migrant"
+          },
+          "sezónní pracovníci",
+          "sezónních pracovníků",
+          {
+            "prefix": "sezónní zaměstnaneck"
+          },
+          {
+            "prefix": "sezónní víz"
+          },
+          {
+            "prefix": "sezonní víz"
+          }
+        ],
+        "rw": [
+          "abimukira b'ibihe",
+          "abimukira b’ibihe",
+          "iyimuka ry'ibihe",
+          "iyimuka ry’ibihe",
+          "abakozi b'ibihe by'isarura",
+          "abakozi b’ibihe by’isarura",
+          "seasonal migration",
+          "seasonal workers"
+        ],
+        "ne": [
+          {
+            "prefix": "मौसमी बसाइँसराइ"
+          },
+          {
+            "prefix": "मौसमी प्रवासन"
+          },
+          {
+            "prefix": "मौसमी आप्रवासी"
+          },
+          {
+            "prefix": "मौसमी कामदार"
+          },
+          {
+            "prefix": "मौसमी श्रमिक"
+          },
+          {
+            "prefix": "मौसमी रोजगार"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ސީޒަނަލް މައިގްރޭޝަ"
+          },
+          {
+            "prefix": "ސީޒަނަލް ވޯކަ"
+          },
+          {
+            "prefix": "ސީޒަނަލް މަސައްކަތްތެރި"
+          },
+          {
+            "prefix": "ސީޒަނަލް ވޯކް ވިސާ"
+          }
         ]
       }
     },
@@ -7795,6 +9857,300 @@
           "migrashon di retorno",
           "remigratie",
           "remigranten"
+        ],
+        "urdu": [
+          "وطن واپسی",
+          "وطن واپس آنے والے",
+          "واپس آنے والے تارکین",
+          "مزدوروں کی وطن واپسی",
+          "کارکنوں کی وطن واپسی"
+        ],
+        "bn": [
+          {
+            "prefix": "বিদেশফেরত"
+          },
+          {
+            "prefix": "বিদেশ ফেরত"
+          },
+          {
+            "prefix": "প্রবাসফেরত"
+          },
+          {
+            "prefix": "ফেরত আসা প্রবাসী"
+          },
+          {
+            "prefix": "ফেরত আসা অভিবাসী"
+          },
+          {
+            "prefix": "প্রত্যাগত প্রবাসী"
+          },
+          {
+            "prefix": "প্রত্যাগত অভিবাসী"
+          },
+          {
+            "prefix": "প্রত্যাগত কর্মী"
+          },
+          {
+            "prefix": "দেশে ফেরা প্রবাসী"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "visszavándorl"
+          },
+          {
+            "prefix": "hazatérő migráns"
+          },
+          {
+            "prefix": "visszatérő migráns"
+          },
+          {
+            "prefix": "visszatelepül"
+          },
+          {
+            "prefix": "migráns munkavállalók hazatelepít"
+          },
+          "Gyere haza, fiatal"
+        ],
+        "sl": [
+          {
+            "prefix": "povratna migracij"
+          },
+          {
+            "prefix": "povratne migracij"
+          },
+          {
+            "prefix": "povratnih migracij"
+          },
+          {
+            "prefix": "povratno migracij"
+          },
+          {
+            "prefix": "povratni migrant"
+          },
+          {
+            "prefix": "povratnih migrant"
+          },
+          {
+            "prefix": "vračanje izseljenc"
+          },
+          {
+            "prefix": "vrnitev izseljenc"
+          },
+          {
+            "prefix": "povratniki iz tujin"
+          },
+          {
+            "prefix": "povratnikov iz tujin"
+          }
+        ],
+        "somali": [
+          "muhaajiriinta dib u soo laabtay",
+          "muhaajiriin dib u soo laabtay",
+          "dib u soo laabashada muhaajiriinta",
+          "dib u soo celinta muhaajiriinta",
+          "dib u soo laabashada qurbo-joogta",
+          "return migration"
+        ],
+        "sk": [
+          {
+            "prefix": "návratová migrác"
+          },
+          {
+            "prefix": "návratovej migrác"
+          },
+          {
+            "prefix": "návratovú migrác"
+          },
+          "návrat migrantov",
+          "návratu migrantov",
+          "návrat Slovákov zo zahraničia",
+          "návratu Slovákov zo zahraničia",
+          {
+            "prefix": "navrátilc"
+          }
+        ],
+        "swahili": [
+          "wahamiaji wanaorejea",
+          "wahamiaji waliorejea",
+          "wahamiaji waliorudi",
+          "kurejea kwa wahamiaji",
+          "uhamiaji wa kurejea",
+          "wafanyakazi waliorejeshwa nyumbani"
+        ],
+        "si": [
+          {
+            "prefix": "ආපසු සංක්‍රමණ"
+          },
+          {
+            "prefix": "ආපසු සංක්රමණ"
+          },
+          {
+            "prefix": "ආපසු පැමිණි සංක්‍රමණික"
+          },
+          {
+            "prefix": "ආපසු පැමිණි සංක්රමණික"
+          },
+          {
+            "prefix": "ආපසු පැමිණෙන සංක්‍රමණික"
+          },
+          {
+            "prefix": "ආපසු පැමිණෙන සංක්රමණික"
+          },
+          {
+            "prefix": "ආපසු පැමිණි විදේශ ශ්‍රමික"
+          },
+          {
+            "prefix": "ආපසු පැමිණි විදේශ ශ්රමික"
+          },
+          {
+            "prefix": "ආපසු ගෙන්වා ගත් ශ්‍රමික"
+          },
+          {
+            "prefix": "ආපසු ගෙන්වා ගත් ශ්රමික"
+          },
+          {
+            "prefix": "නැවත රටට පැමිණි ශ්‍රමික"
+          },
+          {
+            "prefix": "නැවත රටට පැමිණි ශ්රමික"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "gaýdyp gelen migrant"
+          },
+          {
+            "prefix": "gaýdyp gelýän migrant"
+          },
+          {
+            "prefix": "yzyna dolanan migrant"
+          },
+          {
+            "prefix": "yzyna dolanýan migrant"
+          },
+          {
+            "prefix": "migrantlaryň gaýdyp gelme"
+          },
+          {
+            "prefix": "migrantlaryň watana dolanma"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "लौटे प्रवासी"
+          },
+          {
+            "prefix": "लौटने वाले प्रवासी"
+          },
+          "प्रवासियों की वापसी",
+          "प्रवासी मजदूरों की वापसी",
+          "रिवर्स माइग्रेशन",
+          "उल्टा पलायन",
+          "रिवर्स पलायन"
+        ],
+        "hebrew": [
+          "הגירה חוזרת",
+          "מהגרים חוזרים",
+          "חזרת מהגרים",
+          "שיבת מהגרים",
+          "תושבים חוזרים",
+          "תושב חוזר"
+        ],
+        "amharic": [
+          {
+            "prefix": "ተመላሽ ስደተ"
+          },
+          {
+            "prefix": "ከስደት ተመላ"
+          },
+          {
+            "prefix": "ከስደት የተመለሱ"
+          },
+          {
+            "prefix": "ከስደት የሚመለሱ"
+          },
+          {
+            "prefix": "ዜጎችን ወደ ሀገር የመመለ"
+          },
+          {
+            "prefix": "ዜጎችን ወደ አገር የመመለ"
+          },
+          {
+            "prefix": "ዜጎችን ወደ ሀገር ቤት የመመለ"
+          },
+          {
+            "prefix": "ወደ ሀገር የተመለሱ ስደተ"
+          }
+        ],
+        "cs": [
+          {
+            "prefix": "návratová migrac"
+          },
+          {
+            "prefix": "návratové migrac"
+          },
+          {
+            "prefix": "návratovou migrac"
+          },
+          {
+            "prefix": "reemigrac"
+          },
+          "návrat migrantů",
+          "návratu migrantů",
+          "návrat emigrantů",
+          "návratu emigrantů",
+          "repatriace krajanů",
+          "repatriaci krajanů",
+          "repatriace migrantů"
+        ],
+        "rw": [
+          "gutahuka kw'abimukira",
+          "gutahuka kw’abimukira",
+          "abimukira batahutse",
+          "abimukira batahuka",
+          "abimukira basubiye iwabo",
+          "abakozi batahutse bavuye mu mahanga"
+        ],
+        "ne": [
+          {
+            "prefix": "वैदेशिक रोजगारबाट फर्क"
+          },
+          {
+            "prefix": "स्वदेश फर्केका कामदार"
+          },
+          {
+            "prefix": "स्वदेश फर्किएका कामदार"
+          },
+          {
+            "prefix": "स्वदेश फर्केका श्रमिक"
+          },
+          {
+            "prefix": "फर्केका आप्रवासी"
+          },
+          {
+            "prefix": "फर्किएका आप्रवासी"
+          },
+          {
+            "prefix": "विदेशबाट फर्केका कामदार"
+          },
+          {
+            "prefix": "स्वदेश फिर्ता गरिएका कामदार"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ރިޕެޓްރިއޭ"
+          },
+          {
+            "prefix": "ރިޓާރން މައިގްރޭޝަ"
+          },
+          {
+            "prefix": "ބިދޭސީ މަސައްކަތްތެރިން އެމީހުންގެ ގައުމަށް ފޮނުވާލު"
+          },
+          {
+            "prefix": "ބިދޭސީން އެމީހުންގެ ގައުމަށް ފޮނުވާލު"
+          }
         ]
       }
     },
@@ -9134,6 +11490,411 @@
           "migrashon iregular",
           "illegale immigratie",
           "illegale migranten"
+        ],
+        "urdu": [
+          "غیر قانونی تارکین",
+          "غیرقانونی تارکین",
+          "غیر قانونی نقل مکانی",
+          "غیر قانونی ہجرت",
+          "غیر قانونی امیگریشن",
+          "غیر قانونی طور پر بیرون ملک",
+          "ڈنکی لگا"
+        ],
+        "bn": [
+          {
+            "prefix": "অনিয়মিত অভিবাসন"
+          },
+          {
+            "prefix": "অনিয়মিত অভিবাসী"
+          },
+          {
+            "prefix": "অবৈধ অভিবাসন"
+          },
+          {
+            "prefix": "অবৈধ অভিবাসী"
+          },
+          {
+            "prefix": "অবৈধভাবে বিদেশে"
+          },
+          {
+            "prefix": "অবৈধভাবে ইউরোপ"
+          },
+          {
+            "prefix": "অবৈধ পথে ইউরোপ"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "illegális migráci"
+          },
+          {
+            "prefix": "illegális bevándorl"
+          },
+          {
+            "prefix": "illegális migráns"
+          },
+          {
+            "prefix": "irreguláris migráci"
+          },
+          {
+            "prefix": "irreguláris migráns"
+          },
+          {
+            "prefix": "szabálytalan migráci"
+          },
+          {
+            "prefix": "határsértő"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "nezakonita migracij"
+          },
+          {
+            "prefix": "nezakonite migracij"
+          },
+          {
+            "prefix": "nezakonitih migracij"
+          },
+          {
+            "prefix": "nezakoniti migrant"
+          },
+          {
+            "prefix": "nezakonitih migrant"
+          },
+          {
+            "prefix": "nezakonite migrant"
+          },
+          {
+            "prefix": "ilegalna migracij"
+          },
+          {
+            "prefix": "ilegalne migracij"
+          },
+          {
+            "prefix": "ilegalnih migracij"
+          },
+          {
+            "prefix": "ilegalni migrant"
+          },
+          {
+            "prefix": "ilegalnih migrant"
+          },
+          {
+            "prefix": "ilegalne migrant"
+          },
+          {
+            "prefix": "neregularne migracij"
+          },
+          {
+            "prefix": "neregularnih migracij"
+          },
+          {
+            "prefix": "nezakonito priseljevanj"
+          },
+          {
+            "prefix": "nezakonitega priseljevanj"
+          },
+          {
+            "prefix": "ilegalno priseljevanj"
+          },
+          {
+            "prefix": "ilegalnega priseljevanj"
+          },
+          {
+            "prefix": "ilegalni prebežnik"
+          },
+          {
+            "prefix": "ilegalnih prebežnik"
+          },
+          {
+            "prefix": "nezakonitih prehodov mej"
+          },
+          {
+            "prefix": "nedovoljenih prehodov mej"
+          }
+        ],
+        "somali": [
+          {
+            "prefix": "tahriib"
+          },
+          "socdaal sharci darro ah",
+          "hijrad sharci darro ah",
+          "muhaajiriin sharci darro ah",
+          "illegal migration",
+          "irregular migration"
+        ],
+        "sk": [
+          {
+            "prefix": "nelegálna migrác"
+          },
+          {
+            "prefix": "nelegálnej migrác"
+          },
+          {
+            "prefix": "nelegálnu migrác"
+          },
+          {
+            "prefix": "nelegálnou migrác"
+          },
+          {
+            "prefix": "nelegálni migranti"
+          },
+          {
+            "prefix": "nelegálnych migrant"
+          },
+          {
+            "prefix": "nelegálnym migrant"
+          },
+          {
+            "prefix": "nelegálnymi migrant"
+          },
+          {
+            "prefix": "ilegálna migrác"
+          },
+          {
+            "prefix": "ilegálnej migrác"
+          },
+          {
+            "prefix": "ilegálni migranti"
+          },
+          {
+            "prefix": "ilegálnych migrant"
+          },
+          {
+            "prefix": "neregulárna migrác"
+          },
+          {
+            "prefix": "neregulárnej migrác"
+          },
+          {
+            "prefix": "neregulárni migranti"
+          },
+          {
+            "prefix": "neregulárnych migrant"
+          },
+          "nelegálni prisťahovalci",
+          "nelegálnych prisťahovalcov",
+          {
+            "prefix": "nelegálne prisťahovalectv"
+          },
+          {
+            "prefix": "nelegálneho prisťahovalectv"
+          }
+        ],
+        "swahili": [
+          "uhamiaji haramu",
+          "wahamiaji haramu",
+          "mhamiaji haramu",
+          "uhamiaji usio rasmi",
+          "wahamiaji wasio rasmi",
+          "uhamiaji usio wa kisheria",
+          "wahamiaji wasio halali"
+        ],
+        "si": [
+          {
+            "prefix": "අවිධිමත් සංක්‍රමණ"
+          },
+          {
+            "prefix": "අවිධිමත් සංක්රමණ"
+          },
+          {
+            "prefix": "අක්‍රමවත් සංක්‍රමණ"
+          },
+          {
+            "prefix": "අක්රමවත් සංක්රමණ"
+          },
+          {
+            "prefix": "නීති විරෝධී සංක්‍රමණ"
+          },
+          {
+            "prefix": "නීති විරෝධී සංක්රමණ"
+          },
+          {
+            "prefix": "නීතිවිරෝධී සංක්‍රමණ"
+          },
+          {
+            "prefix": "නීතිවිරෝධී සංක්රමණ"
+          },
+          {
+            "prefix": "නීති විරෝධී ආගමන"
+          },
+          {
+            "prefix": "නීතිවිරෝධී ආගමන"
+          },
+          {
+            "prefix": "අනවසර සංක්‍රමණ"
+          },
+          {
+            "prefix": "අනවසර සංක්රමණ"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "bikanun migrasi"
+          },
+          {
+            "prefix": "bikanun migrant"
+          },
+          {
+            "prefix": "bikanun immigrasi"
+          },
+          {
+            "prefix": "bikanun immigrant"
+          },
+          {
+            "prefix": "nelegal migrasi"
+          },
+          {
+            "prefix": "nelegal migrant"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "अवैध प्रवास"
+          },
+          {
+            "prefix": "अवैध आप्रवास"
+          },
+          {
+            "prefix": "अवैध अप्रवास"
+          },
+          {
+            "prefix": "अनियमित प्रवास"
+          },
+          "बांग्लादेशी घुसपैठिए",
+          "बांग्लादेशी घुसपैठियों"
+        ],
+        "hebrew": [
+          "הגירה בלתי חוקית",
+          "הגירה לא חוקית",
+          "הגירה בלתי סדירה",
+          "הגירה לא סדירה",
+          "מהגרים בלתי חוקיים",
+          "מהגרים לא חוקיים",
+          "שוהים בלתי חוקיים",
+          "שב\"ח",
+          "שב״ח"
+        ],
+        "amharic": [
+          {
+            "prefix": "ሕገወጥ ስደ"
+          },
+          {
+            "prefix": "ህገወጥ ስደ"
+          },
+          {
+            "prefix": "ሕገ ወጥ ስደ"
+          },
+          {
+            "prefix": "ህገ ወጥ ስደ"
+          },
+          {
+            "prefix": "ሕገወጥ ፍልሰ"
+          },
+          {
+            "prefix": "ህገወጥ ፍልሰ"
+          },
+          {
+            "prefix": "መደበኛ ያልሆነ ፍልሰ"
+          },
+          {
+            "prefix": "መደበኛ ያልሆነ ስደ"
+          }
+        ],
+        "cs": [
+          {
+            "prefix": "nelegální migrac"
+          },
+          {
+            "prefix": "nelegální migrant"
+          },
+          {
+            "prefix": "nelegálních migrant"
+          },
+          {
+            "prefix": "nelegálními migrant"
+          },
+          {
+            "prefix": "nelegálním migrant"
+          },
+          {
+            "prefix": "ilegální migrac"
+          },
+          {
+            "prefix": "ilegální migrant"
+          },
+          {
+            "prefix": "ilegálních migrant"
+          },
+          {
+            "prefix": "nelegální imigrac"
+          },
+          {
+            "prefix": "nelegální přistěhoval"
+          },
+          {
+            "prefix": "nelegálních přistěhoval"
+          },
+          {
+            "prefix": "neregulérní migrac"
+          }
+        ],
+        "rw": [
+          "abimukira binjira mu buryo butemewe",
+          "abimukira binjiye mu buryo butemewe",
+          "abimukira batemewe",
+          "iyimuka ritemewe n'amategeko",
+          "iyimuka ritemewe n’amategeko",
+          "kwinjira mu gihugu mu buryo butemewe",
+          "abinjira mu gihugu mu buryo butemewe",
+          "illegal migration"
+        ],
+        "ne": [
+          {
+            "prefix": "अवैध बसाइँसराइ"
+          },
+          {
+            "prefix": "अवैध आप्रवासन"
+          },
+          {
+            "prefix": "अवैध आप्रवासी"
+          },
+          {
+            "prefix": "अवैध प्रवासी"
+          },
+          {
+            "prefix": "अनियमित आप्रवासन"
+          },
+          {
+            "prefix": "अनियमित आप्रवासी"
+          },
+          {
+            "prefix": "अवैध रूपमा विदेश"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ގަވާއިދާ ހިލާފަށް ތިބި ބިދޭސީ"
+          },
+          {
+            "prefix": "ގަވާއިދާ ހިލާފަށް ރާއްޖޭގައި ތިބި"
+          },
+          {
+            "prefix": "ނާޖާއިޒު ގޮތުގައި ތިބި ބިދޭސީ"
+          },
+          {
+            "prefix": "ނާޖާއިޒު ބިދޭސީ"
+          },
+          {
+            "prefix": "އިރެގިއުލަރ މައިގްރަ"
+          },
+          {
+            "prefix": "އިލީގަލް މައިގްރަ"
+          },
+          {
+            "prefix": "އިލީގަލް އިމިގްރަ"
+          }
         ]
       }
     },
@@ -9920,6 +12681,252 @@
           "stranheronan sin documento",
           "migrante indokumentá",
           "ongedocumenteerde migranten"
+        ],
+        "urdu": [
+          "بغیر دستاویزات",
+          "دستاویزات کے بغیر مقیم",
+          "بغیر کاغذات",
+          "غیر قانونی مقیم",
+          "غیر رجسٹرڈ افغان"
+        ],
+        "bn": [
+          {
+            "prefix": "অনিবন্ধিত অভিবাসী"
+          },
+          {
+            "prefix": "অনথিভুক্ত অভিবাসী"
+          },
+          {
+            "prefix": "নথিপত্রহীন অভিবাসী"
+          },
+          {
+            "prefix": "আনডকুমেন্টেড"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "papírok nélküli migráns"
+          },
+          {
+            "prefix": "papírok nélküli bevándorl"
+          },
+          {
+            "prefix": "papírok nélküli munkás"
+          },
+          {
+            "prefix": "okmányok nélküli migráns"
+          },
+          {
+            "prefix": "okmányok nélküli bevándorl"
+          },
+          {
+            "prefix": "dokumentumok nélküli migráns"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "migranti brez dokument"
+          },
+          {
+            "prefix": "migrantov brez dokument"
+          },
+          {
+            "prefix": "migrante brez dokument"
+          },
+          {
+            "prefix": "tujci brez dokument"
+          },
+          {
+            "prefix": "tujcev brez dokument"
+          },
+          {
+            "prefix": "delavci brez dokument"
+          },
+          {
+            "prefix": "delavcev brez dokument"
+          },
+          {
+            "prefix": "priseljenci brez dokument"
+          },
+          {
+            "prefix": "priseljencev brez dokument"
+          }
+        ],
+        "somali": [
+          "muhaajiriin aan sharci haysan",
+          "muhaajiriinta aan sharci haysan",
+          "muhaajiriinta aan sharciga haysan",
+          "dad aan sharci haysan",
+          "aan haysan dukumentiyo sharci",
+          "undocumented migrants"
+        ],
+        "sk": [
+          "migranti bez dokladov",
+          "migrantov bez dokladov",
+          "cudzinci bez dokladov",
+          "cudzincov bez dokladov",
+          "migranti bez papierov",
+          "migrantov bez papierov",
+          "bez povolenia na pobyt",
+          "nelegálny pobyt",
+          "nelegálneho pobytu",
+          "nelegálnym pobytom"
+        ],
+        "swahili": [
+          "wahamiaji wasio na nyaraka",
+          "wahamiaji wasio na vibali",
+          "wahamiaji wasio na hati",
+          "wageni wasio na vibali",
+          "raia wa kigeni wasio na vibali",
+          "bila hati za kusafiria"
+        ],
+        "si": [
+          {
+            "prefix": "ලේඛනගත නොකළ සංක්‍රමණ"
+          },
+          {
+            "prefix": "ලේඛනගත නොකළ සංක්රමණ"
+          },
+          {
+            "prefix": "ලේඛන රහිත සංක්‍රමණ"
+          },
+          {
+            "prefix": "ලේඛන රහිත සංක්රමණ"
+          },
+          {
+            "prefix": "ලියකියවිලි නොමැති සංක්‍රමණ"
+          },
+          {
+            "prefix": "ලියකියවිලි නොමැති සංක්රමණ"
+          },
+          {
+            "prefix": "ලියකියවිලි නොමැති ශ්‍රමික"
+          },
+          {
+            "prefix": "ලියකියවිලි නොමැති ශ්රමික"
+          },
+          {
+            "prefix": "වලංගු ලේඛන නොමැති සංක්‍රමණ"
+          },
+          {
+            "prefix": "වලංගු ලේඛන නොමැති සංක්රමණ"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "resminamasyz migrant"
+          },
+          {
+            "prefix": "dokumentsiz migrant"
+          },
+          {
+            "prefix": "resminamasyz immigrant"
+          },
+          {
+            "prefix": "resminamasyz daşary ýurtly"
+          },
+          {
+            "prefix": "resminamasyz işçi"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "बिना दस्तावेज वाले प्रवास"
+          },
+          {
+            "prefix": "बिना दस्तावेज़ वाले प्रवास"
+          },
+          {
+            "prefix": "अप्रलेखित प्रवास"
+          },
+          "बिना दस्तावेज के रह रहे",
+          "बिना वैध दस्तावेज के रह रहे",
+          "बिना वैध दस्तावेजों के रह रहे",
+          "अनडॉक्यूमेंटेड"
+        ],
+        "hebrew": [
+          "מהגרים ללא מעמד",
+          "מהגרים ללא מסמכים",
+          "מהגרים חסרי מעמד",
+          "שוהים ללא היתר",
+          "עובדים ללא היתר",
+          "ללא היתר שהייה",
+          "ללא אשרת שהייה"
+        ],
+        "amharic": [
+          {
+            "prefix": "ሰነድ የሌላቸው ስደተ"
+          },
+          {
+            "prefix": "የመኖሪያ ፈቃድ የሌላቸው"
+          },
+          "undocumented migrants"
+        ],
+        "cs": [
+          "migranti bez dokladů",
+          "migrantů bez dokladů",
+          "cizinci bez dokladů",
+          "cizinců bez dokladů",
+          {
+            "prefix": "nelegální pobyt"
+          },
+          {
+            "prefix": "nelegálního pobyt"
+          },
+          {
+            "prefix": "nelegálním pobyt"
+          },
+          {
+            "prefix": "neoprávněný pobyt"
+          },
+          {
+            "prefix": "neoprávněného pobyt"
+          },
+          {
+            "prefix": "neoprávněném pobyt"
+          }
+        ],
+        "rw": [
+          "abimukira badafite ibyangombwa",
+          "abimukira batagira ibyangombwa",
+          "abanyamahanga badafite ibyangombwa",
+          "abakozi badafite ibyangombwa",
+          "abanyamahanga batagira ibyangombwa"
+        ],
+        "ne": [
+          {
+            "prefix": "कागजातविहीन आप्रवासी"
+          },
+          {
+            "prefix": "कागजातविहीन कामदार"
+          },
+          {
+            "prefix": "कागजातविहीन नेपाली"
+          },
+          {
+            "prefix": "बिना कागजात बसेका"
+          },
+          {
+            "prefix": "कागजपत्रविनाका आप्रवासी"
+          },
+          "अनडकुमेन्टेड"
+        ],
+        "dv": [
+          {
+            "prefix": "ލިޔެކިޔުމެއް ނެތި ތިބި"
+          },
+          {
+            "prefix": "ޑޮކިއުމަންޓެއް ނެތި ތިބި"
+          },
+          {
+            "prefix": "ޑޮކިއުމަންޓް ނެތި ތިބި"
+          },
+          {
+            "prefix": "ވިސާއެއް ނެތި ތިބި"
+          },
+          {
+            "prefix": "އަންޑޮކިއުމަންޓެޑް"
+          }
         ]
       }
     },
@@ -10793,6 +13800,221 @@
           "poblashon desplasá",
           "ontheemden",
           "ontheemding"
+        ],
+        "urdu": [
+          "بے گھر افراد",
+          "بے گھر ہو",
+          "نقل مکانی پر مجبور",
+          "جبری نقل مکانی",
+          "بڑے پیمانے پر نقل مکانی",
+          "آئی ڈی پیز",
+          "IDPs"
+        ],
+        "bn": [
+          {
+            "prefix": "বাস্তুচ্যুত"
+          },
+          {
+            "prefix": "উদ্বাস্তু"
+          },
+          {
+            "prefix": "বাস্তুহারা"
+          },
+          {
+            "prefix": "ভিটেমাটি ছাড়া"
+          },
+          {
+            "prefix": "ভিটেমাটি হারা"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "belső menekült"
+          },
+          {
+            "prefix": "lakóhelyüket elhagyni kényszer"
+          },
+          {
+            "prefix": "otthonukat elhagyni kényszer"
+          },
+          {
+            "prefix": "lakóhelyükről elüldöz"
+          },
+          {
+            "prefix": "tömeges kitelepít"
+          },
+          {
+            "prefix": "lakóhelyét elhagyni kényszer"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "razseljen"
+          },
+          {
+            "prefix": "razseljev"
+          },
+          "razselitev prebivalstva",
+          "razselitve prebivalstva",
+          "prisilno preseljevanje",
+          "prisilnega preseljevanja"
+        ],
+        "somali": [
+          {
+            "prefix": "barakac"
+          },
+          {
+            "prefix": "barakici"
+          },
+          "dadka qaxay",
+          "qaxooti",
+          "qaxootiga",
+          "displaced people"
+        ],
+        "sk": [
+          {
+            "prefix": "vysídlen"
+          },
+          "masové vysťahovanie",
+          "nútené vysťahovanie",
+          "núteného vysťahovania"
+        ],
+        "swahili": [
+          "wakimbizi wa ndani",
+          "watu waliohamishwa makazi",
+          "watu waliokimbia makazi yao",
+          "kuyakimbia makazi",
+          "kuhamishwa kwa watu",
+          "wakimbizi"
+        ],
+        "si": [
+          "අවතැන්",
+          {
+            "prefix": "අවතැන්වූ"
+          },
+          {
+            "prefix": "අවතැන්වී"
+          },
+          "අවතැන් වූ",
+          "අවතැන් වීම",
+          "ජනතාව අවතැන්"
+        ],
+        "turkmen": [
+          {
+            "prefix": "mejbury göçürilen"
+          },
+          {
+            "prefix": "ýerinden göçürilen"
+          },
+          {
+            "prefix": "içerki göçürilen"
+          },
+          {
+            "prefix": "ilatyň göçürilme"
+          },
+          {
+            "prefix": "bosgun"
+          }
+        ],
+        "hindi": [
+          "विस्थापन",
+          {
+            "prefix": "विस्थापित"
+          },
+          "बड़े पैमाने पर विस्थापन",
+          "लोगों का विस्थापन"
+        ],
+        "hebrew": [
+          "עקורים",
+          "עקורי",
+          "עקירת אוכלוסי",
+          "עקירת תושבים",
+          "עקירה המונית",
+          "אוכלוסייה עקורה",
+          "מפונים",
+          "פינוי תושבים"
+        ],
+        "amharic": [
+          {
+            "prefix": "ተፈናቃ"
+          },
+          {
+            "prefix": "የተፈናቃ"
+          },
+          {
+            "prefix": "ለተፈናቃ"
+          },
+          {
+            "prefix": "የተፈናቀ"
+          },
+          {
+            "prefix": "ለተፈናቀ"
+          },
+          {
+            "prefix": "መፈናቀ"
+          },
+          {
+            "prefix": "በመፈናቀ"
+          },
+          {
+            "prefix": "ከመፈናቀ"
+          },
+          "IDPs"
+        ],
+        "cs": [
+          {
+            "prefix": "vysídlenc"
+          },
+          {
+            "prefix": "vysídlené osob"
+          },
+          {
+            "prefix": "vysídlených osob"
+          },
+          {
+            "prefix": "vnitřně vysídlen"
+          },
+          {
+            "prefix": "vysídlení obyvatel"
+          },
+          "masové vysídlení",
+          "nucené vysídlení"
+        ],
+        "rw": [
+          "abavanywe mu byabo",
+          "abakuwe mu byabo",
+          "abaturage bavanywe mu byabo",
+          "abahunze ingo zabo",
+          "impunzi z'imbere mu gihugu",
+          "impunzi z’imbere mu gihugu",
+          "kuvanwa mu byabo"
+        ],
+        "ne": [
+          {
+            "prefix": "विस्थापित"
+          },
+          {
+            "prefix": "विस्थापन"
+          },
+          {
+            "prefix": "सामूहिक विस्थापन"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ގެދޮރު ދޫކޮށް ފިލަ"
+          },
+          {
+            "prefix": "ގޭދޮރު ދޫކޮށް ފިލަ"
+          },
+          "ޑިސްޕްލޭސްވި",
+          "ޑިސްޕްލޭސްމަންޓް",
+          {
+            "prefix": "ބެހިގެން ގޮސް ތިބި މީހު"
+          },
+          {
+            "prefix": "ގެދޮރު ގެއްލިފައިވާ"
+          }
         ]
       }
     },
@@ -11516,6 +14738,218 @@
           "trafiko di persona",
           "víktima di trafiko humano",
           "mensenhandel"
+        ],
+        "urdu": [
+          "انسانی اسمگلنگ",
+          "انسانی سمگلنگ",
+          "انسانوں کی اسمگلنگ",
+          "انسانوں کی سمگلنگ",
+          "انسانی تجارت",
+          "بردہ فروشی",
+          "ہیومن ٹریفکنگ"
+        ],
+        "bn": [
+          {
+            "prefix": "মানবপাচার"
+          },
+          {
+            "prefix": "মানব পাচার"
+          },
+          {
+            "prefix": "নারী পাচার"
+          },
+          {
+            "prefix": "শিশু পাচার"
+          },
+          {
+            "prefix": "নারী ও শিশু পাচার"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "emberkereskede"
+          },
+          {
+            "prefix": "prostitúcióra kényszerít"
+          },
+          {
+            "prefix": "kényszermunkára kényszerít"
+          }
+        ],
+        "sl": [
+          "trgovina z ljudmi",
+          "trgovine z ljudmi",
+          "trgovini z ljudmi",
+          "trgovino z ljudmi",
+          "trgovanje z ljudmi",
+          "trgovanja z ljudmi"
+        ],
+        "somali": [
+          "ka ganacsiga dadka",
+          "ka-ganacsiga dadka",
+          "ka ganacsiga bini'aadamka",
+          "ka ganacsiga bini’aadamka",
+          "iibinta dadka",
+          "human trafficking"
+        ],
+        "sk": [
+          "obchodovanie s ľuďmi",
+          "obchodovania s ľuďmi",
+          "obchodovaním s ľuďmi",
+          "obchodovaní s ľuďmi",
+          "obchod s ľuďmi",
+          "obchodu s ľuďmi",
+          "obchodníci s ľuďmi",
+          "obchodníkov s ľuďmi",
+          "obete obchodovania",
+          "obetí obchodovania",
+          "obchodovanie s bielym mäsom"
+        ],
+        "swahili": [
+          "usafirishaji haramu wa binadamu",
+          "usafirishaji wa binadamu",
+          "usafirishaji haramu wa watu",
+          "biashara ya binadamu",
+          "biashara haramu ya binadamu",
+          "waathirika wa usafirishaji haramu wa binadamu"
+        ],
+        "si": [
+          {
+            "prefix": "මානව ජාවාර"
+          },
+          {
+            "prefix": "මිනිස් ජාවාර"
+          },
+          {
+            "prefix": "පුද්ගල ජාවාර"
+          },
+          {
+            "prefix": "මිනිස් වෙළඳා"
+          },
+          {
+            "prefix": "මානව වෙළඳා"
+          },
+          {
+            "prefix": "ලිංගික ජාවාර"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "adam söwda"
+          },
+          {
+            "prefix": "adamlary satma"
+          },
+          {
+            "prefix": "adam söwdasynyň pida"
+          },
+          {
+            "prefix": "jynsy gulluga satyl"
+          }
+        ],
+        "hindi": [
+          "मानव तस्करी",
+          "मानव तस्कर",
+          "मानव तस्करों",
+          "मानव दुर्व्यापार",
+          "व्यक्तियों की तस्करी",
+          "बच्चों की तस्करी",
+          "महिलाओं की तस्करी",
+          "लड़कियों की तस्करी"
+        ],
+        "hebrew": [
+          "סחר בבני אדם",
+          "סחר בבני-אדם",
+          "סחר בנשים",
+          "סחר באנשים",
+          "סחר בעובדים",
+          "קורבנות סחר",
+          "קרבנות סחר",
+          "נפגעי סחר",
+          "נפגעות סחר",
+          "עבדות מודרנית"
+        ],
+        "amharic": [
+          {
+            "prefix": "ሕገወጥ የሰዎች ዝውው"
+          },
+          {
+            "prefix": "ህገወጥ የሰዎች ዝውው"
+          },
+          {
+            "prefix": "ሕገ ወጥ የሰዎች ዝውው"
+          },
+          {
+            "prefix": "ህገ ወጥ የሰዎች ዝውው"
+          },
+          {
+            "prefix": "ሕገወጥ የሰው ዝውው"
+          },
+          {
+            "prefix": "ህገወጥ የሰው ዝውው"
+          },
+          {
+            "prefix": "የሰው ንግድ"
+          },
+          {
+            "prefix": "ሕገወጥ የሰው አዘዋዋሪ"
+          },
+          "human trafficking"
+        ],
+        "cs": [
+          "obchod s lidmi",
+          "obchodu s lidmi",
+          "obchodem s lidmi",
+          "obchodování s lidmi",
+          "obchodováním s lidmi",
+          "obchodník s lidmi",
+          "obchodníci s lidmi",
+          "obchodníků s lidmi",
+          "obchodníky s lidmi"
+        ],
+        "rw": [
+          "icuruzwa ry'abantu",
+          "icuruzwa ry’abantu",
+          "gucuruza abantu",
+          "abacuruza abantu",
+          "ubucuruzi bw'abantu",
+          "ubucuruzi bw’abantu",
+          "abacurujwe",
+          "human trafficking"
+        ],
+        "ne": [
+          {
+            "prefix": "बेचबिखन"
+          },
+          {
+            "prefix": "मानव बेचबिखन"
+          },
+          {
+            "prefix": "मानव बेचबिखन तथा ओसारपसार"
+          },
+          {
+            "prefix": "चेलीबेटी बेचबिखन"
+          },
+          {
+            "prefix": "यौन शोषणका लागि बेच"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ހިއުމަން ޓްރެފި"
+          },
+          {
+            "prefix": "މީހުން ވިއްކުމާއި ގަތު"
+          },
+          {
+            "prefix": "އިންސާނުން ވިއްކުމާއި ގަތު"
+          },
+          {
+            "prefix": "މީހުން ވިއްކުމު"
+          },
+          {
+            "prefix": "ޓްރެފިކިންގ އިން ޕާސަ"
+          }
         ]
       }
     },
@@ -12317,6 +15751,217 @@
           "trafiko di migrante",
           "mensensmokkel",
           "mensensmokkelaars"
+        ],
+        "urdu": [
+          "انسانی اسمگلر",
+          "انسانی سمگلر",
+          "انسانی اسمگلنگ",
+          "انسانی سمگلنگ",
+          "تارکین وطن کی اسمگلنگ",
+          "ہیومن اسمگلنگ",
+          "ہیومن سمگلنگ",
+          "ایجنٹ مافیا"
+        ],
+        "bn": [
+          {
+            "prefix": "অভিবাসী পাচার"
+          },
+          {
+            "prefix": "মানব চোরাচালান"
+          },
+          {
+            "prefix": "সাগরপথে ইউরোপ"
+          },
+          {
+            "prefix": "সাগরপথে মালয়েশিয়া"
+          },
+          {
+            "prefix": "ভূমধ্যসাগর পাড়ি"
+          },
+          {
+            "prefix": "অবৈধভাবে ইতালি"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "embercsempész"
+          },
+          {
+            "prefix": "migránscsempész"
+          },
+          {
+            "prefix": "migránsok csempész"
+          }
+        ],
+        "sl": [
+          "tihotapljenje ljudi",
+          "tihotapljenja ljudi",
+          "tihotapljenju ljudi",
+          "tihotapljenjem ljudi",
+          "tihotapci ljudi",
+          "tihotapcev ljudi",
+          "tihotapec ljudi",
+          {
+            "prefix": "tihotapljenje migrant"
+          },
+          {
+            "prefix": "tihotapljenja migrant"
+          },
+          {
+            "prefix": "tihotapci migrant"
+          },
+          {
+            "prefix": "tihotapcev migrant"
+          },
+          {
+            "prefix": "tihotapcev prebežnik"
+          }
+        ],
+        "somali": [
+          "tahriibinta dadka",
+          "tahriibiyayaasha",
+          "tahriibiyayaal",
+          "kooxaha tahriibiya",
+          "people smuggling",
+          "human smuggling"
+        ],
+        "sk": [
+          {
+            "prefix": "prevádzač"
+          },
+          "pašovanie migrantov",
+          "pašovania migrantov",
+          "pašovanie ľudí",
+          "pašovania ľudí",
+          "pašeráci ľudí",
+          "pašerákov ľudí",
+          "prevádzanie migrantov",
+          "prevádzania migrantov"
+        ],
+        "swahili": [
+          "usafirishaji haramu wa wahamiaji",
+          "usafirishaji wa wahamiaji haramu",
+          "kusafirisha wahamiaji haramu",
+          "kusafirisha wahamiaji",
+          "wasafirishaji wa wahamiaji haramu",
+          "msafirishaji wa wahamiaji",
+          "magendo ya wahamiaji"
+        ],
+        "si": [
+          {
+            "prefix": "මිනිස් ජාවාරම්කරු"
+          },
+          {
+            "prefix": "මිනිස් ජාවාරම්කාර"
+          },
+          {
+            "prefix": "සංක්‍රමණිකයන් ජාවාර"
+          },
+          {
+            "prefix": "සංක්රමණිකයන් ජාවාර"
+          },
+          {
+            "prefix": "සංක්‍රමණිකයන් හොරෙන්"
+          },
+          {
+            "prefix": "සංක්රමණිකයන් හොරෙන්"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "migrantlary bikanun geçir"
+          },
+          {
+            "prefix": "adamlary serhetden bikanun geçir"
+          },
+          {
+            "prefix": "adam kontrabanda"
+          },
+          {
+            "prefix": "migrant kontrabanda"
+          }
+        ],
+        "hindi": [
+          "प्रवासियों की तस्करी",
+          "डंकी रूट",
+          "डोंकी रूट",
+          "कबूतरबाजी",
+          "कबूतरबाज़ी",
+          {
+            "prefix": "अवैध रूप से विदेश भेज"
+          }
+        ],
+        "hebrew": [
+          "הברחת מהגרים",
+          "הברחת בני אדם",
+          "הברחת אנשים",
+          "הברחת פליטים",
+          "מבריחי מהגרים",
+          "מבריחי בני אדם",
+          "מבריחי אדם",
+          "מבריחי אנשים"
+        ],
+        "amharic": [
+          {
+            "prefix": "ሕገወጥ ሰዎችን ድንበር ማሻገ"
+          },
+          {
+            "prefix": "ህገወጥ ሰዎችን ድንበር ማሻገ"
+          },
+          {
+            "prefix": "ሰዎችን ድንበር ማሻገ"
+          },
+          {
+            "prefix": "ሰዎችን በሕገወጥ መንገድ የሚያሻግ"
+          },
+          {
+            "prefix": "ህገወጥ ደላላ"
+          },
+          "human smuggling"
+        ],
+        "cs": [
+          {
+            "prefix": "převaděč"
+          },
+          "pašování lidí",
+          "pašováním lidí",
+          "pašování migrantů",
+          "pašováním migrantů",
+          "pašeráci lidí",
+          "pašeráků lidí",
+          "pašerák lidí"
+        ],
+        "rw": [
+          "kwambutsa abimukira mu buryo butemewe",
+          "abambutsa abimukira",
+          "abambutsa abantu imipaka mu buryo butemewe",
+          "kwinjiza abantu mu buryo bwa magendu",
+          "human smuggling"
+        ],
+        "ne": [
+          {
+            "prefix": "मानव तस्कर"
+          },
+          {
+            "prefix": "मानिसको तस्करी"
+          },
+          {
+            "prefix": "आप्रवासी तस्करी"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ހިއުމަން ސްމަ"
+          },
+          {
+            "prefix": "މައިގްރަންޓް ސްމަ"
+          },
+          {
+            "prefix": "ބިދޭސީން ވަގަށް ރާއްޖެ"
+          },
+          {
+            "prefix": "މީހުން ވަގަށް ރާއްޖެ"
+          }
         ]
       }
     },
@@ -13536,6 +17181,369 @@
           "siguridat di frontera",
           "grenscontrole",
           "grensbewaking"
+        ],
+        "urdu": [
+          "سرحدی انتظام",
+          "بارڈر مینجمنٹ",
+          "سرحدی کنٹرول",
+          "بارڈر کنٹرول",
+          "سرحدی سیکیورٹی",
+          "سرحدی سکیورٹی",
+          "بارڈر سیکیورٹی",
+          "سرحدی چوکی"
+        ],
+        "bn": [
+          {
+            "prefix": "সীমান্ত ব্যবস্থাপনা"
+          },
+          {
+            "prefix": "সীমান্ত নিয়ন্ত্রণ"
+          },
+          {
+            "prefix": "সীমান্ত নিরাপত্তা"
+          },
+          {
+            "prefix": "সীমান্ত সুরক্ষা"
+          },
+          {
+            "prefix": "সীমান্ত টহল"
+          },
+          {
+            "prefix": "সীমান্তে টহল"
+          },
+          {
+            "prefix": "সীমান্তে কড়াকড়ি"
+          },
+          {
+            "prefix": "সীমান্ত চৌকি"
+          },
+          {
+            "prefix": "বর্ডার গার্ড বাংলাদেশ"
+          },
+          "বিজিবি",
+          "বিজিবির"
+        ],
+        "hu": [
+          {
+            "prefix": "határvédel"
+          },
+          {
+            "prefix": "határellenőrz"
+          },
+          {
+            "prefix": "határőriz"
+          },
+          {
+            "prefix": "határzár"
+          },
+          {
+            "prefix": "határkerítés"
+          },
+          {
+            "prefix": "határrendész"
+          },
+          {
+            "prefix": "határőr"
+          },
+          "Frontex"
+        ],
+        "sl": [
+          {
+            "prefix": "mejni nadzor"
+          },
+          {
+            "prefix": "mejnega nadzor"
+          },
+          {
+            "prefix": "nadzor na mej"
+          },
+          {
+            "prefix": "nadzora na mej"
+          },
+          {
+            "prefix": "nadzoru na mej"
+          },
+          {
+            "prefix": "nadzor mej"
+          },
+          {
+            "prefix": "nadzora mej"
+          },
+          {
+            "prefix": "varovanje mej"
+          },
+          {
+            "prefix": "varovanja mej"
+          },
+          {
+            "prefix": "varovanju mej"
+          },
+          {
+            "prefix": "mejna kontrol"
+          },
+          {
+            "prefix": "mejne kontrol"
+          },
+          {
+            "prefix": "mejno kontrol"
+          },
+          {
+            "prefix": "mejna policij"
+          },
+          {
+            "prefix": "mejne policij"
+          },
+          "Frontex",
+          "ograja na meji",
+          "ograje na meji",
+          "ograjo na meji"
+        ],
+        "somali": [
+          {
+            "prefix": "ilaalinta xuduud"
+          },
+          {
+            "prefix": "ilaalinta xudduud"
+          },
+          {
+            "prefix": "amniga xuduud"
+          },
+          {
+            "prefix": "amniga xudduud"
+          },
+          {
+            "prefix": "ammaanka xuduud"
+          },
+          {
+            "prefix": "ammaanka xudduud"
+          },
+          {
+            "prefix": "xakamaynta xuduud"
+          },
+          {
+            "prefix": "xakameynta xuduud"
+          }
+        ],
+        "sk": [
+          "ochrana hraníc",
+          "ochrany hraníc",
+          "ochranou hraníc",
+          "ochrane hraníc",
+          "ochrana vonkajších hraníc",
+          "ochrany vonkajších hraníc",
+          "ochrane vonkajších hraníc",
+          "ochrana štátnej hranice",
+          "ochrany štátnej hranice",
+          {
+            "prefix": "hraničné kontrol"
+          },
+          {
+            "prefix": "hraničných kontrol"
+          },
+          {
+            "prefix": "hraničnými kontrol"
+          },
+          "kontroly na hraniciach",
+          "kontrol na hraniciach",
+          "kontrolami na hraniciach",
+          {
+            "prefix": "hraničná políci"
+          },
+          {
+            "prefix": "hraničnej políci"
+          },
+          {
+            "prefix": "hraničnú políci"
+          },
+          {
+            "prefix": "hraničnou políci"
+          },
+          "Frontex",
+          "Frontexu"
+        ],
+        "swahili": [
+          "udhibiti wa mipaka",
+          "ulinzi wa mipaka",
+          "usalama wa mipaka",
+          "usimamizi wa mipaka",
+          "ulinzi mipakani",
+          "doria mipakani",
+          "vituo vya mpakani",
+          "kituo cha mpakani"
+        ],
+        "si": [
+          {
+            "prefix": "දේශසීමා කළමනාකරණ"
+          },
+          {
+            "prefix": "දේශ සීමා කළමනාකරණ"
+          },
+          {
+            "prefix": "දේශසීමා පාලන"
+          },
+          {
+            "prefix": "දේශ සීමා පාලන"
+          },
+          {
+            "prefix": "දේශසීමා ආරක්ෂා"
+          },
+          {
+            "prefix": "දේශ සීමා ආරක්ෂා"
+          },
+          {
+            "prefix": "දේශසීමා මුරපොල"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "serhet gözegçilig"
+          },
+          {
+            "prefix": "serhet howpsuzlyg"
+          },
+          {
+            "prefix": "serhet gorag"
+          },
+          {
+            "prefix": "serhet gulluk"
+          },
+          {
+            "prefix": "serhetçi"
+          },
+          {
+            "prefix": "serhet geçelge"
+          }
+        ],
+        "hindi": [
+          "सीमा प्रबंधन",
+          "सीमा नियंत्रण",
+          "सीमा सुरक्षा",
+          "सीमा की सुरक्षा",
+          "सीमा पर गश्त",
+          "सीमा पर चौकसी",
+          {
+            "prefix": "सीमा चौकी"
+          },
+          {
+            "prefix": "सीमा चौकिय"
+          }
+        ],
+        "hebrew": [
+          "ביטחון הגבול",
+          "ביטחון גבולות",
+          "ביטחון הגבולות",
+          "אבטחת הגבול",
+          "אבטחת גבולות",
+          "אבטחת הגבולות",
+          "בקרת גבולות",
+          "בקרת גבול",
+          "ניהול גבולות",
+          "פיקוח גבולות"
+        ],
+        "amharic": [
+          {
+            "prefix": "የድንበር ቁጥጥ"
+          },
+          {
+            "prefix": "የድንበር ጥበቃ"
+          },
+          {
+            "prefix": "የድንበር ደኅን"
+          },
+          {
+            "prefix": "የድንበር ደህን"
+          },
+          {
+            "prefix": "የድንበር ፍተሻ"
+          },
+          {
+            "prefix": "የድንበር ኬላ"
+          },
+          "border control"
+        ],
+        "cs": [
+          {
+            "prefix": "hraniční kontrol"
+          },
+          {
+            "prefix": "hraničních kontrol"
+          },
+          {
+            "prefix": "kontroly na hranic"
+          },
+          {
+            "prefix": "kontrol na hranic"
+          },
+          {
+            "prefix": "kontrolách na hranic"
+          },
+          "ochrana hranic",
+          "ochrany hranic",
+          "ochranu hranic",
+          "ochranou hranic",
+          "ostraha hranic",
+          "ostrahy hranic",
+          "ostrahu hranic",
+          "Frontex",
+          {
+            "prefix": "hraniční přechod"
+          },
+          {
+            "prefix": "hraničních přechod"
+          },
+          {
+            "prefix": "hraničním přechod"
+          }
+        ],
+        "rw": [
+          "igenzura ry'imipaka",
+          "igenzura ry’imipaka",
+          "kugenzura imipaka",
+          "umutekano w'imipaka",
+          "umutekano w’imipaka",
+          "umutekano ku mipaka",
+          "imicungire y'imipaka",
+          "imicungire y’imipaka"
+        ],
+        "ne": [
+          {
+            "prefix": "सीमा व्यवस्थापन"
+          },
+          {
+            "prefix": "सीमा सुरक्षा"
+          },
+          {
+            "prefix": "सीमा नियन्त्रण"
+          },
+          {
+            "prefix": "सीमा निगरानी"
+          },
+          {
+            "prefix": "सीमा नाका"
+          },
+          {
+            "prefix": "सीमा चौकी"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ބޯޑަރު ކޮންޓްރޯ"
+          },
+          {
+            "prefix": "ބޯޑަރ ކޮންޓްރޯ"
+          },
+          {
+            "prefix": "ބޯޑަރު ސެކިއުރި"
+          },
+          {
+            "prefix": "ބޯޑަރު މެނޭ"
+          },
+          {
+            "prefix": "ބޯޑަރު ރައްކާތެރި"
+          },
+          {
+            "prefix": "ބޯޑަރު ޕެޓްރޯ"
+          }
         ]
       }
     },
@@ -14345,6 +18353,275 @@
           "deportashonnan",
           "deportá",
           "expulsion di migrante"
+        ],
+        "urdu": [
+          "ملک بدر",
+          "ڈی پورٹ",
+          "ڈیپورٹ",
+          "تارکین وطن کی بے دخلی"
+        ],
+        "bn": [
+          {
+            "prefix": "ডিপোর্ট"
+          },
+          {
+            "prefix": "দেশে ফেরত পাঠা"
+          },
+          {
+            "prefix": "নিজ দেশে ফেরত পাঠা"
+          },
+          {
+            "prefix": "অভিবাসী বিতাড়ন"
+          },
+          {
+            "prefix": "বিতাড়িত অভিবাসী"
+          },
+          {
+            "prefix": "বহিষ্কৃত অভিবাসী"
+          },
+          {
+            "prefix": "পুশইন"
+          },
+          {
+            "prefix": "পুশ ইন"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "kitoloncol"
+          },
+          {
+            "prefix": "migránsok kiutasít"
+          },
+          {
+            "prefix": "visszatoloncol"
+          },
+          {
+            "prefix": "migránsok deportál"
+          },
+          {
+            "prefix": "migránsokat deportál"
+          },
+          {
+            "prefix": "bevándorlók deportál"
+          },
+          {
+            "prefix": "bevándorlókat deportál"
+          },
+          {
+            "prefix": "menedékkérők deportál"
+          },
+          {
+            "prefix": "menedékkérőket deportál"
+          },
+          {
+            "prefix": "külföldiek kiutasít"
+          },
+          {
+            "prefix": "külföldieket kiutasít"
+          },
+          {
+            "prefix": "országból való kiutasít"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "deportacij"
+          },
+          {
+            "prefix": "deportir"
+          },
+          "izgon migrantov",
+          "izgona migrantov",
+          "izgon tujcev",
+          "izgona tujcev",
+          "odstranitev iz države",
+          "odstranitve iz države"
+        ],
+        "somali": [
+          {
+            "prefix": "tarxiil"
+          },
+          "dib u celin qasab ah",
+          "celin qasab ah",
+          "deportation",
+          "deported"
+        ],
+        "sk": [
+          {
+            "prefix": "deportác"
+          },
+          {
+            "prefix": "deportova"
+          },
+          "vyhostenie migrantov",
+          "vyhostenia migrantov",
+          "vyhostenie cudzincov",
+          "vyhostenia cudzincov",
+          "administratívne vyhostenie",
+          "administratívneho vyhostenia"
+        ],
+        "swahili": [
+          "kufukuzwa nchini",
+          "kufukuzwa nchi",
+          "amri ya kufukuzwa nchini",
+          "kurejeshwa makwao",
+          "kurudishwa makwao",
+          "kurejeshwa nchini kwao",
+          "wahamiaji waliorejeshwa"
+        ],
+        "si": [
+          "පිටුවහල්",
+          {
+            "prefix": "පිටුවහල්කර"
+          },
+          {
+            "prefix": "පිටුවහල්කිරී"
+          },
+          {
+            "prefix": "රටින් නෙරපා"
+          },
+          {
+            "prefix": "සංක්‍රමණිකයන් නෙරපා"
+          },
+          {
+            "prefix": "සංක්රමණිකයන් නෙරපා"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "deportasi"
+          },
+          {
+            "prefix": "deport ed"
+          },
+          {
+            "prefix": "migrantlary yzyna gaýtar"
+          },
+          {
+            "prefix": "migrantlaryň yzyna gaýtaryl"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "डिपोर्ट"
+          },
+          "निर्वासन",
+          "निर्वासित किए",
+          "निर्वासित किया",
+          "निर्वासित भारतीय",
+          "निर्वासित भारतीयों",
+          "देश निकाला"
+        ],
+        "hebrew": [
+          "צו גירוש",
+          "צווי גירוש",
+          "גירוש מהגר",
+          "גירוש המהגר",
+          "גירוש מבקשי מקלט",
+          "גירוש עובדים",
+          "גירוש שוהים",
+          "מגורשים"
+        ],
+        "amharic": [
+          {
+            "prefix": "ከሀገር ማስወጣ"
+          },
+          {
+            "prefix": "ከአገር ማስወጣ"
+          },
+          {
+            "prefix": "ከሀገር የተባረ"
+          },
+          {
+            "prefix": "ከአገር የተባረ"
+          },
+          {
+            "prefix": "ዲፖርት"
+          },
+          "deportation"
+        ],
+        "cs": [
+          {
+            "prefix": "deportace migrant"
+          },
+          {
+            "prefix": "deportace cizinc"
+          },
+          {
+            "prefix": "deportace uprchlík"
+          },
+          {
+            "prefix": "deportace žadatel"
+          },
+          {
+            "prefix": "deportaci migrant"
+          },
+          {
+            "prefix": "deportaci cizinc"
+          },
+          {
+            "prefix": "deportovat migrant"
+          },
+          {
+            "prefix": "deportovat cizinc"
+          },
+          {
+            "prefix": "deportovat uprchlík"
+          },
+          {
+            "prefix": "správní vyhoštění"
+          },
+          {
+            "prefix": "správního vyhoštění"
+          },
+          {
+            "prefix": "vyhoštění cizinc"
+          },
+          {
+            "prefix": "vyhoštění migrant"
+          }
+        ],
+        "rw": [
+          "kwirukanwa mu gihugu",
+          "birukanwe mu gihugu",
+          "yirukanwe mu gihugu",
+          "kwirukana abimukira",
+          "abimukira birukanwe",
+          "gusubizwa iwabo ku gahato",
+          "basubijwe iwabo ku gahato",
+          "deportation"
+        ],
+        "ne": [
+          {
+            "prefix": "डिपोर्ट"
+          },
+          {
+            "prefix": "देश निकाला"
+          },
+          {
+            "prefix": "देशनिकाला"
+          },
+          {
+            "prefix": "जबरजस्ती स्वदेश फर्का"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ޑިޕޯޓްކުރު"
+          },
+          {
+            "prefix": "ޑިޕޯޓްކުރެ"
+          },
+          "ޑިޕޯޓްކޮށް",
+          "ޑިޕޯޓްކޮށްފި",
+          "ޑިޕޯޓްކޮށްފައި",
+          "ޑިޕޯޓްކުރި",
+          "ޑިޕޯޓްކުރާ",
+          {
+            "prefix": "ޑިޕޯޓް ކުރު"
+          },
+          "ޑިޕޯޓް ކޮށްފި"
         ]
       }
     },
@@ -15191,6 +19468,257 @@
           "migrante detení",
           "sentro di detenshon pa migrante",
           "vreemdelingenbewaring"
+        ],
+        "urdu": [
+          "امیگریشن حراستی",
+          "تارکین وطن کی حراست",
+          "تارکین وطن کو حراست",
+          "حراست میں لیے گئے تارکین",
+          "تارکین وطن کے حراستی",
+          "امیگریشن ڈیٹینشن"
+        ],
+        "bn": [
+          {
+            "prefix": "অভিবাসী আটক"
+          },
+          {
+            "prefix": "আটক অভিবাসী"
+          },
+          {
+            "prefix": "অভিবাসন আটক"
+          },
+          {
+            "prefix": "ডিটেনশন সেন্টার"
+          },
+          {
+            "prefix": "ডিটেনশন ক্যাম্প"
+          },
+          {
+            "prefix": "অভিবাসী বন্দিশিবির"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "idegenrendészeti őriz"
+          },
+          {
+            "prefix": "menekültügyi őriz"
+          },
+          {
+            "prefix": "tranzitzón"
+          },
+          {
+            "prefix": "őrizetbe vett migráns"
+          },
+          {
+            "prefix": "fogva tartott migráns"
+          },
+          {
+            "prefix": "migránsok fogva tart"
+          }
+        ],
+        "sl": [
+          "center za tujce",
+          "centra za tujce",
+          "centru za tujce",
+          "centrom za tujce",
+          "pridržanje migrantov",
+          "pridržanja migrantov",
+          "pridržani migranti",
+          "pridržanih migrantov",
+          "pridržanje tujcev",
+          "pridržanja tujcev"
+        ],
+        "somali": [
+          "xabsiga muhaajiriinta",
+          "xarunta haynta muhaajiriinta",
+          "xarumaha lagu hayo muhaajiriinta",
+          "muhaajiriinta la xiray",
+          "muhaajiriin la xiray",
+          "immigration detention"
+        ],
+        "sk": [
+          "zaistenie migrantov",
+          "zaistenia migrantov",
+          "zaistenie cudzincov",
+          "zaistenia cudzincov",
+          "zaistení migranti",
+          "zaistených migrantov",
+          "zadržaní migranti",
+          "zadržaných migrantov",
+          "zadržiavanie migrantov",
+          "zadržiavania migrantov",
+          {
+            "prefix": "útvar policajného zaisteni"
+          },
+          {
+            "prefix": "útvaru policajného zaisteni"
+          },
+          {
+            "prefix": "útvare policajného zaisteni"
+          },
+          "ÚPZC",
+          "detenčné zariadenie pre migrantov",
+          "detenčných zariadení pre migrantov"
+        ],
+        "swahili": [
+          "wahamiaji waliokamatwa",
+          "wahamiaji haramu waliokamatwa",
+          "kukamatwa kwa wahamiaji haramu",
+          "wahamiaji waliozuiliwa",
+          "kituo cha kuwashikilia wahamiaji",
+          "wahamiaji gerezani"
+        ],
+        "si": [
+          {
+            "prefix": "ආගමන රැඳවුම්"
+          },
+          {
+            "prefix": "ආගමන රඳවා"
+          },
+          {
+            "prefix": "සංක්‍රමණිකයන් රඳවා"
+          },
+          {
+            "prefix": "සංක්රමණිකයන් රඳවා"
+          },
+          {
+            "prefix": "රඳවා ගත් සංක්‍රමණික"
+          },
+          {
+            "prefix": "රඳවා ගත් සංක්රමණික"
+          },
+          {
+            "prefix": "රඳවා සිටින සංක්‍රමණික"
+          },
+          {
+            "prefix": "රඳවා සිටින සංක්රමණික"
+          },
+          {
+            "prefix": "අක්වෙරළ රැඳවුම්"
+          },
+          {
+            "prefix": "මිරිහාන රඳවා"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "tussag edilen migrant"
+          },
+          {
+            "prefix": "saklanylan migrant"
+          },
+          {
+            "prefix": "migrantlary tussag"
+          },
+          {
+            "prefix": "migrantlary saklaýyş merkez"
+          },
+          {
+            "prefix": "deportasiýa merkez"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "डिटेंशन सेंटर"
+          },
+          {
+            "prefix": "डिटेंशन कैंप"
+          },
+          {
+            "prefix": "हिरासत केंद्र"
+          },
+          {
+            "prefix": "निरोध केंद्र"
+          },
+          {
+            "prefix": "हिरासत में लिए गए प्रवासी"
+          },
+          {
+            "prefix": "हिरासत में लिए गए प्रवासियों"
+          }
+        ],
+        "hebrew": [
+          "מעצר מהגרים",
+          "כליאת מהגרים",
+          "כליאת מבקשי מקלט",
+          "מעצר מבקשי מקלט",
+          "משמורת מהגרים",
+          "מתקן חולות",
+          "סהרונים"
+        ],
+        "amharic": [
+          {
+            "prefix": "የስደተኞች ማቆያ"
+          },
+          {
+            "prefix": "የስደተኞች መያዣ ማዕከ"
+          },
+          {
+            "prefix": "የታሰሩ ስደተ"
+          },
+          {
+            "prefix": "በእስር ላይ የሚገኙ ስደተ"
+          },
+          {
+            "prefix": "በእስር የሚገኙ ኢትዮጵያውያን ስደተ"
+          },
+          "immigration detention"
+        ],
+        "cs": [
+          "zajištění cizinců",
+          "zajištěním cizinců",
+          "zařízení pro zajištění cizinců",
+          "zadržení migrantů",
+          "zadržování migrantů",
+          "zadržených migrantů",
+          "zadržení migranti",
+          "Bělá-Jezová",
+          "Bělé-Jezové"
+        ],
+        "rw": [
+          "gufunga abimukira",
+          "abimukira bafunzwe",
+          "ikigo gifungirwamo abimukira",
+          "aho abimukira bafungirwa",
+          "offshore processing"
+        ],
+        "ne": [
+          {
+            "prefix": "आप्रवासन हिरासत"
+          },
+          {
+            "prefix": "आप्रवासी हिरासत"
+          },
+          {
+            "prefix": "हिरासतमा राखिएका आप्रवासी"
+          },
+          {
+            "prefix": "अध्यागमन हिरासत"
+          },
+          {
+            "prefix": "डिटेन्सन सेन्टर"
+          },
+          {
+            "prefix": "डिटेन्सन केन्द्र"
+          },
+          {
+            "prefix": "डिटेन्सन क्याम्प"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "އިމިގްރޭޝަން ޑިޓެންޝަ"
+          },
+          {
+            "prefix": "އިމިގްރޭޝަނުގެ ޑިޓެންޝަ"
+          },
+          {
+            "prefix": "ހުޅުމާލޭ ޑިޓެންޝަ"
+          },
+          {
+            "prefix": "ޑިޕޯޓްކުރުމަށް ބަންދު"
+          }
         ]
       }
     },
@@ -16237,6 +20765,333 @@
           "polítika di migrashon",
           "lei di migrashon",
           "migratiebeleid"
+        ],
+        "urdu": [
+          "نقل مکانی کی پالیسی",
+          "ہجرت کی پالیسی",
+          "مائیگریشن پالیسی",
+          "ایمیگریشن آرڈیننس",
+          "ایمیگریشن پالیسی",
+          "مائیگریشن گورننس"
+        ],
+        "bn": [
+          {
+            "prefix": "অভিবাসন নীতি"
+          },
+          {
+            "prefix": "অভিবাসননীতি"
+          },
+          {
+            "prefix": "অভিবাসন আইন"
+          },
+          {
+            "prefix": "অভিবাসন ব্যবস্থাপনা"
+          },
+          {
+            "prefix": "অভিবাসন সংস্কার"
+          },
+          {
+            "prefix": "বৈদেশিক কর্মসংস্থান ও অভিবাসী আইন"
+          },
+          {
+            "prefix": "বৈদেশিক কর্মসংস্থান নীতি"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "migrációs politik"
+          },
+          {
+            "prefix": "migrációs törvény"
+          },
+          {
+            "prefix": "migrációs paktum"
+          },
+          {
+            "prefix": "migrációs reform"
+          },
+          {
+            "prefix": "migrációs szabályoz"
+          },
+          {
+            "prefix": "migráció kezel"
+          },
+          {
+            "prefix": "migrációs csomag"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "migracijska politik"
+          },
+          {
+            "prefix": "migracijske politik"
+          },
+          {
+            "prefix": "migracijsko politik"
+          },
+          {
+            "prefix": "migracijskih politik"
+          },
+          {
+            "prefix": "migracijska zakonodaj"
+          },
+          {
+            "prefix": "migracijske zakonodaj"
+          },
+          {
+            "prefix": "migracijsko zakonodaj"
+          },
+          "upravljanje migracij",
+          "upravljanja migracij",
+          "upravljanju migracij",
+          {
+            "prefix": "migracijski pakt"
+          },
+          {
+            "prefix": "migracijskega pakt"
+          },
+          {
+            "prefix": "migracijska reform"
+          },
+          {
+            "prefix": "migracijske reform"
+          },
+          "pakt o migracijah in azilu"
+        ],
+        "somali": [
+          "siyaasadda hijrada",
+          "siyaasadda muhaajiriinta",
+          "maaraynta hijrada",
+          "maamulka hijrada",
+          "migration policy"
+        ],
+        "sk": [
+          {
+            "prefix": "migračná politik"
+          },
+          {
+            "prefix": "migračnej politik"
+          },
+          {
+            "prefix": "migračnú politik"
+          },
+          {
+            "prefix": "migračnou politik"
+          },
+          {
+            "prefix": "migračné politik"
+          },
+          {
+            "prefix": "migračných polit"
+          },
+          {
+            "prefix": "migračný pakt"
+          },
+          {
+            "prefix": "migračného pakt"
+          },
+          {
+            "prefix": "migračnom pakt"
+          },
+          "pakt o migrácii a azyle",
+          "paktu o migrácii a azyle",
+          {
+            "prefix": "migračná reform"
+          },
+          {
+            "prefix": "migračnej reform"
+          },
+          "riadenie migrácie",
+          "riadenia migrácie",
+          {
+            "prefix": "migračné kvót"
+          },
+          {
+            "prefix": "migračných kvót"
+          }
+        ],
+        "swahili": [
+          "sera ya uhamiaji",
+          "sera za uhamiaji",
+          "sheria ya uhamiaji",
+          "sheria za uhamiaji",
+          "usimamizi wa uhamiaji",
+          "mageuzi ya uhamiaji"
+        ],
+        "si": [
+          {
+            "prefix": "සංක්‍රමණ ප්‍රතිපත්ති"
+          },
+          {
+            "prefix": "සංක්රමණ ප්රතිපත්ති"
+          },
+          {
+            "prefix": "සංක්‍රමණ නීති"
+          },
+          {
+            "prefix": "සංක්රමණ නීති"
+          },
+          {
+            "prefix": "සංක්‍රමණ කළමනාකරණ"
+          },
+          {
+            "prefix": "සංක්රමණ කළමනාකරණ"
+          },
+          {
+            "prefix": "සංක්‍රමණ ප්‍රතිසංස්කරණ"
+          },
+          {
+            "prefix": "සංක්රමණ ප්රතිසංස්කරණ"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "migrasiýa syýasat"
+          },
+          {
+            "prefix": "migrasiýa kanun"
+          },
+          {
+            "prefix": "migrasiýa hakynda kanun"
+          },
+          {
+            "prefix": "migrasiýa gulluk"
+          },
+          {
+            "prefix": "migrasiýany dolandyr"
+          },
+          {
+            "prefix": "migrasiýa özgertme"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "प्रवासन नीति"
+          },
+          {
+            "prefix": "प्रवास नीति"
+          },
+          {
+            "prefix": "प्रवासी नीति"
+          },
+          {
+            "prefix": "प्रवासन कानून"
+          },
+          "प्रवासन प्रबंधन",
+          "प्रवासन सुधार"
+        ],
+        "hebrew": [
+          "מדיניות הגירה",
+          "מדיניות ההגירה",
+          "חוק ההגירה",
+          "חוקי ההגירה",
+          "ניהול הגירה",
+          "ניהול ההגירה",
+          "רפורמת הגירה",
+          "רפורמה בהגירה"
+        ],
+        "amharic": [
+          {
+            "prefix": "የፍልሰት ፖሊሲ"
+          },
+          {
+            "prefix": "የስደት ፖሊሲ"
+          },
+          {
+            "prefix": "የፍልሰት ሕግ"
+          },
+          {
+            "prefix": "የፍልሰት ህግ"
+          },
+          {
+            "prefix": "የፍልሰት አስተዳደ"
+          },
+          {
+            "prefix": "የፍልሰት አዋጅ"
+          },
+          "migration policy"
+        ],
+        "cs": [
+          {
+            "prefix": "migrační politik"
+          },
+          {
+            "prefix": "migračních politik"
+          },
+          {
+            "prefix": "migrační zákon"
+          },
+          {
+            "prefix": "migračního zákon"
+          },
+          {
+            "prefix": "migrační pakt"
+          },
+          {
+            "prefix": "migračního pakt"
+          },
+          {
+            "prefix": "migračním pakt"
+          },
+          {
+            "prefix": "migrační reform"
+          },
+          {
+            "prefix": "migrační kvót"
+          },
+          {
+            "prefix": "migračních kvót"
+          },
+          {
+            "prefix": "řízení migrac"
+          }
+        ],
+        "rw": [
+          "politiki y'abimukira",
+          "politiki y’abimukira",
+          "politiki ku bimukira",
+          "politiki y'ubwimukira",
+          "politiki y’ubwimukira",
+          "imicungire y'abimukira",
+          "imicungire y’abimukira",
+          "amasezerano ku bimukira",
+          "amasezerano y'abimukira",
+          "amasezerano y’abimukira"
+        ],
+        "ne": [
+          {
+            "prefix": "प्रवासन नीति"
+          },
+          {
+            "prefix": "बसाइँसराइ नीति"
+          },
+          {
+            "prefix": "वैदेशिक रोजगार नीति"
+          },
+          {
+            "prefix": "वैदेशिक रोजगार ऐन"
+          },
+          {
+            "prefix": "प्रवासन व्यवस्थापन"
+          },
+          {
+            "prefix": "श्रम आप्रवासन नीति"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "މައިގްރޭޝަން ޕޮލި"
+          },
+          {
+            "prefix": "މައިގްރޭޝަން ޤާނޫނު"
+          },
+          {
+            "prefix": "މައިގްރޭޝަން މެނޭ"
+          },
+          {
+            "prefix": "ހިޖުރަކުރުމާ ބެހޭ ސިޔާސަ"
+          }
         ]
       }
     },
@@ -17390,6 +22245,379 @@
           "vreemdelingenbeleid",
           "Landsverordening Toelating en Uitzetting",
           "Departamento di Integracion, Maneho y Admision di Stranhero"
+        ],
+        "urdu": [
+          "امیگریشن پالیسی",
+          "امیگریشن قوانین",
+          "امیگریشن قانون",
+          "امیگریشن رولز",
+          "امیگریشن اصلاحات",
+          "ویزا پالیسی",
+          "ویزا قوانین",
+          "ویزا کے قواعد"
+        ],
+        "bn": [
+          {
+            "prefix": "অভিবাসন বিধি"
+          },
+          {
+            "prefix": "ভিসা নীতি"
+          },
+          {
+            "prefix": "ভিসানীতি"
+          },
+          {
+            "prefix": "ভিসা নিয়ম"
+          },
+          {
+            "prefix": "অভিবাসীবিরোধী"
+          },
+          {
+            "prefix": "অভিবাসী ধরপাকড়"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "bevándorlási politik"
+          },
+          {
+            "prefix": "bevándorlási törvény"
+          },
+          {
+            "prefix": "bevándorlási szabály"
+          },
+          {
+            "prefix": "bevándorlási reform"
+          },
+          {
+            "prefix": "vízumpolitik"
+          },
+          {
+            "prefix": "vízumszabály"
+          },
+          {
+            "prefix": "idegenrendészeti törvény"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "priseljenska politik"
+          },
+          {
+            "prefix": "priseljenske politik"
+          },
+          {
+            "prefix": "priseljensko politik"
+          },
+          "politika priseljevanja",
+          "politike priseljevanja",
+          "politiko priseljevanja",
+          "zakon o tujcih",
+          "zakona o tujcih",
+          "zakonu o tujcih",
+          "zakon o mednarodni zaščiti",
+          "zakona o mednarodni zaščiti",
+          {
+            "prefix": "vizumska politik"
+          },
+          {
+            "prefix": "vizumske politik"
+          },
+          {
+            "prefix": "vizumski režim"
+          },
+          {
+            "prefix": "vizumskega režim"
+          },
+          "omejevanje priseljevanja",
+          "omejitev priseljevanja"
+        ],
+        "somali": [
+          "siyaasadda soogalootiga",
+          "sharciga soogalootiga",
+          "sharciyada soogalootiga",
+          "sharciga socdaalka",
+          "xeerka socdaalka",
+          "siyaasadda fiisaha",
+          "immigration policy"
+        ],
+        "sk": [
+          {
+            "prefix": "prisťahovalecká politik"
+          },
+          {
+            "prefix": "prisťahovaleckej politik"
+          },
+          {
+            "prefix": "prisťahovaleckú politik"
+          },
+          {
+            "prefix": "imigračná politik"
+          },
+          {
+            "prefix": "imigračnej politik"
+          },
+          {
+            "prefix": "imigračnú politik"
+          },
+          "zákon o pobyte cudzincov",
+          "zákona o pobyte cudzincov",
+          "zákone o pobyte cudzincov",
+          {
+            "prefix": "vízová politik"
+          },
+          {
+            "prefix": "vízovej politik"
+          },
+          {
+            "prefix": "imigračné pravidl"
+          },
+          {
+            "prefix": "imigračných pravidi"
+          },
+          {
+            "prefix": "imigračný zákon"
+          },
+          {
+            "prefix": "imigračného zákon"
+          },
+          {
+            "prefix": "imigračné zákon"
+          },
+          {
+            "prefix": "imigračných zákon"
+          }
+        ],
+        "swahili": [
+          "Idara ya Uhamiaji",
+          "sera ya uhamiaji",
+          "sheria ya uhamiaji",
+          "sheria za uhamiaji",
+          "sera ya viza",
+          "masharti ya viza",
+          "kibali cha ukaazi",
+          "vibali vya ukaazi"
+        ],
+        "si": [
+          {
+            "prefix": "ආගමන ප්‍රතිපත්ති"
+          },
+          {
+            "prefix": "ආගමන ප්රතිපත්ති"
+          },
+          {
+            "prefix": "ආගමන නීති"
+          },
+          {
+            "prefix": "ආගමන හා විගමන නීති"
+          },
+          {
+            "prefix": "ආගමන ප්‍රතිසංස්කරණ"
+          },
+          {
+            "prefix": "ආගමන ප්රතිසංස්කරණ"
+          },
+          {
+            "prefix": "වීසා ප්‍රතිපත්ති"
+          },
+          {
+            "prefix": "වීසා ප්රතිපත්ති"
+          },
+          {
+            "prefix": "වීසා නීති"
+          },
+          {
+            "prefix": "වීසා රීති"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "immigrasiýa syýasat"
+          },
+          {
+            "prefix": "immigrasiýa kanun"
+          },
+          {
+            "prefix": "immigrasiýa düzgün"
+          },
+          {
+            "prefix": "wiza syýasat"
+          },
+          {
+            "prefix": "wiza düzgün"
+          },
+          {
+            "prefix": "wiza režim"
+          }
+        ],
+        "hindi": [
+          {
+            "prefix": "आप्रवासन नीति"
+          },
+          {
+            "prefix": "अप्रवासन नीति"
+          },
+          {
+            "prefix": "आव्रजन नीति"
+          },
+          {
+            "prefix": "आव्रजन कानून"
+          },
+          {
+            "prefix": "आप्रवासन कानून"
+          },
+          {
+            "prefix": "आव्रजन नियम"
+          },
+          {
+            "prefix": "वीजा नीति"
+          },
+          {
+            "prefix": "वीज़ा नीति"
+          },
+          {
+            "prefix": "वीजा नियम"
+          },
+          {
+            "prefix": "वीज़ा नियम"
+          },
+          "इमिग्रेशन नीति"
+        ],
+        "hebrew": [
+          "מדיניות הגירה",
+          "מדיניות ההגירה",
+          "מדיניות העלייה",
+          "חוק השבות",
+          "חוק הכניסה לישראל",
+          "מדיניות אשרות",
+          "מדיניות הוויזות",
+          "רשות האוכלוסין וההגירה",
+          "רשות ההגירה"
+        ],
+        "amharic": [
+          {
+            "prefix": "የኢሚግሬሽን ፖሊሲ"
+          },
+          {
+            "prefix": "የኢሚግሬሽን ሕግ"
+          },
+          {
+            "prefix": "የኢሚግሬሽን ህግ"
+          },
+          {
+            "prefix": "የኢሚግሬሽን መመሪያ"
+          },
+          {
+            "prefix": "የኢሚግሬሽን አዋጅ"
+          },
+          {
+            "prefix": "የቪዛ ፖሊሲ"
+          },
+          {
+            "prefix": "የቪዛ መመሪያ"
+          },
+          "immigration policy"
+        ],
+        "cs": [
+          {
+            "prefix": "imigrační politik"
+          },
+          {
+            "prefix": "přistěhovalecká politik"
+          },
+          {
+            "prefix": "přistěhovalecké politik"
+          },
+          {
+            "prefix": "přistěhovaleckou politik"
+          },
+          {
+            "prefix": "imigrační zákon"
+          },
+          {
+            "prefix": "imigračního zákon"
+          },
+          {
+            "prefix": "zákon o pobytu cizinc"
+          },
+          {
+            "prefix": "zákona o pobytu cizinc"
+          },
+          {
+            "prefix": "zákonem o pobytu cizinc"
+          },
+          {
+            "prefix": "vízová politik"
+          },
+          {
+            "prefix": "vízové politik"
+          },
+          {
+            "prefix": "vízovou politik"
+          },
+          {
+            "prefix": "lex Ukrajin"
+          }
+        ],
+        "rw": [
+          "itegeko ry'abinjira n'abasohoka",
+          "itegeko ry’abinjira n’abasohoka",
+          "amategeko y'abinjira n'abasohoka",
+          "amategeko y’abinjira n’abasohoka",
+          "politiki y'abinjira n'abasohoka",
+          "politiki y’abinjira n’abasohoka",
+          "politiki ya viza",
+          "amabwiriza ya viza",
+          "DGIE"
+        ],
+        "ne": [
+          {
+            "prefix": "आप्रवासन नीति"
+          },
+          {
+            "prefix": "आप्रवासन कानुन"
+          },
+          {
+            "prefix": "अध्यागमन नीति"
+          },
+          {
+            "prefix": "अध्यागमन ऐन"
+          },
+          {
+            "prefix": "अध्यागमन नियम"
+          },
+          {
+            "prefix": "अध्यागमन कानुन"
+          },
+          {
+            "prefix": "भिसा नीति"
+          },
+          {
+            "prefix": "भिसा नियम"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "އިމިގްރޭޝަން ޤާނޫނު"
+          },
+          {
+            "prefix": "އިމިގްރޭޝަން ޕޮލި"
+          },
+          {
+            "prefix": "އިމިގްރޭޝަން ގަވާއިދު"
+          },
+          {
+            "prefix": "އިމިގްރޭޝަންގެ ގަވާއިދު"
+          },
+          {
+            "prefix": "ވިސާ ޕޮލި"
+          },
+          {
+            "prefix": "ވިސާ ގަވާއިދު"
+          },
+          {
+            "prefix": "ވިސާ ދޫކުރުމުގެ ގަވާއިދު"
+          }
         ]
       }
     },
@@ -18192,6 +23420,251 @@
           "integrashon di stranhero",
           "integratie van migranten",
           "inburgering"
+        ],
+        "urdu": [
+          "تارکین وطن کا انضمام",
+          "تارکین وطن کی شمولیت",
+          "مہاجرین کا انضمام",
+          "تارکین وطن کو معاشرے"
+        ],
+        "bn": [
+          {
+            "prefix": "অভিবাসীদের একীভূত"
+          },
+          {
+            "prefix": "অভিবাসীদের একীকরণ"
+          },
+          {
+            "prefix": "অভিবাসী একীকরণ"
+          },
+          {
+            "prefix": "অভিবাসীদের অন্তর্ভুক্তি"
+          },
+          {
+            "prefix": "অভিবাসী অন্তর্ভুক্তি"
+          },
+          {
+            "prefix": "অভিবাসীদের আত্তীকরণ"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "migránsok integráci"
+          },
+          {
+            "prefix": "bevándorlók integráci"
+          },
+          {
+            "prefix": "migránsok beilleszked"
+          },
+          {
+            "prefix": "bevándorlók beilleszked"
+          },
+          {
+            "prefix": "menekültek integráci"
+          }
+        ],
+        "sl": [
+          "integracija migrantov",
+          "integracije migrantov",
+          "integraciji migrantov",
+          "integracijo migrantov",
+          "vključevanje migrantov",
+          "vključevanja migrantov",
+          "integracija priseljencev",
+          "integracije priseljencev",
+          "vključevanje priseljencev",
+          "vključevanja priseljencev",
+          "integracija tujcev",
+          "integracije tujcev"
+        ],
+        "somali": [
+          "isdhexgalka muhaajiriinta",
+          "is-dhexgalka muhaajiriinta",
+          "isdhexgalka soogalootiga",
+          "is-dhexgalka soogalootiga",
+          "migrant integration"
+        ],
+        "sk": [
+          {
+            "prefix": "integrácia migrant"
+          },
+          {
+            "prefix": "integrácie migrant"
+          },
+          {
+            "prefix": "integráciu migrant"
+          },
+          {
+            "prefix": "integráciou migrant"
+          },
+          {
+            "prefix": "integrácii migrant"
+          },
+          {
+            "prefix": "integrácia cudzinc"
+          },
+          {
+            "prefix": "integrácie cudzinc"
+          },
+          {
+            "prefix": "integráciu cudzinc"
+          },
+          {
+            "prefix": "integrácia prisťahovalc"
+          },
+          {
+            "prefix": "integrácie prisťahovalc"
+          },
+          {
+            "prefix": "integračná politik"
+          },
+          {
+            "prefix": "integračnej politik"
+          }
+        ],
+        "swahili": [
+          "ujumuishaji wa wahamiaji",
+          "kuwajumuisha wahamiaji",
+          "kujumuishwa kwa wahamiaji",
+          "ushirikishwaji wa wahamiaji",
+          "uraia kwa wakimbizi",
+          "kuwapa uraia wakimbizi"
+        ],
+        "si": [
+          {
+            "prefix": "සංක්‍රමණිකයන් ඒකාබද්ධ"
+          },
+          {
+            "prefix": "සංක්රමණිකයන් ඒකාබද්ධ"
+          },
+          {
+            "prefix": "සංක්‍රමණිකයන්ගේ ඒකාබද්ධ"
+          },
+          {
+            "prefix": "සංක්රමණිකයන්ගේ ඒකාබද්ධ"
+          },
+          {
+            "prefix": "සංක්‍රමණිකයන් සමාජගත"
+          },
+          {
+            "prefix": "සංක්රමණිකයන් සමාජගත"
+          },
+          {
+            "prefix": "සංක්‍රමණිකයන් සමාජයට ඒකාබද්ධ"
+          },
+          {
+            "prefix": "සංක්රමණිකයන් සමාජයට ඒකාබද්ධ"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "migrantlaryň integrasi"
+          },
+          {
+            "prefix": "immigrantlaryň integrasi"
+          },
+          {
+            "prefix": "migrantlaryň jemgyýete goşul"
+          },
+          {
+            "prefix": "migrantlary jemgyýete goş"
+          }
+        ],
+        "hindi": [
+          "प्रवासी एकीकरण",
+          "प्रवासियों का एकीकरण",
+          "प्रवासियों के एकीकरण",
+          "आप्रवासियों का एकीकरण",
+          "आप्रवासियों के एकीकरण",
+          "प्रवासियों का समावेशन"
+        ],
+        "hebrew": [
+          "קליטת עלייה",
+          "קליטת עולים",
+          "קליטת העולים",
+          "קליטת מהגרים",
+          "שילוב מהגרים",
+          "שילוב המהגרים",
+          "השתלבות מהגרים",
+          "משרד העלייה והקליטה",
+          "סל קליטה"
+        ],
+        "amharic": [
+          {
+            "prefix": "የስደተኞች ውህደ"
+          },
+          {
+            "prefix": "ስደተኞችን ከማኅበረሰቡ ጋር"
+          },
+          {
+            "prefix": "ስደተኞችን ከህብረተሰቡ ጋር"
+          },
+          {
+            "prefix": "ስደተኞችን ከአካባቢው ማኅበረሰብ ጋር"
+          },
+          "migrant integration"
+        ],
+        "cs": [
+          {
+            "prefix": "integrace cizinc"
+          },
+          {
+            "prefix": "integraci cizinc"
+          },
+          {
+            "prefix": "integrací cizinc"
+          },
+          {
+            "prefix": "integrace migrant"
+          },
+          {
+            "prefix": "integraci migrant"
+          },
+          {
+            "prefix": "integrace přistěhoval"
+          },
+          {
+            "prefix": "integraci přistěhoval"
+          },
+          "integrace uprchlíků",
+          "integraci uprchlíků"
+        ],
+        "rw": [
+          "kwinjiza abimukira mu muryango nyarwanda",
+          "kwinjiza abimukira mu buzima busanzwe",
+          "kwinjizwa kw'abimukira mu muryango",
+          "kwinjizwa kw’abimukira mu muryango",
+          "kwishyira hamwe kw'abimukira",
+          "kwishyira hamwe kw’abimukira"
+        ],
+        "ne": [
+          {
+            "prefix": "आप्रवासी एकीकरण"
+          },
+          {
+            "prefix": "आप्रवासीहरूको एकीकरण"
+          },
+          {
+            "prefix": "आप्रवासीको एकीकरण"
+          },
+          {
+            "prefix": "आप्रवासीको समावेश"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "މައިގްރަންޓް އިންޓަގްރޭޝަ"
+          },
+          {
+            "prefix": "މައިގްރަންޓުން އިންޓަގްރޭ"
+          },
+          {
+            "prefix": "ބިދޭސީން މުޖުތަމައާ ގުޅުވާ"
+          },
+          {
+            "prefix": "ބިދޭސީން މުޖުތަމަޢާ ގުޅުވާ"
+          }
         ]
       }
     },
@@ -19051,6 +24524,222 @@
           "plaka manda pa famia",
           "geldovermakingen",
           "remittances"
+        ],
+        "urdu": [
+          "ترسیلات",
+          "ترسیل زر",
+          "ورکرز ریمیٹنس",
+          "ریمیٹنس",
+          "روشن ڈیجیٹل اکاؤنٹ",
+          "بیرون ملک سے رقوم"
+        ],
+        "bn": [
+          {
+            "prefix": "রেমিট্যান্স"
+          },
+          {
+            "prefix": "রেমিটেন্স"
+          },
+          "প্রবাসী আয়",
+          "প্রবাসী আয়ের",
+          "প্রবাসী আয়ে",
+          "প্রবাস আয়",
+          "প্রবাস আয়ের",
+          {
+            "prefix": "প্রবাসীদের পাঠানো অর্থ"
+          },
+          {
+            "prefix": "প্রবাসীদের পাঠানো টাকা"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "hazautal"
+          },
+          {
+            "prefix": "külföldről érkező utalás"
+          },
+          {
+            "prefix": "migránsok utalás"
+          },
+          {
+            "prefix": "hazaküldött pénz"
+          }
+        ],
+        "sl": [
+          "nakazila migrantov",
+          "nakazil migrantov",
+          "denarna nakazila migrantov",
+          "nakazila izseljencev",
+          "nakazil izseljencev",
+          "nakazila delavcev v tujini"
+        ],
+        "somali": [
+          {
+            "prefix": "xawaalad"
+          },
+          "lacagaha laga soo diro dibadda",
+          "lacagaha laga soo diro qurbaha",
+          "lacagaha qurbo-joogtu soo diraan",
+          "lacagaha ay soo diraan qurbo-joogta",
+          "remittances"
+        ],
+        "sk": [
+          {
+            "prefix": "remitenc"
+          },
+          "prevody od migrantov",
+          "prevodov od migrantov",
+          "prevody migrantov"
+        ],
+        "swahili": [
+          "fedha zinazotumwa kutoka nje",
+          "fedha zinazotumwa nyumbani",
+          "fedha zinazotumwa na diaspora",
+          "fedha za diaspora",
+          "fedha kutoka kwa diaspora",
+          "utumaji fedha kutoka nje",
+          "remittances"
+        ],
+        "si": [
+          {
+            "prefix": "ප්‍රේෂණ"
+          },
+          {
+            "prefix": "ප්රේෂණ"
+          },
+          {
+            "prefix": "විදේශ ප්‍රේෂණ"
+          },
+          {
+            "prefix": "විදේශ ප්රේෂණ"
+          },
+          {
+            "prefix": "සේවා නියුක්තිකයින්ගේ ප්‍රේෂණ"
+          },
+          {
+            "prefix": "සේවා නියුක්තිකයින්ගේ ප්රේෂණ"
+          },
+          "ශ්‍රමිකයන් එවන මුදල්",
+          "ශ්රමිකයන් එවන මුදල්",
+          "ශ්‍රමිකයන් එවූ මුදල්",
+          "ශ්රමිකයන් එවූ මුදල්"
+        ],
+        "turkmen": [
+          {
+            "prefix": "migrantlaryň pul geçirme"
+          },
+          {
+            "prefix": "daşary ýurtdan iberilýän pul"
+          },
+          {
+            "prefix": "daşary ýurtdan pul geçirim"
+          },
+          {
+            "prefix": "maşgalalaryna pul iber"
+          },
+          {
+            "prefix": "öýlerine pul iber"
+          },
+          {
+            "prefix": "zähmet migrantlarynyň pul"
+          }
+        ],
+        "hindi": [
+          "विप्रेषण",
+          "धन प्रेषण",
+          "धनप्रेषण",
+          "रेमिटेंस",
+          {
+            "prefix": "प्रवासी भारतीयों द्वारा भेज"
+          },
+          "विदेश से भेजी गई रकम"
+        ],
+        "hebrew": [
+          "העברות כספים של מהגרים",
+          "העברות כספים של עובדים זרים",
+          "העברות כספים לארץ המוצא",
+          "שולחים כסף הביתה",
+          "שליחת כסף הביתה"
+        ],
+        "amharic": [
+          {
+            "prefix": "ሐዋላ"
+          },
+          {
+            "prefix": "ሀዋላ"
+          },
+          {
+            "prefix": "የሐዋላ"
+          },
+          {
+            "prefix": "የሀዋላ"
+          },
+          {
+            "prefix": "በሐዋላ"
+          },
+          {
+            "prefix": "በሀዋላ"
+          },
+          {
+            "prefix": "ከውጭ የሚላክ ገንዘ"
+          },
+          {
+            "prefix": "ከውጭ ሀገር የሚላክ ገንዘ"
+          },
+          {
+            "prefix": "ከዳያስፖራ የሚላክ ገንዘ"
+          },
+          "remittances"
+        ],
+        "cs": [
+          {
+            "prefix": "remitenc"
+          },
+          "peníze posílané domů",
+          "peněz posílaných domů",
+          "převody peněz ze zahraničí",
+          "převodů peněz ze zahraničí"
+        ],
+        "rw": [
+          "amafaranga yoherezwa n'ababa mu mahanga",
+          "amafaranga yoherezwa n’ababa mu mahanga",
+          "amafaranga ava muri diaspora",
+          "amafaranga yoherejwe n'Abanyarwanda baba mu mahanga",
+          "amafaranga yoherejwe n’Abanyarwanda baba mu mahanga",
+          "remittances"
+        ],
+        "ne": [
+          {
+            "prefix": "रेमिट्यान्स"
+          },
+          {
+            "prefix": "रेमिटेन्स"
+          },
+          {
+            "prefix": "विप्रेषण"
+          },
+          {
+            "prefix": "विदेशबाट पठाएको पैसा"
+          },
+          {
+            "prefix": "विदेशबाट पठाएको रकम"
+          }
+        ],
+        "dv": [
+          "ރެމިޓަންސް",
+          "ރެމިޓެންސް",
+          "ރެމިޓަންސަށް",
+          "ރެމިޓަންސްގެ",
+          {
+            "prefix": "ބިދޭސީން ބޭރަށް ފޮނުވާ ފައިސާ"
+          },
+          {
+            "prefix": "ބިދޭސީ މަސައްކަތްތެރިން ފޮނުވާ ފައިސާ"
+          },
+          {
+            "prefix": "ގައުމަށް ފޮނުވާ ފައިސާ"
+          }
         ]
       }
     },
@@ -19710,6 +25399,229 @@
           "dividendo demográfiko",
           "bono demográfiko",
           "demografisch dividend"
+        ],
+        "urdu": [
+          "آبادیاتی منافع",
+          "آبادیاتی فائدہ",
+          "آبادیاتی بونس",
+          "ڈیموگرافک ڈیویڈنڈ",
+          "ڈیموگرافک ڈیوڈنڈ"
+        ],
+        "bn": [
+          {
+            "prefix": "জনমিতিক লভ্যাংশ"
+          },
+          {
+            "prefix": "জনসংখ্যাতাত্ত্বিক লভ্যাংশ"
+          },
+          {
+            "prefix": "জনসংখ্যাগত লভ্যাংশ"
+          },
+          {
+            "prefix": "জনমিতিক বোনাস"
+          },
+          {
+            "prefix": "জনসংখ্যার বোনাস"
+          },
+          {
+            "prefix": "জনমিতিক সুবিধা"
+          },
+          {
+            "prefix": "ডেমোগ্রাফিক ডিভিডেন্ড"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "demográfiai osztalék"
+          },
+          {
+            "prefix": "demográfiai bónusz"
+          },
+          {
+            "prefix": "demográfiai ablak"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "demografska dividend"
+          },
+          {
+            "prefix": "demografske dividend"
+          },
+          {
+            "prefix": "demografsko dividend"
+          },
+          {
+            "prefix": "demografski bonus"
+          },
+          {
+            "prefix": "demografskega bonus"
+          },
+          {
+            "prefix": "demografsko okn"
+          },
+          {
+            "prefix": "demografskega okn"
+          }
+        ],
+        "somali": [
+          "demographic dividend",
+          "faa'iidada dimoqraafiga",
+          "faa’iidada dimoqraafiga"
+        ],
+        "sk": [
+          {
+            "prefix": "demografická dividend"
+          },
+          {
+            "prefix": "demografickej dividend"
+          },
+          {
+            "prefix": "demografickú dividend"
+          },
+          {
+            "prefix": "demografickou dividend"
+          },
+          "demografický bonus",
+          "demografického bonusu",
+          "demografické okno",
+          "demografického okna",
+          "demografickom okne"
+        ],
+        "swahili": [
+          "faida ya idadi ya watu",
+          "gawio la idadi ya watu",
+          "fursa ya idadi ya watu",
+          "faida za kidemografia",
+          "demographic dividend"
+        ],
+        "si": [
+          {
+            "prefix": "ජනවිකාස ලාභාංශ"
+          },
+          {
+            "prefix": "ජන විකාස ලාභාංශ"
+          },
+          {
+            "prefix": "ජනගහන ලාභාංශ"
+          },
+          {
+            "prefix": "ජනවිකාස කවුළු"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "demografik diwidend"
+          },
+          {
+            "prefix": "demografik bonus"
+          },
+          {
+            "prefix": "demografik penjire"
+          },
+          {
+            "prefix": "demografik mümkinçilik penjire"
+          }
+        ],
+        "hindi": [
+          "जनसांख्यिकीय लाभांश",
+          "जनसांख्यिकीय लाभ",
+          "जनांकिकीय लाभांश",
+          "जनसंख्या लाभांश",
+          "डेमोग्राफिक डिविडेंड"
+        ],
+        "hebrew": [
+          "דיבידנד דמוגרפי",
+          "דיבידנד הדמוגרפי",
+          "בונוס דמוגרפי",
+          "חלון דמוגרפי",
+          "חלון הזדמנויות דמוגרפי",
+          "חלון ההזדמנויות הדמוגרפי"
+        ],
+        "amharic": [
+          {
+            "prefix": "የሥነ ሕዝብ ትሩፋ"
+          },
+          {
+            "prefix": "የስነ ሕዝብ ትሩፋ"
+          },
+          {
+            "prefix": "የስነ ህዝብ ትሩፋ"
+          },
+          {
+            "prefix": "የሥነ-ሕዝብ ትሩፋ"
+          },
+          {
+            "prefix": "የህዝብ ቁጥር ትሩፋ"
+          },
+          "demographic dividend"
+        ],
+        "cs": [
+          {
+            "prefix": "demografická dividend"
+          },
+          {
+            "prefix": "demografické dividend"
+          },
+          {
+            "prefix": "demografickou dividend"
+          },
+          {
+            "prefix": "demografický bonus"
+          },
+          {
+            "prefix": "demografického bonus"
+          },
+          {
+            "prefix": "demografické okn"
+          },
+          {
+            "prefix": "demografického okn"
+          },
+          {
+            "prefix": "demografickém okn"
+          }
+        ],
+        "rw": [
+          "demographic dividend",
+          "inyungu ituruka ku miterere y'abaturage",
+          "inyungu ituruka ku miterere y’abaturage",
+          "inyungu y'imiterere y'abaturage",
+          "inyungu y’imiterere y’abaturage"
+        ],
+        "ne": [
+          {
+            "prefix": "जनसांख्यिक लाभ"
+          },
+          {
+            "prefix": "जनसाङ्ख्यिक लाभ"
+          },
+          {
+            "prefix": "जनसांख्यिकीय लाभ"
+          },
+          {
+            "prefix": "जनसाङ्ख्यिकीय लाभ"
+          },
+          {
+            "prefix": "जनसांख्यिक अवसर"
+          },
+          {
+            "prefix": "जनसाङ्ख्यिक अवसर"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ޑިމޮގްރަފިކް ޑިވި"
+          },
+          {
+            "prefix": "ޑެމޮގްރަފިކް ޑިވި"
+          },
+          {
+            "prefix": "ޑިމޮގްރަފިކް ބޯނަ"
+          },
+          {
+            "prefix": "ޑެމޮގްރަފިކް ބޯނަ"
+          }
         ]
       }
     },
@@ -20367,6 +26279,181 @@
           "tasa di dependensia",
           "afhankelijkheidsratio",
           "grijze druk"
+        ],
+        "urdu": [
+          "انحصار کا تناسب",
+          "انحصاری تناسب",
+          "ڈیپینڈنسی ریشو",
+          "زیر کفالت افراد کا تناسب"
+        ],
+        "bn": [
+          {
+            "prefix": "নির্ভরশীলতা অনুপাত"
+          },
+          {
+            "prefix": "নির্ভরশীলতার অনুপাত"
+          },
+          {
+            "prefix": "নির্ভরশীল জনসংখ্যার অনুপাত"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "eltartottsági rát"
+          },
+          {
+            "prefix": "eltartottsági arány"
+          },
+          {
+            "prefix": "függőségi rát"
+          },
+          {
+            "prefix": "időskori függőségi rát"
+          },
+          {
+            "prefix": "időskori eltartottsági"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "starostne odvisnost"
+          },
+          {
+            "prefix": "starostna odvisnost"
+          },
+          "razmerje med zavarovanci in upokojenci",
+          "razmerja med zavarovanci in upokojenci"
+        ],
+        "somali": [
+          "saamiga ku tiirsanaanta",
+          "saamiga ku-tiirsanaanta",
+          "heerka ku tiirsanaanta",
+          "dependency ratio"
+        ],
+        "sk": [
+          "index ekonomického zaťaženia",
+          "indexu ekonomického zaťaženia",
+          {
+            "prefix": "miera závislosti star"
+          },
+          {
+            "prefix": "miery závislosti star"
+          },
+          {
+            "prefix": "pomer závislosti"
+          },
+          {
+            "prefix": "pomeru závislosti"
+          },
+          {
+            "prefix": "koeficient závislosti"
+          },
+          {
+            "prefix": "koeficientu závislosti"
+          },
+          "pomer pracujúcich a dôchodcov",
+          "pomer dôchodcov a pracujúcich",
+          "na jedného dôchodcu pripadá"
+        ],
+        "swahili": [
+          "uwiano wa utegemezi",
+          "uwiano wa tegemezi",
+          "uwiano wa wategemezi",
+          "dependency ratio"
+        ],
+        "si": [
+          {
+            "prefix": "යැපුම් අනුපාත"
+          },
+          {
+            "prefix": "යැපීම් අනුපාත"
+          },
+          {
+            "prefix": "යැපෙන්නන්ගේ අනුපාත"
+          },
+          {
+            "prefix": "වැඩිහිටි යැපුම් අනුපාත"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "demografik ýük"
+          },
+          {
+            "prefix": "garaşlylyk koeffisiýent"
+          },
+          {
+            "prefix": "garramak boýunça garaşlylyk"
+          }
+        ],
+        "hindi": [
+          "निर्भरता अनुपात",
+          "आश्रितता अनुपात",
+          "आश्रित अनुपात"
+        ],
+        "hebrew": [
+          "יחס תלות",
+          "יחס התלות",
+          "שיעור התלות"
+        ],
+        "amharic": [
+          {
+            "prefix": "የጥገኝነት ምጣኔ"
+          },
+          {
+            "prefix": "የጥገኝነት ጥምርታ"
+          },
+          {
+            "prefix": "የጥገኛ ሕዝብ ምጣኔ"
+          },
+          "dependency ratio"
+        ],
+        "cs": [
+          {
+            "prefix": "index ekonomické závislost"
+          },
+          {
+            "prefix": "indexu ekonomické závislost"
+          },
+          {
+            "prefix": "index ekonomického zatížení"
+          },
+          {
+            "prefix": "indexu ekonomického zatížení"
+          },
+          "poměr ekonomické závislosti"
+        ],
+        "rw": [
+          "dependency ratio",
+          "igipimo cy'abatunzwe",
+          "igipimo cy’abatunzwe",
+          "umubare w'abatunzwe ugereranyije n'abakora",
+          "umubare w’abatunzwe ugereranyije n’abakora"
+        ],
+        "ne": [
+          {
+            "prefix": "निर्भरता अनुपात"
+          },
+          {
+            "prefix": "परनिर्भरता अनुपात"
+          },
+          {
+            "prefix": "आश्रित अनुपात"
+          },
+          {
+            "prefix": "आश्रितता अनुपात"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ޑިޕެންޑެންސީ ރޭޝި"
+          },
+          {
+            "prefix": "ޑިޕެންޑެންސީ ރޭޓި"
+          },
+          {
+            "prefix": "ބަރޯސާވާ މީހުންގެ ނިސްބަ"
+          }
         ]
       }
     },
@@ -20846,6 +26933,161 @@
         ],
         "pap": [
           "youth bulge"
+        ],
+        "urdu": [
+          "یوتھ بلج",
+          "نوجوان آبادی",
+          "نوجوانوں کی آبادی",
+          "آبادی نوجوانوں پر مشتمل",
+          "آبادی کا بڑا حصہ نوجوان"
+        ],
+        "bn": [
+          "youth bulge"
+        ],
+        "hu": [
+          {
+            "prefix": "fiatal népess"
+          },
+          {
+            "prefix": "fiatalos népess"
+          },
+          {
+            "prefix": "fiatalos korszerkezet"
+          }
+        ],
+        "sl": [
+          "youth bulge",
+          "mlado prebivalstvo",
+          "mladega prebivalstva",
+          "mladem prebivalstvu",
+          "mladim prebivalstvom"
+        ],
+        "somali": [
+          "dadweyne dhallinyaro ah",
+          "dadweyne dhalinyaro ah",
+          "bulsho dhallinyaro ah",
+          "bulsho dhalinyaro ah",
+          "tirada badan ee dhallinyarada",
+          "tirada badan ee dhalinyarada",
+          "youth bulge"
+        ],
+        "sk": [
+          "youth bulge",
+          "mladá populácia",
+          "mladej populácie",
+          "mladú populáciu",
+          "mladou populáciou",
+          "vysoký podiel mladých ľudí",
+          "vysokým podielom mladých ľudí"
+        ],
+        "swahili": [
+          "idadi kubwa ya vijana",
+          "wingi wa vijana",
+          "kundi kubwa la vijana",
+          "taifa la vijana"
+        ],
+        "si": [
+          {
+            "prefix": "තරුණ ජනගහන"
+          },
+          {
+            "prefix": "යෞවන ජනගහන"
+          },
+          {
+            "prefix": "තරුණ ජනගහනය ඉහළ"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "ýaş ilat"
+          },
+          {
+            "prefix": "ilatyň ýaşlaryň paý"
+          },
+          {
+            "prefix": "ýaşlaryň ilatdaky paý"
+          },
+          {
+            "prefix": "ilatyň köpüsi ýaşlar"
+          }
+        ],
+        "hindi": [
+          "युवा आबादी",
+          "युवा जनसंख्या",
+          "युवाओं की बड़ी आबादी",
+          "यूथ बल्ज"
+        ],
+        "hebrew": [
+          "בליטת צעירים",
+          "בליטת הצעירים",
+          "אוכלוסייה צעירה",
+          "אוכלוסיה צעירה",
+          "אוכלוסייה הצעירה",
+          "שיעור גבוה של צעירים",
+          "ריבוי צעירים"
+        ],
+        "amharic": [
+          {
+            "prefix": "የወጣቱ ቁጥር መጨመ"
+          },
+          {
+            "prefix": "ከፍተኛ የወጣት ቁጥ"
+          },
+          {
+            "prefix": "ወጣት የሕዝብ ብዛ"
+          },
+          "youth bulge"
+        ],
+        "cs": [
+          "youth bulge",
+          {
+            "prefix": "mladá věková struktur"
+          },
+          {
+            "prefix": "mladé věkové struktur"
+          },
+          {
+            "prefix": "mladou věkovou struktur"
+          },
+          {
+            "prefix": "mladá populac"
+          },
+          {
+            "prefix": "mladou populac"
+          }
+        ],
+        "rw": [
+          "umubare munini w'urubyiruko",
+          "umubare munini w’urubyiruko",
+          "abaturage benshi bakiri bato",
+          "abaturage biganjemo urubyiruko",
+          "youth bulge"
+        ],
+        "ne": [
+          {
+            "prefix": "युवा जनसंख्या"
+          },
+          {
+            "prefix": "युवा जनसङ्ख्या"
+          },
+          {
+            "prefix": "युवा बाहुल्य"
+          },
+          {
+            "prefix": "युवाको बाहुल्य"
+          }
+        ],
+        "dv": [
+          "ޔޫތު ބަލްޖް",
+          {
+            "prefix": "ޒުވާން އާބާދީ"
+          },
+          {
+            "prefix": "އާބާދީގެ ގިނަ ބައެއް ޒުވާނު"
+          },
+          {
+            "prefix": "ޒުވާނުންގެ އަދަދު ގިނަ"
+          }
         ]
       }
     },
@@ -21731,6 +27973,334 @@
           "poblashon ta envehesé",
           "vergrijzing",
           "vergrijzende bevolking"
+        ],
+        "urdu": [
+          "عمر رسیدہ آبادی",
+          "بوڑھی ہوتی آبادی",
+          "آبادی کا بڑھاپا",
+          "بزرگ آبادی",
+          "معمر آبادی",
+          "عمر رسیدہ معاشرہ",
+          "بوڑھے ہوتے معاشرے"
+        ],
+        "bn": [
+          {
+            "prefix": "বয়স্ক জনগোষ্ঠী"
+          },
+          {
+            "prefix": "বয়স্ক জনসংখ্যা"
+          },
+          {
+            "prefix": "প্রবীণ জনগোষ্ঠী"
+          },
+          {
+            "prefix": "প্রবীণ জনসংখ্যা"
+          },
+          {
+            "prefix": "জনসংখ্যার বার্ধক্য"
+          },
+          {
+            "prefix": "বয়স্ক সমাজ"
+          },
+          {
+            "prefix": "বার্ধক্যগ্রস্ত সমাজ"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "elöregedő társadal"
+          },
+          {
+            "prefix": "elöregedő népess"
+          },
+          {
+            "prefix": "népesség elöreged"
+          },
+          {
+            "prefix": "társadalom elöreged"
+          },
+          {
+            "prefix": "demográfiai elöreged"
+          },
+          {
+            "prefix": "idősödő társadal"
+          },
+          {
+            "prefix": "idősödő népess"
+          },
+          {
+            "prefix": "népesség öreged"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "staranje prebivalstv"
+          },
+          {
+            "prefix": "staranja prebivalstv"
+          },
+          {
+            "prefix": "staranju prebivalstv"
+          },
+          {
+            "prefix": "staranjem prebivalstv"
+          },
+          {
+            "prefix": "starajoče se prebivalstv"
+          },
+          {
+            "prefix": "starajočega se prebivalstv"
+          },
+          {
+            "prefix": "starajoča se družb"
+          },
+          {
+            "prefix": "starajoče se družb"
+          },
+          {
+            "prefix": "starajoči se družb"
+          },
+          {
+            "prefix": "staranje družb"
+          },
+          {
+            "prefix": "staranja družb"
+          },
+          {
+            "prefix": "demografsko staranj"
+          },
+          {
+            "prefix": "ostarelo prebivalstv"
+          },
+          {
+            "prefix": "ostarelega prebivalstv"
+          }
+        ],
+        "somali": [
+          "gabowga dadweynaha",
+          "gabowga bulshada",
+          "bulsho gabowday",
+          "dadweynaha oo da' weynaanaya",
+          "dadweynaha oo da’ weynaanaya",
+          "ageing population",
+          "aging population"
+        ],
+        "sk": [
+          {
+            "prefix": "starnutie obyvateľstv"
+          },
+          {
+            "prefix": "starnutia obyvateľstv"
+          },
+          {
+            "prefix": "starnutím obyvateľstv"
+          },
+          {
+            "prefix": "starnutí obyvateľstv"
+          },
+          {
+            "prefix": "starnutie populác"
+          },
+          {
+            "prefix": "starnutia populác"
+          },
+          {
+            "prefix": "starnutím populác"
+          },
+          {
+            "prefix": "starnutí populác"
+          },
+          {
+            "prefix": "starnúca populác"
+          },
+          {
+            "prefix": "starnúcej populác"
+          },
+          {
+            "prefix": "starnúcu populác"
+          },
+          {
+            "prefix": "starnúcou populác"
+          },
+          {
+            "prefix": "starnúce obyvateľstv"
+          },
+          {
+            "prefix": "starnúceho obyvateľstv"
+          },
+          {
+            "prefix": "starnúca spoločnos"
+          },
+          {
+            "prefix": "starnúcej spoločnos"
+          },
+          {
+            "prefix": "starnutie spoločnos"
+          },
+          {
+            "prefix": "starnutia spoločnos"
+          }
+        ],
+        "swahili": [
+          "kuzeeka kwa idadi ya watu",
+          "kuzeeka kwa jamii",
+          "idadi ya watu inayozeeka",
+          "jamii inayozeeka",
+          "ongezeko la wazee",
+          "ongezeko la idadi ya wazee"
+        ],
+        "si": [
+          {
+            "prefix": "වයස්ගත ජනගහන"
+          },
+          {
+            "prefix": "වයස්ගතවන ජනගහන"
+          },
+          {
+            "prefix": "වයස්ගත වන ජනගහන"
+          },
+          {
+            "prefix": "ජනගහනය වයස්ගත"
+          },
+          {
+            "prefix": "ජනගහන වයස්ගත"
+          },
+          {
+            "prefix": "වයෝවෘද්ධ ජනගහන"
+          },
+          {
+            "prefix": "වයස්ගත සමාජ"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "ilatyň garrama"
+          },
+          {
+            "prefix": "garraýan ilat"
+          },
+          {
+            "prefix": "garraýan jemgyýet"
+          },
+          {
+            "prefix": "garry ilatyň paý"
+          },
+          {
+            "prefix": "ilatyň garraýş"
+          }
+        ],
+        "hindi": [
+          "बुजुर्ग आबादी",
+          "बुज़ुर्ग आबादी",
+          "वृद्ध आबादी",
+          "वृद्ध होती आबादी",
+          "बूढ़ी होती आबादी",
+          "बुजुर्गों की बढ़ती आबादी",
+          "बूढ़ी आबादी"
+        ],
+        "hebrew": [
+          "הזדקנות האוכלוסי",
+          "הזדקנות אוכלוסי",
+          "אוכלוסייה מזדקנת",
+          "אוכלוסיה מזדקנת",
+          "חברה מזדקנת",
+          "הזדקנות החברה"
+        ],
+        "amharic": [
+          {
+            "prefix": "የሕዝብ እርጅ"
+          },
+          {
+            "prefix": "የህዝብ እርጅ"
+          },
+          {
+            "prefix": "እያረጀ ያለ ሕዝ"
+          },
+          {
+            "prefix": "እያረጀ የመጣ ሕዝ"
+          },
+          {
+            "prefix": "የአረጋውያን ቁጥር መጨመ"
+          },
+          "ageing population",
+          "aging population"
+        ],
+        "cs": [
+          {
+            "prefix": "stárnutí populac"
+          },
+          {
+            "prefix": "stárnutím populac"
+          },
+          {
+            "prefix": "stárnutí obyvatel"
+          },
+          {
+            "prefix": "stárnutím obyvatel"
+          },
+          {
+            "prefix": "stárnutí společnost"
+          },
+          {
+            "prefix": "stárnoucí populac"
+          },
+          {
+            "prefix": "stárnoucí společnost"
+          },
+          {
+            "prefix": "stárnoucí obyvatel"
+          },
+          "demografické stárnutí",
+          "demografického stárnutí"
+        ],
+        "rw": [
+          "gusaza kw'abaturage",
+          "gusaza kw’abaturage",
+          "abaturage bashaje",
+          "ubwiyongere bw'abageze mu za bukuru",
+          "ubwiyongere bw’abageze mu za bukuru",
+          "umubare w'abageze mu za bukuru wiyongera",
+          "umubare w’abageze mu za bukuru wiyongera"
+        ],
+        "ne": [
+          {
+            "prefix": "वृद्ध जनसंख्या"
+          },
+          {
+            "prefix": "वृद्ध जनसङ्ख्या"
+          },
+          {
+            "prefix": "बुढ्यौली जनसंख्या"
+          },
+          {
+            "prefix": "बुढ्यौली समाज"
+          },
+          {
+            "prefix": "वृद्ध समाज"
+          },
+          {
+            "prefix": "ज्येष्ठ नागरिकको संख्या बढ"
+          },
+          {
+            "prefix": "ज्येष्ठ नागरिकको जनसंख्या"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "މުސްކުޅިވަމުންދާ އާބާދީ"
+          },
+          {
+            "prefix": "އާބާދީ މުސްކުޅިވު"
+          },
+          {
+            "prefix": "އާބާދީ މުސްކުޅިވެ"
+          },
+          {
+            "prefix": "މުސްކުޅި އާބާދީ"
+          },
+          {
+            "prefix": "އޭޖިންގ ޕޮޕިއުލޭޝަ"
+          }
         ]
       }
     },
@@ -22669,6 +29239,277 @@
           "despoblashon",
           "bevolkingskrimp",
           "bevolkingsdaling"
+        ],
+        "urdu": [
+          "آبادی میں کمی",
+          "گھٹتی آبادی",
+          "کم ہوتی آبادی",
+          "سکڑتی آبادی",
+          "آبادی گھٹ"
+        ],
+        "bn": [
+          {
+            "prefix": "জনসংখ্যা হ্রাস"
+          },
+          {
+            "prefix": "জনসংখ্যার হ্রাস"
+          },
+          {
+            "prefix": "জনসংখ্যা কমে"
+          },
+          {
+            "prefix": "জনসংখ্যা কমছ"
+          },
+          {
+            "prefix": "জনসংখ্যা কমার"
+          },
+          {
+            "prefix": "জনসংখ্যা সংকোচন"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "népességfogy"
+          },
+          {
+            "prefix": "népességcsökken"
+          },
+          {
+            "prefix": "népesség fogy"
+          },
+          {
+            "prefix": "népesség csökken"
+          },
+          {
+            "prefix": "fogyó népess"
+          },
+          {
+            "prefix": "csökkenő népess"
+          },
+          {
+            "prefix": "zsugorodó népess"
+          }
+        ],
+        "sl": [
+          {
+            "prefix": "depopulacij"
+          },
+          "upad prebivalstva",
+          "upada prebivalstva",
+          "upadanje prebivalstva",
+          "upadanja prebivalstva",
+          "krčenje prebivalstva",
+          "krčenja prebivalstva",
+          "zmanjševanje števila prebivalcev",
+          "zmanjševanja števila prebivalcev",
+          "zmanjšanje števila prebivalcev",
+          "upad števila prebivalcev",
+          "padec števila prebivalcev"
+        ],
+        "somali": [
+          "hoos u dhaca tirada dadka",
+          "tirada dadka oo hoos u dhacday",
+          "yaraanshaha tirada dadka",
+          "dhimista tirada dadka",
+          "population decline"
+        ],
+        "sk": [
+          {
+            "prefix": "úbytok obyvateľ"
+          },
+          {
+            "prefix": "úbytku obyvateľ"
+          },
+          {
+            "prefix": "úbytkom obyvateľ"
+          },
+          {
+            "prefix": "úbytok populác"
+          },
+          {
+            "prefix": "úbytku populác"
+          },
+          {
+            "prefix": "pokles počtu obyvateľ"
+          },
+          {
+            "prefix": "poklesu počtu obyvateľ"
+          },
+          {
+            "prefix": "poklesom počtu obyvateľ"
+          },
+          {
+            "prefix": "klesajúci počet obyvateľ"
+          },
+          {
+            "prefix": "klesajúceho počtu obyvateľ"
+          },
+          {
+            "prefix": "ubúdanie obyvateľ"
+          },
+          {
+            "prefix": "ubúdania obyvateľ"
+          },
+          {
+            "prefix": "depopulác"
+          },
+          "zmenšovanie populácie",
+          "zmenšovania populácie"
+        ],
+        "swahili": [
+          "kupungua kwa idadi ya watu",
+          "kushuka kwa idadi ya watu",
+          "idadi ya watu kupungua",
+          "idadi ya watu inapungua",
+          "idadi ya watu inayopungua"
+        ],
+        "si": [
+          "ජනගහනය අඩුවීම",
+          "ජනගහනය අඩු වීම",
+          "ජනගහනය අඩුවෙමින්",
+          "ජනගහන අඩුවීම",
+          {
+            "prefix": "ජනගහනය පහත වැටී"
+          },
+          {
+            "prefix": "ජනගහනය හැකිළී"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "ilatyň azalma"
+          },
+          {
+            "prefix": "ilat sanynyň azalma"
+          },
+          {
+            "prefix": "ilatyň sanynyň azalma"
+          },
+          {
+            "prefix": "ilat sanynyň kemelme"
+          },
+          {
+            "prefix": "depopulýasi"
+          }
+        ],
+        "hindi": [
+          "जनसंख्या में गिरावट",
+          "आबादी में गिरावट",
+          "जनसंख्या में कमी",
+          "घटती जनसंख्या",
+          "घटती आबादी",
+          "सिकुड़ती आबादी",
+          "आबादी घटने",
+          "जनसंख्या घटने"
+        ],
+        "hebrew": [
+          "ירידה באוכלוסי",
+          "התכווצות האוכלוסי",
+          "הצטמקות האוכלוסי",
+          "צמצום האוכלוסי",
+          "אוכלוסייה מצטמקת",
+          "אוכלוסיה מצטמקת",
+          "דלדול אוכלוסי",
+          "דלדול האוכלוסי",
+          "ירידה במספר התושבים"
+        ],
+        "amharic": [
+          {
+            "prefix": "የሕዝብ ቁጥር መቀነ"
+          },
+          {
+            "prefix": "የህዝብ ቁጥር መቀነ"
+          },
+          {
+            "prefix": "የሕዝብ ቁጥር ቀነ"
+          },
+          {
+            "prefix": "የሕዝብ ቁጥር እየቀነ"
+          },
+          {
+            "prefix": "የሕዝብ ብዛት መቀነ"
+          },
+          {
+            "prefix": "የህዝብ ብዛት መቀነ"
+          },
+          "population decline"
+        ],
+        "cs": [
+          {
+            "prefix": "úbytek obyvatel"
+          },
+          {
+            "prefix": "úbytku obyvatel"
+          },
+          {
+            "prefix": "úbytek populac"
+          },
+          {
+            "prefix": "úbytku populac"
+          },
+          {
+            "prefix": "pokles počtu obyvatel"
+          },
+          {
+            "prefix": "poklesu počtu obyvatel"
+          },
+          {
+            "prefix": "vylidňování"
+          },
+          {
+            "prefix": "depopulac"
+          }
+        ],
+        "rw": [
+          "igabanuka ry'abaturage",
+          "igabanuka ry’abaturage",
+          "kugabanuka kw'abaturage",
+          "kugabanuka kw’abaturage",
+          "umubare w'abaturage ugabanuka",
+          "umubare w’abaturage ugabanuka",
+          "umubare w'abaturage waragabanutse",
+          "umubare w’abaturage waragabanutse"
+        ],
+        "ne": [
+          {
+            "prefix": "जनसंख्या घट"
+          },
+          {
+            "prefix": "जनसङ्ख्या घट"
+          },
+          {
+            "prefix": "घट्दो जनसंख्या"
+          },
+          {
+            "prefix": "घट्दो जनसङ्ख्या"
+          },
+          "जनसंख्यामा कमी",
+          {
+            "prefix": "जनसंख्यामा ह्रास"
+          },
+          {
+            "prefix": "जनसंख्या ह्रास"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "އާބާދީ ކުޑަވު"
+          },
+          {
+            "prefix": "އާބާދީ ކުޑަވެ"
+          },
+          {
+            "prefix": "އާބާދީ މަދުވު"
+          },
+          {
+            "prefix": "އާބާދީ މަދުވެ"
+          },
+          {
+            "prefix": "އާބާދީ ދަށްވު"
+          },
+          {
+            "prefix": "އާބާދީ ދަށްވެ"
+          }
         ]
       }
     },
@@ -23213,6 +30054,195 @@
           "poblashon urbano",
           "kresementu di poblashon urbano",
           "stedelijke bevolking"
+        ],
+        "urdu": [
+          "شہری آبادی",
+          "شہروں کی آبادی",
+          "شہروں کی بڑھتی آبادی",
+          "شہری کاری",
+          "شہرکاری",
+          "اربنائزیشن"
+        ],
+        "bn": [
+          {
+            "prefix": "শহরের জনসংখ্যা বৃদ্ধি"
+          },
+          {
+            "prefix": "নগরের জনসংখ্যা বৃদ্ধি"
+          },
+          {
+            "prefix": "শহুরে জনসংখ্যা বৃদ্ধি"
+          },
+          {
+            "prefix": "নগর জনসংখ্যা বৃদ্ধি"
+          },
+          {
+            "prefix": "শহরে জনসংখ্যা বৃদ্ধি"
+          },
+          {
+            "prefix": "শহরের জনসংখ্যা বাড়"
+          },
+          {
+            "prefix": "শহরে জনসংখ্যা বাড়"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "urbanizáci"
+          }
+        ],
+        "sl": [
+          "rast mestnega prebivalstva",
+          "rasti mestnega prebivalstva",
+          "rast prebivalstva v mestih",
+          "rasti prebivalstva v mestih"
+        ],
+        "somali": [
+          "kororka dadka magaalooyinka",
+          "kororka tirada dadka magaalooyinka",
+          "dadka ku nool magaalooyinka",
+          "magaalaynta",
+          "urban population"
+        ],
+        "sk": [
+          {
+            "prefix": "mestská populác"
+          },
+          {
+            "prefix": "mestskej populác"
+          },
+          {
+            "prefix": "mestskú populác"
+          },
+          {
+            "prefix": "mestské obyvateľstv"
+          },
+          {
+            "prefix": "mestského obyvateľstv"
+          },
+          {
+            "prefix": "mestskom obyvateľstv"
+          },
+          "rast počtu obyvateľov miest",
+          "rastu počtu obyvateľov miest"
+        ],
+        "swahili": [
+          "ongezeko la watu mijini",
+          "ongezeko la idadi ya watu mijini",
+          "ukuaji wa idadi ya watu mijini",
+          "idadi ya watu mijini",
+          "ukuaji wa miji"
+        ],
+        "si": [
+          {
+            "prefix": "නාගරික ජනගහන"
+          },
+          {
+            "prefix": "නගරවල ජනගහන"
+          },
+          {
+            "prefix": "නගර ජනගහන"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "şäher ilatynyň ösüş"
+          },
+          {
+            "prefix": "şäher ilatynyň art"
+          },
+          {
+            "prefix": "şäher ilatynyň san"
+          }
+        ],
+        "hindi": [
+          "शहरी आबादी",
+          "शहरी जनसंख्या",
+          "शहरों की आबादी",
+          "शहरी आबादी में वृद्धि",
+          "शहरी जनसंख्या वृद्धि"
+        ],
+        "hebrew": [
+          "אוכלוסייה עירונית",
+          "אוכלוסיה עירונית",
+          "אוכלוסייה העירונית",
+          "אוכלוסיה העירונית",
+          "גידול האוכלוסייה בערים",
+          "גידול האוכלוסיה בערים",
+          "אוכלוסיית הערים"
+        ],
+        "amharic": [
+          {
+            "prefix": "የከተማ ነዋሪ ቁጥ"
+          },
+          {
+            "prefix": "የከተማ ነዋሪዎች ቁጥ"
+          },
+          "urban population"
+        ],
+        "cs": [
+          "růst městské populace",
+          "růstu městské populace",
+          {
+            "prefix": "městská populac"
+          },
+          {
+            "prefix": "městské populac"
+          },
+          {
+            "prefix": "městskou populac"
+          },
+          {
+            "prefix": "městské obyvatelstv"
+          },
+          {
+            "prefix": "městského obyvatelstv"
+          },
+          {
+            "prefix": "urbanizac"
+          }
+        ],
+        "rw": [
+          "ubwiyongere bw'abaturage bo mu mijyi",
+          "ubwiyongere bw’abaturage bo mu mijyi",
+          "ubwiyongere bw'abatuye imijyi",
+          "ubwiyongere bw’abatuye imijyi",
+          "umubare w'abatuye imijyi",
+          "umubare w’abatuye imijyi"
+        ],
+        "ne": [
+          {
+            "prefix": "सहरी जनसंख्या"
+          },
+          {
+            "prefix": "शहरी जनसंख्या"
+          },
+          {
+            "prefix": "सहरी जनसङ्ख्या"
+          },
+          {
+            "prefix": "शहरी जनसङ्ख्या"
+          },
+          {
+            "prefix": "सहरमा जनसंख्या बढ"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "މާލޭގެ އާބާދީ އިތުރުވ"
+          },
+          {
+            "prefix": "މާލޭގެ އާބާދީ ބޮޑުވ"
+          },
+          {
+            "prefix": "ސިޓީތަކުގެ އާބާދީ އިތުރުވ"
+          },
+          {
+            "prefix": "ޝަހަރުތަކުގެ އާބާދީ އިތުރުވ"
+          },
+          {
+            "prefix": "ސިޓީގެ އާބާދީ އިތުރުވ"
+          }
         ]
       }
     },
@@ -24155,6 +31185,260 @@
           "éksodo rural",
           "eksodo rural",
           "ontvolking van het platteland"
+        ],
+        "urdu": [
+          "دیہی آبادی میں کمی",
+          "دیہات خالی",
+          "دیہات ویران",
+          "دیہی علاقوں سے انخلا",
+          "دیہی انخلا",
+          "گاؤں خالی"
+        ],
+        "bn": [
+          {
+            "prefix": "গ্রাম জনশূন্য"
+          },
+          {
+            "prefix": "গ্রামগুলো জনশূন্য"
+          },
+          {
+            "prefix": "গ্রামীণ জনশূন্যতা"
+          },
+          {
+            "prefix": "গ্রামীণ জনসংখ্যা হ্রাস"
+          },
+          {
+            "prefix": "গ্রামীণ জনসংখ্যা কম"
+          },
+          {
+            "prefix": "গ্রামের জনসংখ্যা কম"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "falvak elnéptelened"
+          },
+          {
+            "prefix": "vidék elnéptelened"
+          },
+          {
+            "prefix": "vidéki elnéptelened"
+          },
+          {
+            "prefix": "elnéptelenedő falv"
+          },
+          {
+            "prefix": "elnéptelenedő település"
+          },
+          {
+            "prefix": "vidéki népesség fogy"
+          },
+          {
+            "prefix": "falvak kiürül"
+          },
+          {
+            "prefix": "szellemfal"
+          }
+        ],
+        "sl": [
+          "praznjenje podeželja",
+          "praznjenja podeželja",
+          "praznjenju podeželja",
+          "odseljevanje s podeželja",
+          "odseljevanja s podeželja",
+          "beg s podeželja",
+          "bega s podeželja",
+          "depopulacija podeželja",
+          "depopulacije podeželja",
+          "zapuščene vasi",
+          "zapuščenih vasi",
+          "izumiranje vasi",
+          "izumiranja vasi",
+          {
+            "prefix": "demografsko ogrožen"
+          }
+        ],
+        "somali": [
+          "ka cidlaynta miyiga",
+          "miyiga oo cidlo noqday",
+          "tuulooyinka oo cidlo noqday",
+          "ka guuritaanka miyiga",
+          "rural depopulation"
+        ],
+        "sk": [
+          "vyľudňovanie vidieka",
+          "vyľudňovania vidieka",
+          "vyľudňovaním vidieka",
+          "vyľudnenie vidieka",
+          "vyľudnenia vidieka",
+          "vyľudňovanie obcí",
+          "vyľudňovania obcí",
+          "vyľudnené obce",
+          "vyľudnených obcí",
+          "vymierajúce obce",
+          "vymierajúcich obcí",
+          "vymierajúce dediny",
+          "vymierajúcich dedín",
+          "odchod z vidieka",
+          "odchodu z vidieka"
+        ],
+        "swahili": [
+          "kupungua kwa watu vijijini",
+          "kupungua kwa idadi ya watu vijijini",
+          "vijiji kukosa watu",
+          "vijiji vitupu"
+        ],
+        "si": [
+          {
+            "prefix": "ග්‍රාමීය ජනගහනය අඩු"
+          },
+          {
+            "prefix": "ග්රාමීය ජනගහනය අඩු"
+          },
+          {
+            "prefix": "ගම්වල ජනගහනය අඩු"
+          },
+          {
+            "prefix": "ගම් අතහැර"
+          },
+          {
+            "prefix": "ගම්බද ප්‍රදේශ අතහැර"
+          },
+          {
+            "prefix": "ගම්බද ප්රදේශ අතහැර"
+          },
+          {
+            "prefix": "ජනශූන්‍ය ගම්"
+          },
+          {
+            "prefix": "ජනශූන්ය ගම්"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "obalaryň boşama"
+          },
+          {
+            "prefix": "obalaryň ilatsyzlan"
+          },
+          {
+            "prefix": "oba ilatynyň azalma"
+          },
+          {
+            "prefix": "obalardan göç"
+          },
+          {
+            "prefix": "boş galan obala"
+          }
+        ],
+        "hindi": [
+          "गांवों से पलायन",
+          "गाँवों से पलायन",
+          "ग्रामीण क्षेत्रों से पलायन",
+          "खाली होते गांव",
+          "घोस्ट विलेज",
+          "ग्रामीण आबादी में गिरावट"
+        ],
+        "hebrew": [
+          "התרוקנות הכפרים",
+          "התרוקנות כפרים",
+          "נטישת הכפרים",
+          "עזיבת הכפרים",
+          "כפרי רפאים",
+          "דלדול האוכלוסייה הכפרית",
+          "ירידה באוכלוסייה הכפרית",
+          "התרוקנות הפריפריה",
+          "נטישת הפריפריה"
+        ],
+        "amharic": [
+          {
+            "prefix": "የገጠር ሕዝብ ቁጥር መቀነ"
+          },
+          {
+            "prefix": "የገጠር ህዝብ ቁጥር መቀነ"
+          },
+          {
+            "prefix": "የገጠር ሕዝብ መቀነ"
+          },
+          "ገጠሩን ለቀው",
+          "ገጠርን ለቀው",
+          "rural exodus"
+        ],
+        "cs": [
+          {
+            "prefix": "vylidňování venkov"
+          },
+          {
+            "prefix": "vylidňováním venkov"
+          },
+          {
+            "prefix": "vylidňování vesnic"
+          },
+          "vylidňování obcí",
+          {
+            "prefix": "vylidňování pohraničí"
+          },
+          {
+            "prefix": "odliv obyvatel z venkov"
+          },
+          {
+            "prefix": "úbytek venkovského obyvatelstv"
+          },
+          {
+            "prefix": "vylidněné vesnic"
+          },
+          {
+            "prefix": "vylidněných vesnic"
+          },
+          "vesnice duchů"
+        ],
+        "rw": [
+          "igabanuka ry'abaturage bo mu cyaro",
+          "igabanuka ry’abaturage bo mu cyaro",
+          "ibyaro bisigara ari ubusa",
+          "icyaro gisigaramo abantu bake",
+          "abaturage bava mu cyaro",
+          "rural exodus"
+        ],
+        "ne": [
+          {
+            "prefix": "गाउँ रित्ति"
+          },
+          {
+            "prefix": "गाउँहरू रित्ति"
+          },
+          {
+            "prefix": "गाउँ रित्तो"
+          },
+          {
+            "prefix": "बस्ती रित्ति"
+          },
+          {
+            "prefix": "पहाड रित्ति"
+          },
+          {
+            "prefix": "ग्रामीण जनसंख्या घट"
+          },
+          {
+            "prefix": "गाउँ खाली हुँद"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ރަށްރަށުގެ އާބާދީ ކުޑަވު"
+          },
+          {
+            "prefix": "ރަށްރަށުގެ އާބާދީ ކުޑަވެ"
+          },
+          {
+            "prefix": "ރަށްރަށުގެ އާބާދީ މަދުވު"
+          },
+          {
+            "prefix": "ރަށްރަށުގެ އާބާދީ މަދުވެ"
+          },
+          {
+            "prefix": "ރަށްރަށް ފަޅުވަމުން"
+          }
         ]
       }
     },
@@ -24970,6 +32254,232 @@
           "huishoudensgrootte",
           "aantal huishoudens",
           "nieuwe huishoudens"
+        ],
+        "urdu": [
+          "گھرانوں کی تعداد",
+          "گھرانے کا حجم",
+          "گھرانوں کا حجم",
+          "گھرانے کا سائز",
+          "نئے گھرانے",
+          "گھرانوں کی تشکیل",
+          "فی گھرانہ اوسط"
+        ],
+        "bn": [
+          {
+            "prefix": "খানার সংখ্যা"
+          },
+          {
+            "prefix": "খানার আকার"
+          },
+          {
+            "prefix": "খানার গড় আকার"
+          },
+          {
+            "prefix": "পরিবারের আকার"
+          },
+          {
+            "prefix": "পরিবারের গড় আকার"
+          },
+          {
+            "prefix": "পরিবারের গড় সদস্য"
+          },
+          {
+            "prefix": "নতুন খানা"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "háztartásalapít"
+          },
+          {
+            "prefix": "háztartások szám"
+          },
+          {
+            "prefix": "új háztartás"
+          },
+          {
+            "prefix": "háztartásméret"
+          },
+          {
+            "prefix": "háztartások méret"
+          }
+        ],
+        "sl": [
+          "število gospodinjstev",
+          "števila gospodinjstev",
+          "številu gospodinjstev",
+          "nova gospodinjstva",
+          "novih gospodinjstev",
+          "velikost gospodinjstev",
+          "velikosti gospodinjstev",
+          "velikost gospodinjstva",
+          "velikosti gospodinjstva",
+          "oblikovanje gospodinjstev"
+        ],
+        "somali": [
+          "tirada qoysaska",
+          "cabbirka qoyska",
+          "baaxadda qoyska",
+          "qoysas cusub",
+          "tirada xubnaha qoyska",
+          "household size"
+        ],
+        "sk": [
+          "počet domácností",
+          "počtu domácností",
+          "počtom domácností",
+          "nové domácnosti",
+          "nových domácností",
+          "vznik nových domácností",
+          "zakladanie domácností",
+          "zakladania domácností",
+          "veľkosť domácností",
+          "veľkosti domácností",
+          "veľkosť domácnosti",
+          "veľkosti domácnosti",
+          "jednočlenné domácnosti",
+          "jednočlenných domácností"
+        ],
+        "swahili": [
+          "ukubwa wa kaya",
+          "idadi ya kaya",
+          "ongezeko la kaya",
+          "wastani wa ukubwa wa kaya",
+          "wastani wa watu kwa kaya"
+        ],
+        "si": [
+          "නව කුටුම්බ",
+          {
+            "prefix": "කුටුම්බ ප්‍රමාණ"
+          },
+          {
+            "prefix": "කුටුම්බ ප්රමාණ"
+          },
+          {
+            "prefix": "කුටුම්බ සංඛ්‍යා"
+          },
+          {
+            "prefix": "කුටුම්බ සංඛ්යා"
+          },
+          {
+            "prefix": "කුටුම්භ සංඛ්‍යා"
+          },
+          {
+            "prefix": "කුටුම්භ සංඛ්යා"
+          },
+          {
+            "prefix": "කුටුම්භ ප්‍රමාණ"
+          },
+          {
+            "prefix": "කුටුම්භ ප්රමාණ"
+          },
+          {
+            "prefix": "කුටුම්බ ගණන"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "öý hojalyklarynyň san"
+          },
+          {
+            "prefix": "täze öý hojalyk"
+          },
+          {
+            "prefix": "öý hojalygynyň ululyg"
+          },
+          {
+            "prefix": "öý hojalyklarynyň ululyg"
+          },
+          {
+            "prefix": "maşgalanyň orta ululyg"
+          }
+        ],
+        "hindi": [
+          "परिवार का औसत आकार",
+          "परिवारों का औसत आकार",
+          "औसत परिवार आकार",
+          "परिवारों के आकार",
+          "परिवार गठन",
+          "नए परिवारों का गठन"
+        ],
+        "hebrew": [
+          "משקי בית חדשים",
+          "מספר משקי הבית",
+          "מספר משקי בית",
+          "גודל משק הבית",
+          "גודל משק בית",
+          "גודל משקי הבית",
+          "היווצרות משקי בית",
+          "הקמת משקי בית"
+        ],
+        "amharic": [
+          {
+            "prefix": "የቤተሰብ ብዛ"
+          },
+          {
+            "prefix": "የቤተሰብ መጠን"
+          },
+          {
+            "prefix": "የቤተሰብ አባላት ብዛ"
+          },
+          {
+            "prefix": "የአባወራዎች ቁጥ"
+          },
+          {
+            "prefix": "አዳዲስ ቤተሰቦ"
+          },
+          "household size"
+        ],
+        "cs": [
+          {
+            "prefix": "velikost domácnost"
+          },
+          {
+            "prefix": "velikosti domácnost"
+          },
+          "nové domácnosti",
+          "nových domácností",
+          "zakládání domácností",
+          "vznik nových domácností"
+        ],
+        "rw": [
+          "ingo nshya",
+          "ubwiyongere bw'ingo",
+          "ubwiyongere bw’ingo"
+        ],
+        "ne": [
+          {
+            "prefix": "घरधुरी संख्या"
+          },
+          {
+            "prefix": "घरधुरीको संख्या"
+          },
+          {
+            "prefix": "परिवारको आकार"
+          },
+          {
+            "prefix": "पारिवारिक आकार"
+          },
+          {
+            "prefix": "नयाँ घरधुरी"
+          },
+          {
+            "prefix": "औसत परिवार संख्या"
+          }
+        ],
+        "dv": [
+          {
+            "prefix": "ގޭބިސީގެ އަދަދު"
+          },
+          {
+            "prefix": "ގޭބިސީތަކުގެ އަދަދު"
+          },
+          {
+            "prefix": "ގޭބިސީގެ ބޮޑުމިނު"
+          },
+          {
+            "prefix": "އާ ގޭބިސީތަ"
+          }
         ]
       }
     },
@@ -25706,6 +33216,232 @@
           "censo di poblacion y vivienda",
           "senso di poblashon",
           "volkstelling"
+        ],
+        "urdu": [
+          "مردم شماری",
+          "خانہ شماری",
+          "سنسس",
+          "census",
+          "شمار کنندگان"
+        ],
+        "bn": [
+          {
+            "prefix": "জনশুমারি"
+          },
+          {
+            "prefix": "আদমশুমারি"
+          },
+          {
+            "prefix": "গৃহগণনা"
+          },
+          {
+            "prefix": "জনগণনা"
+          },
+          {
+            "prefix": "জনসংখ্যা গণনা"
+          }
+        ],
+        "hu": [
+          {
+            "prefix": "népszámlál"
+          },
+          {
+            "prefix": "mikrocenzus"
+          }
+        ],
+        "sl": [
+          "popis prebivalstva",
+          "popisa prebivalstva",
+          "popisu prebivalstva",
+          "popisom prebivalstva",
+          {
+            "prefix": "registrski popis"
+          },
+          {
+            "prefix": "registrskega popis"
+          },
+          "popisovalci",
+          "popisovalcev"
+        ],
+        "somali": [
+          "tirakoobka dadweynaha",
+          "tirakoobka dadka",
+          "tirakoob dadweyne",
+          "tirakoobka qaranka",
+          "tirakoobka guud ee dadka",
+          "census"
+        ],
+        "sk": [
+          {
+            "prefix": "sčítanie obyvateľ"
+          },
+          {
+            "prefix": "sčítania obyvateľ"
+          },
+          {
+            "prefix": "sčítaním obyvateľ"
+          },
+          {
+            "prefix": "sčítaní obyvateľ"
+          },
+          "sčítanie ľudu",
+          "sčítania ľudu",
+          "sčítanie domov a bytov",
+          "sčítania domov a bytov",
+          "SODB",
+          {
+            "prefix": "sčítací komisár"
+          },
+          {
+            "prefix": "sčítacích komisár"
+          },
+          "asistované sčítanie",
+          "asistovaného sčítania"
+        ],
+        "swahili": [
+          "sensa",
+          "sensa ya watu na makazi",
+          "sensa ya taifa",
+          "zoezi la sensa",
+          "karani wa sensa",
+          "makarani wa sensa"
+        ],
+        "si": [
+          {
+            "prefix": "සංගණන"
+          },
+          {
+            "prefix": "ජනසංගණන"
+          },
+          {
+            "prefix": "සංගණක"
+          },
+          {
+            "prefix": "ජන හා නිවාස සංගණන"
+          }
+        ],
+        "turkmen": [
+          {
+            "prefix": "ilatyň ýazuw"
+          },
+          {
+            "prefix": "ilat ýazuw"
+          },
+          {
+            "prefix": "ilaty ýazyşa al"
+          },
+          {
+            "prefix": "ilaty hasaba al"
+          },
+          {
+            "prefix": "ýaşaýyş jaý gorunyň ýazuw"
+          },
+          {
+            "prefix": "umumy ýurt ýazuw"
+          }
+        ],
+        "hindi": [
+          "जनगणना",
+          "राष्ट्रीय जनगणना",
+          "जनसंख्या गणना",
+          "सेंसस",
+          {
+            "prefix": "प्रगणक"
+          },
+          "मकान सूचीकरण"
+        ],
+        "hebrew": [
+          "מפקד אוכלוסי",
+          "מפקד האוכלוסי",
+          "מפקדי אוכלוסי",
+          "מפקדי האוכלוסי",
+          "מפקד הדיור",
+          "מפקד דיור",
+          "מפקד אוכלוסין ודיור"
+        ],
+        "amharic": [
+          {
+            "prefix": "የሕዝብና ቤት ቆጠ"
+          },
+          {
+            "prefix": "የህዝብና ቤት ቆጠ"
+          },
+          {
+            "prefix": "የሕዝብ እና ቤት ቆጠ"
+          },
+          {
+            "prefix": "የሕዝብ ቆጠ"
+          },
+          {
+            "prefix": "የህዝብ ቆጠ"
+          },
+          {
+            "prefix": "የቆጠራ ሠራተኞ"
+          },
+          "census"
+        ],
+        "cs": [
+          "sčítání lidu",
+          "sčítáním lidu",
+          "SLDB",
+          {
+            "prefix": "sčítání obyvatel"
+          },
+          {
+            "prefix": "sčítáním obyvatel"
+          },
+          {
+            "prefix": "sčítací komisař"
+          },
+          {
+            "prefix": "sčítacího komisař"
+          },
+          {
+            "prefix": "sčítacích komisař"
+          },
+          "Sčítání 2021"
+        ],
+        "rw": [
+          "ibarura rusange ry'abaturage",
+          "ibarura rusange ry’abaturage",
+          "ibarura rusange ry'abaturage n'imiturire",
+          "ibarura rusange ry’abaturage n’imiturire",
+          "ibarura ry'abaturage",
+          "ibarura ry’abaturage",
+          "abakarani b'ibarura",
+          "abakarani b’ibarura",
+          "RPHC",
+          "census"
+        ],
+        "ne": [
+          {
+            "prefix": "जनगणना"
+          },
+          {
+            "prefix": "राष्ट्रिय जनगणना"
+          },
+          {
+            "prefix": "घरधुरी गणना"
+          },
+          {
+            "prefix": "जनगणनाका गणक"
+          }
+        ],
+        "dv": [
+          "ސެންސަސް",
+          "ސެންސަހުގެ",
+          "ސެންސަހުގައި",
+          "ސެންސަސްގެ",
+          {
+            "prefix": "އާބާދީ ގުނުމު"
+          },
+          "އާބާދީ ގުނުން",
+          {
+            "prefix": "އާބާދީއާއި ގެދޮރު ގުނު"
+          },
+          {
+            "prefix": "އާބާދީ އަދި ގެދޮރު ގުނު"
+          }
         ]
       }
     }
