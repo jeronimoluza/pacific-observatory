@@ -199,8 +199,11 @@ class EPU:
         df["body"] = (
             df["body"]
             .str.replace("\n", "", regex=False)
+            .str.replace("\u200b", "", regex=False)
             .str.lower()
             .str.normalize("NFC")
+            .str.replace("\u0e4d\u0e32", "\u0e33", regex=False)
+            .str.replace("\u0ecd\u0eb2", "\u0eb3", regex=False)
         )
         df["date"] = pd.to_datetime(df["date"], format="mixed", errors="coerce")
         df = df[~df["date"].isna()].reset_index(drop=True)

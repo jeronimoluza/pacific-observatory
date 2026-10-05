@@ -401,13 +401,18 @@ def standardize_unit(
     daily_tail_start: str | None,
     topic_keys: Iterable[str],
     actor_keys: Iterable[str],
+    extra_families: dict[str, tuple[str, list[str]]] | None = None,
 ) -> dict:
     """Run the full standardization pipeline for a single unit.
 
     Returns dict with keys: `e_base`, `topic_epus`, `actor_epus`,
     `ug_counts_all` — same shape that the legacy `runners.run_full_epu`
-    returned, so `outputs.build_outputs` works unchanged.
+    returned, so `outputs.build_outputs` works unchanged — plus
+    `extra_epus`, one `{key: StandardizedUnit}` per family in
+    `extra_families` (`{name: (metric_prefix, keys)}`, e.g. concepts), whose
+    UG counts land in `ug_counts_all[name]`.
     """
+    extra_families = extra_families or {}
     wide, sources = pivot_to_wide(source_counts, daily_tail_start)
     if not sources:
         empty = StandardizedUnit(
@@ -425,7 +430,12 @@ def standardize_unit(
             "e_base": empty,
             "topic_epus": {},
             "actor_epus": {},
-            "ug_counts_all": {"topics": pd.DataFrame(), "actors": pd.DataFrame()},
+            "ug_counts_all": {
+                "topics": pd.DataFrame(),
+                "actors": pd.DataFrame(),
+                **{name: pd.DataFrame() for name in extra_families},
+            },
+            "extra_epus": {name: {} for name in extra_families},
         }
 
     # ── Base EPU ─────────────────────────────────────────────────────
@@ -450,9 +460,17 @@ def standardize_unit(
         _extended_calc=calc,
     )
 
+    # Topics and actors never read the extra families' columns, and each of
+    # their StandardizedUnits keeps a full copy of its input, so they get the
+    # frame without them.
+    extra_prefixes = tuple(
+        f"{s}_{prefix}" for s in sources for prefix, _ in extra_families.values()
+    )
+    wide_core = wide[[c for c in wide.columns if not c.startswith(extra_prefixes)]]
+
     # ── Per-topic EPU ────────────────────────────────────────────────
     wide_with_topic_ratios = _build_topic_or_actor_ratios(
-        wide, sources, topic_keys, metric_prefix="topic_"
+        wide_core, sources, topic_keys, metric_prefix="topic_"
     )
     topic_epus: dict[str, StandardizedUnit] = {}
     for k in topic_keys:
@@ -473,7 +491,7 @@ def standardize_unit(
 
     # ── Per-actor EPU ────────────────────────────────────────────────
     wide_with_actor_ratios = _build_topic_or_actor_ratios(
-        wide, sources, actor_keys, metric_prefix="actor_"
+        wide_core, sources, actor_keys, metric_prefix="actor_"
     )
     actor_epus: dict[str, StandardizedUnit] = {}
     for k in actor_keys:
@@ -500,9 +518,49 @@ def standardize_unit(
         wide, sources, actor_keys, metric_prefix="actor_"
     )
 
+    # ── Extra families (concepts, groups) ──────────────────────────
+    # Same two steps as topics and actors, kept apart so those stay untouched.
+    extra_epus: dict[str, dict[str, StandardizedUnit]] = {}
+    ug_extra: dict[str, pd.DataFrame] = {}
+    for name, (prefix, keys) in extra_families.items():
+        wide_with_ratios = _build_topic_or_actor_ratios(
+            wide, sources, keys, metric_prefix=prefix
+        )
+        extra_epus[name] = {}
+        # `_standardize_epu` copies its input, and each StandardizedUnit keeps
+        # that copy. With ~1,600 concept and group keys a full-width copy per
+        # key ran past 80 GB, so each key gets only the columns it reads.
+        base_cols = ["date", "ym"] + [
+            f"{s}_weights" for s in sources if f"{s}_weights" in wide_with_ratios
+        ]
+        for k in keys:
+            ratio_cols = [
+                c
+                for s in sources
+                if (c := f"{s}_{prefix}{k}_ratio") in wide_with_ratios
+            ]
+            df_x, params_x, _ = _standardize_epu(
+                wide_with_ratios[base_cols + ratio_cols],
+                sources,
+                cutoff_start,
+                cutoff_end,
+                ratio_template=f"{{source}}_{prefix}{k}_ratio",
+            )
+            extra_epus[name][k] = StandardizedUnit(
+                epu_stats=df_x,
+                news_cols=news_cols,
+                params=params_x,
+                min_date=df_x["date"].min(),
+                max_date=df_x["date"].max(),
+            )
+        ug_extra[name] = _build_ug_counts_frame(
+            wide, sources, keys, metric_prefix=prefix
+        )
+
     return {
         "e_base": e_base,
         "topic_epus": topic_epus,
         "actor_epus": actor_epus,
-        "ug_counts_all": {"topics": ug_topics, "actors": ug_actors},
+        "ug_counts_all": {"topics": ug_topics, "actors": ug_actors, **ug_extra},
+        "extra_epus": extra_epus,
     }

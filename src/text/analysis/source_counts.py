@@ -75,9 +75,9 @@ def keyword_hash_bundle(
 ) -> dict[str, dict[str, str]]:
     """Return ``{keyword_file: {language: sha256}}`` covering every language used.
 
-    Covers the flat ``epu.json`` plus every theme file of the ``topics`` and
-    ``actors`` families, so adding or editing a single theme invalidates the
-    cache. Falls back to ``en`` per file, mirroring the resolution rules in
+    Covers the flat ``epu.json``, every theme file of the ``topics`` and
+    ``actors`` families and every ``concepts/*.json`` heading file, so adding
+    or editing a single theme or heading invalidates the cache. Falls back to ``en`` per file, mirroring the resolution rules in
     ``utils._resolve_theme_file``.
     """
     themed = {
@@ -94,6 +94,11 @@ def keyword_hash_bundle(
                 candidate = keywords_root / "en" / key
             if candidate.exists():
                 out[key][lang] = _sha256_file(candidate)
+    # Concept files hold every language inline, so each one is hashed once and
+    # an edit to any of them invalidates every cache.
+    for path in sorted((keywords_root / "concepts").glob("*.json")):
+        digest = _sha256_file(path)
+        out[f"concepts/{path.name}"] = {lang: digest for lang in sorted(set(languages))}
     return out
 
 

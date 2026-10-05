@@ -6,7 +6,7 @@
 
 name: "China Times"
 country: "taiwan_china"
-language: "zh"
+language: chinese_traditional
 base_url: "https://www.chinatimes.com/"
 
 listing:

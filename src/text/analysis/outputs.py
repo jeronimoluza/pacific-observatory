@@ -262,11 +262,17 @@ def build_outputs(
     full_write=False,
     replace_from: str | None = None,
     output_dir: Path = None,
+    extra_epus: dict | None = None,
 ):
     """Build and write all output CSVs.
 
+    `extra_epus` is `{family: {key: StandardizedUnit}}` for families beyond
+    topics and actors (concepts, groups); each writes `epu/{family}_epu.csv`
+    and `uncertainty_attribution/{family}.csv`.
+
     Returns (calc_topics_idx, calc_actors_idx) IndexCalculator instances.
     """
+    extra_epus = extra_epus or {}
     base_out = output_dir
     epu_folder = base_out / "epu"
     epu_folder.mkdir(parents=True, exist_ok=True)
@@ -330,6 +336,21 @@ def build_outputs(
         actor_epu[f"EPU_{actor_key}_index"] = aligned[f"EPU_{actor_key}_index"].values
     _write_csv(epu_folder / "actors_epu.csv", actor_epu)
 
+    # ── {family}_epu.csv for extra families ──────────────────────────
+    for family, family_epus in extra_epus.items():
+        family_epu = e_base.epu_stats[["date", "ym"]].copy()
+        for key, e_key in family_epus.items():
+            aligned = pd.merge(
+                family_epu[["date"]],
+                e_key.epu_stats[["date", "epu_weighted"]].rename(
+                    columns={"epu_weighted": f"EPU_{key}_index"}
+                ),
+                on="date",
+                how="left",
+            )
+            family_epu[f"EPU_{key}_index"] = aligned[f"EPU_{key}_index"].values
+        _write_csv(epu_folder / f"{family}_epu.csv", family_epu)
+
     # ── uncertainty_attribution ───────────────────────────────────────
     sources = [col.replace("_body_count", "") for col in e_base.news_cols]
     calc_topics_idx = IndexCalculator(cutoff_start_date, cutoff_end_date)
@@ -338,9 +359,15 @@ def build_outputs(
     for (source_file, output_name), calc in [
         (("topics", "topics"), calc_topics_idx),
         (("actors", "actors"), calc_actors_idx),
+        *(
+            ((family, family), IndexCalculator(cutoff_start_date, cutoff_end_date))
+            for family in extra_epus
+        ),
     ]:
-        groups = load_all_groups(source_file)
-        group_names = list(groups.keys())
+        if source_file in extra_epus:
+            group_names = list(extra_epus[source_file])
+        else:
+            group_names = list(load_all_groups(source_file).keys())
 
         ug_counts = ug_counts_all[source_file]
         attr_df = e_base.epu_stats[["date", "ym"]].copy()
@@ -396,4 +423,72 @@ def build_outputs(
         attr_folder.mkdir(parents=True, exist_ok=True)
         _write_csv(attr_folder / f"{output_name}.csv", attr_out)
 
+        if source_file in extra_epus and daily_tail_start is not None:
+            _write_pooled(
+                attr_folder,
+                output_name,
+                ug_counts,
+                sources,
+                group_names,
+                cutoff_start_date,
+                cutoff_end_date,
+                daily_tail_start,
+            )
+
     return calc_topics_idx, calc_actors_idx
+
+
+def _write_pooled(
+    attr_folder,
+    family,
+    ug_counts,
+    sources,
+    group_names,
+    cutoff_start_date,
+    cutoff_end_date,
+    daily_tail_start,
+):
+    """Write the daily tail as counts pooled across sources, plus the baseline.
+
+    The per-source index turns one article on a thin day into a spike, because
+    a single source's day has few articles to divide by. The dashboard builds
+    its weekly and daily points from these instead: the period's matching
+    articles over the period's articles, summed across every source, then
+    divided by the same pooled share's baseline mean (index) or std (z).
+
+    `{family}_pooled.csv` holds the daily tail rows (A_total, U_count,
+    `UG_<g>`, `G_<g>`); `{family}_pooled_baseline.csv` holds one `mean` and one
+    `std` row of the pooled monthly share per `<g>_<measure>`.
+    """
+
+    def _sum(cols):
+        present = [c for c in cols if c in ug_counts.columns]
+        return ug_counts[present].sum(axis=1) if present else 0
+
+    pooled = ug_counts[["date", "ym"]].copy()
+    pooled["A_total"] = _sum([f"{s}_A_total" for s in sources])
+    pooled["U_count"] = _sum([f"{s}_U_count" for s in sources])
+    for g in group_names:
+        pooled[f"UG_{g}"] = _sum([f"{s}_UG_{g}_count" for s in sources])
+        pooled[f"G_{g}"] = _sum([f"{s}_G_{g}_count" for s in sources])
+
+    tail = pooled["date"] >= pd.Timestamp(daily_tail_start)
+    months = pooled[
+        ~tail & baseline_mask(pooled["date"], cutoff_start_date, cutoff_end_date)
+    ]
+    stats = {"stat": ["mean", "std"]}
+    for g in group_names:
+        for measure, num, den in (
+            ("absolute", f"UG_{g}", "A_total"),
+            ("framing", f"UG_{g}", "U_count"),
+            ("intensity", f"G_{g}", "A_total"),
+        ):
+            share = (months[num] / months[den]).replace([np.inf, -np.inf], np.nan)
+            stats[f"{g}_{measure}"] = [share.mean(), share.std()]
+
+    out = pooled[tail].copy()
+    out["date"] = out["date"].dt.strftime("%Y-%m-%d")
+    out.to_csv(attr_folder / f"{family}_pooled.csv", index=False, encoding="utf-8")
+    pd.DataFrame(stats).to_csv(
+        attr_folder / f"{family}_pooled_baseline.csv", index=False, encoding="utf-8"
+    )

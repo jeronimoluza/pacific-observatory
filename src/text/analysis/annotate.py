@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 import ahocorasick
+import numpy as np
 import pandas as pd
 
 from text.analysis.utils import (
@@ -29,7 +30,9 @@ from text.analysis.utils import (
     NON_SPACE_DELIMITED,
     _is_latin_boundary,
     _is_word_boundary,
+    _is_word_char,
     load_all_groups,
+    load_concepts,
     load_topics_words,
     resolved_language,
 )
@@ -52,16 +55,21 @@ class KeywordBundle:
     topics: dict[str, list[str]]
     actors: dict[str, list[str]]
     script_language: str = ""
+    concepts: dict[str, list] = field(default_factory=dict)
+    groups: dict[str, list] = field(default_factory=dict)
 
     @classmethod
     def for_language(cls, language: str) -> "KeywordBundle":
         lang = LANGUAGE_ALIASES.get(language, language)
+        concepts, groups = load_concepts(lang)
         return cls(
             language=lang,
             epu=load_topics_words(language=lang),
             topics=load_all_groups("topics", language=lang),
             actors=load_all_groups("actors", language=lang),
             script_language=resolved_language(lang, "topics"),
+            concepts=concepts,
+            groups=groups,
         )
 
 
@@ -72,7 +80,7 @@ class KeywordBundle:
 class CombinedAutomaton:
     """An ahocorasick.Automaton plus the category list and per-term length cache.
 
-    Each automaton payload is `(category_tag, term_lower)`. Counts are
+    Each automaton payload is `(category_tag, term_lower, is_prefix)`. Counts are
     resolved per category via greedy non-overlapping dedupe against the
     list of (start, end) tuples for that category.
     """
@@ -91,6 +99,17 @@ def _category_iter(bundle: KeywordBundle) -> Iterable[tuple[str, list[str]]]:
         yield f"topic:{topic_key}", terms
     for actor_key, terms in bundle.actors.items():
         yield f"actor:{actor_key}", terms
+    for concept_id, forms in bundle.concepts.items():
+        yield f"concept:{concept_id}", forms
+    for group_id, forms in bundle.groups.items():
+        yield f"group:{group_id}", forms
+
+
+def _forms_key(forms: list) -> tuple:
+    """Concept forms as hashable ``(text, is_prefix)`` pairs."""
+    return tuple(
+        (f["prefix"], True) if isinstance(f, dict) else (f, False) for f in forms
+    )
 
 
 def _bundle_cache_key(bundle: KeywordBundle) -> tuple:
@@ -101,12 +120,16 @@ def _bundle_cache_key(bundle: KeywordBundle) -> tuple:
     )
     topics_key = tuple((k, tuple(v)) for k, v in sorted(bundle.topics.items()))
     actors_key = tuple((k, tuple(v)) for k, v in sorted(bundle.actors.items()))
+    concepts_key = tuple((k, _forms_key(v)) for k, v in sorted(bundle.concepts.items()))
+    groups_key = tuple((k, _forms_key(v)) for k, v in sorted(bundle.groups.items()))
     return (
         bundle.language,
         bundle.script_language or bundle.language,
         epu_key,
         topics_key,
         actors_key,
+        concepts_key,
+        groups_key,
     )
 
 
@@ -119,14 +142,22 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
     overwrites the prior value, so we must accumulate the FULL list of (tag,
     term) tuples for each word and emit them all on match.
     """
-    language, script_language, epu_key, topics_key, actors_key = cache_key
+    (
+        language,
+        script_language,
+        epu_key,
+        topics_key,
+        actors_key,
+        concepts_key,
+        groups_key,
+    ) = cache_key
     categories: list[str] = []
-    by_word: dict[str, list[tuple[str, str]]] = {}
+    by_word: dict[str, list[tuple[str, str, bool]]] = {}
 
-    def add(tag: str, terms):
+    def add(tag: str, terms, is_prefix: bool = False):
         for term in terms:
-            t = term.lower()
-            by_word.setdefault(t, []).append((tag, t))
+            t = _compose_sara_am(term.lower())
+            by_word.setdefault(t, []).append((tag, t, is_prefix))
 
     for cat, terms in epu_key:
         tag = {"economic": "econ", "policy": "policy", "uncertainty": "uncertain"}[cat]
@@ -140,6 +171,12 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
         tag = f"actor:{actor_key}"
         categories.append(tag)
         add(tag, terms)
+    for family, key in (("concept", concepts_key), ("group", groups_key)):
+        for group_id, forms in key:
+            tag = f"{family}:{group_id}"
+            categories.append(tag)
+            for text, is_prefix in forms:
+                add(tag, [text], is_prefix)
 
     A = ahocorasick.Automaton()
     for word, tag_list in by_word.items():
@@ -166,21 +203,29 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
     Implements the same greedy non-overlapping dedupe as the legacy
     ``match_keywords`` in ``utils.py`` — but per category, so two categories
     matching overlapping byte ranges are counted independently.
+
+    Only categories with a match are returned: with 1,700 concept and group
+    categories, a full dict per article held 1.4 GB per 20,000-row chunk.
     """
     if not body:
-        return {cat: 0 for cat in combo.categories}
+        return {}
 
     text = str(body)
     per_cat_matches: dict[str, list[tuple[int, int]]] = defaultdict(list)
 
     for end_idx, payload in combo.automaton.iter(text):
-        # `payload` is a tuple of (cat, term) tuples — the same word may
-        # belong to several categories (e.g. policy + actor:government).
-        for cat, term in payload:
+        # `payload` is a tuple of (cat, term, is_prefix) tuples — the same word
+        # may belong to several categories (e.g. policy + actor:government).
+        for cat, term, is_prefix in payload:
             start_idx = end_idx - len(term) + 1
             end_pos = end_idx + 1
             if combo.check_boundaries:
-                if not _is_word_boundary(text, start_idx, end_pos):
+                if is_prefix:
+                    # A prefix form keeps only the left boundary, so the
+                    # suffixes of an agglutinative language still match.
+                    if start_idx > 0 and _is_word_char(text[start_idx - 1]):
+                        continue
+                elif not _is_word_boundary(text, start_idx, end_pos):
                     continue
             elif term.isascii():
                 # Latin term in a non-space-delimited pack. Bounding it against
@@ -191,7 +236,7 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
                     continue
             per_cat_matches[cat].append((start_idx, end_pos))
 
-    counts: dict[str, int] = {cat: 0 for cat in combo.categories}
+    counts: dict[str, int] = {}
     for cat, matches in per_cat_matches.items():
         matches.sort(key=lambda m: (m[0], -(m[1] - m[0])))
         last_end = -1
@@ -208,12 +253,32 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
 
 
 def _process_body(body: str | float) -> str:
-    """Mirror EPU.process_data body normalization (strip newlines, lower, NFC)."""
+    """Mirror EPU.process_data body normalization (strip newlines and zero-width
+    spaces, lower, NFC).
+
+    Khmer sources insert U+200B between words (about 64 per article in
+    kampuchea_thmey_daily), and one inside a phrase stops the phrase matching.
+    Sara am is composed too (see `_compose_sara_am`).
+    """
     if not isinstance(body, str):
         return ""
     import unicodedata
 
-    return unicodedata.normalize("NFC", body.replace("\n", "").lower())
+    return _compose_sara_am(
+        unicodedata.normalize(
+            "NFC", body.replace("\n", "").replace("\u200b", "").lower()
+        )
+    )
+
+
+def _compose_sara_am(text: str) -> str:
+    """Write Thai and Lao sara am as one character.
+
+    matichon and thai_rath spell ำ as nikhahit + sara aa (ํา), and KPL spells
+    ຳ as ໍາ; NFC leaves both pairs apart, so a form written ำ never matched
+    them. Applied to bodies and keyword terms alike.
+    """
+    return text.replace("\u0e4d\u0e32", "\u0e33").replace("\u0ecd\u0eb2", "\u0eb3")
 
 
 def _ym_for_date(d: pd.Timestamp, daily_tail_start: pd.Timestamp | None) -> str:
@@ -234,20 +299,15 @@ def _grouped_for_frame(
     per-chunk results and summing them by ym reproduces the whole-file answer.
     Returned frame is indexed by ym and carries no source_key column.
     """
-    counts_per_row: list[dict[str, int]] = []
-    for body in df.get("body", pd.Series([], dtype=str)):
-        counts_per_row.append(_match_all_categories(_process_body(body), combo))
+    col = {cat: j for j, cat in enumerate(combo.categories)}
+    matrix = np.zeros((len(df), len(col)), dtype=np.int64)
+    for i, body in enumerate(df.get("body", pd.Series([], dtype=str))):
+        for cat, c in _match_all_categories(_process_body(body), combo).items():
+            matrix[i, col[cat]] = c
 
     ym_series = df["date"].apply(lambda d: _ym_for_date(d, daily_tail_start))
 
-    cat_df = pd.DataFrame(counts_per_row, index=df.index).fillna(0).astype(int)
-    # When df is empty (e.g. a source with zero rows after subset filtering),
-    # `counts_per_row` is empty and pandas cannot infer columns. Force every
-    # category from the automaton to exist as an int64 zero-filled column so
-    # downstream `cat_df[cat]` never KeyErrors.
-    for cat in combo.categories:
-        if cat not in cat_df.columns:
-            cat_df[cat] = 0
+    cat_df = pd.DataFrame(matrix, index=df.index, columns=list(combo.categories))
 
     e_present = cat_df["econ"] > 0
     p_present = cat_df["policy"] > 0
@@ -308,37 +368,37 @@ def _grouped_for_frame(
     # much is this topic being discussed", as opposed to "how much of the
     # uncertainty is about this topic"; the two diverge badly for topics that are
     # covered routinely rather than in moments of doubt.
-    for cat in combo.categories:
-        if cat in ("econ", "policy", "uncertain"):
-            continue
-        present = cat_df[cat] > 0
-        epu_x = (
-            work.loc[epu_present & present]
-            .groupby("ym")
-            .size()
-            .reindex(grouped.index, fill_value=0)
-            .astype(int)
-        )
-        u_x = (
-            work.loc[u_present & present]
-            .groupby("ym")
-            .size()
-            .reindex(grouped.index, fill_value=0)
-            .astype(int)
-        )
-        g_x = (
-            work.loc[present]
-            .groupby("ym")
-            .size()
-            .reindex(grouped.index, fill_value=0)
-            .astype(int)
-        )
-        base = cat.replace("topic:", "topic_").replace("actor:", "actor_")
-        grouped[f"{base}_count"] = epu_x
-        grouped[f"{base}_U_count"] = u_x
-        grouped[f"{base}_A_count"] = g_x
+    # One groupby per condition over every category at once; a groupby per
+    # category took 1,700 x 3 passes per chunk once concepts arrived.
+    cats = [c for c in combo.categories if c not in ("econ", "policy", "uncertain")]
+    present = cat_df[cats] > 0
 
-    return grouped
+    def per_month(mask: pd.Series) -> pd.DataFrame:
+        return (
+            present[mask]
+            .groupby(work.loc[mask, "ym"])
+            .sum()
+            .reindex(grouped.index, fill_value=0)
+            .astype(int)
+        )
+
+    epu_x, u_x, g_x = (
+        per_month(epu_present),
+        per_month(u_present),
+        per_month(pd.Series(True, index=df.index)),
+    )
+    columns = {}
+    for cat in cats:
+        base = (
+            cat.replace("topic:", "topic_")
+            .replace("actor:", "actor_")
+            .replace("concept:", "concept_")
+            .replace("group:", "group_")
+        )
+        columns[f"{base}_count"] = epu_x[cat]
+        columns[f"{base}_U_count"] = u_x[cat]
+        columns[f"{base}_A_count"] = g_x[cat]
+    return pd.concat([grouped, pd.DataFrame(columns, index=grouped.index)], axis=1)
 
 
 def annotate_source(

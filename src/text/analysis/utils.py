@@ -6,6 +6,7 @@ Last modified:
 """
 
 import re
+import unicodedata
 from typing import List, Dict, Tuple, Union
 from functools import lru_cache
 import pandas as pd
@@ -179,16 +180,31 @@ def get_automaton(terms_tuple: tuple, language: str = "en") -> ahocorasick.Autom
     return _build_automaton(list(terms_tuple))
 
 
+def _is_word_char(ch: str) -> bool:
+    """Letter, digit, underscore, combining mark or zero-width (non-)joiner.
+
+    Vowel signs and viramas in Devanagari, Bengali, Sinhala and Thaana are
+    combining marks, which ``str.isalnum`` rejects; without them a word ending
+    in a consonant would match inside every longer word built on it. ZWJ and
+    ZWNJ sit inside Sinhala and Indic words, never between them.
+    """
+    return (
+        ch.isalnum()
+        or ch in "_\u200c\u200d"
+        or unicodedata.category(ch).startswith("M")
+    )
+
+
 def _is_word_boundary(text: str, start: int, end: int) -> bool:
     """
     Check if the match at text[start:end] falls on word boundaries.
 
     Mimics regex \\b behaviour: the character immediately before start
-    and immediately after end-1 must not be alphanumeric/underscore.
+    and immediately after end-1 must not be a word character.
     """
-    if start > 0 and (text[start - 1].isalnum() or text[start - 1] == "_"):
+    if start > 0 and _is_word_char(text[start - 1]):
         return False
-    if end < len(text) and (text[end].isalnum() or text[end] == "_"):
+    if end < len(text) and _is_word_char(text[end]):
         return False
     return True
 
@@ -560,6 +576,187 @@ def load_all_groups(
             merged[group] = _extract_terms(val)
             origin[group] = theme
     return merged
+
+
+# Concepts: one file per heading under ``keywords/concepts/``, every language
+# inline. A form is a plain string or ``{"prefix": str}``; a prefix form keeps
+# the left word boundary and drops the right one, so it is allowed only where
+# suffixes carry case and number.
+PREFIX_LANGUAGES = frozenset(
+    {
+        "turkish",
+        "mn",
+        "russian",
+        "ukrainian",
+        "polish",
+        "serbian",
+        "croatian",
+        "bosnian",
+        "montenegrin",
+        "macedonian",
+        "bulgarian",
+        "romanian",
+        "albanian",
+        "armenian",
+        "georgian",
+        "azerbaijani",
+        "belarusian",
+        "kazakh",
+        "kyrgyz",
+        "uzbek",
+        "tajik",
+        "latvian",
+        "lithuanian",
+        "estonian",
+        "sk",
+        "cs",
+        "sl",
+        "hu",
+        "turkmen",
+        "somali",
+        "amharic",
+        "hindi",
+        "bn",
+        "ne",
+        "si",
+        "dv",
+    }
+)
+# Concept forms exist for these, but no keyword directory does yet.
+CONCEPT_ONLY_LANGUAGES = frozenset({"bn", "dv", "ne", "si"})
+CONCEPTS_DIR = Path(__file__).parent / "keywords" / "concepts"
+
+
+def _concept_language_ok(lang: str) -> bool:
+    base = Path(__file__).parent / "keywords"
+    if lang in CONCEPT_ONLY_LANGUAGES:
+        return True
+    return lang != "concepts" and (base / lang).is_dir()
+
+
+def load_concept_catalog(concepts_dir: Union[Path, None] = None) -> dict:
+    """Read and validate every heading file under ``keywords/concepts/``.
+
+    Raises ValueError naming the file and id on any rule violation; the rules
+    are the whole enforcement mechanism, so nothing here is advisory.
+    """
+    concepts_dir = CONCEPTS_DIR if concepts_dir is None else Path(concepts_dir)
+    headings: dict = {}
+    concepts: dict = {}
+    groups: dict = {}
+    owner: dict = {}
+    for path in sorted(concepts_dir.glob("*.json")):
+        with open(path, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        name = path.name
+
+        def fail(msg: str, _name=name):
+            raise ValueError(f"concepts/{_name}: {msg}")
+
+        if raw.get("heading") != path.stem:
+            fail(f"heading {raw.get('heading')!r} does not equal the file stem")
+        file_groups = raw.get("groups") or {}
+        file_concepts = raw.get("concepts") or {}
+        for cid in list(file_groups) + list(file_concepts):
+            if cid in owner:
+                fail(f"id '{cid}' already defined in concepts/{owner[cid]}")
+            owner[cid] = name
+        for gid, g in file_groups.items():
+            seen = [gid]
+            parent = g.get("parent")
+            while parent is not None:
+                if parent not in file_groups:
+                    fail(
+                        f"group '{seen[-1]}': parent '{parent}' is not in this file's groups"
+                    )
+                if parent in seen:
+                    fail(f"group '{gid}': parent chain loops through '{parent}'")
+                seen.append(parent)
+                parent = file_groups[parent].get("parent")
+        for cid, c in file_concepts.items():
+            group = c.get("group")
+            if group is not None and group not in file_groups:
+                fail(f"concept '{cid}': group '{group}' is not in this file's groups")
+            forms = c.get("forms") or {}
+            if not forms.get("en"):
+                fail(f"concept '{cid}': forms.en is missing or empty")
+            for lang, lang_forms in forms.items():
+                if not _concept_language_ok(lang):
+                    fail(f"concept '{cid}': '{lang}' is not a keyword directory name")
+                if not isinstance(lang_forms, list):
+                    fail(f"concept '{cid}': forms.{lang} is not a list")
+                for form in lang_forms:
+                    if isinstance(form, str) and form:
+                        continue
+                    if (
+                        isinstance(form, dict)
+                        and set(form) == {"prefix"}
+                        and isinstance(form["prefix"], str)
+                        and form["prefix"]
+                    ):
+                        if lang not in PREFIX_LANGUAGES:
+                            fail(
+                                f"concept '{cid}': prefix form in '{lang}', not a prefix language"
+                            )
+                        continue
+                    fail(f"concept '{cid}': bad form {form!r} in '{lang}'")
+            concepts[cid] = {**c, "heading": path.stem}
+        for gid, g in file_groups.items():
+            if not any(
+                gid in _group_chain(c.get("group"), file_groups)
+                for c in file_concepts.values()
+            ):
+                fail(f"group '{gid}' has no concepts beneath it")
+            groups[gid] = {**g, "heading": path.stem}
+        headings[path.stem] = {
+            "label": raw.get("label", path.stem),
+            "groups": list(file_groups),
+            "concepts": list(file_concepts),
+        }
+    return {"headings": headings, "concepts": concepts, "groups": groups}
+
+
+def _group_chain(group: Union[str, None], groups: dict) -> List[str]:
+    """A concept's group, then that group's parent, up to the top."""
+    chain = []
+    while group is not None:
+        chain.append(group)
+        group = groups[group].get("parent")
+    return chain
+
+
+def load_concepts(language: str = "en") -> Tuple[Dict[str, list], Dict[str, list]]:
+    """Concept and group forms for one language.
+
+    A group's forms are the union of every concept beneath it, at any depth,
+    so a group series counts articles matching any of those concepts.
+
+    No English fallback: English words in Thai text would be a different
+    measurement. A concept with no forms in ``language`` gets an empty list.
+    Forms listed in ``review.<lang>.rejected`` never load.
+    """
+    language = LANGUAGE_ALIASES.get(language, language)
+    catalog = load_concept_catalog()
+    concepts: Dict[str, list] = {}
+    groups: Dict[str, list] = {gid: [] for gid in catalog["groups"]}
+    for cid, c in catalog["concepts"].items():
+        if c.get("deprecated"):
+            continue
+        rejected = ((c.get("review") or {}).get(language) or {}).get("rejected") or []
+        forms = [f for f in c["forms"].get(language, []) if f not in rejected]
+        concepts[cid] = forms
+        for gid in _group_chain(c.get("group"), catalog["groups"]):
+            groups[gid].extend(f for f in forms if f not in groups[gid])
+    return concepts, groups
+
+
+def concept_keys() -> Tuple[List[str], List[str]]:
+    """Non-deprecated concept ids and group ids, the same for every language."""
+    catalog = load_concept_catalog()
+    return (
+        [cid for cid, c in catalog["concepts"].items() if not c.get("deprecated")],
+        list(catalog["groups"]),
+    )
 
 
 def generate_news_statistics_table(country_folder: Path) -> str:

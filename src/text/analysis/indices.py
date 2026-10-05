@@ -411,6 +411,36 @@ class IndexCalculator:
             "scaling_factors": dict(self.scaling_factors),
         }
 
+    def _attribution(self, df, sources, group_names, num, den, stem):
+        """Per group: ratio num/den per source, then standardize, aggregate, normalize.
+
+        Each group runs on a slice of date and weight columns, and all new
+        columns are attached in one concat at the end. Inserting them into the
+        full frame one group at a time is quadratic in the group count, which
+        a concept family (~1,700 keys) makes the dominant build cost.
+        """
+        base = [c for c in ("date", "ym") if c in df.columns] + [
+            f"{s}_weights" for s in sources if f"{s}_weights" in df.columns
+        ]
+        new_cols: dict = {}
+        for g in group_names:
+            index_name = stem.format(g=g)
+            ratios = {}
+            for source in sources:
+                num_col, den_col = num.format(s=source, g=g), den.format(s=source)
+                if num_col in df.columns and den_col in df.columns:
+                    ratios[f"{source}_{index_name}_ratio"] = (
+                        df[num_col] / df[den_col]
+                    ).replace([np.inf, -np.inf], np.nan)
+            if ratios:
+                sub = self._standardize_aggregate_normalize(
+                    _attach(df[base], ratios), list(ratios), sources, index_name
+                )
+                new_cols.update({c: sub[c] for c in sub.columns if c not in base})
+        return _attach(
+            df.drop(columns=[c for c in new_cols if c in df.columns]), new_cols
+        )
+
     def calculate_absolute_uncertainty_attribution(
         self,
         df: pd.DataFrame,
@@ -428,29 +458,9 @@ class IndexCalculator:
         Returns:
             DataFrame with {group}_absolute_weighted columns added.
         """
-        df = df.copy()
-        for g in group_names:
-            ratio_cols = []
-            new_cols: dict = {}
-            for source in sources:
-                ug_col = f"{source}_UG_{g}_count"
-                total_col = f"{source}_A_total"
-                ratio_col = f"{source}_UG_{g}_abs_ratio"
-                if ug_col in df.columns and total_col in df.columns:
-                    ratio = (df[ug_col] / df[total_col]).replace(
-                        [np.inf, -np.inf], np.nan
-                    )
-                    if ratio_col in df.columns:
-                        df[ratio_col] = ratio
-                    else:
-                        new_cols[ratio_col] = ratio
-                    ratio_cols.append(ratio_col)
-            df = _attach(df, new_cols)
-            if ratio_cols:
-                df = self._standardize_aggregate_normalize(
-                    df, ratio_cols, sources, f"UG_{g}_abs"
-                )
-        return df
+        return self._attribution(
+            df, sources, group_names, "{s}_UG_{g}_count", "{s}_A_total", "UG_{g}_abs"
+        )
 
     def calculate_topic_intensity_attribution(
         self,
@@ -476,29 +486,9 @@ class IndexCalculator:
         Returns:
             DataFrame with {group}_int_weighted columns added.
         """
-        df = df.copy()
-        for g in group_names:
-            ratio_cols = []
-            new_cols: dict = {}
-            for source in sources:
-                g_col = f"{source}_G_{g}_count"
-                total_col = f"{source}_A_total"
-                ratio_col = f"{source}_G_{g}_int_ratio"
-                if g_col in df.columns and total_col in df.columns:
-                    ratio = (df[g_col] / df[total_col]).replace(
-                        [np.inf, -np.inf], np.nan
-                    )
-                    if ratio_col in df.columns:
-                        df[ratio_col] = ratio
-                    else:
-                        new_cols[ratio_col] = ratio
-                    ratio_cols.append(ratio_col)
-            df = _attach(df, new_cols)
-            if ratio_cols:
-                df = self._standardize_aggregate_normalize(
-                    df, ratio_cols, sources, f"G_{g}_int"
-                )
-        return df
+        return self._attribution(
+            df, sources, group_names, "{s}_G_{g}_count", "{s}_A_total", "G_{g}_int"
+        )
 
     def calculate_framing_uncertainty_attribution(
         self,
@@ -517,24 +507,6 @@ class IndexCalculator:
         Returns:
             DataFrame with {group}_framing_weighted columns added.
         """
-        df = df.copy()
-        for g in group_names:
-            ratio_cols = []
-            new_cols: dict = {}
-            for source in sources:
-                ug_col = f"{source}_UG_{g}_count"
-                u_col = f"{source}_U_count"
-                ratio_col = f"{source}_UG_{g}_frm_ratio"
-                if ug_col in df.columns and u_col in df.columns:
-                    ratio = (df[ug_col] / df[u_col]).replace([np.inf, -np.inf], np.nan)
-                    if ratio_col in df.columns:
-                        df[ratio_col] = ratio
-                    else:
-                        new_cols[ratio_col] = ratio
-                    ratio_cols.append(ratio_col)
-            df = _attach(df, new_cols)
-            if ratio_cols:
-                df = self._standardize_aggregate_normalize(
-                    df, ratio_cols, sources, f"UG_{g}_frm"
-                )
-        return df
+        return self._attribution(
+            df, sources, group_names, "{s}_UG_{g}_count", "{s}_U_count", "UG_{g}_frm"
+        )
