@@ -1,0 +1,21 @@
+scaffolding: spider
+spider: caribbeanfasteners_cw
+url: "https://caribbean-fasteners.com/en/"
+channel: home-improvement
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: ANG
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+notes: |
+  Curacao onboarding 2026-10-05. Caribbean Fasteners Webshop: Sylius storefront,
+  Curacao delivery, ANG prices ("ANG 341.48"). Fasteners, window/door hardware,
+  safety, tools, machines, chemicals, ladders. Plain chrome124 200, robots open.
+  Listing /en/taxons/<slug>?page=N paginates (page 2 differs). Variant products
+  show "From ANG x" (cheapest variant), recorded as the price. Page family:
+  listing. coicop_codes left unset (wide hardware/DIY).

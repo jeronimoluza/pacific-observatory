@@ -1,0 +1,22 @@
+scaffolding: spider
+spider: connections_cw
+url: "https://connectionscuracao.net/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: XCG
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+notes: |
+  Curacao onboarding 2026-10-05. Connections (Punda and Otrobanda, Willemstad):
+  phones, laptops, TVs, appliances, scooters, accessories. The page renders its
+  catalog client-side from /data/products.json (114 items, all priced, e.g.
+  iPhone 12 HSO XCG 549; categories apple, samsung, appliances, tvs, acs, motor,
+  laptops). Static file, plain chrome124 200, robots allow all. Small catalog,
+  no per-product URLs (fragment URL built from slug). Page family: API.
+  coicop_codes left unset (wide).

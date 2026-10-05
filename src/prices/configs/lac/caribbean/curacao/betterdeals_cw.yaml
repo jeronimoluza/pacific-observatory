@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://betterdeals.cw/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: ANG
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "betterdeals_cw"
+  base_url: "https://betterdeals.cw"
+  currency: "ANG"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Curacao onboarding 2026-10-05. Better Deals (Willemstad, Curacao): Shopify
+  store, myshopify better-deals-curacao, countryCode CW. Shop currencyCode is
+  ANG (the Shopify shop setting has not been migrated to XCG; same 1:1 peg and
+  value). /products.json?limit=250 paginates (page 1 and 2 return different
+  250-product sets, e.g. Apple 20W USB-C adapter 59.99, HP LaserJet Pro
+  MFP 3103fdw 999.99). Consumer electronics, computers, appliances.
+  Page family: API. coicop_codes left unset (wide).
+throttle_group: shopify

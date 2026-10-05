@@ -1,0 +1,22 @@
+scaffolding: spider
+spider: polytronica_cw
+url: "https://polytronicacuracao.com/shop/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: ANG
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+notes: |
+  Curacao onboarding 2026-10-05. Polytronica (Schottegatweg Oost, Willemstad):
+  electronics, TVs, appliances, air conditioning, cooking. WooCommerce but the
+  Store API returns 401 rest_forbidden, so the spider parses the /shop/ listing
+  (page/N/ paginates, page 2 is a different set). Host 403s chrome/safari
+  profiles and clears only on curl_cffi firefox133. Storefront shows the florin
+  sign (not migrated to XCG), recorded as ANG. Page family: listing.
+  coicop_codes left unset (wide).
