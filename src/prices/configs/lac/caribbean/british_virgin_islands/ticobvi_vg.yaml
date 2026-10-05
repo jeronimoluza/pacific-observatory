@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ticobvi_vg
+url: https://ticobvi.com/
+language: en
+currency: USD
+cadence: weekly
+channel: specialty-food
+archive_prefix: "ticobvi.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Tico BVI, Tortola (BVI address on site). WooCommerce Store API, 976 products
+  (probed 2026-10-05), wine/spirits/beer/mixers. USD from currency_code,
+  minor_unit 2. page 2 returns a different id set; 0 zero-priced in page 1.
+  Page family: API.

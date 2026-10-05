@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: islanddepartment_vg
+url: https://islanddepartment.store/
+language: en
+currency: USD
+cadence: weekly
+channel: other
+archive_prefix: "islanddepartment.store/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+throttle_group: shopify
+notes: |
+  Island Department Store, Tortola BVI furniture/home goods. Shopify
+  /products.json, 750+ products over 3 full pages, pages disjoint; 18 of 357
+  variants priced 0 (probed 2026-10-05). USD. Page family: API.
