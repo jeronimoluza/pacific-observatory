@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pyrenees_ad
+url: https://www.pyrenees.ad/alimentacio/
+language: ca
+currency: EUR
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.pyrenees.ad/alimentacio/"
+archive_path_re: '^/alimentacio/(?:[a-z0-9-]+/)+[a-z0-9-]+/?$'
+notes: |
+  Pyrenees Andorra (grans magatzems) online food hall, Andorra (.ad domain).
+  OpenCart + Journal3, clean-SEO categories; spider walks the top-level
+  categories only (parents re-list descendants). Page family: listing.
+  Platform / address verified 2026-10-05; Catalan prices in EUR ("6,99EUR").

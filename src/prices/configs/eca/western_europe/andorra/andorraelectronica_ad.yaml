@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: andorraelectronica_ad
+url: https://andorraelectronica.com/es/
+language: es
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "andorraelectronica.com/"
+archive_path_re: '^/(?:es/)?[a-z0-9-]+/\d+-[a-z0-9-]+\.html$'
+notes: |
+  Andorra Electronica (AD500, +376). PrestaShop, stock microdata cards, shared PrestashopBaseSpider. Page family: listing.

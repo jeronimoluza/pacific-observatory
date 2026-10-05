@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kavehome_ad
+url: https://kavehome.ad/
+language: ca
+currency: EUR
+cadence: weekly
+channel: other
+throttle_group: shopify
+archive_prefix: "kavehome.ad/products/"
+archive_path_re: '^/(?:[a-z]{2}/)?products/[^/?]+'
+notes: |
+  Kave Home Andorra, Andorra (AD500 address and +376 phone on the storefront). Open Shopify
+  /products.json catalog, EUR. Page family: API.
