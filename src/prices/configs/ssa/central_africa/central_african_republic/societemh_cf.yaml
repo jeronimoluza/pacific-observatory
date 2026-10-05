@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://societemh.com/catalogue/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: XAF
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "societemh_cf"
+  base_url: "https://societemh.com"
+  currency: "XAF"
+  language: "fr"
+  api_url: "https://societemh.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 1.0
+notes: >
+  Probed 2026-10-05. WooCommerce Store API open, 11 products with non-zero XAF
+  prices (currency_minor_unit 0): farm/hardware tools and motor oil (e.g.
+  Pioche 2000, Houe Ceylan 1500, Huile moteur 5L 17000). Catalogue page
+  mentions Bangui (14) and Centrafrique (11) -- local supplier. Very small
+  catalog. Page family: API.
