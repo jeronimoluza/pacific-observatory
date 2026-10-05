@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://manxinspirations.com/shop/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GBP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "manxinspirations_im"
+  base_url: "https://manxinspirations.com"
+  currency: "GBP"
+  language: "en"
+  api_url: "https://manxinspirations.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "manxinspirations.com/product/"
+archive_path_re: '^/product/[a-z0-9%-]+/?$'
+notes: >
+  Onboarded 2026-10-05 (discovery-onboard, isle_of_man). Page family: API.
+  Manx gifts and souvenirs shop. WooCommerce Store API v1: 312 products,
+  4 pages of 100, currency_code GBP, currency_minor_unit 2 (999 -> GBP 9.99),
+  no zero prices in page 3. Thin gift catalog; low priority for the basket.

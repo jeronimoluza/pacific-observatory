@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://shop.jacstores.co.uk/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GBP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "jacstores_im"
+  base_url: "https://shop.jacstores.co.uk"
+  currency: "GBP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "shop.jacstores.co.uk/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Onboarded 2026-10-05 (discovery-onboard, isle_of_man). Page family: API.
+  JAC Stores, Douglas: toys, gifts and general merchandise. Shopify; /products.json 500+ products over 2+ pages, zero-price 0/250 on page 1, GBP. Locality: site title 'JAC Stores Isle of Man - Online Shop'. Probed with curl_cffi chrome124, page 1 and 2 of products.json have disjoint ids.
+throttle_group: shopify

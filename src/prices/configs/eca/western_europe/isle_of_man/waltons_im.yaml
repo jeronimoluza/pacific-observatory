@@ -1,0 +1,25 @@
+scaffolding: spider
+spider: waltons_im
+url: "https://waltons.im/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GBP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "waltons.im/product/"
+archive_path_re: '^/product/[a-z0-9%-]+/?$'
+notes: >
+  Onboarded 2026-10-05 (discovery-onboard, isle_of_man). Page family: API.
+  Waltons Direct, "Isle of Man's Premier TV and Electrical Store". WooCommerce
+  Store API v1: 387 products, GBP, minor_unit 2. WAF: curl_cffi chrome120 and
+  chrome124 get 403; safari17_0 returns 200, so the spider pins safari17_0.
+  2 of the first 100 products carry price 0 (dropped by the base class).
