@@ -13,7 +13,7 @@ from core.hashing import observation_hash
 from core.state import read_state, set_checked, set_last_data_date, write_state
 from core.storage import load_csv, save_csv
 
-from .fx import build_fx_table
+from .fx import DEFAULT_FX_CACHE, build_fx_table
 from .paths import canonical_observations_path_for_entry
 
 logger = logging.getLogger(__name__)
@@ -215,7 +215,7 @@ def run_collection(
                         for d in (span[0], span[-1])
                     ]
                 )
-                build_fx_table(dummy, cache_path=base_dir / "fx_cache.csv")
+                build_fx_table(dummy, cache_path=base_dir / DEFAULT_FX_CACHE.name)
                 logger.info("FX cache updated.")
             except Exception:
                 logger.exception("FX refresh failed (non-fatal)")
