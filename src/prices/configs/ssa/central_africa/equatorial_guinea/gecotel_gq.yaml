@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gecotel_gq
+url: https://tienda.gecotel.post/tienda.php?lang=es
+language: es
+cadence: weekly
+channel: electronics
+notes: |
+  Probed 2026-10-05. Small PHP e-shop of GECOTEL (Equatorial Guinea telco
+  and post operator): electronics, stationery, accessories. Plain chrome124
+  fetch returns 200. Each listing page embeds a schema.org ItemList
+  JSON-LD (name, product URL, price, priceCurrency=XAF), so no PDP is
+  fetched. Page family: listing. Catalog is tiny (~25 products across 11
+  category filters); category ids are numeric (?categoria=N) and the
+  spider's category field holds that id, not a label. robots.txt only
+  disallows /api/, cart and account paths.
