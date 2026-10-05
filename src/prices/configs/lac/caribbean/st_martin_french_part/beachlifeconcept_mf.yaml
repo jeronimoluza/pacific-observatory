@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://beachlifeconcept.com/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fr
+currency: EUR
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "beachlifeconcept_mf"
+  base_url: "https://beachlifeconcept.com"
+  currency: "EUR"
+  language: "fr"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+throttle_group: shopify
+notes: |
+  BeachLife Concept, Orient Bay (Saint-Martin French side): swimwear,
+  accessories, jewelry, souvenirs. Shopify, currency EUR (Shopify.currency
+  active=EUR). /products.json?limit=250 verified 2026-10-05: pages 1-3 each
+  return 250 distinct products (page 3 not the last). SPIDER PAGE FAMILY: API.

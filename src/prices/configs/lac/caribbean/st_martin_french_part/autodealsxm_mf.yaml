@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: autodealsxm_mf
+url: https://autodealsxm.com/produits/
+language: fr
+cadence: weekly
+channel: electronics
+archive_prefix: "autodealsxm.com/produits/"
+archive_path_re: '^/produits/[^/?]+/?$'
+notes: |
+  Autodeal Computique SXM, ZAC de Bellevue, Marigot (97150 Saint-Martin,
+  French side). Appliances, tech, home equipment, EUR. NOT WooCommerce: an
+  ic-epc product-catalog plugin (no Store API). 403 at curl_cffi chrome120 and
+  chrome124; safari17_0 / firefox133 return 200 (2026-10-05), so the spider
+  pins safari17_0. /produits/page/N/ lists 12 cards per page, ~31 pages, page
+  2 differs from page 1. SPIDER PAGE FAMILY: listing only (cards characterised
+  from /produits/ listing HTML).
