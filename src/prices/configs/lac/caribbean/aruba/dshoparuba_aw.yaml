@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://dshoparuba.com/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "dshoparuba_aw"
+  base_url: "https://dshoparuba.com"
+  currency: "USD"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-10-05 (onboard-20261005-aruba). Shopify storefront, /products.json paginates; /meta.json currency USD, 1,561 products. Physical store Caya Harmonia 8 Oranjestad, free delivery within Aruba (USD is common in Aruba). Fashion/footwear.
+  Page family: API.
