@@ -1717,9 +1717,9 @@ body {
 <script>window.__DASH__ = __SHARED_DATA_JSON__;</script>
 </head>
 <body>
-<input class="tab-radio" type="radio" name="tabs" id="r0" checked>
+<input class="tab-radio" type="radio" name="tabs" id="r0">
 <input class="tab-radio" type="radio" name="tabs" id="r1">
-<input class="tab-radio" type="radio" name="tabs" id="r2">
+<input class="tab-radio" type="radio" name="tabs" id="r2" checked>
 <input class="tab-radio" type="radio" name="tabs" id="r3">
 <div class="shell">
     <div class="header">
@@ -1728,9 +1728,9 @@ body {
             <div class="subtitle">__HOST_SUBTITLE__</div>
         </div>
         <div class="tabs" role="tablist">
+            <label for="r2">__POLICY_TAB_LABEL__</label>
             <label for="r0">Uncertainty Topics</label>
             <label for="r1">Uncertainty Topics (Ranked)</label>
-            <label for="r2">__POLICY_TAB_LABEL__</label>
             <label for="r3">Uncertainty Actors</label>
         </div>
     </div>
