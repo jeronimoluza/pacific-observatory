@@ -32,6 +32,23 @@ if [ "$(git branch --show-current)" != "$BRANCH" ]; then
   git rev-parse --verify -q "$BRANCH" >/dev/null && git checkout -q "$BRANCH" || git checkout -q -b "$BRANCH"
 fi
 
+# Sources onboarded on prices/discovery-onboard (Monday 03:00) reach collect only through this copy:
+# the branches have diverged, so a merge would drop spiders. Files already here are left alone.
+# Prints the stems of the configs it copied.
+ONB=prices/discovery-onboard
+copy_onboarded() {
+  local new
+  new=$(git diff --name-only --diff-filter=A "$BRANCH...$ONB" -- src/prices/configs src/prices/price_scraping/spiders \
+    | while read -r f; do git cat-file -e "HEAD:$f" 2>/dev/null || echo "$f"; done)
+  [ -n "$new" ] || return 0
+  # shellcheck disable=SC2086
+  git checkout -q "$ONB" -- $new && git commit -q -m "feat(prices): bring onboarded sources onto $BRANCH" -- $new \
+    || { echo "$(date -u +%FT%TZ) copy from $ONB failed" >>"$OUT/events.log"; return 0; }
+  echo "$(date -u +%FT%TZ) copied $(echo "$new" | wc -l) onboarded files from $ONB" >>"$OUT/events.log"
+  echo "$new" | sed -n "s|^src/prices/configs/.*/\([^/]*\)\.yaml$|\1|p"
+}
+copy_onboarded >/dev/null
+
 TS=$(date -u +%Y%m%dT%H%MZ)
 LOG=$TREE/logs/prices/collect_${WEEK}_$TS.log
 status "RUNNING collect from $BRANCH @$(git rev-parse --short HEAD), log $LOG"
@@ -56,6 +73,28 @@ LEDGER=$(sed -n 's/.*ledger: \(.*status.jsonl\).*/\1/p' "$LOG" | tail -1)
 SUMMARY=$(sed -n 's/.*Prices collect .* done: \(.*\)/\1/p' "$LOG" | tail -1)
 echo "$LEDGER" >"$OUT/ledger_path"
 case "$(cat "$OUT/STATUS")" in
-  *ABORTED*) ;;
-  *) status "DONE rc=$RC $SUMMARY ledger=$LEDGER free=$(free_gb)GB" ;;
+  *ABORTED*) exit 1 ;;
 esac
+
+# Onboarding can still be committing when collect starts at 06:00. Wait for it (up to 6 h past the
+# main run), then collect whatever it added after the first copy, so every source is collected on
+# the Monday it is onboarded. STATUS stays RUNNING until this pass ends.
+if [ -f "$OUT/STATUS_onboard" ]; then
+  for _ in $(seq 72); do
+    grep -qE " (DONE|FAILED|BLOCKED)" "$OUT/STATUS_onboard" && break
+    sleep 300
+  done
+fi
+LATE=$(copy_onboarded)
+NLATE=0
+if [ -n "$LATE" ]; then
+  NLATE=$(echo "$LATE" | wc -l)
+  echo "$LATE" >"$OUT/collect_late_sources.txt"
+  mkdir -p "$OUT/collect_late"
+  status "RUNNING late collect of $NLATE sources onboarded after the main run started"
+  systemd-run --user --scope -q -p MemoryMax=12G -p MemorySwapMax=2G \
+    xargs -P 4 -I{} sh -c "\"$PY\" run.py prices collect -s {} -P 2 --timeout 5400 >\"$OUT/collect_late/{}.log\" 2>&1" \
+    <"$OUT/collect_late_sources.txt"
+fi
+NLATE_OK=$(grep -l "done:" "$OUT"/collect_late/*.log 2>/dev/null | wc -l)
+status "DONE rc=$RC $SUMMARY ledger=$LEDGER late=$NLATE_OK/$NLATE free=$(free_gb)GB"
