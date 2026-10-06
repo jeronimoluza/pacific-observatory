@@ -2,6 +2,8 @@
 # Weekly Monday collect (spec vault specs/prices-refactor/2026-09-28-weekly-run.md, step 4).
 # Runs every configured source from ~/po-worktrees/refactor on branch weekly/<YYYY-Www>.
 # cron: 0 6 * * 1  setsid nohup bash <this file> </dev/null >/dev/null 2>&1
+# `collect.sh new`: the /weekly skill runs this once onboarding is done, to collect only the sources
+# onboarded since the last copy, the same day. Own lock; status in STATUS_collect_new.
 # Status for the week lands in ~/po/logs/weekly/<YYYY-Www>/STATUS (one line, overwritten).
 set -u
 # cron has no login session: point systemd-run --user at the lingering user manager.
@@ -10,14 +12,16 @@ TREE=/home/jeronimoluza/po-worktrees/refactor
 PY=/home/jeronimoluza/venv/bin/python
 GATE_GB=${GATE_GB:-15}
 FLOOR_GB=${FLOOR_GB:-3}
-WEEK=$(date -u +%G-W%V)
+WEEK=${WEEK:-$(date -u +%G-W%V)}
 OUT=/home/jeronimoluza/po/logs/weekly/$WEEK
+MODE=${1:-all}
 mkdir -p "$OUT"
-status() { echo "$(date -u +%FT%TZ) $*" | tee "$OUT/STATUS" >>"$OUT/events.log"; }
+if [ "$MODE" = new ]; then STATUS_FILE=STATUS_collect_new; LOCK=.collect_new.lock; else STATUS_FILE=STATUS; LOCK=.collect.lock; fi
+status() { echo "$(date -u +%FT%TZ) $*" | tee "$OUT/$STATUS_FILE" >>"$OUT/events.log"; }
 free_gb() { df -BG --output=avail / | tail -1 | tr -dc 0-9; }
 
-exec 9>"$OUT/.collect.lock"
-flock -n 9 || { echo "$(date -u +%FT%TZ) skipped: collect lock held" >>"$OUT/events.log"; exit 0; }
+exec 9>"$OUT/$LOCK"
+flock -n 9 || { echo "$(date -u +%FT%TZ) skipped: $LOCK held" >>"$OUT/events.log"; exit 0; }
 
 if [ "$(free_gb)" -lt "$GATE_GB" ]; then
   status "BLOCKED disk $(free_gb) GB free < gate $GATE_GB GB; collect not started"
@@ -34,8 +38,8 @@ if [ "$(git branch --show-current)" != "$BRANCH" ]; then
   git rev-parse --verify -q "$BRANCH" >/dev/null && git checkout -q "$BRANCH" || git checkout -q -b "$BRANCH"
 fi
 
-# Sources onboarded on prices/discovery-onboard (Monday 03:00) reach collect only through this copy:
-# the branches have diverged, so a merge would drop spiders. Files already here are left alone.
+# Sources onboarded on prices/discovery-onboard reach collect only through this copy: the branches
+# have diverged, so a merge would drop spiders. Files already here are left alone.
 # Prints the stems of the configs it copied.
 ONB=prices/discovery-onboard
 copy_onboarded() {
@@ -49,6 +53,25 @@ copy_onboarded() {
   echo "$(date -u +%FT%TZ) copied $(echo "$new" | wc -l) onboarded files from $ONB" >>"$OUT/events.log"
   echo "$new" | sed -n "s|^src/prices/configs/.*/\([^/]*\)\.yaml$|\1|p"
 }
+
+if [ "$MODE" = new ]; then
+  NEW=$(copy_onboarded)
+  if [ -z "$NEW" ]; then
+    status "DONE nothing new to collect"
+    exit 0
+  fi
+  N=$(echo "$NEW" | wc -l)
+  echo "$NEW" >>"$OUT/collect_new_sources.txt"
+  mkdir -p "$OUT/collect_new"
+  status "RUNNING collect of $N new sources from $BRANCH @$(git rev-parse --short HEAD)"
+  # 6G: this can overlap the main collect (16G) on a8's 26 GB.
+  echo "$NEW" | systemd-run --user --scope -q -p MemoryMax=6G -p MemorySwapMax=1G \
+    xargs -P 4 -I{} sh -c "\"$PY\" run.py prices collect -s {} -P 2 --timeout 5400 >\"$OUT/collect_new/{}.log\" 2>&1"
+  OK=$(echo "$NEW" | while read -r s; do grep -q "done:" "$OUT/collect_new/$s.log" 2>/dev/null && echo "$s"; done | wc -l)
+  status "DONE $OK/$N new sources finished; logs $OUT/collect_new"
+  exit 0
+fi
+
 copy_onboarded >/dev/null
 
 TS=$(date -u +%Y%m%dT%H%MZ)
@@ -75,28 +98,6 @@ LEDGER=$(sed -n 's/.*ledger: \(.*status.jsonl\).*/\1/p' "$LOG" | tail -1)
 SUMMARY=$(sed -n 's/.*Prices collect .* done: \(.*\)/\1/p' "$LOG" | tail -1)
 echo "$LEDGER" >"$OUT/ledger_path"
 case "$(cat "$OUT/STATUS")" in
-  *ABORTED*) exit 1 ;;
+  *ABORTED*) ;;
+  *) status "DONE rc=$RC $SUMMARY ledger=$LEDGER free=$(free_gb)GB" ;;
 esac
-
-# Onboarding can still be committing when collect starts at 06:00. Wait for it (up to 6 h past the
-# main run), then collect whatever it added after the first copy, so every source is collected on
-# the Monday it is onboarded. STATUS stays RUNNING until this pass ends.
-if [ -f "$OUT/STATUS_onboard" ]; then
-  for _ in $(seq 72); do
-    grep -qE " (DONE|FAILED|BLOCKED)" "$OUT/STATUS_onboard" && break
-    sleep 300
-  done
-fi
-LATE=$(copy_onboarded)
-NLATE=0
-if [ -n "$LATE" ]; then
-  NLATE=$(echo "$LATE" | wc -l)
-  echo "$LATE" >"$OUT/collect_late_sources.txt"
-  mkdir -p "$OUT/collect_late"
-  status "RUNNING late collect of $NLATE sources onboarded after the main run started"
-  systemd-run --user --scope -q -p MemoryMax=12G -p MemorySwapMax=2G \
-    xargs -P 4 -I{} sh -c "\"$PY\" run.py prices collect -s {} -P 2 --timeout 5400 >\"$OUT/collect_late/{}.log\" 2>&1" \
-    <"$OUT/collect_late_sources.txt"
-fi
-NLATE_OK=$(grep -l "done:" "$OUT"/collect_late/*.log 2>/dev/null | wc -l)
-status "DONE rc=$RC $SUMMARY ledger=$LEDGER late=$NLATE_OK/$NLATE free=$(free_gb)GB"
