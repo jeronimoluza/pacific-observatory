@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://dewitvandorp.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: AWG
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "dewitvandorp_aw"
+  base_url: "https://dewitvandorp.com"
+  currency: "AWG"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-10-05 (onboard-20261005-aruba). Shopify storefront, /products.json?limit=250 paginates (page 2 differs); /meta.json currency AWG, 13,127 published products. Aruban department store (books, stationery, household), AWG prices e.g. 26.75.
+  Page family: API.

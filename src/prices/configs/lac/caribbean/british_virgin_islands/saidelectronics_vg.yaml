@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: saidelectronics_vg
+url: https://www.saidelectronics.com/
+language: en
+currency: USD
+cadence: weekly
+channel: electronics
+archive_prefix: "saidelectronics.com/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+throttle_group: shopify
+notes: |
+  Said Electronics, Road Town BVI. Shopify /products.json: 92 products in one
+  page; 104 of 201 variants priced 0.00 (quote only), so only ~half yield rows
+  (probed 2026-10-05). USD. Page family: API.

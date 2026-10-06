@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: engrup_ad
+url: https://engrup.com/
+language: es
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "engrup.com/"
+archive_path_re: '^/[^/?]+\.html$'
+notes: |
+  Engrup S.A., Andorra la Vella (AD500). OpenCart Journal3 with clean-SEO categories; ten departments listed explicitly. Small catalogue (~100 SKUs). Page family: listing; PDPs are /<slug>.html.

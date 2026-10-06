@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: galaxyandorra_ad
+url: https://www.galaxyandorra.com/en/
+language: en
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "galaxyandorra.com/"
+archive_path_re: '^/(?:en|es|fr|ca)/[a-z0-9-]+/\d+-[a-z0-9-]+\.html$'
+notes: |
+  Galaxy Andorra photography and electronics (AD500, +376). PrestaShop; theme lacks microdata so CARD_CSS=article.product-miniature. Page family: listing.

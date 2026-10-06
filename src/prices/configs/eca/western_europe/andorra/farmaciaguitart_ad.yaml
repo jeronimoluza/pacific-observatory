@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmaciaguitart_ad
+url: https://farmaciaguitart.com/
+language: ca
+currency: EUR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "farmaciaguitart.com/"
+archive_path_re: '^/(?:[a-z]{2}/)?(?:producte|producto|product|tienda|botiga)/[^/?]+/?$'
+notes: |
+  Farmacia Guitart, Andorra (AD500 address and +376 phone on the storefront). Open
+  WooCommerce Store API, EUR, minor unit 2. Page family: API.

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nawakimport_mf
+url: https://nawakimport.com/en/shop
+language: en
+cadence: weekly
+channel: dept-store
+archive_prefix: "nawakimport.com/en/shop/"
+archive_path_re: '^/en/shop/[^/?]+-\d+$'
+notes: |
+  Nawak Import, Grand Case (97150 Saint-Martin, French side). Odoo
+  website_sale, server-rendered, open at curl_cffi chrome124. Verified
+  2026-10-05: /en/shop lists 4,876 products, 20 cards/page, page 2/50/200 all
+  return different sets. Prices EUR (itemprop priceCurrency), whole euros.
+  General merchandise: home, hardware, solar, tools, some food, plus Amazon-
+  derived items. Placeholder rows named "NE PAS VENDRE" (1.00 EUR) are
+  skipped. SPIDER PAGE FAMILY: listing only (markup characterised from
+  /en/shop listing pages).

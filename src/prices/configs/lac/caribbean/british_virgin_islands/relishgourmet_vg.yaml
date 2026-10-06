@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: relishgourmet_vg
+url: https://relishgourmetfood.com/
+language: en
+currency: USD
+cadence: weekly
+channel: specialty-food
+archive_prefix: "relishgourmetfood.com/"
+archive_path_re: '^/[^/?]+-p\d+/?$'
+notes: |
+  Relish Gourmet Food, Wine & Beverages, BVI (Tortola / Virgin Gorda store
+  locations on site). Ecwid starter site, no open product API; sitemap.xml
+  lists PDPs (-p<id>) and each PDP has Product JSON-LD, USD (probed
+  2026-10-05, e.g. GRACA white wine 750ML 8.99). Categories: Food, Beverage,
+  Non-food. Page family: PDP.

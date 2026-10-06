@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: techje_ci
+url: https://tech.je/
+language: en
+currency: GBP
+cadence: weekly
+channel: electronics
+archive_prefix: "tech.je"
+archive_path_re: '^/[^/?]+'
+notes: |
+  Tech.je, St Helier. Computers and electronics. Local: Jersey/Guernsey address on site. Priced in GBP.
+  Page family parsed: API (/wp-json/wc/store/v1/products). Onboarded 2026-10-05 from the Channel Islands discovery list.

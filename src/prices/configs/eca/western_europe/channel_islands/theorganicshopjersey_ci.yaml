@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: theorganicshopjersey_ci
+url: https://theorganicshopjersey.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "theorganicshopjersey.com"
+archive_path_re: '^/[^/?]+'
+notes: |
+  The Organic Shop Jersey, St Helier. Organic grocery. Local: Jersey/Guernsey address on site. Priced in GBP.
+  Page family parsed: API (/wp-json/wc/store/v1/products). Onboarded 2026-10-05 from the Channel Islands discovery list.

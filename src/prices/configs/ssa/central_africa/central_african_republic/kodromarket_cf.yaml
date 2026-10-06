@@ -1,0 +1,21 @@
+scaffolding: spider
+spider: kodromarket_cf
+url: https://kodromarket.com/
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: fr
+currency: XAF
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-10-05. Bangui classifieds (97 "Bangui" mentions on the homepage,
+  prices in FCFA). Server-rendered PHP; no JSON-LD, sitemap.xml is unrendered
+  PHP source. Seeds from category.php?slug=... pages (7 categories, ~65
+  ads, unpaginated); ad.php?id=N PDPs give h1.ad-title, .ad-price .deal-price,
+  breadcrumb. Mixed assortment (electronics, clothing, vehicles, real estate);
+  ads without a numeric price are dropped. robots.txt blocks only admin/login
+  paths. Small catalog -- low volume but local to Bangui.
+  Page family: both (category seeds, PDP rows).

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: luoandorra_ad
+url: https://luoandorra.com/
+language: es
+currency: EUR
+cadence: weekly
+channel: fashion
+throttle_group: shopify
+archive_prefix: "luoandorra.com/products/"
+archive_path_re: '^/(?:[a-z]{2}/)?products/[^/?]+'
+notes: |
+  Luo Andorra, Andorra (AD500 address and +376 phone on the storefront). Open Shopify
+  /products.json catalog, EUR. Page family: API.

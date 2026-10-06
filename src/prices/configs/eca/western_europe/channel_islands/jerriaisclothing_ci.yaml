@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jerriaisclothing_ci
+url: https://jerriaisclothing.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: fashion
+archive_prefix: "jerriaisclothing.com/products/"
+archive_path_re: '^/products/[^/?]+'
+throttle_group: shopify
+notes: |
+  Jerriais Clothing, Jersey-branded apparel (small catalog). Local: Jersey/Guernsey address on site. Priced in GBP.
+  Page family parsed: API (/products.json). Onboarded 2026-10-05 from the Channel Islands discovery list.

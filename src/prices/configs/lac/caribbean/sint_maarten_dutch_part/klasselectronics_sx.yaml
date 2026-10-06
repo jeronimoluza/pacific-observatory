@@ -1,0 +1,16 @@
+# shared_catalog: klass-electronics.com (one USD catalog serves stores on Tortola and St Maarten;
+# twin config: british_virgin_islands/klasselectronics_vg.yaml, same spider).
+# No archive_prefix here: the BVI twin owns the archive scope, so no URL is claimed twice.
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: klasselectronics_vg
+url: https://klass-electronics.com/
+language: en
+currency: USD
+cadence: weekly
+channel: electronics
+notes: |
+  Klass Electronics, Philipsburg / St Maarten branch. Same WooCommerce catalog and USD prices as
+  the Road Town store (klasselectronics_vg); spider shared. Added 2026-10-05 per user decision.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bvihsa_vg
+url: https://www.bvihsa.vg/
+language: en
+currency: USD
+cadence: weekly
+channel: pharmacy
+archive_prefix: "bvihsa.vg/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  BVI Health Services Authority pharmacy catalog (Tortola/Road Town). WooCommerce
+  Store API, 50 products, none priced 0 (probed 2026-10-05), USD, minor_unit 2.
+  Small catalog but real. Page family: API.

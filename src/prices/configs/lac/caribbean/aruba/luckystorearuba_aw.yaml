@@ -1,0 +1,26 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://luckystorearuba.com/"
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: AWG
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "luckystorearuba_aw"
+  base_url: "https://luckystorearuba.com"
+  currency: "AWG"
+  language: "en"
+  api_url: "https://luckystorearuba.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Probed 2026-10-05 (onboard-20261005-aruba). WooCommerce Store API, x-wp-total=233, pages differ, currency_code AWG minor_unit 2, real prices (e.g. fridge 259900 -> 2599.00). Appliances/electronics/home furnishing department store marketed to Aruba.
+  Page family: API.

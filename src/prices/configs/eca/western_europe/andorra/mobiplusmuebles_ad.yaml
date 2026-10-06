@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mobiplusmuebles_ad
+url: https://mobiplusmuebles.com/
+language: es
+currency: EUR
+cadence: weekly
+channel: other
+archive_prefix: "mobiplusmuebles.com/"
+archive_path_re: '^/(?:[a-z]{2}/)?(?:producte|producto|product|tienda|botiga)/[^/?]+/?$'
+notes: |
+  Mobiplus Muebles, Andorra (AD500 address and +376 phone on the storefront). Open
+  WooCommerce Store API, EUR, minor unit 2. Page family: API.

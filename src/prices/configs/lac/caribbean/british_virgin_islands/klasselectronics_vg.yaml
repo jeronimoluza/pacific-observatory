@@ -1,0 +1,18 @@
+# shared_catalog: klass-electronics.com (one USD catalog serves stores on Tortola and St Maarten;
+# twin config: sint_maarten_dutch_part/klasselectronics_sx.yaml, same spider)
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: klasselectronics_vg
+url: https://klass-electronics.com/
+language: en
+currency: USD
+cadence: weekly
+channel: electronics
+archive_prefix: "klass-electronics.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Klass Electronics, Road Town BVI. WooCommerce Store API, 233 products; chrome
+  profiles get 403, firefox133 clears (IMPERSONATE_PROFILE set). 35 of first 100
+  have price 0 (probed 2026-10-05); page 2 differs. USD. Page family: API.

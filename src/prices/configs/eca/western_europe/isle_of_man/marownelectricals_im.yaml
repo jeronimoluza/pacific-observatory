@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://www.marownelectricals.im/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GBP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "marownelectricals_im"
+  base_url: "https://www.marownelectricals.im"
+  currency: "GBP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "www.marownelectricals.im/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Onboarded 2026-10-05 (discovery-onboard, isle_of_man). Page family: API.
+  Marown Electricals: domestic appliances. Shopify; /products.json 257 products over 2 pages, about 23 of 250 on page 1 carry price 0.00 (price-on-application; the spider drops them), GBP. Probed with curl_cffi chrome124, page 1 and 2 of products.json have disjoint ids.
+throttle_group: shopify

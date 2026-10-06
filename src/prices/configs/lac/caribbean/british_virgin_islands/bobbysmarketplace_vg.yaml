@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bobbysmarketplace_vg
+url: https://bobbysmarketplacevi.com/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "bobbysmarketplacevi.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Bobby's Marketplace, Road Town, Tortola, BVI (footer address and +1 284
+  number; the .vi in the domain is a name, not the US Virgin Islands).
+  WooCommerce Store API, 1482 products (X-WP-Total, probed 2026-10-05),
+  USD minor_unit 2, 0 zero-priced in page 1. Groceries, provisioning,
+  household. Page family: API.

@@ -1,0 +1,21 @@
+scaffolding: spider
+spider: banguistore_cf
+url: https://banguistore.com/
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: fr
+currency: XAF
+cadence: weekly
+coicop_codes: null
+active: true
+notes: |
+  Probed 2026-10-05. Bangui-based multi-vendor marketplace ("Achat et vente en
+  ligne a Bangui, Centrafrique"); delivery zones Bangui/Bimbo/Begoua, prices
+  in F CFA. Custom platform (not Shopify/Woo). Product sitemap
+  /sitemaps/products-1.xml lists ~78 products x 3 language prefixes
+  (/fr/ /en/ /sg/); spider follows /fr/ only. PDP JSON-LD Product:
+  priceCurrency XAF, sku BS-P000002, price 93500 for "Panneau solaire 550W".
+  robots.txt allows everything except /api/.
+  Page family: PDP only.

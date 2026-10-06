@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fnacandorra_ad
+url: https://fnac-andorra.com/
+language: es
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "fnac-andorra.com/"
+archive_path_re: '^/index\.php$'
+notes: |
+  Fnac Andorra (Andorra la Vella store; linked from the Pyrenees Andorra group site). OpenCart Journal3, route=product/category&path= leaf-walk (274 path ids). Page family: listing. Electronics, computing, books, games.

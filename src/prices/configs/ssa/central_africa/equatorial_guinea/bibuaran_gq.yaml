@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bibuaran_gq
+url: https://gq.bibuaran.com/
+language: es
+cadence: weekly
+channel: marketplace
+notes: |
+  Probed 2026-10-05. PrestaShop multi-vendor marketplace for Equatorial
+  Guinea (prices integer XAF, product:price:currency=XAF). Hostinger hcdn
+  403s chrome124 (6,768-byte page) but firefox133 returns 200, so the
+  spider pins IMPERSONATE_BROWSERS=firefox133. Category pages repeat a
+  newest-products carousel and ?page=2 returns the same set, so the
+  enumeration surface is the product sitemap (/sitemap/product/N.xml) ->
+  PDP. Page family: PDP. Catalog skews to furniture, appliances, fashion
+  and beauty with a food and drink branch (alimentos-y-bebidas).
+  Name and category come from the PDP breadcrumb, price from the
+  product:price:amount meta.

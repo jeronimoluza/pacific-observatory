@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmaciapasteur_ad
+url: https://farmaciapasteur.com/
+language: ca
+currency: EUR
+cadence: weekly
+channel: pharmacy
+throttle_group: shopify
+archive_prefix: "farmaciapasteur.com/products/"
+archive_path_re: '^/(?:[a-z]{2}/)?products/[^/?]+'
+notes: |
+  Farmacia Pasteur, Andorra (AD500 address and +376 phone on the storefront). Open Shopify
+  /products.json catalog, EUR. Page family: API.

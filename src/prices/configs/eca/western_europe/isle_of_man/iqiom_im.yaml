@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://iqiom.com/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GBP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "iqiom_im"
+  base_url: "https://iqiom.com"
+  currency: "GBP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "iqiom.com/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Onboarded 2026-10-05 (discovery-onboard, isle_of_man). Page family: API.
+  iQ Isle of Man: Apple reseller on the island. Shopify; /products.json 500+ products over 2+ pages, GBP, none zero-priced. Probed with curl_cffi chrome124, page 1 and 2 of products.json have disjoint ids.
+throttle_group: shopify

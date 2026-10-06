@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: chocadyllic_ci
+url: https://chocadyllic.co.uk/
+language: en
+currency: GBP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "chocadyllic.co.uk"
+archive_path_re: '^/[^/?]+'
+notes: |
+  Chocadyllic (JE2 4UU), St Helier. Chocolate gifts (16 products). Local: Jersey/Guernsey address on site. Priced in GBP.
+  Page family parsed: API (/wp-json/wc/store/v1/products). Onboarded 2026-10-05 from the Channel Islands discovery list.
