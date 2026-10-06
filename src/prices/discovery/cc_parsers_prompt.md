@@ -1,4 +1,4 @@
-You are the unattended {{WEEK}} Common Crawl parser stage on a8, started by cron. No human is
+You are the unattended {{WEEK}} Common Crawl parser stage on a8, started by the /weekly skill. No human is
 watching: never wait for input, never ask questions. Decide, note the decision in the summary,
 and continue.
 
@@ -49,7 +49,7 @@ When every worker is done:
 - Commit only the new `archived_weekly/*.py` files for `fixed` and `partial` sources, one commit
   (`feat(prices/cc): archived parsers for N weekly sources ({{WEEK}})`), no attribution lines,
   then `git push origin prices/discovery-onboard`. Never push any other branch, never merge.
-- Write `{{OUT}}/parsers_fixed.txt`: the committed stems, one per line (the wrapper then re-runs
+- Write `{{OUT}}/parsers_fixed.txt`: the committed stems, one per line (a human reviews the summary, then the wrapper re-runs
   their saved misses with `--retry-misses` and lands what they recover).
 - Write `{{OUT}}/cc_parsers_summary.md`: source | verdict | train priced | held-out priced |
   spot check | eras | notes; the commit hash; and decisions a human should review.

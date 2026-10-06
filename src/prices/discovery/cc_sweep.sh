@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Weekly Common Crawl sweep of newly onboarded sources, after the Monday onboarding.
-# cron: 5 3 * * 1  setsid nohup bash <this file> </dev/null >/dev/null 2>&1
+# Weekly Common Crawl sweep of newly onboarded sources, started by the /weekly skill.
 # Waits for STATUS_onboard to finish (polls; never takes monday.sh's lock, which it would
 # then skip), then sweeps every stem in any week's new_sources.txt not yet in cc_swept.txt.
 # Status: ~/po/logs/weekly/<YYYY-Www>/STATUS_cc; summary: cc/cc_summary.md; log: cc.log.
@@ -10,7 +9,7 @@ export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 TREE=/home/jeronimoluza/po-worktrees/discovery-onboard
 PY=/home/jeronimoluza/venv/bin/python
 WEEKLY=/home/jeronimoluza/po/logs/weekly
-WEEK=$(date -u +%G-W%V)
+WEEK=${WEEK:-$(date -u +%G-W%V)}
 OUT=$WEEKLY/$WEEK
 GATE_GB=${GATE_GB:-15}
 mkdir -p "$OUT"

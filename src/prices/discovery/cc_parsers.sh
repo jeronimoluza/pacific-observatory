@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Tuesday CC parser stage: headless Claude writes archived parsers for the sources the Monday
-# CC sweep flagged (cc/needs_parser.txt), then their saved misses are re-run and landed.
-# cron: 0 4 * * 2  setsid nohup bash <this file> </dev/null >/dev/null 2>&1
+# CC parser stage, run by the /weekly skill: headless Claude writes archived parsers for the
+# sources the CC sweep flagged (cc/needs_parser.txt) and stops at REVIEW. After a human approves
+# (and trims parsers_fixed.txt), `cc_parsers.sh land` re-runs their saved misses and lands the rows.
+# Set WEEK=<YYYY-Www> when not run the day after the sweep.
 # Waits for STATUS_cc (week of the preceding Monday) to finish; polls, never takes its lock.
 # Status: ~/po/logs/weekly/<YYYY-Www>/STATUS_parsers; summary: cc_parsers_summary.md.
 set -u
@@ -10,13 +11,31 @@ export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 TREE=/home/jeronimoluza/po-worktrees/discovery-onboard
 CLAUDE=/home/jeronimoluza/.local/bin/claude
 PY=/home/jeronimoluza/venv/bin/python
-WEEK=$(date -u -d "yesterday" +%G-W%V)
+WEEK=${WEEK:-$(date -u -d "yesterday" +%G-W%V)}
+MODE=${1:-write}
 OUT=/home/jeronimoluza/po/logs/weekly/$WEEK
 mkdir -p "$OUT"
 status() { echo "$(date -u +%FT%TZ) $*" | tee "$OUT/STATUS_parsers" >>"$OUT/events.log"; }
 
 exec 6>"$OUT/.parsers.lock"
 flock -n 6 || exit 0
+
+if [ "$MODE" = land ]; then
+  grep -q " REVIEW" "$OUT/STATUS_parsers" 2>/dev/null || { echo "STATUS_parsers is not at REVIEW" >&2; exit 1; }
+  if [ ! -s "$OUT/parsers_fixed.txt" ]; then
+    status "DONE nothing approved to land"
+    exit 0
+  fi
+  status "RUNNING retry of saved misses for $(wc -l <"$OUT/parsers_fixed.txt") approved sources"
+  cd "$TREE/src" && env PO_CC_INDEX_DIR=/mnt/backup5tb/cc_index \
+    systemd-run --user --scope -q -p MemoryMax=6G "$PY" -c \
+    "import sys; sys.argv = ['po', 'prices', 'cc-weekly'] + sys.argv[1:]; from cli import main; main()" \
+    --sources "$OUT/parsers_fixed.txt" --retry-misses "$OUT/cc/misses" \
+    --reasons no_extract,selectors_noprice --data-root /home/jeronimoluza/po/data/prices \
+    --work "$OUT/cc_parsers_retry" >"$OUT/cc_parsers_retry.log" 2>&1
+  status "DONE $(tail -1 "$OUT/cc_parsers_retry.log")"
+  exit 0
+fi
 
 status "WAITING for the CC sweep (STATUS_cc)"
 for _ in $(seq 360); do
@@ -58,14 +77,7 @@ DIRTY=""
 [ -n "$(git status --porcelain --untracked-files=no)" ] && DIRTY=" WARNING tree dirty: Monday onboarding will block"
 
 if [ -s "$OUT/parsers_fixed.txt" ]; then
-  status "RUNNING retry of saved misses for $(wc -l <"$OUT/parsers_fixed.txt") parsed sources"
-  cd "$TREE/src" && env PO_CC_INDEX_DIR=/mnt/backup5tb/cc_index \
-    systemd-run --user --scope -q -p MemoryMax=6G "$PY" -c \
-    "import sys; sys.argv = ['po', 'prices', 'cc-weekly'] + sys.argv[1:]; from cli import main; main()" \
-    --sources "$OUT/parsers_fixed.txt" --retry-misses "$OUT/cc/misses" \
-    --reasons no_extract,selectors_noprice --data-root /home/jeronimoluza/po/data/prices \
-    --work "$OUT/cc_parsers_retry" >"$OUT/cc_parsers_retry.log" 2>&1
-  status "DONE rc=$RC $(tail -1 "$OUT/cc_parsers_retry.log")$DIRTY"
+  status "REVIEW rc=$RC $(wc -l <"$OUT/parsers_fixed.txt") parsers committed; read cc_parsers_summary.md, trim parsers_fixed.txt, then run with 'land'$DIRTY"
 else
   status "DONE rc=$RC no parser committed; see $OUT/cc_parsers_summary.md$DIRTY"
 fi

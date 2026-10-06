@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# Unattended Monday onboarding: headless Claude runs monday.md as orchestrator.
-# cron: 0 3 * * 1  setsid nohup bash <this file> </dev/null >/dev/null 2>&1
+# Monday onboarding, started by the /weekly skill: headless Claude runs monday.md as orchestrator.
 # Holds the discovery lock for the whole session, so the nightly search never overlaps it.
 # Status: ~/po/logs/weekly/<YYYY-Www>/STATUS_onboard; transcript: onboard.jsonl; summary: onboard_summary.md.
 set -u
 TREE=/home/jeronimoluza/po-worktrees/discovery-onboard
 CLAUDE=/home/jeronimoluza/.local/bin/claude
-WEEK=$(date -u +%G-W%V)
+WEEK=${WEEK:-$(date -u +%G-W%V)}
 OUT=/home/jeronimoluza/po/logs/weekly/$WEEK
 mkdir -p "$OUT"
 status() { echo "$(date -u +%FT%TZ) $*" | tee "$OUT/STATUS_onboard" >>"$OUT/events.log"; }
