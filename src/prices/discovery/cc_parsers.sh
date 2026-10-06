@@ -5,6 +5,8 @@
 # Waits for STATUS_cc (week of the preceding Monday) to finish; polls, never takes its lock.
 # Status: ~/po/logs/weekly/<YYYY-Www>/STATUS_parsers; summary: cc_parsers_summary.md.
 set -u
+# cron has no login session: point systemd-run --user at the lingering user manager.
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 TREE=/home/jeronimoluza/po-worktrees/discovery-onboard
 CLAUDE=/home/jeronimoluza/.local/bin/claude
 PY=/home/jeronimoluza/venv/bin/python

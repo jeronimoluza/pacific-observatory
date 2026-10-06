@@ -5,6 +5,8 @@
 # then skip), then sweeps every stem in any week's new_sources.txt not yet in cc_swept.txt.
 # Status: ~/po/logs/weekly/<YYYY-Www>/STATUS_cc; summary: cc/cc_summary.md; log: cc.log.
 set -u
+# cron has no login session: point systemd-run --user at the lingering user manager.
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 TREE=/home/jeronimoluza/po-worktrees/discovery-onboard
 PY=/home/jeronimoluza/venv/bin/python
 WEEKLY=/home/jeronimoluza/po/logs/weekly
