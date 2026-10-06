@@ -22,7 +22,9 @@ CLI (run from `src/`):
 4. Otherwise write `src/prices/price_scraping/archived_weekly/<stem>.py` exposing
    `extract(html: str, url: str) -> list[dict]`. Build each row with
    `from ..archived import price_row` (`price_row(name, price, url, currency)`; returns None to
-   reject) and `normalize_price`. Parse with `lxml.html.fromstring`. Read
+   reject) and `normalize_price`. Parse with `lxml.html.fromstring`, after stripping a leading
+   `<?xml ...?>` declaration: lxml rejects a str that carries one, and the tier swallows the error,
+   so the parser silently returns nothing (W41, manxinspirations_im). Read
    `archived_spar_zw.py` and `archived_bysource.py` for the house style (those take an lxml doc
    and return one row; yours take the HTML string and return a list). The currency is the
    source manifest's `currency:`; never read it from the page. Module docstring: what the
