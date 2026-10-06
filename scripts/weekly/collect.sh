@@ -4,6 +4,8 @@
 # cron: 0 6 * * 1  setsid nohup bash <this file> </dev/null >/dev/null 2>&1
 # Status for the week lands in ~/po/logs/weekly/<YYYY-Www>/STATUS (one line, overwritten).
 set -u
+# cron has no login session: point systemd-run --user at the lingering user manager.
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 TREE=/home/jeronimoluza/po-worktrees/refactor
 PY=/home/jeronimoluza/venv/bin/python
 GATE_GB=${GATE_GB:-15}
