@@ -30,6 +30,7 @@ from bs4 import BeautifulSoup
 
 from .archived import row_from_meta, rows_from_jsonld
 from .archived_bysource import rows_from_source
+from .archived_weekly import rows_from_weekly
 from .archived_embedded import rows_from_next_flight
 from .archived_microdata import rows_from_microdata
 from .archived_nextdata import rows_from_nextdata
@@ -244,6 +245,12 @@ def portable_rows(html: str, url: str, source: Optional[str] = None) -> Tuple[Li
     return [], "none"
 
 
+def _weekly(html: str, url: str, source: Optional[str]) -> Tuple[List[Dict[str, Any]], str]:
+    """Last resort: a parser the weekly CC stage wrote for this source."""
+    rows = _priced(rows_from_weekly(html, url, source))
+    return (rows, "weekly") if rows else ([], "none")
+
+
 def parse_rows(
     html: str,
     url: str,
@@ -275,7 +282,8 @@ def parse_rows(
             rows = []
         if rows:
             return rows, "hook"
-        return portable_rows(html, url, source)
+        rows, tier = portable_rows(html, url, source)
+        return (rows, tier) if rows else _weekly(html, url, source)
     if source in _BYSOURCE_FIRST:
         rows = _priced(rows_from_source(html, url, source))
         if rows:
@@ -287,6 +295,9 @@ def parse_rows(
     jsonld_first = source in _JSONLD_FIRST and tier == "jsonld" and rows
     if extracted.get("price") and len(rows) <= 1 and not jsonld_first:
         return [extracted], "selectors"
+    if rows:
+        return rows, tier
+    rows, tier = _weekly(html, url, source)
     if rows:
         return rows, tier
     if extracted:

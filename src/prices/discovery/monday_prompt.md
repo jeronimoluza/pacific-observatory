@@ -16,6 +16,16 @@ Follow `src/prices/discovery/monday.md` in this worktree exactly, with these add
   local delivery); write the probe-log shard as `onboard-<YYYYMMDD>-<country>.jsonl`; report the
   domain exactly as in the TSV `domain` column; set `throttle_group: shopify` on Shopify manifests;
   test rows stay under this worktree's own `data/` directory.
+- Add to each worker brief: every manifest with a `spider` gets `archive_prefix` and
+  `archive_path_re` derived from what Common Crawl archived, not from today's live URLs
+  (URL schemes change between eras: `/product/` vs `/products/`, locale prefixes, old platforms).
+  From `src/`, run
+  `PO_CC_INDEX_DIR=/mnt/backup5tb/cc_index ~/venv/bin/python -c "import sys;sys.argv=['po','prices','cc-weekly','--shapes','<host>'];from cli import main;main()"`
+  (a few minutes) and pick the product-page families across eras. Prefix = host plus the
+  narrowest path covering every product family (bare host when they differ); path_re matches
+  all of them and no listing pages. On a shared host (marketplace, SaaS storefront) the prefix
+  must include the store's own path segment. 0 captures: bare host + the live product regex.
+  The 03:05 CC sweep (`cc_sweep.sh`) reads these fields from `new_sources.txt` sources.
 - Before each commit, check that the worktree's `data` is a real directory, not a symlink into
   `~/po/data`. Never `git add` anything under `data/` or `outputs/`.
 - Git: one commit per country on `prices/discovery-onboard`, no attribution lines, then

@@ -20,9 +20,11 @@ import gzip
 import io
 import json
 import logging
+import os
 import re
 import subprocess
 import time
+import zlib
 from pathlib import Path
 from collections import OrderedDict
 from typing import Any, Dict, List, Optional, Tuple
@@ -168,6 +170,10 @@ _CLUSTER_CACHE: "OrderedDict[str, Tuple[List[str], List[Tuple[str, int, int]]]]"
 
 
 def cache_dir(project_root: Optional[Path] = None) -> Path:
+    if project_root is None and os.environ.get("PO_CC_INDEX_DIR"):
+        d = Path(os.environ["PO_CC_INDEX_DIR"])
+        d.mkdir(parents=True, exist_ok=True)
+        return d
     if project_root is None:
         project_root = Path(__file__).parent.parent.parent
     d = project_root / "data" / "prices" / "_cc_index"
@@ -300,20 +306,24 @@ def _fetch_block(index: str, shard: str, offset: int, length: int) -> str:
             capture_output=True,
         )
         if result.returncode == 0:
-            break
-        last_err = result.stderr
+            # curl can exit 0 on a short or corrupted body; a CRC or deflate
+            # error here crashed whole resolves (W41), so it retries like a 503.
+            try:
+                return (
+                    gzip.GzipFile(fileobj=io.BytesIO(result.stdout))
+                    .read()
+                    .decode("utf-8", "replace")
+                )
+            except (OSError, EOFError, zlib.error) as exc:
+                last_err = str(exc).encode()
+        else:
+            last_err = result.stderr
         if attempt < _BLOCK_ATTEMPTS:
             time.sleep(_BLOCK_RETRY_SECONDS * attempt)
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"cdx block fetch failed after {_BLOCK_ATTEMPTS} attempts "
-            f"({index} {shard} @{offset}): "
-            f"{last_err[:200].decode('utf-8', 'replace')}"
-        )
-    return (
-        gzip.GzipFile(fileobj=io.BytesIO(result.stdout))
-        .read()
-        .decode("utf-8", "replace")
+    raise RuntimeError(
+        f"cdx block fetch failed after {_BLOCK_ATTEMPTS} attempts "
+        f"({index} {shard} @{offset}): "
+        f"{last_err[:200].decode('utf-8', 'replace')}"
     )
 
 

@@ -465,6 +465,7 @@ from prices.source_sanity import (  # noqa: E402
     source_sanity_command as _prices_source_sanity,
 )
 from prices.cc_ledger import cc_ledger_command as _prices_cc_ledger  # noqa: E402
+from prices.cc_weekly import cc_weekly_command as _prices_cc_weekly  # noqa: E402
 from prices.cc_exhaustion import (  # noqa: E402
     cc_exhaustion_command as _prices_cc_exhaustion,
 )
@@ -495,6 +496,7 @@ prices.add_command(_prices_uv_report, name="uv-report")
 prices.add_command(_prices_stage_b, name="stage-b")
 prices.add_command(_prices_drop_ledger, name="drop-ledger")
 prices.add_command(_prices_cc_ledger, name="cc-ledger")
+prices.add_command(_prices_cc_weekly, name="cc-weekly")
 prices.add_command(_prices_cc_exhaustion, name="cc-exhaustion")
 
 
