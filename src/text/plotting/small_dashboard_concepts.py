@@ -302,6 +302,11 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .chip-tools input[type="text"]:focus { outline: 0; border-color: #667eea; }
 .chip-tools button { padding: 4px 8px; border: 1px solid #ddd; border-radius: 12px; background: #fff; font-size: 0.8em; cursor: pointer; }
 .chip-tools button:hover { border-color: #667eea; background: #f0f4ff; }
+.chip-tools button.is-active { background: #667eea; border-color: #667eea; color: #fff; }
+/* Outside Custom mode the tree drives the chart: rows open and close, they
+   are not ticked one by one. */
+#item-select:not(.is-custom) .tree .chip { cursor: default; }
+#item-select:not(.is-custom) .tree .tree-row > .chip { cursor: pointer; }
 .chip-container {
     display: flex;
     flex-wrap: wrap;
@@ -391,7 +396,8 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .tree-group:not(.is-open) > .chip-group-body > .tree-group:not(:has(.chip.is-hit)) { display: none; }
 .tree-heading:not(.is-open) > .chip-group-body > .tree-group:not(:has(.chip.is-hit)) { display: none; }
 .tree-on { color: #667eea; font-size: 0.72em; white-space: nowrap; padding-right: 6px; }
-.tree-group.is-open > .tree-row > .tree-on { display: none; }
+.tree-group.is-open > .tree-row > .tree-on,
+.tree-heading.is-open > .chip-group-header > .tree-on { display: none; }
 .chip {
     display: inline-flex;
     align-items: center;
@@ -453,6 +459,7 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
     max-width: 260px;
 }
 .tooltip-title { font-weight: 700; margin-bottom: 6px; }
+.tooltip-line { margin-top: 2px; font-variant-numeric: tabular-nums; }
 .tooltip-table { width: 100%; border-collapse: collapse; }
 .tooltip-table td { padding: 1px 0; }
 .tooltip-group-title-row td { padding-top: 4px; font-weight: 600; }
@@ -476,7 +483,48 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .noUi-handle:before, .noUi-handle:after { display: none !important; }
 .noUi-handle:hover { background: #667eea !important; box-shadow: 0 0 0 3px rgba(102,126,234,0.2) !important; }
 .noUi-tooltip { font-size: 0.75em; padding: 2px 6px; background: #667eea; color: #fff; border: none; border-radius: 4px; }
+/* Tree on the left from the top of the page; controls right-aligned above the
+   chart. The tree scrolls inside the column, so the chart side sets its height. */
+.page { display: flex; gap: 14px; align-items: stretch; }
+.page .chip-sidebar { height: auto; min-height: 0; }
+.chip-scroll { position: relative; flex: 1 1 auto; min-height: 200px; }
+.chip-scroll > .chip-container { position: absolute; inset: 0; }
+.main-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.controls-bar { display: flex; flex-direction: column; align-items: flex-end; }
+.controls-bar .controls { justify-content: flex-end; }
+/* Country above Measure on the left, Scale on the right; beneath them one row
+   of Measure, date range and smoothing. */
+.controls-bar .controls-top,
+.controls-bar .controls-mid { width: 100%; justify-content: space-between; }
+.controls-bar .controls-mid { margin-bottom: 0; align-items: center; }
+.controls-bar .controls-mid > .controls { margin: 22px 0 0; }
+.controls-bar .controls-mid { flex-wrap: nowrap; }
+.controls-bar .controls-mid > .slider-row { margin: 22px 0 0; padding: 0 40px; flex: 1 1 auto; min-width: 0; justify-content: center; }
+/* The handle labels already show the range; the text copy would crowd the row. */
+.controls-mid .range-label { display: none; }
+.controls-mid .date-slider { flex: 1 1 220px; min-width: 120px; max-width: 320px; }
+@media (max-width: 1100px) { .controls-bar .controls-mid { flex-wrap: wrap; } }
+/* The handle tooltips centre on the handle, so the right one needs room. */
+.controls-bar .slider-row { margin-bottom: 8px; padding-right: 44px; }
+.empty-hint {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 40px;
+    color: #667085;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+.empty-hint-inner { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.empty-hint-arrow { font-size: 2.4em; line-height: 1; }
+.chart-wrapper.is-empty .empty-hint { display: flex; }
+.chart-wrapper.is-empty canvas { visibility: hidden; }
 @media (max-width: 900px) {
+    .page { flex-direction: column; }
+    .chip-scroll { height: 200px; flex: 0 0 auto; }
+    .controls-bar { align-items: stretch; }
     .plot-row { flex-direction: column; }
     .chip-sidebar {
         flex: 1 1 auto;
@@ -523,10 +571,6 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 }
 .rank-table tbody tr { border-bottom: 1px solid #f2f4f7; }
 .rank-table td.num, .rank-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
-/* Topics this tracker is about, highlighted in place rather than filtered out,
-   so their rank against everything else stays visible. */
-.rank-table tr.focus-row { background: #fff7e6; }
-.rank-table tr.focus-row td:nth-child(2) { font-weight: 600; }
 .rank-table td.up { color: #b42318; }
 .rank-table td.down { color: #067647; }
 /* Readers kept asking what an EPU actually is, so the recipe sits on the page
@@ -662,7 +706,7 @@ function buildMADatasets(rawValues, baseColor, seriesLabel, toggleName) {
             borderColor: hexToRgba(baseColor, opacity),
             borderDash: s.dash,
             borderWidth: s.width,
-            fill: false, tension: 0.1, pointRadius: 0, pointHoverRadius: 5,
+            fill: false, tension: 0.1, pointRadius: 0, pointHoverRadius: 5, pointHitRadius: 6,
             _variant: variantMap[w] || 'ma'
         };
     });
@@ -764,6 +808,151 @@ function externalTooltipHandler(context) {
 """
 
 
+# ---------- Concept picker, shared by the time-series and ranked tabs ----------
+
+# The tree sidebar. Needs __ITEM_LABEL__, __SEARCH_PLACEHOLDER__ and __CHIP_HTML__.
+SIDEBAR_HTML = """    <div class="chip-sidebar">
+        <div class="chip-header">__ITEM_LABEL__: <span id="selected-count">0</span> selected</div>
+        <div class="chip-tools">
+            <input type="text" id="item-search" placeholder="__SEARCH_PLACEHOLDER__">
+            <button type="button" id="default-btn">Default</button>
+            <button type="button" id="clear-btn">Clear</button>
+            <button type="button" id="custom-btn" title="Tick any topic, group or concept freely">Custom</button>
+        </div>
+        <div class="chip-scroll"><div class="chip-container" id="item-select">__CHIP_HTML__</div></div>
+    </div>"""
+
+# Needs page globals `items`, `palette`, `chipLabelMap` and `defaultItems`;
+# `initPicker(onChange)` wires the tree and calls `onChange` after each change.
+PICKER_JS = r"""
+function getSelectedItems() {
+    return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
+}
+function updateSelectedCount() {
+    const el = document.getElementById('selected-count');
+    if (el) el.textContent = getSelectedItems().length;
+}
+function fmtChipLabel(raw) {
+    if (chipLabelMap[raw]) return chipLabelMap[raw];
+    return raw.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+function getChipColor(item) { return palette[items.indexOf(item) % palette.length]; }
+function applyChipFilters() {
+    const q = (document.getElementById('item-search').value || '').toLowerCase().trim();
+    document.querySelectorAll('#item-select .chip').forEach(chip => {
+        const input = chip.querySelector('input');
+        const labelEl = chip.querySelector('.chip-label');
+        const raw = input.value;
+        const label = chip.dataset.label || fmtChipLabel(raw);
+        const color = getChipColor(raw);
+        if (color) chip.style.setProperty('--chip-color', color);
+        if (labelEl) labelEl.textContent = label;
+        const txt = label.toLowerCase();
+        const match = !q || txt.indexOf(q) !== -1;
+        // A selected pill always stays on screen: its line is on the chart and
+        // the pill is the only way to take it off again.
+        chip.classList.toggle('is-filtered', !(match || input.checked));
+        chip.classList.toggle('is-hit', !!(q && match));
+    });
+    document.querySelectorAll('#item-select .chip-group').forEach(group => {
+        const shown = group.querySelectorAll('.chip:not(.is-filtered)').length;
+        group.classList.toggle('is-empty', shown === 0);
+        const cnt = group.querySelector('.chip-group-count');
+        if (cnt) cnt.textContent = shown;
+    });
+    // A search hit keeps its parent group rows on screen, so it reads in context.
+    document.querySelectorAll('#item-select .chip.is-hit').forEach(chip => {
+        let g = chip.closest('.chip-group-body');
+        while (g && (g = g.closest('.tree-group'))) {
+            const row = g.querySelector(':scope > .tree-row > .chip');
+            if (row) row.classList.remove('is-filtered');
+            g = g.parentElement;
+        }
+    });
+    document.querySelectorAll('#item-select .tree-group, #item-select .tree-heading').forEach(group => {
+        const on = group.querySelectorAll(':scope > .chip-group-body input:checked').length;
+        const el = group.querySelector(':scope > .tree-row > .tree-on, :scope > .chip-group-header > .tree-on');
+        if (el) el.textContent = on ? on + ' on chart' : '';
+    });
+}
+function setSelected(picks) {
+    const set = new Set(picks);
+    document.querySelectorAll('#item-select input').forEach(cb => { cb.checked = set.has(cb.value); });
+    updateSelectedCount();
+    applyChipFilters();
+}
+
+function initPicker(onChange) {
+    document.getElementById('item-select').addEventListener('change', function() {
+        updateSelectedCount();
+        applyChipFilters();
+        onChange();
+    });
+    document.getElementById('item-search').addEventListener('input', applyChipFilters);
+    // Outside Custom mode the chart shows exactly what the open tree shows: every
+    // open topic or group draws the rows directly beneath it, and closing one
+    // takes its lines off. Custom mode leaves the ticks to the reader.
+    const picker = document.getElementById('item-select');
+    const isTree = !!picker.querySelector('.tree');
+    const customBtn = document.getElementById('custom-btn');
+    function isCustom() { return picker.classList.contains('is-custom'); }
+    function shownOpen(g) {
+        for (; g; g = g.parentElement.closest('.tree-group, .tree-heading')) {
+            if (!g.classList.contains('is-open')) return false;
+        }
+        return true;
+    }
+    function syncAuto() {
+        picker.querySelectorAll('input').forEach(i => { i.checked = false; });
+        picker.querySelectorAll('.tree-heading.is-open, .tree-group.is-open').forEach(g => {
+            if (!shownOpen(g)) return;
+            g.querySelectorAll(
+                ':scope > .chip-group-body > .chip input, ' +
+                ':scope > .chip-group-body > .tree-group > .tree-row input'
+            ).forEach(i => { i.checked = true; });
+        });
+        picker.dispatchEvent(new Event('change'));
+    }
+    function toggleNode(g) {
+        if (!g.classList.toggle('is-open')) {
+            g.querySelectorAll('.is-open').forEach(x => x.classList.remove('is-open'));
+        }
+        if (isTree && !isCustom()) syncAuto();
+    }
+    document.querySelectorAll('#item-select .chip-group-header').forEach(h => {
+        h.addEventListener('click', () => toggleNode(h.parentElement));
+    });
+    document.querySelectorAll('#item-select .tree-caret').forEach(b => {
+        b.addEventListener('click', () => toggleNode(b.closest('.tree-group')));
+    });
+    picker.addEventListener('click', function(e) {
+        if (!isTree || isCustom()) return;
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        e.preventDefault();
+        const row = chip.closest('.tree-row');
+        if (row) toggleNode(row.parentElement);
+    });
+    if (!isTree) customBtn.remove();
+    else customBtn.addEventListener('click', function() {
+        const on = picker.classList.toggle('is-custom');
+        customBtn.classList.toggle('is-active', on);
+        if (!on) syncAuto();
+    });
+    if (!defaultItems.length) document.getElementById('default-btn').remove();
+    else document.getElementById('default-btn').addEventListener('click', function() {
+        setSelected(defaultItems);
+        onChange();
+    });
+    document.getElementById('clear-btn').addEventListener('click', function() {
+        if (isTree && !isCustom()) picker.querySelectorAll('.is-open').forEach(x => x.classList.remove('is-open'));
+        setSelected([]);
+        onChange();
+    });
+}
+"""
+
+
 # ---------- Tab 1: Uncertainty Topics (rank chart) ----------
 
 TOPIC_PAGE_TEMPLATE = r"""<!DOCTYPE html>
@@ -775,46 +964,48 @@ TOPIC_PAGE_TEMPLATE = r"""<!DOCTYPE html>
 <style>__CSS__</style>
 </head>
 <body>
-<div class="controls field-row">
-    <div class="field">
-        <label for="topic-country">Country</label>
-        <select id="topic-country">__COUNTRY_OPTIONS__</select>
+<div class="page">
+__SIDEBAR__
+    <div class="main-col">
+        <div class="controls-bar">
+            <div class="controls field-row controls-top">
+                <div class="field">
+                    <label for="topic-country">Country</label>
+                    <select id="topic-country">__COUNTRY_OPTIONS__</select>
+                </div>
+                <div class="field">
+                    <label for="topic-scale">Scale</label>
+                    <select id="topic-scale">
+                        <option value="index" selected>Index (baseline = 100)</option>
+                        <option value="z">Z-score</option>
+                    </select>
+                </div>
+            </div>
+            <div class="controls field-row controls-mid">
+                <div class="field">
+                    <label for="topic-measure">Measure</label>
+                    <select id="topic-measure">
+                        <option value="intensity">How much the topic is discussed</option>
+                        <option value="absolute" selected>How much uncertainty is about the topic</option>
+                        <option value="framing">The topic&#39;s share of uncertainty</option>
+                    </select>
+                </div>
+                <div class="slider-row">
+                    <label>Date Range:</label>
+                    <span class="range-label" id="topic-range">-</span>
+                    <div id="topic-slider" class="date-slider"></div>
+                </div>
+                <div class="field field-narrow">
+                    <label for="topic-topn">Top N</label>
+                    <input type="number" id="topic-topn" value="5" min="1">
+                </div>
+            </div>
+        </div>
+        <p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;" id="topic-explainer">-</p>
+        <div class="chart-wrapper">
+            <canvas id="topic-chart"></canvas>
+        </div>
     </div>
-    <div class="field">
-        <label for="topic-measure">Measure</label>
-        <select id="topic-measure">
-            <option value="intensity">How much the topic is discussed</option>
-            <option value="absolute" selected>How much uncertainty is about the topic</option>
-            <option value="framing">The topic&#39;s share of uncertainty</option>
-        </select>
-    </div>
-    <div class="field">
-        <label for="topic-scale">Scale</label>
-        <select id="topic-scale">
-            <option value="index" selected>Index (baseline = 100)</option>
-            <option value="z">Z-score</option>
-        </select>
-    </div>
-    <div class="field">
-        <label for="topic-universe">Compared against</label>
-        <select id="topic-universe">
-            <option value="focus" selected>Tracker topics (__N_FOCUS__)</option>
-            <option value="all">All topics (__N_ALL__)</option>
-        </select>
-    </div>
-    <div class="field field-narrow">
-        <label for="topic-topn">Top N</label>
-        <input type="number" id="topic-topn" value="5" min="1">
-    </div>
-</div>
-<div class="slider-row">
-    <label>Date Range:</label>
-    <span class="range-label" id="topic-range">-</span>
-    <div id="topic-slider" class="date-slider"></div>
-</div>
-<p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;" id="topic-explainer">-</p>
-<div class="chart-wrapper">
-    <canvas id="topic-chart"></canvas>
 </div>
 <div class="table-section">
     <div class="table-header">
@@ -830,6 +1021,7 @@ TOPIC_PAGE_TEMPLATE = r"""<!DOCTYPE html>
 </div>
 <script>
 __COMMON_JS__
+__PICKER_JS__
 
 const topicData = __DATA_JSON__;
 const topicFactors = __FACTORS_JSON__;
@@ -868,6 +1060,12 @@ const SCALE_META = {
 const topicState = { slider: null, sliderDates: [], chart: null, onChange: () => {} };
 
 const labelMap = __RANK_LABEL_MAP_JSON__;
+// The picker: nothing ticked ranks every top-level group; ticking narrows the
+// chart and the table to the ticked rows. Swatches and lines share one colour.
+const items = topicAllGroups;
+const palette = topicPalette;
+const chipLabelMap = labelMap;
+const defaultItems = [];
 function fmtLabel(key) {
     if (labelMap[key]) return labelMap[key];
     return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -886,7 +1084,6 @@ function initTopicTab() {
         if (range.to) data = data.filter(r => r.date <= range.to);
         const measure = document.getElementById('topic-measure').value;
         const scale = document.getElementById('topic-scale').value;
-        const universe = document.getElementById('topic-universe').value;
         const factors = topicFactors[country] || {};
         const suffix = '_' + measure;
 
@@ -905,9 +1102,10 @@ function initTopicTab() {
         const present = Object.keys(rawData[0])
             .filter(k => k.endsWith(suffix))
             .map(k => k.slice(0, -suffix.length));
-        const pool = universe === 'all' ? topicAllGroups : topicFocusGroups;
+        const picked = getSelectedItems();
+        const pool = picked.length ? picked : topicFocusGroups;
         const items = present.filter(it => pool.indexOf(it) !== -1);
-        if (!items.length) return;
+        if (!items.length) { if (topicState.chart) { topicState.chart.destroy(); topicState.chart = null; } return; }
         data = data.filter(r => !isDaily(r) || items.some(item => r[item + suffix] != null));
         if (!data.length) return;
         let topN = parseInt(topnInput.value, 10) || 5;
@@ -959,8 +1157,8 @@ function initTopicTab() {
 
         const labels = displayEntries.map(entry => entry.label);
 
-        const datasets = visible.map((item, i) => {
-            const color = topicPalette[i % topicPalette.length];
+        const datasets = visible.map(item => {
+            const color = getChipColor(item);
             return {
                 label: fmtLabel(item),
                 data: ranks.map(mr => mr[item]),
@@ -1014,14 +1212,13 @@ function initTopicTab() {
             }
         });
 
-        renderExplainer(measure, scale, items.length, pool.length);
-        renderTable(data, valueOf, measure, scale);
+        renderExplainer(measure, scale, items.length, pool.length, picked.length > 0);
+        renderTable(data, valueOf, measure, scale, items);
     }
 
-    // The chart follows the "compared against" selector; this table never does.
-    // It always ranks the full topic set, because its whole job is to answer
-    // "what else was in the pool" — the question a filtered chart cannot answer.
-    function renderTable(data, valueOf, measure, scale) {
+    // The table ranks the same rows as the chart, all of them rather than the
+    // top N, so "what else was in the pool" stays answerable.
+    function renderTable(data, valueOf, measure, scale, pool) {
         const tbody = document.querySelector('#topic-table tbody');
         const note = document.getElementById('topic-table-note');
         const title = document.getElementById('topic-table-title');
@@ -1031,21 +1228,20 @@ function initTopicTab() {
         const last = monthly[monthly.length - 1];
         const prev = monthly.length > 1 ? monthly[monthly.length - 2] : null;
 
-        const rows = topicAllGroups.map(item => ({
+        const rows = pool.map(item => ({
             item: item,
             value: valueOf(last, item),
             prev: prev ? valueOf(prev, item) : null
         })).filter(r => r.value != null);
         rows.sort((a, b) => b.value - a.value);
 
-        title.textContent = 'All topics ranked \u2014 ' + last.date.slice(0, 7);
+        title.textContent = 'Ranked \u2014 ' + last.date.slice(0, 7);
         note.textContent = rows.length + ' topics, ' + MEASURE_META[measure].short +
             (scale === 'z' ? ' (z-score)' : ' (index)') +
             (prev ? ', change vs ' + prev.date.slice(0, 7) : '');
 
         rows.forEach((r, i) => {
             const tr = document.createElement('tr');
-            if (topicFocusGroups.indexOf(r.item) !== -1) tr.className = 'focus-row';
             const delta = (r.prev == null) ? null : r.value - r.prev;
             const dTxt = delta == null ? '\u2013'
                 : (delta > 0 ? '+' : '') + delta.toFixed(1);
@@ -1059,13 +1255,14 @@ function initTopicTab() {
         });
     }
 
-    function renderExplainer(measure, scale, nShown, nPool) {
+    function renderExplainer(measure, scale, nShown, nPool, picked) {
         document.getElementById('topic-explainer').innerHTML =
             'Denominator: ' + MEASURE_META[measure].blurb +
             ' Each topic is then ' + SCALE_META[scale] + '.' +
-            ' The chart ranks the top N of ' + nPool + ' topics in the selected comparison set' +
+            ' The chart ranks the top N of ' +
+            (picked ? 'the ' + nPool + ' selected rows' : 'all ' + nPool + ' top-level groups (open a topic on the left to narrow it)') +
             ' (' + nShown + ' with data) against each other, month by month;' +
-            ' the table below always ranks all ' + topicAllGroups.length + ' topics.';
+            ' the table below ranks all of them.';
     }
 
     topicState.onChange = render;
@@ -1076,7 +1273,10 @@ function initTopicTab() {
         });
     });
     topnInput.addEventListener('change', render);
-    ['topic-measure', 'topic-scale', 'topic-universe'].forEach(id => {
+    initPicker(render);
+    updateSelectedCount();
+    applyChipFilters();
+    ['topic-measure', 'topic-scale'].forEach(id => {
         document.getElementById(id).addEventListener('change', render);
     });
     withUnit(select.value, () => {
@@ -1101,56 +1301,53 @@ EPU_PAGE_TEMPLATE = r"""<!DOCTYPE html>
 <style>__CSS__</style>
 </head>
 <body>
-<div class="controls field-row">
-    <div class="field">
-        <label for="country">Country</label>
-        <select id="country">__COUNTRY_OPTIONS__</select>
-    </div>
-    <div class="field">
-        <label for="actor-measure">Measure</label>
-        <select id="actor-measure">
-            <option value="intensity">How much the __NOUN__ is discussed</option>
-            <option value="absolute" selected>How much uncertainty is about the __NOUN__</option>
-            <option value="framing">The __NOUN__&#39;s share of uncertainty</option>
-        </select>
-    </div>
-    <div class="field">
-        <label for="actor-scale">Scale</label>
-        <select id="actor-scale">
-            <option value="index" selected>Index (baseline = 100)</option>
-            <option value="z">Z-score</option>
-        </select>
-    </div>
-</div>
-<div class="slider-row">
-    <label>Date Range:</label>
-    <span class="range-label" id="range-label">-</span>
-    <div id="slider" class="date-slider"></div>
-</div>
-<div class="controls">
-    <label>Smoothing:</label>
-    <div class="toggle-group">
-        <label><input type="checkbox" name="ma-toggle" value="1" checked>Raw</label>
-        <label><input type="checkbox" name="ma-toggle" value="3" checked>3-Mo MA</label>
-        <label><input type="checkbox" name="ma-toggle" value="6">6-Mo MA</label>
-        <label><input type="checkbox" name="ma-toggle" value="12">12-Mo MA</label>
-    </div>
-</div>
-<p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;" id="actor-explainer">-</p>
-<div class="plot-row">
-    <div class="chip-sidebar">
-        <div class="chip-header">__ITEM_LABEL__: <span id="selected-count">0</span> selected</div>
-        <div class="chip-tools">
-            <input type="text" id="item-search" placeholder="__SEARCH_PLACEHOLDER__">
-            <button type="button" id="default-btn">Default</button>
-            <button type="button" id="clear-btn">Clear</button>
+<div class="page">
+__SIDEBAR__
+    <div class="main-col">
+        <div class="controls-bar">
+            <div class="controls field-row controls-top">
+                <div class="field">
+                    <label for="country">Country</label>
+                    <select id="country">__COUNTRY_OPTIONS__</select>
+                </div>
+                <div class="field">
+                    <label for="actor-scale">Scale</label>
+                    <select id="actor-scale">
+                        <option value="index" selected>Index (baseline = 100)</option>
+                        <option value="z">Z-score</option>
+                    </select>
+                </div>
+            </div>
+            <div class="controls field-row controls-mid">
+                <div class="field">
+                    <label for="actor-measure">Measure</label>
+                    <select id="actor-measure">
+                        <option value="intensity">How much the __NOUN__ is discussed</option>
+                        <option value="absolute" selected>How much uncertainty is about the __NOUN__</option>
+                        <option value="framing">The __NOUN__&#39;s share of uncertainty</option>
+                    </select>
+                </div>
+                <div class="slider-row">
+                    <label>Date Range:</label>
+                    <span class="range-label" id="range-label">-</span>
+                    <div id="slider" class="date-slider"></div>
+                </div>
+                <div class="controls">
+                    <label>Smoothing:</label>
+                    <div class="toggle-group">
+                        <label><input type="checkbox" name="ma-toggle" value="1" checked>Raw</label>
+                        <label><input type="checkbox" name="ma-toggle" value="3" checked>3-Mo MA</label>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="chip-container" id="item-select">__CHIP_HTML__</div>
-    </div>
-    <div class="chart-col">
-        <div class="chart-wrapper"><canvas id="chart"></canvas></div>
+        <p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;" id="actor-explainer">-</p>
+        <div class="chart-wrapper">
+            <canvas id="chart"></canvas>
+            <div class="empty-hint" id="empty-hint"><div class="empty-hint-inner"><div>Choose a __HINT_NOUN__</div><div class="empty-hint-arrow">&larr;</div></div></div>
+        </div>
         <div class="style-key">
-            <div class="style-key-row"><span class="key-line key-ma"></span>Moving average &mdash; 3, 6 or 12 months</div>
+            <div class="style-key-row"><span class="key-line key-ma"></span>3-month moving average</div>
             <div class="style-key-row"><span class="key-line key-raw"></span>Raw monthly</div>
             <div class="style-key-row"><span class="key-line key-current"></span>Current month &mdash; weekly and daily points</div>
         </div>
@@ -1158,6 +1355,7 @@ EPU_PAGE_TEMPLATE = r"""<!DOCTYPE html>
 </div>
 <script>
 __COMMON_JS__
+__PICKER_JS__
 
 const epuData = __DATA_JSON__;
 // A unit's series may live in its own data file, loaded on first use.
@@ -1191,63 +1389,6 @@ const SCALE_META = {
 const toggleName = 'ma-toggle';
 const state = { slider: null, sliderDates: [], chart: null, onChange: () => {} };
 
-function getSelectedItems() {
-    return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
-}
-function updateSelectedCount() {
-    const el = document.getElementById('selected-count');
-    if (el) el.textContent = getSelectedItems().length;
-}
-function fmtChipLabel(raw) {
-    if (chipLabelMap[raw]) return chipLabelMap[raw];
-    return raw.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-}
-function getChipColor(item) { return palette[items.indexOf(item) % palette.length]; }
-function applyChipFilters() {
-    const q = (document.getElementById('item-search').value || '').toLowerCase().trim();
-    document.querySelectorAll('#item-select .chip').forEach(chip => {
-        const input = chip.querySelector('input');
-        const labelEl = chip.querySelector('.chip-label');
-        const raw = input.value;
-        const label = chip.dataset.label || fmtChipLabel(raw);
-        const color = getChipColor(raw);
-        if (color) chip.style.setProperty('--chip-color', color);
-        if (labelEl) labelEl.textContent = label;
-        const txt = label.toLowerCase();
-        const match = !q || txt.indexOf(q) !== -1;
-        // A selected pill always stays on screen: its line is on the chart and
-        // the pill is the only way to take it off again.
-        chip.classList.toggle('is-filtered', !(match || input.checked));
-        chip.classList.toggle('is-hit', !!(q && match));
-    });
-    document.querySelectorAll('#item-select .chip-group').forEach(group => {
-        const shown = group.querySelectorAll('.chip:not(.is-filtered)').length;
-        group.classList.toggle('is-empty', shown === 0);
-        const cnt = group.querySelector('.chip-group-count');
-        if (cnt) cnt.textContent = shown;
-    });
-    // A search hit keeps its parent group rows on screen, so it reads in context.
-    document.querySelectorAll('#item-select .chip.is-hit').forEach(chip => {
-        let g = chip.closest('.chip-group-body');
-        while (g && (g = g.closest('.tree-group'))) {
-            const row = g.querySelector(':scope > .tree-row > .chip');
-            if (row) row.classList.remove('is-filtered');
-            g = g.parentElement;
-        }
-    });
-    document.querySelectorAll('#item-select .tree-group').forEach(group => {
-        const on = group.querySelectorAll(':scope > .chip-group-body input:checked').length;
-        const el = group.querySelector(':scope > .tree-row > .tree-on');
-        if (el) el.textContent = on ? on + ' on chart' : '';
-    });
-}
-function setSelected(picks) {
-    const set = new Set(picks);
-    document.querySelectorAll('#item-select input').forEach(cb => { cb.checked = set.has(cb.value); });
-    updateSelectedCount();
-    applyChipFilters();
-}
-
 function render() {
     const country = document.getElementById('country').value;
     const rawData = epuData[country];
@@ -1262,6 +1403,14 @@ function render() {
     const scale = document.getElementById('actor-scale').value;
     const factors = actorFactors[country] || {};
     const suffix = '_' + measure;
+    document.getElementById('actor-explainer').innerHTML =
+        'Denominator: ' + MEASURE_META[measure].blurb +
+        ' Each __NOUN__ is then ' + SCALE_META[scale] + '.';
+    document.querySelector('.chart-wrapper').classList.toggle('is-empty', !selectedItems.length);
+    if (!selectedItems.length) {
+        if (state.chart) { state.chart.destroy(); state.chart = null; }
+        return;
+    }
 
     // The index is `factor * z` with one factor per column, so dividing
     // recovers the z-score exactly; a column that never left zero has no
@@ -1322,6 +1471,7 @@ function render() {
             const dataPoints = [];
             const pointRadius = [];
             const pointHoverRadius = [];
+            const pointHitRadius = [];
             const pointStyle = [];
             const pointTypes = [];
             if (monthlyData.length > 0) {
@@ -1330,12 +1480,14 @@ function render() {
                     dataPoints.push(null);
                     pointRadius.push(0);
                     pointHoverRadius.push(0);
+                    pointHitRadius.push(0);
                     pointStyle.push('circle');
                     pointTypes.push(null);
                 }
                 dataPoints.push(lastMonthly);
                 pointRadius.push(0);
                 pointHoverRadius.push(0);
+                pointHitRadius.push(0);
                 pointStyle.push('circle');
                 pointTypes.push(null);
             }
@@ -1346,9 +1498,11 @@ function render() {
                 if (val == null) {
                     pointRadius.push(0);
                     pointHoverRadius.push(0);
+                    pointHitRadius.push(0);
                 } else {
                     pointRadius.push(isWeekly ? 5 : 4);
                     pointHoverRadius.push(isWeekly ? 7 : 6);
+                    pointHitRadius.push(4);
                 }
                 pointStyle.push(isWeekly ? 'rect' : 'circle');
                 pointTypes.push(entry.type);
@@ -1364,6 +1518,7 @@ function render() {
                 spanGaps: true,
                 pointRadius: pointRadius,
                 pointHoverRadius: pointHoverRadius,
+                pointHitRadius: pointHitRadius,
                 pointStyle: pointStyle,
                 pointBackgroundColor: color,
                 _legendGroup: item,
@@ -1382,6 +1537,7 @@ function render() {
     const yMax = (scale === 'index' && allVals.length)
         ? Math.max.apply(null, allVals) * 1.1
         : undefined;
+    state.view = { country: country, measure: measure, scale: scale, monthlyData: monthlyData, entries: dailyDisplay.entries };
     const ctx = document.getElementById('chart').getContext('2d');
     if (state.chart) state.chart.destroy();
     state.chart = new Chart(ctx, {
@@ -1390,9 +1546,10 @@ function render() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: { mode: 'nearest', intersect: true },
             plugins: {
                 legend: { display: false },
-                tooltip: { enabled: false, mode: 'index', intersect: false, external: externalTooltipHandler }
+                tooltip: { enabled: false, mode: 'nearest', intersect: true, external: pointTooltip }
             },
             scales: {
                 x: { display: true, title: { display: true, text: 'Date' } },
@@ -1405,11 +1562,74 @@ function render() {
         }
     });
     state.chart._groupOrder = selectedItems.slice();
-    document.getElementById('actor-explainer').innerHTML =
-        'Denominator: ' + MEASURE_META[measure].blurb +
-        ' Each __NOUN__ is then ' + SCALE_META[scale] + '.';
 }
 
+// One point, one tooltip: the series, its value, and the articles behind it
+// against the articles behind its baseline, both pooled across sources.
+function fmtN(n) { return Math.round(n).toLocaleString('en-US'); }
+function sumCounts(table, dates, item, measure) {
+    let num = 0, den = 0, seen = 0;
+    dates.forEach(d => {
+        const c = table && table[d];
+        if (!c) return;
+        seen++;
+        const v = c[item] || [0, 0];
+        num += measure === 'intensity' ? v[1] : v[0];
+        den += measure === 'framing' ? c.U : c.A;
+    });
+    return seen ? { num: num, den: den } : null;
+}
+function pointTooltip(context) {
+    const tooltip = context.tooltip;
+    const el = getTooltipEl();
+    const dp = tooltip && tooltip.opacity !== 0 && tooltip.dataPoints && tooltip.dataPoints[0];
+    const v = state.view;
+    if (!dp || !v || dp.raw == null) { el.style.opacity = 0; return; }
+    const ds = dp.dataset, i = dp.dataIndex, item = ds._legendGroup;
+    const pool = pooledCounts[v.country] || {};
+    let period, counts;
+    if (ds._variant === 'rawDaily') {
+        const entry = v.entries[i - v.monthlyData.length];
+        if (!entry) { el.style.opacity = 0; return; }
+        period = entry.label + (entry.type === 'weekly' ? ' (week)' : ' (day)');
+        counts = sumCounts(pool.rows, entry.rows.map(r => r.date), item, v.measure);
+    } else {
+        const w = ds._variant === 'ma3' ? 3 : 1;
+        const dates = v.monthlyData.slice(Math.max(0, i - w + 1), i + 1).map(r => r.date);
+        period = w === 1 ? dates[0].slice(0, 7)
+            : dates[0].slice(0, 7) + ' to ' + dates[dates.length - 1].slice(0, 7) + ' (3-month average)';
+        counts = sumCounts(pool.months, dates, item, v.measure);
+    }
+    const denNoun = v.measure === 'framing' ? 'uncertain articles' : 'articles';
+    let html = '<div class="tooltip-title">' + ds._legendLabel + '</div>' +
+        '<div class="tooltip-line">' + period + '</div>' +
+        '<div class="tooltip-line">' + (v.scale === 'index' ? 'Index: ' + dp.raw.toFixed(1) : 'Z-score: ' + dp.raw.toFixed(2)) + '</div>';
+    if (counts) {
+        html += '<div class="tooltip-line">Articles: ' + fmtN(counts.num) + ' of ' + fmtN(counts.den) + ' ' + denNoun + '</div>';
+    }
+    const months = pool.months ? Object.keys(pool.months).filter(d => pool.months[d].B).sort() : [];
+    if (months.length) {
+        const b = sumCounts(pool.months, months, item, v.measure);
+        html += '<div class="tooltip-line">Baseline: ' + fmtN(b.num) + ' of ' + fmtN(b.den) + ' ' + denNoun +
+            ' (' + months[0].slice(0, 7) + ' to ' + months[months.length - 1].slice(0, 7) + ')</div>';
+    }
+    el.innerHTML = html;
+    const rect = context.chart.canvas.getBoundingClientRect();
+    el.style.opacity = 1;
+    el.style.left = rect.left + window.pageXOffset + tooltip.caretX + 12 + 'px';
+    el.style.top = rect.top + window.pageYOffset + tooltip.caretY + 12 + 'px';
+}
+
+// Chart.js leaves the last tooltip up when the mouse leaves the plot area.
+const chartCanvas = document.getElementById('chart');
+function hideTip() { getTooltipEl().style.opacity = 0; }
+chartCanvas.addEventListener('mouseleave', hideTip);
+chartCanvas.addEventListener('mousemove', function(e) {
+    const a = state.chart && state.chart.chartArea;
+    const r = chartCanvas.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    if (!a || x < a.left - 6 || x > a.right + 6 || y < a.top - 6 || y > a.bottom + 6) hideTip();
+});
 state.onChange = render;
 document.getElementById('country').addEventListener('change', function(e) {
     withUnit(e.target.value, () => {
@@ -1417,38 +1637,7 @@ document.getElementById('country').addEventListener('change', function(e) {
         render();
     });
 });
-document.getElementById('item-select').addEventListener('change', function() {
-    updateSelectedCount();
-    applyChipFilters();
-    render();
-});
-document.getElementById('item-search').addEventListener('input', applyChipFilters);
-document.querySelectorAll('#item-select .chip-group-header').forEach(h => {
-    h.addEventListener('click', function() {
-        h.parentElement.classList.toggle('is-open');
-    });
-});
-document.querySelectorAll('#item-select .tree-caret').forEach(b => {
-    b.addEventListener('click', function() {
-        const group = b.closest('.tree-group');
-        // Opening a group draws its next level: the concepts and subgroups
-        // directly beneath it. Closing leaves the ticks alone.
-        if (!group.classList.toggle('is-open')) return;
-        group.querySelectorAll(
-            ':scope > .chip-group-body > .chip input, ' +
-            ':scope > .chip-group-body > .tree-group > .tree-row input'
-        ).forEach(i => { i.checked = true; });
-        document.getElementById('item-select').dispatchEvent(new Event('change'));
-    });
-});
-document.getElementById('default-btn').addEventListener('click', function() {
-    setSelected(defaultItems);
-    render();
-});
-document.getElementById('clear-btn').addEventListener('click', function() {
-    setSelected([]);
-    render();
-});
+initPicker(render);
 document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', render));
 ['actor-measure', 'actor-scale'].forEach(id => {
     document.getElementById(id).addEventListener('change', render);
@@ -1555,6 +1744,7 @@ def build_topic_iframe_html(
     data_expr=None,
     factors_expr=None,
     loader_expr=None,
+    chip_html=None,
 ):
     options = (
         dropdown_options_html
@@ -1567,13 +1757,16 @@ def build_topic_iframe_html(
     # fall back to the full set rather than rendering a blank chart.
     focus_groups = focus_groups or all_groups
     return (
-        TOPIC_PAGE_TEMPLATE.replace("__CHARTJS_INLINE__", _vendor("chart.umd.min.js"))
+        TOPIC_PAGE_TEMPLATE.replace("__SIDEBAR__", SIDEBAR_HTML)
+        .replace("__PICKER_JS__", PICKER_JS)
+        .replace("__ITEM_LABEL__", "Concepts")
+        .replace("__SEARCH_PLACEHOLDER__", "Search concepts")
+        .replace("__CHIP_HTML__", chip_html or "")
+        .replace("__CHARTJS_INLINE__", _vendor("chart.umd.min.js"))
         .replace("__NOUI_CSS_INLINE__", _vendor("nouislider.min.css"))
         .replace("__NOUI_JS_INLINE__", _vendor("nouislider.min.js"))
         .replace("__CSS__", EPU_PAGE_CSS)
         .replace("__COUNTRY_OPTIONS__", options)
-        .replace("__N_FOCUS__", str(len(focus_groups)))
-        .replace("__N_ALL__", str(len(all_groups)))
         .replace("__COMMON_JS__", EPU_COMMON_JS)
         .replace("__DATA_JSON__", data_expr or json.dumps(topic_data))
         .replace("__FACTORS_JSON__", factors_expr or json.dumps(factors))
@@ -1669,6 +1862,7 @@ def build_epu_iframe_html(
     chip_html=None,
     pool_expr=None,
     loader_expr=None,
+    hint_noun=None,
 ):
     options = (
         dropdown_options_html
@@ -1676,7 +1870,10 @@ def build_epu_iframe_html(
         else _country_options(data)
     )
     return (
-        EPU_PAGE_TEMPLATE.replace("__CHARTJS_INLINE__", _vendor("chart.umd.min.js"))
+        EPU_PAGE_TEMPLATE.replace("__SIDEBAR__", SIDEBAR_HTML)
+        .replace("__PICKER_JS__", PICKER_JS)
+        .replace("__HINT_NOUN__", hint_noun or noun)
+        .replace("__CHARTJS_INLINE__", _vendor("chart.umd.min.js"))
         .replace("__NOUI_CSS_INLINE__", _vendor("nouislider.min.css"))
         .replace("__NOUI_JS_INLINE__", _vendor("nouislider.min.js"))
         .replace("__CSS__", EPU_PAGE_CSS)
@@ -1795,12 +1992,14 @@ body {
 #r0:checked ~ .shell #p0,
 #r1:checked ~ .shell #p1,
 #r2:checked ~ .shell #p2,
-#r3:checked ~ .shell #p3 { display: block; }
+#r3:checked ~ .shell #p3,
+#r4:checked ~ .shell #p4 { display: block; }
 /* Active tab button */
 #r0:checked ~ .shell .tabs label[for="r0"],
 #r1:checked ~ .shell .tabs label[for="r1"],
 #r2:checked ~ .shell .tabs label[for="r2"],
-#r3:checked ~ .shell .tabs label[for="r3"] {
+#r3:checked ~ .shell .tabs label[for="r3"],
+#r4:checked ~ .shell .tabs label[for="r4"] {
     background: var(--accent);
     color: #fff;
     border-color: var(--accent);
@@ -1839,13 +2038,20 @@ body {
         return out;
     }
     function pool(p) {
-        const out = {};
-        p.date.forEach((d, i) => {
-            const r = {A: p.A[i], U: p.U[i]};
-            Object.keys(p.items).forEach(k => { r[k] = [p.items[k][0][i], p.items[k][1][i]]; });
-            out[d] = r;
-        });
-        return {rows: out, base: p.base};
+        function byDate(t) {
+            const out = {};
+            if (!t) return out;
+            t.date.forEach((d, i) => {
+                const r = {A: t.A[i], U: t.U[i]};
+                if (t.B) r.B = t.B[i];
+                Object.keys(t.items).forEach(k => {
+                    r[k] = [t.items[k][0][i] || 0, t.items[k][1][i] || 0];
+                });
+                out[d] = r;
+            });
+            return out;
+        }
+        return {rows: byDate(p), months: byDate(p.months), base: p.base};
     }
     ['topics', 'actors'].forEach(k => { if (D[k]) D[k] = lazy(D[k], rows); });
     if (D.pool) D.pool = lazy(D.pool, pool);
@@ -1878,6 +2084,7 @@ body {
 <input class="tab-radio" type="radio" name="tabs" id="r1">
 <input class="tab-radio" type="radio" name="tabs" id="r2">
 <input class="tab-radio" type="radio" name="tabs" id="r3">
+<input class="tab-radio" type="radio" name="tabs" id="r4">
 <div class="shell">
     <div class="header">
         <div>
@@ -1887,12 +2094,14 @@ body {
         <div class="tabs" role="tablist">
             <label for="r0">Uncertainty Topics</label>
             <label for="r1">Uncertainty Topics (Ranked)</label>
+            <label for="r4">Policy Overview</label>
             <label for="r2">__POLICY_TAB_LABEL__</label>
             <label for="r3">Uncertainty Actors</label>
         </div>
     </div>
     <div class="tab-panel" id="p0"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SERIES_SRCDOC__' title="Uncertainty Topics"></iframe></div></div>
     <div class="tab-panel" id="p1"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SRCDOC__' title="Uncertainty Topics (Ranked)"></iframe></div></div>
+    <div class="tab-panel" id="p4"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_OVERVIEW_SRCDOC__' title="Policy Overview"></iframe></div></div>
     <div class="tab-panel" id="p2"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_SRCDOC__' title="__POLICY_TAB_LABEL__"></iframe></div></div>
     <div class="tab-panel" id="p3"><div class="panel-body"><iframe class="tab-frame" srcdoc='__ACTORS_EPU_SRCDOC__' title="Uncertainty Actors"></iframe></div></div>
 </div>
@@ -1910,8 +2119,9 @@ def build_host_html(
     policy_tab_label="Fuel Crisis Policy",
     shared_data=None,
     keywords_schema=None,
+    policy_overview_html="",
 ):
-    """Assemble the four-tab host page.
+    """Assemble the five-tab host page.
 
     The two topic tabs are two readings of one table: a per-topic time series
     and a ranking over time. Their payload is written once into ``window.__DASH__``
@@ -1937,7 +2147,55 @@ def build_host_html(
         .replace("__TOPIC_SERIES_SRCDOC__", escape_srcdoc(topic_series_html))
         .replace("__TOPIC_SRCDOC__", escape_srcdoc(topic_html))
         .replace("__ACTORS_EPU_SRCDOC__", escape_srcdoc(actors_epu_html))
+        .replace("__POLICY_OVERVIEW_SRCDOC__", escape_srcdoc(policy_overview_html))
     )
+
+
+# The Policy Overview tab: the food security and fuel crisis tracker addons,
+# each in its own iframe, switched by a CSS-only tab strip like the host's.
+POLICY_OVERVIEW_TEMPLATE = r"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: #f5f6f8; }
+body { display: flex; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.sub-radio { position: absolute; opacity: 0; pointer-events: none; }
+.sub-tabs { display: flex; gap: 8px; padding: 10px 12px 0 12px; }
+.sub-tabs label {
+    border: 1px solid #e3e7ef; background: #fff; color: #1e2432;
+    padding: 6px 12px; border-radius: 20px; font-size: 0.85em;
+    cursor: pointer; user-select: none;
+}
+.sub-tabs label:hover { border-color: #1d77b2; }
+.sub-panel { display: none; flex: 1 1 auto; min-height: 0; }
+.sub-panel iframe { width: 100%; height: 100%; border: 0; }
+#s0:checked ~ #q0, #s1:checked ~ #q1 { display: block; }
+#s0:checked ~ .sub-tabs label[for="s0"],
+#s1:checked ~ .sub-tabs label[for="s1"] { background: #1d77b2; color: #fff; border-color: #1d77b2; }
+</style>
+</head>
+<body>
+<input class="sub-radio" type="radio" name="subtabs" id="s0" checked>
+<input class="sub-radio" type="radio" name="subtabs" id="s1">
+<div class="sub-tabs" role="tablist">
+    <label for="s0">Food Security Policies</label>
+    <label for="s1">Fuel Crisis Policies</label>
+</div>
+<div class="sub-panel" id="q0"><iframe srcdoc='__FOOD_SRCDOC__' title="Food Security Policies"></iframe></div>
+<div class="sub-panel" id="q1"><iframe srcdoc='__FUEL_SRCDOC__' title="Fuel Crisis Policies"></iframe></div>
+</body>
+</html>"""
+
+
+def build_policy_overview_html(region: str) -> str:
+    """The Policy Overview page for ``region`` from its food and fuel addons."""
+    from text.plotting.small_dashboard_integrated_w_policy import _load_addon_html
+
+    return POLICY_OVERVIEW_TEMPLATE.replace(
+        "__FOOD_SRCDOC__", escape_srcdoc(_load_addon_html(region, "food"))
+    ).replace("__FUEL_SRCDOC__", escape_srcdoc(_load_addon_html(region, "fuel")))
 
 
 _ACTORS_DEFAULTS = [
@@ -2049,10 +2307,11 @@ def _schema_tree_html(schema: dict, items: list, defaults: list) -> str:
         ]
         if any(rows):
             out.append(
-                '<div class="chip-group tree-heading is-open">'
+                '<div class="chip-group tree-heading">'
                 '<button type="button" class="chip-group-header">'
                 '<span class="chip-group-caret">&#9656;</span>'
-                f'<span class="chip-group-label">{_esc(h["label"])}</span></button>'
+                f'<span class="chip-group-label">{_esc(h["label"])}</span>'
+                '<span class="tree-on"></span></button>'
                 f'<div class="chip-group-body">{"".join(rows)}</div></div>'
             )
     return f'<div class="tree">{"".join(out)}</div>'
@@ -2138,28 +2397,45 @@ def _columnar(rows: list) -> dict:
     }
 
 
+def _sparse_counts(col: list):
+    """A count column, as ``{index: n}`` when mostly zero (absent index = 0)."""
+    if sum(1 for v in col if v == 0) * 2 > len(col):
+        return {i: v for i, v in enumerate(col) if v != 0}
+    return col
+
+
 def _pool_columnar(pool: dict) -> dict:
     """``_pool_payload`` column-wise; ``pool()`` in the host script inverts it."""
-    dates = sorted(pool["rows"])
-    items = [k for k in pool["rows"][dates[0]] if k not in ("A", "U")]
-    return {
-        "date": dates,
-        "A": [pool["rows"][d]["A"] for d in dates],
-        "U": [pool["rows"][d]["U"] for d in dates],
-        "items": {
-            k: [[pool["rows"][d][k][j] for d in dates] for j in (0, 1)] for k in items
-        },
-        "base": pool["base"],
-    }
+
+    def table(by_date, extra=()):
+        dates = sorted(by_date)
+        if not dates:
+            return None
+        fixed = ("A", "U") + extra
+        items = [k for k in by_date[dates[0]] if k not in fixed]
+        out = {"date": dates, **{f: [by_date[d][f] for d in dates] for f in fixed}}
+        out["items"] = {
+            k: [_sparse_counts([by_date[d][k][j] for d in dates]) for j in (0, 1)]
+            for k in items
+        }
+        return out
+
+    out = table(pool["rows"])
+    out["months"] = table(pool.get("months") or {}, ("B",))
+    out["base"] = pool["base"]
+    return out
 
 
 def _pool_payload(attribution: dict) -> dict:
     """The daily tail as pooled counts, for the weekly and daily points.
 
-    Returns {"rows": {date: {"A", "U", <item>: [UG, G]}}, "base": {<item>_<measure>:
-    [mean, std]}}, or {} when the build wrote no pooled files.
+    Returns {"rows": {date: {"A", "U", <item>: [UG, G]}}, "months": the same
+    per month plus "B" (1 in the baseline), "base": {<item>_<measure>: [mean,
+    std]}}, or {} when the build wrote no pooled files. The monthly counts are
+    what the tooltip reports; the build writes them from 2026-09-25 on.
     """
     rows: dict = {}
+    months: dict = {}
     base: dict = {}
     for family in ("concepts", "groups"):
         for r in attribution.get(f"{family}_pooled") or []:
@@ -2167,14 +2443,22 @@ def _pool_payload(attribution: dict) -> dict:
             for col, v in r.items():
                 if col.startswith("UG_"):
                     row[col[3:]] = [v, r["G_" + col[3:]]]
+        for r in attribution.get(f"{family}_pooled_monthly") or []:
+            row = months.setdefault(
+                r["date"], {"A": r["A_total"], "U": r["U_count"], "B": r["in_baseline"]}
+            )
+            for col, v in r.items():
+                if col.startswith("UG_"):
+                    row[col[3:]] = [v, r["G_" + col[3:]]]
         for r in attribution.get(f"{family}_pooled_baseline") or []:
             i = 0 if r["stat"] == "mean" else 1
             for col, v in r.items():
                 if col != "stat":
+                    # 4 significant figures: a rare concept's share is ~1e-6.
                     base.setdefault(col, [None, None])[i] = (
-                        None if v is None or v != v else v
+                        None if v is None or v != v else float(f"{v:.4g}")
                     )
-    return {"rows": rows, "base": base} if rows else {}
+    return {"rows": rows, "months": months, "base": base} if rows else {}
 
 
 def _records(table: dict | None) -> list:
@@ -2230,8 +2514,10 @@ def _concept_unit_payload(path: Path) -> tuple[dict, dict, set, dict]:
             for k in (
                 "concepts_pooled",
                 "concepts_pooled_baseline",
+                "concepts_pooled_monthly",
                 "groups_pooled",
                 "groups_pooled_baseline",
+                "groups_pooled_monthly",
             )
         }
     )
@@ -2334,11 +2620,12 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         data_expr=data_expr,
         factors_expr=factors_expr,
         loader_expr="window.parent.__DASH_LOAD__",
+        chip_html=_schema_tree_html(schema, items, []),
     )
     series_html = build_epu_iframe_html(
         {},
         items,
-        defaults,
+        [],
         title="Uncertainty Concepts",
         item_label="Concepts",
         search_placeholder="Search concepts",
@@ -2350,9 +2637,10 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         method_foot_extra=(
             " A group series counts articles matching any concept beneath it."
         ),
-        chip_html=_schema_tree_html(schema, items, defaults),
+        chip_html=_schema_tree_html(schema, items, []),
         pool_expr='window.parent.__DASH__["pool"]',
         loader_expr="window.parent.__DASH_LOAD__",
+        hint_noun="topic",
     )
     actors_html = build_epu_iframe_html(
         actors_data,
@@ -2383,6 +2671,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
             "actorFactors": actor_factors,
         },
         keywords_schema=schema,
+        policy_overview_html=build_policy_overview_html(region),
     )
 
     dashboard_path = output_dir / f"{region}_concepts_dashboard.html"

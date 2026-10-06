@@ -458,7 +458,10 @@ def _write_pooled(
 
     `{family}_pooled.csv` holds the daily tail rows (A_total, U_count,
     `UG_<g>`, `G_<g>`); `{family}_pooled_baseline.csv` holds one `mean` and one
-    `std` row of the pooled monthly share per `<g>_<measure>`.
+    `std` row of the pooled monthly share per `<g>_<measure>`;
+    `{family}_pooled_monthly.csv` holds the same counts for every month before
+    the tail, with `in_baseline` marking the baseline months, so the dashboard
+    can say how many articles stand behind a point.
     """
 
     def _sum(cols):
@@ -473,9 +476,8 @@ def _write_pooled(
         pooled[f"G_{g}"] = _sum([f"{s}_G_{g}_count" for s in sources])
 
     tail = pooled["date"] >= pd.Timestamp(daily_tail_start)
-    months = pooled[
-        ~tail & baseline_mask(pooled["date"], cutoff_start_date, cutoff_end_date)
-    ]
+    in_baseline = baseline_mask(pooled["date"], cutoff_start_date, cutoff_end_date)
+    months = pooled[~tail & in_baseline]
     stats = {"stat": ["mean", "std"]}
     for g in group_names:
         for measure, num, den in (
@@ -489,6 +491,12 @@ def _write_pooled(
     out = pooled[tail].copy()
     out["date"] = out["date"].dt.strftime("%Y-%m-%d")
     out.to_csv(attr_folder / f"{family}_pooled.csv", index=False, encoding="utf-8")
+    monthly = pooled[~tail].copy()
+    monthly.insert(2, "in_baseline", in_baseline[~tail].astype(int))
+    monthly["date"] = monthly["date"].dt.strftime("%Y-%m-%d")
+    monthly.to_csv(
+        attr_folder / f"{family}_pooled_monthly.csv", index=False, encoding="utf-8"
+    )
     pd.DataFrame(stats).to_csv(
         attr_folder / f"{family}_pooled_baseline.csv", index=False, encoding="utf-8"
     )

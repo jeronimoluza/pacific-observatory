@@ -155,9 +155,11 @@ CONCEPT_FILES = (
     "concepts",
     "concepts_pooled",
     "concepts_pooled_baseline",
+    "concepts_pooled_monthly",
     "groups",
     "groups_pooled",
     "groups_pooled_baseline",
+    "groups_pooled_monthly",
 )
 
 
@@ -183,7 +185,9 @@ def _concept_unit(output_dir: Path) -> dict:
 
     Each ``<item>_<measure>`` column is an exact rescale of its ``_z`` twin
     (``index = factor * z``, one factor per column), so the twin ships as that
-    factor in ``<family>_z_factor``. Floats are rounded to 4 decimals.
+    factor in ``<family>_z_factor``. Floats are rounded to 4 decimals, except
+    in the pooled tables: those are counts, and baseline shares of rare
+    concepts (about 1e-6) that 4 decimals would round to 0.
     """
     attr_dir = output_dir / "uncertainty_attribution"
     out: dict = {}
@@ -205,7 +209,9 @@ def _concept_unit(output_dir: Path) -> dict:
                 )
             df = df.drop(columns=z_cols)
             out[f"{stem}_z_factor"] = factors
-        df = df.round(4).astype(object).where(df.notna(), None)
+        if "_pooled" not in stem:
+            df = df.round(4)
+        df = df.astype(object).where(df.notna(), None)
         out[stem] = df.to_dict(orient="list")
     return out
 
