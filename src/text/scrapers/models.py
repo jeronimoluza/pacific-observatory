@@ -222,6 +222,11 @@ class NewspaperConfig(BaseModel):
     country: str = Field(..., description="Country identifier (can be any string)")
     base_url: HttpUrl = Field(..., description="Base URL of the newspaper website")
 
+    enabled: bool = Field(
+        default=True,
+        description="False = collect and the refresh skill skip this source",
+    )
+
     # Listing configuration
     listing: dict = Field(..., description="Listing discovery configuration")
 

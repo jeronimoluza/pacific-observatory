@@ -40,9 +40,11 @@ NOHUP_LOG="/tmp/refresh_${REGION}_nohup.log"
 # Build the job queue: walk src/text/configs/<region>/<subregion>/<country>/*.yaml
 # Always per-source — no whole-country grouping.
 poetry run python - "$REGION" "$JOBS_FILE" <<'PY'
+import re
 import sys
 from pathlib import Path
 
+disabled = re.compile(r"^enabled:\s*false\b", re.I | re.M)
 region = sys.argv[1]
 out = Path(sys.argv[2])
 base = Path(f"src/text/configs/{region}")
@@ -55,6 +57,7 @@ for country_dir in sorted(p for p in base.glob("*/*") if p.is_dir() and not p.na
     sources = sorted(
         y.stem for y in country_dir.glob("*.yaml")
         if not y.stem.startswith("_0_") and not y.stem.startswith("_")
+        and not disabled.search(y.read_text())
     )
     if not sources:
         continue

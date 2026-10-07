@@ -2,6 +2,7 @@
 
 import logging
 import os
+import re
 from pathlib import Path
 
 import click
@@ -17,6 +18,25 @@ CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
 STATE_FILE = Path("data/text/.state.json")
 DATA_BASE = Path("data/text")
 LOGS_BASE = Path("logs")
+_DISABLED_RE = re.compile(r"^enabled:\s*false\b", re.IGNORECASE | re.MULTILINE)
+
+
+def _split_disabled(configs):
+    """Split config paths into (active, disabled) by a top-level `enabled: false`."""
+    active, disabled = [], []
+    for c in configs:
+        (disabled if _DISABLED_RE.search(c.read_text()) else active).append(c)
+    return active, disabled
+
+
+def _echo_skipped(disabled):
+    if disabled:
+        click.echo(
+            f"  Skipped {len(disabled)} disabled (enabled: false): "
+            + " · ".join(
+                f"{parse_config_path(c, CONFIGS_DIR)[2]}/{c.stem}" for c in disabled
+            )
+        )
 
 
 def _source_stats(news_csv: Path) -> dict:
@@ -79,9 +99,11 @@ def display_list(region=None, subregion=None, country=None, source=None):
     )
     if source:
         configs = [c for c in configs if c.stem == source]
+    configs, disabled = _split_disabled(configs)
 
     if not configs:
         click.echo("No sources found matching filters.")
+        _echo_skipped(disabled)
         return
 
     entries = []
@@ -113,6 +135,7 @@ def display_list(region=None, subregion=None, country=None, source=None):
             click.echo(f"    {ctry}   {' · '.join(keys)}")
         click.echo()
 
+    _echo_skipped(disabled)
     click.echo("  Run 'po text status' for article counts and freshness.")
     click.echo("  Use --source <key> to run a single source.")
     click.echo()
@@ -209,13 +232,19 @@ def display_status(region=None, subregion=None, country=None, show_all=False):
     click.echo()
 
 
-def _build_plan(region=None, subregion=None, country=None, source=None):
-    """Discover configs and build execution plan with data stats."""
+def _build_plan(region=None, subregion=None, country=None, source=None, skipped=None):
+    """Discover configs and build execution plan with data stats.
+
+    Disabled sources are left out of the plan; if `skipped` is a list they are appended to it.
+    """
     configs = discover_pipeline_configs(
         CONFIGS_DIR, region=region, subregion=subregion, country=country
     )
     if source:
         configs = [c for c in configs if c.stem == source]
+    configs, disabled = _split_disabled(configs)
+    if skipped is not None:
+        skipped.extend(disabled)
 
     plan = []
     for config_path in configs:
@@ -349,9 +378,15 @@ def run_collect(
     if rebuild and retry_failed:
         raise click.UsageError("--retry-failed and --rebuild are mutually exclusive")
 
+    skipped = []
     plan = _build_plan(
-        region=region, subregion=subregion, country=country, source=source
+        region=region,
+        subregion=subregion,
+        country=country,
+        source=source,
+        skipped=skipped,
     )
+    _echo_skipped(skipped)
 
     display_plan(
         plan,
