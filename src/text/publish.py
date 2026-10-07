@@ -9,7 +9,6 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
-TEXT_CONFIGS_DIR = PROJECT_ROOT / "src" / "text" / "configs"
 DASHBOARD_DATA_DIR = OUTPUT_DIR / "dashboard_data"
 DASHBOARD_JSON = DASHBOARD_DATA_DIR / "dashboard_data.json"
 
@@ -92,11 +91,10 @@ def _discover_units(region=None, subregion=None, country=None):
                 ctry = country_dir.name
                 if not (country_dir / "epu" / "epu.csv").exists():
                     continue
-                if (
-                    known is not None
-                    and ctry not in known
-                    and not (TEXT_CONFIGS_DIR / rgn / sub / ctry).is_dir()
-                ):
+                # Config folders outside regions.yaml (`pacific`: regional
+                # Pacific outlets) are built and counted in their subregion's
+                # aggregate, but are not countries, so they get no entry here.
+                if known is not None and ctry not in known:
                     continue
 
                 if region and region != rgn:
