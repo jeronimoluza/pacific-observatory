@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://vietnam-mart.com/"
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: vi
+currency: USD
+cadence: weekly
+active: true
+archive_prefix: "vietnam-mart.com/product/"
+archive_path_re: '^/product/[^/?]+'
+spider_kwargs:
+  source_label: "vietnammart_kh"
+  base_url: "https://vietnam-mart.com"
+  currency: "USD"
+  language: "vi"
+  api_url: "https://vietnam-mart.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Vietnam Mart, Phnom Penh online shop for Vietnamese-import grocery (plus
+  some cosmetics/OTC). WordPress/WooCommerce behind Cloudflare with the
+  public Store API open; USD, currency_minor_unit 2. X-WP-Total 1345 as of
+  2026-10-07. robots.txt only disallows wc-logs/uploads/add-to-cart/wp-admin.
+  Product names are mostly Vietnamese (e.g. "Mi Tron Omachi Xot Spaghetti").
+  Full catalog kept; zero-price placeholders dropped by _woo_base.

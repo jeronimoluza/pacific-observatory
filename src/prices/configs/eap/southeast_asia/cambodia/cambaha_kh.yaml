@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://cambaha.com/"
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+active: true
+archive_prefix: "cambaha.com/product/"
+archive_path_re: '^/product/[^/?]+'
+spider_kwargs:
+  source_label: "cambaha_kh"
+  base_url: "https://cambaha.com"
+  currency: "USD"
+  language: "en"
+  api_url: "https://cambaha.com/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: |
+  Cambaha, Cambodian online shop for local/organic Cambodian goods (grocery
+  ~367, drinks ~73, plus crafts/cosmetics). WordPress/WooCommerce on
+  LiteSpeed with the public Store API open; USD, currency_minor_unit 2.
+  X-WP-Total 1229 as of 2026-10-07. robots.txt only disallows
+  wc-logs/uploads/add-to-cart/wp-admin. Names are English with Khmer
+  suffixes. Full catalog kept; zero-price placeholders dropped by _woo_base.
