@@ -1,0 +1,18 @@
+spider: vtenh_kh
+url: https://www.vtenh.com/en/t/cat/others/groceries
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.vtenh.com/en/products/"
+archive_path_re: '^/en/products/[^/?]+'
+notes: |
+  VTENH "Shop Easy" Cambodia marketplace on Spree/Rails with server-rendered
+  taxon listings (12 cards/page, rel=next pagination) and USD prices. The
+  /api paths are robots-disallowed, so the spider reads only public HTML
+  listings for groceries, beverages, meat/vegetables, household supplies,
+  mom-and-baby, pet food, and everyday personal care. Child taxons are
+  crawled before parents so products keep the most specific category.
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
