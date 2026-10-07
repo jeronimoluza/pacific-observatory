@@ -18,9 +18,9 @@ notes: |
   * market_price_board -- /market-prices, 4 pages x 30 cards = 105 price
     groups. price = the "Suggested" (headline) KHR price; price_min /
     price_max = Low / High; unit = kg/pc/pack/bunch/...; n_observations =
-    sample count; source_date_label = card date (dd/mm/yyyy). 32 of the 105
-    are category "market average" rows (details.row_type=category_average,
-    mixing different products -- exclude for item-level work). product_id
+    sample count; source_date_label = card date (dd/mm/yyyy). The 32 category
+    "market average" cards mix different products and are skipped (73 product
+    rows kept, 2026-10-07). product_id
     is a hash of name|category|unit (board cards have no ids); url is
     /market-prices#<product_id> so the url-dedup pipeline keeps every row.
     CAVEAT: every card is source_type "catalog", i.e. the site aggregates
