@@ -1,6 +1,11 @@
 spider: makro
 language: en
 active: false
+inactive_reason: "Store offline 2026-03..06 (last CC capture with products 2026-03-09); domain now serves gambling spam, every Makro path 404s. Kept for archive recovery."
 channel: supermarket
+# Archived Next.js pages carry USD prices (olive oil 250 ml 3.2, AAA batteries 7.5); the
+# spider attribute stamped KHR on them. Same fix as aeon_online (68063605).
+currency: USD
+restamp_archive_currency: true
 archive_prefix: "www.makrocambodiaclick.com/en/products/"
 archive_path_re: "^/en/products/\\d+"
