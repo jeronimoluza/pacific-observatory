@@ -21,6 +21,7 @@ import json
 import logging
 import os
 import queue
+import re
 import shutil
 import statistics
 import subprocess
@@ -236,6 +237,24 @@ def _rows_in_new_runs(items_dir: Path, before: frozenset) -> int:
     return total
 
 
+_BLOCK_CODES = ("403", "429")
+_STAT = re.compile(r"'(response_received_count|downloader/response_status_count/(\d+))': (\d+)")
+
+
+def _all_blocked(log_path: Path) -> bool:
+    """Every response in the Scrapy stats was a 403/429. Scrapy ignores those and
+    still finishes, so aeon_online (Cambodia) wrote empty files from 2026-09-11
+    as `ok_norows`. Summed over every stats dump: a child can run several spiders."""
+    try:
+        text = log_path.read_text(errors="replace")
+    except OSError:
+        return False
+    hits = _STAT.findall(text)
+    received = sum(int(n) for key, _, n in hits if key == "response_received_count")
+    blocked = sum(int(n) for _, code, n in hits if code in _BLOCK_CODES)
+    return received > 0 and blocked >= received
+
+
 def _terminate(proc: subprocess.Popen) -> None:
     try:
         os.killpg(os.getpgid(proc.pid), 15)
@@ -287,7 +306,7 @@ def _collect_one(m, *, project_root, data_root, run_dir, timeout, max_items) -> 
         if rc != 0:
             status = "fail"
         elif new_rows == 0:
-            status = "ok_norows"
+            status = "blocked" if _all_blocked(log_path) else "ok_norows"
 
     return {
         "region": m.region,
