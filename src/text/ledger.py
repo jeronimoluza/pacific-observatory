@@ -3,9 +3,10 @@
 One SQLite file per region (``~/text_state/<region>.sqlite``, override with
 ``TEXT_STATE_DIR``). Each row is one source, keyed ``<subregion>/<country>/<source>``
 like its folder under ``data/text/<region>/``, and holds what collect would
-otherwise read from that folder: the urls.csv and news.csv URL sets
-(zlib-compressed, newline-joined), the discovered-but-unscraped urls.csv rows,
-the failed_urls_seen.csv file, and the newest news.csv date (the watermark).
+otherwise read from that folder: the news.csv URL set and the urls.csv URLs
+not in it (zlib-compressed, newline-joined; storing urls.csv whole would repeat
+news.csv), the discovered-but-unscraped urls.csv rows, the failed_urls_seen.csv
+file (compressed), and the newest news.csv date (the watermark).
 
 The Mac copy is the master: ``po text merge`` updates it after appending a
 staging run to the archive, and it is copied to the collect host afterwards.
@@ -30,7 +31,7 @@ URL_COLUMNS = ["url", "title", "date"]
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS sources (
     key TEXT PRIMARY KEY,
-    urls BLOB NOT NULL,
+    urls_only BLOB NOT NULL,
     news BLOB NOT NULL,
     pending BLOB NOT NULL,
     failed BLOB,
@@ -97,27 +98,33 @@ class Ledger:
 
     def get(self, key: str) -> Optional[SourceState]:
         row = self.conn.execute(
-            "SELECT urls, news, pending, failed, watermark FROM sources WHERE key = ?",
+            "SELECT urls_only, news, pending, failed, watermark FROM sources "
+            "WHERE key = ?",
             (key,),
         ).fetchone()
         if row is None:
             return None
-        urls, news, pending, failed, watermark = row
+        urls_only, news, pending, failed, watermark = row
+        news = _unpack(news)
         return SourceState(
-            _unpack(urls), _unpack(news), _unpack_frame(pending), failed, watermark
+            _unpack(urls_only) | news,
+            news,
+            _unpack_frame(pending),
+            zlib.decompress(failed) if failed is not None else None,
+            watermark,
         )
 
     def put(self, key: str, state: SourceState) -> None:
         self.conn.execute(
             "INSERT OR REPLACE INTO sources "
-            "(key, urls, news, pending, failed, watermark, n_urls, n_news) "
+            "(key, urls_only, news, pending, failed, watermark, n_urls, n_news) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 key,
-                _pack(state.urls),
+                _pack(state.urls - state.news),
                 _pack(state.news),
                 _pack_frame(state.pending),
-                state.failed,
+                zlib.compress(state.failed) if state.failed is not None else None,
                 state.watermark,
                 len(state.urls),
                 len(state.news),
