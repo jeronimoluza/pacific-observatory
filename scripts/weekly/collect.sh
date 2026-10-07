@@ -64,6 +64,9 @@ if [ "$MODE" = new ]; then
   echo "$NEW" >>"$OUT/collect_new_sources.txt"
   mkdir -p "$OUT/collect_new"
   status "RUNNING collect of $N new sources from $BRANCH @$(git rev-parse --short HEAD)"
+  # The lock guards the copy + commit above; collects of different sources can overlap, and
+  # xargs children would otherwise inherit fd 9 and hold the lock for the whole collect.
+  exec 9>&-
   # 6G: this can overlap the main collect (16G) on a8's 26 GB.
   echo "$NEW" | systemd-run --user --scope -q -p MemoryMax=6G -p MemorySwapMax=1G \
     xargs -P 4 -I{} sh -c "\"$PY\" run.py prices collect -s {} -P 2 --timeout 5400 >\"$OUT/collect_new/{}.log\" 2>&1"
