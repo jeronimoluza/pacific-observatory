@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://www.meatup.shop/"
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+archive_prefix: "www.meatup.shop/products/"
+archive_path_re: "^/products/[^/?.]+"
+spider_kwargs:
+  source_label: "meatup_kh"
+  base_url: "https://www.meatup.shop"
+  currency: "USD"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+notes: >
+  MeatUp Cambodia online butcher/grocery on Shopify (~1,000 products: fresh and
+  frozen meat, seafood, grocery). Public /products.json catalog, USD prices,
+  one row per variant via the shared Shopify base.
+throttle_group: shopify

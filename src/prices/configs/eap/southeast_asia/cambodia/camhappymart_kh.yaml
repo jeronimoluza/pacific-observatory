@@ -1,0 +1,20 @@
+spider: camhappymart_kh
+url: https://www.camhappymart.com/products?data_from=latest&page=1
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.camhappymart.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  CamHappyMart, a Siem Reap grocery store on a custom PHP (6valley-style)
+  multivendor storefront. Server-rendered listings (~30 cards/page, ~41
+  pages of data_from=latest, ~1.2k products) with USD prices; the /api/v1
+  JSON API needs auth, so the spider reads public HTML only. Card titles are
+  truncated, so each product costs one detail-page request for its full
+  og:title. Whole catalog is food/grocery/beverage/household (plus a small
+  cigarettes category), so nothing is filtered. Subcategories are swept
+  before parents to keep the most specific category label.
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
