@@ -10,7 +10,9 @@
 #                        on hit, python is killed and [TIMEOUT] is emitted
 #   STALL_SECONDS    — seconds of post-warning zero-growth before killing (default 300)
 #   POLL_SECONDS     — sampling cadence (default 30)
-#   DATA_BASE        — root for news.csv resolution (default $(pwd)/data/text)
+#   DATA_BASE        — root for news.csv resolution (default $(pwd)/data/text,
+#                      or $STAGING when set)
+#   STAGING          — staged run dir; passed as `po text collect --staging`
 #   KILL_SCRIPT      — kill_collect_python.sh helper path
 #   DISABLE_WATCHDOG=1 — bypass the watchdog (legacy plain-wrap behaviour)
 set -u
@@ -29,6 +31,9 @@ fi
 
 if [ -n "${MAX_ARTICLES:-}" ]; then
   ARGS+=(--max-articles "$MAX_ARTICLES")
+fi
+if [ -n "${STAGING:-}" ]; then
+  ARGS+=(--staging "$STAGING")
 fi
 
 LOG="/tmp/refresh_${TAG}.log"
@@ -49,7 +54,7 @@ fi
 MAX_SOURCE_SECONDS="${MAX_SOURCE_SECONDS:-300}"
 STALL_SECONDS="${STALL_SECONDS:-300}"
 POLL_SECONDS="${POLL_SECONDS:-30}"
-DATA_BASE="${DATA_BASE:-$(pwd)/data/text}"
+DATA_BASE="${DATA_BASE:-${STAGING:-$(pwd)/data/text}}"
 KILL_SCRIPT="${KILL_SCRIPT:-$(pwd)/.claude/skills/refresh-text-region/scripts/kill_collect_python.sh}"
 WARNING_RE="after [0-9]+ article attempts, 0 were successfully scraped"
 
@@ -74,11 +79,12 @@ fi
 
 csv_size() {
   local total=0 f sz
-  while IFS= read -r f; do
+  # Glob instead of find: a full-tree walk per poll saturates exFAT on USB.
+  for f in "$DATA_BASE"/$FIND_PATTERN "$DATA_BASE"/*/$FIND_PATTERN; do
     [ -f "$f" ] || continue
     sz=$(stat -f%z "$f" 2>/dev/null || stat -c%s "$f" 2>/dev/null || echo 0)
     total=$(( total + sz ))
-  done < <(find "$DATA_BASE" -path "$FIND_PATTERN" 2>/dev/null)
+  done
   echo "$total"
 }
 

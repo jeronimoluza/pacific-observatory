@@ -6,6 +6,8 @@ Usage:
     poetry run po --help         Use the installed alias
 """
 
+from pathlib import Path
+
 import click
 
 from cli_display import render_home, text_help_examples, top_level_help_examples
@@ -58,11 +60,19 @@ _subregion_opt = click.option(
     callback=make_slug_validator("subregion"),
     help="Filter by subregion slug",
 )
+# Text config folders outside regions.yaml that build and publish already keep
+# as units (`pacific`: regional Pacific outlets counted in Pacific Islands).
+# Without them collect rejected `--country pacific` and those sources stopped.
+_TEXT_CONFIG_COUNTRIES = {
+    p.name
+    for p in (Path(__file__).resolve().parent / "text" / "configs").glob("*/*/*")
+    if p.is_dir() and any(p.glob("*.yaml"))
+}
 _country_opt = click.option(
     "--country",
     "-c",
     default=None,
-    callback=make_slug_validator("country"),
+    callback=make_slug_validator("country", extra_valid=_TEXT_CONFIG_COUNTRIES),
     help="Filter by country slug",
 )
 _source_opt = click.option(
@@ -201,6 +211,16 @@ def fuel_publish(region, subregion):
         "articles. Cannot be combined with --rebuild."
     ),
 )
+@click.option(
+    "--staging",
+    type=click.Path(path_type=Path),
+    default=None,
+    help=(
+        "Write only new rows to this run dir (e.g. ~/text_staging/<run_id>) "
+        "instead of data/text; seen URLs come from the ledger. "
+        "Merge later with `po text merge`."
+    ),
+)
 def text_collect(
     region,
     subregion,
@@ -213,6 +233,7 @@ def text_collect(
     rebuild,
     resume,
     retry_failed,
+    staging,
 ):
     """Scrape new articles from configured newspapers."""
     from text.collect import run_collect
@@ -229,7 +250,41 @@ def text_collect(
         resume=resume,
         retry_failed=retry_failed,
         list_sources=list_sources,
+        staging=staging,
     )
+
+
+@text.command("merge")
+@click.option("--region", required=True, help="Region to merge (e.g. menaap)")
+@click.option(
+    "--staging",
+    type=click.Path(path_type=Path),
+    default=Path.home() / "text_staging",
+    show_default=True,
+    help="Dir holding staged run dirs; every unmerged run is merged, oldest first",
+)
+def text_merge(region, staging):
+    """Append staged collect runs to data/text and update the ledger."""
+    from text.collect import DATA_BASE
+    from text.merge import run_merge
+
+    run_merge(region=region, staging=staging, data_base=DATA_BASE)
+
+
+@text.command("ledger-bootstrap")
+@click.option("--region", required=True, help="Region to read (e.g. menaap)")
+def text_ledger_bootstrap(region):
+    """Build the region's seen-URL ledger from data/text (one full read)."""
+    from text.collect import DATA_BASE
+    from text.ledger import STATE_DIR, bootstrap
+
+    n, blocked = bootstrap(region, DATA_BASE)
+    click.echo(f"  {n} sources -> {STATE_DIR / (region + '.sqlite')}")
+    if blocked:
+        click.echo(f"  {len(blocked)} blocked (unreadable files; collect skips them):")
+        for key, err in blocked.items():
+            click.echo(f"    {key}: {err[:200]}")
+        raise SystemExit(1)
 
 
 @text.command("build")
@@ -337,10 +392,58 @@ def text_publish(region, subregion, country, tracker, skip_database_status):
     help="Policy-tracker variant to build. Default: fuel.",
 )
 def text_build_policy_addons(region, chart_title, tracker):
-    """Build policy addon HTMLs from data/text/policy_tracker/<region>.xlsx."""
+    """Build policy addon HTMLs from the newest outputs/text/policy_tracker/<tracker>/YYYY-MM-DD/<region>.xlsx."""
     from text.plotting.policy_dashboards import build_addons
 
     build_addons(region=region, chart_title=chart_title, tracker=tracker)
+
+
+def _policy_step(name, module, summary):
+    """Register ``po text policy-<name>``; argparse in the module owns the flags."""
+
+    @text.command(
+        f"policy-{name}",
+        help=summary,
+        context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+        add_help_option=False,
+    )
+    @click.pass_context
+    def step(ctx):
+        import importlib
+
+        importlib.import_module(f"text.policy.{module}").main(ctx.args)
+
+    return step
+
+
+for _name, _module, _summary in (
+    (
+        "discover",
+        "discover",
+        "Policy corpus 1/5: scan a region's news for candidate measures.",
+    ),
+    (
+        "slice",
+        "slice",
+        "Policy corpus 2/5: pick the candidates the extraction pass reads.",
+    ),
+    (
+        "shard",
+        "shard",
+        "Policy corpus 3/5: hydrate the slice with article text, cut into shards.",
+    ),
+    (
+        "assemble",
+        "assemble",
+        "Policy corpus 4/5: turn agent findings into discovered_<region>.json.",
+    ),
+    (
+        "merge-workbook",
+        "merge_workbook",
+        "Policy corpus 5/5: fold discovered measures into the tracker workbook.",
+    ),
+):
+    _policy_step(_name, _module, _summary)
 
 
 @text.command("status")

@@ -45,6 +45,11 @@ class CSVStorage:
         self.metadata_handler = MetadataHandler(self.base_data_dir)
         self.url_tracker = URLTracker(self.base_data_dir)
 
+        # URLs already in the archive when collecting into a staging dir
+        # (text.ledger); unioned into the seen sets read from this dir.
+        self.archived_urls: set = set()
+        self.archived_article_urls: set = set()
+
         # Streaming state tracking (kept here for now)
         self._streaming_file_handles: Dict[str, Any] = {}
         self._streaming_headers_written: Dict[str, bool] = {}
@@ -192,7 +197,10 @@ class CSVStorage:
             Set of existing article URLs
         """
         newspaper_dir = self.get_newspaper_dir(country, newspaper)
-        return self.csv_writer.get_existing_article_urls(newspaper_dir)
+        return (
+            self.csv_writer.get_existing_article_urls(newspaper_dir)
+            | self.archived_article_urls
+        )
 
     # Metadata Handler delegations
 
@@ -288,7 +296,7 @@ class CSVStorage:
             Set of existing URL strings, empty set if file doesn't exist
         """
         newspaper_dir = self.get_newspaper_dir(country, newspaper)
-        return self.url_tracker.get_existing_urls(newspaper_dir)
+        return self.url_tracker.get_existing_urls(newspaper_dir) | self.archived_urls
 
     def append_thumbnails_to_urls(
         self,

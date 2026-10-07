@@ -1,0 +1,25 @@
+# Studio Kalangou daily radio bulletins (Niger), transcribed offline with
+# faster-whisper-large-v3 and loaded straight into news.csv by
+# scripts/transcripts_to_news.py. There is nothing to scrape: this config
+# exists so the analysis stage resolves the source's language as French
+# instead of falling back to "en", which silently zeroes every EPU count.
+name: Studio Kalangou
+country: niger
+language: fr
+base_url: https://www.studiokalangou.org
+
+listing:
+  type: none
+
+client: http
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+max_pages: null
+max_articles: null

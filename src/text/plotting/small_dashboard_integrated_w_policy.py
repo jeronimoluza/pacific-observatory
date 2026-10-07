@@ -824,24 +824,15 @@ const MEASURE_META = {
     }
 };
 const SCALE_META = {
-    index: 'rescaled so the baseline period averages 100',
+    index: 'rescaled so the baseline period (year 2024) averages 100',
     z: 'expressed in units of its own baseline standard deviation'
 };
 const topicState = { slider: null, sliderDates: [], chart: null, onChange: () => {} };
 
-const labelMap = {
-    'Imf': 'IMF',
-    'Us Government': 'US Government',
-    'Us China Trade War': 'US-China Trade War',
-    'Covid Pandemic': 'COVID-19 Pandemic',
-    'Inflation Prices': 'Inflation & Prices',
-    'Climate Environment': 'Climate & Environment',
-    'Corruption Governance': 'Corruption & Governance',
-    'Housing Real Estate': 'Housing & Real Estate'
-};
+const labelMap = __RANK_LABEL_MAP_JSON__;
 function fmtLabel(key) {
-    const raw = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    return labelMap[raw] || raw;
+    if (labelMap[key]) return labelMap[key];
+    return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
 function initTopicTab() {
@@ -1144,7 +1135,7 @@ const MEASURE_META = {
     }
 };
 const SCALE_META = {
-    index: 'rescaled so the baseline period averages 100',
+    index: 'rescaled so the baseline period (year 2024) averages 100',
     z: 'expressed in units of its own baseline standard deviation'
 };
 const toggleName = 'ma-toggle';
@@ -1394,8 +1385,8 @@ render();
     <div class="method-foot">
         On the index scale a reading of 130 means the conversation was 30% more
         intense than its baseline norm; 70 means 30% less. The baseline period
-        runs from the start of the series to the end of 2020 unless the build was
-        given other dates.__METHOD_FOOT_EXTRA__
+        runs over calendar year 2024 unless the build was given other
+        dates.__METHOD_FOOT_EXTRA__
     </div>
 </div>
 </body></html>"""
@@ -1411,10 +1402,13 @@ def _country_options(data):
 
 
 def _chip_one(item, defaults):
+    # The JS rewrites this label on load, but emitting the real name here too
+    # keeps the served HTML honest -- otherwise grepping the file for a bad
+    # label reports one that no reader ever sees.
     return (
         f'<label class="chip"><input type="checkbox" value="{item}"'
         f"{' checked' if item in defaults else ''}>"
-        f'<span class="chip-label">{fmt_country(item)}</span></label>'
+        f'<span class="chip-label">{RANK_LABEL_MAP.get(item, fmt_country(item))}</span></label>'
     )
 
 
@@ -1489,6 +1483,7 @@ def build_topic_iframe_html(
         .replace("__FOCUS_JSON__", json.dumps(focus_groups))
         .replace("__ALL_GROUPS_JSON__", json.dumps(all_groups))
         .replace("__PALETTE_JSON__", json.dumps(PALETTE))
+        .replace("__RANK_LABEL_MAP_JSON__", json.dumps(RANK_LABEL_MAP))
     )
 
 
@@ -1550,6 +1545,12 @@ ACTORS_LABEL_MAP = {
     "parliament": "Parliament",
     "government": "Government",
 }
+
+
+# The rank table and the chart legend label by RAW group key, so they need both
+# families in one dict. Keeping it derived means a name added above shows up in
+# every tab instead of only the chips.
+RANK_LABEL_MAP = {**TOPICS_LABEL_MAP, **ACTORS_LABEL_MAP}
 
 
 def build_epu_iframe_html(
@@ -1669,7 +1670,13 @@ body {
 }
 .title { font-size: 1.1em; font-weight: 700; }
 .subtitle { color: var(--muted); font-size: 0.9em; }
-.tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+/* A long region name -- MENAAP's title is 96 characters against SSA's 65 --
+   overflows the header row and wraps the tab strip onto its own line, where
+   space-between strands it on the left. Letting the title block shrink keeps
+   the tabs beside the title as on every other region, and margin-left:auto
+   keeps them right-aligned in the narrow-screen case where they still wrap. */
+.header > div:first-child { flex: 1 1 auto; min-width: 0; }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; flex: 0 0 auto; margin-left: auto; }
 .tabs label {
     border: 1px solid var(--border);
     background: #fff;

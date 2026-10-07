@@ -374,7 +374,10 @@ def build_outputs(
         # normalization was applied to, and are the honest scale when the
         # question is "how unusual is this month" rather than "how does this
         # unit compare to that one".
-        out_cols = ["date", "ym"]
+        # Select the output columns first and rename once: renaming inside the
+        # loop copies the whole wide frame (every per-source ratio and z
+        # column) once per output column.
+        renames = {}
         for g in group_names:
             for stem, label in (
                 (f"UG_{g}_abs", f"{g}_absolute"),
@@ -386,10 +389,9 @@ def build_outputs(
                     (f"{stem}_z_weighted", f"{label}_z"),
                 ):
                     if src_col in attr_df.columns:
-                        attr_df = attr_df.rename(columns={src_col: out_col})
-                        out_cols.append(out_col)
+                        renames[src_col] = out_col
 
-        attr_out = attr_df[[c for c in out_cols if c in attr_df.columns]]
+        attr_out = attr_df[["date", "ym", *renames]].rename(columns=renames)
         attr_folder = base_out / "uncertainty_attribution"
         attr_folder.mkdir(parents=True, exist_ok=True)
         _write_csv(attr_folder / f"{output_name}.csv", attr_out)

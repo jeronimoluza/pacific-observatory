@@ -126,6 +126,9 @@ class NewspaperScraper:
         # Per-run set of URLs whose batch hit the watchdog timeout. Excluded
         # from the failure ledger so the next run will retry them.
         self._cancelled_by_watchdog: set = set()
+        # YYYY-MM-DD; when set, discovery stops at a batch whose newest dated
+        # thumbnail is older than this (archive strategies excepted).
+        self.stop_before_date: Optional[str] = None
 
         # Initialize client based on configuration
         self.client_type = self.config.client
@@ -1934,6 +1937,17 @@ class NewspaperScraper:
                     no_progress_streak = 0
                 prev_batch_urls_window.append(batch_urls)
                 prev_batch_urls_window = prev_batch_urls_window[-2:]
+
+            # Rule 6: Batch entirely older than the collect watermark
+            if self.stop_before_date and not isinstance(
+                self.listing_strategy, (ArchiveStrategy, PaginatedArchiveStrategy)
+            ):
+                batch_dates = [t.date for t in batch_thumbnails if t.date]
+                if batch_dates and max(batch_dates) < self.stop_before_date:
+                    logger.info(
+                        f"Batch older than {self.stop_before_date}. Stopping discovery."
+                    )
+                    break
 
             # Add to results
             all_thumbnails.extend(batch_thumbnails)

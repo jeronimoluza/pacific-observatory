@@ -2,7 +2,7 @@
 addons consumed by ``small_dashboard_integrated_w_policy``.
 
 Pipeline:
-    data/text/policy_tracker/<region>.xlsx
+    outputs/text/policy_tracker/<tracker>/YYYY-MM-DD/<region>.xlsx  (newest edition)
       -> src/text/plotting/addons/<tracker>/<region>_policy_addon.html
 
 CLI:
@@ -23,24 +23,29 @@ import re
 import sys
 import zipfile
 from collections import Counter
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from openpyxl import load_workbook
 
+from core.config import load_countries
+from text.plotting.policy_subregions import fold
+
 from text.plotting.trackers import (
     DEFAULT_TRACKER,
     TRACKERS,
+    WORKBOOK_ROOT,
     addon_filename,
     get_tracker,
+    latest_workbook,
     tracker_dir,
     tracker_label,
     workbook_dir,
 )
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_INPUT_DIR = PROJECT_ROOT / "data" / "text" / "policy_tracker"
+DEFAULT_INPUT_DIR = WORKBOOK_ROOT
 DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "addons"
 
 
@@ -312,25 +317,54 @@ WB_PIC_MEMBERS = [
 # share no vocabulary. Left alone a country splits in two: the dropdown offers
 # both, the year bars divide between them, and -- because the PIC view matches
 # WB_PIC_MEMBERS by exact string -- rows filed under the variant drop out of
-# "PICs only (12)" entirely. Keys are punctuation-free and lowercased, so a
-# newly invented separator lands on the canonical name without another entry.
+# "PICs only (12)" entirely. Keys are `fold`ed, so a newly invented separator
+# or an accent lands on the canonical name without another entry.
+#
+# These are the overrides only: names where the workbook's own spelling is
+# canonical and countries.yaml disagrees. Everything else resolves against
+# countries.yaml itself, so a region does not need entries here just because
+# its analysts type accents.
 COUNTRY_ALIASES = {
-    "hong kong sar china": "Hong Kong SAR, China",
-    "marshall islands": "RMI",
-    "micronesia fed sts": "FSM",
-    "micronesia federated states of": "FSM",
-    "timor leste": "Timor-Leste",
-    "papua new guinea": "PNG",
-    "lao pdr": "Laos",
-    "viet nam": "Vietnam",
+    "hongkongsarchina": "Hong Kong SAR, China",
+    "marshallislands": "RMI",
+    "micronesiafedsts": "FSM",
+    "micronesiafederatedstatesof": "FSM",
+    "timorleste": "Timor-Leste",
+    "papuanewguinea": "PNG",
+    "laopdr": "Laos",
+    "vietnam": "Vietnam",
+    # Long forms countries.yaml carries only in World Bank short form.
+    "democraticrepublicofcongo": "Congo, Dem. Rep.",
+    "republicofcongo": "Congo, Rep.",
 }
 
 
+@lru_cache(maxsize=1)
+def _names_by_fold() -> Dict[str, str]:
+    """Every countries.yaml display name, keyed by its folded form."""
+    return {
+        fold(props["name"]): props["name"]
+        for props in load_countries().values()
+        if props.get("name")
+    }
+
+
 def canonical_country(value: Any) -> str:
-    """One spelling per country, so a name cannot split the same country in two."""
+    """One spelling per country, so a name cannot split the same country in two.
+
+    Two layers, overrides last. countries.yaml decides the spelling for every
+    country in every region -- which is what makes "Côte d'Ivoire" and
+    "Cote d'Ivoire" one country without an SSA-specific entry. COUNTRY_ALIASES
+    then wins where the workbook's abbreviation is canonical, because the PIC
+    view matches WB_PIC_MEMBERS ("RMI", "FSM", "PNG") by exact string and
+    resolving those to their countries.yaml long forms would empty it.
+    """
     name = clean_text(value)
-    key = re.sub(r"[^a-z0-9]+", " ", name.lower()).strip()
-    return COUNTRY_ALIASES.get(key, name)
+    key = fold(name)
+    if key in COUNTRY_ALIASES:
+        return COUNTRY_ALIASES[key]
+    resolved = _names_by_fold().get(key, name)
+    return COUNTRY_ALIASES.get(fold(resolved), resolved)
 
 
 REGIONS: List[Dict[str, Any]] = [
@@ -1226,7 +1260,11 @@ render();
 
 
 def find_workbook(input_dir: Path, region_key: str) -> Path:
-    """Locate ``<region>.xlsx`` (preferred) or any ``*<region>*.xlsx`` fallback."""
+    """Locate the newest dated ``YYYY-MM-DD/<region>.xlsx`` edition, else a flat
+    ``<region>.xlsx`` or any ``*<region>*.xlsx`` in ``input_dir``."""
+    latest = latest_workbook(input_dir, region_key)
+    if latest is not None:
+        return latest
     canonical = input_dir / f"{region_key}.xlsx"
     if canonical.exists():
         return canonical
@@ -1265,7 +1303,7 @@ def generate_region(
     display = region_cfg.get("display_name", key)
     print(f"[{key}] {display}")
     workbook = find_workbook(input_dir, key)
-    print(f"  workbook: {workbook.name}")
+    print(f"  workbook: {workbook.parent.name}/{workbook.name}")
     rows, sheet_name, header_row = load_policy_rows(
         workbook, region_cfg.get("sheet", CANONICAL_SHEET)
     )
@@ -1411,7 +1449,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         "--input-dir",
         type=Path,
         default=DEFAULT_INPUT_DIR,
-        help=f"Folder with <region>.xlsx workbooks. Default: {DEFAULT_INPUT_DIR}",
+        help=f"Root holding <tracker>/YYYY-MM-DD/<region>.xlsx editions. Default: {DEFAULT_INPUT_DIR}",
     )
     parser.add_argument(
         "--output-dir",

@@ -1,0 +1,102 @@
+# Country-name spellings the corpus uses that canonical_country does not know.
+# endonyms: keyed by folded form (see text.plotting.policy_subregions.fold),
+#   valued by the countries.yaml display name; extend as new languages enter a
+#   region's corpus.
+# script_endonyms: fold keeps only [a-z0-9], so a name in Arabic or Persian
+#   script folds to "" and can never hit endonyms; those match on the raw string.
+endonyms:
+  "rdc": "Congo, Dem. Rep."
+  "republiquedemocratiqueducongo": "Congo, Dem. Rep."
+  "democraticrepublicofcongo": "Congo, Dem. Rep."
+  "republicademocraticadocongo": "Congo, Dem. Rep."
+  "republiqueducongo": "Congo, Rep."
+  "comores": "Comoros"
+  "guineaecuatorial": "Equatorial Guinea"
+  "guineeequatoriale": "Equatorial Guinea"
+  "guineequatorial": "Equatorial Guinea"
+  "cotedivoire": "Cote d'Ivoire"
+  "capvert": "Cabo Verde"
+  "caboverde": "Cabo Verde"
+  "afriquedusud": "South Africa"
+  "etiopia": "Ethiopia"
+  "tanzanie": "Tanzania"
+  "mocambique": "Mozambique"
+  # The Palestinian territories arrive under half a dozen spellings; the
+  # topology knows exactly one of them.
+  "palestine": "West Bank and Gaza"
+  "palestinianterritories": "West Bank and Gaza"
+  "gaza": "West Bank and Gaza"
+  "gazastrip": "West Bank and Gaza"
+  "westbank": "West Bank and Gaza"
+  # Both spellings clear the region gate, so without this one country would
+  # split into two rows on the dashboard.
+  "syria": "Syrian Arab Republic"
+  # The eca press calls these countries by their common names, but the
+  # topology only knows the formal ones, so every measure arrived looking
+  # foreign: "Russia" alone accounted for 95 dropped events.
+  "russia": "Russian Federation"
+  "kyrgyzstan": "Kyrgyz Republic"
+  "turkey": "Türkiye"
+  # Francophone Maghreb and Sahel press.
+  "algerie": "Algeria"
+  "maroc": "Morocco"
+  "tunisie": "Tunisia"
+  "tchad": "Chad"
+  # Portuguese/Spanish lac press.
+  "brasil": "Brazil"
+  "republicadominicana": "Dominican Republic"
+  "southkorea": "Korea, Rep."
+  "korea": "Korea, Rep."
+  # Balkan, Polish, Romanian, Albanian and Turkish eca press.
+  "republicamoldova": "Moldova"
+  "moldawia": "Moldova"
+  "modawia": "Moldova"  # fold drops the Polish ł
+  "polska": "Poland"
+  "crnagora": "Montenegro"
+  "sjevernamakedonija": "North Macedonia"
+  "macedonia": "North Macedonia"
+  "francuska": "France"
+  "fransa": "France"
+  "slovenija": "Slovenia"
+  "njemacka": "Germany"
+  "greqia": "Greece"
+  "greqi": "Greece"
+  "yunanistan": "Greece"
+  "shqiperia": "Albania"
+  "srbija": "Serbia"
+
+script_endonyms:
+  "الجزائر": "Algeria"
+  "المغرب": "Morocco"
+  "تونس": "Tunisia"
+  "الأردن": "Jordan"
+  "اليمن": "Yemen, Rep."
+  "ایران": "Iran, Islamic Rep."
+  "إيران": "Iran, Islamic Rep."
+  "جيبوتي": "Djibouti"
+  "تشاد": "Chad"
+  "قطاع غزة": "West Bank and Gaza"
+  "غزة": "West Bank and Gaza"
+  "فلسطين": "West Bank and Gaza"
+  "مصر": "Egypt, Arab Rep."
+  "العراق": "Iraq"
+  "سوريا": "Syrian Arab Republic"
+  "لبنان": "Lebanon"
+  "ليبيا": "Libya"
+  # Cyrillic and Armenian eca press.
+  "Молдова": "Moldova"
+  "Кыргызстан": "Kyrgyz Republic"
+  "Россия": "Russian Federation"
+  "Русија": "Russian Federation"
+  "Росія": "Russian Federation"
+  "Ռուսաստան": "Russian Federation"
+  "Беларусь": "Belarus"
+  "България": "Bulgaria"
+  "ՀՀ": "Armenia"
+  "Латвия": "Latvia"
+  "Македонија": "North Macedonia"
+  "Унгарија": "Hungary"
+  "Казахстан": "Kazakhstan"
+  "Италија": "Italy"
+  "Германија": "Germany"
+  "Україна": "Ukraine"

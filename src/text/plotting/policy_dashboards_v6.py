@@ -72,7 +72,16 @@ def _policy_year(raw: Any) -> int | None:
     cannot: it is the first year the policy's keywords reach 15% of their
     peak coverage, so a recurring measure like the FCCC's monthly fuel
     price cycle onsets in 2009 while the measure itself dates to 2026.
+
+    A year past the current one is clamped to it: such text names an expiry
+    or a scheduled phase-in (``Active 9-Jul-26; prices frozen through
+    12-Jan-2027``), and the measure was decided no later than today.
     """
+    year = _parse_policy_year(raw)
+    return min(year, dt.date.today().year) if year else year
+
+
+def _parse_policy_year(raw: Any) -> int | None:
     text = _clean(raw)
     if not text or text.lower() in {"nan", "none", "tbd", "n/a"}:
         return None

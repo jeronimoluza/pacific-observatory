@@ -1,6 +1,7 @@
 """Text publish stage: build dashboard_data.json and generate EPU dashboards."""
 
 import json
+import re
 from pathlib import Path
 
 import click
@@ -8,7 +9,6 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
-TEXT_CONFIGS_DIR = PROJECT_ROOT / "src" / "text" / "configs"
 DASHBOARD_DATA_DIR = OUTPUT_DIR / "dashboard_data"
 DASHBOARD_JSON = DASHBOARD_DATA_DIR / "dashboard_data.json"
 
@@ -91,11 +91,10 @@ def _discover_units(region=None, subregion=None, country=None):
                 ctry = country_dir.name
                 if not (country_dir / "epu" / "epu.csv").exists():
                     continue
-                if (
-                    known is not None
-                    and ctry not in known
-                    and not (TEXT_CONFIGS_DIR / rgn / sub / ctry).is_dir()
-                ):
+                # Config folders outside regions.yaml (`pacific`: regional
+                # Pacific outlets) are built and counted in their subregion's
+                # aggregate, but are not countries, so they get no entry here.
+                if known is not None and ctry not in known:
                     continue
 
                 if region and region != rgn:
@@ -304,7 +303,8 @@ def _export_region_panel(
     scoped to this region). CSV/DTA: long-on-unit, wide-on-index panel
     merging EPU + topics + actors. XLSX: one sheet per family plus a
     combined ``panel`` sheet, standalone ``topics_framing``/
-    ``actors_framing`` sheets for the uncertainty-attribution data, and a
+    ``actors_framing`` sheets for the uncertainty-attribution data, a
+    ``policies_<tracker>`` sheet per policy tracker that has an addon, and a
     ``sources`` sheet (per-source provenance) when ``database_status`` is
     available for this region.
     """
@@ -376,20 +376,94 @@ def _export_region_panel(
             _front_id_cols(df).to_excel(xw, sheet_name=sheet, index=False)
         if merged is not None:
             _front_id_cols(merged).to_excel(xw, sheet_name="panel", index=False)
+        _write_policy_sheets(xw, region)
         _write_sources_sheet(xw, database_status, region)
 
     return region_json
 
 
+_POLICY_RE = re.compile(r"const D = (\{.*?\});\s*\n", re.S)
+
+# The columns a reader wants first; anything else the addon carries (the
+# corpus-discovery extras) follows in the order it appears.
+_POLICY_FRONT = [
+    "Country",
+    "Policy",
+    "category_display",
+    "subcategory",
+    "onset_year",
+    "date_basis",
+    "provenance",
+    "Active or Proposed Date",
+    "Policy Description",
+    "Source",
+]
+
+
+def _read_addon_policies(region: str, tracker: str) -> pd.DataFrame | None:
+    """The policy rows one addon reports, or None when it has no addon.
+
+    Read from the addon rather than the tracker workbook because the dashboard
+    is what the sheet has to agree with: corpus-discovered measures reach the
+    addon through a ``discovered_<region>.json`` sidecar and never appear in the
+    workbook, so a workbook-sourced sheet would silently omit them.
+    """
+    from text.plotting.small_dashboard_integrated_w_policy import ADDONS_DIR
+    from text.plotting.trackers import addon_filename, tracker_dir
+
+    path = tracker_dir(ADDONS_DIR, tracker) / addon_filename(region)
+    if not path.exists():
+        return None
+    match = _POLICY_RE.search(path.read_text(encoding="utf-8", errors="replace"))
+    if not match:
+        return None
+    rows = json.loads(match.group(1)).get("policies") or []
+    if not rows:
+        return None
+
+    df = pd.DataFrame(rows)
+    # ``years`` is a per-year article-count dict; Excel takes scalars only.
+    if "years" in df.columns:
+        df["years"] = df["years"].apply(
+            lambda v: json.dumps(v, sort_keys=True) if isinstance(v, dict) else v
+        )
+    front = [c for c in _POLICY_FRONT if c in df.columns]
+    return df[front + [c for c in df.columns if c not in front]]
+
+
+def _write_policy_sheets(xw, region: str) -> None:
+    """Append a ``policies_<tracker>`` sheet per tracker, if an addon exists.
+
+    Never raises: a missing or unparsable addon just skips that sheet, the same
+    way a missing status skips ``sources``.
+    """
+    for tracker in ("fuel", "food"):
+        try:
+            df = _read_addon_policies(region, tracker)
+        except Exception:  # noqa: BLE001
+            continue
+        if df is not None:
+            df.to_excel(xw, sheet_name=f"policies_{tracker}", index=False)
+
+
 def _write_sources_sheet(xw, database_status: dict | None, region: str) -> None:
     """Append a ``sources`` sheet scoped to ``region``, if status data allows.
 
+    Without fresh ``database_status`` (``--skip-database-status``), falls back to
+    the region's last export, ``sources_<region>.json``, so a skipped scan does
+    not drop the sheet from a workbook that already had one.
+
     Never raises: a status failure or empty region slice just skips the sheet.
     """
-    if not database_status:
-        return
     try:
-        from text.status import DATABASE_STATUS_FIELDS
+        from text.status import DATABASE_STATUS_DIR, DATABASE_STATUS_FIELDS
+
+        if not database_status:
+            saved = DATABASE_STATUS_DIR / f"sources_{region}.json"
+            if not saved.exists():
+                return
+            with open(saved, encoding="utf-8") as f:
+                database_status = json.load(f)
 
         rows = [
             r for r in database_status.get("sources", []) if r.get("region") == region
@@ -416,18 +490,28 @@ def _render_fcp_dashboard(
     return generate_dashboard_from_json(region_json, region, tracker)
 
 
-def _refresh_database_status():
-    """Regenerate the global outputs/text/database_status/sources.{csv,json,xlsx} snapshot.
+def _refresh_database_status(region=None):
+    """Regenerate the database status snapshot under outputs/text/database_status/.
 
-    Scope-independent: always reflects the whole data/text/ database. Failures
-    here never block dashboard publishing. Returns the computed data dict (also
-    used to populate the per-region ``sources`` xlsx sheet), or None on failure.
+    With ``region``, scans only that region's news.csv files, writes
+    ``sources_<region>.*`` and re-merges the combined ``sources.xlsx`` from every
+    per-region export, the same path as ``po text database-status --region``.
+    Without it, rescans the whole data/text/ database into the global export.
+    Failures here never block dashboard publishing. Returns the computed data
+    dict (also used to populate the per-region ``sources`` xlsx sheet), or None
+    on failure.
     """
-    from text.status import compute_database_status, write_database_status
+    from text.status import (
+        compute_database_status,
+        merge_region_exports,
+        write_database_status,
+    )
 
     try:
-        data = compute_database_status()
-        write_database_status(data)
+        data = compute_database_status(region_filter=region)
+        write_database_status(data, region=region)
+        if region:
+            merge_region_exports()
         t = data["totals"]
         click.echo(
             f"  Database status: {t['sources']} sources · "
@@ -448,8 +532,9 @@ def run_publish(
 ):
     """Build dashboard_data.json, per-region panels, and EPU dashboards.
 
-    ``skip_database_status`` bypasses the global raw-data rescan, which is
-    pointless when the published regions have no local ``data/text/`` copy.
+    ``skip_database_status`` bypasses the raw-data rescan (scoped to ``region``
+    when one is given), which is pointless when the published regions have no
+    local ``data/text/`` copy.
 
     Always writes the global ``outputs/text/dashboard_data/dashboard_data.json``
     and renders the basic integrated HTML. When the scope covers full
@@ -467,7 +552,7 @@ def run_publish(
         click.echo("  Database status: skipped (--skip-database-status)")
         database_status = None
     else:
-        database_status = _refresh_database_status()
+        database_status = _refresh_database_status(region)
 
     if not units:
         click.echo("  No units with EPU data found. Run 'po text build' first.")
@@ -514,6 +599,7 @@ def run_publish(
         return
 
     regions_in_scope = sorted({u["region"] for u in units})
+    missing_addons = []
     for rgn in regions_in_scope:
         rgn_units = [u for u in units if u["region"] == rgn]
         click.echo(f"  Building {rgn}/ panel from outputs/text/...")
@@ -528,5 +614,21 @@ def run_publish(
         except (FileNotFoundError, ValueError) as exc:
             click.echo(f"  Policy dashboard for {rgn}: {exc}")
             continue
-        if fcp_html is not None:
+        if fcp_html is None:
+            missing_addons.append(rgn)
+        else:
             click.echo(f"  Written: {fcp_html.relative_to(PROJECT_ROOT)}")
+
+    if missing_addons:
+        from text.plotting.small_dashboard_integrated_w_policy import _addon_path
+
+        lines = [
+            f"  {r}: {_addon_path(r, tracker).relative_to(PROJECT_ROOT)}"
+            f"  (fix: po text build-policy-addons --region {r}"
+            + (f" --tracker {tracker}" if tracker else "")
+            + ")"
+            for r in missing_addons
+        ]
+        raise click.ClickException(
+            "Policy dashboard addon missing, nothing rendered for:\n" + "\n".join(lines)
+        )

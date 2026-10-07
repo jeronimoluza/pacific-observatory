@@ -622,7 +622,7 @@ def gen_regional_bump_html(country, title, date_from, date_to, topics, data_dir,
 
 if __name__ == "__main__":
     PROJECT_ROOT = Path(__file__).resolve().parents[3]
-    DATA_DIR = PROJECT_ROOT / "outputs" / "text"
+    DATA_DIR = PROJECT_ROOT / "outputs" / "text" / "_archive"
     OUTPUT_DIR = PROJECT_ROOT / "docs/images/interactive/text/regional_note"
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 

@@ -132,14 +132,14 @@
     "원·달러",
     "원달러",
     "유로",
-    "엔",
     "위안",
     "평가절하 압력",
     "exchange rate",
     "currency",
     "devaluation",
     "depreciation",
-    "appreciation"
+    "appreciation",
+    "엔화"
   ],
   "financial_stability": [
     "금융안정",
@@ -309,13 +309,13 @@
     "추수",
     "농작물",
     "곡물",
-    "밀",
     "옥수수",
     "쌀",
     "food",
     "food prices",
     "food security",
-    "agriculture"
+    "agriculture",
+    "밀가루"
   ],
   "housing_real_estate": [
     "주택",
@@ -402,7 +402,6 @@
     "의료서비스",
     "병원",
     "의료기관",
-    "약",
     "의약품",
     "약품",
     "질병",

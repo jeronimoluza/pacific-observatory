@@ -12,7 +12,6 @@
     "authority": "權威",
     "authorities": "當局",
     "minister": "部長",
-    "ministry": "部",
     "parliament": "議會",
     "parliamentary": "議會",
     "tax": "稅",
@@ -21,7 +20,15 @@
     "central bank": "中央銀行",
     "IMF": "IMF",
     "International Monetary Fund": "國際貨幣基金組織",
-    "World Bank": "世界銀行"
+    "World Bank": "世界銀行",
+    "government department": "政府部門",
+    "education ministry": "教育部",
+    "foreign ministry": "外交部",
+    "finance ministry": "財政部",
+    "economic affairs ministry": "經濟部",
+    "interior ministry": "內政部",
+    "defence ministry": "國防部",
+    "health ministry": "衛生福利部"
   },
   "uncertainty": {
     "uncertain": "不確定",

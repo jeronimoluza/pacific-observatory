@@ -2,7 +2,7 @@
 
 This is the research brief for the `update-food-security-policy` skill.
 It governs how the regional Excel workbooks under
-`data/text/policy_tracker/food_security/` are updated before
+`outputs/text/policy_tracker/food_security/` are updated before
 `po text build-policy-addons --tracker food` regenerates the dashboard
 HTML addons.
 
@@ -47,10 +47,10 @@ fertilizer-energy costs are the operative mechanism.
 
 # Regional workbooks
 
-`data/text/policy_tracker/food_security/<region>.xlsx` for region keys
+`outputs/text/policy_tracker/food_security/<newest YYYY-MM-DD>/<region>.xlsx` for region keys
 `eap`, `eca`, `menaap`, `sar`, `ssa`, `lac`.
 
-**Do not open or write `data/text/policy_tracker/<region>.xlsx`** — that
+**Do not open or write `outputs/text/policy_tracker/fuel/`** — that
 is the fuel tracker.
 
 Important regional rule: Afghanistan and Pakistan are tracked under

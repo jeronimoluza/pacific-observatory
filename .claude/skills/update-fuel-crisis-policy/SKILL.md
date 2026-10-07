@@ -1,12 +1,16 @@
 ---
 name: update-fuel-crisis-policy
-description: "Update the regional Fuel Crisis Policy trackers and regenerate the per-region addon dashboards that feed `po text publish`. Trigger when the user wants to refresh policy data for EAP / ECA / MENAAP / SAR / LAC / SSA, asks to 'update the policy tracker', references `data/text/policy_tracker/<region>.xlsx`, or wants to publish the Fuel Crisis Policy + EPU dashboard for a region. Orchestrates: (1) research-driven workbook updates per `references/master_prompt.md` (per-country search, two-part demand-reduction typology, SAR excludes AFG/PAK, EAP includes the 12-PIC view), (2) `po text build-policy-addons --region <r>` to convert workbooks into HTML addons under `src/text/plotting/addons/`, (3) `po text publish --region <r>` to render the final tabbed dashboard. Stops after publish — does NOT modify any other pipeline state."
+description: "Update the regional Fuel Crisis Policy trackers and regenerate the per-region addon dashboards that feed `po text publish`. Trigger when the user wants to refresh policy data for EAP / ECA / MENAAP / SAR / LAC / SSA, asks to 'update the policy tracker', references `outputs/text/policy_tracker/fuel/`, or wants to publish the Fuel Crisis Policy + EPU dashboard for a region. Orchestrates: (1) research-driven workbook updates per `references/master_prompt.md` (per-country search, two-part demand-reduction typology, SAR excludes AFG/PAK, EAP includes the 12-PIC view), (2) `po text build-policy-addons --region <r>` to convert workbooks into HTML addons under `src/text/plotting/addons/`, (3) `po text publish --region <r>` to render the final tabbed dashboard. Stops after publish — does NOT modify any other pipeline state."
 ---
 
 # Update Fuel Crisis Policy
 
 Refresh the regional Fuel Crisis Policy trackers and rebuild the standalone
 HTML dashboards that the `publish` command embeds as iframe srcdoc.
+
+## Corpus pass and refresh-text-region
+
+A corpus pass over collected news exists (`po text policy-discover | policy-slice | policy-shard | policy-assemble | policy-merge-workbook`, prompt `src/text/policy/extract_prompt.md`); it writes rows with Provenance=corpus. `refresh-text-region` calls it per region for the fuel tracker, then runs the research below for what the corpus missed. Running this skill alone is the websearch-only path.
 
 ## When this skill applies
 
@@ -15,7 +19,7 @@ HTML dashboards that the `publish` command embeds as iframe srcdoc.
 - Republish a region's Fuel Crisis Policy + EPU dashboard after research is done.
 - User says "the EAP policy tracker is stale", "regenerate the SAR fuel
   policy dashboard", "update the policy addons", or references
-  `data/text/policy_tracker/` or `src/text/plotting/addons/`.
+  `outputs/text/policy_tracker/fuel/` or `src/text/plotting/addons/`.
 
 For a one-off fix to a single Excel row (no research), the user can edit
 the workbook directly and run step 2 + step 3 below — no skill needed.
@@ -23,10 +27,10 @@ the workbook directly and run step 2 + step 3 below — no skill needed.
 ## Pipeline (canonical)
 
 ```
-data/text/policy_tracker/<region>.xlsx
-   |  (research + edit per references/master_prompt.md)
+outputs/text/policy_tracker/fuel/YYYY-MM-DD/<region>.xlsx   (newest edition = current)
+   |  (start today's edition, research + edit per references/master_prompt.md)
    v
-data/text/policy_tracker/YYYY-MM-DD/excel/<region>.xlsx   (dated snapshot — audit trail)
+outputs/text/policy_tracker/fuel/<today>/<region>.xlsx      (older editions = audit trail)
    |
    v
 po text build-policy-addons --region <r>
@@ -43,7 +47,19 @@ outputs/text/dashboards/fuel/<region>_policy_dashboard.html
 
 ## Step 1 — Update the workbook
 
-Open `data/text/policy_tracker/<region>.xlsx`. The research protocol —
+Start today's edition. It creates `outputs/text/policy_tracker/fuel/<today>/`
+holding every region's newest workbook (a no-op if it already exists), then
+back up the workbook you are about to edit:
+
+```bash
+DATE=$(date +%Y-%m-%d)
+PYTHONPATH=src poetry run python -c "from text.plotting.trackers import WORKBOOK_ROOT, start_edition; print(start_edition(WORKBOOK_ROOT / 'fuel'))"
+mkdir -p outputs/text/policy_tracker/fuel/backups
+cp -p outputs/text/policy_tracker/fuel/$DATE/<region>.xlsx \
+   outputs/text/policy_tracker/fuel/backups/<region>.pre-research-$(date -u +%Y%m%dT%H%M%SZ).bak.xlsx
+```
+
+Edit `outputs/text/policy_tracker/fuel/$DATE/<region>.xlsx` in place. The research protocol —
 search window, per-country search, per-implementing-agency search,
 multilingual queries, the two-part `Reduce demand - higher prices` /
 `Reduce demand - restricting quantities` typology, source hierarchy,
@@ -74,46 +90,23 @@ Region-specific rules the converter enforces on top of that:
 | `lac` | — |
 | `ssa` | — |
 
-Save back to the same filename (`<region>.xlsx`, no date suffix). Git
-status / mtime is the version log.
+Save back to the same file (`<today>/<region>.xlsx`, no date suffix). The
+dated editions are the version log; every backup goes to `fuel/backups/`,
+never next to a workbook.
 
-## Step 2 — Archive the dated snapshot
+## Step 2 — Verify the edition
 
-**After every workbook edit is finished and saved** — and specifically
-**after** any parallel research agents (e.g. codex-rescue) have
-returned and you have confirmed the live `.xlsx` mtimes reflect their
-writes — copy the updated workbook(s) into a dated audit directory:
+There is no separate snapshot copy: today's edition folder is the snapshot.
+In a parallel/orchestrated run (several regions edited by sub-agents), every
+editor writes into `outputs/text/policy_tracker/fuel/$DATE/`. Wait until all
+report done, then check that `ls -la outputs/text/policy_tracker/fuel/$DATE/`
+mtimes are AFTER their reported finish times and that the edited regions'
+sizes differ from the previous edition's (identical sizes across all six is
+the canonical "an editor wrote somewhere else" smell).
 
-```bash
-DATE=$(date -u +%Y-%m-%d)
-mkdir -p data/text/policy_tracker/$DATE/excel
-# For one region:
-cp data/text/policy_tracker/<region>.xlsx data/text/policy_tracker/$DATE/excel/<region>.xlsx
-# Or for all six in one go:
-for r in eap eca lac menaap sar ssa; do
-  cp data/text/policy_tracker/$r.xlsx data/text/policy_tracker/$DATE/excel/$r.xlsx
-done
-```
-
-**Ordering rule (do not snapshot early):** the snapshot is post-edit by
-definition. In a parallel/orchestrated run (multiple regions edited
-concurrently by sub-agents), do NOT snapshot at job dispatch — the live
-files still hold the previous run's content. Wait until every region's
-editor has reported done, then snapshot once. Verify by spot-checking
-that `ls -la data/text/policy_tracker/$DATE/excel/` mtimes are AFTER
-the editor agents' reported finish times and that file sizes differ
-from yesterday's snapshot (identical sizes across all 6 regions is the
-canonical "snapshotted too early" smell).
-
-The dated directories under `data/text/policy_tracker/YYYY-MM-DD/excel/`
-form the human-readable audit trail — one snapshot per run-day. If the
-skill runs more than once on the same day, the later snapshot wins
-(later runs supersede earlier ones); use the dated `.pre-codex-<ts>.bak`
-or `.pre-v6.bak` siblings of the live `<region>.xlsx` for finer-grained
-rollback within a day.
-
-Skip this step only when you didn't actually change the workbook (e.g.,
-you're only re-running build+publish after a converter-side fix).
+If the skill runs more than once on the same day, the later edits land in the
+same folder; use `fuel/backups/<region>.pre-*-<ts>.bak.xlsx` for finer-grained
+rollback within a day. Never edit an older edition — it is the audit trail.
 
 ## Step 3 — Build the addon HTML
 
@@ -124,8 +117,8 @@ poetry run po text build-policy-addons
 ```
 
 The converter (`src/text/plotting/policy_dashboards.py`):
-- Reads `data/text/policy_tracker/<region>.xlsx` (or any
-  `*<region>*.xlsx` fallback).
+- Reads the newest `outputs/text/policy_tracker/fuel/YYYY-MM-DD/<region>.xlsx`
+  (`--input-dir` may instead point at a flat folder of `<region>.xlsx`).
 - Normalizes alias headers (`Country/economy`, `Policy measure`,
   `Status/date`, etc.) into the dashboard schema.
 - Maps legacy `Reduce demand` rows into the two-part typology using
@@ -177,8 +170,8 @@ Open the final HTML and confirm against the checklist at the end of
 
 ```
 ## Fuel Crisis Policy refresh: <region>
-- Workbook: data/text/policy_tracker/<region>.xlsx  (last edited: <mtime>)
-- Snapshot: data/text/policy_tracker/YYYY-MM-DD/excel/<region>.xlsx
+- Workbook: outputs/text/policy_tracker/fuel/YYYY-MM-DD/<region>.xlsx  (last edited: <mtime>)
+- Backup:   outputs/text/policy_tracker/fuel/backups/<region>.pre-research-<ts>.bak.xlsx
 - Addon:    src/text/plotting/addons/fuel/<region>_policy_addon.html
             (rows=<n>, excluded=<n>, countries=<n>)
 - Final:    outputs/text/dashboards/fuel/<region>_policy_dashboard.html
