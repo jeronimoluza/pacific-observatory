@@ -1,0 +1,43 @@
+spider: phumikasephal_kh
+url: https://phumikasephal.com/market-prices
+language: en
+currency: KHR
+cadence: daily
+channel: marketplace
+archive_prefix: "phumikasephal.com/products/"
+archive_path_re: '^/products/\d+'
+notes: |
+  Phumi Kasephal (ភូមិកសិផល), Cambodian farm-produce marketplace, Khmer/English,
+  prices in KHR (site shows a configured $1 = 4,100 KHR; price_usd is that
+  site conversion, not a market rate). The documented REST API (/api-docs)
+  lives under /api/v1/..., which robots.txt disallows and which needs a Bearer
+  token, so the spider reads public HTML only, in English via the
+  phoumika_locale=en cookie (product names stay Khmer; categories/units EN).
+
+  Two record types, told apart by details.record_type:
+  * market_price_board -- /market-prices, 4 pages x 30 cards = 105 price
+    groups. price = the "Suggested" (headline) KHR price; price_min /
+    price_max = Low / High; unit = kg/pc/pack/bunch/...; n_observations =
+    sample count; source_date_label = card date (dd/mm/yyyy). 32 of the 105
+    are category "market average" rows (details.row_type=category_average,
+    mixing different products -- exclude for item-level work). product_id
+    is a hash of name|category|unit (board cards have no ids); url is
+    /market-prices#<product_id> so the url-dedup pipeline keeps every row.
+    CAVEAT: every card is source_type "catalog", i.e. the site aggregates
+    its OWN live listings -- it is not an independent market survey, and
+    most product groups have 1 sample. The source_type filter also offers
+    official/admin/import, all empty on 2026-10-07; if they fill, they will
+    appear with a different details.board_source.
+  * marketplace_listing -- /products, 3 pages, 74 live listings (matches
+    sitemap-products.xml); ids go up to ~12,563 but only 74 are listed.
+    One KHR price per unit, plus seller and stock in details.
+
+  Test 2026-10-07 (a8): 179 rows (105 board + 74 listings), 8 requests,
+  ~16 s, all KHR, 0 non-numeric/zero prices, 0 missing units, low <=
+  suggested <= high on all 105. Furniture/seedlings/fertiliser categories
+  are present; food (vegetables, fruits, rice, meat/fish, eggs/dairy,
+  spices) is the majority.
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: marketplace_offer
+coicop_classification: classifier
