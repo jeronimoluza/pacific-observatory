@@ -270,8 +270,13 @@ def text_ledger_bootstrap(region):
     from text.collect import DATA_BASE
     from text.ledger import STATE_DIR, bootstrap
 
-    n = bootstrap(region, DATA_BASE)
+    n, blocked = bootstrap(region, DATA_BASE)
     click.echo(f"  {n} sources -> {STATE_DIR / (region + '.sqlite')}")
+    if blocked:
+        click.echo(f"  {len(blocked)} blocked (unreadable files; collect skips them):")
+        for key, err in blocked.items():
+            click.echo(f"    {key}: {err[:200]}")
+        raise SystemExit(1)
 
 
 @text.command("build")

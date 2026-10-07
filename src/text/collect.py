@@ -389,6 +389,10 @@ def _prepare_staged_source(scraper, staging: Path, ledgers: dict, rgn: str) -> N
     storage = scraper._storage
     source_dir = storage.get_newspaper_dir(scraper.country, scraper.source_key)
     key = str(source_dir.relative_to(staging / rgn))
+    reason = ledgers[rgn].blocked(key)
+    if reason:
+        # Collecting without its seen set would re-discover the whole source.
+        raise RuntimeError(f"blocked in ledger (repair the archive files): {reason}")
     archived = ledgers[rgn].get(key)
 
     if archived is not None and not source_dir.exists():

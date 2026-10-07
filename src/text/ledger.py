@@ -38,6 +38,11 @@ CREATE TABLE IF NOT EXISTS sources (
     n_urls INTEGER NOT NULL,
     n_news INTEGER NOT NULL,
     updated TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS blocked (
+    key TEXT PRIMARY KEY,
+    error TEXT NOT NULL,
+    updated TEXT NOT NULL DEFAULT (datetime('now'))
 )
 """
 
@@ -88,7 +93,7 @@ class Ledger:
         state_dir.mkdir(parents=True, exist_ok=True)
         self.path = state_dir / f"{region}.sqlite"
         self.conn = sqlite3.connect(self.path)
-        self.conn.execute(_SCHEMA)
+        self.conn.executescript(_SCHEMA)
 
     def get(self, key: str) -> Optional[SourceState]:
         row = self.conn.execute(
@@ -122,6 +127,20 @@ class Ledger:
 
     def keys(self) -> list[str]:
         return [k for (k,) in self.conn.execute("SELECT key FROM sources ORDER BY key")]
+
+    def block(self, key: str, error: str) -> None:
+        """Mark a source whose archive files could not be read; collect skips it."""
+        self.conn.execute("DELETE FROM sources WHERE key = ?", (key,))
+        self.conn.execute(
+            "INSERT OR REPLACE INTO blocked (key, error) VALUES (?, ?)", (key, error)
+        )
+        self.conn.commit()
+
+    def blocked(self, key: str) -> Optional[str]:
+        row = self.conn.execute(
+            "SELECT error FROM blocked WHERE key = ?", (key,)
+        ).fetchone()
+        return row[0] if row else None
 
     def close(self) -> None:
         self.conn.close()
@@ -165,10 +184,16 @@ def iter_source_dirs(region_dir: Path) -> Iterator[tuple[str, Path]]:
             yield str(source_dir.relative_to(region_dir)), source_dir
 
 
-def bootstrap(region: str, data_base: Path, state_dir: Path = STATE_DIR) -> int:
-    """Read every source folder of ``region`` into its ledger. Returns sources written."""
+def bootstrap(
+    region: str, data_base: Path, state_dir: Path = STATE_DIR
+) -> tuple[int, dict[str, str]]:
+    """Read every source folder of ``region`` into its ledger.
+
+    A source whose files do not parse is recorded as blocked (and staged collect
+    skips it) instead of aborting the region. Returns (sources written, blocked).
+    """
     ledger = Ledger(region, state_dir)
-    n = 0
+    n, blocked = 0, {}
     try:
         for key, source_dir in iter_source_dirs(data_base / region):
             if (
@@ -176,9 +201,18 @@ def bootstrap(region: str, data_base: Path, state_dir: Path = STATE_DIR) -> int:
                 and not (source_dir / "urls.csv").exists()
             ):
                 continue
-            ledger.put(key, read_source_dir(source_dir))
+            try:
+                state = read_source_dir(source_dir)
+            except (pd.errors.ParserError, UnicodeDecodeError, ValueError) as e:
+                blocked[key] = f"{type(e).__name__}: {e}"
+                ledger.block(key, blocked[key])
+                print(f"  BLOCKED {key}: {blocked[key]}", flush=True)
+                continue
+            ledger.put(key, state)
+            ledger.conn.execute("DELETE FROM blocked WHERE key = ?", (key,))
+            ledger.conn.commit()
             n += 1
             print(f"  {key}", flush=True)
     finally:
         ledger.close()
-    return n
+    return n, blocked
