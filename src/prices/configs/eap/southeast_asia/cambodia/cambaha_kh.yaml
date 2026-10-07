@@ -11,6 +11,12 @@ cadence: weekly
 active: true
 archive_prefix: "cambaha.com/product/"
 archive_path_re: '^/product/[^/?]+'
+# Before WooCommerce the shop ran on Shopify (CC 2024-10..2025-26).
+archive_also:
+  - prefix: "cambaha.com/products/"
+    path_re: "^/products/[^/?]+"
+  - prefix: "cambaha.com/km/products/"
+    path_re: "^/km/products/[^/?]+"
 spider_kwargs:
   source_label: "cambaha_kh"
   base_url: "https://cambaha.com"
