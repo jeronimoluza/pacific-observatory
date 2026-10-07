@@ -39,15 +39,18 @@ def _echo_skipped(disabled):
         )
 
 
+_EMPTY_STATS = {
+    "article_count": "—",
+    "earliest_date": "—",
+    "last_date": "—",
+    "last_updated": "—",
+    "mtime": None,
+}
+
+
 def _source_stats(news_csv: Path) -> dict:
     """Read article count, date range, and file freshness from a news.csv file."""
-    empty = {
-        "article_count": "—",
-        "earliest_date": "—",
-        "last_date": "—",
-        "last_updated": "—",
-        "mtime": None,
-    }
+    empty = _EMPTY_STATS
     if not news_csv.exists():
         return empty
     try:
@@ -232,10 +235,13 @@ def display_status(region=None, subregion=None, country=None, show_all=False):
     click.echo()
 
 
-def _build_plan(region=None, subregion=None, country=None, source=None, skipped=None):
+def _build_plan(
+    region=None, subregion=None, country=None, source=None, skipped=None, stats=True
+):
     """Discover configs and build execution plan with data stats.
 
     Disabled sources are left out of the plan; if `skipped` is a list they are appended to it.
+    ``stats=False`` skips reading news.csv (staging runs must not touch the archive).
     """
     configs = discover_pipeline_configs(
         CONFIGS_DIR, region=region, subregion=subregion, country=country
@@ -260,7 +266,6 @@ def _build_plan(region=None, subregion=None, country=None, source=None, skipped=
             / newspaper
             / "news.csv"
         )
-        stats = _source_stats(news_csv)
         plan.append(
             {
                 "config_path": config_path,
@@ -270,7 +275,7 @@ def _build_plan(region=None, subregion=None, country=None, source=None, skipped=
                 "newspaper": newspaper,
                 "source_key": newspaper,
                 "data_folder_expected": newspaper,
-                **stats,
+                **(_source_stats(news_csv) if stats else _EMPTY_STATS),
             }
         )
     return plan
@@ -355,6 +360,67 @@ def _print_source_summary(results):
             click.echo(f"  {label + ':':<30} {count:>5}")
 
 
+STAGING_OVERLAP_DAYS = 7
+
+
+def _prepare_staged_source(scraper, staging: Path, ledgers: dict, rgn: str) -> None:
+    """Seed a source's staging dir from the ledger and hand the scraper its seen URLs.
+
+    The staging dir gets the source's discovered-but-unscraped urls.csv rows and
+    its failed_urls_seen.csv, so the scraper's own pending/failed logic runs
+    unchanged. URLs already archived, plus those in other unmerged runs beside
+    ``staging``, are unioned into the scraper's seen sets.
+    """
+    from datetime import date, timedelta
+
+    from text.ledger import Ledger
+    from text.merge import MERGED_MARKER
+
+    if rgn not in ledgers:
+        ledger = Ledger(rgn)
+        if not ledger.keys():
+            ledger.close()
+            raise click.ClickException(
+                f"ledger {ledger.path} is empty: run `po text ledger-bootstrap "
+                f"--region {rgn}` where data/text is mounted, then copy it here"
+            )
+        ledgers[rgn] = ledger
+
+    storage = scraper._storage
+    source_dir = storage.get_newspaper_dir(scraper.country, scraper.source_key)
+    key = str(source_dir.relative_to(staging / rgn))
+    archived = ledgers[rgn].get(key)
+
+    if archived is not None and not source_dir.exists():
+        source_dir.mkdir(parents=True)
+        if not archived.pending.empty:
+            archived.pending.to_csv(source_dir / "urls.csv", index=False)
+        if archived.failed:
+            (source_dir / "failed_urls_seen.csv").write_bytes(archived.failed)
+
+    urls = archived.urls | archived.news if archived else set()
+    news = set(archived.news) if archived else set()
+    for run in staging.parent.iterdir():
+        other = run / rgn / key
+        if run == staging or not other.is_dir() or (run / rgn / MERGED_MARKER).exists():
+            continue
+        for name, seen in (("urls.csv", urls), ("news.csv", news)):
+            if (other / name).exists():
+                seen.update(
+                    pd.read_csv(other / name, usecols=["url"], dtype=str)[
+                        "url"
+                    ].dropna()
+                )
+    storage.archived_urls = urls | news
+    storage.archived_article_urls = news
+
+    if archived is not None and archived.watermark:
+        cutoff = date.fromisoformat(archived.watermark) - timedelta(
+            days=STAGING_OVERLAP_DAYS
+        )
+        scraper.stop_before_date = cutoff.isoformat()
+
+
 def run_collect(
     region=None,
     subregion=None,
@@ -367,8 +433,14 @@ def run_collect(
     resume=False,
     retry_failed=False,
     list_sources=False,
+    staging=None,
 ):
-    """Run the text collect stage."""
+    """Run the text collect stage.
+
+    With ``staging`` (a run dir), new rows go to ``<staging>/<region>/...`` and the
+    seen URLs come from the region's ledger plus other unmerged runs beside it,
+    so the archive under data/text is neither read nor written.
+    """
     if list_sources:
         display_list(region=region, subregion=subregion, country=country, source=source)
         return
@@ -377,6 +449,8 @@ def run_collect(
         raise click.UsageError("--rebuild and --resume are mutually exclusive")
     if rebuild and retry_failed:
         raise click.UsageError("--retry-failed and --rebuild are mutually exclusive")
+    if staging and (rebuild or resume):
+        raise click.UsageError("--staging works only with a default collect")
 
     skipped = []
     plan = _build_plan(
@@ -385,6 +459,7 @@ def run_collect(
         country=country,
         source=source,
         skipped=skipped,
+        stats=staging is None,
     )
     _echo_skipped(skipped)
 
@@ -426,7 +501,11 @@ def run_collect(
     # Suppress Python warnings from 3rd-party libs (BeautifulSoup XML, codec errors)
     warnings.filterwarnings("ignore")
 
-    state = read_state(STATE_FILE)
+    data_base, state_file, ledgers = DATA_BASE, STATE_FILE, {}
+    if staging:
+        data_base, state_file = staging, staging / ".state.json"
+
+    state = read_state(state_file)
     # Sources whose scraper raised or reported success False. Exiting 0 over
     # them let a read-only data volume pass as a clean run (2026-09-28).
     failed = []
@@ -469,11 +548,13 @@ def run_collect(
 
         # Set data path: data/text/{region}/{subregion}/{country}/{newspaper}/
         # CSVStorage reads DATA_FOLDER_PATH env var for its base dir
-        subregion_data_dir = str(DATA_BASE / rgn / subrgn)
+        subregion_data_dir = str(data_base / rgn / subrgn)
         os.environ["DATA_FOLDER_PATH"] = subregion_data_dir
 
         try:
             scraper = create_scraper_from_file(str(entry["config_path"]))
+            if staging:
+                _prepare_staged_source(scraper, staging, ledgers, rgn)
 
             # Wire the early-abort prompt so the scraper can ask before
             # giving up on a source. Without this callback the scraper
@@ -545,7 +626,9 @@ def run_collect(
             if scraper_file_handler is not None:
                 scraper_log.removeHandler(scraper_file_handler)
 
-    write_state(state, STATE_FILE)
+    for ledger in ledgers.values():
+        ledger.close()
+    write_state(state, state_file)
     click.echo("\n  Collection complete.")
     if failed:
         click.echo(f"  {len(failed)} source(s) failed: {', '.join(failed)}")

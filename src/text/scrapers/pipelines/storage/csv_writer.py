@@ -308,9 +308,10 @@ class CSVWriter:
             logger.info(f"Found {len(urls)} existing article URLs")
             return urls
 
-        except Exception as e:
-            logger.error(f"Failed to get existing article URLs from {file_path}: {e}")
+        except pd.errors.EmptyDataError:
             return set()
+        # Any other read error propagates: an empty seen set would make the
+        # scraper re-scrape every pending URL into duplicate news.csv rows.
 
     def _read_csv_header(self, file_path: Path) -> List[str]:
         """

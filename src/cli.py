@@ -6,6 +6,8 @@ Usage:
     poetry run po --help         Use the installed alias
 """
 
+from pathlib import Path
+
 import click
 
 from cli_display import render_home, text_help_examples, top_level_help_examples
@@ -201,6 +203,16 @@ def fuel_publish(region, subregion):
         "articles. Cannot be combined with --rebuild."
     ),
 )
+@click.option(
+    "--staging",
+    type=click.Path(path_type=Path),
+    default=None,
+    help=(
+        "Write only new rows to this run dir (e.g. ~/text_staging/<run_id>) "
+        "instead of data/text; seen URLs come from the ledger. "
+        "Merge later with `po text merge`."
+    ),
+)
 def text_collect(
     region,
     subregion,
@@ -213,6 +225,7 @@ def text_collect(
     rebuild,
     resume,
     retry_failed,
+    staging,
 ):
     """Scrape new articles from configured newspapers."""
     from text.collect import run_collect
@@ -229,7 +242,36 @@ def text_collect(
         resume=resume,
         retry_failed=retry_failed,
         list_sources=list_sources,
+        staging=staging,
     )
+
+
+@text.command("merge")
+@click.option("--region", required=True, help="Region to merge (e.g. menaap)")
+@click.option(
+    "--staging",
+    type=click.Path(path_type=Path),
+    default=Path.home() / "text_staging",
+    show_default=True,
+    help="Dir holding staged run dirs; every unmerged run is merged, oldest first",
+)
+def text_merge(region, staging):
+    """Append staged collect runs to data/text and update the ledger."""
+    from text.collect import DATA_BASE
+    from text.merge import run_merge
+
+    run_merge(region=region, staging=staging, data_base=DATA_BASE)
+
+
+@text.command("ledger-bootstrap")
+@click.option("--region", required=True, help="Region to read (e.g. menaap)")
+def text_ledger_bootstrap(region):
+    """Build the region's seen-URL ledger from data/text (one full read)."""
+    from text.collect import DATA_BASE
+    from text.ledger import STATE_DIR, bootstrap
+
+    n = bootstrap(region, DATA_BASE)
+    click.echo(f"  {n} sources -> {STATE_DIR / (region + '.sqlite')}")
 
 
 @text.command("build")

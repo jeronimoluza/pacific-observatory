@@ -168,9 +168,10 @@ class URLTracker:
             logger.info(f"Loaded {len(urls)} existing URLs from urls.csv")
             return urls
 
-        except Exception as e:
-            logger.error(f"Failed to get existing URLs from {file_path}: {e}")
+        except pd.errors.EmptyDataError:
             return set()
+        # Any other read error propagates: an empty seen set would make the
+        # scraper re-discover and re-scrape the whole source into duplicates.
 
     def append_thumbnails_to_urls(
         self,
