@@ -11,6 +11,7 @@ the data_from=latest listing picks up anything not in a category.
 
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 
 import scrapy
 
@@ -122,4 +123,29 @@ class CamhappymartKhSpider(scrapy.Spider):
             "language": self.language,
             "store": self.store_name,
             "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
+        }
+
+    # Common Crawl hook (prices/backfill.py and cc_weekly). The detail page has
+    # no JSON-LD or price meta; the selling price is the
+    # span.discounted_unit_price under the title (equal to the listing card
+    # price, with del.total_unit_price as the pre-discount price when on sale).
+    # Same markup in every capture sampled, 2025-03 through 2026-08.
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        sel = scrapy.Selector(text=html_text)
+        name = sel.css("meta[property='og:title']::attr(content)").get() or sel.css(
+            ".details span.__inline-24::text"
+        ).get()
+        price_text = sel.css("span.discounted_unit_price::text").get()
+        match = cls._price_re.search(price_text or "")
+        if not name or not name.strip() or not match:
+            return
+        yield {
+            "product_id": sel.css("#add-to-cart-form input[name=id]::attr(value)").get(),
+            "product_name": " ".join(name.split()),
+            "price": match.group(0).replace(",", ""),
+            "currency": cls.currency,
+            "url": url,
+            "language": cls.language,
+            "store": cls.store_name,
         }
