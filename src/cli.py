@@ -60,11 +60,19 @@ _subregion_opt = click.option(
     callback=make_slug_validator("subregion"),
     help="Filter by subregion slug",
 )
+# Text config folders outside regions.yaml that build and publish already keep
+# as units (`pacific`: regional Pacific outlets counted in Pacific Islands).
+# Without them collect rejected `--country pacific` and those sources stopped.
+_TEXT_CONFIG_COUNTRIES = {
+    p.name
+    for p in (Path(__file__).resolve().parent / "text" / "configs").glob("*/*/*")
+    if p.is_dir() and any(p.glob("*.yaml"))
+}
 _country_opt = click.option(
     "--country",
     "-c",
     default=None,
-    callback=make_slug_validator("country"),
+    callback=make_slug_validator("country", extra_valid=_TEXT_CONFIG_COUNTRIES),
     help="Filter by country slug",
 )
 _source_opt = click.option(
