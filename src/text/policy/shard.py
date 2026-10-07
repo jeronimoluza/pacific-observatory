@@ -41,7 +41,7 @@ KEEP = (
 )
 
 
-def corpus_dirs(region: str) -> dict[str, Path]:
+def corpus_dirs(region: str, data_root: Path = DATA) -> dict[str, Path]:
     """Map each country's display name to its corpus directory."""
     topology = load_regions().get(region) or {}
     if not topology:
@@ -50,7 +50,7 @@ def corpus_dirs(region: str) -> dict[str, Path]:
     found: dict[str, Path] = {}
     for sub_key, sub in (topology.get("subregions") or {}).items():
         for slug in sub.get("countries") or []:
-            path = DATA / region / sub_key / slug
+            path = data_root / region / sub_key / slug
             if path.is_dir():
                 found[(names.get(slug) or {}).get("name") or slug] = path
     return found
@@ -75,12 +75,18 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="po text policy-shard")
     ap.add_argument("--region", required=True)
     ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
+    ap.add_argument(
+        "--data-root",
+        type=Path,
+        default=DATA,
+        help="corpus root the slice was discovered from (same as policy-discover)",
+    )
     ap.add_argument("--per-shard", type=int, default=110)
     ap.add_argument("--jobs", type=int, default=8)
     args = ap.parse_args(argv)
 
     slice_rows = json.loads((args.out_dir / f"slice_{args.region}.json").read_text())
-    dirs = corpus_dirs(args.region)
+    dirs = corpus_dirs(args.region, args.data_root)
 
     by_country: dict[str, list[dict]] = defaultdict(list)
     for row in slice_rows:

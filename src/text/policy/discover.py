@@ -36,7 +36,9 @@ from core.config import load_countries, load_regions
 from text.policy import DATA, DEFAULT_OUT_DIR
 
 
-def corpus_dirs(region: str, only: str | None) -> dict[str, Path]:
+def corpus_dirs(
+    region: str, only: str | None, data_root: Path = DATA
+) -> dict[str, Path]:
     """Map the workbook's country spelling to that country's corpus directory."""
     topology = load_regions().get(region) or {}
     if not topology:
@@ -48,7 +50,7 @@ def corpus_dirs(region: str, only: str | None) -> dict[str, Path]:
         for slug in sub.get("countries") or []:
             if only and slug != only:
                 continue
-            path = DATA / region / sub_key / slug
+            path = data_root / region / sub_key / slug
             if not path.is_dir():
                 continue
             display = (names.get(slug) or {}).get("name") or slug.replace("_", " ")
@@ -126,6 +128,13 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="po text policy-discover")
     ap.add_argument("--region", required=True)
     ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
+    ap.add_argument(
+        "--data-root",
+        type=Path,
+        default=DATA,
+        help="corpus root laid out <region>/<subregion>/<country>/<source>/news.csv; "
+        "a staged run dir scans only that run's new articles",
+    )
     ap.add_argument("--country", help="one slug, for a smoke test")
     ap.add_argument("--jobs", type=int, default=8)
     ap.add_argument("--lang-min-score", type=float, default=3.0)
@@ -139,7 +148,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--top-k", type=int, default=60, help="English gate")
     args = ap.parse_args(argv)
 
-    dirs = corpus_dirs(args.region, args.country)
+    dirs = corpus_dirs(args.region, args.country, args.data_root)
     print(f"region={args.region} countries={len(dirs)} jobs={args.jobs}")
     if not dirs:
         raise SystemExit("no corpus directories found")
