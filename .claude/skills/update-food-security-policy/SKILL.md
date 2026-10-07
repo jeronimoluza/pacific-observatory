@@ -15,6 +15,10 @@ crisis lens and the research brief differ. The `--tracker food` flag
 keeps every path, filename and dashboard label separate from the fuel
 tracker so the two never overwrite each other.
 
+## Corpus pass and refresh-text-region
+
+A corpus pass over collected news exists (`po text policy-discover | policy-slice | policy-shard | policy-assemble | policy-merge-workbook`, prompt `src/text/policy/extract_prompt.md`); it writes rows with Provenance=corpus. `refresh-text-region` calls it per region for the food tracker (`--tracker food`), then runs the research below for what the corpus missed. Running this skill alone is the websearch-only path.
+
 ## When this skill applies
 
 - Update food-security policy data for one region

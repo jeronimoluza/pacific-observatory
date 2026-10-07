@@ -8,6 +8,10 @@ description: "Update the regional Fuel Crisis Policy trackers and regenerate the
 Refresh the regional Fuel Crisis Policy trackers and rebuild the standalone
 HTML dashboards that the `publish` command embeds as iframe srcdoc.
 
+## Corpus pass and refresh-text-region
+
+A corpus pass over collected news exists (`po text policy-discover | policy-slice | policy-shard | policy-assemble | policy-merge-workbook`, prompt `src/text/policy/extract_prompt.md`); it writes rows with Provenance=corpus. `refresh-text-region` calls it per region for the fuel tracker, then runs the research below for what the corpus missed. Running this skill alone is the websearch-only path.
+
 ## When this skill applies
 
 - Update policy data for one region (`eap | eca | menaap | sar | lac | ssa`)

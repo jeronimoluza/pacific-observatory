@@ -112,7 +112,9 @@ def build_rows(discovered: list[dict], existing: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(out)
 
 
-def merge(region: str, tracker: str, stamp: str, sidecar: Path) -> str:
+def merge(
+    region: str, tracker: str, stamp: str, sidecar: Path, append: bool = False
+) -> str:
     wb_path, sc_path = paths_for(region, tracker, sidecar)
     if wb_path is None:
         return f"{tracker:5s} {region:7s} SKIP - no workbook"
@@ -124,13 +126,20 @@ def merge(region: str, tracker: str, stamp: str, sidecar: Path) -> str:
     sheets = {name: xl.parse(name) for name in xl.sheet_names}
     policies = sheets["Policies"]
 
-    if "Provenance" in policies.columns and (policies["Provenance"] == "corpus").any():
+    merged_before = (
+        "Provenance" in policies.columns and (policies["Provenance"] == "corpus").any()
+    )
+    if merged_before and not append:
         n = int((policies["Provenance"] == "corpus").sum())
         return f"{tracker:5s} {region:7s} SKIP - already merged ({n} corpus rows)"
 
     before = len(policies)
     policies = policies.copy()
-    policies["Provenance"] = "workbook"
+    if merged_before:
+        # Incremental run: keep the provenance earlier merges recorded.
+        policies["Provenance"] = policies["Provenance"].fillna("workbook")
+    else:
+        policies["Provenance"] = "workbook"
     for col in EXTRA_COLS:
         if col not in policies.columns:
             policies[col] = None
@@ -163,6 +172,11 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     ap.add_argument("--tracker", choices=["fuel", "food"])
     ap.add_argument("--all", action="store_true", help="every region with a sidecar")
+    ap.add_argument(
+        "--append",
+        action="store_true",
+        help="add rows to a workbook that already holds corpus rows (incremental runs)",
+    )
     args = ap.parse_args(argv)
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -178,7 +192,7 @@ def main(argv: list[str] | None = None) -> None:
         jobs = [(args.region, args.tracker)]
 
     for region, tracker in jobs:
-        print(merge(region, tracker, stamp, args.out_dir))
+        print(merge(region, tracker, stamp, args.out_dir, append=args.append))
 
 
 if __name__ == "__main__":

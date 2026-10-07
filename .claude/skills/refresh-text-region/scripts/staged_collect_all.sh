@@ -68,4 +68,5 @@ print(len(fs), sum(len(pandas.read_csv(f, usecols=['url'])) for f in fs))
 done
 echo >> "$STATUS"
 echo "free: $(free_gb) GB under $STAGING_ROOT" >> "$STATUS"
+touch "$STAGING/.done"   # po text merge takes only finished runs
 log RUN-DONE

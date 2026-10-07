@@ -23,6 +23,9 @@ import pandas as pd
 from text.ledger import Ledger, SourceState, URL_COLUMNS, iter_source_dirs, newest_date
 
 MERGED_MARKER = ".merged"
+# Written by the collect driver when a run is finished; a run without it may
+# still be collecting (or was copied mid-run) and is never merged.
+DONE_MARKER = ".done"
 
 
 class MergeError(RuntimeError):
@@ -136,12 +139,16 @@ def merge_source(
 
 
 def pending_runs(staging: Path, region: str) -> list[Path]:
-    """Run dirs under ``staging`` holding an unmerged ``region``, oldest first."""
-    return [
-        run
-        for run in sorted(p for p in staging.iterdir() if p.is_dir())
-        if (run / region).is_dir() and not (run / region / MERGED_MARKER).exists()
-    ]
+    """Finished run dirs under ``staging`` holding an unmerged ``region``, oldest first."""
+    runs = []
+    for run in sorted(p for p in staging.iterdir() if p.is_dir()):
+        if not (run / region).is_dir() or (run / region / MERGED_MARKER).exists():
+            continue
+        if not (run / DONE_MARKER).exists():
+            click.echo(f"  Skipping {run.name}: no {DONE_MARKER} (still collecting?)")
+            continue
+        runs.append(run)
+    return runs
 
 
 def run_merge(region: str, staging: Path, data_base: Path) -> None:
