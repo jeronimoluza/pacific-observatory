@@ -3,8 +3,9 @@
 Two public HTML products, both read in English (locale cookie) with KHR prices:
 
 * /market-prices: the daily market price board (~105 price groups, 30 cards
-  per page). Each card is a product (or a category "market average") with a
-  unit, Low / Suggested / High KHR prices and a sample count. The board is
+  per page). Each card is a product (or a category "market average", which mixes
+  products and is skipped) with a unit, Low / Suggested / High KHR prices and a
+  sample count. The board is
   aggregated by the site from its own live marketplace listings
   (source_type "catalog"). ``price`` is the Suggested value (the headline
   price); Low and High go to ``price_min`` / ``price_max``.
@@ -75,13 +76,12 @@ class PhumikasephalKhSpider(scrapy.Spider):
             subtitle = " ".join(card.css("header p::text").get("").split())
             category, _, unit_label = subtitle.rpartition(" · ")
             price = self._num(card.css(".market-price-range .average b::text").get())
-            if not name or not price:
+            if not name or not price or name.endswith("market average"):
                 continue
             spans = card.css(".market-price-range > span")
             footer = card.css("footer span::text").getall()
             key = f"{name}|{category}|{unit_label}"
             product_id = "mp-" + hashlib.md5(key.encode()).hexdigest()[:12]
-            is_avg = name.endswith("market average")
             yield {
                 "product_id": product_id,
                 "product_name": name,
@@ -97,7 +97,6 @@ class PhumikasephalKhSpider(scrapy.Spider):
                 "city": footer[0].rpartition(" · ")[2] if footer else None,
                 "details": {
                     "record_type": "market_price_board",
-                    "row_type": "category_average" if is_avg else "product",
                     "price_basis": "suggested",
                     "unit_label": unit_label,
                     "board_source": card.css(".market-source::text").get(),
