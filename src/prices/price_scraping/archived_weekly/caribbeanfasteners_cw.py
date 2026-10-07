@@ -13,18 +13,30 @@ product's own price next to its name, and a "Box quantity" attribute::
 Multi-variant products replace that with a table, one row per variant::
 
     <table id="sylius-product-variants"><th>Variant</th><th>Price/1</th><th>Box</th>...
-      <td><p>Oil for Piston Compressors 0.6L</p></td>
-      <td class="sylius-product-variant-price"><p>ANG 24.13</p></td><td>1</td>
+      <td><p>M 2 - 0.4</p></td>
+      <td class="sylius-product-variant-price"><p>ANG 0.23</p></td><td>1000</td>
+
+Every price is per piece, whatever the box quantity: the variant column is
+headed "Price/1", and on a variant page ``#product-price`` repeats the first
+variant's Price/1 (hex nut M 2: ANG 0.23, box 1000). So the box quantity is the
+carton size, not what the price buys, and is never written into the name (a
+"box of N" in the name would be read downstream as a pack count and divide the
+piece price again). Variant labels are often only a size ("M 2 - 0.4"), so the
+product name is prefixed unless the label already starts with it.
+
+Listing, brand and home pages show product cards::
+
+    <div class="ui fluid card"> ...
+      <a href="/en/products/..." class="header sylius-product-name">Oil for Pneumatic Machines oil 0.6L</a>
+      <div class="sylius-product-price"> ANG 17.05 </div>
+
+A card priced "From ANG x" is a multi-variant product's minimum and is skipped;
+a plain "ANG x" card is a single-variant product's own price. Cards are read
+only on pages that are not product pages (there they are related products).
 
 ANG (Netherlands Antillean guilder) is recorded, never read from the page; a
 figure is kept only when it is written with the literal ``ANG`` prefix, so a
 capture priced in anything else (USD, the 2025 Caribbean guilder) is skipped.
-
-Abstains on: products sold by the box (box quantity other than 1), where the
-storefront's "Price/1" figure may be per piece rather than per item sold;
-pages with no box quantity at all; listing, brand and review pages, whose
-product cards carry no box quantity and include "From ANG x" minimum-variant
-prices; the related-product cards under a product page; shipping figures.
 """
 from __future__ import annotations
 
@@ -37,6 +49,7 @@ from ..archived import normalize_price, price_row
 
 _CURRENCY = "ANG"
 _ANG = re.compile(r"^ANG\s*(\d[\d,]*(?:\.\d+)?)$")
+_CARD = '//div[contains(concat(" ", normalize-space(@class), " "), " card ")]'
 
 
 def _text(el: Any) -> str:
@@ -48,33 +61,59 @@ def _ang(el: Any) -> str | None:
     return normalize_price(m.group(1), _CURRENCY) if m else None
 
 
-def _variants(table: Any, url: str) -> list[dict]:
+def _variant_name(product: str, label: str) -> str:
+    if label.lower().startswith(product.split()[0].lower()):
+        return label
+    return f"{product} {label}"
+
+
+def _variants(table: Any, product: str, url: str) -> list[dict]:
     heads = [_text(th) for th in table.xpath("./thead/tr/th")]
     if heads[:3] != ["Variant", "Price/1", "Box"]:
         return []
     rows = []
     for tr in table.xpath("./tbody/tr"):
         tds = tr.xpath("./td")
-        if len(tds) < 3 or _text(tds[2]) != "1":
+        if len(tds) < 3 or not _text(tds[0]):
             continue
-        row = price_row(_text(tds[0]), _ang(tds[1]), url, _CURRENCY)
+        row = price_row(_variant_name(product, _text(tds[0])), _ang(tds[1]), url, _CURRENCY)
+        if row:
+            rows.append(row)
+    return rows
+
+
+def _cards(doc: Any, url: str) -> list[dict]:
+    rows, seen = [], set()
+    for card in doc.xpath(_CARD):
+        names = card.xpath('.//a[contains(@class, "sylius-product-name")]')
+        prices = card.xpath('.//*[contains(@class, "sylius-product-price")]')
+        if len(names) != 1 or len(prices) != 1:
+            continue
+        key = (_text(names[0]), _ang(prices[0]))
+        if key in seen:
+            continue
+        seen.add(key)
+        row = price_row(key[0], key[1], url, _CURRENCY)
         if row:
             rows.append(row)
     return rows
 
 
 def extract(html: str, url: str) -> list[dict]:
-    """The product's own price(s) on an archived caribbeanfasteners_cw product page."""
+    """Per-piece prices on an archived caribbeanfasteners_cw product or listing page."""
     doc = lxml.html.fromstring(html)
     names = doc.xpath('//h1[@id="sylius-product-name"]')
-    if len(names) != 1:
+    if not names:
+        return _cards(doc, url)
+    product = _text(names[0]) if len(names) == 1 else ""
+    if not product:
         return []
     tables = doc.xpath('//table[@id="sylius-product-variants"]')
     if tables:
-        return _variants(tables[0], url) if len(tables) == 1 else []
+        return _variants(tables[0], product, url) if len(tables) == 1 else []
     boxes = doc.xpath('//td[@id="attribute-unit_size"]')
     prices = doc.xpath('//span[@id="product-price"]')
-    if len(boxes) != 1 or _text(boxes[0]) != "1" or len(prices) != 1:
+    if len(boxes) != 1 or len(prices) != 1:
         return []
-    row = price_row(_text(names[0]), _ang(prices[0]), url, _CURRENCY)
+    row = price_row(product, _ang(prices[0]), url, _CURRENCY)
     return [row] if row else []
