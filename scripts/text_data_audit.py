@@ -167,7 +167,9 @@ def audit_source(task):
                     m["bad_utf8_rows"] += 1
                     if len(bad_utf8_lines) < MAX_LINES:
                         bad_utf8_lines.append(rd.line_num)
-                if iu is not None:
+                # Rows without a url (pina's 2025-11-05 bulk import) are
+                # distinct articles, not duplicates of one another.
+                if iu is not None and row[iu].strip():
                     u = row[iu].strip()
                     h = h8(u)
                     if h in seen_h:
@@ -273,7 +275,8 @@ def write_dedup(source_dir):
         iu = head.index("url")
         for row in rd:
             if len(row) == len(head):
-                h = h8(row[iu].strip())
+                # No url: only an identical whole row counts as a duplicate.
+                h = h8(row[iu].strip() or "\x00" + "\x1f".join(row))
                 if h in seen:
                     dropped += 1
                     continue
