@@ -19,29 +19,21 @@ weights on the corpus before scanning it. Pass --english to add it back for an
 anglophone region where it earns its keep.
 
 Usage:
-    python scripts/policy_discover.py --region ssa
-    python scripts/policy_discover.py --region ssa --jobs 8
-    python scripts/policy_discover.py --region eap --english
+    po text policy-discover --region ssa
+    po text policy-discover --region ssa --jobs 8
+    po text policy-discover --region eap --english
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import sys
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO_ROOT / "src"))
-
-from core.config import load_countries, load_regions  # noqa: E402
-
-DATA = REPO_ROOT / "data" / "text"
-# Output lands beside the extended workbooks, not the canonical ones: the
-# backfill is kept parallel to the tracker it is derived from until adopted.
-OUT_DIR = DATA / "policy_tracker_extended"
+from core.config import load_countries, load_regions
+from text.policy import DATA, DEFAULT_OUT_DIR
 
 
 def corpus_dirs(region: str, only: str | None) -> dict[str, Path]:
@@ -130,9 +122,10 @@ def scan_country(args: tuple[str, str, float]) -> dict:
     }
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
+def main(argv: list[str] | None = None) -> None:
+    ap = argparse.ArgumentParser(prog="po text policy-discover")
     ap.add_argument("--region", required=True)
+    ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     ap.add_argument("--country", help="one slug, for a smoke test")
     ap.add_argument("--jobs", type=int, default=8)
     ap.add_argument("--lang-min-score", type=float, default=3.0)
@@ -144,7 +137,7 @@ def main() -> None:
     ap.add_argument("--min-score", type=float, default=6.0, help="English gate")
     ap.add_argument("--max-df", type=float, default=0.05, help="English gate")
     ap.add_argument("--top-k", type=int, default=60, help="English gate")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     dirs = corpus_dirs(args.region, args.country)
     print(f"region={args.region} countries={len(dirs)} jobs={args.jobs}")
@@ -190,9 +183,9 @@ def main() -> None:
                     bucket["candidates"].append(row)
             bucket["n_candidates"] = len(bucket["candidates"])
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    args.out_dir.mkdir(parents=True, exist_ok=True)
     stem = f"{args.region}" + (f"_{args.country}" if args.country else "")
-    out = OUT_DIR / f"candidates_{stem}.json"
+    out = args.out_dir / f"candidates_{stem}.json"
     out.write_text(json.dumps(results, indent=1))
 
     total = sum(c["n_candidates"] for c in results["countries"].values())

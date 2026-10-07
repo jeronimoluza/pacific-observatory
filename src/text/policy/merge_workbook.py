@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Merge corpus-discovered policy measures into a region's tracker workbook.
 
 The discovery pipeline leaves its output in ``discovered_<region>.json`` sidecars
@@ -18,28 +17,26 @@ a new ``Status`` column and ``Label`` is left blank rather than filled with an
 out-of-vocabulary value that would silently corrupt the column.
 
 Usage:
-    python scripts/policy_merge_workbook.py --region sar --tracker fuel
-    python scripts/policy_merge_workbook.py --all
+    po text policy-merge-workbook --region sar --tracker fuel
+    po text policy-merge-workbook --all
 """
 
 import argparse
 import json
 import shutil
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from text.plotting.trackers import (  # noqa: E402
+from text.plotting.trackers import (
     WORKBOOK_ROOT,
     latest_workbook,
     start_edition,
     workbook_dir,
 )
 
-SIDECAR = Path("data/text/policy_tracker_extended")
+from text.policy import DEFAULT_OUT_DIR
 
 # Columns carried over from the sidecar that the workbook does not already have.
 EXTRA_COLS = [
@@ -52,11 +49,11 @@ EXTRA_COLS = [
 ]
 
 
-def paths_for(region: str, tracker: str) -> tuple[Path | None, Path]:
+def paths_for(region: str, tracker: str, sidecar: Path) -> tuple[Path | None, Path]:
     """Current workbook (newest edition) and sidecar for one region/tracker pair."""
     sub = "" if tracker == "fuel" else "food_security"
     root = workbook_dir(WORKBOOK_ROOT, tracker)
-    return latest_workbook(root, region), SIDECAR / sub / f"discovered_{region}.json"
+    return latest_workbook(root, region), sidecar / sub / f"discovered_{region}.json"
 
 
 def build_rows(discovered: list[dict], existing: pd.DataFrame) -> pd.DataFrame:
@@ -115,8 +112,8 @@ def build_rows(discovered: list[dict], existing: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(out)
 
 
-def merge(region: str, tracker: str, stamp: str) -> str:
-    wb_path, sc_path = paths_for(region, tracker)
+def merge(region: str, tracker: str, stamp: str, sidecar: Path) -> str:
+    wb_path, sc_path = paths_for(region, tracker, sidecar)
     if wb_path is None:
         return f"{tracker:5s} {region:7s} SKIP - no workbook"
     if not sc_path.exists():
@@ -160,19 +157,20 @@ def merge(region: str, tracker: str, stamp: str) -> str:
     )
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
+def main(argv: list[str] | None = None) -> None:
+    ap = argparse.ArgumentParser(prog="po text policy-merge-workbook")
     ap.add_argument("--region")
+    ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     ap.add_argument("--tracker", choices=["fuel", "food"])
     ap.add_argument("--all", action="store_true", help="every region with a sidecar")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
     if args.all:
         jobs = []
         for tracker, sub in (("fuel", ""), ("food", "food_security")):
-            for sc in sorted((SIDECAR / sub).glob("discovered_*.json")):
+            for sc in sorted((args.out_dir / sub).glob("discovered_*.json")):
                 jobs.append((sc.stem.replace("discovered_", ""), tracker))
     else:
         if not args.region or not args.tracker:
@@ -180,7 +178,7 @@ def main() -> None:
         jobs = [(args.region, args.tracker)]
 
     for region, tracker in jobs:
-        print(merge(region, tracker, stamp))
+        print(merge(region, tracker, stamp, args.out_dir))
 
 
 if __name__ == "__main__":

@@ -601,6 +601,7 @@ def run_publish(
         return
 
     regions_in_scope = sorted({u["region"] for u in units})
+    missing_addons = []
     for rgn in regions_in_scope:
         rgn_units = [u for u in units if u["region"] == rgn]
         click.echo(f"  Building {rgn}/ panel from outputs/text/...")
@@ -615,5 +616,21 @@ def run_publish(
         except (FileNotFoundError, ValueError) as exc:
             click.echo(f"  Policy dashboard for {rgn}: {exc}")
             continue
-        if fcp_html is not None:
+        if fcp_html is None:
+            missing_addons.append(rgn)
+        else:
             click.echo(f"  Written: {fcp_html.relative_to(PROJECT_ROOT)}")
+
+    if missing_addons:
+        from text.plotting.small_dashboard_integrated_w_policy import _addon_path
+
+        lines = [
+            f"  {r}: {_addon_path(r, tracker).relative_to(PROJECT_ROOT)}"
+            f"  (fix: po text build-policy-addons --region {r}"
+            + (f" --tracker {tracker}" if tracker else "")
+            + ")"
+            for r in missing_addons
+        ]
+        raise click.ClickException(
+            "Policy dashboard addon missing, nothing rendered for:\n" + "\n".join(lines)
+        )

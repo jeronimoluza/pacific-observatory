@@ -343,6 +343,54 @@ def text_build_policy_addons(region, chart_title, tracker):
     build_addons(region=region, chart_title=chart_title, tracker=tracker)
 
 
+def _policy_step(name, module, summary):
+    """Register ``po text policy-<name>``; argparse in the module owns the flags."""
+
+    @text.command(
+        f"policy-{name}",
+        help=summary,
+        context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+        add_help_option=False,
+    )
+    @click.pass_context
+    def step(ctx):
+        import importlib
+
+        importlib.import_module(f"text.policy.{module}").main(ctx.args)
+
+    return step
+
+
+for _name, _module, _summary in (
+    (
+        "discover",
+        "discover",
+        "Policy corpus 1/5: scan a region's news for candidate measures.",
+    ),
+    (
+        "slice",
+        "slice",
+        "Policy corpus 2/5: pick the candidates the extraction pass reads.",
+    ),
+    (
+        "shard",
+        "shard",
+        "Policy corpus 3/5: hydrate the slice with article text, cut into shards.",
+    ),
+    (
+        "assemble",
+        "assemble",
+        "Policy corpus 4/5: turn agent findings into discovered_<region>.json.",
+    ),
+    (
+        "merge-workbook",
+        "merge_workbook",
+        "Policy corpus 5/5: fold discovered measures into the tracker workbook.",
+    ),
+):
+    _policy_step(_name, _module, _summary)
+
+
 @text.command("status")
 @_region_opt
 @_subregion_opt

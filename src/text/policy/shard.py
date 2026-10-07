@@ -10,25 +10,19 @@ the corpus is only readable in one direction: a country's news.csv files are
 streamed once and the wanted urls are picked out on the way past.
 
 Usage:
-    python scripts/policy_shard.py --region ssa --per-shard 110 --jobs 8
+    po text policy-shard --region ssa --per-shard 110 --jobs 8
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import sys
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO_ROOT / "src"))
-
-from core.config import load_countries, load_regions  # noqa: E402
-
-DATA = REPO_ROOT / "data" / "text"
-OUT_DIR = DATA / "policy_tracker_extended"
+from core.config import load_countries, load_regions
+from text.policy import DATA, DEFAULT_OUT_DIR
 
 # Enough for the lede and the paragraphs that carry the numbers; a wire story
 # spends its tail on reaction quotes, which cost context and add nothing.
@@ -77,14 +71,15 @@ def hydrate_country(job: tuple[str, str, list[dict]]) -> list[dict]:
     return list(wanted.values())
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
+def main(argv: list[str] | None = None) -> None:
+    ap = argparse.ArgumentParser(prog="po text policy-shard")
     ap.add_argument("--region", required=True)
+    ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     ap.add_argument("--per-shard", type=int, default=110)
     ap.add_argument("--jobs", type=int, default=8)
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
-    slice_rows = json.loads((OUT_DIR / f"slice_{args.region}.json").read_text())
+    slice_rows = json.loads((args.out_dir / f"slice_{args.region}.json").read_text())
     dirs = corpus_dirs(args.region)
 
     by_country: dict[str, list[dict]] = defaultdict(list)
@@ -108,7 +103,7 @@ def main() -> None:
     kept = [r for r in hydrated if r.get("body")]
     kept.sort(key=lambda r: r["cand_id"])
 
-    shard_dir = OUT_DIR / "shards" / args.region
+    shard_dir = args.out_dir / "shards" / args.region
     shard_dir.mkdir(parents=True, exist_ok=True)
     for old in shard_dir.glob("shard_*.json"):
         old.unlink()
