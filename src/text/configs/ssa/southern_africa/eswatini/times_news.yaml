@@ -30,3 +30,5 @@ cleaning:
 
 max_pages: null
 max_articles: null
+# Disabled 2026-10-07: 0 articles; times_eswatini_news covers times.co.sz
+enabled: false

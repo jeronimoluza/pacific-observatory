@@ -30,3 +30,5 @@ cleaning:
 
 max_pages: null
 max_articles: null
+# Disabled 2026-10-07: 0 articles (config audit 2026-10-07)
+enabled: false
