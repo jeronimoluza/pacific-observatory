@@ -5,7 +5,7 @@ channel: specialty-food
 coicop_classification: classifier
 analytical_role: retailer_sku
 extraction_pattern: scrapy_api
-language: en
+language: vi
 currency: USD
 cadence: weekly
 active: true
@@ -15,7 +15,7 @@ spider_kwargs:
   source_label: "vietnammart_kh"
   base_url: "https://vietnam-mart.com"
   currency: "USD"
-  language: "en"
+  language: "vi"
   api_url: "https://vietnam-mart.com/wp-json/wc/store/v1/products"
 scrapy_settings:
   CONCURRENT_REQUESTS_PER_DOMAIN: 1
