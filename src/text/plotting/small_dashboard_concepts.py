@@ -1,10 +1,9 @@
 """Concepts dashboard: a copy of ``small_dashboard_integrated_w_policy`` whose
 topic tabs read the keyword concepts and their groups instead of the old topic groups.
 
-Labels, chip groups and the schema tab all come from ``keywords_schema.json``,
-which is also embedded as ``<script type="application/json" id="keywords-schema">``
-so an exported file carries its own definitions. The policy tab shows that
-schema instead of a tracker addon.
+Labels and chip groups come from ``keywords_schema.json``, which is also
+embedded as ``<script type="application/json" id="keywords-schema">`` so an
+exported file carries its own definitions.
 
 What follows is the original description of the page it was copied from.
 
@@ -906,6 +905,9 @@ function initPicker(onChange) {
         picker.querySelectorAll('input').forEach(i => { i.checked = false; });
         picker.querySelectorAll('.tree-heading.is-open, .tree-group.is-open').forEach(g => {
             if (!shownOpen(g)) return;
+            // An open node with an open child defers to it: clicking a group
+            // draws only what sits beneath that group, not its peers too.
+            if (g.querySelector('.tree-group.is-open')) return;
             g.querySelectorAll(
                 ':scope > .chip-group-body > .chip input, ' +
                 ':scope > .chip-group-body > .tree-group > .tree-row input'
@@ -1919,6 +1921,9 @@ def _build_hierarchical_options(tree: list) -> str:
 
 # ---------- Host page (CSS-only tab switching, no inline <script>) ----------
 
+# The keyword schema table, published on its own page.
+SCHEMA_URL = "https://datanalytics-int.worldbank.org/content/f2e30825-f419-4478-8cb5-ff96b2997717"
+
 HOST_TEMPLATE = r"""<!DOCTYPE html>
 <html>
 <head>
@@ -1966,7 +1971,7 @@ body {
    keeps them right-aligned in the narrow-screen case where they still wrap. */
 .header > div:first-child { flex: 1 1 auto; min-width: 0; }
 .tabs { display: flex; gap: 8px; flex-wrap: wrap; flex: 0 0 auto; margin-left: auto; }
-.tabs label {
+.tabs label, .tabs a {
     border: 1px solid var(--border);
     background: #fff;
     color: var(--text);
@@ -1977,7 +1982,8 @@ body {
     user-select: none;
     transition: all 0.15s;
 }
-.tabs label:hover { border-color: var(--accent); }
+.tabs a { text-decoration: none; }
+.tabs label:hover, .tabs a:hover { border-color: var(--accent); }
 .tab-panel { display: none; }
 .panel-body { padding: 14px 18px 18px 18px; }
 .tab-frame {
@@ -1991,13 +1997,11 @@ body {
 /* Active tab panel */
 #r0:checked ~ .shell #p0,
 #r1:checked ~ .shell #p1,
-#r2:checked ~ .shell #p2,
 #r3:checked ~ .shell #p3,
 #r4:checked ~ .shell #p4 { display: block; }
 /* Active tab button */
 #r0:checked ~ .shell .tabs label[for="r0"],
 #r1:checked ~ .shell .tabs label[for="r1"],
-#r2:checked ~ .shell .tabs label[for="r2"],
 #r3:checked ~ .shell .tabs label[for="r3"],
 #r4:checked ~ .shell .tabs label[for="r4"] {
     background: var(--accent);
@@ -2082,7 +2086,6 @@ body {
 <body>
 <input class="tab-radio" type="radio" name="tabs" id="r0">
 <input class="tab-radio" type="radio" name="tabs" id="r1">
-<input class="tab-radio" type="radio" name="tabs" id="r2">
 <input class="tab-radio" type="radio" name="tabs" id="r3">
 <input class="tab-radio" type="radio" name="tabs" id="r4" checked>
 <div class="shell">
@@ -2095,14 +2098,13 @@ body {
             <label for="r4">Policy Overview</label>
             <label for="r0">Uncertainty Topics</label>
             <label for="r1">Uncertainty Topics (Ranked)</label>
-            <label for="r2">__POLICY_TAB_LABEL__</label>
             <label for="r3">Uncertainty Actors</label>
+            <a href="__SCHEMA_URL__" target="_blank" rel="noopener">Keyword Schema &#8599;</a>
         </div>
     </div>
     <div class="tab-panel" id="p0"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SERIES_SRCDOC__' title="Uncertainty Topics"></iframe></div></div>
     <div class="tab-panel" id="p1"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SRCDOC__' title="Uncertainty Topics (Ranked)"></iframe></div></div>
     <div class="tab-panel" id="p4"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_OVERVIEW_SRCDOC__' title="Policy Overview"></iframe></div></div>
-    <div class="tab-panel" id="p2"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_SRCDOC__' title="__POLICY_TAB_LABEL__"></iframe></div></div>
     <div class="tab-panel" id="p3"><div class="panel-body"><iframe class="tab-frame" srcdoc='__ACTORS_EPU_SRCDOC__' title="Uncertainty Actors"></iframe></div></div>
 </div>
 </body>
@@ -2110,18 +2112,16 @@ body {
 
 
 def build_host_html(
-    policy_html,
     topic_series_html,
     topic_html,
     actors_epu_html,
     host_title,
     host_subtitle,
-    policy_tab_label="Fuel Crisis Policy",
     shared_data=None,
     keywords_schema=None,
     policy_overview_html="",
 ):
-    """Assemble the five-tab host page.
+    """Assemble the four-tab host page.
 
     The two topic tabs are two readings of one table: a per-topic time series
     and a ranking over time. Their payload is written once into ``window.__DASH__``
@@ -2137,13 +2137,12 @@ def build_host_html(
     return (
         HOST_TEMPLATE.replace("__HOST_TITLE__", host_title)
         .replace("__HOST_SUBTITLE__", host_subtitle)
-        .replace("__POLICY_TAB_LABEL__", policy_tab_label)
+        .replace("__SCHEMA_URL__", SCHEMA_URL)
         .replace("__SHARED_DATA_JSON__", json.dumps(shared_data or {}))
         .replace(
             "__KEYWORDS_SCHEMA_JSON__",
             json.dumps(keywords_schema or {}, ensure_ascii=False).replace("</", "<\\/"),
         )
-        .replace("__POLICY_SRCDOC__", escape_srcdoc(policy_html))
         .replace("__TOPIC_SERIES_SRCDOC__", escape_srcdoc(topic_series_html))
         .replace("__TOPIC_SRCDOC__", escape_srcdoc(topic_html))
         .replace("__ACTORS_EPU_SRCDOC__", escape_srcdoc(actors_epu_html))
@@ -2337,47 +2336,6 @@ def _schema_defaults(schema: dict) -> list:
 
 def _esc(s) -> str:
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
-
-def _form_text(f) -> str:
-    return f"{f['prefix']}…" if isinstance(f, dict) else f
-
-
-def _schema_page_html(schema: dict) -> str:
-    """The keyword schema as a readable page: heading, group, concept, forms."""
-    parts = [
-        "<!DOCTYPE html><html><head><meta charset='utf-8'><style>"
-        "body{font-family:system-ui,sans-serif;margin:16px;color:#1d2330}"
-        "table{border-collapse:collapse;width:100%;margin-bottom:24px;font-size:13px}"
-        "th,td{border:1px solid #d8dce3;padding:4px 8px;text-align:left;vertical-align:top}"
-        "th{background:#f0f2f5}</style></head><body>"
-    ]
-    for h in schema["headings"].values():
-        parts.append(f"<h2>{_esc(h['label'])}</h2>")
-        langs = sorted({lang for c in h["concepts"].values() for lang in c["forms"]})
-        parts.append(
-            "<table><tr><th>Concept</th><th>Group</th>"
-            + "".join(f"<th>{_esc(lang)}</th>" for lang in langs)
-            + "</tr>"
-        )
-        for c in h["concepts"].values():
-            path, gid = [], c["group"]
-            while gid is not None:
-                path.insert(0, h["groups"][gid]["label"])
-                gid = h["groups"][gid]["parent"]
-            parts.append(
-                f"<tr><td>{_esc(c['label'])}</td><td>{_esc(' › '.join(path))}</td>"
-                + "".join(
-                    "<td>"
-                    + "<br>".join(_esc(_form_text(f)) for f in c["forms"].get(lang, []))
-                    + "</td>"
-                    for lang in langs
-                )
-                + "</tr>"
-            )
-        parts.append("</table>")
-    parts.append("</body></html>")
-    return "".join(parts)
 
 
 def _columnar(rows: list) -> dict:
@@ -2658,13 +2616,11 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
 
     region_label = _resolve_region_label(region_subtree, region)
     out = build_host_html(
-        _schema_page_html(schema),
         series_html,
         ranked_html,
         actors_html,
         host_title=f"{region_label} — Keyword Concepts & Uncertainty Dashboard",
-        host_subtitle="uncertainty concepts over time and ranked, keyword schema, and uncertainty actors",
-        policy_tab_label="Keyword Schema",
+        host_subtitle="policy overview, uncertainty concepts over time and ranked, and uncertainty actors",
         shared_data={
             "unitFiles": unit_files,
             "actors": {k: _columnar(v) for k, v in actors_data.items()},
