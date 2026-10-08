@@ -111,8 +111,8 @@ _PHRASE_STRIP_PATTERNS = [
     re.compile(
         r"(?:\b\d+\s+)?\d+(?:[.,]\d+)?\s*(?:mg|MG|Mg|mcg|MCG|µg|ug)(?=\s+"
         r"(?:Tablet|Tablets|TABLET|TABLETS|tablet|tablets|"
-        r"Tab|Tabs|Capsule|Capsules|CAPSULE|CAPSULES|capsule|capsules|"
-        r"Cap|Caps|Caplet|Caplets|Pill|Pills|PILL|PILLS|pill|pills)\b)"
+        r"Tab|Tabs|TAB|TABS|Capsule|Capsules|CAPSULE|CAPSULES|capsule|capsules|"
+        r"Cap|Caps|CAP|CAPS|Caplet|Caplets|Pill|Pills|PILL|PILLS|pill|pills)\b)"
     ),
 ]
 
