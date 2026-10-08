@@ -137,7 +137,9 @@ def per_kg_rows(extracted: pd.DataFrame, sizeless: pd.DataFrame) -> pd.DataFrame
     both = both[(both["size_free"] >= 3) & (both["size_kg"] >= 3)]
     ratio = both["median_free"] / both["median_kg"]
     hit = set(both.index[ratio.between(*PER_KG_BOUNDS)])
-    rows = sizeless[[k in hit for k in zip(*(sizeless[c] for c in key))]]
+    # A Series mask, not a list: an empty list selects no COLUMNS (`df[[]]`).
+    mask = pd.Series([k in hit for k in zip(*(sizeless[c] for c in key))], index=sizeless.index, dtype=bool)
+    rows = sizeless[mask]
     return rows.assign(
         pricing_basis="mass", standard_unit="kg", amount_value=1.0, count=1.0,
         multiplier=1.0, size_qty=1.0, size_source="per_kg",
