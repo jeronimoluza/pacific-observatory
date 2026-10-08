@@ -28,6 +28,7 @@ from prices.build.unit_value_audit import UV_SUPPORT_WINDOW, flag_uv_outliers
 
 _DIR = Path(__file__).resolve().parent
 BASIS_MAP_CSV = _DIR / "basis_map.csv"
+NONFOOD_BASIS_MAP_CSV = _DIR / "basis_map_nonfood.csv"
 BASIS_OVERRIDES_CSV = _DIR / "basis_overrides.csv"
 OFFICIAL_SOURCES_CSV = _DIR / "official_sources.csv"
 COICOP_OVERRIDES_CSV = _DIR / "coicop_overrides.csv"
@@ -51,9 +52,21 @@ def allowed_bases(country: str) -> dict[str, frozenset[str]]:
         return {r.code: frozenset(str(r.allowed).split("|")) for r in frame.itertuples()}
 
     out = parse(pd.read_csv(BASIS_MAP_CSV, dtype=str))
+    out.update(parse(pd.read_csv(NONFOOD_BASIS_MAP_CSV, dtype=str)))
     over = pd.read_csv(BASIS_OVERRIDES_CSV, dtype=str)
     out.update(parse(over[over["country"] == country]))
     return out
+
+
+def nonfood_leaves() -> frozenset[str]:
+    """Non-food goods leaves Stage B prices (services are not in the map)."""
+    return frozenset(pd.read_csv(NONFOOD_BASIS_MAP_CSV, dtype=str)["code"])
+
+
+def piece_leaves(country: str) -> frozenset[str]:
+    """Non-food leaves read with the piece grammar: allowed bases only item/count."""
+    allowed = allowed_bases(country)
+    return frozenset(c for c in nonfood_leaves() if allowed[c] <= {"item", "count"})
 
 
 def official_sources() -> frozenset[str]:

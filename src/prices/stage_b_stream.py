@@ -64,21 +64,21 @@ def _concat(parts: list[Path], dest: Path, trusted_only: bool = False) -> int:
     return n
 
 
-def run_and_write(country: str) -> tuple[int, int]:
+def run_and_write(country: str, scope: str = "food") -> tuple[int, int]:
     """Stage B for `country` chunk by chunk into `stage_b.OUT_ROOT`; (rows, trusted)."""
-    products = sb.load_products(country)
+    products = sb.load_products(country, scope)
     local = products["currency"].mode().iloc[0]
     months = sb.load_months(country, products["input_hash"])
     rates = sb.month_rates(months.assign(currency=months["currency"].map(fx.normalize_currency_safe)), local)
     del months
-    root = sb.OUT_ROOT / decisions_store.part_name(country)
+    root = sb.OUT_ROOT / decisions_store.part_name(country) / ("nonfood" if scope == "nonfood" else "")
     root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         chunks = plan_chunks(products["coicop_code"])
         for i, leaves in enumerate(chunks):
             part = products[products["coicop_code"].isin(leaves)].reset_index(drop=True)
-            out, pm = sb.run(country, part, local, rates)
+            out, pm = sb.run(country, part, local, rates, scope=scope)
             out.to_parquet(tmp / f"obs_{i:04d}.parquet", index=False)
             pm.to_parquet(tmp / f"pm_{i:04d}.parquet", index=False)
             print(f"  chunk {i + 1}/{len(chunks)}: {len(leaves)} leaves, {len(part):,} products, {len(out):,} rows", flush=True)
@@ -96,10 +96,11 @@ def run_and_write(country: str) -> tuple[int, int]:
 
 @click.command("stage-b-streamed")
 @click.argument("countries", nargs=-1, required=True)
-def stage_b_streamed(countries: tuple[str, ...]) -> None:
+@click.option("--scope", type=click.Choice(sb.SCOPES), default="food", show_default=True)
+def stage_b_streamed(countries: tuple[str, ...], scope: str) -> None:
     """Stage B per country, streamed by COICOP leaf."""
     for country in countries:
-        rows, trusted = run_and_write(country)
+        rows, trusted = run_and_write(country, scope)
         click.echo(f"DONE {country} rows={rows} trusted={trusted}")
 
 

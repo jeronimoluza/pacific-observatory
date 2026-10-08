@@ -29,6 +29,7 @@ from prices.build import trust
 from prices.build.qa import PLAUSIBLE_USD
 from prices.build.unit_value_audit import flag_uv_outliers
 from prices.enrich import config, uv_gate
+from prices.enrich.extract_nonfood import nonfood_frame
 from prices.enrich.fluid_oz import remap_fluid_oz
 from prices.enrich.prepare_shards import PREPARED_DIR, PRODUCT_MONTHS_DIR
 from prices.enrich.stages import decisions_store
@@ -36,9 +37,15 @@ from prices.enrich.stages.concatenate import PER_SOURCE_DIR
 from prices.enrich.stages.extraction import EXTRACTION_FIELDS, extract_frame
 from prices.enrich.stages.merge import compute_unit_value
 from prices.enrich.stages.prepare import month_of, parse_dates, parse_price
-from prices.fx import attach as fx
+from prices.stage_b_fx import month_fx, month_rates  # noqa: F401  (stage_b_stream uses sb.month_rates)
 
 DIVISIONS = ("01.", "02.1.")
+# `nonfood`: the goods leaves in `basis_map_nonfood.csv`, read from classify's
+# full decisions (the classified view holds 01 + 02 only).
+SCOPES = ("food", "nonfood")
+# Human-owned, PROPOSED 2026-10-06, not approved: the food ceilings make a
+# sofa, a TV or a perfume implausible (unit 500, kg/lt 200 USD); floors stay food's.
+PLAUSIBLE_USD_NONFOOD = {**PLAUSIBLE_USD, "unit": (0.005, 200_000.0), "kg": (0.20, 20_000.0), "lt": (0.05, 20_000.0)}
 OUT_ROOT = config.REPO_ROOT / "outputs" / "prices" / "stage_b"
 
 # Human-owned, like k=5: a dated row priced outside this factor of its
@@ -58,18 +65,19 @@ _PRODUCT_COLS = [
 _DATED_COLS = ["input_hash", "product_name", "product_url", "price", "currency", "date", "source"]
 
 
-def _in_divisions(codes: pd.Series) -> pd.Series:
+def _in_divisions(codes: pd.Series, scope: str = "food") -> pd.Series:
+    if scope == "nonfood":
+        return codes.isin(trust.nonfood_leaves())
     return codes.fillna("").str.startswith(DIVISIONS)
 
 
-def load_products(country: str) -> pd.DataFrame:
-    """This country's 01 + 02.1 products: classify's COICOP joined to the
+def load_products(country: str, scope: str = "food") -> pd.DataFrame:
+    """This country's products in `scope`: classify's COICOP joined to the
     product text extraction reads. One row per `input_hash`."""
-    part = decisions_store.parts_root(config.CLASSIFIED_HIERLEX_PARQUET) / (
-        decisions_store.part_name(country) + ".parquet"
-    )
+    table = config.DECISIONS_HIERLEX_PARQUET if scope == "nonfood" else config.CLASSIFIED_HIERLEX_PARQUET
+    part = decisions_store.parts_root(table) / (decisions_store.part_name(country) + ".parquet")
     classified = pd.read_parquet(part, columns=["input_hash", "coicop_code", "state"])
-    classified = classified[_in_divisions(classified["coicop_code"])]
+    classified = classified[_in_divisions(classified["coicop_code"], scope) & classified["state"].ne("rejected")]
     if classified["input_hash"].duplicated().any():
         raise RuntimeError(f"{part}: duplicate input_hash")
     paths = sorted(PREPARED_DIR.rglob(f"{country}.parquet"))
@@ -87,7 +95,7 @@ def load_products(country: str) -> pd.DataFrame:
     over = trust.coicop_overrides()
     fixed = pd.Series(list(zip(products["source"], products["product_name_original"])), index=products.index).map(over)
     products["coicop_code"] = fixed.fillna(products["coicop_code"])
-    return products[_in_divisions(products["coicop_code"])].reset_index(drop=True)
+    return products[_in_divisions(products["coicop_code"], scope)].reset_index(drop=True)
 
 
 def load_months(country: str, hashes: pd.Series) -> pd.DataFrame:
@@ -105,69 +113,15 @@ def load_months(country: str, hashes: pd.Series) -> pd.DataFrame:
     return months
 
 
-def month_rates(pm: pd.DataFrame, local: str) -> pd.DataFrame:
-    """Mean rate and `fx_suspect` per (currency, month) over `pm`'s months.
-
-    The month's rate is the mean of its daily USD->local rates, forward-filled
-    by `build_fx_table`; the month is `fx_suspect` when any of those days' rate
-    is implausible.
-    """
-    known = pm["month"].dropna()
-    start = pd.to_datetime(known.min(), format="%Y-%m")
-    end = pd.to_datetime(known.max(), format="%Y-%m") + pd.offsets.MonthEnd(0)
-    currencies = sorted(set(pm["currency"].dropna()) | {local})
-    days = pd.DataFrame(
-        [(c, d) for c in currencies for d in (start, end)], columns=["currency", "observation_date"]
-    )
-    table = fx._mark_suspect_rates(fx.build_fx_table(days), fx.PRICES_FX_CACHE)
-    table["fx_rate"] = pd.to_numeric(table["fx_rate"], errors="coerce")
-    table["month"] = month_of(pd.to_datetime(table["observation_date"]))
-    return table.groupby(["currency", "month"]).agg(
-        fx_rate=("fx_rate", "mean"), fx_suspect=("fx_suspect", "any")
-    )
-
-
-def month_fx(pm: pd.DataFrame, local: str, rates: pd.DataFrame | None = None) -> pd.DataFrame:
-    """Each product-month at its month's rate (`month_rates`), repriced into `local`.
-
-    A month quoted in another currency is repriced via USD
-    (livingcost quotes New Zealand in USD: banded as NZD it sat at ~0.6x every
-    other shop, blended in, and was trusted). One with no rate is left as
-    quoted and marked `fx_suspect`.
-    """
-    pm = pm.assign(currency=pm["currency"].map(fx.normalize_currency_safe))
-    if rates is None:
-        rates = month_rates(pm, local)
-
-    def at(currency: pd.Series) -> tuple[pd.Series, pd.Series]:
-        key = pd.MultiIndex.from_arrays([currency, pm["month"]])
-        rate = pd.Series(rates["fx_rate"].reindex(key).to_numpy(), index=pm.index, dtype=float)
-        bad = pd.Series(rates["fx_suspect"].reindex(key).to_numpy(), index=pm.index)
-        usd = currency.eq("USD").to_numpy()
-        rate[usd] = 1.0
-        bad[usd] = False
-        return rate, bad.fillna(False).astype(bool)
-
-    own_rate, _ = at(pm["currency"])
-    local_rate, local_bad = at(pd.Series(local, index=pm.index))
-    foreign = pm["currency"].ne(local)
-    ok = foreign & own_rate.gt(0) & local_rate.notna()
-    stuck = foreign & ~ok
-    price = pd.to_numeric(pm["price"], errors="coerce")
-    pm = pm.copy()
-    pm["currency_quoted"] = pm["currency"]
-    pm["price_local"] = price.where(~ok, price / own_rate * local_rate)
-    pm.loc[ok, "currency"] = local
-    pm["fx_rate"] = local_rate.where(~stuck, own_rate)
-    pm["fx_suspect"] = local_bad | stuck
-    return pm
-
-
-def extract_products(products: pd.DataFrame, codes: pd.DataFrame) -> pd.DataFrame:
-    """Extraction on 01 + 02.1 products, then reconcile: fluid-oz remap ->
-    basis check (in `run`) -> uv_gate. The remap must come first: the basis
-    check would otherwise rule on a basis it is about to replace."""
-    ex = extract_frame(products)
+def extract_products(products: pd.DataFrame, codes: pd.DataFrame, piece: frozenset = frozenset()) -> pd.DataFrame:
+    """Extraction, then reconcile: fluid-oz remap -> basis check (in `run`) ->
+    uv_gate. The remap must come first: the basis check would otherwise rule on
+    a basis it is about to replace. Products on a `piece` leaf are read with the
+    non-food piece grammar instead of the food one."""
+    is_piece = products["coicop_code"].isin(piece)
+    ex = extract_frame(products[~is_piece])
+    if piece:
+        ex = nonfood_frame(ex, products, is_piece)
     if ex.duplicated(["input_hash", "country"]).any():
         raise RuntimeError("extraction repeats an (input_hash, country) key")
     ex = ex.merge(codes, on="input_hash", how="left")
@@ -184,14 +138,17 @@ def extract_products(products: pd.DataFrame, codes: pd.DataFrame) -> pd.DataFram
     return ex[["input_hash", *EXTRACTION_FIELDS, "qa_uv_category"]]
 
 
-def run(country: str, products=None, local=None, rates=None) -> tuple[pd.DataFrame, pd.DataFrame]:
+def run(
+    country: str, products=None, local=None, rates=None, scope: str = "food"
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """(dated rows, product-months) for `country`; `stage_b_stream` passes one leaf chunk."""
     if products is None:
-        products = load_products(country)
+        products = load_products(country, scope)
     local = local or products["currency"].mode().iloc[0]
+    piece = trust.piece_leaves(country) if scope == "nonfood" else frozenset()
 
     # Step 1, product grain: extraction and the basis check.
-    ex = extract_products(products, products[["input_hash", "coicop_code"]])
+    ex = extract_products(products, products[["input_hash", "coicop_code"]], piece)
     prod = products[["input_hash", "source", "country", "coicop_code", "product_name_original"]].merge(
         ex, on="input_hash", how="left", validate="one_to_one"
     )
@@ -212,6 +169,10 @@ def run(country: str, products=None, local=None, rates=None) -> tuple[pd.DataFra
     counted = ~prod["basis_ok"] & basis.eq("count") & measured & prod["size_qty"].gt(0)
     prod["_pieces"] = prod["size_qty"].where(counted, 1.0)
     prod["sizeless"] = ~prod["basis_ok"] & (basis.isna() | basis.eq("item") | counted)
+    # A non-food bundle (different products under one price: "Gift Set 3pcs")
+    # has no per-piece price: it stays out of the band and is never imputed.
+    prod["bundle"] = prod["is_bundle"].eq(True) & (scope == "nonfood")
+    prod.loc[prod["bundle"], ["basis_ok", "sizeless"]] = False
     # An allowed item is one piece, the same quantity as a count of one: both
     # price per piece, so they share the count cell ("Thơm 1 trái" and "Thơm"
     # are one pineapple each) instead of thinning two cells.
@@ -279,6 +240,8 @@ def run(country: str, products=None, local=None, rates=None) -> tuple[pd.DataFra
     )
     if chosen["_row"].duplicated().any():
         raise RuntimeError("imputation kept two sizes for one product-month")
+    # Non-food sizes are never imputed: a leaf mixes creams with razors (user 2026-10-07).
+    chosen = chosen.iloc[:0] if scope == "nonfood" else chosen
 
     judged = pd.concat(
         [scored.iloc[:ne], chosen.drop(columns=["_cand_share"], errors="ignore")], ignore_index=True
@@ -311,8 +274,9 @@ def run(country: str, products=None, local=None, rates=None) -> tuple[pd.DataFra
     )
 
     pm["unit_value_usd"] = pm["unit_value_local"] / pm["fx_rate"]
-    lo = pd.to_numeric(pm["standard_unit"].map(lambda u: PLAUSIBLE_USD.get(u, (None, None))[0]))
-    hi = pd.to_numeric(pm["standard_unit"].map(lambda u: PLAUSIBLE_USD.get(u, (None, None))[1]))
+    bounds = PLAUSIBLE_USD_NONFOOD if scope == "nonfood" else PLAUSIBLE_USD
+    lo = pd.to_numeric(pm["standard_unit"].map(lambda u: bounds.get(u, (None, None))[0]))
+    hi = pd.to_numeric(pm["standard_unit"].map(lambda u: bounds.get(u, (None, None))[1]))
     uv = pm["unit_value_usd"]
     pm["qa_uv_plausible"] = lo.isna() | uv.isna() | uv.between(lo, hi)
     pm["qa_fx"] = pm["fx_rate"].notna() & ~pm["fx_suspect"]
@@ -384,6 +348,7 @@ def _status(df: pd.DataFrame) -> np.ndarray:
     level, src = df["qa_level"], df["size_source"]
     conditions = [
         ~df["qa_price_positive"],
+        df["bundle"],
         df["basis_mismatch"],
         src.isna(),
         df["piece_fail"],
@@ -397,7 +362,7 @@ def _status(df: pd.DataFrame) -> np.ndarray:
         ~df["qa_fx"],
     ]
     choices = [
-        "review_zero_price", "review_basis", "review_missing_qty",
+        "review_zero_price", "review_bundle", "review_basis", "review_missing_qty",
         "review_piece", "review_uv_category", "review_uv_unscored", "review_uv_out",
         "review_level", "review_uv_implausible", "review_fx",
     ]
@@ -471,8 +436,8 @@ _SAMPLE_COLS = [
 ]
 
 
-def write(country: str, out: pd.DataFrame, pm: pd.DataFrame) -> None:
-    root = OUT_ROOT / decisions_store.part_name(country)
+def write(country: str, out: pd.DataFrame, pm: pd.DataFrame, scope: str = "food") -> None:
+    root = OUT_ROOT / decisions_store.part_name(country) / ("nonfood" if scope == "nonfood" else "")
     root.mkdir(parents=True, exist_ok=True)
     out.to_parquet(root / "observations.parquet", index=False)
     out[out["trusted"]].to_parquet(root / "trusted_observations.parquet", index=False)
@@ -492,9 +457,11 @@ def write_checks(root, out: pd.DataFrame, pm: pd.DataFrame) -> None:
 
 @click.command("stage-b")
 @click.option("--country", required=True, help="Country slug, e.g. vietnam.")
-def stage_b(country: str) -> None:
-    """Stage B for one country: 01 + 02.1 extraction, basis map, band, trust."""
-    out, pm = run(country)
-    write(country, out, pm)
+@click.option("--scope", type=click.Choice(SCOPES), default="food", show_default=True,
+              help="food = 01 + 02.1; nonfood = goods leaves in basis_map_nonfood.csv.")
+def stage_b(country: str, scope: str) -> None:
+    """Stage B for one country: extraction, basis map, band, trust."""
+    out, pm = run(country, scope=scope)
+    write(country, out, pm, scope)
     click.echo(report(out, pm))
-    click.echo(f"\nwrote {OUT_ROOT / decisions_store.part_name(country)}")
+    click.echo(f"\nwrote {OUT_ROOT / decisions_store.part_name(country)}{'/nonfood' if scope == 'nonfood' else ''}")

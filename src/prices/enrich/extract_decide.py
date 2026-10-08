@@ -406,12 +406,22 @@ def _rung_pharma_pred(st):
     return st.pharma_per_unit
 
 
+# "(per Tablet)": the price is for one unit, whatever pack the name states.
+_PER_UNIT_LITERAL = re.compile(r"\(\s*per\s+(?:tablet|capsule|cap|caplet|pill)\s*\)", re.IGNORECASE)
+
+
 def _rung_pharma_emit(st):
+    # A strength ("300mg Cap") makes the mg a dose, not a weight, but the
+    # product is still the pack: "Cap 100s" is 100 (user 2026-10-08).
+    n = 1
+    if not _PER_UNIT_LITERAL.search(st.item_name):
+        n = next((c for c in (st.pack_count, st.extra_count)
+                  if c is not None and c > 1 and _count_is_plausible(c)), 1)
     return StructuralFields(
         pricing_basis="count",
         amount_value=None,
         standard_unit="unit",
-        count=1,
+        count=n,
         multiplier=1,
         is_promotion=_markers_fire(st.item_name, st.effective_lang, _PROMO_MARKERS),
         is_bundle=_markers_fire(st.item_name, st.effective_lang, _BUNDLE_MARKERS),

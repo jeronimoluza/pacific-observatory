@@ -116,6 +116,8 @@ EN_COUNT_NUM_NOUN:
 # noun is usually an SKU ("Duo Pack 806939") or a gram weight ("TIN BOX 250").
 # Bounded to two digits so "Box 12" still reads as a count and the rest fall
 # through to `item` rather than fabricating a denominator.
+# A dose form then its count: "Tablets 28", "Pathes 2" (medicines, 2026-10-08).
+# Not "cap": in Indonesian it is a brand ("Mie Telur Cap 3 Ayam").
 EN_COUNT_NOUN_TRAIL:
   {template: regex, case: ci,
-   regex: '\b(?:pack|combo|set|box|case)\s*-?\s*(?P<count>\d{1,2})(?![\d.,]*\s*(?:ml|mls|l|ltrs?|litres?|liters?|cl|dl|g|gm|gr|grams?|kg|mg|oz|lb)\b)\b'}
+   regex: '\b(?:(?:pack|combo|set|box|case)\s*-?\s*(?=\d{1,2}(?!\d))|(?:tablets?|tabs?|capsules?|patch(?:es)?|pathes)\s+(?=\d{1,3}(?!\d)))(?P<count>\d{1,3})(?![\d.,]*\s*(?:ml|mls|l|ltrs?|litres?|liters?|cl|dl|g|gm|gr|grams?|kg|mg|mcg|oz|lb)\b)\b'}

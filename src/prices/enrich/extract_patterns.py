@@ -106,11 +106,13 @@ _PHRASE_STRIP_PATTERNS = [
     # Pharma per-tablet strength: `100mg Tablet`, `20mcg Capsule`. The number
     # is the API dose, not the package weight. Stripping it prevents tier-a
     # from emitting basis=mass with a tiny per-pill value (2026-06-16).
+    # Only the dose goes, with a bare strength before it ("Urodil 300 300mg"):
+    # the form word stays, so "Tablets 28" still reads.
     re.compile(
-        r"\d+(?:[.,]\d+)?\s*(?:mg|MG|Mg|mcg|MCG|µg|ug)\s+"
+        r"(?:\b\d+\s+)?\d+(?:[.,]\d+)?\s*(?:mg|MG|Mg|mcg|MCG|µg|ug)(?=\s+"
         r"(?:Tablet|Tablets|TABLET|TABLETS|tablet|tablets|"
         r"Tab|Tabs|Capsule|Capsules|CAPSULE|CAPSULES|capsule|capsules|"
-        r"Cap|Caps|Caplet|Caplets|Pill|Pills|PILL|PILLS|pill|pills)\b"
+        r"Cap|Caps|Caplet|Caplets|Pill|Pills|PILL|PILLS|pill|pills)\b)"
     ),
 ]
 
