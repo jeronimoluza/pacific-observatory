@@ -74,8 +74,10 @@ def _group_news_dirs_by_country(news_dirs: Iterable[Path]) -> dict[Path, list[Pa
     return dict(grouped)
 
 
-def _dedup_source_counts(df: pd.DataFrame) -> pd.DataFrame:
-    """Normalize ym and drop (source_key, date) duplicates.
+def _dedup_source_counts(
+    df: pd.DataFrame, daily_tail_start: pd.Timestamp | None = None
+) -> pd.DataFrame:
+    """Normalize ym, roll past daily rows into months, drop (source_key, date) duplicates.
 
     The cache can carry monthly ym in two forms ("2026-4" and "2026-04") plus
     daily form ("2026-04-01") — leftover from past builds when daily_tail_start
@@ -84,6 +86,15 @@ def _dedup_source_counts(df: pd.DataFrame) -> pd.DataFrame:
     standardize.pivot_to_wide. Normalize monthly ym to zero-padded ("2026-04")
     and dedupe by (source_key, date), keeping the daily form when both monthly
     and daily exist for the same date.
+
+    Rows dated before ``daily_tail_start`` are summed into one monthly row per
+    source. When the tail moves forward a month, the old tail month is cached
+    as daily rows, and incremental annotation adds the late articles of that
+    month as a separate monthly row. The pivot's index only has the 1st of a
+    past month, so without the roll-up every day but the 1st was dropped: on
+    2026-10-05 September kept ~3% of its articles. Past-month rows are
+    disjoint article sets (incremental annotation starts strictly after each
+    source's cached tail), so summing is exact.
     """
     if (
         df is None
@@ -102,6 +113,21 @@ def _dedup_source_counts(df: pd.DataFrame) -> pd.DataFrame:
         normalized.loc[monthly_mask] = parts[0] + "-" + parts[1].str.zfill(2)
         work["ym"] = normalized
     work["_date"] = pd.to_datetime(work["ym"], format="mixed")
+    if daily_tail_start is not None:
+        past = work["_date"] < daily_tail_start
+        if past.any():
+            rolled = work[past].copy()
+            rolled["ym"] = rolled["_date"].dt.strftime("%Y-%m")
+            metric_cols = [
+                c for c in work.columns if c not in ("source_key", "ym", "_date")
+            ]
+            rolled = rolled.groupby(["source_key", "ym"], as_index=False)[
+                metric_cols
+            ].sum()
+            rolled["_date"] = pd.to_datetime(rolled["ym"], format="%Y-%m")
+            work = pd.concat([rolled, work[~past]], ignore_index=True)[
+                list(df.columns) + ["_date"]
+            ]
     work["_len"] = work["ym"].astype(str).str.len()
     work = (
         work.sort_values(["source_key", "_date", "_len"], kind="stable")
@@ -295,7 +321,7 @@ def _ensure_country_source_counts(
         diagnostics["mode"] = "reused"
         for sk in source_keys:
             _advance(sk)
-        return cached_df
+        return _dedup_source_counts(cached_df, daily_tail_start)
 
     diagnostics["mode"] = "incremental"
     extended_keys = {sk for _, sk, _, _ in sources_to_extend}
@@ -329,9 +355,9 @@ def _ensure_country_source_counts(
     if extended_frames:
         new_rows = pd.concat(extended_frames, ignore_index=True)
         merged = pd.concat([cached_df, new_rows], ignore_index=True)
-        df_out = _dedup_source_counts(merged)
+        df_out = _dedup_source_counts(merged, daily_tail_start)
     else:
-        df_out = _dedup_source_counts(cached_df)
+        df_out = _dedup_source_counts(cached_df, daily_tail_start)
 
     params_obj = source_counts.SourceCountsParams(
         schema_version=source_counts.SCHEMA_VERSION,
