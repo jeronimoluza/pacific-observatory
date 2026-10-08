@@ -256,6 +256,8 @@ Document the update window in `Update_Audit`.
   withdrawn, or superseded. Export bans in particular are frequently
   time-limited and quietly lapse — always re-verify status.
 - Preserve valid rows unless clearly wrong or duplicative.
+- Never delete or retitle a row dated before the current year. Past-year
+  rows are verified history; the addon build refuses an edition that drops one.
 - Do not delete uncertain rows silently. Mark `Unverified`,
   `Needs follow-up`, `Superseded`, or `Excluded`.
 - Split overly broad rows into distinct instruments; consolidate only
