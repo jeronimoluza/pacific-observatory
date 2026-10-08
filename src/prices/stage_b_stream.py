@@ -19,6 +19,7 @@ import tempfile
 from pathlib import Path
 
 import click
+import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.compute as pc
@@ -88,10 +89,44 @@ def run_and_write(country: str, scope: str = "food") -> tuple[int, int]:
         rows = _concat(obs, root / "observations.parquet")
         trusted = _concat(obs, root / "trusted_observations.parquet", trusted_only=True)
         _concat(pms, root / "product_months.parquet")
-    out = pd.read_parquet(root / "observations.parquet", columns=list(dict.fromkeys(_REPORT_OBS + ["source"] + sb._SAMPLE_COLS)))
-    pm = pd.read_parquet(root / "product_months.parquet", columns=_REPORT_PM)
-    sb.write_checks(root, out, pm)
+    write_checks(root)
     return rows, trusted
+
+
+def _rows_at(path: Path, positions: np.ndarray, columns: list[str]) -> pd.DataFrame:
+    """Rows of `path` at `positions` (in that order), read one batch at a time."""
+    want = np.sort(positions)
+    got, start = [], 0
+    for batch in pq.ParquetFile(path).iter_batches(columns=columns, batch_size=1 << 20):
+        lo, hi = np.searchsorted(want, [start, start + batch.num_rows])
+        if hi > lo:
+            got.append(batch.take(pa.array(want[lo:hi] - start)))
+        start += batch.num_rows
+    schema = pa.schema([pq.read_schema(path).field(c) for c in columns])
+    t = pa.Table.from_batches(got, schema=schema) if got else schema.empty_table()
+    df = t.to_pandas()
+    return df.iloc[np.argsort(np.argsort(positions))].reset_index(drop=True) if len(df) else df
+
+
+def write_checks(root: Path) -> None:
+    """`stage_b.write_checks` from the files: the same report and the same
+    samples (`DataFrame.sample(random_state=0)` draws the same positions).
+    Only the sampled rows' sample columns are read: all of them for Japan's
+    41M non-food rows outgrew a8."""
+    obs = root / "observations.parquet"
+    out = pd.read_parquet(obs, columns=list(dict.fromkeys(_REPORT_OBS + ["source"])))
+    pm = pd.read_parquet(root / "product_months.parquet", columns=_REPORT_PM)
+    (root / "report.txt").write_text(sb.report(out, pm))
+    del pm
+    picks = [
+        ("check_ab.csv", out["trusted"].to_numpy(dtype=bool) & out["qa_level"].isin(["A", "B"]).to_numpy(dtype=bool, na_value=False), 100),
+        ("check_imputed.csv", out["size_source"].isin(["imputed_mode", "imputed_fit"]).to_numpy(dtype=bool, na_value=False), 50),
+    ]
+    del out
+    for name, mask, n in picks:
+        idx = np.flatnonzero(mask)
+        pick = idx[np.random.RandomState(0).choice(len(idx), size=min(n, len(idx)), replace=False)]
+        _rows_at(obs, pick, sb._SAMPLE_COLS).to_csv(root / name, index=False)
 
 
 @click.command("stage-b-streamed")
