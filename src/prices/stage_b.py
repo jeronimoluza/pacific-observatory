@@ -46,6 +46,10 @@ SCOPES = ("food", "nonfood")
 # Human-owned, PROPOSED 2026-10-06, not approved: the food ceilings make a
 # sofa, a TV or a perfume implausible (unit 500, kg/lt 200 USD); floors stay food's.
 PLAUSIBLE_USD_NONFOOD = {**PLAUSIBLE_USD, "unit": (0.005, 200_000.0), "kg": (0.20, 20_000.0), "lt": (0.05, 20_000.0)}
+# Human-owned, PROPOSED 2026-10-08, not approved: a medicine priced as N pieces
+# whose price / N falls below this (local currency) is priced per piece, not per
+# pack ("BUSCOPAN 10MG TAB 120" at 37 PHP); it is held as implausible, not re-read.
+PER_PIECE_FLOOR_LOCAL = {"philippines": 1.0}
 OUT_ROOT = config.REPO_ROOT / "outputs" / "prices" / "stage_b"
 
 # Human-owned, like k=5: a dated row priced outside this factor of its
@@ -279,6 +283,12 @@ def run(
     hi = pd.to_numeric(pm["standard_unit"].map(lambda u: bounds.get(u, (None, None))[1]))
     uv = pm["unit_value_usd"]
     pm["qa_uv_plausible"] = lo.isna() | uv.isna() | uv.between(lo, hi)
+    floor = PER_PIECE_FLOOR_LOCAL.get(country) if scope == "nonfood" else None
+    if floor:
+        n = pd.to_numeric(pm["count"], errors="coerce")
+        per_piece = (pm["coicop_code"].astype(str).str.startswith("06.1.1") & pm["pricing_basis"].eq("count")
+                     & n.gt(1) & (pd.to_numeric(pm["price_local"], errors="coerce") / n).lt(floor))
+        pm["qa_uv_plausible"] &= ~per_piece
     pm["qa_fx"] = pm["fx_rate"].notna() & ~pm["fx_suspect"]
     pm["qa_uv_category"] = pm["qa_uv_category"].fillna(True).astype(bool)
     pm["stage_b_status"] = _status(pm)
