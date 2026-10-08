@@ -915,9 +915,18 @@ function initPicker(onChange) {
         });
         picker.dispatchEvent(new Event('change'));
     }
+    function closeNode(g) {
+        g.classList.remove('is-open');
+        g.querySelectorAll('.is-open').forEach(x => x.classList.remove('is-open'));
+    }
     function toggleNode(g) {
         if (!g.classList.toggle('is-open')) {
-            g.querySelectorAll('.is-open').forEach(x => x.classList.remove('is-open'));
+            closeNode(g);
+        } else if (isTree && !isCustom()) {
+            // One branch open per level: opening a node closes its siblings.
+            Array.from(g.parentElement.children).forEach(s => {
+                if (s !== g && s.classList.contains('is-open')) closeNode(s);
+            });
         }
         if (isTree && !isCustom()) syncAuto();
     }
