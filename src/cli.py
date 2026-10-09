@@ -336,11 +336,21 @@ def text_publish(region, subregion, country, tracker, skip_database_status):
     type=click.Choice(["fuel", "food"]),
     help="Policy-tracker variant to build. Default: fuel.",
 )
-def text_build_policy_addons(region, chart_title, tracker):
+@click.option(
+    "--allow-history-drop",
+    is_flag=True,
+    help="Build even if the newest edition lacks past-year rows the previous one holds.",
+)
+def text_build_policy_addons(region, chart_title, tracker, allow_history_drop):
     """Build policy addon HTMLs from the newest outputs/text/policy_tracker/<tracker>/YYYY-MM-DD/<region>.xlsx."""
     from text.plotting.policy_dashboards import build_addons
 
-    build_addons(region=region, chart_title=chart_title, tracker=tracker)
+    build_addons(
+        region=region,
+        chart_title=chart_title,
+        tracker=tracker,
+        allow_history_drop=allow_history_drop,
+    )
 
 
 @text.command("status")

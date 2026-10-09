@@ -333,6 +333,8 @@ For every existing policy row:
   withdrawn, or was superseded.
 - Preserve valid rows unless there is clear evidence they are wrong or
   duplicative.
+- Never delete or retitle a row dated before the current year. Past-year
+  rows are verified history; the addon build refuses an edition that drops one.
 - Do not delete uncertain rows silently. Mark them as `Unverified`,
   `Needs follow-up`, `Superseded`, or `Excluded from dashboard`,
   depending on the workbook convention.

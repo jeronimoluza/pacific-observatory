@@ -39,6 +39,7 @@ from text.plotting.trackers import (
     addon_filename,
     get_tracker,
     latest_workbook,
+    previous_workbook,
     tracker_dir,
     tracker_label,
     workbook_dir,
@@ -1289,6 +1290,31 @@ def find_workbook(input_dir: Path, region_key: str) -> Path:
     return matches[0]
 
 
+def dropped_history(
+    workbook: Path, previous: Path, sheet: Optional[str]
+) -> List[Dict[str, str]]:
+    """Rows dated before this year that ``previous`` holds and ``workbook`` lacks.
+
+    Past-year rows are history that discovery and lookback passes found; a
+    weekly research edit has no reason to remove them. EAP lost 148 verified
+    2010-2025 measures this way, unnoticed, because nothing compared editions.
+    """
+    from text.plotting.policy_dashboards_v6 import _policy_year
+
+    this_year = dt.date.today().year
+
+    def key(r: Dict[str, str]) -> Tuple[str, str]:
+        return norm_country(r["Country"]), norm_key(r["Policy"])
+
+    current = {key(r) for r in load_policy_rows(workbook, sheet)[0]}
+    return [
+        r
+        for r in load_policy_rows(previous, sheet)[0]
+        if (_policy_year(r["Active or Proposed Date"]) or this_year) < this_year
+        and key(r) not in current
+    ]
+
+
 def generate_region(
     region_cfg: Dict[str, Any],
     input_dir: Path,
@@ -1298,12 +1324,28 @@ def generate_region(
     timeline_path: Optional[Path] = None,
     coverage_path: Optional[Path] = None,
     discovered_path: Optional[Path] = None,
+    allow_history_drop: bool = False,
 ) -> Dict[str, Any]:
     key = region_cfg["key"]
     display = region_cfg.get("display_name", key)
     print(f"[{key}] {display}")
     workbook = find_workbook(input_dir, key)
     print(f"  workbook: {workbook.parent.name}/{workbook.name}")
+    previous = previous_workbook(input_dir, workbook)
+    if previous is not None and not allow_history_drop:
+        dropped = dropped_history(
+            workbook, previous, region_cfg.get("sheet", CANONICAL_SHEET)
+        )
+        if dropped:
+            listed = "\n".join(
+                f"    {r['Country']}: {r['Policy']} [{r['Active or Proposed Date']}]"
+                for r in dropped[:25]
+            )
+            raise ValueError(
+                f"{workbook.parent.name}/{workbook.name} drops {len(dropped)} past-year "
+                f"rows that {previous.parent.name} holds. Restore them, or pass "
+                f"--allow-history-drop if each removal is deliberate:\n{listed}"
+            )
     rows, sheet_name, header_row = load_policy_rows(
         workbook, region_cfg.get("sheet", CANONICAL_SHEET)
     )
@@ -1418,6 +1460,7 @@ def build_addons(
     input_dir: Optional[Path] = None,
     output_dir: Optional[Path] = None,
     tracker: Optional[str] = None,
+    allow_history_drop: bool = False,
 ) -> List[Dict[str, Any]]:
     """Programmatic entry point used by the ``po text build-policy-addons`` CLI."""
     in_dir = workbook_dir(input_dir or DEFAULT_INPUT_DIR, tracker)
@@ -1429,7 +1472,16 @@ def build_addons(
     regions = _resolve_regions(only)
     summary: List[Dict[str, Any]] = []
     for region_cfg in regions:
-        summary.append(generate_region(region_cfg, in_dir, out_dir, title, tracker))
+        summary.append(
+            generate_region(
+                region_cfg,
+                in_dir,
+                out_dir,
+                title,
+                tracker,
+                allow_history_drop=allow_history_drop,
+            )
+        )
     return summary
 
 
@@ -1474,6 +1526,11 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         help="Policy-tracker variant to build. Default: fuel.",
     )
     parser.add_argument(
+        "--allow-history-drop",
+        action="store_true",
+        help="Build even if the newest edition lacks past-year rows the previous one holds.",
+    )
+    parser.add_argument(
         "--zip",
         action="store_true",
         help="Also zip all generated HTML files into output-dir.",
@@ -1507,7 +1564,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         try:
             summary.append(
                 generate_region(
-                    region_cfg, in_dir, args.output_dir, title, args.tracker
+                    region_cfg,
+                    in_dir,
+                    args.output_dir,
+                    title,
+                    args.tracker,
+                    allow_history_drop=args.allow_history_drop,
                 )
             )
         except Exception as exc:

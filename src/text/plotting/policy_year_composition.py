@@ -21,8 +21,8 @@ YEAR_CSS = """
   .panel-split { display: flex; flex-direction: column; gap: 18px; margin-top: 6px; }
   .chart-col { flex: 1 1 auto; min-width: 0; }
   .chart-col svg { min-width: 0; margin: 0; }
-  .chart-frame { display: flex; align-items: flex-start; width: 100%; }
-  .chart-frame .chart-wrap { flex: 1 1 auto; min-width: 0; }
+  .chart-frame { display: flex; align-items: flex-start; justify-content: center; width: 100%; }
+  .chart-frame .chart-wrap { flex: 0 1 auto; width: auto; min-width: 0; }
   #chartAxis { flex: 0 0 auto; }
   .detail-col { flex: 1 1 auto; width: 100%; }
   .detail-col .detail-card { margin: 0; }
@@ -42,13 +42,17 @@ const detailCard = document.getElementById("detailCard");
 const detailPlaceholder = detailCard.innerHTML;
 const chartScroll = document.getElementById("chartScroll");
 const axisSvg = document.getElementById("chartAxis");
-const discBox = document.getElementById("ycDiscovered");
 const sqrtBox = document.getElementById("ycSqrt");
-const ystate = { showDiscovered: true, sqrt: false, sig: "", pinned: null, ro: null };
+const ystate = { sqrt: false, sig: "", pinned: null, ro: null };
+const chartFrame = document.querySelector(".chart-frame");
 
 function cleanText(s) { return (s || "").toString().replace(/\\s+/g, " ").trim(); }
 function escapeHTML(s) { return cleanText(s).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#039;"}[ch])); }
-function titleCase(s) { return cleanText(s).replace(/\\b([a-z])/g, m => m.toUpperCase()); }
+// Title case keeps short joining words low: "Financial Stabilization and Reserve Management".
+function titleCase(s) {
+  return cleanText(s).replace(/\\b([a-z])/g, m => m.toUpperCase())
+    .replace(/(?!^)\\b(And|Or|Of|For|To|In|On|The)\\b/g, m => m.toLowerCase());
+}
 function isActive(r) { return cleanText(r["Active or Proposed Date"]).toLowerCase().startsWith("active"); }
 function isProposed(r) { return cleanText(r["Active or Proposed Date"]).toLowerCase().startsWith("proposed"); }
 
@@ -75,9 +79,15 @@ function initControls() {
   refreshSubcategoryOptions();
   categorySelect.addEventListener("input", () => { refreshSubcategoryOptions(); render(); });
   [subregionSelect, groupSelect, subcategorySelect, statusSelect].forEach(el => el.addEventListener("input", render));
-  if (discBox) discBox.addEventListener("change", () => {
-    ystate.showDiscovered = discBox.checked; render();
-  });
+  // Bars stretch to the frame's width, which is 0 while the Policy tab is
+  // hidden, so redraw whenever the frame takes on a new width.
+  if (chartFrame) {
+    let frameW = 0;
+    new ResizeObserver(() => {
+      const w = chartFrame.clientWidth;
+      if (w && w !== frameW) { frameW = w; render(); }
+    }).observe(chartFrame);
+  }
   if (sqrtBox) sqrtBox.addEventListener("change", () => {
     ystate.sqrt = sqrtBox.checked; render();
   });
@@ -99,7 +109,7 @@ function refreshSubcategoryOptions() {
   }
   subs.forEach(s => {
     const opt = document.createElement("option");
-    opt.value = s; opt.textContent = s;
+    opt.value = s; opt.textContent = titleCase(s);
     subcategorySelect.appendChild(opt);
   });
 }
@@ -121,7 +131,6 @@ function filteredRows() {
     if (sub !== "all" && r.subcategory !== sub) return false;
     if (status === "active" && !isActive(r)) return false;
     if (status === "proposed" && !isProposed(r)) return false;
-    if (!ystate.showDiscovered && r.provenance === "corpus") return false;
     return true;
   });
 }
@@ -251,14 +260,16 @@ function render() {
 
   drawLegend(activeCats);
 
-  const slot = 52;
   const height = 560;
   const axisW = 62;
   const margin = {top: 20, right: 26, bottom: 54, left: 8};
+  // Fill the frame; past that, keep a 52px floor and scroll.
+  const roomW = (chartFrame ? chartFrame.clientWidth : 0) - axisW - margin.left - margin.right;
+  const slot = Math.max(52, Math.floor(roomW / Math.max(years.length, 1)));
   const plotW = Math.max(320, years.length * slot);
   const width = margin.left + plotW + margin.right;
   const plotH = height - margin.top - margin.bottom;
-  const barW = Math.min(34, slot * 0.62);
+  const barW = Math.min(80, slot * 0.62);
 
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
   svg.setAttribute("width", width); svg.setAttribute("height", height);
@@ -308,7 +319,7 @@ function render() {
   });
   ax("text", {x: 0, y: 0, class: "axis-title", "text-anchor": "middle",
               transform: `translate(13, ${margin.top + plotH / 2}) rotate(-90)`},
-     "distinct policies" + (ystate.sqrt ? " (\u221a scale)" : ""));
+     "Distinct Policies" + (ystate.sqrt ? " (\u221a scale)" : ""));
   ax("line", {x1: axisW, y1: margin.top, x2: axisW, y2: margin.top + plotH, class: "axis-line"});
 
   // A dense axis (2007-2026 is 20 slots) needs every label; a filtered view can
