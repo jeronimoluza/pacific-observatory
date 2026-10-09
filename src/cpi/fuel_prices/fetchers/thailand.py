@@ -6,9 +6,9 @@ SOURCE_META = [
         "fetcher_fn": "fetch_th_eppo_retail_daily",
         "country": "Thailand",
         "source_name": "EPPO Retail Fuel Prices (Daily)",
-        "url": "http://www.eppo.go.th/petro/price/index.html",
-        "description": "Official EPPO retail fuel prices page with current pump prices across major products.",
-        "extraction_method": ["Web scraping"],
+        "url": "https://www.eppo.go.th/wp-json/oil-api/v1/oil-prices",
+        "description": "Official EPPO retail fuel price feed with current pump prices per brand across major products (JSON; replaced the scraped price board in the 2026 site rebuild).",
+        "extraction_method": ["JSON API"],
         "products": [
             "Benzine 95",
             "Gasohol 95",
@@ -49,7 +49,7 @@ SOURCE_META = [
         "fetcher_fn": "fetch_th_eppo_p04",
         "country": "Thailand",
         "source_name": "EPPO P04 Monthly Retail Petroleum",
-        "url": "https://www.eppo.go.th/epposite/images/Energy-Statistics/energyinformation/Energy_Statistics/Petroleum_Prices/P04.xls",
+        "url": "https://www.eppo.go.th/data-energy-statistic/energy-statistic/petro-price-energy-stat/%e0%b8%a3%e0%b8%b2%e0%b8%84%e0%b8%b2%e0%b8%9b%e0%b8%b4%e0%b9%82%e0%b8%95%e0%b8%a3%e0%b9%80%e0%b8%a5%e0%b8%b5%e0%b8%a2%e0%b8%a1/",
         "description": "Official government source (Energy Policy and Planning Office, Ministry of Energy). Publishes monthly retail petroleum price statistics as a public XLS file (P04 table). Includes biofuel blends.",
         "extraction_method": "Excel download (XLS)",
         "products": [
@@ -70,7 +70,7 @@ SOURCE_META = [
         "fetcher_fn": "fetch_th_eppo_p04",
         "country": "Thailand",
         "source_name": "EPPO P04 Monthly Retail Petroleum",
-        "url": "https://www.eppo.go.th/epposite/images/Energy-Statistics/energyinformation/Energy_Statistics/Petroleum_Prices/P04.xls",
+        "url": "https://www.eppo.go.th/data-energy-statistic/energy-statistic/petro-price-energy-stat/%e0%b8%a3%e0%b8%b2%e0%b8%84%e0%b8%b2%e0%b8%9b%e0%b8%b4%e0%b9%82%e0%b8%95%e0%b8%a3%e0%b9%80%e0%b8%a5%e0%b8%b5%e0%b8%a2%e0%b8%a1/",
         "description": "Official government (EPPO/Ministry of Energy). Monthly retail petroleum stats as public XLS (P04 table). Includes biofuel blends.",
         "extraction_method": ["Excel download"],
         "products": [
@@ -91,9 +91,9 @@ SOURCE_META = [
         "fetcher_fn": "fetch_thailand_eppo_ngv",
         "country": "Thailand",
         "source_name": "EPPO NGV Bangkok Retail Prices",
-        "url": "https://www.eppo.go.th/images/petroleum/price/retail-priceNGV/NGVPrice.xls",
-        "description": "Official government (EPPO/Ministry of Energy). Monthly NGV retail prices in Bangkok as public XLS file.",
-        "extraction_method": ["Excel download"],
+        "url": "https://www.eppo.go.th/data-energy-statistic/energy-price-th/%e0%b8%a3%e0%b8%b2%e0%b8%84%e0%b8%b2-ngv/",
+        "description": "Official government (EPPO/Ministry of Energy). Monthly NGV retail prices in Bangkok, published as an HTML table (the former spreadsheet was retired in the 2026 site rebuild).",
+        "extraction_method": ["Web scraping"],
         "products": ["Natural Gas for Vehicles (NGV)"],
         "source_keys": ["th_eppo_ngv_bangkok_2025"],
         "publishes_on": "Monthly",
@@ -123,6 +123,7 @@ SOURCE_META = [
 
 import io
 import html
+import json
 import re
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
@@ -140,7 +141,7 @@ _TMPL_TH = make_template(
     wb_iso3="THA",
     source_key="th_eppo_p04_monthly",
     source_name="Thailand EPPO Table P04 – Retail Prices of Petroleum Products",
-    source_url="https://www.eppo.go.th/epposite/images/Energy-Statistics/energyinformation/Energy_Statistics/Petroleum_Prices/P04.xls",
+    source_url="https://www.eppo.go.th/data-energy-statistic/energy-statistic/petro-price-energy-stat/%e0%b8%a3%e0%b8%b2%e0%b8%84%e0%b8%b2%e0%b8%9b%e0%b8%b4%e0%b9%82%e0%b8%95%e0%b8%a3%e0%b9%80%e0%b8%a5%e0%b8%b5%e0%b8%a2%e0%b8%a1/",
     currency="THB",
     unit="L",
     subnational_area="National",
@@ -176,11 +177,79 @@ _TH_MONTH_ABBR = {
     "DEC": 12,
 }
 
-_P04_URL = "https://www.eppo.go.th/epposite/images/Energy-Statistics/energyinformation/Energy_Statistics/Petroleum_Prices/P04.xls"
+# EPPO's 2026 rebuild moved the P04 spreadsheet out of the old
+# /epposite/images/... tree (now 404) into the WordPress uploads folder, where
+# the path carries the upload month and so changes on every re-publish.
+# Discover it from the petroleum-price statistics page instead of hardcoding.
+_P04_PAGE_URL = (
+    "https://www.eppo.go.th/data-energy-statistic/energy-statistic/"
+    "petro-price-energy-stat/%e0%b8%a3%e0%b8%b2%e0%b8%84%e0%b8%b2"
+    "%e0%b8%9b%e0%b8%b4%e0%b9%82%e0%b8%95%e0%b8%a3%e0%b9%80%e0%b8%a5"
+    "%e0%b8%b5%e0%b8%a2%e0%b8%a1/"
+)
+_P04_HREF_RE = re.compile(
+    r'href="(https://www\.eppo\.go\.th/wp-content/uploads/'
+    r'\d{4}/\d{2}/P04[^"]*\.xls)"',
+    re.IGNORECASE,
+)
+# Last known-good direct link, used only if the listing page is unreachable.
+_P04_URL = "https://www.eppo.go.th/wp-content/uploads/2026/04/P04-1.xls"
+
+
+def _discover_p04_url(session) -> str:
+    """Return the current P04 spreadsheet URL, else the last known-good one."""
+    try:
+        resp = session.get(_P04_PAGE_URL, timeout=60)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"  [th_eppo] Could not read P04 listing ({e}); using {_P04_URL}")
+        return _P04_URL
+
+    matches = _P04_HREF_RE.findall(resp.text)
+    if not matches:
+        print(f"  [th_eppo] No P04 link on listing page; using {_P04_URL}")
+        return _P04_URL
+
+    # Upload paths sort chronologically (.../YYYY/MM/...), so the last is newest.
+    return sorted(matches)[-1]
 
 # ── EPPO Retail Fuel Prices (Daily) ───────────────────────────────────────────
 
-_TH_RETAIL_URL = "http://www.eppo.go.th/petro/price/index.html"
+# EPPO's 2026 site rebuild retired the scraped price board at
+# /petro/price/index.html (now 404) and publishes the same numbers as JSON.
+# Human-readable equivalent: eppo.go.th -> data & statistics -> retail oil prices.
+_TH_RETAIL_URL = "https://www.eppo.go.th/wp-json/oil-api/v1/oil-prices"
+
+# Feed keys are "oil_<brand>_<suffix>"; the suffix identifies the grade.
+# Suffixes gs95p/gs99p/gl95p are brand-specific premium gasohols with no
+# entry in _TH_RETAIL_PRODUCTS, so they are deliberately not mapped.
+_TH_API_PRODUCT_LABELS = {
+    "gl95": "Benzine 95",
+    "gh95": "Gasohol 95",
+    "gh91": "Gasohol 91",
+    "e20": "Gasohol E20",
+    "e85": "Gasohol E85",
+    "ds": "Diesel B7",
+    "dsb10": "Diesel B10",
+    "dsb20": "Diesel B20",
+    "pds": "Premium Diesel",
+}
+
+# PTT is Thailand's reference retailer, so it is preferred; the remaining
+# brands are consulted only when PTT does not quote a grade (the feed writes
+# "-" for grades a brand does not sell). One row per product, as before.
+_TH_API_BRAND_ORDER = (
+    "ptt",
+    "bcp",
+    "shell",
+    "esso",
+    "caltex",
+    "irpc",
+    "pt",
+    "susco1",
+    "pure",
+    "susco2",
+)
 
 _TMPL_TH_DAILY = make_template(
     country="Thailand",
@@ -195,21 +264,6 @@ _TMPL_TH_DAILY = make_template(
     observation_method="reported",
     tax_status="tax_inclusive",
 )
-
-_THAI_MONTHS = {
-    "มกราคม": 1,
-    "กุมภาพันธ์": 2,
-    "มีนาคม": 3,
-    "เมษายน": 4,
-    "พฤษภาคม": 5,
-    "มิถุนายน": 6,
-    "กรกฎาคม": 7,
-    "สิงหาคม": 8,
-    "กันยายน": 9,
-    "ตุลาคม": 10,
-    "พฤศจิกายน": 11,
-    "ธันวาคม": 12,
-}
 
 _TH_RETAIL_PRODUCTS = [
     {
@@ -539,35 +593,6 @@ def fetch_th_or_pttor_current_oil_price(cutoff: date) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def _parse_thai_date_text(text: str) -> date | None:
-    match = re.search(r"(\d{1,2})\s+([ก-ฮ]+)\s+(\d{4})", text)
-    if match:
-        day = int(match.group(1))
-        mon = _THAI_MONTHS.get(match.group(2).strip())
-        year = int(match.group(3))
-        if mon:
-            if year >= 2400:
-                year -= 543
-            try:
-                return date(year, mon, day)
-            except ValueError:
-                return None
-    match = re.search(r"(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})", text)
-    if match:
-        day = int(match.group(1))
-        mon = int(match.group(2))
-        year = int(match.group(3))
-        if year < 100:
-            year += 2000
-        if year >= 2400:
-            year -= 543
-        try:
-            return date(year, mon, day)
-        except ValueError:
-            return None
-    return None
-
-
 def _match_th_retail_product(text: str) -> dict | None:
     key = (text or "").lower()
     for spec in _TH_RETAIL_PRODUCTS:
@@ -575,6 +600,14 @@ def _match_th_retail_product(text: str) -> dict | None:
             if re.search(pattern, key, re.IGNORECASE):
                 return spec
     return None
+
+
+def _parse_iso_date(value) -> date | None:
+    """Parse the feed's ISO "YYYY-MM-DD" date field, tolerating junk."""
+    try:
+        return date.fromisoformat(str(value).strip())
+    except (TypeError, ValueError):
+        return None
 
 
 def _parse_price_value(text: str) -> float | None:
@@ -607,7 +640,7 @@ def _normalize_bangchak_title(title: str) -> str:
 
 
 def fetch_th_eppo_retail_daily(cutoff: date) -> pd.DataFrame:
-    """Fetch Thailand EPPO current retail fuel prices from the daily page."""
+    """Fetch Thailand EPPO current retail fuel prices from the oil-price feed."""
     print("  [th_eppo_daily] Fetching Thailand EPPO retail daily prices...")
     print(f"  [th_eppo_daily] Cutoff: {cutoff}")
 
@@ -615,44 +648,45 @@ def fetch_th_eppo_retail_daily(cutoff: date) -> pd.DataFrame:
     try:
         resp = session.get(_TH_RETAIL_URL, timeout=45)
         resp.raise_for_status()
+        # The feed is served with a UTF-8 BOM, which resp.json() rejects.
+        payload = json.loads(resp.content.decode("utf-8-sig"))
     except Exception as e:
-        print(f"  [th_eppo_daily] Could not fetch page: {e}")
+        print(f"  [th_eppo_daily] Could not fetch price feed: {e}")
         return pd.DataFrame()
 
-    soup = BeautifulSoup(resp.content, "lxml")
-    page_text = soup.get_text(" ", strip=True)
-    obs_date = _parse_thai_date_text(page_text) or date.today()
+    brands = payload.get("data") or {}
+    if not brands:
+        print("  [th_eppo_daily] Feed carried no data block")
+        return pd.DataFrame()
+
+    # Every brand stamps its own effective date and they move together, so the
+    # first one present is the snapshot date for the whole feed.
+    obs_date = None
+    for brand in _TH_API_BRAND_ORDER:
+        raw_date = (brands.get(brand) or {}).get(f"oil_{brand}_date")
+        obs_date = _parse_iso_date(raw_date)
+        if obs_date:
+            break
+    if obs_date is None:
+        print("  [th_eppo_daily] Feed carried no parseable date")
+        return pd.DataFrame()
 
     if obs_date <= cutoff:
         print(f"  [th_eppo_daily] Date {obs_date} not newer than cutoff {cutoff}")
         return pd.DataFrame()
 
     rows = []
-    seen_products = set()
-    for table in soup.find_all("table"):
-        for tr in table.find_all("tr"):
-            cells = [
-                cell.get_text(" ", strip=True) for cell in tr.find_all(["th", "td"])
-            ]
-            if len(cells) < 2:
+    for suffix, label in _TH_API_PRODUCT_LABELS.items():
+        spec = _match_th_retail_product(label)
+        if not spec:
+            continue
+        for brand in _TH_API_BRAND_ORDER:
+            block = brands.get(brand)
+            if not block:
                 continue
-            prod_text = cells[0]
-            spec = _match_th_retail_product(prod_text)
-            if not spec:
-                continue
-
-            price = None
-            for cell_text in cells[1:]:
-                val = _parse_price_value(cell_text)
-                if val is not None:
-                    price = val
+            price = _parse_price_value(block.get(f"oil_{brand}_{suffix}"))
             if price is None or not (5 <= price <= 120):
                 continue
-
-            product_key = spec["fuel_product"]
-            if product_key in seen_products:
-                continue
-            seen_products.add(product_key)
 
             row = _TMPL_TH_DAILY.copy()
             row.update(
@@ -667,14 +701,15 @@ def fetch_th_eppo_retail_daily(cutoff: date) -> pd.DataFrame:
                     "effective_to": str(obs_date),
                     "observation_date": str(obs_date),
                     "source_url": _TH_RETAIL_URL,
-                    "notes": prod_text.strip() or None,
+                    "notes": f"{label} ({brand.upper()})",
                 }
             )
             row["observation_hash"] = make_hash(row)
             rows.append(row)
+            break
 
     if not rows:
-        print("  [th_eppo_daily] No rows parsed from page")
+        print("  [th_eppo_daily] No rows parsed from feed")
         return pd.DataFrame()
 
     print(f"  [th_eppo_daily] {len(rows)} rows fetched for {obs_date}")
@@ -832,11 +867,12 @@ def fetch_th_eppo_p04(cutoff: date) -> pd.DataFrame:
     print(f"  [th_eppo] Cutoff: {cutoff}")
 
     session = get_session()
+    p04_url = _discover_p04_url(session)
     try:
-        resp = session.get(_P04_URL, timeout=60)
+        resp = session.get(p04_url, timeout=60)
         resp.raise_for_status()
     except Exception as e:
-        print(f"  [th_eppo] Download error: {e}")
+        print(f"  [th_eppo] Download error for {p04_url}: {e}")
         return pd.DataFrame()
 
     content = resp.content
@@ -928,12 +964,24 @@ def fetch_th_eppo_p04(cutoff: date) -> pd.DataFrame:
 
 # ── EPPO NGV Bangkok ──────────────────────────────────────────────────────────
 
+# EPPO's 2026 rebuild deleted the retail-priceNGV spreadsheet (404). The same
+# Bangkok monthly NGV series now lives in an HTML table on the NGV price page,
+# one row per year (Buddhist era, with the AD year in parentheses) and twelve
+# monthly Baht/Kg columns.
+_NGV_URL = (
+    "https://www.eppo.go.th/data-energy-statistic/energy-price-th/"
+    "%e0%b8%a3%e0%b8%b2%e0%b8%84%e0%b8%b2-ngv/"
+)
+
+# "2569 (2026)" -> 2026; the parenthesised AD year is the reliable token.
+_NGV_YEAR_RE = re.compile(r"\((\d{4})\)")
+
 _TMPL_TH_NGV = make_template(
     country="Thailand",
     wb_iso3="THA",
     source_key="th_eppo_ngv_bangkok_2025",
     source_name="Thailand EPPO NGV Retail Prices — Bangkok",
-    source_url="https://www.eppo.go.th/images/petroleum/price/retail-priceNGV/NGVPrice.xls",
+    source_url=_NGV_URL,
     currency="THB",
     unit="kg",
     subnational_area="Bangkok",
@@ -944,11 +992,9 @@ _TMPL_TH_NGV = make_template(
     quality_group="regular",
 )
 
-_NGV_URL = "https://www.eppo.go.th/images/petroleum/price/retail-priceNGV/NGVPrice.xls"
-
 
 def fetch_thailand_eppo_ngv(cutoff: date) -> pd.DataFrame:
-    """Fetch Thailand EPPO NGV retail prices from Bangkok (monthly XLS)."""
+    """Fetch Thailand EPPO NGV retail prices from Bangkok (monthly HTML table)."""
     print("  [th_eppo_ngv] Fetching Thailand EPPO NGV data...")
     print(f"  [th_eppo_ngv] Cutoff: {cutoff}")
 
@@ -957,89 +1003,54 @@ def fetch_thailand_eppo_ngv(cutoff: date) -> pd.DataFrame:
         resp = session.get(_NGV_URL, timeout=60)
         resp.raise_for_status()
     except Exception as e:
-        print(f"  [th_eppo_ngv] Could not download XLS: {e}")
+        print(f"  [th_eppo_ngv] Could not fetch page: {e}")
         return pd.DataFrame()
 
-    try:
-        import xlrd  # noqa: F401
-
-        engine = "xlrd"
-    except ImportError:
-        engine = "openpyxl"
+    soup = BeautifulSoup(resp.content, "lxml")
+    table = None
+    for candidate in soup.find_all("table"):
+        if "Baht/Kg" in candidate.get_text(" ", strip=True):
+            table = candidate
+            break
+    if table is None:
+        print("  [th_eppo_ngv] No Baht/Kg table on page")
+        return pd.DataFrame()
 
     all_rows = []
-    try:
-        xf = pd.ExcelFile(BytesIO(resp.content), engine=engine)
-        for sheet in xf.sheet_names:
-            try:
-                raw = pd.read_excel(
-                    BytesIO(resp.content), sheet_name=sheet, header=None, engine=engine
-                )
-            except Exception:
+    for tr in table.find_all("tr"):
+        cells = [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])]
+        if not cells:
+            continue
+        year_match = _NGV_YEAR_RE.search(cells[0])
+        if not year_match:
+            continue
+        year = int(year_match.group(1))
+
+        # Twelve month columns follow the year label, January first.
+        for month, cell in enumerate(cells[1:13], start=1):
+            price = _parse_price_value(cell)
+            if price is None or not (5 <= price <= 30):
+                continue
+            obs_date = date(year, month, 1)
+            if obs_date <= cutoff:
                 continue
 
-            date_col = None
-            for col_idx in range(min(3, raw.shape[1])):
-                parsed = pd.to_datetime(raw.iloc[:, col_idx], errors="coerce")
-                if parsed.notna().sum() > 10:
-                    date_col = col_idx
-                    break
-
-            if date_col is None:
-                continue
-
-            raw["_date"] = pd.to_datetime(raw.iloc[:, date_col], errors="coerce")
-            raw_new = raw[raw["_date"].dt.date > cutoff].copy()
-
-            if raw_new.empty:
-                continue
-
-            price_col = None
-            for col_idx in range(raw.shape[1]):
-                if col_idx == date_col:
-                    continue
-                vals = pd.to_numeric(raw.iloc[:, col_idx], errors="coerce").dropna()
-                if vals.empty:
-                    continue
-                if vals.between(5, 30).sum() > 5:
-                    price_col = col_idx
-                    break
-
-            if price_col is None:
-                continue
-
-            for _, row in raw_new.iterrows():
-                obs_date = row["_date"].date()
-                try:
-                    price = float(row.iloc[price_col])
-                    if pd.isna(price) or not (5 <= price <= 30):
-                        continue
-                except (ValueError, TypeError):
-                    continue
-
-                r = _TMPL_TH_NGV.copy()
-                r.update(
-                    {
-                        "price_local": round(price, 4),
-                        "effective_from": str(obs_date),
-                        "effective_to": str(obs_date),
-                        "observation_date": str(obs_date),
-                        "source_url": _NGV_URL,
-                    }
-                )
-                r["observation_hash"] = make_hash(r)
-                all_rows.append(r)
-
-            if all_rows:
-                print(f"  [th_eppo_ngv] Sheet '{sheet}': {len(all_rows)} new rows")
-                break
-
-    except Exception as e:
-        if "zip" in str(e).lower() or "xlrd" in str(e).lower():
-            print("  [th_eppo_ngv] Legacy .xls requires xlrd: pip install xlrd>=2.0.1")
-        else:
-            print(f"  [th_eppo_ngv] Error parsing XLS: {e}")
+            r = _TMPL_TH_NGV.copy()
+            r.update(
+                {
+                    "price_local": round(price, 4),
+                    "effective_from": str(obs_date),
+                    "effective_to": str(obs_date),
+                    "observation_date": str(obs_date),
+                    "source_url": _NGV_URL,
+                }
+            )
+            r["observation_hash"] = make_hash(r)
+            all_rows.append(r)
 
     if not all_rows:
         print("  [th_eppo_ngv] No new rows")
-    return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
+        return pd.DataFrame()
+
+    print(f"  [th_eppo_ngv] {len(all_rows)} new rows")
+    return pd.DataFrame(all_rows)
