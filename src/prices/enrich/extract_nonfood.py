@@ -80,7 +80,8 @@ def extract_nonfood(
             for m in p.regex.finditer(text):
                 g = m.groupdict()
                 n = next(v for k, v in g.items() if k.startswith("n") and v)
-                n = int(n) if n.isdigit() else _WORD_N[n.lower()]
+                # re.I lets Turkish "ı"/"İ" match "i"; fold them back for the lookup.
+                n = int(n) if n.isdigit() else _WORD_N[n.lower().replace("\u0131", "i").replace("\u0307", "")]
                 out.append(n * (int(g["a"]) if g.get("a") else 1))
             text = p.regex.sub(" ", text)
         return out
