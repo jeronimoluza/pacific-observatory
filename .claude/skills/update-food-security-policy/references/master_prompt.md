@@ -466,6 +466,17 @@ Flag caveats, e.g.:
 
 # Regional coverage rules
 
+Every region's country universe is the slugs under `<region>.subregions`
+in `src/configs/regions.yaml`, and each country belongs to exactly one
+region's workbook. A country already having rows in a workbook does not
+put it in scope: Mauritania sat in MENAAP that way while regions.yaml
+puts it in SSA. Boundary cases: Mauritania is `ssa`; Djibouti and Malta
+are `menaap`. Malta is the one exception to regions.yaml, which still
+lists it under `eca.western_europe` because the prices pipeline keys
+its data paths there; the ECA pass skips Malta. A measure found for a
+country outside the region goes to that country's own region, not
+this workbook.
+
 ## EAP
 
 The country universe is every slug listed under `eap.subregions` in
@@ -504,7 +515,8 @@ relevant.
 
 ## MENAAP
 
-Middle East, North Africa, Afghanistan, and Pakistan. Wheat import
+Middle East, North Africa, Afghanistan, Pakistan per `menaap.subregions`
+in regions.yaml, plus Malta (see above) (Mauritania is SSA). Wheat import
 dependence, bread subsidy programs, and strategic reserve policy are the
 dominant channels.
 
@@ -516,7 +528,8 @@ from coverage-audit rows.
 
 ## SSA
 
-Sub-Saharan Africa. Fertilizer subsidy programs, maize export/import
+Sub-Saharan Africa per `ssa.subregions` in regions.yaml (Mauritania
+included, Djibouti excluded). Fertilizer subsidy programs, maize export/import
 restrictions, strategic grain reserves, drought and flood emergency
 responses, and pest outbreaks (fall armyworm, locusts) are the dominant
 channels. IPC / Cadre Harmonisé and FEWS NET are essential.

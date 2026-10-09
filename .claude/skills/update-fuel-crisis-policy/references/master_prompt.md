@@ -550,6 +550,17 @@ and what source confirms it. It should also flag caveats, such as:
 
 # Regional coverage rules
 
+Every region's country universe is the slugs under `<region>.subregions`
+in `src/configs/regions.yaml`, and each country belongs to exactly one
+region's workbook. A country already having rows in a workbook does not
+put it in scope: Mauritania sat in MENAAP that way while regions.yaml
+puts it in SSA. Boundary cases: Mauritania is `ssa`; Djibouti and Malta
+are `menaap`. Malta is the one exception to regions.yaml, which still
+lists it under `eca.western_europe` because the prices pipeline keys
+its data paths there; the ECA pass skips Malta. A measure found for a
+country outside the region goes to that country's own region, not
+this workbook.
+
 ## EAP
 
 The country universe is every slug listed under `eap.subregions` in
@@ -595,9 +606,9 @@ Typical SAR countries after exclusion:
 
 ## MENAAP
 
-Track Middle East, North Africa, Afghanistan, and Pakistan, according to
-the workbook's existing country list. Afghanistan and Pakistan belong
-here for this project's current division of labor.
+Track Middle East, North Africa, Afghanistan, Pakistan per `menaap.subregions`
+in regions.yaml, plus Malta (see above). Afghanistan and Pakistan belong
+here for this project's current division of labor. Mauritania is SSA.
 
 ## ECA
 
@@ -612,8 +623,8 @@ in the workbook as audit notes if useful.
 
 ## SSA
 
-Track Sub-Saharan Africa according to the workbook's existing country
-list. Include fuel price stabilization, subsidies, tax changes,
+Track Sub-Saharan Africa per `ssa.subregions` in regions.yaml
+(Mauritania included, Djibouti excluded). Include fuel price stabilization, subsidies, tax changes,
 rationing, utility support, import/supply measures, and emergency
 declarations where verified.
 
