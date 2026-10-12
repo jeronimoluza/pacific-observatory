@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: iqjersey_ci
+url: https://iqjersey.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: electronics
+archive_prefix: "iqjersey.com"
+archive_path_re: '^/(?:products|accessories)/[^/?]+$'
+throttle_group: shopify
+notes: |
+  iQ Jersey, Apple Premium Partner (Apple devices and accessories). Local: Jersey in-store service and Jersey branding on site. Priced in GBP.
+  Page family parsed: API (/products.json). Onboarded 2026-10-12 from the Channel Islands discovery list.

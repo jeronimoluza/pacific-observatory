@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ormerco_ci
+url: https://www.ormerco.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: other
+archive_prefix: "ormerco.com/product-page/"
+archive_path_re: '^/product-page/[^/?]+'
+notes: |
+  Ormerco, Jersey (JE3) gifts, cards, mugs and apparel with Channel Islands designs. Local: Jersey JE3 address on site. Priced in GBP.
+  Page family parsed: PDP (Wix store-products-sitemap.xml, schema.org JSON-LD). Onboarded 2026-10-12 from the Channel Islands discovery list.

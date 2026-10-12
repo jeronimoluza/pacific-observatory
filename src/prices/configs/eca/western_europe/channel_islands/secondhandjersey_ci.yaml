@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: secondhandjersey_ci
+url: https://secondhandjersey.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: marketplace
+archive_prefix: "secondhandjersey.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Second Hand Jersey, St Helier (JE2) second-hand furniture and household goods; API reports JEP, forced to GBP (par). Local: St Helier JE2 address on site. Priced in GBP.
+  Page family parsed: API (/wp-json/wc/store/v1/products). Onboarded 2026-10-12 from the Channel Islands discovery list.
