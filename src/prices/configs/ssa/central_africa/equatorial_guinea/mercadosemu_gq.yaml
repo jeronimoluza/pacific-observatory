@@ -8,7 +8,7 @@ language: es
 cadence: weekly
 channel: marketplace
 archive_prefix: mercadosemu.com/
-archive_path_re: '^https?://mercadosemu\.com/listing/[0-9a-f-]{36}/?$'
+archive_path_re: '^/listing/[0-9a-f-]{36}/?$'
 notes: |
   Probed 2026-10-12. Next.js user-classifieds marketplace for Equatorial
   Guinea (Malabo, Bata, all provinces; local city in every listing).
