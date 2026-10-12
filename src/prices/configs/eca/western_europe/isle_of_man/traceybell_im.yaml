@@ -1,0 +1,34 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://traceybell.co.uk/shop/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GBP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "traceybell_im"
+  base_url: "https://traceybell.co.uk"
+  currency: "GBP"
+  language: "en"
+  api_url: "https://traceybell.co.uk/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "traceybell.co.uk/shop/"
+archive_path_re: '^/shop/(?:[^/]+/){2,}[^/]+/?$'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, isle_of_man). Page family: API.
+  Tracey Bell, Isle of Man aesthetics, dental and skin clinic: online shop of
+  skincare (Obagi, Skinade, AQ Skin Solutions) and treatment courses.
+  WooCommerce Store API v1: 61 products, currency_code GBP,
+  currency_minor_unit 2 (5000 -> GBP 50.00), no zero prices. Locality: page
+  title 'Aesthetics Treatment Fees - Isle of Man'. The archive regex is
+  depth-based (product permalinks are /shop/<cat>/<sub>/<slug>/) and may also
+  admit deep category pages.

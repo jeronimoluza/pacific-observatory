@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sure_im
+url: "https://www.sure.com/isleofman/mobile/tech-deals/"
+language: en
+cadence: weekly
+channel: electronics
+archive_prefix: "www.sure.com/isleofman/mobile/"
+archive_path_re: '^/isleofman/mobile/(?:tech-deals|refurbished-phones)/?$'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, isle_of_man). Page family: listing
+  (product-card blocks on two pages; only the outright Buy Now price is
+  emitted, the 36-month instalment is skipped). Sure Isle of Man, the island's
+  incumbent telco and handset seller: Apple and Samsung phones, tablets,
+  watches, refurbished handsets, GBP. URL path is /isleofman/. robots.txt
+  Crawl-delay 5 honoured. The mobile plan tariffs on the same site are not
+  covered here. Common Crawl holds 23 /isleofman/mobile/* captures only in
+  CC-MAIN-2024-10.

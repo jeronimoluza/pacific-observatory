@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: escapebeauty_im
+url: "https://escapebeauty.co.im/"
+language: en
+cadence: weekly
+channel: other
+archive_prefix: "escapebeauty.co.im/"
+archive_path_re: '^/?$'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, isle_of_man). Page family: listing
+  (single homepage price list, ul.ro-option li "Treatment £NN").
+  Escape Beauty, Ramsey: home-based beauty salon, personal-care services
+  (facials, brows, lashes, nails, waxing). WooCommerce Store API returns 0
+  products, so prices come from the HTML price list. Common Crawl holds 0
+  captures for the host: bare host plus the live regex (homepage only).
