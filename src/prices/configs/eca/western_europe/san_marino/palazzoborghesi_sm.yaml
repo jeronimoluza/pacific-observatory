@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: palazzoborghesi_sm
+url: https://palazzo-borghesi.com/
+language: it
+currency: EUR
+cadence: weekly
+channel: fashion
+throttle_group: shopify
+archive_prefix: "palazzo-borghesi.com"
+archive_path_re: '^/(?:it-sm/)?products/[^/?]+/?$'
+notes: |
+  Palazzo Borghesi, Fashion House San Marino. Shopify, open /products.json, 84 products, EUR (Shopify.currency.active). Page family: API. Archive: /products/<handle> and /it-sm/products/<handle>.

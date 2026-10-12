@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: deli_sm
+url: https://www.deli.sm/
+language: it
+currency: EUR
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.deli.sm"
+archive_path_re: '^/(?:prodotto/[^/?]+|it/[^/?]+/[^/?]+-p\d+)/?$'
+notes: |
+  Delì San Marino (San Marino, .sm): perfumery, leather goods, footwear, watches. WooCommerce Store API v1, 997 products, EUR, prices in minor units. Page family: API. Archive: /prodotto/<slug>/ (2026 era) and /it/<brand>/<slug>-p<id> (2024 era).

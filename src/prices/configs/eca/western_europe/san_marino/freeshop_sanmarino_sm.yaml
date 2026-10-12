@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: freeshop_sanmarino_sm
+url: https://www.freeshop-sanmarino.sm/
+language: it
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "www.freeshop-sanmarino.sm/catalogo-prodotti/"
+archive_path_re: '^/catalogo-prodotti/(?:[^/?]+/)+p/[^/?]+$'
+notes: |
+  FreeShop San Marino (Centro Atlante, 47891 San Marino): duty-free electronics and household. Custom OpenCart with SEO URLs; div.product-item cards, tax-inclusive price. Page family: listing. Archive PDP: /catalogo-prodotti/<a>/<b>/.../p/<sku>-<slug> (one sampled in 2024-10).
