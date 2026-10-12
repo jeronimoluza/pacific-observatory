@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: merkado_cw
+url: https://merkado.cw/
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: merkado.cw/
+archive_path_re: '^/(car|real-estate)/[^/]+/?$'
+notes: |
+  Probed 2026-10-12. Next.js classifieds site for Curacao (cars and real
+  estate, rent and sale; every ad is in a Curacao neighbourhood). Plain
+  chrome124 fetch returns 200; robots.txt allows all but /api/. /sitemap.xml
+  lists ~230 /car/<slug> and ~345 /real-estate/<slug> ads; each server-renders
+  og:title and og:description with the price as "XCG 139.900,-" (also
+  JSON-LD Offer priceCurrency XCG). Currency XCG per the site (same
+  convention as mangusa_cw/connections_cw; countries.yaml still says ANG).
+  Real-estate names end in "for rent" / "for sale". Page family: PDP.
+  The archive regex excludes /real-estate/browse and /real-estate/in/<area>
+  only by the single-segment shape; the spider skips those two names.
+  Common Crawl index (collinfo.json) was unreachable during onboarding
+  (TLS EOF), so archive_prefix/archive_path_re come from the live URL shapes,
+  not from archived captures; re-run cc-weekly --shapes to confirm.
