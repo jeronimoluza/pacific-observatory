@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dashmebvi_vg
+url: https://dashmebvi.com/
+language: en
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: "dashmebvi.com/"
+archive_path_re: '^/[a-z0-9-]+/product/[a-z0-9-]+/?$'
+notes: |
+  Dash Me BVI: Virgin Gorda food and grocery delivery marketplace (default
+  address Spanish Town, BVI), multi-vendor menus (restaurants, groceries,
+  drinks), USD. Menu fragments come from POST /vendor/products/searchResults
+  (session cookie + CSRF token read off each vendor page). Test vendors skipped.
+  Probed 2026-10-12. Page family: API.
