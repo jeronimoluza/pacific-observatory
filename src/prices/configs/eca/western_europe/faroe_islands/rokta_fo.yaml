@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://rokta.fo/handil/"
+channel: cosmetics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fo
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "rokta_fo"
+  base_url: "https://rokta.fo"
+  currency: "DKK"
+  language: "fo"
+  api_url: "https://rokta.fo/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "rokta.fo/handil/"
+archive_path_re: '^/handil/[^/]+/[^/]+/[^/]+(/[^/]+)*/?$'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, faroe_islands). Page family: API. Rokta, Faroese skincare and cosmetics shop. 822 products. Product permalinks are /handil/<cat>/<sub>/<slug>/ so regex needs 3+ segments; some deep category listings may also match (approximate).
+  Store API reports DKK, minor unit 2. Probed with curl_cffi chrome124.

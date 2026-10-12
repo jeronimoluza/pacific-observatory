@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://simme.fo/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fo
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "simme_fo"
+  base_url: "https://simme.fo"
+  currency: "DKK"
+  language: "fo"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "simme.fo/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, faroe_islands). Page family: API. Simme Musikkhus, instruments and audio. meta.json country FO, DKK. 750+ products, many unavailable.
+  Probed with curl_cffi chrome124. Archive shape from local CC crawls.
+throttle_group: shopify
