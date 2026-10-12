@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mercadosemu_gq
+url: https://mercadosemu.com/
+language: es
+cadence: weekly
+channel: marketplace
+archive_prefix: mercadosemu.com/
+archive_path_re: '^/listing/[0-9a-f-]{36}/?$'
+notes: |
+  Probed 2026-10-12. Next.js user-classifieds marketplace for Equatorial
+  Guinea (Malabo, Bata, all provinces; local city in every listing).
+  Prices are integer FCFA (XAF) with "." thousands separators. Plain
+  chrome124 fetch returns 200, robots.txt allows /listing/. /sitemap.xml
+  lists ~110 /listing/<uuid> pages, each server-rendering og:title as
+  "<title> - <price> FCFA"; the spider reads that, plus the ?cat=<slug>
+  link for category. Listings with price 0 are skipped. Small, user-posted
+  catalog (phones, appliances, vehicles, fashion, services); the first
+  listing probed showed 0 FCFA for price-on-request items. Page family: PDP.
+  Common Crawl holds 0 captures of the host (8 crawls checked 2015-2026),
+  so archive_prefix is the bare host and archive_path_re the live regex.

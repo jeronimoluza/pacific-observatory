@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lukariboldi_sm
+url: https://www.lukariboldi.com/
+language: it
+currency: EUR
+cadence: weekly
+channel: fashion
+archive_prefix: "www.lukariboldi.com"
+archive_path_re: '^/prodotto/[^/?]+/?$'
+notes: |
+  Luka Riboldi San Marino: fashion, WooCommerce Store API v1, 243 products, EUR. Page family: API. Common Crawl holds 0 product pages for this host; bare host plus the live /prodotto/ permalink regex.

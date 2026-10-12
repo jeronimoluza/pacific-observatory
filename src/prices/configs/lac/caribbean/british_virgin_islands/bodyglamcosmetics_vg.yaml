@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bodyglamcosmetics_vg
+url: https://www.bodyglamcosmetics.com/
+language: en
+currency: USD
+cadence: weekly
+channel: cosmetics
+archive_prefix: "bodyglamcosmetics.com/"
+archive_path_re: '^/shop-\d+/[^/?]+/?$'
+notes: |
+  Body Glam Cosmetics (BVI): body care and cosmetics, ~25 PDPs under /shop-1/.
+  Wix storefront: sitemap.xml -> store-products-sitemap.xml -> schema.org
+  Product JSON-LD per PDP (priceCurrency USD) via the shared
+  JsonLdSitemapBaseSpider. Probed 2026-10-12. Page family: PDP.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pepia4home_aw
+url: https://www.pepia4home.com/
+language: en
+currency: AWG
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.pepia4home.com/product-page/"
+archive_path_re: '^/product\-page/[^/?]+'
+notes: |
+  Probed 2026-10-12 (onboard-20261012-aruba). Wix store of Pepia Est., wine and spirits distributor,
+  Schotlandstraat 42 Oranjestad (local). SitemapSpider over /store-products-sitemap.xml (~710 PDPs);
+  Schema.org Product JSON-LD gives name, offers.price, priceCurrency AWG. Common Crawl holds 696
+  /product-page/ captures (2026-39 only). Page family: PDP.

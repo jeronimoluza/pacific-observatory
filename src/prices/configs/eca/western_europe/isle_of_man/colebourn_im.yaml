@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: colebourn_im
+url: "https://www.colebourn.com/"
+language: en
+cadence: weekly
+channel: electronics
+archive_prefix: "www.colebourn.com/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, isle_of_man). Page family: both
+  (the spider parses category listing cards; PDPs live at /product/<slug>/).
+  Colebourn Isle of Man: electrical and electronics retailer (computers, TVs,
+  white goods, small appliances), 42 category pages. Custom WordPress theme;
+  the WooCommerce Store API route is 404, prices are server-rendered GBP in
+  span.price. Locality: site feed title 'Colebourn Isle of Man'. Common Crawl
+  holds 0 product captures (6 legacy .shtml captures only), so the archive
+  prefix is the bare host plus the live product regex.

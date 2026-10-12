@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: loop_ci
+url: https://www.loop.gg/
+language: en
+currency: GBP
+cadence: weekly
+channel: other
+archive_prefix: "loop.gg/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  LOOP Ltd, Guernsey furniture store (GY1). Local: Guernsey GY1 address on site. Priced in GBP.
+  Page family parsed: API (/wp-json/wc/store/v1/products). Onboarded 2026-10-12 from the Channel Islands discovery list.

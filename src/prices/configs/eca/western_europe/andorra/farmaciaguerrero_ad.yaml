@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmaciaguerrero_ad
+url: https://www.farmacia-guerrero.com/en/
+language: en
+currency: EUR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.farmacia-guerrero.com/"
+archive_path_re: '^/(?:(?:en|es|ca|fr)/)?[a-z0-9\-]+/[a-z0-9\-]+/?$'
+notes: |
+  Farmacia Guerrero, Andorra (AD500, +376). OpenCart clean-SEO; home-page menu walk. Page family: listing.
+  Archive caveat: clean-SEO OpenCart, so PDP and category URLs share one shape; archive_path_re also admits category listing pages (the OpenCart parse_html handles both).

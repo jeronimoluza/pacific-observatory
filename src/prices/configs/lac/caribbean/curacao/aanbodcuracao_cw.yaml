@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aanbodcuracao_cw
+url: https://aanbodcuracao.com/
+language: nl
+cadence: weekly
+channel: marketplace
+archive_prefix: aanbodcuracao.com/
+archive_path_re: '^/index\.php$'
+notes: |
+  Probed 2026-10-12. Osclass user-classifieds site for Curacao (second-hand
+  goods, vehicles, furniture, services). chrome124 returns 200 behind
+  Cloudflare, robots.txt allows everything. /index.php?page=search&iPage=N
+  paginates 20 ads per page (pages 1-5 return distinct sets); about half the
+  cards show "<n> ANG", the rest are "Bespreek met verkoper" or "Gratis" and
+  are skipped. Prices are ANG (site has not switched to XCG labels). Page
+  family: listing. The ad pages are /index.php?page=item&id=N (same path, id
+  in the query string; archive_path_re matches the path only).
+  Common Crawl index (collinfo.json) was unreachable during onboarding
+  (TLS EOF), so archive_prefix/archive_path_re come from the live URL shapes,
+  not from archived captures; re-run cc-weekly --shapes to confirm.

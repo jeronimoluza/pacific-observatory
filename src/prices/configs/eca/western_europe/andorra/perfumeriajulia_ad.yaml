@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: perfumeriajulia_ad
+url: https://www.perfumeriajulia.ad/
+language: ca
+currency: EUR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "www.perfumeriajulia.ad/"
+archive_path_re: '^/(?:[a-z]{2}/)?\d+-[a-z0-9\-]*\.html$'
+notes: |
+  Perfumeria Julia, Andorra (.ad domain, +376 contact numbers). PrestaShop custom theme, article.product-miniature cards, id-slug category walk. Page family: listing; PDPs are /<id>-<slug>.html (CC holds both PDPs and brand pages like /101_caron-parfums, excluded).

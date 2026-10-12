@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fsgcshop_sm
+url: https://shop.fsgc.sm/
+language: it
+currency: EUR
+cadence: weekly
+channel: fashion
+archive_prefix: "shop.fsgc.sm"
+archive_path_re: '^/(?:en/)?prodotto/[^/?]+/?$|^/shop/[^/]+/[^/?]+/?$'
+notes: |
+  Official shop of the San Marino Football Federation. WooCommerce Store API on the non-versioned route /wp-json/wc/store/products (v1 route 404s), only 6 products, EUR. Page family: API. Archive: /prodotto/<slug>/, /en/prodotto/<slug>/, old /shop/<cat>/<slug>/.

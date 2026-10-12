@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://einstakt.com/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "einstakt_fo"
+  base_url: "https://einstakt.com"
+  currency: "DKK"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "einstakt.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, faroe_islands). Page family: API. Einstakt, Faroese wool fashion label. meta.json country FO, DKK. 91 products.
+  Probed with curl_cffi chrome124. Archive shape from local CC crawls.
+throttle_group: shopify

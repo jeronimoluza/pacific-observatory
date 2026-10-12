@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: reuseit_ci
+url: https://reuseit.je/
+language: en
+currency: GBP
+cadence: weekly
+channel: electronics
+archive_prefix: "reuseit.je/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Reuseit, Jersey refurbished IT equipment and laptops. Local: .je domain, Jersey address on site. Priced in GBP.
+  Page family parsed: API (/wp-json/wc/store/v1/products). Onboarded 2026-10-12 from the Channel Islands discovery list.

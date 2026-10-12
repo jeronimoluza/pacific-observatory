@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://handil.el-in.fo/"
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: fo
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "elin_fo"
+  base_url: "https://handil.el-in.fo"
+  currency: "DKK"
+  language: "fo"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "handil.el-in.fo/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, faroe_islands). Page family: API. El-in net shop: lamps, kitchen appliances, electrical goods. meta.json country FO, DKK. 750+ products.
+  Probed with curl_cffi chrome124. Archive shape from local CC crawls.
+throttle_group: shopify

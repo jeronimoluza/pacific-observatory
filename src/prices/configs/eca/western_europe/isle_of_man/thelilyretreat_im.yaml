@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: thelilyretreat_im
+url: "https://www.thelilyretreatbeautyroom.co.uk/store"
+language: en
+cadence: weekly
+channel: cosmetics
+archive_prefix: "www.thelilyretreatbeautyroom.co.uk/store/"
+archive_path_re: '^/store/p\d+/.+'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, isle_of_man). Page family: PDP
+  (seeded from sitemap.xml, category pages /store/cN are listings).
+  The Lily Retreat Skin and Beauty Rooms, Peel: Et Al makeup, Medik8
+  skincare, memberships and treatment vouchers. Weebly store, GBP.
+  Locality: page copy 'Shop Et Al makeup in Peel, Isle of Man'. Common Crawl
+  holds product pages only in CC-MAIN-2026-39 (114 /store/pN captures).

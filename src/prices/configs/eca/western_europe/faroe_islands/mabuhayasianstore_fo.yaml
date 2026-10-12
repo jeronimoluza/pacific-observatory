@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://mabuhayasianstore.fo/shop/"
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "mabuhayasianstore_fo"
+  base_url: "https://mabuhayasianstore.fo"
+  currency: "DKK"
+  language: "en"
+  api_url: "https://mabuhayasianstore.fo/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "mabuhayasianstore.fo/"
+archive_path_re: '^/shop/[^/]+/[^/]+/?$'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, faroe_islands). Page family: API. Mabuhay Asian Store, Asian groceries with delivery from 75 DKK on a .fo domain. 769 products, all priced. 0 CC captures so archive regex is the live product shape.
+  Store API reports DKK, minor unit 2. Probed with curl_cffi chrome124.

@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: daixinrestaurant_cw
+url: https://www.daixinrestaurant.com/nl/menu
+language: nl
+cadence: weekly
+channel: other
+archive_prefix: daixinrestaurant.com/
+archive_path_re: '^/(nl|en)/menu/?$'
+notes: |
+  Probed 2026-10-12. Single Willemstad Asian/Chinese/Caribbean take-away
+  restaurant (Nieuwe Caracasbaaiweg 13) on the Oracle Food Booking storefront.
+  chrome124 returns 200. The /nl/menu page embeds a Restaurant JSON-LD block
+  whose menu.hasMenuSection[].hasMenuItem[] lists 62 dishes with Offer price
+  in ANG (e.g. Kroepoek 2.5, Sate 6). Small catalog: one restaurant menu
+  (COICOP 11.1.1). Item URLs are menu-page anchors built from section+name.
+  Page family: PDP (menu page).
+  Common Crawl index (collinfo.json) was unreachable during onboarding
+  (TLS EOF), so archive_prefix/archive_path_re come from the live URL shapes,
+  not from archived captures; re-run cc-weekly --shapes to confirm.

@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_prestashop_configured
+url: "https://www.navia.fo/en/"
+channel: other
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: en
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "navia_fo"
+  home_url: "https://www.navia.fo/en/"
+  currency: "DKK"
+  language: "en"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "navia.fo/"
+archive_path_re: '^/(en|fo|da)/[^/]+/\d+-[^/]+\.html$'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, faroe_islands). Page family: both.
+  Navia, Faroese yarn/wool maker and knitting patterns. PrestaShop, DKK.
+  Archive PDPs under /en|/fo|/da/<cat>/<id>-<slug>.html.

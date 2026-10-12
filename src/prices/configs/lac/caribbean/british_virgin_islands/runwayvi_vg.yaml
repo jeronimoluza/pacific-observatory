@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: runwayvi_vg
+url: https://runwayvi.com/
+language: en
+currency: USD
+cadence: weekly
+channel: fashion
+archive_prefix: "runwayvi.com/"
+archive_path_re: '^(?:/en-vg)?/(?:collections/[^/?]+/)?products/[^/?]+/?$'
+throttle_group: shopify
+notes: |
+  Runway Couture & Shoetique, Tortola BVI (284 phone numbers, pick-up policy).
+  Shopify /products.json, 9 products at probe time (2026-10-12), USD. Small
+  catalog. Page family: API.

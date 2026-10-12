@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: generic_shopify_configured
+url: "https://scentsofman.com/"
+channel: cosmetics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: GBP
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "scentsofman_im"
+  base_url: "https://scentsofman.com"
+  currency: "GBP"
+  language: "en"
+  products_path: "/products.json"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "scentsofman.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, isle_of_man). Page family: API.
+  Scents of Man: Isle of Man independent perfume house and skincare maker
+  (perfume, bath boxes, haircare). Shopify; /products.json 75 products on
+  page 1, none on page 2, GBP, prices 110.00 etc. Locality: about-page text
+  states it is based on the Isle of Man. Probed with curl_cffi chrome124.
+  CC archive: /products/* only (58 captures 2025-26, 2 in 2021-31).
+throttle_group: shopify

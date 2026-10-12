@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vicrown_vg
+url: https://www.vicrown.store/
+language: en
+currency: USD
+cadence: weekly
+channel: fashion
+archive_prefix: "vicrown.store/"
+archive_path_re: '^/product-page/[^/?]+/?$'
+notes: |
+  V.I. Crown (Tortola, British Virgin Islands) clothing, ~9 PDPs.
+  Wix storefront: sitemap.xml -> store-products-sitemap.xml -> schema.org
+  Product JSON-LD per PDP (priceCurrency USD) via the shared
+  JsonLdSitemapBaseSpider. Probed 2026-10-12. Page family: PDP.

@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: generic_woo_configured
+url: "https://www.steinum.net/shop/"
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: DKK
+cadence: weekly
+coicop_codes: null
+active: true
+max_items: null
+start_urls: null
+spider_kwargs:
+  source_label: "steinum_fo"
+  base_url: "https://www.steinum.net"
+  currency: "DKK"
+  language: "en"
+  api_url: "https://www.steinum.net/wp-json/wc/store/v1/products"
+scrapy_settings:
+  CONCURRENT_REQUESTS_PER_DOMAIN: 1
+  DOWNLOAD_DELAY: 2.0
+archive_prefix: "steinum.net/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Onboarded 2026-10-12 (discovery-onboard, faroe_islands). Page family: API. Steinum, Faroese knitwear and home decor brand (Faroe Islands product tags). 132 products.
+  Store API reports DKK, minor unit 2. Probed with curl_cffi chrome124.

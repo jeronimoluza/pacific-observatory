@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: profumeriasimoneshop_sm
+url: https://www.profumeriasimoneshop.com/
+language: it
+currency: EUR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "www.profumeriasimoneshop.com"
+archive_path_re: '^/[a-z\-]+/\d+-[a-z0-9\-]+(?:\.html)?$'
+notes: |
+  Profumeria Simone: perfumery, cosmetics, watches, jewellery; San Marino shop since 1978. PrestaShop, category walk with ?page=N, article.product-miniature microdata. Page family: listing. Archive PDPs: /<category>/<id>-<slug>(.html).

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mypadci_ci
+url: https://mypadci.com/
+language: en
+currency: GBP
+cadence: weekly
+channel: other
+archive_prefix: "mypadci.com"
+archive_path_re: '^/products?/[^/?]+$'
+throttle_group: shopify
+notes: |
+  PADCI, St Helier (JE2) furniture, beds and mattresses. Local: St Helier JE2 address on site. Priced in GBP.
+  Page family parsed: API (/products.json). Onboarded 2026-10-12 from the Channel Islands discovery list.

@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: viva_ci
+url: https://viva.je/
+language: en
+currency: GBP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "viva.je/meal/"
+archive_path_re: '^/meal/[^/?]+'
+notes: |
+  Viva, Jersey meal-subscription delivery (few priced plans; most API entries are zero-price vouchers/add-ons). Local: Jersey-only delivery. Priced in GBP.
+  Page family parsed: API (/wp-json/wc/store/v1/products). Onboarded 2026-10-12 from the Channel Islands discovery list.

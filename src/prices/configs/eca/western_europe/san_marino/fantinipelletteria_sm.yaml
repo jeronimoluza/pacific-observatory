@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fantinipelletteria_sm
+url: https://www.fantinipelletteria.it/
+language: it
+currency: EUR
+cadence: weekly
+channel: fashion
+archive_prefix: "www.fantinipelletteria.it"
+archive_path_re: '^/(?!shop/|cart/|my-account|chi-siamo|pagamento|resi|checkout|contatti)[a-z0-9\-]+/?$'
+notes: |
+  Fantini Pelletteria: leather goods; shop at Contrada dei Magazzeni 23/25, San Marino (COE SM29805, e-commerce authorisation 925). WooCommerce Store API v1, 1327 products, EUR; chrome124/120 refused, safari17_0 pinned. Page family: API. Archive: PDPs are root slugs (/<slug>/); regex also matches some category slugs, unavoidable.

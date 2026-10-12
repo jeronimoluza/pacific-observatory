@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dluxcosmeticsbvi_vg
+url: https://www.dluxcosmeticsbvi.com/
+language: en
+currency: USD
+cadence: weekly
+channel: cosmetics
+archive_prefix: "dluxcosmeticsbvi.com/"
+archive_path_re: '^/product-page/[^/?]+/?$'
+notes: |
+  DLux Cosmetics BVI, Tortola: cosmetics and skincare, ~125 PDPs in the store sitemap.
+  Wix storefront: sitemap.xml -> store-products-sitemap.xml -> schema.org
+  Product JSON-LD per PDP (priceCurrency USD) via the shared
+  JsonLdSitemapBaseSpider. Probed 2026-10-12. Page family: PDP.
