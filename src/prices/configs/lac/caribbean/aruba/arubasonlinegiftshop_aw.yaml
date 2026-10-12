@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: arubasonlinegiftshop_aw
+url: https://www.arubasonlinegiftshop.com/
+language: en
+currency: AWG
+cadence: weekly
+channel: other
+archive_prefix: "www.arubasonlinegiftshop.com/product/"
+archive_path_re: '^/product/\d+/[^/?]+'
+notes: |
+  Probed 2026-10-12 (onboard-20261012-aruba). JouwWeb/Jimdo webshop, AWG, delivers in Aruba (Aruba
+  WhatsApp +297). SitemapSpider over /sitemap.xml (~444 /product/<id>/<slug> PDPs); price from
+  meta itemprop=price/priceCurrency, name from h1 itemprop=name. Gifts, clothing, accessories.
+  Common Crawl holds 110 /product/N captures (2026-39 only). Page family: PDP.
