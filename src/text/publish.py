@@ -9,7 +9,6 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
-TEXT_CONFIGS_DIR = PROJECT_ROOT / "src" / "text" / "configs"
 DASHBOARD_DATA_DIR = OUTPUT_DIR / "dashboard_data"
 DASHBOARD_JSON = DASHBOARD_DATA_DIR / "dashboard_data.json"
 
@@ -92,11 +91,10 @@ def _discover_units(region=None, subregion=None, country=None):
                 ctry = country_dir.name
                 if not (country_dir / "epu" / "epu.csv").exists():
                     continue
-                if (
-                    known is not None
-                    and ctry not in known
-                    and not (TEXT_CONFIGS_DIR / rgn / sub / ctry).is_dir()
-                ):
+                # Config folders outside regions.yaml (`pacific`: regional
+                # Pacific outlets) are built and counted in their subregion's
+                # aggregate, but are not countries, so they get no entry here.
+                if known is not None and ctry not in known:
                     continue
 
                 if region and region != rgn:
@@ -677,6 +675,7 @@ def run_publish(
         return
 
     regions_in_scope = sorted({u["region"] for u in units})
+    missing_addons = []
     for rgn in regions_in_scope:
         rgn_units = [u for u in units if u["region"] == rgn]
         click.echo(f"  Building {rgn}/ panel from outputs/text/...")
@@ -693,5 +692,21 @@ def run_publish(
         except (FileNotFoundError, ValueError) as exc:
             click.echo(f"  Policy dashboard for {rgn}: {exc}")
             continue
-        if fcp_html is not None:
+        if fcp_html is None:
+            missing_addons.append(rgn)
+        else:
             click.echo(f"  Written: {fcp_html.relative_to(PROJECT_ROOT)}")
+
+    if missing_addons:
+        from text.plotting.small_dashboard_integrated_w_policy import _addon_path
+
+        lines = [
+            f"  {r}: {_addon_path(r, tracker).relative_to(PROJECT_ROOT)}"
+            f"  (fix: po text build-policy-addons --region {r}"
+            + (f" --tracker {tracker}" if tracker else "")
+            + ")"
+            for r in missing_addons
+        ]
+        raise click.ClickException(
+            "Policy dashboard addon missing, nothing rendered for:\n" + "\n".join(lines)
+        )

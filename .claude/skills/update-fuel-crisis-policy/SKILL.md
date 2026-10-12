@@ -8,6 +8,10 @@ description: "Update the regional Fuel Crisis Policy trackers and regenerate the
 Refresh the regional Fuel Crisis Policy trackers and rebuild the standalone
 HTML dashboards that the `publish` command embeds as iframe srcdoc.
 
+## Corpus pass and refresh-text-region
+
+A corpus pass over collected news exists (`po text policy-discover | policy-slice | policy-shard | policy-assemble | policy-merge-workbook`, prompt `src/text/policy/extract_prompt.md`); it writes rows with Provenance=corpus. `refresh-text-region` calls it per region for the fuel tracker, then runs the research below for what the corpus missed. Running this skill alone is the websearch-only path.
+
 ## When this skill applies
 
 - Update policy data for one region (`eap | eca | menaap | sar | lac | ssa`)
@@ -89,6 +93,18 @@ Region-specific rules the converter enforces on top of that:
 Save back to the same file (`<today>/<region>.xlsx`, no date suffix). The
 dated editions are the version log; every backup goes to `fuel/backups/`,
 never next to a workbook.
+
+**Past-year rows are permanent.** Never delete or retitle a row dated before
+the current year: those are verified history from discovery and lookback
+passes, and the dashboard's timeline is built from them. Any pass that finds
+historical measures (corpus discovery, a lookback, a backfill) writes its rows
+into today's edition workbook the same day, with a `Provenance` value naming
+the pass. Never leave them in a side folder (`_lookback*/`,
+`policy_tracker_extended/`) to merge later. EAP lost 148 verified 2010-2025
+measures that way in Sep 2026. `build-policy-addons` now refuses to build when
+the newest edition lacks a past-year row the previous edition holds. Pass
+`--allow-history-drop` only for a deliberate removal (a contamination fix, a
+true duplicate), and record each one in `Update_Audit`.
 
 ## Step 2 — Verify the edition
 

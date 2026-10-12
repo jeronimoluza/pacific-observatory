@@ -37,3 +37,5 @@ cleaning:
 
 max_pages: null
 max_articles: null
+# Disabled 2026-10-07: same WP REST feed as mexico/infomercado_net
+enabled: false

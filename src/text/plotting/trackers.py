@@ -293,6 +293,15 @@ def latest_workbook(tracker_root: Path, region: str) -> Path | None:
     return None
 
 
+def previous_workbook(tracker_root: Path, workbook: Path) -> Path | None:
+    """The same region's workbook in the newest edition older than ``workbook``'s."""
+    for edition in _editions(tracker_root):
+        path = edition / workbook.name
+        if edition.name < workbook.parent.name and path.exists():
+            return path
+    return None
+
+
 def start_edition(tracker_root: Path, date: dt.date | None = None) -> Path:
     """Today's edition folder, created by carrying every region's newest
     workbook forward so the newest folder is always a complete set."""

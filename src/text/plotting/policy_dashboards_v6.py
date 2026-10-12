@@ -102,6 +102,11 @@ def has_v6_columns(rows: List[Dict[str, str]]) -> bool:
     return any(_clean(r.get("Category", "")) for r in rows)
 
 
+# The dashboard compares the last ten years. Older rows stay in the workbooks,
+# which keep all history, but are left out of the page.
+YEARS_SHOWN = 10
+
+
 def build_v6_dashboard_data(
     rows: List[Dict[str, str]],
     region_cfg: Dict[str, Any],
@@ -191,6 +196,13 @@ def build_v6_dashboard_data(
             f"({overlap} land in a taxonomy cell the workbook already uses)"
         )
 
+    first_year = dt.date.today().year - YEARS_SHOWN + 1
+    older = sum(1 for p in policies if (p.get("onset_year") or first_year) < first_year)
+    policies = [
+        p for p in policies if (p.get("onset_year") or first_year) >= first_year
+    ]
+    print(f"  window: {first_year}-{dt.date.today().year}; left out {older} older rows")
+
     present = {p["category"] for p in policies}
     categories_order = [c for c in CATEGORY_DISPLAY if c in present]
     unknown = sorted(present - set(CATEGORY_DISPLAY))
@@ -239,6 +251,7 @@ def build_v6_dashboard_data(
         "dashboard_version": "policy_dashboards_v6",
         "region": region_cfg.get("display_name", region_cfg.get("key", "Region")),
         "included_rows": len(policies),
+        "first_year_shown": first_year,
     }
     if excluded_count:
         metadata["excluded_rows"] = excluded_count
@@ -341,7 +354,6 @@ def make_v6_html(
     <h1 id=\"chartTitle\" class=\"chart-title\"></h1>
     <div class=\"chart-subtitle\" id=\"subtitle\"></div>
     <div class=\"yc-controls\">
-      <label><input type=\"checkbox\" id=\"ycDiscovered\" checked> Show measures found in news</label>
       <label><input type=\"checkbox\" id=\"ycSqrt\"> Square-root scale (makes the thin early years readable)</label>
     </div>
     <div class=\"panel-split\">
@@ -358,7 +370,7 @@ def make_v6_html(
         <div class=\"detail-card\" id=\"detailCard\"><h2>Policy details</h2><p>Click a bar segment to list the measures it holds here.</p></div>
       </aside>
     </div>
-    <div class=\"note\">Note: bar height is the number of distinct measures dated to that year; colour is the policy category and each segment within a category is one subcategory. The axis begins at the oldest measure in the current view -- scroll left for earlier years. Measures found in the news corpus are dated from the article text and have not been verified against an official source; untick the box above to see tracker rows only.</div>
+    <div class=\"note\">Note: bar height is the number of distinct measures dated to that year; colour is the policy category and each segment within a category is one subcategory. The chart shows the last ten years. Measures found in the news corpus are dated from the article text and have not been verified against an official source.</div>
   </div>
 </div>
 <script>
