@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmaciamiro_ad
+url: https://www.farmaciamiro.com/
+language: ca
+currency: EUR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.farmaciamiro.com/producte/"
+archive_path_re: '^/producte/[^/?]+/?$'
+notes: |
+  Farmacia Miro (Roser Miro), Andorra (AD500, +376). Open WooCommerce Store API, EUR, minor unit 2, about 110 products. Page family: API.

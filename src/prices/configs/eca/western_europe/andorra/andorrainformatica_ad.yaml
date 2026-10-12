@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: andorrainformatica_ad
+url: https://www.andorrainformatica.com/
+language: es
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "www.andorrainformatica.com/"
+archive_path_re: '^/[a-z0-9\-]+/\d+-[a-z0-9\-]+(?:\.html)?$'
+notes: |
+  Andorra Informatica, Andorra (+376). PrestaShop, id-slug category walk, article.product-miniature cards. Page family: listing; PDPs are /<category>/<id>-<slug> (.html suffix only in some eras).

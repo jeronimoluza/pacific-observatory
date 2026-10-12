@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: eternalandorra_ad
+url: https://eternalandorra.pro/
+language: ca
+currency: EUR
+cadence: weekly
+channel: fashion
+archive_prefix: "eternalandorra.pro/"
+archive_path_re: '^/(?:tienda/[a-z0-9\-]+|[a-z0-9\-]+/tienda)/[a-z0-9\-]+/[a-z0-9\-]+/?$'
+notes: |
+  Eternal Andorra, Andorra (Inter Escaldes, AD500). Official Joma sportswear distributor and club merchandise. Open WooCommerce Store API, EUR, minor unit 2, about 30 products. Page family: API.

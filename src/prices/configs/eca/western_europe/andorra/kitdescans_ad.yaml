@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kitdescans_ad
+url: https://kitdescans.com/
+language: ca
+currency: EUR
+cadence: weekly
+channel: other
+archive_prefix: "kitdescans.com/"
+archive_path_re: '^/(?!(?:es|en|fr)/)[a-z0-9\-]+/[a-z0-9\-]+$|^/(?:es|en|fr)/[a-z0-9\-]+/[a-z0-9\-]+$|^/\d+/detall_producte-\d+-[a-z]{2}/[^/]+\.html$'
+notes: |
+  Kit d'Ans, Andorra (AD500 address, +376). Furniture and bedding. PrestaShop iqit theme with clean category URLs; top-level single-segment menu links used as categories. Page family: listing; PDPs are /<category>/comprar-...-a-andorra (and es/en/fr locale variants).

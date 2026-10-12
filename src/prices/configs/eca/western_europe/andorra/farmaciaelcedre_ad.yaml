@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmaciaelcedre_ad
+url: https://www.farmaciaelcedre.com/
+language: es
+currency: EUR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.farmaciaelcedre.com/"
+archive_path_re: '^/[^/?]+\.html$'
+notes: |
+  Farmacia El Cedre, Andorra (AD500, +376). PrestaShop iqit theme with clean category URLs; top-level menu links used as categories. Page family: listing; PDPs are /<slug>.html.

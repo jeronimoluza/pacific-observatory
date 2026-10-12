@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmaciapiolets_ad
+url: https://www.farmaciapiolets.com/
+language: es
+currency: EUR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.farmaciapiolets.com/"
+archive_path_re: '^/[a-z0-9\-]+(?:/[a-z0-9\-]+)?/?$'
+notes: |
+  Farmacia Piolets, Andorra (AD500, +376). OpenCart clean-SEO; home-page menu walk. Page family: listing.
+  Archive caveat: clean-SEO OpenCart, so PDP and category URLs share one shape; archive_path_re also admits category listing pages (the OpenCart parse_html handles both).
