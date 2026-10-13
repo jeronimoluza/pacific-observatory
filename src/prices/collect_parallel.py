@@ -36,7 +36,7 @@ from prices.writers import output_path_for
 
 logger = logging.getLogger(__name__)
 
-MIN_FREE_GB = 10
+MIN_FREE_GB = 5
 
 # A measured runtime must outrank a footprint guess, and footprints are byte
 # counts, so the offset has to sit above any plausible directory size.
