@@ -26,6 +26,7 @@ import scrapy
 logger = logging.getLogger(__name__)
 
 _SITEMAP = "https://priceoye.pk/sitemap/sitemap-product.xml"
+_SITEMAP_ATTEMPTS = 10
 _LOC_RE = re.compile(r"<loc>(https://priceoye\.pk/[^<]+)</loc>")
 _LDJSON_RE = re.compile(
     r'<script type="application/ld\+json">\s*(.*?)\s*</script>',
@@ -47,9 +48,23 @@ class PriceoyePkSpider(scrapy.Spider):
     }
 
     async def start(self):
-        yield scrapy.Request(_SITEMAP, callback=self.parse_sitemap)
+        yield self._sitemap_request(1)
+
+    def _sitemap_request(self, attempt):
+        return scrapy.Request(
+            _SITEMAP,
+            callback=self.parse_sitemap,
+            dont_filter=True,
+            meta={"handle_httpstatus_list": [404], "attempt": attempt},
+        )
 
     def parse_sitemap(self, response):
+        if response.status == 404:
+            attempt = response.meta["attempt"]
+            logger.warning("priceoye_pk: sitemap 404 (attempt %d)", attempt)
+            if attempt < _SITEMAP_ATTEMPTS:
+                yield self._sitemap_request(attempt + 1)
+            return
         urls = sorted(set(_LOC_RE.findall(response.text)))
         logger.info("priceoye_pk: %d product URLs in sitemap", len(urls))
         for url in urls:

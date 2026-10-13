@@ -9,7 +9,13 @@ MagentoGraphQLBaseSpider -- it crawls the server-rendered Swissup Breeze
 category listing HTML directly (a standalone spider, not the shared Magento
 base, since neither of its two surfaces fit here).
 
-Each category listing page embeds one clean per-tile GTM datalayer blob:
+Re-platformed ~2026-10-07 to a headless front end (Magento now behind
+api.kontakt.az): the GTM tiles below are gone, so name/price/URL come from
+the server-rendered `product-card` markup, out-of-stock cards (no price)
+are skipped, and product_id is the URL slug (no numeric id in the HTML).
+
+Old (pre-2026-10) markup -- each category listing page embedded one clean
+per-tile GTM datalayer blob:
   <div class="prodItem product-item" id="67871" data-sku="TM-DG-SBP-1105-SM-2468"
        data-gtm='{"item_name":"iPhone 15 128 GB Blue","item_id":"...",
                   "item_brand":"Apple","price":1819.99,"item_category":"Smartfonlar",
@@ -37,7 +43,6 @@ in the time budget) -- thin but real; not an exhaustive crawl.
 from __future__ import annotations
 
 import html
-import json
 import logging
 import re
 from datetime import datetime, timezone
@@ -46,12 +51,11 @@ import scrapy
 
 logger = logging.getLogger(__name__)
 
-_TILE_RE = re.compile(
-    r'<div class="prodItem product-item" id="(\d+)" data-sku="([^"]*)" data-gtm=\'([^\']+)\''
-)
-_URL_RE = re.compile(
-    r'<a href="(https://kontakt\.az/[^"]+)" title="[^"]*" data-url-prolabels'
-)
+_CARD_SPLIT_RE = re.compile(r'(?=<div class="product-card[ "])')
+_HREF_RE = re.compile(r'class="product-card__name-row" href="(/[^"?]+)"')
+_TITLE_RE = re.compile(r'class="product-card__title">([^<]+)<')
+_PRICE_RE = re.compile(r'<span class="product-card__price">([\d.,]+) ₼<')
+_CATEGORY_RE = re.compile(r'<h1 class="category-page__title">([^<]+)<')
 
 _CATEGORIES = (
     "telefoniya/smartfonlar",
@@ -90,22 +94,18 @@ class KontaktAzSpider(scrapy.Spider):
         slug = response.meta["slug"]
         page = response.meta["page"]
 
-        tiles = _TILE_RE.findall(response.text)
-        urls = _URL_RE.findall(response.text)
-        n = min(len(tiles), len(urls))
-        logger.info(
-            f"kontakt_az: {slug} page={page} tiles={len(tiles)} urls={len(urls)}"
-        )
+        cards = _CARD_SPLIT_RE.split(response.text)[1:]
+        cat_m = _CATEGORY_RE.search(response.text)
+        category = html.unescape(cat_m.group(1)).strip() if cat_m else None
+        logger.info(f"kontakt_az: {slug} page={page} cards={len(cards)}")
 
         scraped_at = datetime.now(timezone.utc).isoformat()
-        for i in range(n):
-            product_id, sku, gtm_raw = tiles[i]
-            url = urls[i]
-            item = self._parse_item(product_id, sku, gtm_raw, url, scraped_at)
+        for card in cards:
+            item = self._parse_item(card, category, scraped_at)
             if item is not None:
                 yield item
 
-        if n > 0 and page < MAX_PAGES:
+        if cards and page < MAX_PAGES:
             nxt = page + 1
             yield scrapy.Request(
                 f"https://kontakt.az/{slug}?p={nxt}",
@@ -114,28 +114,22 @@ class KontaktAzSpider(scrapy.Spider):
             )
 
     def _parse_item(
-        self, product_id: str, sku: str, gtm_raw: str, url: str, scraped_at: str
+        self, card: str, category: str | None, scraped_at: str
     ) -> dict | None:
-        try:
-            gtm = json.loads(html.unescape(gtm_raw))
-        except ValueError:
+        href_m = _HREF_RE.search(card)
+        title_m = _TITLE_RE.search(card)
+        price_m = _PRICE_RE.search(card)
+        if not (href_m and title_m and price_m):
             return None
-
-        name = gtm.get("item_name")
-        price = gtm.get("price")
-        if not name or price is None:
-            return None
-
-        category = gtm.get("item_category2") or gtm.get("item_category") or None
 
         return {
-            "product_id": product_id,
-            "product_name": html.unescape(str(name)).strip()[:500],
+            "product_id": href_m.group(1).strip("/"),
+            "product_name": html.unescape(title_m.group(1)).strip()[:500],
             "category": category,
-            "price": str(price),
+            "price": price_m.group(1).replace(",", ""),
             "currency": self.currency,
             "available": True,
-            "url": url,
+            "url": f"https://kontakt.az{href_m.group(1)}",
             "language": self.language,
             "scraped_at_utc": scraped_at,
         }

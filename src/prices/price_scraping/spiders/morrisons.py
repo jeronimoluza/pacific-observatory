@@ -56,7 +56,7 @@ _BASE = "https://groceries.morrisons.com"
 _CATEGORY_LIST_PATH = Path(__file__).parent / "_morrisons_categories.txt"
 
 _BLOCK_SPLIT_RE = re.compile(r'(?=data-test="fop-body")')
-_HREF_RE = re.compile(r'href="(/products/[^"]+/(\d+))"')
+_HREF_RE = re.compile(r'href="(/products/[^"?]+/(\d+))[?"]')
 _TITLE_RE = re.compile(r'data-test="fop-title">([^<]+)<')
 _PRICE_RE = re.compile(r'data-test="fop-price">£([0-9]+\.[0-9]{2})')
 
