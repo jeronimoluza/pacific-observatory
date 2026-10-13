@@ -18,5 +18,7 @@ notes: |
   walks the category tree and skips out-of-stock cards that have no displayed
   price. chrome124 impersonation is pinned for the Cloudflare edge. COICOP is
   left to the classifier under the corrected all-consumer-products policy.
+  Leaves paginate with ?page=N (6 cards/page, windowed links); the spider
+  follows every page link (fixed 2026-10-13, it read page 1 only before).
   No archive fields are set pending later CDX measurement.
 

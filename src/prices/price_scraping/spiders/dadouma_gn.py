@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 _BASE = "https://www.dadouma.com"
 _PRODUCT_ID_RE = re.compile(r"/(\d{4,})/v-224(?:[/?#]|$)")
+_PAGE_RE = re.compile(r"[?&]page=(\d+)")
 _PRICE_RE = re.compile(r"([\d\s\u00a0\u202f,.]+)\s*(?:FG|GNF)\b", re.IGNORECASE)
 
 
@@ -94,6 +95,12 @@ class DadoumaGnSpider(scrapy.Spider):
                 "language": self.language,
                 "scraped_at_utc": scraped_at,
             }
+
+        for href in response.css('a[href*="page="]::attr(href)').getall():
+            page = _PAGE_RE.search(href)
+            if page and int(page.group(1)) > 1:
+                url = response.urljoin(f"?page={page.group(1)}")
+                yield self._request(url, self.parse_leaf)
 
         logger.info(
             "dadouma_gn: leaf=%s cards=%d yielded=%d",
