@@ -9,6 +9,7 @@ constituent country counts on the fly (no aggregate cache).
 from __future__ import annotations
 
 import logging
+import threading
 from collections import defaultdict
 from pathlib import Path
 from typing import Callable, Iterable
@@ -200,6 +201,48 @@ def _daily_backfill_cutoff(cached_df, daily_tail_start):
     return daily_tail_start - pd.Timedelta(days=1)
 
 
+# ── Daily history (research output) ──────────────────────────────────
+
+POOLED_DAILY = "pooled_daily.parquet"
+SOURCES_DAILY = "sources_daily.parquet"
+SOURCE_DAILY_COLS = ["A_total", "E_count", "P_count", "U_count", "EPU_count"]
+
+
+class DailyAccumulator:
+    """Collects per-source daily counts from `annotate_source` threads.
+
+    Keeps one country-pooled frame (sum over sources) plus each source's
+    article totals, not every source's full daily matrix: a country with a
+    hundred sources would otherwise hold gigabytes of mostly-zero rows.
+    """
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.pooled: pd.DataFrame | None = None
+        self.sources: list[pd.DataFrame] = []
+
+    def __call__(self, source_key: str, daily: pd.DataFrame) -> None:
+        per_source = daily[SOURCE_DAILY_COLS].reset_index(names="date")
+        per_source.insert(0, "source_key", source_key)
+        with self._lock:
+            self.pooled = (
+                daily if self.pooled is None else self.pooled.add(daily, fill_value=0)
+            )
+            self.sources.append(per_source)
+
+    def write(self, daily_dir: Path) -> None:
+        daily_dir.mkdir(parents=True, exist_ok=True)
+        if self.pooled is None:
+            return
+        pooled = self.pooled.fillna(0).astype("int32").sort_index()
+        pooled.index = pd.to_datetime(pooled.index, format="%Y-%m-%d")
+        pooled.index.name = "date"
+        pooled.to_parquet(daily_dir / POOLED_DAILY)
+        sources = pd.concat(self.sources, ignore_index=True)
+        sources["date"] = pd.to_datetime(sources["date"], format="%Y-%m-%d")
+        sources.to_parquet(daily_dir / SOURCES_DAILY, index=False)
+
+
 # ── Annotation gate (decides full / tail / skip) ─────────────────────
 
 
@@ -215,12 +258,17 @@ def _ensure_country_source_counts(
     diagnostics: UnitDiagnostics,
     progress_cb: Callable[[int], None] | None = None,
     file_articles: dict[Path, int] | None = None,
+    daily_dir: Path | None = None,
 ) -> pd.DataFrame:
     """Ensure the country's `source_counts.parquet` is current and return it.
 
     Decides whether to do a full re-annotate, an incremental tail-only
     annotate, or to reuse the cache as-is, based on the staleness predicate
     and per-source tail extensions.
+
+    With ``daily_dir``, a country without daily history there yet is fully
+    re-annotated at daily grain and its daily files are written to
+    ``daily_dir``; the cache and the returned frame are unchanged.
 
     Mutates `diagnostics["mode"]` to one of: "full", "incremental", "reused".
     """
@@ -239,6 +287,11 @@ def _ensure_country_source_counts(
 
     cached_df, cached_params = source_counts.read_source_counts(cache_dir)
     stale, reason = source_counts.is_stale(cached_params, source_keys, keyword_hashes)
+    daily = None
+    if daily_dir is not None and not (daily_dir / POOLED_DAILY).exists():
+        daily = DailyAccumulator()
+        if not stale:
+            stale, reason = True, "daily history requested"
 
     if stale:
         diagnostics["mode"] = "full"
@@ -264,7 +317,10 @@ def _ensure_country_source_counts(
             subset_end=subset_end,
             max_parallel_sources=max_parallel_sources,
             progress_cb=_advance,
+            daily_sink=daily,
         )
+        if daily is not None:
+            daily.write(daily_dir)
         for k, v in source_diags.items():
             diagnostics["sources"][k] = v
             diagnostics["total_articles"] += v.get("n_total", 0)
@@ -396,12 +452,16 @@ def process_unit_v2(
     progress_cb: Callable[[int], None] | None = None,
     file_articles: dict[Path, int] | None = None,
     daily_tail_start: str | None = None,
+    daily_history: bool = False,
 ) -> UnitDiagnostics:
     """Process a single unit (country / subregion / region aggregate).
 
     ``daily_tail_start`` is resolved once per build from the corpus, so every
     unit shares one anchor and the dashboards stay comparable. Callers that
     omit it fall back to the current calendar month.
+
+    ``daily_history`` writes daily counts for the full history of a country
+    unit to ``output_dir/daily`` (aggregates reuse the countries' caches).
 
     Returns the per-unit diagnostics dict.
     """
@@ -442,6 +502,7 @@ def process_unit_v2(
             diagnostics=diagnostics,
             progress_cb=progress_cb,
             file_articles=file_articles,
+            daily_dir=output_dir / "daily" if daily_history else None,
         )
     else:
         # Aggregate: ensure each constituent country has source_counts; auto-build.

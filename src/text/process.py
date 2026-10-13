@@ -94,6 +94,7 @@ def run_build(
     cutoff_end_date=None,
     rebuild=False,
     max_parallel_sources: int = 1,
+    daily_history: bool = False,
 ):
     """Run EPU analysis for matching units (countries + aggregates)."""
     countries = set()
@@ -165,6 +166,7 @@ def run_build(
             cutoff_end_date=cutoff_end_date,
             recalculate_params=rebuild,
             max_parallel_sources=max_parallel_sources,
+            daily_history=daily_history,
         )
     except ImportError:
         click.echo("  Analysis module not yet migrated. Skipping.")

@@ -281,6 +281,10 @@ def _compose_sara_am(text: str) -> str:
     return text.replace("\u0e4d\u0e32", "\u0e33").replace("\u0ecd\u0eb2", "\u0eb3")
 
 
+# Grain start that makes every article daily (see `annotate_source` daily_sink).
+DAILY_HISTORY_START = pd.Timestamp("1900-01-01")
+
+
 def _ym_for_date(d: pd.Timestamp, daily_tail_start: pd.Timestamp | None) -> str:
     if daily_tail_start is not None and d >= daily_tail_start:
         return d.strftime("%Y-%m-%d")
@@ -409,6 +413,7 @@ def annotate_source(
     subset_start: pd.Timestamp | None = None,
     subset_end: pd.Timestamp | None = None,
     chunksize: int = 20_000,
+    daily_sink: Callable[[str, pd.DataFrame], None] | None = None,
 ) -> tuple[pd.DataFrame, dict]:
     """Annotate a single source's news.csv and aggregate to monthly counts.
 
@@ -427,8 +432,14 @@ def annotate_source(
     diagnostics : dict
         Per-source numbers used by the build summary report:
         {n_total, n_dropped_nan_body, n_dropped_nan_date, min_date, max_date}.
+
+    When ``daily_sink`` is given, every article is counted at daily grain,
+    the daily frame (indexed by "YYYY-MM-DD") goes to ``daily_sink(source_key,
+    frame)``, and the returned counts are that frame rolled back to the usual
+    months-plus-tail grain. All columns are sums, so the result is unchanged.
     """
     combo = build_combined_automaton(bundle)
+    grain_start = DAILY_HISTORY_START if daily_sink is not None else daily_tail_start
 
     cols = pd.read_csv(news_csv, encoding="utf-8", nrows=0).columns.tolist()
     want = [c for c in ("date", "body", "language", "url") if c in cols]
@@ -476,7 +487,7 @@ def annotate_source(
             min_date = cmin if min_date is None else min(min_date, cmin)
             max_date = cmax if max_date is None else max(max_date, cmax)
 
-        frames.append(_grouped_for_frame(chunk, combo, daily_tail_start))
+        frames.append(_grouped_for_frame(chunk, combo, grain_start))
 
     if not frames:
         empty = pd.DataFrame(
@@ -485,10 +496,17 @@ def annotate_source(
                 "body": pd.Series([], dtype=object),
             }
         )
-        frames.append(_grouped_for_frame(empty, combo, daily_tail_start))
+        frames.append(_grouped_for_frame(empty, combo, grain_start))
 
     grouped = pd.concat(frames)
     grouped = grouped.groupby(level="ym").sum()
+    if daily_sink is not None:
+        daily_sink(source_key, grouped)
+        days = pd.to_datetime(grouped.index, format="%Y-%m-%d")
+        grouped = grouped.groupby(
+            [_ym_for_date(d, daily_tail_start) for d in days], sort=True
+        ).sum()
+        grouped.index.name = "ym"
 
     grouped = grouped.reset_index()
     grouped.insert(0, "source_key", source_key)
@@ -510,6 +528,7 @@ def annotate_country(
     subset_end: pd.Timestamp | None = None,
     max_parallel_sources: int = 1,
     progress_cb: Callable[[str], None] | None = None,
+    daily_sink: Callable[[str, pd.DataFrame], None] | None = None,
 ) -> tuple[pd.DataFrame, dict[str, dict]]:
     """Annotate every source for one country and concatenate the per-source frames.
 
@@ -517,6 +536,8 @@ def annotate_country(
     ----------
     sources : list of (news_csv, source_key, bundle)
     progress_cb : invoked with the ``source_key`` after each source completes.
+    daily_sink : passed to `annotate_source`; must be thread-safe when
+        ``max_parallel_sources > 1``.
     """
     if max_parallel_sources < 1:
         raise ValueError("max_parallel_sources must be >= 1")
@@ -533,6 +554,7 @@ def annotate_country(
             daily_tail_start=daily_tail_start,
             subset_start=subset_start,
             subset_end=subset_end,
+            daily_sink=daily_sink,
         )
 
     if max_parallel_sources == 1:

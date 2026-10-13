@@ -318,6 +318,13 @@ def text_ledger_bootstrap(region):
     show_default=True,
     help="Bound on concurrent per-source annotation. Increase for speed; keep at 1 for memory safety.",
 )
+@click.option(
+    "--daily-history",
+    is_flag=True,
+    default=False,
+    help="Also write each country's full-history daily counts to <output>/daily "
+    "(re-annotates countries that have none yet).",
+)
 def text_build(
     region,
     subregion,
@@ -326,6 +333,7 @@ def text_build(
     cutoff_end_date,
     rebuild,
     max_parallel_sources,
+    daily_history,
 ):
     """Run EPU index calculation and analysis."""
     from text.process import run_build
@@ -341,6 +349,7 @@ def text_build(
         cutoff_end_date=cutoff_end_date,
         rebuild=rebuild,
         max_parallel_sources=max_parallel_sources,
+        daily_history=daily_history,
     )
 
 

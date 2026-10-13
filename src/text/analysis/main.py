@@ -822,6 +822,7 @@ def run_analysis(
     redo_actors: set[str] | None = None,
     exclude_countries: set[str] | None = None,
     max_parallel_sources: int = 1,
+    daily_history: bool = False,
 ):
     """Run EPU analysis for matching units (countries + aggregates).
 
@@ -841,6 +842,8 @@ def run_analysis(
     exclude_countries : set of country names to exclude.
     max_parallel_sources : bound on concurrent per-source annotation
         (default 1, sequential).
+    daily_history : also write each country's full-history daily counts to
+        ``<output_dir>/daily`` (research output; dashboards don't read it).
     """
     if max_parallel_sources < 1:
         raise ValueError("max_parallel_sources must be >= 1")
@@ -1015,6 +1018,7 @@ def run_analysis(
                     progress_cb=_cb,
                     file_articles=file_articles,
                     daily_tail_start=daily_tail_start,
+                    daily_history=daily_history,
                 )
                 row.status = diag.get("status", "ok")
                 row.mode = diag.get("mode", "unknown")
