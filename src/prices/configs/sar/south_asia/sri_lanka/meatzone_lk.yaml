@@ -1,3 +1,5 @@
+active: false
+inactive_reason: "Checked 2026-10-13 (W42): the WordPress shop is gone; the site is a generic template (app.js still says CHANGE THIS TO YOUR WHATSAPP NUMBER 94771234567) with no catalog."
 scaffolding: spider
 extraction_pattern: scrapy_api
 analytical_role: retailer_sku

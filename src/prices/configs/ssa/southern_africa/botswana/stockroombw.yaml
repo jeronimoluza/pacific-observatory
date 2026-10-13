@@ -9,7 +9,8 @@ language: en
 currency: BWP
 cadence: weekly
 coicop_codes: null
-active: true
+active: false
+inactive_reason: "Checked 2026-10-13 (W42): site down; Wix ConnectYourDomain error, 404 on every path."
 notes: |
   Probed 2026-09-12: Wix, same route as homeandallstore_bw -- Wix-generated
   /store-products-sitemap.xml lists 35 /product-page/ urls, each PDP carries

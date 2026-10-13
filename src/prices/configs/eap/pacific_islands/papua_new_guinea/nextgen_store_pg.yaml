@@ -1,3 +1,5 @@
+active: false
+inactive_reason: "Checked 2026-10-13 (W42): store is now B2B; /shop returns 404 and product cards say Product details available to approved business accounts (login wall)."
 scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: retailer_sku
