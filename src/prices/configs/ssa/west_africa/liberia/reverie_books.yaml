@@ -1,10 +1,10 @@
 scaffolding: spider
-spider: generic_woo_configured
+spider: reverie_books
 url: "https://reveriebooks.shop/"
 channel: other
 coicop_classification: classifier
 analytical_role: retailer_sku
-extraction_pattern: scrapy_api
+extraction_pattern: scrapy_html
 language: en
 currency: USD
 cadence: weekly
@@ -12,12 +12,6 @@ coicop_codes: null
 active: true
 max_items: null
 start_urls: null
-spider_kwargs:
-  source_label: "reverie_books"
-  base_url: "https://reveriebooks.shop"
-  currency: "USD"
-  language: "en"
-  api_url: "https://reveriebooks.shop/wp-json/wc/store/v1/products"
 scrapy_settings:
   CONCURRENT_REQUESTS_PER_DOMAIN: 1
   DOWNLOAD_DELAY: 2.0
@@ -28,3 +22,6 @@ notes: >
   name in the site's own JSON-LD is "Reverie Books Liberia". Dual-currency
   judgement call: USD, not LRD -- noted, not silently accepted. Uses the
   existing generic_woo_configured spider, no new code.
+  2026-10-13 (W42): site re-platformed to a custom Next.js storefront; the
+  WC Store API 404s. Moved to its own reverie_books spider on the shared
+  _jsonld_sitemap_base (/sitemap.xml -> /product/<slug> PDP JSON-LD).

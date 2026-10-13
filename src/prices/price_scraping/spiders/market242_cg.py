@@ -21,6 +21,7 @@ using the site's explicit currency over the country default) with this
 caveat recorded in the YAML notes for downstream PPP analysts to weigh.
 """
 
+import json
 import logging
 import re
 from datetime import datetime, timezone
@@ -32,11 +33,9 @@ logger = logging.getLogger(__name__)
 _BASE = "https://242market.com"
 _SITEMAP_URL = f"{_BASE}/sitemap.xml"
 
-_PRICE_RE = re.compile(r'class="Price-value"\s+itemprop="price"\s+content="([\d.]+)"')
-_CURRENCY_RE = re.compile(r'itemprop="priceCurrency"\s+content="([A-Z]{3})"')
-_SKU_RE = re.compile(r'itemprop="sku">([^<]*)</span>')
-_CATEGORY_RE = re.compile(r'itemprop="category">([^<]*)</a>')
-_TITLE_RE = re.compile(r'<h1[^>]*>(.*?)</h1>', re.S)
+_LDJSON_RE = re.compile(
+    r'<script[^>]*application/ld\+json[^>]*>(.*?)</script>', re.S
+)
 
 
 class Market242CgSpider(scrapy.Spider):
@@ -63,29 +62,43 @@ class Market242CgSpider(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse_pdp)
 
     def parse_pdp(self, response):
-        html = response.text
-        price_m = _PRICE_RE.search(html)
-        if not price_m:
-            return
-        title_m = _TITLE_RE.search(html)
-        if not title_m:
-            return
-        name = re.sub(r"<[^>]+>", "", title_m.group(1)).strip()
+        # Microdata was dropped (2026-10); the PDP now carries a JSON-LD
+        # ProductGroup whose hasVariant entries each have their own offer.
+        for raw in _LDJSON_RE.findall(response.text):
+            try:
+                node = json.loads(raw)
+            except ValueError:
+                continue
+            if node.get("@type") == "ProductGroup":
+                variants = node.get("hasVariant") or []
+            elif node.get("@type") == "Product":
+                variants = [node]
+            else:
+                continue
+            for variant in variants:
+                item = self._variant_item(variant, node, response.url)
+                if item:
+                    yield item
+
+    def _variant_item(self, variant, group, page_url):
+        offer = variant.get("offers") or {}
+        if isinstance(offer, list):
+            offer = offer[0] if offer else {}
+        name = (variant.get("name") or "").strip()
+        try:
+            price = float(offer.get("price"))
+        except (TypeError, ValueError):
+            return None
         if not name:
-            return
-
-        currency_m = _CURRENCY_RE.search(html)
-        sku_m = _SKU_RE.search(html)
-        category_m = _CATEGORY_RE.search(html)
-
-        yield {
-            "product_id": sku_m.group(1).strip() if sku_m else response.url,
+            return None
+        return {
+            "product_id": variant.get("sku") or variant.get("url") or page_url,
             "product_name": name[:500],
-            "category": category_m.group(1).strip() if category_m else None,
-            "price": float(price_m.group(1)),
-            "currency": currency_m.group(1) if currency_m else self.currency,
-            "available": True,
-            "url": response.url,
+            "category": group.get("category"),
+            "price": price,
+            "currency": offer.get("priceCurrency") or self.currency,
+            "available": "InStock" in (offer.get("availability") or ""),
+            "url": variant.get("url") or page_url,
             "language": self.language,
             "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
         }

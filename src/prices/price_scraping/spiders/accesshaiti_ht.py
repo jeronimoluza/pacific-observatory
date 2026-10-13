@@ -39,11 +39,12 @@ logger = logging.getLogger(__name__)
 
 _BASE_URL = "https://accesshaiti.com"
 _SCRIPT_SRC_RE = re.compile(r'<script[^>]+src="(/assets/[^"]+\.js)"')
+# The 2026-10 bundle keeps every plan in one catalog array of object literals:
+# {id:19700,family:"airfiber",name:"AirFiber Basic",net:54.55,gross:60.01,
+#  currency:"USD",downloadMbps:30}. `net` is the pre-tax price shown first.
 _PLAN_RE = re.compile(
-    r'n\.jsx\("h3",\{className:"text-2xl font-bold mb-2",children:"([^"]+)"\}\).*?'
-    r'children:"(\$[\d.,]+)"\}\).*?'
-    r'children:"•\s*([^"]+)"',
-    re.DOTALL,
+    r'\{id:\d+,family:"([^"]+)",name:"([^"]+)",net:([\d.e+]+),'
+    r'gross:[^,]*,currency:"([A-Z]{3})",downloadMbps:([\d.]+|null)\}'
 )
 
 
@@ -71,14 +72,14 @@ class AccesshaitiHtSpider(scrapy.Spider):
 
     def parse_bundle(self, response):
         count = 0
-        for name, price, speed in _PLAN_RE.findall(response.text):
+        for family, name, net, currency, mbps in _PLAN_RE.findall(response.text):
             slug = name.lower().replace(" ", "-")
             yield {
-                "product_id": f"airfiber-{slug}",
-                "product_name": f"{name} ({speed})",
-                "category": "Home Internet",
-                "price": price.lstrip("$").replace(",", ""),
-                "currency": self.currency,
+                "product_id": f"{family}-{slug}",
+                "product_name": name if mbps == "null" else f"{name} ({mbps} Mbps)",
+                "category": family,
+                "price": f"{float(net):g}",
+                "currency": currency,
                 "available": True,
                 # DuplicationPipeline dedups on item['url']; every plan shares
                 # response.url (the JS bundle), so append a slug fragment.

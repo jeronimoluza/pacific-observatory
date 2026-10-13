@@ -76,7 +76,7 @@ class DadoumaGnSpider(scrapy.Spider):
         for card in cards:
             href = card.attrib.get("href", "")
             id_match = _PRODUCT_ID_RE.search(href)
-            name = (card.css("h3.dd-product-card__name::text").get() or "").strip()
+            name = (card.css(".dd-product-card__name::text").get() or "").strip()
             price_text = card.css("p.dd-product-card__price::text").get() or ""
             price = _parse_price(price_text)
             if not id_match or not name or not price:
