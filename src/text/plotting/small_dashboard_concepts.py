@@ -17,6 +17,8 @@ The policy iframe is sourced from the per-region HTML files in
 ``src/text/plotting/addons/{tracker}/{region}_policy_addon.html``.
 """
 
+import base64
+import gzip
 import json
 from pathlib import Path
 
@@ -1036,7 +1038,7 @@ __PICKER_JS__
 
 const topicData = __DATA_JSON__;
 const topicFactors = __FACTORS_JSON__;
-// A unit's series may live in its own data file, loaded on first use.
+// A unit's series may ship compressed in the host page, inflated on first use.
 const loadUnit = __LOADER_EXPR__;
 function withUnit(key, fn) {
     if (!loadUnit) return fn();
@@ -1369,7 +1371,7 @@ __COMMON_JS__
 __PICKER_JS__
 
 const epuData = __DATA_JSON__;
-// A unit's series may live in its own data file, loaded on first use.
+// A unit's series may ship compressed in the host page, inflated on first use.
 const loadUnit = __LOADER_EXPR__;
 function withUnit(key, fn) {
     if (!loadUnit) return fn();
@@ -2069,7 +2071,8 @@ body {
     ['topics', 'actors'].forEach(k => { if (D[k]) D[k] = lazy(D[k], rows); });
     if (D.pool) D.pool = lazy(D.pool, pool);
 
-    // Concept series ship one file per unit next to the page and load on first
+    // Concept series ship inside the page, one gzipped, base64'd
+    // <script type="application/gzip"> block per unit, and are inflated on first
     // selection; the tabs hold the same objects, so filling them is enough.
     const files = D.unitFiles || {}, pending = {};
     D.topics = D.topics || {}; D.topicFactors = D.topicFactors || {}; D.pool = D.pool || {};
@@ -2078,19 +2081,24 @@ body {
         D.topicFactors[key] = u.factors;
         if (u.pool) D.pool[key] = pool(u.pool);
     };
+    function inflate(id) {
+        const el = document.getElementById(id);
+        if (!el) return Promise.reject(new Error('missing ' + id));
+        const bin = atob(el.textContent.trim()), bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const text = new Response(new Blob([bytes]).stream()
+            .pipeThrough(new DecompressionStream('gzip'))).text();
+        return text.then(t => { const u = JSON.parse(t); window.__DASH_UNIT__(u.key, u); });
+    }
     window.__DASH_LOAD__ = function (key) {
         if (D.topics[key] || !files[key]) return Promise.resolve();
-        return pending[key] || (pending[key] = new Promise((resolve, reject) => {
-            const el = document.createElement('script');
-            el.src = files[key];
-            el.onload = () => resolve();
-            el.onerror = () => { delete pending[key]; reject(new Error('missing ' + files[key])); };
-            document.head.appendChild(el);
-        }));
+        return pending[key] || (pending[key] =
+            inflate(files[key]).catch(e => { delete pending[key]; throw e; }));
     };
 })();
 </script>
 <script type="application/json" id="keywords-schema">__KEYWORDS_SCHEMA_JSON__</script>
+__UNIT_BLOBS__
 </head>
 <body>
 <input class="tab-radio" type="radio" name="tabs" id="r0">
@@ -2129,6 +2137,7 @@ def build_host_html(
     shared_data=None,
     keywords_schema=None,
     policy_overview_html="",
+    unit_blobs="",
 ):
     """Assemble the four-tab host page.
 
@@ -2147,6 +2156,7 @@ def build_host_html(
         HOST_TEMPLATE.replace("__HOST_TITLE__", host_title)
         .replace("__HOST_SUBTITLE__", host_subtitle)
         .replace("__SCHEMA_URL__", SCHEMA_URL)
+        .replace("__UNIT_BLOBS__", unit_blobs)
         .replace("__SHARED_DATA_JSON__", json.dumps(shared_data or {}))
         .replace(
             "__KEYWORDS_SCHEMA_JSON__",
@@ -2503,6 +2513,8 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
 
     Reads the publish region JSON and ``keywords_schema.json`` and writes
     ``outputs/text/dashboards/concepts/{region}_concepts_dashboard.html``.
+    The unit data goes inline, gzipped, so the page is one file to share with
+    no data folder beside it.
     """
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
@@ -2527,13 +2539,13 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
 
     project_root = Path(__file__).resolve().parents[3]
     output_dir = project_root / "outputs" / "text" / "dashboards" / "concepts"
-    data_dirname = f"{region}_concepts_data"
-    (output_dir / data_dirname).mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Concept series: one publish file per unit in, one page data file per unit
-    # out, loaded when the unit is first selected (``__DASH_LOAD__``).
+    # Concept series: one publish file per unit in, one inline gzipped block per
+    # unit out, inflated when the unit is first selected (``__DASH_LOAD__``).
     unit_json_dir = Path(json_path).parent / region
     unit_files: dict = {}
+    unit_blobs: list = []
     concept_groups: set = set()
     actors_data: dict = {}
     for key, unit in units.items():
@@ -2547,19 +2559,18 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
             continue
         series, factors, groups, pool = _concept_unit_payload(src)
         concept_groups.update(groups)
-        name = f"{data_dirname}/{key.replace(':', '__')}.js"
         payload = {
             "topics": series,
             "factors": factors,
             "pool": _pool_columnar(pool) if pool else None,
         }
-        (output_dir / name).write_text(
-            f"window.__DASH_UNIT__({json.dumps(key)}, "
-            + json.dumps(payload, separators=(",", ":"))
-            + ");\n",
-            encoding="utf-8",
+        blob_id = f"unit-{key.replace(':', '__')}"
+        raw = json.dumps({"key": key, **payload}, separators=(",", ":"))
+        b64 = base64.b64encode(gzip.compress(raw.encode(), mtime=0)).decode()
+        unit_blobs.append(
+            f'<script type="application/gzip" id="{blob_id}">{b64}</script>'
         )
-        unit_files[key] = name
+        unit_files[key] = blob_id
 
     actor_factors: dict = {}
     actors_set: set = set()
@@ -2637,6 +2648,7 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         },
         keywords_schema=schema,
         policy_overview_html=build_policy_overview_html(region),
+        unit_blobs="\n".join(unit_blobs),
     )
 
     dashboard_path = output_dir / f"{region}_concepts_dashboard.html"
