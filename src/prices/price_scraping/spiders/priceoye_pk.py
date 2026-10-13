@@ -26,7 +26,7 @@ import scrapy
 logger = logging.getLogger(__name__)
 
 _SITEMAP = "https://priceoye.pk/sitemap/sitemap-product.xml"
-_SITEMAP_ATTEMPTS = 10
+_SITEMAP_ATTEMPTS = 30
 _LOC_RE = re.compile(r"<loc>(https://priceoye\.pk/[^<]+)</loc>")
 _LDJSON_RE = re.compile(
     r'<script type="application/ld\+json">\s*(.*?)\s*</script>',
