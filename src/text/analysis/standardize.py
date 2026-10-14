@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 
 from src.text.analysis.baseline import baseline_mask
-from src.text.analysis.indices import IndexCalculator
+from src.text.analysis.indices import IndexCalculator, panel_cols
 
 
 # ── Standardized-unit shim ───────────────────────────────────────────
@@ -148,10 +148,9 @@ def pivot_to_wide(
         wide["ym"] = wide["date"].apply(lambda d: f"{d.year}-{d.month}")
 
     # news_total + per-source weights + body_count + epu_count + ratio aliases.
-    # Legacy `EPU.get_count_stats` fills NaN to 0 across the whole epu_stats
-    # frame after the continuous-date-index merge, which means missing
-    # source-months end up with ratio = 0 (not NaN). Mirror that here so the
-    # downstream standardization arithmetic stays bit-faithful.
+    # A source-month with no articles has no ratio (NaN, not 0): Baker
+    # averages the papers present, and a silent month is no observation for
+    # the baseline std either.
     body_cols = [f"{s}_A_total" for s in sources]
     wide["news_total"] = wide[body_cols].sum(axis=1)
     for s in sources:
@@ -165,7 +164,6 @@ def pivot_to_wide(
             wide[f"{s}_epu_count"]
             .div(wide[f"{s}_A_total"])
             .replace([np.inf, -np.inf], np.nan)
-            .fillna(0)
         )
 
     return wide, sources
@@ -180,6 +178,7 @@ def _standardize_epu(
     cutoff_start: str | None,
     cutoff_end: str | None,
     ratio_template: str,
+    panel: set[str] | None = None,
 ) -> tuple[pd.DataFrame, dict, list[str]]:
     """Standardize a per-source ratio column into a single EPU index.
 
@@ -247,7 +246,9 @@ def _standardize_epu(
             ratio_cols,
         )
 
-    df["z_score_unweighted"] = df[z_cols].mean(axis=1, skipna=True)
+    df["z_score_unweighted"] = df[panel_cols(z_cols, sources, panel)].mean(
+        axis=1, skipna=True
+    )
     df["z_score_weighted"] = 0.0
     for z_col in z_cols:
         # The weight column is per source, not per (source × topic). Strip
@@ -314,12 +315,7 @@ def _build_topic_or_actor_ratios(
             count_col = f"{src}_{metric_prefix}{k}_count"
             ratio_col = f"{src}_{metric_prefix}{k}_ratio"
             if count_col in existing:
-                ratio = (
-                    df[count_col]
-                    .div(a_series)
-                    .replace([np.inf, -np.inf], np.nan)
-                    .fillna(0)
-                )
+                ratio = df[count_col].div(a_series).replace([np.inf, -np.inf], np.nan)
                 if ratio_col in existing:
                     # Overwrite in place so the column keeps its position and
                     # the concat below cannot introduce a duplicate name.
@@ -336,8 +332,8 @@ def _key_frame(wide: pd.DataFrame, sources: list[str], key: str) -> pd.DataFrame
 
     `_standardize_epu` copies its input, and every per-key result is kept, so
     passing the full wide frame (all sources x all keys) holds one full copy
-    per key. Consumers of the per-key units read only `date` and
-    `epu_weighted`.
+    per key. Consumers of the per-key units read only `date` and the
+    `epu_*` columns.
     """
     existing = set(wide.columns)
     cols = [c for c in ("date", "ym") if c in existing]
@@ -402,6 +398,7 @@ def standardize_unit(
     topic_keys: Iterable[str],
     actor_keys: Iterable[str],
     extra_families: dict[str, tuple[str, list[str]]] | None = None,
+    panel: set[str] | None = None,
 ) -> dict:
     """Run the full standardization pipeline for a single unit.
 
@@ -410,7 +407,8 @@ def standardize_unit(
     returned, so `outputs.build_outputs` works unchanged — plus
     `extra_epus`, one `{key: StandardizedUnit}` per family in
     `extra_families` (`{name: (metric_prefix, keys)}`, e.g. concepts), whose
-    UG counts land in `ug_counts_all[name]`.
+    UG counts land in `ug_counts_all[name]`. `panel` limits the unweighted
+    (Baker) mean to those sources; None keeps all.
     """
     extra_families = extra_families or {}
     wide, sources = pivot_to_wide(source_counts, daily_tail_start)
@@ -440,13 +438,18 @@ def standardize_unit(
 
     # ── Base EPU ─────────────────────────────────────────────────────
     base_df, base_params, _ = _standardize_epu(
-        wide, sources, cutoff_start, cutoff_end, ratio_template="{source}_ratio"
+        wide,
+        sources,
+        cutoff_start,
+        cutoff_end,
+        ratio_template="{source}_ratio",
+        panel=panel,
     )
     news_cols = [f"{s}_body_count" for s in sources]
 
     # Extended indices (breadth / intensity / pairwise) — IndexCalculator
     # consumes the wide layout we already built; just add the columns it needs.
-    calc = IndexCalculator(cutoff_start, cutoff_end)
+    calc = IndexCalculator(cutoff_start, cutoff_end, panel)
     base_df = calc.calculate_breadth_indices(base_df, sources)
     base_df = calc.calculate_intensity_indices(base_df, sources)
     base_df = calc.calculate_pairwise_indices(base_df, sources)
@@ -480,6 +483,7 @@ def standardize_unit(
             cutoff_start,
             cutoff_end,
             ratio_template=f"{{source}}_topic_{k}_ratio",
+            panel=panel,
         )
         topic_epus[k] = StandardizedUnit(
             epu_stats=df_t,
@@ -501,6 +505,7 @@ def standardize_unit(
             cutoff_start,
             cutoff_end,
             ratio_template=f"{{source}}_actor_{k}_ratio",
+            panel=panel,
         )
         actor_epus[k] = StandardizedUnit(
             epu_stats=df_a,
@@ -545,6 +550,7 @@ def standardize_unit(
                 cutoff_start,
                 cutoff_end,
                 ratio_template=f"{{source}}_{prefix}{k}_ratio",
+                panel=panel,
             )
             extra_epus[name][k] = StandardizedUnit(
                 epu_stats=df_x,

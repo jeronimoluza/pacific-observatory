@@ -19,6 +19,7 @@ import pandas as pd
 from pandas.api.types import union_categoricals
 
 from src.text.analysis import annotate, source_counts
+from src.text.analysis import baker
 from src.text.analysis.outputs import build_outputs
 from src.text.analysis.standardize import standardize_unit
 from src.text.analysis.utils import (
@@ -208,6 +209,7 @@ def _daily_backfill_cutoff(cached_df, daily_tail_start):
 POOLED_DAILY = "pooled_daily.parquet"
 SOURCES_DAILY = "sources_daily.parquet"
 SOURCES_TERMS_DAILY = "sources_terms_daily.parquet"
+WEEKLY_BAKER = "baker.parquet"  # weeks x group_/concept_ terms, Baker index
 SOURCE_DAILY_COLS = ["A_total", "E_count", "P_count", "U_count", "EPU_count"]
 TERM_PREFIXES = ("group_", "concept_")
 
@@ -258,23 +260,39 @@ class DailyAccumulator:
             self.sources.append(per_source)
             self.terms.append(terms)
 
-    def write(self, daily_dir: Path) -> None:
+    def write(self, daily_dir: Path, append: bool = False) -> None:
+        """Write the daily files; with ``append``, add to the ones there.
+
+        Appended days must be new for their source (the caller passes only
+        days past each source's cached tail), so pooled counts just add.
+        """
         daily_dir.mkdir(parents=True, exist_ok=True)
         if self.pooled is None:
             return
         pooled = self.pooled.fillna(0).astype("int32").sort_index()
         pooled.index = pd.to_datetime(pooled.index, format="%Y-%m-%d")
         pooled.index.name = "date"
-        pooled.to_parquet(daily_dir / POOLED_DAILY)
         sources = pd.concat(self.sources, ignore_index=True)
         sources["date"] = pd.to_datetime(sources["date"], format="%Y-%m-%d")
+        terms = self.terms
+        if append:
+            old = pd.read_parquet(daily_dir / POOLED_DAILY)
+            pooled = old.add(pooled, fill_value=0).fillna(0).astype("int32")
+            sources = pd.concat(
+                [pd.read_parquet(daily_dir / SOURCES_DAILY), sources],
+                ignore_index=True,
+            )
+            terms = [pd.read_parquet(daily_dir / SOURCES_TERMS_DAILY), *terms]
+        pooled.to_parquet(daily_dir / POOLED_DAILY)
         sources.to_parquet(daily_dir / SOURCES_DAILY, index=False)
         terms = pd.DataFrame(
             {
-                "source_key": union_categoricals([t.source_key for t in self.terms]),
-                "date": np.concatenate([t.date.to_numpy() for t in self.terms]),
-                "term": union_categoricals([t.term for t in self.terms]),
-                "count": np.concatenate([t["count"].to_numpy() for t in self.terms]),
+                "source_key": union_categoricals(
+                    [t.source_key.astype("category") for t in terms]
+                ),
+                "date": np.concatenate([t.date.to_numpy() for t in terms]),
+                "term": union_categoricals([t.term.astype("category") for t in terms]),
+                "count": np.concatenate([t["count"].to_numpy() for t in terms]),
             }
         )
         terms.to_parquet(daily_dir / SOURCES_TERMS_DAILY, index=False)
@@ -303,9 +321,10 @@ def _ensure_country_source_counts(
     annotate, or to reuse the cache as-is, based on the staleness predicate
     and per-source tail extensions.
 
-    With ``daily_dir``, a country without daily history there yet is fully
-    re-annotated at daily grain and its daily files are written to
-    ``daily_dir``; the cache and the returned frame are unchanged.
+    With ``daily_dir``, a country without daily history there yet (or with a
+    stale cache) is fully re-annotated at daily grain and its daily files are
+    written to ``daily_dir``; an incremental annotate appends the new days to
+    them. The cache and the returned frame are unchanged.
 
     Mutates `diagnostics["mode"]` to one of: "full", "incremental", "reused".
     """
@@ -325,7 +344,8 @@ def _ensure_country_source_counts(
     cached_df, cached_params = source_counts.read_source_counts(cache_dir)
     stale, reason = source_counts.is_stale(cached_params, source_keys, keyword_hashes)
     daily = None
-    if daily_dir is not None and not (daily_dir / POOLED_DAILY).exists():
+    has_daily = daily_dir is not None and (daily_dir / POOLED_DAILY).exists()
+    if daily_dir is not None and (stale or not has_daily):
         daily = DailyAccumulator()
         if not stale:
             stale, reason = True, "daily history requested"
@@ -424,7 +444,17 @@ def _ensure_country_source_counts(
             _advance(sk)
     extended_frames: list[pd.DataFrame] = []
     new_tails = dict(cached_params.tails)
+    daily = DailyAccumulator() if has_daily else None
     for fp, sk, bundle, cutoff in sources_to_extend:
+        # The daily files already hold every day up to the source's cached
+        # tail; a backfill cutoff re-annotates earlier days, which are dropped.
+        last = new_tails.get(sk, {}).get("last_date")
+        sink = None
+        if daily is not None:
+
+            def sink(key, frame, last=last):
+                daily(key, frame[frame.index > last] if last else frame)
+
         # Only annotate rows strictly after the cached tail.
         df_new, diag = annotate.annotate_source(
             fp,
@@ -433,6 +463,7 @@ def _ensure_country_source_counts(
             daily_tail_start=daily_tail_start,
             subset_start=cutoff + pd.Timedelta(days=1),
             subset_end=subset_end,
+            daily_sink=sink,
         )
         diagnostics["sources"][sk] = diag
         diagnostics["total_articles"] += diag.get("n_total", 0)
@@ -444,6 +475,9 @@ def _ensure_country_source_counts(
                 "n_rows": int(diag.get("n_total", 0))
                 + int(new_tails.get(sk, {}).get("n_rows", 0)),
             }
+
+    if daily is not None:
+        daily.write(daily_dir, append=True)
 
     # Replace the cached tail rows for affected sources with the new ones.
     if extended_frames:
@@ -582,6 +616,27 @@ def process_unit_v2(
     if "A_total" in df.columns:
         diagnostics["total_articles"] = int(df["A_total"].sum())
 
+    # Baker's source panel and the weekly index need the daily history.
+    panel = None
+    daily_dir = output_dir / "daily"
+    if level == "country" and (daily_dir / SOURCES_TERMS_DAILY).exists():
+        sources_daily = pd.read_parquet(daily_dir / SOURCES_DAILY)
+        panel = baker.panel(sources_daily, cutoff_start_date, cutoff_end_date)
+        weekly = baker.index(
+            sources_daily,
+            pd.read_parquet(daily_dir / SOURCES_TERMS_DAILY),
+            panel,
+            "W",
+            cutoff_start_date,
+            cutoff_end_date,
+        )
+        weekly.columns = weekly.columns.str.removesuffix("_A_count")
+        weekly.index.name = "week"
+        (output_dir / "weekly").mkdir(exist_ok=True)
+        weekly.to_parquet(output_dir / "weekly" / WEEKLY_BAKER)
+    elif level == "country":
+        _logger.warning("%s: no daily history, Baker mean over all sources", name)
+
     # Standardize and write outputs.
     bundle = standardize_unit(
         source_counts=df,
@@ -591,6 +646,7 @@ def process_unit_v2(
         topic_keys=list(all_topics.keys()),
         actor_keys=list(all_actors.keys()),
         extra_families=extra_families,
+        panel=panel,
     )
     build_outputs(
         e_base=bundle["e_base"],
@@ -605,7 +661,23 @@ def process_unit_v2(
         replace_from=None,
         output_dir=output_dir,
         extra_epus=bundle["extra_epus"],
+        panel=panel,
     )
+    if level != "country":
+        region_out = output_dir.parent if level == "region" else output_dir.parents[1]
+        stale = baker.combine_outputs(
+            output_dir,
+            [region_out / d.parent.name / d.name for d in per_country],
+            cutoff_start_date,
+            cutoff_end_date,
+        )
+        if stale:
+            _logger.warning(
+                "%s: left out of the index, daily tail from another build "
+                "(rebuild them): %s",
+                name,
+                ", ".join(d.name for d in stale),
+            )
     return diagnostics
 
 

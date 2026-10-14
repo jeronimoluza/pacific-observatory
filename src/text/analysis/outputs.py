@@ -14,6 +14,11 @@ from src.text.analysis.indices import IndexCalculator
 from src.text.analysis.utils import collapse_to_index_grid, load_all_groups
 
 
+# Published variant: Baker et al. (2016), a plain mean of standardized ratios
+# over the source panel. The article-weighted variant is still computed.
+VARIANT = "unweighted"
+
+
 def json_default(x):
     """JSON serialization helper: convert NaN to None."""
     if isinstance(x, float) and np.isnan(x):
@@ -263,12 +268,14 @@ def build_outputs(
     replace_from: str | None = None,
     output_dir: Path = None,
     extra_epus: dict | None = None,
+    panel: set[str] | None = None,
 ):
     """Build and write all output CSVs.
 
     `extra_epus` is `{family: {key: StandardizedUnit}}` for families beyond
     topics and actors (concepts, groups); each writes `epu/{family}_epu.csv`
-    and `uncertainty_attribution/{family}.csv`.
+    and `uncertainty_attribution/{family}.csv`. `panel` limits the published
+    (Baker) mean of the attribution indices to those sources.
 
     Returns (calc_topics_idx, calc_actors_idx) IndexCalculator instances.
     """
@@ -291,10 +298,10 @@ def build_outputs(
 
     # ── epu.csv ──────────────────────────────────────────────────────
     result = e_base.epu_stats[["date", "ym", "news_total"]].copy()
-    result["EPU_index"] = e_base.epu_stats["epu_weighted"]
+    result["EPU_index"] = e_base.epu_stats[f"epu_{VARIANT}"]
     for cat in ["E", "P", "U"]:
-        col_b = f"{cat}_breadth_weighted"
-        col_i = f"{cat}_intensity_weighted"
+        col_b = f"{cat}_breadth_{VARIANT}"
+        col_i = f"{cat}_intensity_{VARIANT}"
         result[f"{cat}_breadth"] = (
             e_base.epu_stats[col_b] if col_b in e_base.epu_stats.columns else np.nan
         )
@@ -302,7 +309,7 @@ def build_outputs(
             e_base.epu_stats[col_i] if col_i in e_base.epu_stats.columns else np.nan
         )
     for pair in ["EU", "PU", "EP"]:
-        col_p = f"{pair}_share_weighted"
+        col_p = f"{pair}_share_{VARIANT}"
         result[f"{pair}_index"] = (
             e_base.epu_stats[col_p] if col_p in e_base.epu_stats.columns else np.nan
         )
@@ -313,8 +320,8 @@ def build_outputs(
     for topic_key, e_topic in topic_epus.items():
         aligned = pd.merge(
             topic_epu[["date"]],
-            e_topic.epu_stats[["date", "epu_weighted"]].rename(
-                columns={"epu_weighted": f"EPU_{topic_key}_index"}
+            e_topic.epu_stats[["date", f"epu_{VARIANT}"]].rename(
+                columns={f"epu_{VARIANT}": f"EPU_{topic_key}_index"}
             ),
             on="date",
             how="left",
@@ -327,8 +334,8 @@ def build_outputs(
     for actor_key, e_actor in actor_epus.items():
         aligned = pd.merge(
             actor_epu[["date"]],
-            e_actor.epu_stats[["date", "epu_weighted"]].rename(
-                columns={"epu_weighted": f"EPU_{actor_key}_index"}
+            e_actor.epu_stats[["date", f"epu_{VARIANT}"]].rename(
+                columns={f"epu_{VARIANT}": f"EPU_{actor_key}_index"}
             ),
             on="date",
             how="left",
@@ -342,8 +349,8 @@ def build_outputs(
         for key, e_key in family_epus.items():
             aligned = pd.merge(
                 family_epu[["date"]],
-                e_key.epu_stats[["date", "epu_weighted"]].rename(
-                    columns={"epu_weighted": f"EPU_{key}_index"}
+                e_key.epu_stats[["date", f"epu_{VARIANT}"]].rename(
+                    columns={f"epu_{VARIANT}": f"EPU_{key}_index"}
                 ),
                 on="date",
                 how="left",
@@ -353,14 +360,17 @@ def build_outputs(
 
     # ── uncertainty_attribution ───────────────────────────────────────
     sources = [col.replace("_body_count", "") for col in e_base.news_cols]
-    calc_topics_idx = IndexCalculator(cutoff_start_date, cutoff_end_date)
-    calc_actors_idx = IndexCalculator(cutoff_start_date, cutoff_end_date)
+    calc_topics_idx = IndexCalculator(cutoff_start_date, cutoff_end_date, panel)
+    calc_actors_idx = IndexCalculator(cutoff_start_date, cutoff_end_date, panel)
 
     for (source_file, output_name), calc in [
         (("topics", "topics"), calc_topics_idx),
         (("actors", "actors"), calc_actors_idx),
         *(
-            ((family, family), IndexCalculator(cutoff_start_date, cutoff_end_date))
+            (
+                (family, family),
+                IndexCalculator(cutoff_start_date, cutoff_end_date, panel),
+            )
             for family in extra_epus
         ),
     ]:
@@ -395,9 +405,9 @@ def build_outputs(
             attr_df, sources, group_names
         )
 
-        # Both scales ship. The `*_weighted` columns are normalized to mean 100
+        # Both scales ship. The `*_<VARIANT>` columns are normalized to mean 100
         # over the cutoff window, which is what makes series comparable across
-        # units; the `*_z_weighted` columns are the standard deviations that
+        # units; the `*_z_<VARIANT>` columns are the standard deviations that
         # normalization was applied to, and are the honest scale when the
         # question is "how unusual is this month" rather than "how does this
         # unit compare to that one".
@@ -412,8 +422,8 @@ def build_outputs(
                 (f"G_{g}_int", f"{g}_intensity"),
             ):
                 for src_col, out_col in (
-                    (f"{stem}_weighted", label),
-                    (f"{stem}_z_weighted", f"{label}_z"),
+                    (f"{stem}_{VARIANT}", label),
+                    (f"{stem}_z_{VARIANT}", f"{label}_z"),
                 ):
                     if src_col in attr_df.columns:
                         renames[src_col] = out_col

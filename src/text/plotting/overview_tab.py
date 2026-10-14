@@ -201,7 +201,7 @@ function countryTable(s) {
 
 function render() {
     document.getElementById('window').textContent =
-        `${weekText()}. "1.8× usual" = this week's coverage vs an average week of the comparison period (Baker index: each source standardized by its 2024 variation, weighted by articles); "–" = no source with 2024 data covers it this week. Below it, articles this week. Ranked by articles above an average week. "↑ N wks above 2024" = the 4-week average has stayed 1.5× its 2024 level for N weeks (long crises stop bursting). Updated ${O.generated}.`;
+        `${weekText()}. "1.8× usual" = this week's coverage vs an average week of the comparison period (Baker index: each source standardized by its 2024 variation, averaged over sources that published in at least half of 2024's weeks; regions average their countries); "–" = none of those sources covers it this week. Below it, articles this week. Ranked by articles above an average week. "↑ N wks above 2024" = the 4-week average has stayed 1.5× its 2024 level for N weeks (long crises stop bursting). Updated ${O.generated}.`;
     const reg = O.units.region || {rows: [], fading: [], kpi: {articles: 0, usual: [0, 0, 0, 0], subtopics: 0, countries: 0, new: 0}};
     const rows = byScore(reg.rows);
     const fading = [...reg.fading].sort((a, b) => b.n - a.n).slice(0, 2);

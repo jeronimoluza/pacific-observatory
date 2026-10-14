@@ -26,6 +26,22 @@ from src.text.analysis.baseline import baseline_mask
 warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
 
 
+def panel_cols(z_cols: List[str], sources: List[str], panel: set[str] | None):
+    """The z columns of panel sources (all of them when ``panel`` is None).
+
+    A column belongs to the longest source key it starts with, so a key that
+    prefixes another (``x_the`` and ``x_the_news``) is not mistaken for it.
+    """
+    if panel is None:
+        return z_cols
+    by_length = sorted(sources, key=len, reverse=True)
+    return [
+        z
+        for z in z_cols
+        if next((s for s in by_length if z.startswith(f"{s}_")), None) in panel
+    ]
+
+
 def _attach(df: pd.DataFrame, new_cols: dict) -> pd.DataFrame:
     """Add all of `new_cols` to `df` in a single concat.
 
@@ -48,16 +64,23 @@ warnings.filterwarnings(
 class IndexCalculator:
     """Calculates standardized indices following EPU methodology."""
 
-    def __init__(self, cutoff_start_date: str | None, cutoff_end_date: str | None):
+    def __init__(
+        self,
+        cutoff_start_date: str | None,
+        cutoff_end_date: str | None,
+        panel: set[str] | None = None,
+    ):
         """
         Initialize the IndexCalculator.
 
         Args:
             cutoff_start_date: Inclusive baseline start date.
             cutoff_end_date: Inclusive baseline end date.
+            panel: Sources in the unweighted mean (``baker.panel``); None = all.
         """
         self.cutoff_start_date = cutoff_start_date
         self.cutoff_end_date = cutoff_end_date
+        self.panel = panel
         self.stds: dict = {}
         self.scaling_factors: dict = {}
 
@@ -245,7 +268,9 @@ class IndexCalculator:
         df = _attach(df, new_cols)
 
         # Aggregate (unweighted and weighted)
-        df[f"{index_name}_z_unweighted"] = df[z_cols].mean(axis=1, skipna=True)
+        df[f"{index_name}_z_unweighted"] = df[
+            panel_cols(z_cols, sources, self.panel)
+        ].mean(axis=1, skipna=True)
 
         weighted = np.zeros(len(df))
         for z_col in z_cols:

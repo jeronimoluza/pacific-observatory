@@ -7,14 +7,12 @@ this week, with:
   >= 2.5x expected from the trailing 26-week share, >= 5 articles, Poisson
   p < 1e-4). A region or subregion row is a group bursting in >= 1 of its
   countries.
-- Ratio vs usual, weekly Baker as the pipeline's weighted index (epu.py):
-  X_it = group count / articles of source i in week t, sigma_i = std of X_it
-  over 2024, Z_t = sum_i w_it X_it / sigma_i with w_it = source articles / unit
-  articles, so Z_t = sum_i (C_it / sigma_i) / A_t. Sources with no 2024
-  variation drop out, as in the pipeline. Ratio = Z this week / mean Z over a
-  comparison period (2024, the 52, 26 or 8 weeks before). Sigma is always
-  2024. Units sum the per-country numerators and articles, so a region pools
-  all its sources (not a sum of country indices).
+- Ratio vs usual: the weekly Baker index the build writes to
+  ``weekly/baker.parquet`` (``src/text/analysis/baker.py``: plain mean of
+  per-source shares over their 2024 std, over the source panel; regions and
+  subregions combine their countries as Baker's European EPU). Ratio = index
+  this week / its mean over a comparison period (2024, the 52, 26 or 8 weeks
+  before).
 - N = articles mentioning the group this week. The dashboard ranks by
   N - N / ratio (articles above a usual week).
 - Badge: new, peaked k weeks ago, k weeks rising, k-th week; fading rows
@@ -23,12 +21,13 @@ this week, with:
   mean of Z is above ``ELEVATED`` times its 2024 mean. A group elevated for
   ``MIN_ELEVATED`` weeks with >= ``BURST_MIN`` articles this week is listed
   even when not bursting (a long crisis stops bursting once it is the usual).
-- A group none of whose articles this week come from a source with 2024
-  data has no ratio (``u``): Baker leaves those sources out.
+- A group none of whose articles this week come from a panel source has no
+  ratio (``u``): Baker leaves the other sources out.
 
-Days with suspect source dumps are dropped as in ``weekly.py``. Reads each
-country's ``daily/`` files (``text build --daily-history``, which writes the
-per-source ``sources_terms_daily.parquet``). Writes
+Days with suspect source dumps are dropped from the counts as in
+``weekly.py``. Reads each country's ``daily/`` files and every unit's
+``weekly/baker.parquet`` (a full ``text build --region <r> --daily-history``,
+aggregates included). Writes
 ``outputs/text/<region>/overview.json``, read by ``small_dashboard_concepts.py``.
 
 Run: python src/text/analysis/explorations/overview.py [--region ssa]
@@ -45,7 +44,7 @@ import pandas as pd
 
 from lead_lag import OUT
 from narratives import BURST_MIN, bursts
-from weekly import MASK_SHARE, MIN_WEEK, masked_days, weekly
+from weekly import MASK_SHARE, masked_days, weekly
 
 BASE = ("2024-01-01", "2024-12-31")
 PERIODS = ("2024", "52", "26", "8")  # comparison windows, weeks before this one
@@ -66,61 +65,29 @@ def week_end(d: pd.Series) -> pd.Series:
 
 
 def country_numbers(cdir, weeks: pd.DatetimeIndex) -> dict:
-    """Weekly Baker numerators, articles and counts (weeks x terms) for a country."""
+    """Weekly articles and term counts (weeks x terms) for a country."""
     d = cdir / "daily"
     sources = pd.read_parquet(d / "sources_daily.parquet")
     bad = masked_days(sources)
     drop = set(bad[bad > MASK_SHARE].index)
     sources = sources[~sources.date.isin(drop)]
     A = (
-        sources.assign(week=week_end(sources.date))
-        .groupby(["week", "source_key"])
+        sources.groupby(week_end(sources.date))
         .A_total.sum()
-        .unstack(fill_value=0)
         .reindex(weeks, fill_value=0)
     )
     t = pd.read_parquet(d / "sources_terms_daily.parquet")
     t = t[~t.date.isin(drop)]
-    t = (
-        t.assign(week=week_end(t.date))
-        .groupby(["source_key", "week", "term"], observed=True)["count"]
+    counts = (
+        t.groupby([week_end(t.date), "term"], observed=True)["count"]
         .sum()
-        .reset_index()
+        .unstack(fill_value=0)
+        .reindex(weeks, fill_value=0)
     )
-    t = t[t.week.isin(weeks)]
-    t["term"] = t.term.astype(str).str.replace(
+    counts.columns = counts.columns.astype(str).str.replace(
         r"^(group|concept)_(.*)_A_count$", r"\2", regex=True
     )
-    t["source_key"] = t.source_key.astype(str)
-    t["a"] = (
-        A.stack()
-        .reindex(pd.MultiIndex.from_frame(t[["week", "source_key"]]))
-        .to_numpy()
-    )
-    t["x"] = t["count"] / t["a"]
-
-    # sigma_i per (source, term) over 2024; zero weeks (articles, no mention) count.
-    in_base = (A.index >= BASE[0]) & (A.index <= BASE[1])
-    n = (A[in_base] > 0).sum()
-    b = t[(t.week >= BASE[0]) & (t.week <= BASE[1])]
-    s = b.groupby(["source_key", "term"]).x.agg(s1="sum", s2=lambda x: (x * x).sum())
-    nn = n.reindex(s.index.get_level_values("source_key")).to_numpy()
-    var = (s.s2 - s.s1**2 / nn) / (nn - 1)
-    sigma = np.sqrt(var.where((nn > 1) & (var > 0)))
-    t = t.join(sigma.rename("sigma"), on=["source_key", "term"])
-    t["c"] = t["count"] / t.sigma
-
-    zsum = t.dropna(subset=["c"]).pivot_table(
-        index="week", columns="term", values="c", aggfunc="sum", fill_value=0
-    )
-    counts = t.pivot_table(
-        index="week", columns="term", values="count", aggfunc="sum", fill_value=0
-    )
-    return {
-        "zsum": zsum.reindex(weeks, fill_value=0),
-        "articles": A.sum(axis=1),
-        "counts": counts.reindex(weeks, fill_value=0),
-    }
+    return {"articles": A, "counts": counts}
 
 
 def add(parts: list[dict]) -> dict:
@@ -130,10 +97,12 @@ def add(parts: list[dict]) -> dict:
     return out
 
 
-def z_index(num: dict) -> pd.DataFrame:
-    """Weekly Baker Z (weeks x groups): standardized counts / unit articles."""
-    A = num["articles"]
-    return num["zsum"].div(A.where(A >= MIN_WEEK), axis=0)
+def baker_index(unit_dir, weeks: pd.DatetimeIndex) -> pd.DataFrame:
+    """The unit's weekly Baker index of groups (weeks x groups), from the build."""
+    Z = pd.read_parquet(unit_dir / "weekly" / "baker.parquet")
+    Z = Z[[c for c in Z.columns if c.startswith("group_")]]
+    Z.columns = Z.columns.str.removeprefix("group_")
+    return Z.reindex(weeks)
 
 
 def ratios(Z: pd.DataFrame, groups: list[str]) -> dict[str, list]:
@@ -224,6 +193,10 @@ def main():
     for c, s in sub_of.items():
         subs.setdefault(s, []).append(c)
     units = {"region": list(dirs)}
+    unit_dirs = {"region": OUT / args.region / "_aggregate", **dirs}
+    unit_dirs.update(
+        {f"subregion:{s}": OUT / args.region / s / "_aggregate" for s in subs}
+    )
     units.update({f"subregion:{s}": cs for s, cs in sorted(subs.items())})
     units.update({c: [c] for c in sorted(dirs)})
 
@@ -234,7 +207,7 @@ def main():
         bursting = {
             c: set(flags[c].columns[flags[c].iloc[-1].to_numpy()]) for c in members
         }
-        Z = z_index(num)
+        Z = baker_index(unit_dirs[u], weeks)
         run = elevated_weeks(Z)
         now = num["counts"].iloc[-1]
         persistent = [
@@ -304,7 +277,7 @@ def main():
         "method": {
             "burst": "weekly count >= 2.5x expected from the previous 26 weeks' share, >= 5 articles, Poisson p < 1e-4 (per country)",
             "persistent": f"{SMOOTH}-week mean of the Baker index above {ELEVATED}x its 2024 mean for >= {MIN_ELEVATED} weeks in a row, >= {BURST_MIN} articles this week",
-            "ratio": "weekly Baker index (per-source share / its 2024 std, article-weighted across sources) this week / its mean over the comparison period",
+            "ratio": "weekly Baker index (per-source share / its 2024 std, plain mean over sources publishing in >= 50% of 2024 weeks; regions average their countries) this week / its mean over the comparison period",
         },
     }
     path = OUT / args.region / "overview.json"
