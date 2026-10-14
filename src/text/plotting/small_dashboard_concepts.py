@@ -2014,14 +2014,12 @@ body {
 }
 /* Active tab panel */
 #r5:checked ~ .shell #p5,
-#r6:checked ~ .shell #p6,
 #r0:checked ~ .shell #p0,
 #r1:checked ~ .shell #p1,
 #r3:checked ~ .shell #p3,
 #r4:checked ~ .shell #p4 { display: block; }
 /* Active tab button */
 #r5:checked ~ .shell .tabs label[for="r5"],
-#r6:checked ~ .shell .tabs label[for="r6"],
 #r0:checked ~ .shell .tabs label[for="r0"],
 #r1:checked ~ .shell .tabs label[for="r1"],
 #r3:checked ~ .shell .tabs label[for="r3"],
@@ -2150,7 +2148,6 @@ def build_host_html(
     policy_overview_html="",
     unit_blobs="",
     overview_html="",
-    country_html="",
 ):
     """Assemble the four-tab host page.
 
@@ -2165,16 +2162,12 @@ def build_host_html(
     articles which also read as policy commentary undercounts the thing it
     names. The uncertainty attribution tab is now the single topic index.
     """
-    # The Overview and Country tabs are there only when the region has overview
-    # data, and Overview then opens first; otherwise Policy Overview does.
+    # The Overview tab is there only when the region has overview data, and
+    # then opens first; otherwise Policy Overview does.
     if overview_html:
-        panels = [
-            ("r5", "p5", "Overview", overview_html),
-            ("r6", "p6", "Country", country_html),
-        ]
+        panels = [("r5", "p5", "Overview", overview_html)]
         overview = {
-            "__OVERVIEW_RADIO__": '<input class="tab-radio" type="radio" name="tabs" id="r5" checked>\n'
-            '<input class="tab-radio" type="radio" name="tabs" id="r6">\n',
+            "__OVERVIEW_RADIO__": '<input class="tab-radio" type="radio" name="tabs" id="r5" checked>\n',
             "__R4_CHECKED__": "",
             "__OVERVIEW_LABEL__": "".join(
                 f'<label for="{r}">{t}</label>\n            ' for r, _, t, _ in panels
@@ -2682,23 +2675,18 @@ def generate_dashboard_from_json(
         factors_expr='window.parent.__DASH__["actorFactors"]',
     )
 
-    # Overview and Country tabs: outputs/text/<region>/overview.json when it exists
+    # Overview tab: outputs/text/<region>/overview.json when it exists
     # (src/text/analysis/explorations/overview.py).
     overview_path = Path(
         overview_path or project_root / "outputs" / "text" / region / "overview.json"
     )
-    overview_html = country_html = ""
+    overview_html = ""
     if overview_path.exists():
-        from text.plotting.overview_tab import (
-            build_country_html,
-            build_overview_html,
-            unit_names,
-        )
+        from text.plotting.overview_tab import build_overview_html, unit_names
 
         overview = json.loads(overview_path.read_text(encoding="utf-8"))
         names = unit_names(region_subtree)
-        overview_html = build_overview_html(overview, names)
-        country_html = build_country_html(overview, hier_options, names)
+        overview_html = build_overview_html(overview, hier_options, names)
 
     region_label = _resolve_region_label(region_subtree, region)
     out = build_host_html(
@@ -2716,7 +2704,6 @@ def generate_dashboard_from_json(
         policy_overview_html=build_policy_overview_html(region),
         unit_blobs="\n".join(unit_blobs),
         overview_html=overview_html,
-        country_html=country_html,
     )
 
     dashboard_path = output_dir / f"{region}_concepts_dashboard.html"

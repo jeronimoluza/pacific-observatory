@@ -30,6 +30,10 @@ usual weekly count per comparison period, and its importance in the last
 ``FADE`` + 1 weeks (bursting, persistent or both). The dashboard computes the
 7-day states (Pressing, Came Back, Gone quiet, pace) from the browser clock.
 
+Series (``s`` per unit, every group listed in rows, fading or beat): the last
+``SERIES`` weeks of the weekly index, its mean per comparison period (the
+page divides one by the other: x usual) and the weeks it burst in.
+
 Days with suspect source dumps are dropped from the counts as in
 ``weekly.py``. Reads each country's ``daily/`` files and every unit's
 ``weekly/baker.parquet`` (a full ``text build --region <r> --daily-history``,
@@ -61,6 +65,7 @@ SMOOTH = 4  # weeks averaged before comparing with 2024
 MIN_ELEVATED = 8  # weeks in a row for a group to count as persistent
 BEAT_DAYS = 21  # 7-day window + the 14 days before it (Came Back)
 HISTORY = 10  # 2024 articles for a group to "come back"
+SERIES = 52  # weeks of index per card
 
 
 def last_week(today: date) -> pd.Timestamp:
@@ -198,6 +203,27 @@ def beat(num: dict, F: pd.DataFrame, Z: pd.DataFrame, groups: set[str]) -> dict:
     }
 
 
+def series(Z: pd.DataFrame, F: pd.DataFrame, groups: list[str]) -> dict:
+    """Last SERIES weeks of each group's index, its period means and burst weeks."""
+    Z = Z.reindex(columns=groups)
+    past = Z.iloc[:-1]
+    means = [past.loc[BASE[0] : BASE[1]].mean()] + [
+        past.iloc[-int(p) :].mean() for p in PERIODS[1:]
+    ]
+    tail = Z.iloc[-SERIES:]
+    burst = F.reindex(columns=groups, fill_value=False).iloc[-SERIES:].to_numpy()
+    out = {}
+    for k, g in enumerate(groups):
+        row = {
+            "z": [None if pd.isna(x) else int(round(x)) for x in tail[g]],
+            "m": [_num(m[g]) for m in means],
+        }
+        if burst[:, k].any():
+            row["f"] = np.flatnonzero(burst[:, k]).tolist()
+        out[g] = row
+    return out
+
+
 def badge(F: np.ndarray, N: np.ndarray) -> list:
     """Status of a group from its burst flags F and counts N (last = this week)."""
     if not F[-1]:
@@ -311,17 +337,18 @@ def main():
             lst[:] = [r for r in lst if r["g"] not in covered]
         unit = {"rows": rows, "fading": fading}
         unit["beat"] = beat(num, F, Z, set(label))
-        if u == "region":
-            A = num["articles"]
-            unit["kpi"] = {
-                "articles": int(A.iloc[-1]),
-                "usual": usual_articles(A),
-                "subtopics": int(F.iloc[-1].sum()),
-                "countries": sum(1 for c in members if bursting[c]),
-                "new": sum(
-                    int((flags[c].iloc[-1] & ~flags[c].iloc[-2]).sum()) for c in members
-                ),
-            }
+        shown = [r["g"] for r in rows + fading] + list(unit["beat"]["g"])
+        unit["s"] = series(Z, F, list(dict.fromkeys(shown)))
+        A = num["articles"]
+        unit["kpi"] = {
+            "articles": int(A.iloc[-1]),
+            "usual": usual_articles(A),
+            "subtopics": int(F.iloc[-1].sum()),
+            "countries": sum(1 for c in members if bursting[c]),
+            "new": sum(
+                int((flags[c].iloc[-1] & ~flags[c].iloc[-2]).sum()) for c in members
+            ),
+        }
         if rows or fading or unit["beat"]["g"]:
             out_units[u] = unit
 
@@ -332,6 +359,7 @@ def main():
         "periods": list(PERIODS),
         "asof": f"{asof:%Y-%m-%dT%H:%MZ}",
         "beat_start": f"{days[0]:%Y-%m-%d}",
+        "series_start": f"{weeks[-SERIES]:%Y-%m-%d}",
         "subregions": {s: sorted(cs) for s, cs in sorted(subs.items())},
         "labels": {
             g: label.get(g, g)
