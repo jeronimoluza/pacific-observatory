@@ -3,10 +3,38 @@ the country's local currency. Split out of `stage_b` to keep it under 500 lines.
 
 from __future__ import annotations
 
+import functools
+import os
+from datetime import datetime, timezone
+
 import pandas as pd
 
 from prices.enrich.stages.prepare import month_of
 from prices.fx import attach as fx
+
+
+FX_MAX_LAG_DAYS = 3
+
+
+@functools.lru_cache(maxsize=4)
+def _cache_last_date(path: str, mtime: float) -> pd.Timestamp:
+    return pd.to_datetime(pd.read_csv(path, usecols=["date"])["date"]).max()
+
+
+def require_fresh_fx(end: pd.Timestamp, cache_path=fx.PRICES_FX_CACHE) -> None:
+    """Stop when the FX cache ends more than `FX_MAX_LAG_DAYS` before the data does.
+
+    Stage B only reads the cache (`fx-refresh` is the one step that fetches), so
+    stale rates would otherwise be forward-filled silently. Checked against the
+    cache's overall last date: retired codes (HRK, BGN, SLL, ZWL) end early.
+    """
+    upto = min(end, pd.Timestamp(datetime.now(timezone.utc).date()))
+    last = _cache_last_date(str(cache_path), os.path.getmtime(cache_path))
+    if last < upto - pd.Timedelta(days=FX_MAX_LAG_DAYS):
+        raise RuntimeError(
+            f"FX cache {cache_path} ends {last.date()}, data runs to {upto.date()}: "
+            "run `run.py prices fx-refresh` first"
+        )
 
 
 def month_rates(pm: pd.DataFrame, local: str) -> pd.DataFrame:
@@ -19,6 +47,7 @@ def month_rates(pm: pd.DataFrame, local: str) -> pd.DataFrame:
     known = pm["month"].dropna()
     start = pd.to_datetime(known.min(), format="%Y-%m")
     end = pd.to_datetime(known.max(), format="%Y-%m") + pd.offsets.MonthEnd(0)
+    require_fresh_fx(end)
     currencies = sorted(set(pm["currency"].dropna()) | {local})
     days = pd.DataFrame(
         [(c, d) for c in currencies for d in (start, end)], columns=["currency", "observation_date"]
