@@ -14,7 +14,9 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Callable, Iterable
 
+import numpy as np
 import pandas as pd
+from pandas.api.types import union_categoricals
 
 from src.text.analysis import annotate, source_counts
 from src.text.analysis.outputs import build_outputs
@@ -205,30 +207,56 @@ def _daily_backfill_cutoff(cached_df, daily_tail_start):
 
 POOLED_DAILY = "pooled_daily.parquet"
 SOURCES_DAILY = "sources_daily.parquet"
+SOURCES_TERMS_DAILY = "sources_terms_daily.parquet"
 SOURCE_DAILY_COLS = ["A_total", "E_count", "P_count", "U_count", "EPU_count"]
+TERM_PREFIXES = ("group_", "concept_")
+
+
+def _term_rows(source_key: str, daily: pd.DataFrame) -> pd.DataFrame:
+    """Non-zero (date, term, count) rows of a source's group/concept counts."""
+    cols = [
+        c
+        for c in daily.columns
+        if c.startswith(TERM_PREFIXES) and c.endswith("_A_count")
+    ]
+    values = daily[cols].fillna(0).to_numpy()
+    day, term = np.nonzero(values)
+    return pd.DataFrame(
+        {
+            "source_key": pd.Categorical([source_key] * len(day)),
+            "date": pd.to_datetime(daily.index[day], format="%Y-%m-%d"),
+            "term": pd.Categorical.from_codes(term, categories=cols),
+            "count": values[day, term].astype("int32"),
+        }
+    )
 
 
 class DailyAccumulator:
     """Collects per-source daily counts from `annotate_source` threads.
 
-    Keeps one country-pooled frame (sum over sources) plus each source's
-    article totals, not every source's full daily matrix: a country with a
-    hundred sources would otherwise hold gigabytes of mostly-zero rows.
+    Keeps one country-pooled frame (sum over sources), each source's article
+    totals, and each source's group/concept counts as non-zero long rows (for
+    per-source standardization), not every source's full daily matrix: a
+    country with a hundred sources would otherwise hold gigabytes of
+    mostly-zero rows.
     """
 
     def __init__(self):
         self._lock = threading.Lock()
         self.pooled: pd.DataFrame | None = None
         self.sources: list[pd.DataFrame] = []
+        self.terms: list[pd.DataFrame] = []
 
     def __call__(self, source_key: str, daily: pd.DataFrame) -> None:
         per_source = daily[SOURCE_DAILY_COLS].reset_index(names="date")
         per_source.insert(0, "source_key", source_key)
+        terms = _term_rows(source_key, daily)
         with self._lock:
             self.pooled = (
                 daily if self.pooled is None else self.pooled.add(daily, fill_value=0)
             )
             self.sources.append(per_source)
+            self.terms.append(terms)
 
     def write(self, daily_dir: Path) -> None:
         daily_dir.mkdir(parents=True, exist_ok=True)
@@ -241,6 +269,15 @@ class DailyAccumulator:
         sources = pd.concat(self.sources, ignore_index=True)
         sources["date"] = pd.to_datetime(sources["date"], format="%Y-%m-%d")
         sources.to_parquet(daily_dir / SOURCES_DAILY, index=False)
+        terms = pd.DataFrame(
+            {
+                "source_key": union_categoricals([t.source_key for t in self.terms]),
+                "date": np.concatenate([t.date.to_numpy() for t in self.terms]),
+                "term": union_categoricals([t.term for t in self.terms]),
+                "count": np.concatenate([t["count"].to_numpy() for t in self.terms]),
+            }
+        )
+        terms.to_parquet(daily_dir / SOURCES_TERMS_DAILY, index=False)
 
 
 # ── Annotation gate (decides full / tail / skip) ─────────────────────

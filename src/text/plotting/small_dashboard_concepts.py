@@ -208,6 +208,13 @@ PALETTE = [
 ]
 
 
+def themed(html: str) -> str:
+    """Give a page the World Bank careers look (``overview_tab.THEME_HEAD``)."""
+    from text.plotting.overview_tab import THEME_HEAD
+
+    return html.replace("</head>", THEME_HEAD + "</head>", 1)
+
+
 def escape_srcdoc(s):
     """Minimal HTML escape for content inside srcdoc='...' (single-quoted).
     Only & < > ' need escaping; double quotes pass through unescaped, which
@@ -2006,11 +2013,15 @@ body {
     background: #f5f6f8;
 }
 /* Active tab panel */
+#r5:checked ~ .shell #p5,
+#r6:checked ~ .shell #p6,
 #r0:checked ~ .shell #p0,
 #r1:checked ~ .shell #p1,
 #r3:checked ~ .shell #p3,
 #r4:checked ~ .shell #p4 { display: block; }
 /* Active tab button */
+#r5:checked ~ .shell .tabs label[for="r5"],
+#r6:checked ~ .shell .tabs label[for="r6"],
 #r0:checked ~ .shell .tabs label[for="r0"],
 #r1:checked ~ .shell .tabs label[for="r1"],
 #r3:checked ~ .shell .tabs label[for="r3"],
@@ -2101,10 +2112,10 @@ body {
 __UNIT_BLOBS__
 </head>
 <body>
-<input class="tab-radio" type="radio" name="tabs" id="r0">
+__OVERVIEW_RADIO__<input class="tab-radio" type="radio" name="tabs" id="r0">
 <input class="tab-radio" type="radio" name="tabs" id="r1">
 <input class="tab-radio" type="radio" name="tabs" id="r3">
-<input class="tab-radio" type="radio" name="tabs" id="r4" checked>
+<input class="tab-radio" type="radio" name="tabs" id="r4"__R4_CHECKED__>
 <div class="shell">
     <div class="header">
         <div>
@@ -2112,14 +2123,14 @@ __UNIT_BLOBS__
             <div class="subtitle">__HOST_SUBTITLE__</div>
         </div>
         <div class="tabs" role="tablist">
-            <label for="r4">Policy Overview</label>
+            __OVERVIEW_LABEL__<label for="r4">Policy Overview</label>
             <label for="r0">Uncertainty Topics</label>
             <label for="r1">Uncertainty Topics (Ranked)</label>
             <label for="r3">Uncertainty Actors</label>
             <a href="__SCHEMA_URL__" target="_blank" rel="noopener">Keyword Schema &#8599;</a>
         </div>
     </div>
-    <div class="tab-panel" id="p0"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SERIES_SRCDOC__' title="Uncertainty Topics"></iframe></div></div>
+    __OVERVIEW_PANEL__<div class="tab-panel" id="p0"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SERIES_SRCDOC__' title="Uncertainty Topics"></iframe></div></div>
     <div class="tab-panel" id="p1"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SRCDOC__' title="Uncertainty Topics (Ranked)"></iframe></div></div>
     <div class="tab-panel" id="p4"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_OVERVIEW_SRCDOC__' title="Policy Overview"></iframe></div></div>
     <div class="tab-panel" id="p3"><div class="panel-body"><iframe class="tab-frame" srcdoc='__ACTORS_EPU_SRCDOC__' title="Uncertainty Actors"></iframe></div></div>
@@ -2138,6 +2149,8 @@ def build_host_html(
     keywords_schema=None,
     policy_overview_html="",
     unit_blobs="",
+    overview_html="",
+    country_html="",
 ):
     """Assemble the four-tab host page.
 
@@ -2152,8 +2165,39 @@ def build_host_html(
     articles which also read as policy commentary undercounts the thing it
     names. The uncertainty attribution tab is now the single topic index.
     """
+    # The Overview and Country tabs are there only when the region has overview
+    # data, and Overview then opens first; otherwise Policy Overview does.
+    if overview_html:
+        panels = [
+            ("r5", "p5", "Overview", overview_html),
+            ("r6", "p6", "Country", country_html),
+        ]
+        overview = {
+            "__OVERVIEW_RADIO__": '<input class="tab-radio" type="radio" name="tabs" id="r5" checked>\n'
+            '<input class="tab-radio" type="radio" name="tabs" id="r6">\n',
+            "__R4_CHECKED__": "",
+            "__OVERVIEW_LABEL__": "".join(
+                f'<label for="{r}">{t}</label>\n            ' for r, _, t, _ in panels
+            ),
+            "__OVERVIEW_PANEL__": "".join(
+                f'<div class="tab-panel" id="{p}"><div class="panel-body"><iframe class="tab-frame" srcdoc=\''
+                + escape_srcdoc(themed(h))
+                + f'\' title="{t}"></iframe></div></div>\n    '
+                for _, p, t, h in panels
+            ),
+        }
+    else:
+        overview = {
+            "__OVERVIEW_RADIO__": "",
+            "__R4_CHECKED__": " checked",
+            "__OVERVIEW_LABEL__": "",
+            "__OVERVIEW_PANEL__": "",
+        }
+    host = themed(HOST_TEMPLATE)
+    for k, v in overview.items():
+        host = host.replace(k, v)
     return (
-        HOST_TEMPLATE.replace("__HOST_TITLE__", host_title)
+        host.replace("__HOST_TITLE__", host_title)
         .replace("__HOST_SUBTITLE__", host_subtitle)
         .replace("__SCHEMA_URL__", SCHEMA_URL)
         .replace("__UNIT_BLOBS__", unit_blobs)
@@ -2162,10 +2206,12 @@ def build_host_html(
             "__KEYWORDS_SCHEMA_JSON__",
             json.dumps(keywords_schema or {}, ensure_ascii=False).replace("</", "<\\/"),
         )
-        .replace("__TOPIC_SERIES_SRCDOC__", escape_srcdoc(topic_series_html))
-        .replace("__TOPIC_SRCDOC__", escape_srcdoc(topic_html))
-        .replace("__ACTORS_EPU_SRCDOC__", escape_srcdoc(actors_epu_html))
-        .replace("__POLICY_OVERVIEW_SRCDOC__", escape_srcdoc(policy_overview_html))
+        .replace("__TOPIC_SERIES_SRCDOC__", escape_srcdoc(themed(topic_series_html)))
+        .replace("__TOPIC_SRCDOC__", escape_srcdoc(themed(topic_html)))
+        .replace("__ACTORS_EPU_SRCDOC__", escape_srcdoc(themed(actors_epu_html)))
+        .replace(
+            "__POLICY_OVERVIEW_SRCDOC__", escape_srcdoc(themed(policy_overview_html))
+        )
     )
 
 
@@ -2508,7 +2554,9 @@ def _concept_unit_payload(path: Path) -> tuple[dict, dict, set, dict]:
     return series, {k: factors.get(k) for k in keys}, groups, pool
 
 
-def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
+def generate_dashboard_from_json(
+    json_path, region: str, schema_path, overview_path=None
+) -> Path:
     """Generate the concepts dashboard for ``region``.
 
     Reads the publish region JSON and ``keywords_schema.json`` and writes
@@ -2634,6 +2682,24 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         factors_expr='window.parent.__DASH__["actorFactors"]',
     )
 
+    # Overview and Country tabs: outputs/text/<region>/overview.json when it exists
+    # (src/text/analysis/explorations/overview.py).
+    overview_path = Path(
+        overview_path or project_root / "outputs" / "text" / region / "overview.json"
+    )
+    overview_html = country_html = ""
+    if overview_path.exists():
+        from text.plotting.overview_tab import (
+            build_country_html,
+            build_overview_html,
+            unit_names,
+        )
+
+        overview = json.loads(overview_path.read_text(encoding="utf-8"))
+        names = unit_names(region_subtree)
+        overview_html = build_overview_html(overview, names)
+        country_html = build_country_html(overview, hier_options, names)
+
     region_label = _resolve_region_label(region_subtree, region)
     out = build_host_html(
         series_html,
@@ -2649,6 +2715,8 @@ def generate_dashboard_from_json(json_path, region: str, schema_path) -> Path:
         keywords_schema=schema,
         policy_overview_html=build_policy_overview_html(region),
         unit_blobs="\n".join(unit_blobs),
+        overview_html=overview_html,
+        country_html=country_html,
     )
 
     dashboard_path = output_dir / f"{region}_concepts_dashboard.html"
@@ -2672,6 +2740,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--schema", default=None, help="default: dashboard_data/keywords_schema.json"
     )
+    parser.add_argument(
+        "--overview",
+        default=None,
+        help="default: outputs/text/<region>/overview.json (tab skipped if missing)",
+    )
     args = parser.parse_args()
 
     json_path = (
@@ -2683,4 +2756,4 @@ if __name__ == "__main__":
     for p in (json_path, schema_path):
         if not p.exists():
             raise SystemExit(f"{p} not found. Run 'po text publish' first.")
-    generate_dashboard_from_json(json_path, args.region, schema_path)
+    generate_dashboard_from_json(json_path, args.region, schema_path, args.overview)
