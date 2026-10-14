@@ -24,6 +24,12 @@ this week, with:
 - A group none of whose articles this week come from a panel source has no
   ratio (``u``): Baker leaves the other sources out.
 
+Heartbeat (``beat`` per unit): the last ``BEAT_DAYS`` UTC days, ending
+today, of daily articles and group counts (masked days null), each group's
+usual weekly count per comparison period, and its importance in the last
+``FADE`` + 1 weeks (bursting, persistent or both). The dashboard computes the
+7-day states (Pressing, Came Back, Gone quiet, pace) from the browser clock.
+
 Days with suspect source dumps are dropped from the counts as in
 ``weekly.py``. Reads each country's ``daily/`` files and every unit's
 ``weekly/baker.parquet`` (a full ``text build --region <r> --daily-history``,
@@ -37,7 +43,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -53,6 +59,8 @@ TOP_CONCEPTS = 3
 ELEVATED = 1.5  # x the 2024 level
 SMOOTH = 4  # weeks averaged before comparing with 2024
 MIN_ELEVATED = 8  # weeks in a row for a group to count as persistent
+BEAT_DAYS = 21  # 7-day window + the 14 days before it (Came Back)
+HISTORY = 10  # 2024 articles for a group to "come back"
 
 
 def last_week(today: date) -> pd.Timestamp:
@@ -64,8 +72,11 @@ def week_end(d: pd.Series) -> pd.Series:
     return d + pd.to_timedelta((6 - d.dt.dayofweek) % 7, unit="D")
 
 
-def country_numbers(cdir, weeks: pd.DatetimeIndex) -> dict:
-    """Weekly articles and term counts (weeks x terms) for a country."""
+def country_numbers(cdir, weeks: pd.DatetimeIndex, days: pd.DatetimeIndex) -> dict:
+    """Weekly and daily articles and term counts (periods x terms) for a country.
+
+    Daily values on masked days are NaN.
+    """
     d = cdir / "daily"
     sources = pd.read_parquet(d / "sources_daily.parquet")
     bad = masked_days(sources)
@@ -84,10 +95,22 @@ def country_numbers(cdir, weeks: pd.DatetimeIndex) -> dict:
         .unstack(fill_value=0)
         .reindex(weeks, fill_value=0)
     )
-    counts.columns = counts.columns.astype(str).str.replace(
-        r"^(group|concept)_(.*)_A_count$", r"\2", regex=True
+    daily = (
+        t[t.date.isin(days)]
+        .groupby(["date", "term"], observed=True)["count"]
+        .sum()
+        .unstack(fill_value=0)
+        .reindex(days, fill_value=0)
     )
-    return {"articles": A, "counts": counts}
+    for c in (counts, daily):
+        c.columns = c.columns.astype(str).str.replace(
+            r"^(group|concept)_(.*)_A_count$", r"\2", regex=True
+        )
+    dA = sources.groupby("date").A_total.sum().reindex(days, fill_value=0)
+    masked = days.isin(list(drop))
+    dA[masked] = np.nan
+    daily[masked] = np.nan
+    return {"articles": A, "counts": counts, "d_articles": dA, "d_counts": daily}
 
 
 def add(parts: list[dict]) -> dict:
@@ -119,13 +142,13 @@ def ratios(Z: pd.DataFrame, groups: list[str]) -> dict[str, list]:
     return out
 
 
-def elevated_weeks(Z: pd.DataFrame) -> pd.Series:
-    """Weeks in a row, ending this week, with smoothed Z above ELEVATED x 2024."""
+def elevated_weeks(Z: pd.DataFrame, end: int = 0) -> pd.Series:
+    """Weeks in a row, ending ``end`` weeks ago, with smoothed Z above ELEVATED x 2024."""
     base = Z.loc[BASE[0] : BASE[1]].mean()
     up = (
         Z.rolling(SMOOTH, min_periods=SMOOTH).mean().gt(ELEVATED * base.where(base > 0))
     )
-    U = up.to_numpy(dtype=bool)[::-1]
+    U = up.to_numpy(dtype=bool)[::-1][end:]
     run = np.where(U.all(axis=0), len(U), np.argmax(~U, axis=0))
     return pd.Series(run, index=Z.columns)
 
@@ -135,6 +158,44 @@ def usual_articles(A: pd.Series) -> list[float]:
     return [round(float(past.loc[BASE[0] : BASE[1]].mean()), 1)] + [
         round(float(past.iloc[-int(p) :].mean()), 1) for p in PERIODS[1:]
     ]
+
+
+def _num(x) -> float | None:
+    return None if pd.isna(x) else round(float(x), 1)
+
+
+def beat(num: dict, F: pd.DataFrame, Z: pd.DataFrame, groups: set[str]) -> dict:
+    """Heartbeat inputs of a unit: daily counts of the last BEAT_DAYS days.
+
+    Groups listed: mentioned in those days or important (bursting or
+    persistent in the last FADE + 1 weeks; "bp" when both).
+    """
+    burst = set(F.columns[F.iloc[-1 - FADE :].any().to_numpy()])
+    runs = [elevated_weeks(Z, k) for k in range(FADE + 1)]
+    run = pd.concat(runs, axis=1).max(axis=1)
+    persistent = set(run.index[run >= MIN_ELEVATED])
+    D = num["d_counts"]
+    mentioned = set(D.columns[D.fillna(0).sum() > 0])
+    W = num["counts"]
+    h2024 = W.loc[BASE[0] : BASE[1]].sum()
+    out = {}
+    for g in sorted((mentioned | burst | persistent) & groups):
+        imp = ("b" if g in burst else "") + ("p" if g in persistent else "")
+        d = D[g] if g in D else num["d_articles"] * 0  # zeros, masked days kept
+        row = {
+            "d": [None if pd.isna(x) else int(x) for x in d],
+            "u": usual_articles(W[g]) if g in W else [0.0] * len(PERIODS),
+        }
+        if imp:
+            row["i"] = imp
+        if h2024.get(g, 0) >= HISTORY:
+            row["h"] = 1
+        out[g] = row
+    return {
+        "a": [_num(x) for x in num["d_articles"]],
+        "ua": usual_articles(num["articles"]),
+        "g": out,
+    }
 
 
 def badge(F: np.ndarray, N: np.ndarray) -> list:
@@ -178,6 +239,8 @@ def main():
 
     last = last_week(date.today())
     weeks = pd.date_range("2015-01-04", last, freq="W-SUN")
+    asof = datetime.now(timezone.utc)
+    days = pd.date_range(end=pd.Timestamp(asof.date()), periods=BEAT_DAYS, freq="D")
     paths = sorted((OUT / args.region).glob("*/*/daily/sources_terms_daily.parquet"))
     dirs = {p.parents[1].name: p.parents[1] for p in paths}
     sub_of = {p.parents[1].name: p.parents[2].name for p in paths}
@@ -185,7 +248,7 @@ def main():
 
     nums, flags = {}, {}
     for name, cdir in dirs.items():
-        nums[name] = country_numbers(cdir, weeks)
+        nums[name] = country_numbers(cdir, weeks, days)
         hit = bursts(weekly(cdir))[0]
         flags[name] = hit.reindex(weeks, fill_value=False).astype(bool)
 
@@ -247,6 +310,7 @@ def main():
             covered = set().union(*[ancestors(r["g"]) for r in lst])
             lst[:] = [r for r in lst if r["g"] not in covered]
         unit = {"rows": rows, "fading": fading}
+        unit["beat"] = beat(num, F, Z, set(label))
         if u == "region":
             A = num["articles"]
             unit["kpi"] = {
@@ -258,7 +322,7 @@ def main():
                     int((flags[c].iloc[-1] & ~flags[c].iloc[-2]).sum()) for c in members
                 ),
             }
-        if rows or fading:
+        if rows or fading or unit["beat"]["g"]:
             out_units[u] = unit
 
     out = {
@@ -266,12 +330,14 @@ def main():
         "generated": f"{date.today():%Y-%m-%d}",
         "week": f"{last:%Y-%m-%d}",
         "periods": list(PERIODS),
+        "asof": f"{asof:%Y-%m-%dT%H:%MZ}",
+        "beat_start": f"{days[0]:%Y-%m-%d}",
         "subregions": {s: sorted(cs) for s, cs in sorted(subs.items())},
         "labels": {
             g: label.get(g, g)
             for u in out_units.values()
-            for lst in (u["rows"], u["fading"])
-            for g in [r["g"] for r in lst]
+            for g in [r["g"] for lst in (u["rows"], u["fading"]) for r in lst]
+            + list(u["beat"]["g"])
         },
         "units": out_units,
         "method": {

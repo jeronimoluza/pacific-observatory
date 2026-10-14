@@ -86,7 +86,9 @@ def index(
     )
     t = t[t.a > 0]
     if t.empty:  # no panel source (or none with articles)
-        return pd.DataFrame(index=A.index, dtype=float)
+        return pd.DataFrame(
+            index=A.index, columns=pd.Index([], dtype=object), dtype=float
+        )
     t["x"] = t["count"] / t["a"]
 
     # sigma over the baseline periods with articles; periods with no mention are x = 0.
