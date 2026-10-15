@@ -7,14 +7,16 @@ this week, with:
   >= 2.5x expected from the trailing 26-week share, >= 5 articles, Poisson
   p < 1e-4). A region or subregion row is a group bursting in >= 1 of its
   countries.
-- Ratio vs usual: the weekly Baker index (``baker.index``: plain mean of
-  per-source shares over their 2024 std, over the source panel; regions and
-  subregions combine their countries as Baker's European EPU, equal
-  weights). A source enters a group or concept only with >= ``MIN_BASE``
-  articles on it in 2024: a source that almost never covered it has a std
-  near 0 and its next few articles would swamp the mean. Ratio = index this
-  week / its mean over a comparison period (2024, the 52, 26 or 8 weeks
-  before).
+- Ratio vs usual: the weekly Baker index (``baker.index``, weighted: each
+  panel source's share of articles mentioning it over that share's std
+  across the 2024 weeks, averaged with weights = the source's share of the
+  week's articles among the sources entering it; 100 = the 2024 weeks'
+  mean; regions and subregions combine their countries as Baker's European
+  EPU, equal weights). A source enters a group or concept only with >=
+  ``MIN_BASE`` articles on it in 2024: a source that almost never covered it
+  has a std near 0 and its next few articles would swamp the mean. Ratio =
+  index this week / its mean over a comparison period (2024, the 52, 26 or
+  8 weeks before).
 - N = articles mentioning the group this week. The dashboard ranks by
   N - N / ratio (articles above a usual week).
 - Badge: new, peaked k weeks ago, k weeks rising, k-th week; fading rows
@@ -36,39 +38,32 @@ usual weekly count per comparison period, and its importance in the last
 Series (``s`` per unit), for every group listed in rows, fading or beat,
 and for the cards:
 
-- ``q``: per comparison window, the Baker index of the last ``DAYS`` days
-  (4 weeks ending on the week's last day, recomputed each week) on the
-  monthly index's scale with that window as T1 (``baker.monthly_family``:
-  per-source share over its std across T1's calendar months, mean over the
-  T1 panel, scaled so T1's months average 100; the same std and mean read a
-  week or a 4-week block, so 4 weeks are the mean of their weeks); stored /
-  100, so 2.3 reads "2.3x usual". T1 is 2024, or the 12 or 24 complete months
-  before this one (``PERIODS`` 52 and 104 weeks). Regions combine their
-  countries over the same T1 (``baker.combine_family``). ``hs``: the last
-  complete month at or above the last 4 weeks (null: none since 2015).
-- Chart (2024 as T1, from January 2024, x 100): ``b4`` the ``DAYS``-day
-  blocks counted back from t0 = ``data_end``, the last day with data
-  (``baker.stepped``: per-source std and mean 100 over the blocks entirely
-  inside 2024); ``m4`` the ``DAYS`` days ending every ``STEP`` days back
-  from t0, read with the blocks' std and mean (on a block's last day it is
-  that block); ``mo`` the monthly index up to the last complete month.
-  Regions scale each country by the std of its blocks (or months) over 2024.
+- Chart (x 100, 2024 = 100 at each frequency): ``wk`` the weekly index
+  (sigma and 100 from the 2024 weeks) for the last ``CHART_WEEKS`` weeks
+  ending t0 = ``week``, the last complete week; ``mo`` the monthly index
+  (sigma and 100 from the 2024 months) for the ``CHART_MONTHS`` months up to
+  the last complete one; ``nw``, ``nm`` their articles (theme lines:
+  mentions). The page draws their trailing means (3 months; 4, 3 or 2 weeks).
+- ``hs``: the month of the latest week ending >= 4 weeks before t0 whose
+  4-week mean of the weekly index is at or above the last 4 weeks' (null:
+  none since 2015). The page's headline and ranking read the last 4 weeks'
+  mean from ``wk`` (``q`` here, / 100: 2.3 reads "2.3x its 2024 level").
 - ``nd``, ``ns``: articles (theme lines: mentions) and panel and other
   sources mentioning it in the last ``DAYS`` days. The page ranks by
   ``above``: (n - n/q) / sqrt(n/q), the index above usual in counting noise.
-- ``tr`` (past 12 months as T1): 1 when the last week is above the last 4
-  weeks and each of the 3 weeks before it, -1 when below them. ``b``:
-  bursting this week.
-- ``w`` (region and subregions): per comparison window, the ``BY``
-  countries furthest above usual on the same scale, [country, q, n].
+- ``tr``: 1 when the last week's weekly index is above its 4-week mean and
+  each of the 3 weeks before it, -1 when below them. ``b``: bursting this
+  week.
+- ``w`` (region and subregions): the ``BY`` countries furthest above their
+  2024 level on the same rule, [country, q, n].
 
 Cards (``cards`` per unit): the top groups (no parent) with something listed
 in their tree; ``kids`` their subgroups.
 
 Themes (``outputs/text/<region>/themes_concept.json`` from ``themes.py``,
 stable ones that are not broad): per unit, series and heartbeat inputs for each theme line
-(``t:<k>``: the mean of its members' indices over their T1 means; summed
-member mentions) and member concept (``c:<id>``).
+(``t:<k>``: the mean of its members' indices over their 2024 means, at each
+frequency; summed member mentions) and member concept (``c:<id>``).
 
 Stories (``dc`` per unit, every group and theme in ``s``): the
 ``TOP_CONCEPTS`` concepts of its tree with the most articles above their
@@ -108,15 +103,7 @@ from lead_lag import OUT, ROOT
 
 sys.path[:0] = [str(ROOT), str(ROOT / "src")]
 from src.text.analysis import annotate  # noqa: E402
-from src.text.analysis.baker import (  # noqa: E402
-    block_start,
-    combine,
-    combine_family,
-    index,
-    monthly_family,
-    panel,
-    stepped,
-)
+from src.text.analysis.baker import combine, index, panel  # noqa: E402
 from src.text.analysis.main import _source_language  # noqa: E402
 from narratives import BURST_MIN, bursts  # noqa: E402
 from weekly import MASK_SHARE, masked_days, weekly  # noqa: E402
@@ -124,7 +111,7 @@ from weekly import MASK_SHARE, masked_days, weekly  # noqa: E402
 BASE = ("2024-01-01", "2024-12-31")
 PERIODS = ("2024", "52", "104")  # comparison windows: 2024, or weeks before this one
 DAYS = 28  # the ranking's period (4 weeks), ending on the week's last day
-FREQS = ["W", f"{DAYS}D"]  # read with the monthly index's sigma and mean
+MA = DAYS // 7  # weeks in the headline's mean of the weekly index
 FADE = 3  # weeks a stopped burst stays listed as fading
 TOP_CONCEPTS = 3
 ELEVATED = 1.5  # x the 2024 level
@@ -134,7 +121,8 @@ CO_SHARE = 0.5  # share of A's articles that mention B for A to fold into B
 CO_LIFT = 4  # that share over B's share of all articles
 BEAT_DAYS = 21  # 7-day window + the 14 days before it (Came Back)
 HISTORY = 10  # 2024 articles for a group to "come back"
-STEP = 7  # days between the chart's moving DAYS-day windows
+CHART_WEEKS = 30  # weekly points sent to the page (section 2 at most 22 + MA)
+CHART_MONTHS = 52  # monthly points (section 1 at most 4 years + 3)
 BY = 5  # countries per region card
 WHERE_MIN = 5  # articles in the last DAYS days for a country to be listed
 
@@ -153,7 +141,7 @@ def country_numbers(
 ) -> dict:
     """Weekly and daily articles and term counts (periods x terms) for a country,
     each term's articles and sources in the last DAYS days, and its articles
-    in the chart's moving DAYS days and calendar months (``chart_axes``).
+    in the chart's calendar months (``chart_axes``).
 
     Daily values on masked days are NaN.
     """
@@ -182,18 +170,16 @@ def country_numbers(
         .unstack(fill_value=0)
         .reindex(days, fill_value=0)
     )
-    span = pd.date_range(axes[1][0] - pd.Timedelta(days=DAYS - 1), axes[1][-1])
-    full = (
-        t[t.date >= span[0]]
-        .groupby(["date", "term"], observed=True)["count"]
+    nm = (
+        t[t.date >= axes[1][0]]
+        .groupby([t.date.dt.to_period("M").dt.to_timestamp(), "term"], observed=True)[
+            "count"
+        ]
         .sum()
         .unstack(fill_value=0)
-        .reindex(span, fill_value=0)
+        .reindex(axes[1], fill_value=0)
     )
-    n4 = full.rolling(DAYS).sum().reindex(axes[1])
-    nm = full.groupby(full.index.to_period("M")).sum()
-    nm = nm.set_axis(nm.index.to_timestamp()).reindex(axes[2], fill_value=0)
-    for c in (counts, daily, n4, nm):
+    for c in (counts, daily, nm):
         c.columns = c.columns.astype(str).str.replace(
             r"^(group|concept)_(.*)_A_count$", r"\2", regex=True
         )
@@ -215,7 +201,6 @@ def country_numbers(
         "d_articles": dA,
         "d_counts": daily,
         "nd": nd,
-        "n4": n4,
         "nm": nm,
         "src": src.to_dict(),
     }
@@ -246,18 +231,6 @@ def ratios(Z: pd.DataFrame, groups: list[str]) -> dict[str, list]:
     return out
 
 
-def baseline(p: str, end: pd.Timestamp) -> tuple[str, str]:
-    """T1 of comparison window p: 2024, or the complete calendar months in the
-    p weeks (12 or 24 months) before the month of ``end``."""
-    if p == "2024":
-        return BASE
-    first = end.to_period("M") - round(int(p) * 12 / 52)
-    return (
-        f"{first.to_timestamp():%Y-%m-%d}",
-        f"{end.to_period('M').to_timestamp() - pd.Timedelta(days=1):%Y-%m-%d}",
-    )
-
-
 def _terms(Z: pd.DataFrame) -> pd.DataFrame:
     Z.columns = Z.columns.astype(str).str.replace(
         r"^(group|concept)_(.*)_A_count$", r"\2", regex=True
@@ -265,47 +238,28 @@ def _terms(Z: pd.DataFrame) -> pd.DataFrame:
     return Z
 
 
-def indices(cdir, weeks: pd.DatetimeIndex, t0: pd.Timestamp) -> tuple:
-    """A country's weekly and monthly Baker index (periods x groups and concepts),
-    per comparison window the monthly index with that window as T1 (panel,
-    sigma and mean 100 over its calendar months) read also by week and by
-    DAYS-day block ending this week (``baker.monthly_family``), and the
-    chart's DAYS-day blocks counted back from ``t0`` with the same DAYS days
-    every STEP days read with their sigma and mean (``baker.stepped``, 2024).
+def indices(cdir, weeks: pd.DatetimeIndex) -> tuple:
+    """A country's weekly and monthly Baker index (periods x groups and
+    concepts), each its own index: sigma and 100 from the 2024 weeks or
+    months, the sources weighted by their articles (``baker.index``).
 
-    Weekly and monthly as the build's ``weekly/baker.parquet`` (same panel and
-    2024 baseline, from the raw daily files). Sources enter a term only with
-    >= MIN_BASE articles on it over the baseline.
+    Same panel and 2024 baseline as the build's ``weekly/baker.parquet``,
+    from the raw daily files. Sources enter a term only with >= MIN_BASE
+    articles on it over the baseline.
     """
     d = cdir / "daily"
     sources = pd.read_parquet(d / "sources_daily.parquet")
     terms = pd.read_parquet(d / "sources_terms_daily.parquet")
     P = panel(sources, *BASE)
     W, M = (
-        _terms(index(sources, terms, P, f, *BASE, min_base_articles=MIN_BASE))
+        _terms(
+            index(
+                sources, terms, P, f, *BASE, min_base_articles=MIN_BASE, weighted=True
+            )
+        )
         for f in ("W", "M")
     )
-    R = {}
-    for p in PERIODS:
-        T1 = baseline(p, weeks[-1])
-        fam = monthly_family(
-            sources,
-            terms,
-            panel(sources, *T1),
-            FREQS,
-            *T1,
-            min_base_articles=MIN_BASE,
-            anchor=weeks[-1],
-        )
-        R[p] = {f: _terms(Z) for f, Z in fam.items()}
-        R[p]["W"] = R[p]["W"].reindex(weeks)  # complete weeks: not the one under way
-    B, S = (
-        _terms(Z)
-        for Z in stepped(
-            sources, terms, P, f"{DAYS}D", STEP, *BASE, MIN_BASE, anchor=t0
-        )
-    )
-    return W.reindex(weeks), M, R, B, S
+    return W.reindex(weeks), M
 
 
 def week_hits(region: str, end: pd.Timestamp) -> dict[str, list[set]]:
@@ -454,92 +408,84 @@ def above(q: float | None, n: int) -> float | None:
     return (n - n / q) / np.sqrt(n / q)
 
 
+def last4(W: pd.DataFrame) -> pd.Series:
+    """The weekly index's mean over the last MA weeks (weeks with a value)."""
+    return W.iloc[-MA:].mean()
+
+
 def series(
     F: pd.DataFrame,
-    R: dict,
+    W: pd.DataFrame,
     nd: pd.Series,
     src: dict,
     groups: list[str],
 ) -> dict:
-    """Per group, per comparison window (the monthly index with it as T1 and
-    the same index by week and DAYS-day block, ``monthly_family``): the last
-    DAYS days (/ 100: x its usual) and the last earlier calendar month at or
-    above it. Also its articles and sources in those days, the weekly trend
-    and this week's burst flag."""
+    """Per group, from the weekly index: the month of the latest week ending
+    >= MA weeks before the last whose MA-week mean is at or above the last
+    MA weeks' (``hs``), the trend, its articles and sources in the last DAYS
+    days and this week's burst flag."""
     burst = F.reindex(columns=groups, fill_value=False).iloc[-1]
-    out = {
-        g: {
-            "q": [],
-            "hs": [],
+    W = W.reindex(columns=groups)
+    q, H = last4(W), W.rolling(MA, min_periods=1).mean().iloc[:-MA]
+    out = {}
+    for g in groups:
+        h = H[g][H[g] >= q[g]] if pd.notna(q[g]) else H[g].iloc[:0]
+        row = {
+            "hs": f"{h.index[-1]:%Y-%m}" if len(h) else None,
             "nd": int(nd.get(g, 0)),
             "ns": len(src.get(g, ())),
         }
-        for g in groups
-    }
-    for p in PERIODS:
-        M, W, B = (R[p][f].reindex(columns=groups) for f in ("M", *FREQS))
-        for g in groups:
-            row, q = out[g], B[g].iloc[-1]
-            row["q"].append(None if pd.isna(q) else round(float(q) / 100, 2))
-            h = M[g].iloc[:-1]  # complete months
-            h = h[h >= q] if pd.notna(q) else h.iloc[:0]
-            row["hs"].append(f"{h.index[-1]:%Y-%m}" if len(h) else None)
-            if (
-                p == PERIODS[1]
-            ):  # trend: the last week against the 3 before, around the level
-                w = W[g].iloc[-4:]
-                if w.notna().all() and pd.notna(q):
-                    if w.iloc[-1] > q and w.iloc[-1] > w.iloc[:-1].max():
-                        row["tr"] = 1
-                    elif w.iloc[-1] < q and w.iloc[-1] < w.iloc[:-1].min():
-                        row["tr"] = -1
-    for g in groups:
+        w = W[g].iloc[-MA:]  # trend: the last week against the ones before
+        if w.notna().all() and pd.notna(q[g]):
+            if w.iloc[-1] > q[g] and w.iloc[-1] > w.iloc[:-1].max():
+                row["tr"] = 1
+            elif w.iloc[-1] < q[g] and w.iloc[-1] < w.iloc[:-1].min():
+                row["tr"] = -1
         if burst[g]:
-            out[g]["b"] = 1
+            row["b"] = 1
+        out[g] = row
     return out
 
 
 def chart_axes(t0: pd.Timestamp) -> tuple:
-    """The chart's dates from 2024: DAYS-day blocks and the moving DAYS days
-    every STEP days, both ending on ``t0`` (the last day with data), and the
-    calendar months up to the last complete one."""
-    first = pd.Timestamp(block_start(BASE[0], f"{DAYS}D"))
-    blocks, steps = (
-        pd.date_range(end=t0, periods=(t0 - first).days // k + 1, freq=f"{k}D")
-        for k in (DAYS, STEP)
-    )
+    """The chart's dates: the CHART_WEEKS weeks ending ``t0`` (the last
+    complete week) and the CHART_MONTHS calendar months up to the last
+    complete one."""
+    weeks = pd.date_range(end=t0, periods=CHART_WEEKS, freq="W-SUN")
     last = (t0 + pd.Timedelta(days=1)).to_period("M") - 1
-    months = pd.period_range(BASE[0][:7], last, freq="M").to_timestamp()
-    return blocks, steps, months
+    months = pd.period_range(end=last, periods=CHART_MONTHS, freq="M").to_timestamp()
+    return weeks, months
 
 
-def chart(B, S, M, N4, NM, keys: list[str], axes: tuple) -> dict:
-    """Per key, the chart's series on ``chart_axes`` (x 100): ``b4`` the
-    DAYS-day blocks, ``m4`` the moving DAYS days (the blocks' sigma and mean:
-    equal to the block on its last day), ``mo`` the calendar months; and its
-    articles in the moving DAYS days (``n4``, a block's on its last day) and
-    the months (``nm``)."""
+def chart(W, M, NW, NM, keys: list[str], axes: tuple) -> dict:
+    """Per key, the chart's series on ``chart_axes``: ``wk`` the weekly and
+    ``mo`` the monthly index (x 100), ``nw`` and ``nm`` their articles."""
+    one = lambda x: [None if pd.isna(v) else round(float(v), 1) for v in x]  # noqa: E731
     ints = lambda x: [None if pd.isna(v) else int(round(v)) for v in x]  # noqa: E731
-    axes = (*axes, axes[1], axes[2])
-    frames = [Z.reindex(index=a, columns=keys) for Z, a in zip((B, S, M, N4, NM), axes)]
-    names = ("b4", "m4", "mo", "n4", "nm")
-    return {g: {k: ints(Z[g]) for k, Z in zip(names, frames)} for g in keys}
+    out = {g: {} for g in keys}
+    for k, Z, a, f in (
+        ("wk", W, axes[0], one),
+        ("mo", M, axes[1], one),
+        ("nw", NW, axes[0], ints),
+        ("nm", NM, axes[1], ints),
+    ):
+        Z = Z.reindex(index=a, columns=keys)
+        for g in keys:
+            out[g][k] = f(Z[g])
+    return out
 
 
 def where(g: str, members: list[str], CQ: dict, CN: dict) -> list:
-    """Per comparison window, the BY countries with >= WHERE_MIN articles
-    furthest above usual on g (``above``): [country, x usual, articles]."""
-    out = []
-    for p in PERIODS:
-        rows = []
-        for c in members:
-            q, n = CQ[c][p].get(g), int(CN[c].get(g, 0))
-            q = None if q is None or pd.isna(q) else float(q)
-            if n >= WHERE_MIN and (a := above(q, n)) is not None and a > 0:
-                rows.append((a, c, round(q, 2), n))
-        rows.sort(reverse=True)
-        out.append([[c, q, n] for _, c, q, n in rows[:BY]])
-    return out
+    """The BY countries with >= WHERE_MIN articles furthest above their 2024
+    level on g (``above`` of the last 4 weeks): [country, x 2024, articles]."""
+    rows = []
+    for c in members:
+        q, n = CQ[c].get(g), int(CN[c].get(g, 0))
+        q = None if q is None or pd.isna(q) else float(q)
+        if n >= WHERE_MIN and (a := above(q, n)) is not None and a > 0:
+            rows.append((a, c, round(q, 2), n))
+    rows.sort(reverse=True)
+    return [[c, q, n] for _, c, q, n in rows[:BY]]
 
 
 def drivers(W: pd.DataFrame, tree: list[str]) -> list:
@@ -550,17 +496,13 @@ def drivers(W: pd.DataFrame, tree: list[str]) -> list:
     return [[c, int(W[c].iloc[-1]), int(round(a))] for c, a in above.items()]
 
 
-def theme_index(
-    Zc: pd.DataFrame, themes: list, T1: tuple = BASE, ref: pd.DataFrame | None = None
-) -> pd.DataFrame:
-    """Theme lines ("t:<k>": mean of members' indices, each over its mean over
-    T1 in ``ref`` (default: itself; a monthly family passes its monthly
-    index), x 100) and member concepts ("c:<id>") of a concept index."""
+def theme_index(Zc: pd.DataFrame, themes: list) -> pd.DataFrame:
+    """Theme lines ("t:<k>": mean of members' indices, each over its 2024
+    mean, x 100) and member concepts ("c:<id>") of a concept index."""
     Z = {}
     for k, t in enumerate(themes):
         z = Zc.reindex(columns=t["members"])
-        base = z if ref is None else ref.reindex(columns=t["members"])
-        base = base.loc[T1[0] : T1[1]].mean()
+        base = z.loc[BASE[0] : BASE[1]].mean()
         Z[f"t:{k}"] = (100 * z / base.where(base > 0)).mean(axis=1)
         Z.update({f"c:{c}": z[c] for c in t["members"]})
     return pd.DataFrame(Z)
@@ -690,43 +632,24 @@ def main():
     db = OUT / "database_status" / f"sources_{args.region}.csv"
     db = pd.read_csv(db) if db.exists() else None
     label.update({f"t:{k}": f"Theme · {t['name']}" for k, t in enumerate(themes)})
-    nums, flags, Zc, cflags, Mc, Rc, CQ, CN = {}, {}, {}, {}, {}, {}, {}, {}
-    Bc, Sc = {}, {}
-    data_end = pd.Timestamp(BASE[0])  # t0 of the charts: the last day with data
-    for cdir in dirs.values():
-        dates = pd.read_parquet(cdir / "daily" / "sources_daily.parquet").date
-        data_end = max(data_end, dates[dates <= pd.Timestamp(asof.date())].max())
-    axes = chart_axes(data_end)
+    nums, flags, Zc, cflags, Mc, CQ, CN = {}, {}, {}, {}, {}, {}, {}
+    axes = chart_axes(last)  # t0 of the charts: the last complete week
     for name, cdir in dirs.items():
         nums[name] = country_numbers(cdir, weeks, days, axes)
-        Zc[name], Mc[name], Rc[name], Bc[name], Sc[name] = indices(
-            cdir, weeks, data_end
-        )
+        Zc[name], Mc[name] = indices(cdir, weeks)
         hit = bursts(weekly(cdir))[0]
         flags[name] = hit.reindex(weeks, fill_value=False).astype(bool)
         if themes:
             hit = bursts(weekly(cdir, "concept_"))[0]
             cflags[name] = hit.reindex(weeks, fill_value=False).astype(bool)
-        # Where (region and subregions): each country's last DAYS days.
-        CQ[name] = {
-            p: pd.concat(
-                [Rc[name][p][FREQS[1]].iloc[-1]]
-                + (
-                    [
-                        theme_index(
-                            Rc[name][p][FREQS[1]],
-                            themes,
-                            baseline(p, last),
-                            Rc[name][p]["M"],
-                        ).iloc[-1]
-                    ]
-                    if themes
-                    else []
-                )
+        # Where (region and subregions): each country's last 4 weeks.
+        CQ[name] = (
+            pd.concat(
+                [last4(Zc[name])]
+                + ([last4(theme_index(Zc[name], themes))] if themes else [])
             )
             / 100
-            for p in PERIODS
-        }
+        )
         CN[name] = pd.concat([nums[name]["nd"], theme_nd(nums[name]["nd"], themes)])
 
     subs = {}
@@ -747,22 +670,6 @@ def main():
         }
         Z = Zc[members[0]] if u in dirs else combine([Zc[c] for c in members], *BASE)[1]
         M = Mc[members[0]] if u in dirs else combine([Mc[c] for c in members], *BASE)[1]
-        R = {
-            p: Rc[members[0]][p]
-            if u in dirs
-            else combine_family([Rc[c][p] for c in members], *baseline(p, last))
-            for p in PERIODS
-        }
-        # The chart's blocks and moving 4 weeks: regions scale each country by
-        # the std of its blocks over 2024, so the two stay equal on block ends.
-        T1b = (block_start(BASE[0], f"{DAYS}D"), BASE[1])
-        Bs = (
-            {"B": Bc[members[0]], "S": Sc[members[0]]}
-            if u in dirs
-            else combine_family(
-                [{"B": Bc[c], "S": Sc[c]} for c in members], *T1b, ref="B"
-            )
-        )
         run = elevated_months(M)
         now = num["counts"].iloc[-1]
         persistent = [
@@ -808,10 +715,8 @@ def main():
         unit["cards"] = {t: {} for t in cards}
         drawn = [g for t in cards for g in [t, *kids.get(t, [])]]
         keys = list(dict.fromkeys(shown + drawn))
-        unit["s"] = series(F, R, num["nd"], num["src"], keys)
-        for g, row in chart(
-            Bs["B"], Bs["S"], M, num["n4"], num["nm"], keys, axes
-        ).items():
+        unit["s"] = series(F, Z, num["nd"], num["src"], keys)
+        for g, row in chart(Z, M, num["counts"], num["nm"], keys, axes).items():
             unit["s"][g].update(row)
         if themes:  # theme lines and their member concepts (themes.py)
             Fc = (
@@ -820,7 +725,7 @@ def main():
                 .any()
                 .T
             )
-            _, Wt, Dt, Ft = theme_frames(
+            Zt, Wt, Dt, Ft = theme_frames(
                 Z,
                 num["counts"],
                 num["d_counts"],
@@ -829,13 +734,6 @@ def main():
                 themes,
             )
             Mt = theme_index(M, themes)
-            Rt = {
-                p: {
-                    f: theme_index(Z, themes, baseline(p, last), R[p]["M"])
-                    for f, Z in R[p].items()
-                }
-                for p in PERIODS
-            }
             ndt = theme_nd(num["nd"], themes)
             numt = {**num, "counts": Wt, "d_counts": Dt}
             unit["beat"]["g"].update(beat(numt, Ft, Mt, set(Wt.columns))["g"])
@@ -845,21 +743,16 @@ def main():
                 if k.startswith("t:") and (ndt.get(k, 0) or k in unit["beat"]["g"])
             ]
             ts = theme_sources(num["src"], themes)
-            unit["s"].update(series(Ft, Rt, ndt, ts, keys))
-            Bt = theme_index(Bs["B"], themes, T1b)
-            St = theme_index(Bs["S"], themes, T1b, Bs["B"])
-            Nt = [
-                pd.DataFrame(
-                    {
-                        f"t:{k}": N.reindex(columns=t["members"], fill_value=0).sum(
-                            axis=1
-                        )
-                        for k, t in enumerate(themes)
-                    }
-                )
-                for N in (num["n4"], num["nm"])
-            ]
-            for g, row in chart(Bt, St, Mt, *Nt, keys, axes).items():
+            unit["s"].update(series(Ft, Zt, ndt, ts, keys))
+            NMt = pd.DataFrame(
+                {
+                    f"t:{k}": num["nm"]
+                    .reindex(columns=t["members"], fill_value=0)
+                    .sum(axis=1)
+                    for k, t in enumerate(themes)
+                }
+            )
+            for g, row in chart(Zt, Mt, Wt, NMt, keys, axes).items():
                 unit["s"][g].update(row)
         if len(members) > 1:
             for g in (k for k in unit["s"] if not k.startswith("c:")):
@@ -878,27 +771,17 @@ def main():
             ]
             if dc := drivers(num["counts"], cs):
                 unit["dc"][g] = dc
-        # The driving concepts' own index ("c:<id>", same family), drawn in the
-        # card's chart: the last DAYS days (q) and the chart's series.
+        # The driving concepts' own index ("c:<id>"), drawn in the card's
+        # chart: their articles and sources in the last DAYS days and series.
         cs = sorted({c for dc in unit["dc"].values() for c, *_ in dc})
-        Rk = {
-            p: {
-                f: Z.reindex(columns=cs).rename(columns=lambda c: f"c:{c}")
-                for f, Z in R[p].items()
+        for c in cs:
+            unit["s"][f"c:{c}"] = {
+                "nd": int(num["nd"].get(c, 0)),
+                "ns": len(num["src"].get(c, ())),
             }
-            for p in PERIODS
-        }
-        for c, row in series(
-            F.iloc[:, :0],
-            Rk,
-            num["nd"].rename(lambda c: f"c:{c}"),
-            {f"c:{c}": num["src"].get(c, set()) for c in cs},
-            [f"c:{c}" for c in cs],
-        ).items():
-            unit["s"][c] = {"q": row["q"], "nd": row["nd"], "ns": row["ns"]}
         rename = lambda Z: Z.rename(columns=lambda c: f"c:{c}")  # noqa: E731
         for c, row in chart(
-            *map(rename, (Bs["B"], Bs["S"], M, num["n4"], num["nm"])),
+            *map(rename, (Z, M, num["counts"], num["nm"])),
             [f"c:{c}" for c in cs],
             axes,
         ).items():
@@ -927,7 +810,8 @@ def main():
         "asof": f"{asof:%Y-%m-%dT%H:%MZ}",
         "beat_start": f"{days[0]:%Y-%m-%d}",
         "days": DAYS,
-        "data_end": f"{data_end:%Y-%m-%d}",  # t0: the charts' blocks end here
+        "w0": f"{axes[0][0]:%Y-%m-%d}",  # the chart's first week (t0: "week")
+        "m0": f"{axes[1][0]:%Y-%m}",  # the chart's first month
         "db_latest": None if db is None else str(db.latest_date.max()),
         "subregions": {s: sorted(cs) for s, cs in sorted(subs.items())},
         "labels": {g: label.get(g, g) for u in out_units.values() for g in u["s"]},
@@ -972,10 +856,10 @@ def main():
         "method": {
             "burst": "weekly count >= 2.5x expected from the previous 26 weeks' share, >= 5 articles, Poisson p < 1e-4 (per country)",
             "persistent": f"monthly Baker index above {ELEVATED}x its 2024 mean for the last >= {MIN_MONTHS} complete months, >= {BURST_MIN} articles this week",
-            "index": f"monthly Baker index with the comparison window as T1 (calendar months: per-source std and mean 100); weeks and {DAYS}-day blocks read with the same std and mean; q = the last {DAYS} days / 100",
+            "index": "Baker index per frequency (weekly, monthly): per panel source, share of articles / its std over the 2024 periods, mean weighted by the sources' articles in the period (renormalized over the sources present), 100 = the 2024 mean; q = the weekly index's mean over the last 4 weeks / 100",
             "rank": f"(n - n/q) / sqrt(n/q), n = articles in the last {DAYS} days: the index above usual in counting noise",
-            "trend": "rising: the last week above the last 4 weeks' level and above each of the 3 weeks before; cooling: below both",
-            "ratio": "weekly Baker index (per-source share / its 2024 std, plain mean over sources publishing in >= 50% of 2024 weeks; regions average their countries) this week / its mean over the comparison period",
+            "trend": "rising: the last week's weekly index above its 4-week mean and above each of the 3 weeks before; cooling: below both",
+            "ratio": "weekly Baker index (per-source share / its 2024 std, mean weighted by articles over sources publishing in >= 50% of 2024 weeks; regions average their countries) this week / its mean over the comparison period",
         },
     }
     path = OUT / args.region / "overview.json"

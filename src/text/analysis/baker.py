@@ -2,11 +2,12 @@
 
 - ``panel``: Baker averages a fixed set of newspapers. Ours is the sources
   that publish in at least ``PANEL_SHARE`` of the baseline weeks; the rest
-  still count in article totals and burst detection, but not in the plain
-  mean of standardized ratios.
+  still count in article totals and burst detection, but not in the mean of
+  standardized ratios.
 - ``index``: the index at any frequency from a country's daily files. The
   build writes the weekly one (our adaptation; Baker is monthly), and its
-  monthly run reproduces the published monthly series.
+  monthly run reproduces the published monthly series. ``weighted``: the
+  sources' mean weighted by their articles (the dashboard's Overview).
 - ``combine`` / ``combine_outputs``: regions and subregions from their
   countries, as Baker's European EPU, not from pooled sources.
 """
@@ -38,27 +39,11 @@ def panel(
     return set(share.index[share >= PANEL_SHARE])
 
 
-def _period(
-    dates: pd.Series, freq: str, anchor: pd.Timestamp | None = None
-) -> pd.Series:
-    """Week ending Sunday ("W"), first of the month ("M"), or the last day of
-    k-day blocks counted back from ``anchor`` ("<k>D"; later dates are NaT)."""
+def _period(dates: pd.Series, freq: str) -> pd.Series:
+    """Week ending Sunday ("W") or first of the month ("M")."""
     if freq == "W":
         return dates + pd.to_timedelta((6 - dates.dt.dayofweek) % 7, unit="D")
-    if freq.endswith("D"):
-        k, back = int(freq[:-1]), (anchor - dates).dt.days
-        return (anchor - pd.to_timedelta(back // k * k, unit="D")).where(back >= 0)
     return dates.dt.to_period("M").dt.to_timestamp()
-
-
-def block_start(cutoff_start: str | None, freq: str) -> str | None:
-    """The first "<k>D" block label inside a baseline starting at
-    ``cutoff_start``: blocks are labelled by their last day, so a block lies
-    in the baseline from k - 1 days after its start."""
-    if cutoff_start is None:
-        return None
-    first = pd.Timestamp(cutoff_start) + pd.Timedelta(days=int(freq[:-1]) - 1)
-    return f"{first:%Y-%m-%d}"
 
 
 def _shares(
@@ -66,26 +51,24 @@ def _shares(
     terms_daily: pd.DataFrame,
     panel: set[str],
     freq: str,
-    anchor: pd.Timestamp | None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Articles per period and source (A), and per panel source, period and
     term with articles the term articles and their share (x)."""
     s = sources_daily.assign(
         source_key=sources_daily.source_key.astype(str),
-        period=_period(pd.to_datetime(sources_daily.date), freq, anchor),
+        period=_period(pd.to_datetime(sources_daily.date), freq),
     )
     A = s.groupby(["period", "source_key"]).A_total.sum().unstack(fill_value=0)
-    if freq.endswith("D"):
-        periods = pd.date_range(end=anchor, start=A.index.min(), freq=freq)
-    else:
-        periods = pd.date_range(
+    A = A.reindex(
+        pd.date_range(
             A.index.min(), A.index.max(), freq="W-SUN" if freq == "W" else "MS"
-        )
-    A = A.reindex(periods, fill_value=0)
+        ),
+        fill_value=0,
+    )
     t = terms_daily.assign(
         source_key=terms_daily.source_key.astype(str),
         term=terms_daily.term.astype(str),
-        period=_period(pd.to_datetime(terms_daily.date), freq, anchor),
+        period=_period(pd.to_datetime(terms_daily.date), freq),
     )
     t = t[t.source_key.isin(panel)]
     t = t.groupby(["source_key", "period", "term"])["count"].sum().reset_index()
@@ -120,20 +103,25 @@ def _sigma(
     return sigma
 
 
-def _z(A: pd.DataFrame, t: pd.DataFrame, sigma: pd.Series) -> pd.DataFrame:
-    """Z_t = mean of x / sigma_i over the sources with articles in t and a sigma."""
+def _z(
+    A: pd.DataFrame, t: pd.DataFrame, sigma: pd.Series, weighted: bool = False
+) -> pd.DataFrame:
+    """Z_t = mean of x / sigma_i over the sources with articles in t and a
+    sigma; ``weighted``: each source weighted by its articles in t (its share
+    of those sources' articles)."""
     t = t.join(sigma.rename("sigma"), on=["source_key", "term"]).dropna(
         subset=["sigma"]
     )
     ysum = (
-        t.assign(y=t.x / t.sigma)
+        t.assign(y=t.x / t.sigma * (t.a if weighted else 1))
         .pivot_table(
             index="period", columns="term", values="y", aggfunc="sum", fill_value=0
         )
         .reindex(A.index, fill_value=0)
     )
     has = sigma.unstack().notna().reindex(columns=ysum.columns, fill_value=False)
-    present = (A.reindex(columns=has.index, fill_value=0) > 0).astype(float)
+    present = A.reindex(columns=has.index, fill_value=0)
+    present = present.astype(float) if weighted else (present > 0).astype(float)
     npresent = present @ has.astype(float)
     return ysum / npresent.where(npresent > 0)
 
@@ -146,7 +134,7 @@ def index(
     cutoff_start: str,
     cutoff_end: str,
     min_base_articles: int = 0,
-    anchor: pd.Timestamp | None = None,
+    weighted: bool = False,
 ) -> pd.DataFrame:
     """Baker index (periods x terms, mean 100 over the baseline) from daily files.
 
@@ -161,90 +149,20 @@ def index(
     almost never covered a term has a sigma near 0, and its next few articles
     would dominate the mean.
 
-    ``anchor``: the last day of the latest period at freq "<k>D" (periods are
-    k-day blocks counted back from it, labelled by their last day). A block
-    is in the baseline only when it lies entirely inside it (``block_start``).
+    ``weighted``: Z_t weighs each source by its share of the articles in t of
+    the sources entering it, so the weights sum to 1 over the sources present
+    (text-main weighs by the share of all sources' articles and counts a
+    missing source as 0).
     """
-    if freq.endswith("D"):
-        cutoff_start = block_start(cutoff_start, freq)
-    A, t = _shares(sources_daily, terms_daily, panel, freq, anchor)
+    A, t = _shares(sources_daily, terms_daily, panel, freq)
     if t.empty:  # no panel source (or none with articles)
         return pd.DataFrame(
             index=A.index, columns=pd.Index([], dtype=object), dtype=float
         )
-    Z = _z(A, t, _sigma(A, t, cutoff_start, cutoff_end, min_base_articles))
+    sigma = _sigma(A, t, cutoff_start, cutoff_end, min_base_articles)
+    Z = _z(A, t, sigma, weighted)
     mean = Z[baseline_mask(A.index, cutoff_start, cutoff_end).to_numpy()].mean()
     return 100 * Z / mean.where(mean > 0)
-
-
-def stepped(
-    sources_daily: pd.DataFrame,
-    terms_daily: pd.DataFrame,
-    panel: set[str],
-    freq: str,
-    step: int,
-    cutoff_start: str,
-    cutoff_end: str,
-    min_base_articles: int = 0,
-    anchor: pd.Timestamp | None = None,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """The "<k>D" index (as ``index``) and the same k days moved back ``step``
-    days at a time from ``anchor`` (a moving window), read with the blocks'
-    sigma_i and mean 100: on a block's last day the two are the same value."""
-    cutoff_start = block_start(cutoff_start, freq)
-    A, t = _shares(sources_daily, terms_daily, panel, freq, anchor)
-    if t.empty:  # no panel source (or none with articles)
-        none = pd.DataFrame(index=A.index, columns=pd.Index([], dtype=object))
-        return none.astype(float), none.astype(float)
-    sigma = _sigma(A, t, cutoff_start, cutoff_end, min_base_articles)
-    Z = _z(A, t, sigma)
-    mean = Z[baseline_mask(A.index, cutoff_start, cutoff_end).to_numpy()].mean()
-    mean = mean.where(mean > 0)
-    parts = [100 * Z / mean]
-    for back in range(step, int(freq[:-1]), step):
-        At, tt = _shares(
-            sources_daily,
-            terms_daily,
-            panel,
-            freq,
-            anchor - pd.Timedelta(days=back),
-        )
-        parts.append(100 * _z(At, tt, sigma).reindex(columns=Z.columns) / mean)
-    return parts[0], pd.concat(parts).sort_index()
-
-
-def monthly_family(
-    sources_daily: pd.DataFrame,
-    terms_daily: pd.DataFrame,
-    panel: set[str],
-    freqs: list[str],
-    cutoff_start: str,
-    cutoff_end: str,
-    min_base_articles: int = 0,
-    anchor: pd.Timestamp | None = None,
-) -> dict[str, pd.DataFrame]:
-    """The monthly Baker index ("M", as ``index``) and the same index at other
-    frequencies: each source's sigma_i and the mean 100 are the monthly
-    index's (calendar months over the baseline), so a week or a k-day block is
-    the same standardized share read over another window, on the same scale
-    (a k-day block is about the mean of its weeks)."""
-    A, t = _shares(sources_daily, terms_daily, panel, "M", None)
-    if t.empty:  # no panel source (or none with articles): no terms at any frequency
-        none = pd.Index([], dtype=object)
-        out = {"M": pd.DataFrame(index=A.index, columns=none, dtype=float)}
-        for f in freqs:
-            idx = _shares(sources_daily, terms_daily, panel, f, anchor)[0].index
-            out[f] = pd.DataFrame(index=idx, columns=none, dtype=float)
-        return out
-    sigma = _sigma(A, t, cutoff_start, cutoff_end, min_base_articles)
-    Z = _z(A, t, sigma)
-    mean = Z[baseline_mask(A.index, cutoff_start, cutoff_end).to_numpy()].mean()
-    mean = mean.where(mean > 0)
-    out = {"M": 100 * Z / mean}
-    for f in freqs:
-        A, t = _shares(sources_daily, terms_daily, panel, f, anchor)
-        out[f] = 100 * _z(A, t, sigma).reindex(columns=Z.columns) / mean
-    return out
 
 
 def combine(
@@ -263,31 +181,6 @@ def combine(
     Z = pd.concat(scaled).groupby(level=0).mean()
     mean = Z[baseline_mask(Z.index, cutoff_start, cutoff_end).to_numpy()].mean()
     return Z, 100 * Z / mean.where(mean > 0)
-
-
-def combine_family(
-    families: list[dict[str, pd.DataFrame]],
-    cutoff_start: str,
-    cutoff_end: str,
-    ref: str = "M",
-) -> dict[str, pd.DataFrame]:
-    """``combine`` for ``monthly_family`` outputs: each country scaled by the
-    std of its monthly index over the baseline at every frequency, averaged,
-    and over the mean of the monthly average, so the frequencies stay on one
-    scale. ``ref``: the family member read in place of the monthly index
-    (``stepped``: the blocks)."""
-    sds = [
-        f[ref][baseline_mask(f[ref].index, cutoff_start, cutoff_end).to_numpy()].std()
-        for f in families
-    ]
-    out = {}
-    for k in families[0]:
-        scaled = [f[k] / sd.where(sd > 0) for f, sd in zip(families, sds)]
-        out[k] = pd.concat(scaled).groupby(level=0).mean()
-    mean = out[ref][
-        baseline_mask(out[ref].index, cutoff_start, cutoff_end).to_numpy()
-    ].mean()
-    return {k: 100 * Z / mean.where(mean > 0) for k, Z in out.items()}
 
 
 # Index files of a unit; every column but these is an index (or, ending in
