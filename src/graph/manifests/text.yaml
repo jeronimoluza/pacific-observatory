@@ -1,0 +1,247 @@
+# Asset manifest: text. Same schema as prices.yaml (src/graph/manifest.py).
+# Source: vault specs/graph-engineering/2026-10-15-tasks-text.md, "Manifiesto de assets text".
+# Text code lives on main (ledger.py, merge.py, policy/ are not in the weekly line);
+# the concepts nodes (estado: dev) live on concepts-explorations @ 243b785f, Mac only.
+# Mac paths: TR = ~/wb/pacificobservatory/repo/template-repo (cache, outputs),
+#            PO = ~/wb/pacificobservatory/repo/pacific-observatory (policy editions, concepts worktree).
+pipeline: text
+code_ref: origin/main
+
+nodes:
+  text.config:
+    estado: prod
+    code_paths:
+      - src/text/configs/**/*.yaml
+      - src/text/scrapers/models.py
+      - src/text/scrapers/orchestration/validate.py
+    partition: source
+    checks:
+      - {color: rojo, desc: el yaml no pasa scrapers/orchestration/validate.py}
+    desc: las fuentes con enabled false quedan fuera del grafo
+
+  text.ledger:
+    estado: prod
+    code_paths: [src/text/ledger.py]
+    paths:
+      - {path: "~/text_state/<region>.sqlite", machine: a8}
+      - {path: "~/text_state/<region>.sqlite", machine: mac, role: ledger}
+      - {path: "/Volumes/SSKJL/text_state/<region>.sqlite", machine: sskjl, role: ledger}
+    partition: region
+    desc: >-
+      lo escribe merge junto con text.corpus. El bootstrap desde corpus y el lazo
+      run -> ledger son temporales (el run N lee el ledger de N-1), no aristas del DAG.
+    freshness: actualizado <= 1 día después de cada merge
+    checks:
+      - {color: rojo, desc: sha256 Mac != sha256 a8 después del merge}
+      - {color: amarillo, desc: tabla blocked crece}
+
+  text.delta:
+    estado: prod
+    code_paths:
+      - src/text/collect.py
+      - src/text/scrapers/**/*.py
+      - .claude/skills/refresh-text-region/scripts/*
+    paths:
+      - {path: "~/text_staging/<run_id>/<region>/<sub>/<country>/<source>/{news,urls}.csv", machine: a8}
+      - {path: "~/text_staging/<run_id>/STATUS.md", machine: a8, role: status}
+      - {path: "~/text_staging/<run_id>/.done", machine: a8, role: status}
+      - {path: "~/text_staging/<run_id>/events_<r>.log", machine: a8, role: ledger}
+    inputs: [text.config, text.ledger]
+    partition: source × run (lun y vie; semana ISO del run)
+    fingerprint:
+      note: además el commit de STATUS.md
+    freshness: un run cada <= 4 días (26 h después del disparo); objetivo 6 h en S6
+    checks:
+      - {color: rojo, desc: "falta .done, región SKIPPED o ABORTED"}
+      - {color: rojo, desc: región con 0 filas}
+      - {color: rojo, desc: fuente en 0 dos runs seguidos}
+      - {color: amarillo, desc: fail > 0}
+      - {color: amarillo, desc: fuente en 0 una vez}
+      - {color: amarillo, desc: share de timeouts > baseline}
+
+  text.corpus:
+    estado: prod
+    code_paths: [src/text/merge.py]
+    paths:
+      - {path: "/mnt/backup5tb/text-corpus/<region>/<sub>/<country>/<source>/news.csv", machine: a8}
+      - {path: "/Volumes/SSKJL/data/text/<region>/<sub>/<country>/<source>/news.csv", machine: sskjl}
+    inputs: [text.delta, text.ledger]
+    partition: fuente (append-only; lógica fuente × semana de evento)
+    freshness: todo run con .done está .merged en <= 1 día
+    checks:
+      - {color: rojo, desc: run .done sin .merged después de 2 días}
+      - {color: rojo, desc: n_news del ledger != URLs del news.csv}
+      - {color: rojo, desc: URL duplicada no vacía}
+      - {color: rojo, desc: fecha > hoy UTC}
+      - {color: amarillo, desc: copia del 5 TB != SSKJL}
+      - {color: amarillo, desc: carpeta <outlet>_<country> sin config}
+
+  text.keywords:
+    estado: prod
+    code_paths: [src/text/analysis/keywords/**/*.json]
+    partition: idioma
+
+  text.counts:
+    estado: prod
+    code_paths:
+      - src/text/analysis/annotate.py
+      - src/text/analysis/orchestrator.py
+      - src/text/analysis/source_counts.py
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/template-repo/data/text/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: mac}
+    inputs: [text.corpus, text.keywords]
+    partition: country
+    fingerprint:
+      params: {schema_version: 4}
+      note: params.keyword_hashes del cache contra el hash de text.keywords
+    freshness: tails.last_date >= watermark - 1 día después del build
+    checks:
+      - {color: rojo, desc: clave repetida en source_set (T23)}
+      - {color: rojo, desc: suma de tails.n_rows != filas de news.csv (T26)}
+      - {color: rojo, desc: filas tardías no anotadas > 0 (T24)}
+      - {color: rojo, desc: filas diarias varadas antes del tail (T25)}
+      - {color: amarillo, desc: last_date atrasado contra el watermark}
+
+  text.epu:
+    estado: prod
+    code_paths:
+      - src/text/analysis/epu.py
+      - src/text/analysis/indices.py
+      - src/text/analysis/outputs.py
+      - src/text/analysis/standardize.py
+      - src/text/analysis/utils.py
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/<region>/<sub>/<country|_aggregate>/epu/epu.csv", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/<region>/<sub>/<country|_aggregate>/uncertainty_attribution/*.csv", machine: mac}
+    inputs: [text.counts]
+    partition: country (los agregados se derivan)
+    fingerprint:
+      note: build_meta.json (TX-16)
+    freshness: mtime >= mtime de text.counts
+    checks:
+      - {color: rojo, desc: país con config y sin epu.csv}
+      - {color: rojo, desc: meses faltantes en el índice continuo}
+      - {color: amarillo, desc: cambio vs build anterior fuera de margen sin cambio en el set de fuentes}
+
+  text.policy:
+    estado: prod
+    code_paths:
+      - src/text/policy/**/*
+      - src/text/plotting/trackers.py
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/policy_tracker/{fuel,food_security}/<edition>/*.xlsx", machine: mac}
+    inputs: [text.delta]
+    external_inputs: [websearch (LLM)]
+    partition: región × tracker × edición
+    freshness: 1 edición por refresh
+    checks:
+      - {color: rojo, desc: una edición descarta filas (guard 2cccea35)}
+      - {color: amarillo, desc: filas de corpus sin Source URL (T53)}
+      - {color: amarillo, desc: endónimos descartados (T54)}
+
+  text.addons:
+    estado: prod
+    code_paths:
+      - src/text/plotting/policy_dashboards.py
+      - src/text/plotting/policy_dashboards_v6.py
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/template-repo/src/text/plotting/addons/{fuel,food_security}/<r>_policy_addon.html", machine: mac}
+    inputs: [text.policy]
+    partition: región × tracker
+    freshness: después de cada edición
+    checks:
+      - {color: rojo, desc: falta el addon}
+
+  text.database_status:
+    estado: prod
+    code_paths: [src/text/status.py]
+    run: run.py text database-status
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/database_status/sources_<r>.csv", machine: mac}
+    inputs: [text.corpus]
+    partition: región
+
+  text.dashboard:
+    estado: prod
+    code_paths:
+      - src/text/publish.py
+      - src/text/plotting/**/*.py
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/dashboards/fuel/<r>_policy_dashboard_fuel.html", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/dashboard_data/*", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/small_dashboard_integrated.html", machine: mac}
+    inputs: [text.epu, text.addons, text.database_status]
+    partition: región
+    freshness: posterior al último .merged
+    checks:
+      - {color: rojo, desc: rojo aguas arriba (S4b)}
+      - {color: amarillo, desc: más viejo que el merge}
+      - {color: amarillo, desc: "html > 100 MB (el integrado pesa 728 MB, T35)"}
+
+  # ---------- conceptos (carril E), dev ----------
+  text.concepts_keywords:
+    estado: dev
+    code_ref: 243b785f
+    code_paths: [src/text/analysis/keywords/concepts/*.json]
+    partition: concepto
+
+  text.daily:
+    estado: dev
+    code_ref: 243b785f
+    code_paths:
+      - src/text/analysis/orchestrator.py
+      - src/text/analysis/annotate.py
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/.claude/worktrees/concepts-explorations/outputs/text/<r>/<sub>/<country>/daily/{pooled_daily,sources_daily,sources_terms_daily}.parquet", machine: mac}
+    inputs: [text.corpus, text.concepts_keywords]
+    partition: country
+    fingerprint:
+      note: orchestrator.DailyAccumulator
+    freshness: igual que text.counts
+    checks:
+      - {color: rojo, desc: suma diaria por mes != text.counts del mes}
+      - {color: amarillo, desc: corrida con --daily-history incompleta}
+
+  text.baker_weekly:
+    estado: dev
+    code_ref: 243b785f
+    code_paths: [src/text/analysis/baker.py]
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/.claude/worktrees/concepts-explorations/outputs/text/<r>/{_aggregate,<sub>/_aggregate}/weekly/baker.parquet", machine: mac}
+    inputs: [text.daily]
+    partition: unidad (país o agregado) × semana
+    fingerprint:
+      note: baker.py tiene cambios sin commitear
+    freshness: semanal
+    checks:
+      - {color: rojo, desc: combine_outputs descarta países por un tail distinto}
+      - {color: amarillo, desc: panel 2024 con < 50% de semanas}
+
+  text.themes:
+    estado: dev
+    code_ref: 243b785f
+    code_paths: [src/text/analysis/explorations/themes.py]
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/.claude/worktrees/concepts-explorations/outputs/text/<region>/themes_{concept,group}.json", machine: mac}
+    inputs: [text.baker_weekly]
+    partition: región
+    freshness: semanal
+    checks:
+      - {color: amarillo, desc: tema paraguas que encadena líneas sin relación (T46)}
+
+  text.overview:
+    estado: dev
+    code_ref: 243b785f
+    code_paths:
+      - src/text/analysis/explorations/overview.py
+      - src/text/plotting/overview_tab.py
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/.claude/worktrees/concepts-explorations/outputs/text/<region>/overview.json", machine: mac}
+    inputs: [text.daily, text.themes, text.dashboard, text.database_status]
+    partition: región
+    fingerprint:
+      note: overview.py tiene cambios sin commitear (949 líneas)
+    freshness: semanal
+    checks:
+      - {color: amarillo, desc: picos de un día sin enmascarar (AllAfrica)}
+      - {color: amarillo, desc: base chica (T51)}
