@@ -21,6 +21,7 @@ nodes:
 
   text.ledger:
     estado: prod
+    observer: text_ledger
     code_paths: [src/text/ledger.py]
     paths:
       - {path: "~/text_state/<region>.sqlite", machine: a8}
@@ -37,6 +38,7 @@ nodes:
 
   text.delta:
     estado: prod
+    observer: text_checks
     code_paths:
       - src/text/collect.py
       - src/text/scrapers/**/*.py
@@ -61,6 +63,7 @@ nodes:
 
   text.corpus:
     estado: prod
+    observer: text_delta
     code_paths: [src/text/merge.py]
     paths:
       - {path: "/mnt/backup5tb/text-corpus/<region>/<sub>/<country>/<source>/news.csv", machine: a8}

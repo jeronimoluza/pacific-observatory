@@ -13,8 +13,6 @@ import statistics
 import sys
 from pathlib import Path
 
-import pandas as pd
-
 from graph.observers.text_delta import STAGING_ROOT, delta_sources, list_runs, run_regions
 
 
@@ -62,7 +60,27 @@ def silent_zeros(staging_root: Path = STAGING_ROOT, run: str | None = None, n: i
     return rows
 
 
+def observe(node) -> list[dict]:
+    """Graph contract (`text.delta`): one row per source of the newest run, with its
+    silent-zero level from ``silent_zeros``."""
+    from datetime import datetime, timezone
+
+    from graph.observe import row
+
+    if not STAGING_ROOT.is_dir() or not list_runs(STAGING_ROOT):
+        return []
+    out = []
+    for s in silent_zeros(STAGING_ROOT):
+        ts = datetime.strptime(s["run"], "%Y%m%dT%H%MZ").replace(tzinfo=timezone.utc).timestamp()
+        out.append(row(node, f"{s['region']}/{s['key'] or s['tag']}", s["state"] == "done",
+                       s["news_rows"], ts,
+                       extra={k: s[k] for k in ("run", "state", "level", "baseline", "zero_streak")}))
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
+    import pandas as pd
+
     ap = argparse.ArgumentParser(prog="python -m graph.observers.text_checks")
     ap.add_argument("--run", help="run id to judge (default: newest)")
     ap.add_argument("--staging-root", type=Path, default=STAGING_ROOT)
