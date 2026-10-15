@@ -19,6 +19,8 @@ outside the production tree.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import click
 import numpy as np
 import pandas as pd
@@ -446,13 +448,14 @@ _SAMPLE_COLS = [
 ]
 
 
-def write(country: str, out: pd.DataFrame, pm: pd.DataFrame, scope: str = "food") -> None:
-    root = OUT_ROOT / decisions_store.part_name(country) / ("nonfood" if scope == "nonfood" else "")
+def write(country: str, out: pd.DataFrame, pm: pd.DataFrame, scope: str = "food", out_root: Path | None = None) -> Path:
+    root = (out_root or OUT_ROOT) / decisions_store.part_name(country) / ("nonfood" if scope == "nonfood" else "")
     root.mkdir(parents=True, exist_ok=True)
     out.to_parquet(root / "observations.parquet", index=False)
     out[out["trusted"]].to_parquet(root / "trusted_observations.parquet", index=False)
     pm.to_parquet(root / "product_months.parquet", index=False)
     write_checks(root, out, pm)
+    return root
 
 
 def write_checks(root, out: pd.DataFrame, pm: pd.DataFrame) -> None:
@@ -469,9 +472,11 @@ def write_checks(root, out: pd.DataFrame, pm: pd.DataFrame) -> None:
 @click.option("--country", required=True, help="Country slug, e.g. vietnam.")
 @click.option("--scope", type=click.Choice(SCOPES), default="food", show_default=True,
               help="food = 01 + 02.1; nonfood = goods leaves in basis_map_nonfood.csv.")
-def stage_b(country: str, scope: str) -> None:
+@click.option("--out", "out_root", type=click.Path(path_type=Path), default=None,
+              help="Output root (default outputs/prices/stage_b).")
+def stage_b(country: str, scope: str, out_root: Path | None) -> None:
     """Stage B for one country: extraction, basis map, band, trust."""
     out, pm = run(country, scope=scope)
-    write(country, out, pm, scope)
+    root = write(country, out, pm, scope, out_root)
     click.echo(report(out, pm))
-    click.echo(f"\nwrote {OUT_ROOT / decisions_store.part_name(country)}{'/nonfood' if scope == 'nonfood' else ''}")
+    click.echo(f"\nwrote {root}")

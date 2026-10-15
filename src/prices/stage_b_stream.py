@@ -65,14 +65,14 @@ def _concat(parts: list[Path], dest: Path, trusted_only: bool = False) -> int:
     return n
 
 
-def run_and_write(country: str, scope: str = "food") -> tuple[int, int]:
-    """Stage B for `country` chunk by chunk into `stage_b.OUT_ROOT`; (rows, trusted)."""
+def run_and_write(country: str, scope: str = "food", out_root: Path | None = None) -> tuple[int, int]:
+    """Stage B for `country` chunk by chunk into `out_root` (default `stage_b.OUT_ROOT`); (rows, trusted)."""
     products = sb.load_products(country, scope)
     local = products["currency"].mode().iloc[0]
     months = sb.load_months(country, products["input_hash"])
     rates = sb.month_rates(months.assign(currency=months["currency"].map(fx.normalize_currency_safe)), local)
     del months
-    root = sb.OUT_ROOT / decisions_store.part_name(country) / ("nonfood" if scope == "nonfood" else "")
+    root = (out_root or sb.OUT_ROOT) / decisions_store.part_name(country) / ("nonfood" if scope == "nonfood" else "")
     root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
@@ -130,12 +130,14 @@ def write_checks(root: Path) -> None:
 
 
 @click.command("stage-b-streamed")
-@click.argument("countries", nargs=-1, required=True)
+@click.option("--country", "countries", multiple=True, required=True, help="Country slug; repeat for several.")
 @click.option("--scope", type=click.Choice(sb.SCOPES), default="food", show_default=True)
-def stage_b_streamed(countries: tuple[str, ...], scope: str) -> None:
+@click.option("--out", "out_root", type=click.Path(path_type=Path), default=None,
+              help="Output root (default outputs/prices/stage_b).")
+def stage_b_streamed(countries: tuple[str, ...], scope: str, out_root: Path | None) -> None:
     """Stage B per country, streamed by COICOP leaf."""
     for country in countries:
-        rows, trusted = run_and_write(country, scope)
+        rows, trusted = run_and_write(country, scope, out_root)
         click.echo(f"DONE {country} rows={rows} trusted={trusted}")
 
 
