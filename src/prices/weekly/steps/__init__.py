@@ -16,4 +16,8 @@ STEPS: dict[str, Step] = {
     ),
     # PX-11
     "fx": Step("fx", "2G", lambda ctx: py_argv("prices.weekly.steps.fx", ctx)),
+    # PX-12. Rents nothing: stops at the need list, universe and pod plan.
+    "embed": Step(
+        "embed", "12G", lambda ctx: py_argv("prices.weekly.steps.embed", ctx)
+    ),
 }

@@ -1,0 +1,25 @@
+# Vector stores the weekly `embed` and `score_classify` steps read, in priority order:
+# a name's vectors are copied from the FIRST store holding all three blocks for it.
+# Replace the whole list with PRICES_EMBED_STORES=<path to a yaml like this one>, e.g.
+# for a panel tree whose vectors were assembled into one local store.
+# `~` expands to $HOME, `{week}` to the ISO week (2026-W44).
+# 2026-10-15: the a8 copies of w40delta/w41delta/w41delta2 are gone; their 5TB copies stay.
+tags: [8b_bf16, 4b_bf16, arctic_bf16]
+stores:
+  main: ~/data/embed_store
+  sskjl_w40: /mnt/backup5tb/embed_store/sskjl_w40
+  sskjl_w41: /mnt/backup5tb/embed_store/sskjl_w41
+  run3: /mnt/backup5tb/embed_store/run3
+  run4: /mnt/backup5tb/embed_store/run4
+  w40delta: /mnt/backup5tb/embed_store/w40delta
+  w41delta: /mnt/backup5tb/embed_store/w41delta
+  w41delta2: /mnt/backup5tb/embed_store/w41delta2
+  w42: ~/data/embed_store_w42
+  w42old: ~/data/embed_store_w42old
+  local: /mnt/backup5tb/embed_store/local
+# Written during the week: the delta the RunPod fleet fills, and the old-name vectors
+# score_classify copies for (name, country) pairs it has never scored.
+week_store: ~/data/embed_store_{week}
+old_store: ~/data/embed_store_{week}old
+# Where the fleet's delta is backed up, file by file with sha256.
+backup_root: /mnt/backup5tb/embed_store
