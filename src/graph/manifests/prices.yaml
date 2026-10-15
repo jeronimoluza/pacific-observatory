@@ -1,0 +1,295 @@
+# Asset manifest: prices. Schema in src/graph/manifest.py.
+# Source: vault specs/graph-engineering/2026-10-15-tasks-prices.md, "Borrador del manifiesto".
+# Paths are a8 @ a16f7a50. `<x>` and `wNN` are placeholders (globbed as `*`).
+# Fuel is out of the MVP: its nodes go in fuel.yaml (PX-72), not here.
+pipeline: prices
+
+nodes:
+  # ---------- compartidos ----------
+  fx:
+    estado: prod
+    code_paths:
+      - src/prices/fx/refresh.py
+      - src/prices/fx/frankfurter.py
+      - src/prices/fx/attach.py
+      - src/prices/fx/paths.py
+      - src/prices/stage_b_fx.py
+    run: run.py prices fx-refresh   # único escritor
+    paths:
+      - {path: ~/po/data/prices/_fx/fx_cache.csv, machine: a8}   # currency,date,rate,provenance
+    external_inputs: [api.frankfurter.dev/v2]
+    partition: global (moneda × día dentro del archivo)
+    fingerprint:
+      code: [src/prices/fx/refresh.py, src/prices/fx/frankfurter.py]
+    freshness: última fecha >= hoy - 3 días (require_fresh_fx)
+    checks:
+      - {color: rojo, desc: fecha más nueva < hoy - 3 días}
+      - {color: rojo, desc: línea con NF != 4}
+      - {color: amarillo, desc: "excursiones F02 (syria 2026-08..09, venezuela_rb 2025-05)"}
+      - {color: amarillo, desc: países sin overlay}
+
+  # ---------- Stage A ----------
+  prices.sources:
+    estado: prod
+    code_paths:
+      - src/prices/configs/**/*.yaml
+      - src/prices/price_scraping/spiders/**/*.py
+      - src/prices/fetchers/**/*.py
+    partition: source
+    fingerprint:
+      config: [src/configs/regions.yaml, src/configs/countries.yaml]
+    checks:
+      - {color: rojo, desc: slug duplicado (bahamas)}
+      - {color: rojo, desc: país en más de un subregion vs regions.yaml}
+      - {color: rojo, desc: currency no declarada}
+
+  prices.raw:
+    estado: prod
+    code_paths:
+      - src/prices/collect.py
+      - src/prices/collect_parallel.py
+      - src/prices/price_scraping/**/*.py
+      - src/prices/fetchers/**/*.py
+      - scripts/weekly/collect.sh
+    run: cron scripts/weekly/collect.sh (lun 06:00 UTC)
+    paths:
+      - {path: "~/po/data/prices/<r>/<s>/<c>/<source>/raw_items/*.jsonl", machine: a8}
+      - {path: "~/po-worktrees/refactor/logs/prices/_fullrun_<ts>/status.jsonl", machine: a8, role: ledger}
+      - {path: "~/po/logs/weekly/<wk>/STATUS*", machine: a8, role: status}
+    inputs: [prices.sources]
+    partition: source × semana
+    fingerprint:
+      deps: [scrapy==2.13.4]
+    freshness: 7 días (visión 48 h)
+    checks:
+      - {color: rojo, desc: cero silencioso vs baseline (ok_norows con baseline > 0)}
+      - {color: rojo, desc: "fecha > hoy UTC (#8), rojo en esa fuente"}
+      - {color: rojo, desc: "dead man's switch: collect no terminó lun 18:00 UTC"}
+      - {color: amarillo, desc: blocked/timeout vs semana anterior}
+
+  prices.raw_cc:
+    estado: prod
+    code_paths:
+      - src/prices/cc_*.py
+    code_external:
+      - branch discovery-onboard src/prices/discovery/{cc_sweep.sh,cc_parsers.sh}
+      - ~/scratch/cc_ec2_w42 (EC2)
+    paths:
+      - {path: "~/po/data/prices/<r>/<s>/<c>/<source>/common_crawl_data/items/cc_{weekly,parsed}_*.jsonl", machine: a8}
+      - {path: ~/po/data/prices/_cc_ledger/ledger.parquet, machine: a8, role: ledger}
+    inputs: [prices.sources]
+    partition: source × crawl
+    fingerprint:
+      note: versión de parser por fuente, hoy nula (CC01, PX-62)
+    checks:
+      - {color: rojo, desc: prefix_rejected 100% en una fuente}
+      - {color: amarillo, desc: 0 capturas}
+
+  prices.shard:
+    estado: prod
+    code_paths: [src/prices/enrich/stages/concatenate.py]
+    run: run.py prices process --stage concatenate
+    paths:
+      - {path: "~/po/outputs/prices_refactor/raw/_per_source/<r>/<s>/<c>/<source>.parquet", machine: a8}
+      - {path: ~/po/outputs/prices_refactor/raw/.state.json, machine: a8, role: state}
+    inputs: [prices.raw, prices.raw_cc]
+    partition: source
+    fingerprint:
+      deps: [pyarrow]
+      note: la firma de concatenate hoy es mtime + cantidad de archivos (P01); PX-61 la pasa a esta huella
+    checks:
+      - {color: amarillo, desc: filas del shard < semana anterior sin --rebuild}
+
+  prices.prepared:
+    estado: prod
+    code_paths:
+      - src/prices/enrich/stages/prepare.py
+      - src/prices/enrich/prepare_shards.py
+    run: run.py prices process --stage prepare --workers 4
+    paths:
+      - {path: "~/po/data_weekly/prices/enrich/_prepared/<r>/<s>/<c>.parquet", machine: a8}
+      - {path: ~/po/data_weekly/prices/enrich/_prepared_months, machine: a8}
+      - {path: ~/po/data_weekly/prices/enrich/_prepared/.state.json, machine: a8, role: state}
+    inputs: [prices.shard]
+    partition: country
+    fingerprint:
+      deps: [pyarrow]
+      config: [src/configs/regions.yaml]
+    freshness: misma semana que shard
+    checks:
+      - {color: rojo, desc: "215 archivos reescritos esta semana (bahamas W42)"}
+      - {color: rojo, desc: país en más de un subregion}
+      - {color: rojo, desc: input_hash duplicado}
+
+  prices.embed_delta:
+    estado: prod
+    code_paths:
+      - src/prices/enrich/stages/embed.py
+      - src/prices/enrich/gpu/fleet/*
+    code_external:
+      - ~/scratch/w42_embed (destino src/prices/weekly/steps/embed.py, no existe en a16f7a50)
+    paths:
+      - {path: ~/data/embed_store_wNN, machine: a8}
+      - {path: /mnt/backup5tb/embed_store/wNN*, machine: a8}
+    inputs: [prices.prepared]
+    external_inputs: [stores de vectores existentes (~/data/embed_store, /mnt/backup5tb/embed_store/main)]
+    partition: semana × bucket (0-255) × {8b,4b,arctic}_bf16
+    fingerprint:
+      note: tags de modelo + kit, hoy fuera del repo
+    checks:
+      - {color: rojo, desc: universo pedido != embebido}
+      - {color: rojo, desc: 768 archivos con sha distinto en 5TB}
+      - {color: amarillo, desc: costo > $25}
+
+  prices.scored:
+    estado: prod
+    code_paths:
+      - src/prices/enrich/hierlex/driver.py
+      - src/prices/enrich/hierlex/scorer.py
+      - src/prices/enrich/hierlex/vectors.py
+    run: enrich/hierlex/driver.py (append_only)
+    paths:
+      - {path: "~/po/data_weekly/prices/enrich/_hierlex_pred/hierlex_select_v1_20260910/pred_*.parquet", machine: a8}
+      - {path: "~/po/data_weekly/prices/enrich/_hierlex_pred/hierlex_select_v1_20260910/_pairs/*.parquet", machine: a8}
+    inputs: [prices.prepared, prices.embed_delta]
+    partition: bucket (256)
+    fingerprint:
+      deps: [pyarrow]
+      params: {bundle: hierlex_select_v1_20260910}
+    checks:
+      - {color: rojo, desc: sin snapshot previo en 5TB}
+      - {color: rojo, desc: filas viejas cambiadas}
+      - {color: amarillo, desc: unscored > basura conocida}
+
+  prices.classified:
+    estado: prod
+    code_paths:
+      - src/prices/enrich/stages/classify.py
+      - src/prices/enrich/hierlex/decide.py
+      - src/prices/enrich/hierlex/package.py
+    run: run.py prices process --stage classify --backend hierlex --only <r/s/c>
+    paths:
+      - {path: "~/po/data_weekly/prices/enrich/cache/{decisions_hierlex,classified_hierlex}/<c>.parquet", machine: a8}
+      - {path: ~/po/data_weekly/prices/enrich/cache/decisions_hierlex/_decide.jsonl, machine: a8, role: ledger}
+    inputs: [prices.prepared, prices.scored]
+    partition: country
+    fingerprint:
+      deps: [pyarrow]
+      params: {bundle: hierlex_select_v1_20260910, tau: 0.69878}
+    checks:
+      - {color: rojo, desc: llaves sin decisión > 0}
+      - {color: rojo, desc: llaves duplicadas > 0}
+      - {color: rojo, desc: más de un bundle o tau}
+
+  # ---------- Stage B y build ----------
+  prices.stage_b:
+    estado: prod
+    code_paths:
+      - src/prices/stage_b.py
+      - src/prices/stage_b_stream.py
+      - src/prices/stage_b_fx.py
+      - src/prices/enrich/stages/extraction.py
+    run: run.py prices stage-b (stage_b_stream.run_and_write)
+    paths:
+      - {path: "/mnt/backup5tb/po_outputs/prices_refactor/stage_b_wNN/<c>/{observations,trusted_observations,product_months}.parquet", machine: a8}
+      - {path: "/mnt/backup5tb/po_outputs/prices_refactor/stage_b_wNN/<c>/report.txt", machine: a8, role: status}
+      - {path: "/mnt/backup5tb/po_outputs/prices_refactor/stage_b_wNN/<c>/nonfood/report.txt", machine: a8, role: status}
+    inputs: [prices.classified, prices.prepared, fx]
+    partition: country × scope{food,nonfood} × semana
+    fingerprint:
+      code: [src/prices/stage_b.py, src/prices/stage_b_stream.py, src/prices/stage_b_fx.py]
+      reuse: prices.enrich.stages.extraction:code_fingerprint
+      deps: [pyarrow]
+      note: el hash del cache fx y de classified del país es de input, no de código (PX-43/45)
+    freshness: <= 2 días después de classify
+    checks:
+      - {color: rojo, desc: 215/215 report.txt por scope}
+      - {color: rojo, desc: filas != metadata}
+      - {color: rojo, desc: gate FX}
+      - {color: amarillo, desc: memoria Japan nonfood}
+
+  prices.build:
+    estado: prod
+    code_paths:
+      - src/prices/global_build.py
+      - src/prices/build/*.py
+    run: python -m prices.global_build assemble
+    paths:
+      - {path: "/mnt/backup5tb/po_outputs/prices_refactor/build_wNN/global_prices_{observations,trusted_observations,unit_value_summary}.parquet", machine: a8}
+    inputs: [prices.stage_b]
+    partition: semana (global)
+    fingerprint:
+      deps: [pyarrow]
+    checks:
+      - {color: rojo, desc: conteos != Stage B}
+      - {color: amarillo, desc: "trust_level todo high (#15)"}
+
+  prices.rtcal:
+    estado: prod
+    code_paths:
+      - src/prices/global_build.py
+      - src/prices/rtcal/**/*
+    run: global_build rtcal + merge
+    paths:
+      - {path: /mnt/backup5tb/po_outputs/prices_refactor/build_wNN/rtcal, machine: a8}
+      - {path: /mnt/backup5tb/po_outputs/prices_refactor/build_wNN/trusted_observations_rtcal.parquet, machine: a8}
+      - {path: /mnt/backup5tb/po_outputs/prices_refactor/build_wNN/rtcal/promotion.json, machine: a8, role: status}
+    inputs: [prices.build]
+    partition: semana
+    fingerprint:
+      code: [src/prices/rtcal/**/*]
+      deps: [pyarrow]
+    checks:
+      - {color: rojo, desc: "#1 fills do_not_release > 0"}
+      - {color: rojo, desc: "#2 fila publicable sin moneda local, fx, fuente o input_hash"}
+      - {color: amarillo, desc: "#6/#7 fill > 10x mediana de la serie"}
+      - {color: rojo, desc: drift no_country_over_pruned BLOCK auto-promovido}
+
+  prices.typical_mass:
+    estado: prod
+    code_paths: [src/prices/build/leaf_typical_mass.py]
+    code_external: [~/scratch/w42_build/tm.py (destino global_build typical-mass)]
+    paths:
+      - {path: /mnt/backup5tb/po_outputs/prices_refactor/build_wNN/leaf_typical_mass.csv, machine: a8}
+    inputs: [prices.build]
+    partition: semana
+    checks:
+      - {color: amarillo, desc: "#10 flips vs semana anterior"}
+      - {color: amarillo, desc: "#9 hoja huevos sin masa"}
+
+  prices.nonfood_global:
+    estado: prod
+    code_paths: [src/prices/global_build.py]
+    code_external: [~/scratch/w42_build/merge_nf.py (destino global_build nonfood)]
+    paths:
+      - {path: "/mnt/backup5tb/po_outputs/prices_refactor/build_wNN/global_prices_nonfood_{observations,trusted_observations}.parquet", machine: a8}
+    inputs: [prices.stage_b]
+    partition: semana
+    fingerprint:
+      deps: [pyarrow]
+    checks:
+      - {color: rojo, desc: filas != suma Stage B nonfood}
+      - {color: amarillo, desc: "divisiones 10-12 ausentes (#19)"}
+
+  prices.pages:
+    estado: prod
+    code_paths:
+      - src/prices/dashboards.py
+      - src/prices/publish.py
+      - src/prices/explorer/*
+    run: run.py prices dashboards
+    paths:
+      - {path: "/mnt/backup5tb/po_outputs/prices_refactor/build_wNN/dashboards/{rtcal,trusted}/global_prices_{dashboard,explorer}{,_eap}.html", machine: a8}
+    inputs: [prices.rtcal, prices.typical_mass, fx]
+    partition: variante × región{world,eap} × página (8)
+    checks:
+      - {color: rojo, desc: "#3/#12/#18 país sin trusted publicado"}
+      - {color: rojo, desc: "datos hasta > hoy (#8)"}
+      - {color: amarillo, desc: "#9-#11 cambio semanal fuera de margen (a cola)"}
+      - {color: amarillo, desc: "#16/#17 conteos del log != páginas"}
+      - {color: amarillo, desc: tamaño fuera de ±x% vs semana anterior}
+
+  prices.delivery:
+    estado: humano
+    desc: zips + MANIFEST a Drive (B03, B04); nunca automático
+    inputs: [prices.pages, prices.build, prices.nonfood_global]

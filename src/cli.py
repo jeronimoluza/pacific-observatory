@@ -615,6 +615,9 @@ prices.add_command(_prices_cc_exhaustion, name="cc-exhaustion")
 prices.add_command(_prices_dashboards, name="dashboards")
 prices.add_command(_prices_weekly, name="weekly")
 
+from graph.cli import graph as _graph  # noqa: E402
+po.add_command(_graph, name="graph")
+
 
 @prices.command("build")
 @_region_opt
