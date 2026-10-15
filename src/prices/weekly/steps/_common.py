@@ -35,7 +35,7 @@ def py_argv(module: str, ctx: Context, *extra: str) -> list[str]:
     ]
     if ctx.countries:
         argv += ["--countries", ",".join(ctx.countries)]
-    return argv + list(extra)
+    return argv + list(extra) + list(ctx.extra)
 
 
 def parser(step: str) -> argparse.ArgumentParser:

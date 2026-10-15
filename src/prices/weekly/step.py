@@ -37,6 +37,8 @@ class Context:
     dry_run: bool = False
     backup_mount: Path = BACKUP_MOUNT
     disk_paths: list[Path] = field(default_factory=list)
+    # Passed through to the step's runner: `weekly step stage_b -- --out X`.
+    extra: tuple[str, ...] = ()
 
     @property
     def week_dir(self) -> Path:

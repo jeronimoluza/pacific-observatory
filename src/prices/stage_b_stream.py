@@ -65,12 +65,14 @@ def _concat(parts: list[Path], dest: Path, trusted_only: bool = False) -> int:
     return n
 
 
-def run_and_write(country: str, scope: str = "food", out_root: Path | None = None) -> tuple[int, int]:
+def run_and_write(
+    country: str, scope: str = "food", out_root: Path | None = None, as_of: pd.Timestamp | None = None
+) -> tuple[int, int]:
     """Stage B for `country` chunk by chunk into `out_root` (default `stage_b.OUT_ROOT`); (rows, trusted)."""
     products = sb.load_products(country, scope)
     local = products["currency"].mode().iloc[0]
     months = sb.load_months(country, products["input_hash"])
-    rates = sb.month_rates(months.assign(currency=months["currency"].map(fx.normalize_currency_safe)), local)
+    rates = sb.month_rates(months.assign(currency=months["currency"].map(fx.normalize_currency_safe)), local, as_of)
     del months
     root = (out_root or sb.OUT_ROOT) / decisions_store.part_name(country) / ("nonfood" if scope == "nonfood" else "")
     root.mkdir(parents=True, exist_ok=True)
@@ -134,10 +136,13 @@ def write_checks(root: Path) -> None:
 @click.option("--scope", type=click.Choice(sb.SCOPES), default="food", show_default=True)
 @click.option("--out", "out_root", type=click.Path(path_type=Path), default=None,
               help="Output root (default outputs/prices/stage_b).")
-def stage_b_streamed(countries: tuple[str, ...], scope: str, out_root: Path | None) -> None:
+@click.option("--as-of", "as_of", type=click.DateTime(formats=["%Y-%m-%d"]), default=None,
+              help="Date the FX cache's freshness is measured against (default today).")
+def stage_b_streamed(countries: tuple[str, ...], scope: str, out_root: Path | None, as_of) -> None:
     """Stage B per country, streamed by COICOP leaf."""
+    as_of = pd.Timestamp(as_of.date()) if as_of else None
     for country in countries:
-        rows, trusted = run_and_write(country, scope, out_root)
+        rows, trusted = run_and_write(country, scope, out_root, as_of)
         click.echo(f"DONE {country} rows={rows} trusted={trusted}")
 
 

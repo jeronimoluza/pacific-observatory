@@ -31,4 +31,8 @@ STEPS: dict[str, Step] = {
             str(ctx.backup_mount),
         ),
     ),
+    # PX-21. One country at a time in its own process; W42 capped the whole chain at 20G.
+    "stage_b": Step(
+        "stage_b", "16G", lambda ctx: py_argv("prices.weekly.steps.stage_b", ctx)
+    ),
 }

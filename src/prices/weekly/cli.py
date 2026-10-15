@@ -96,9 +96,28 @@ def weekly(ctx, week, countries, logs_root, backup_mount, dry_run):
         _print_plan(ctx.obj)
 
 
-@weekly.command("step")
+@weekly.command("step", context_settings={"ignore_unknown_options": True})
 @click.argument("name", type=click.Choice(sorted(STEPS)))
+@click.argument("extra", nargs=-1, type=click.UNPROCESSED)
 @click.pass_obj
-def step_command(c: Context, name: str):
-    """Run one registered step."""
+def step_command(c: Context, name: str, extra: tuple[str, ...]):
+    """Run one registered step; EXTRA goes to its runner (e.g. stage_b --out DIR --as-of DATE)."""
+    c.extra = extra
     sys.exit(run_step(STEPS[name], c))
+
+
+@weekly.command("diff")
+@click.argument("a", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.argument("b", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option(
+    "--countries",
+    "only",
+    default=None,
+    help="Slugs or a panel name; default the group's --countries, else every country in A or B.",
+)
+@click.pass_obj
+def diff_command(c: Context, a: Path, b: Path, only: str | None):
+    """Compare two per-country output trees (e.g. two Stage B roots); exit 1 on any DIFF."""
+    from prices.weekly.diff import diff_trees
+
+    sys.exit(diff_trees(a, b, resolve_countries(only) or c.countries))

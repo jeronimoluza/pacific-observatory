@@ -21,14 +21,15 @@ def _cache_last_date(path: str, mtime: float) -> pd.Timestamp:
     return pd.to_datetime(pd.read_csv(path, usecols=["date"])["date"]).max()
 
 
-def require_fresh_fx(end: pd.Timestamp, cache_path=fx.PRICES_FX_CACHE) -> None:
+def require_fresh_fx(end: pd.Timestamp, cache_path=fx.PRICES_FX_CACHE, as_of: pd.Timestamp | None = None) -> None:
     """Stop when the FX cache ends more than `FX_MAX_LAG_DAYS` before the data does.
 
     Stage B only reads the cache (`fx-refresh` is the one step that fetches), so
     stale rates would otherwise be forward-filled silently. Checked against the
     cache's overall last date: retired codes (HRK, BGN, SLL, ZWL) end early.
+    `as_of` (default today) is the run's date: a past week re-runs against its own.
     """
-    upto = min(end, pd.Timestamp(datetime.now(timezone.utc).date()))
+    upto = min(end, as_of if as_of is not None else pd.Timestamp(datetime.now(timezone.utc).date()))
     last = _cache_last_date(str(cache_path), os.path.getmtime(cache_path))
     if last < upto - pd.Timedelta(days=FX_MAX_LAG_DAYS):
         raise RuntimeError(
@@ -37,7 +38,7 @@ def require_fresh_fx(end: pd.Timestamp, cache_path=fx.PRICES_FX_CACHE) -> None:
         )
 
 
-def month_rates(pm: pd.DataFrame, local: str) -> pd.DataFrame:
+def month_rates(pm: pd.DataFrame, local: str, as_of: pd.Timestamp | None = None) -> pd.DataFrame:
     """Mean rate and `fx_suspect` per (currency, month) over `pm`'s months.
 
     The month's rate is the mean of its daily USD->local rates, forward-filled
@@ -47,7 +48,7 @@ def month_rates(pm: pd.DataFrame, local: str) -> pd.DataFrame:
     known = pm["month"].dropna()
     start = pd.to_datetime(known.min(), format="%Y-%m")
     end = pd.to_datetime(known.max(), format="%Y-%m") + pd.offsets.MonthEnd(0)
-    require_fresh_fx(end)
+    require_fresh_fx(end, as_of=as_of)
     currencies = sorted(set(pm["currency"].dropna()) | {local})
     days = pd.DataFrame(
         [(c, d) for c in currencies for d in (start, end)], columns=["currency", "observation_date"]
