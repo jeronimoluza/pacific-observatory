@@ -17,6 +17,7 @@ from __future__ import annotations
 import difflib
 import filecmp
 import hashlib
+from collections import Counter
 from pathlib import Path
 
 import click
@@ -135,9 +136,12 @@ def _files(root: Path) -> set[Path]:
     )
 
 
-def _obs_rows(d: Path) -> str:
-    f = d / "observations.parquet"
-    return f"{pq.ParquetFile(f).metadata.num_rows:,}" if f.exists() else "-"
+def _rows(f: Path) -> int | None:
+    return pq.ParquetFile(f).metadata.num_rows if f.exists() else None
+
+
+def _fmt(n: int | None) -> str:
+    return "-" if n is None else f"{n:,}"
 
 
 def diff_country(a: Path, b: Path, country: str) -> list[tuple[str, str, list]]:
@@ -165,11 +169,20 @@ def diff_trees(a: Path, b: Path, countries: list[str] | None) -> int:
         f"{'country':28s} {'part':10s} {'verdict':12s} {'obs A':>12s} {'obs B':>12s}"
     )
     equal = diff = 0
+    totals: dict[tuple[str, str], list[int]] = {}
+    verdicts: Counter = Counter()
     for country in countries:
         for part, verdict, files in diff_country(a, b, country):
             label = "food" if part == "." else part
-            ra, rb = _obs_rows(a / country / part), _obs_rows(b / country / part)
-            click.echo(f"{country:28s} {label:10s} {verdict:12s} {ra:>12s} {rb:>12s}")
+            for name in KEYS:
+                t = totals.setdefault((label, name), [0, 0])
+                for i, root in enumerate((a, b)):
+                    t[i] += _rows(root / country / part / name) or 0
+            obs = [_rows(r / country / part / "observations.parquet") for r in (a, b)]
+            click.echo(
+                f"{country:28s} {label:10s} {verdict:12s} {_fmt(obs[0]):>12s} {_fmt(obs[1]):>12s}"
+            )
+            verdicts.update(v for _, v, _ in files)
             if verdict == "EQUAL":
                 equal += 1
                 continue
@@ -177,5 +190,8 @@ def diff_trees(a: Path, b: Path, countries: list[str] | None) -> int:
             for name, v, detail in files:
                 if v not in OK:
                     click.echo(f"    {name:30s} {v:12s} {detail}")
+    for (label, name), (ra, rb) in totals.items():
+        click.echo(f"ROWS {label:8s} {name:30s} A={ra:,} B={rb:,} ({rb - ra:+,})")
+    click.echo("FILES " + " ".join(f"{v}={n}" for v, n in sorted(verdicts.items())))
     click.echo(f"EQUAL {equal} / DIFF {diff}")
     return 1 if diff else 0
