@@ -14,4 +14,6 @@ STEPS: dict[str, Step] = {
     "enrich": Step(
         "enrich", "20G", lambda ctx: py_argv("prices.weekly.steps.enrich", ctx)
     ),
+    # PX-11
+    "fx": Step("fx", "2G", lambda ctx: py_argv("prices.weekly.steps.fx", ctx)),
 }
