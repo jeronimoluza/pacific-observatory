@@ -269,6 +269,8 @@ def _unit(args, status: Status, name: str, mem: int, argv: list[str], tmp: Path)
     if _unit_active(unit):
         _common.say(status, f"FAILED {name}: unit {unit}.scope is already active")
         return 1
+    # A unit that failed (e.g. OOM-killed) stays loaded and blocks its own name on resume.
+    subprocess.run(["systemctl", "--user", "reset-failed", f"{unit}.scope"], capture_output=True)
     cmd = [
         "systemd-run", "--user", "--scope", "-q", f"--unit={unit}",
         "-p", f"MemoryMax={mem}G", "-p", f"MemorySwapMax={args.swap_max}G",
