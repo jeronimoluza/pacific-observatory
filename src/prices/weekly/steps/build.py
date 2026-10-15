@@ -18,12 +18,29 @@ what resume.sh and resume_b.sh did by hand after the W42 OOMs.
 `--countries` builds from week_dir/build/<build>_stage_b/, one link per country to its
 Stage B dir, so every sub-step sees only those countries. Every country in scope needs
 a Stage B report.txt. TMPDIR is a folder next to the build dir, not /tmp.
+
+`--train-stage-b` (with --countries) trains the global parts on a wider Stage B, e.g.
+the 215 countries, and publishes only --countries. RT-CAL's gates, thresholds, global
+and regional pruning and fills, and the pooled typical mass, all depend on every
+country in the build, so a panel built alone gets different numbers. Three sub-steps
+run first into --train-out (default <build dir's parent>/_train_<build>, kept):
+
+  train_assemble      assemble over the training Stage B, with --train-decisions as
+                      the classifier store when given (the panel tree holds only the
+                      panel's decisions)
+  train_rtcal         rtcal over that
+  train_typical_mass  typical mass over that
+
+and then `rtcal` copies the training rtcal/ into the build, every parquet with a
+`country` column cut to --countries, and `typical_mass` copies the training csv.
+The pages then show only --countries, world pages included.
 """
 
 from __future__ import annotations
 
 import glob
 import os
+import shutil
 import re
 import signal
 import subprocess
@@ -72,7 +89,7 @@ def _wk(week: str) -> str:
 
 
 def typical_mass(out: Path) -> int:
-    import pyarrow.parquet as pq
+    import pyarrow.dataset as ds
 
     from prices.build import leaf_typical_mass as ltm
 
@@ -81,12 +98,20 @@ def typical_mass(out: Path) -> int:
     if target.exists():
         print(f"{target} exists, not overwriting", flush=True)
         return 1
-    df = pq.read_table(out / OBS, columns=TM_COLS).to_pandas(strings_to_categorical=True)
-    df = df.dropna(subset=["coicop_code", "standard_unit"])
-    donor = df["pricing_basis"].isin(ltm.MEASURED_BASES)
-    keep = (donor & df["mass_source"].eq("measured")) | df["pricing_basis"].isin(ltm.PIECE_BASES)
-    print(f"rows {len(df):,} -> {int(keep.sum()):,} (measured donors + piece rows)", flush=True)
-    df = df.loc[keep].drop(columns=["mass_source"])
+    # tm.py's row filter, pushed into the read: the 215-country frame peaked at 21.1G.
+    f = ds.field
+    keep = (
+        f("coicop_code").is_valid()
+        & f("standard_unit").is_valid()
+        & (
+            (f("pricing_basis").isin(sorted(ltm.MEASURED_BASES)) & (f("mass_source") == "measured"))
+            | f("pricing_basis").isin(sorted(ltm.PIECE_BASES))
+        )
+    )
+    data = ds.dataset(out / OBS)
+    df = data.to_table(columns=TM_COLS, filter=keep).to_pandas(strings_to_categorical=True)
+    print(f"rows {data.count_rows():,} -> {len(df):,} (measured donors + piece rows)", flush=True)
+    df = df.drop(columns=["mass_source"])
     for c in ("pricing_basis", "standard_unit", "country", "coicop_code"):
         df[c] = df[c].astype(object)
     table = ltm.derive_typical_mass(df)
@@ -129,6 +154,51 @@ def nonfood(stage_b: Path, out: Path) -> int:
     return 0
 
 
+def train_assemble(args) -> int:
+    from prices import global_build
+    from prices.enrich import config
+
+    if args.train_decisions:
+        config.CLASSIFIED_HIERLEX_PARQUET = args.train_decisions
+    argv = ["assemble", "--stage-b", str(args.train_stage_b), "--out", str(args.train_out)]
+    global_build.cli.main(argv + (["--as-of", args.as_of] if args.as_of else []), standalone_mode=False)
+    return 0
+
+
+def rtcal_subset(train: Path, out: Path, countries: list[str]) -> int:
+    import pyarrow.dataset as ds
+    import pyarrow.parquet as pq
+
+    src, dst = train / "rtcal", out / "rtcal"
+    if dst.exists():
+        print(f"{dst} exists, not overwriting", flush=True)
+        return 1
+    for p in sorted(src.rglob("*")):
+        t = dst / p.relative_to(src)
+        if p.is_dir():
+            t.mkdir(parents=True, exist_ok=True)
+            continue
+        t.parent.mkdir(parents=True, exist_ok=True)
+        if p.suffix == ".parquet" and "country" in pq.read_schema(p).names:
+            tab = ds.dataset(p).to_table(filter=ds.field("country").isin(countries))
+            pq.write_table(tab, t)
+            print(f"{t.relative_to(dst)}: {tab.num_rows:,} of {pq.ParquetFile(p).metadata.num_rows:,} rows", flush=True)
+        else:
+            shutil.copyfile(p, t)
+            print(f"{t.relative_to(dst)}: copied", flush=True)
+    return 0
+
+
+def copy_typical_mass(train: Path, out: Path) -> int:
+    target = out / TYPICAL_MASS
+    if target.exists():
+        print(f"{target} exists, not overwriting", flush=True)
+        return 1
+    shutil.copyfile(train / TYPICAL_MASS, target)
+    print(f"copied {train / TYPICAL_MASS}", flush=True)
+    return 0
+
+
 def page(out: Path, spec: str) -> int:
     from prices import dashboards as d
     from prices import explorer, publish
@@ -154,11 +224,30 @@ def _substeps(args, stage_b: Path, out: Path) -> list[tuple[str, int, list[str]]
     gb = ["-m", "prices.global_build"]
     own = ["-m", MODULE, "--week", args.week, "--week-dir", str(args.week_dir), "--out", str(out)]
     as_of = ["--as-of", args.as_of] if args.as_of else []
-    steps = [
-        ("assemble", MEMORY_GB["assemble"], [*gb, "assemble", "--stage-b", str(stage_b), "--out", str(out), *as_of]),
-        ("rtcal", MEMORY_GB["rtcal"], [*gb, "rtcal", "--out", str(out)]),
-        ("merge", MEMORY_GB["merge"], [*gb, "merge", "--out", str(out)]),
-        ("typical_mass", MEMORY_GB["typical_mass"], [*own, "--phase", "typical_mass"]),
+    assemble = ("assemble", MEMORY_GB["assemble"], [*gb, "assemble", "--stage-b", str(stage_b), "--out", str(out), *as_of])
+    if args.train_stage_b:
+        train = ["-m", MODULE, "--week", args.week, "--week-dir", str(args.week_dir), "--out", str(args.train_out)]
+        dec = ["--train-decisions", str(args.train_decisions)] if args.train_decisions else []
+        sub = [*own, "--train-out", str(args.train_out), "--countries", args.countries]
+        steps = [
+            ("train_assemble", MEMORY_GB["assemble"],
+             [*train, "--phase", "train_assemble", "--train-stage-b", str(args.train_stage_b),
+              "--train-out", str(args.train_out), *dec, *as_of]),
+            ("train_rtcal", MEMORY_GB["rtcal"], [*gb, "rtcal", "--out", str(args.train_out)]),
+            ("train_typical_mass", MEMORY_GB["typical_mass"], [*train, "--phase", "typical_mass"]),
+            assemble,
+            ("rtcal", MEMORY_GB["nonfood"], [*sub, "--phase", "rtcal_subset"]),
+            ("merge", MEMORY_GB["merge"], [*gb, "merge", "--out", str(out)]),
+            ("typical_mass", 1, [*sub, "--phase", "copy_typical_mass"]),
+        ]
+    else:
+        steps = [
+            assemble,
+            ("rtcal", MEMORY_GB["rtcal"], [*gb, "rtcal", "--out", str(out)]),
+            ("merge", MEMORY_GB["merge"], [*gb, "merge", "--out", str(out)]),
+            ("typical_mass", MEMORY_GB["typical_mass"], [*own, "--phase", "typical_mass"]),
+        ]
+    steps += [
         ("nonfood", MEMORY_GB["nonfood"], [*own, "--stage-b", str(stage_b), "--phase", "nonfood"]),
     ]
     for v, r, p in PAGES:
@@ -230,6 +319,14 @@ def run(args, countries: list[str] | None) -> int:
     if args.resume and not out.exists():
         _common.say(status, f"FAILED --resume but {out} does not exist")
         return 1
+    if args.train_stage_b:
+        if not countries:
+            _common.say(status, "FAILED --train-stage-b needs --countries: the rows to publish")
+            return 1
+        args.train_out = (args.train_out or out.parent / f"_train_{out.name}").absolute()
+        if args.train_out.exists() and not args.resume:
+            _common.say(status, f"FAILED {args.train_out} exists; refusing to overwrite (--resume continues it)")
+            return 1
     src = _scope(args, sb, out, countries)
     if isinstance(src, str):
         _common.say(status, f"FAILED {src}")
@@ -240,7 +337,8 @@ def run(args, countries: list[str] | None) -> int:
     if not args.resume:
         done_file.parent.mkdir(parents=True, exist_ok=True)
         done_file.write_text("")
-    _common.say(status, f"build {out} from {src} ({n} countries, {n_nf} with nonfood) @{_sha()}")
+    train = f"; trained on {args.train_stage_b} into {args.train_out}" if args.train_stage_b else ""
+    _common.say(status, f"build {out} from {src} ({n} countries, {n_nf} with nonfood){train} @{_sha()}")
     tmp = out.parent / f"_tmp_{out.name}"
     out.mkdir(parents=True, exist_ok=True)
     tmp.mkdir(exist_ok=True)
@@ -266,8 +364,18 @@ def main() -> int:
     ap.add_argument("--as-of", default=None, help="YYYY-MM-DD; assemble drops later rows (default today, UTC)")
     ap.add_argument("--memory-cap", type=int, default=None, help="GiB; caps every sub-step's MemoryMax")
     ap.add_argument("--resume", action="store_true")
+    ap.add_argument("--train-stage-b", type=Path, default=None, help="Stage B the global parts train on")
+    ap.add_argument("--train-decisions", type=Path, default=None,
+                    help="classified_hierlex.parquet whose parts cover --train-stage-b")
+    ap.add_argument("--train-out", type=Path, default=None, help="default: <out parent>/_train_<out name>")
     ap.add_argument("--page", default=None)
     args = ap.parse_args()
+    if args.phase == "train_assemble":
+        return train_assemble(args)
+    if args.phase == "rtcal_subset":
+        return rtcal_subset(args.train_out, args.out, _common.countries(args.countries))
+    if args.phase == "copy_typical_mass":
+        return copy_typical_mass(args.train_out, args.out)
     if args.phase == "typical_mass":
         return typical_mass(args.out)
     if args.phase == "nonfood":
