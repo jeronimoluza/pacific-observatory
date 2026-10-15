@@ -45,6 +45,7 @@ nodes:
 
   prices.raw:
     estado: prod
+    observer: prices_collect
     code_paths:
       - src/prices/collect.py
       - src/prices/collect_parallel.py
@@ -69,6 +70,7 @@ nodes:
 
   prices.raw_cc:
     estado: prod
+    observer: prices_cc
     code_paths:
       - src/prices/cc_*.py
     code_external:
@@ -87,6 +89,7 @@ nodes:
 
   prices.shard:
     estado: prod
+    observer: prices_shard
     code_paths: [src/prices/enrich/stages/concatenate.py]
     run: run.py prices process --stage concatenate
     paths:
@@ -102,6 +105,7 @@ nodes:
 
   prices.prepared:
     estado: prod
+    observer: prices_prepared
     code_paths:
       - src/prices/enrich/stages/prepare.py
       - src/prices/enrich/prepare_shards.py
@@ -143,6 +147,7 @@ nodes:
 
   prices.scored:
     estado: prod
+    observer: prices_pred
     code_paths:
       - src/prices/enrich/hierlex/driver.py
       - src/prices/enrich/hierlex/scorer.py
@@ -163,6 +168,7 @@ nodes:
 
   prices.classified:
     estado: prod
+    observer: prices_classified
     code_paths:
       - src/prices/enrich/stages/classify.py
       - src/prices/enrich/hierlex/decide.py
@@ -184,6 +190,7 @@ nodes:
   # ---------- Stage B y build ----------
   prices.stage_b:
     estado: prod
+    observer: prices_stage_b
     code_paths:
       - src/prices/stage_b.py
       - src/prices/stage_b_stream.py
@@ -210,6 +217,7 @@ nodes:
 
   prices.build:
     estado: prod
+    observer: prices_build
     code_paths:
       - src/prices/global_build.py
       - src/prices/build/*.py
@@ -226,6 +234,7 @@ nodes:
 
   prices.rtcal:
     estado: prod
+    observer: prices_build
     code_paths:
       - src/prices/global_build.py
       - src/prices/rtcal/**/*
@@ -247,6 +256,7 @@ nodes:
 
   prices.typical_mass:
     estado: prod
+    observer: prices_build
     code_paths: [src/prices/build/leaf_typical_mass.py]
     code_external: [~/scratch/w42_build/tm.py (destino global_build typical-mass)]
     paths:
@@ -259,6 +269,7 @@ nodes:
 
   prices.nonfood_global:
     estado: prod
+    observer: prices_build
     code_paths: [src/prices/global_build.py]
     code_external: [~/scratch/w42_build/merge_nf.py (destino global_build nonfood)]
     paths:
@@ -273,6 +284,7 @@ nodes:
 
   prices.pages:
     estado: prod
+    observer: prices_pages
     code_paths:
       - src/prices/dashboards.py
       - src/prices/publish.py
