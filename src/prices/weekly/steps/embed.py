@@ -297,12 +297,12 @@ def run(args, countries: list[str] | None) -> int:
     cfg = embed_stores.load(args.week)
     embed_stores.require_present(cfg.stores)
     stores = _store_list(cfg)
-    out = out_dir(args.week)
+    out = args.out or out_dir(args.week)
     if (out / "need.parquet").exists():
         _common.say(status, f"FAILED {out}/need.parquet exists; refusing to overwrite")
         return 1
     out.mkdir(parents=True, exist_ok=True)
-    files = _common.prepared_files(PREPARED_DIR, countries)
+    files = _common.prepared_files(args.prepared or PREPARED_DIR, countries)
     print(
         f"stores from {cfg.config}: " + ", ".join(f"{s}={r}" for s, r in stores),
         flush=True,
@@ -385,6 +385,10 @@ def main() -> int:
     ap = _common.parser("embed")
     ap.add_argument("--names", type=Path, default=None)
     ap.add_argument("--dst", type=Path, default=None)
+    # Overrides for re-running over another tree's prepared output (e.g. W42's)
+    # without writing into that tree.
+    ap.add_argument("--prepared", type=Path, default=None)
+    ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
     if args.phase == "assemble":
         return assemble(args)
