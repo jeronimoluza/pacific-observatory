@@ -25,7 +25,7 @@ nodes:
     paths:
       - {path: "~/text_state/<region>.sqlite", machine: a8}
       - {path: "~/text_state/<region>.sqlite", machine: mac, role: ledger}
-      - {path: "/Volumes/SSKJL/text_state/<region>.sqlite", machine: sskjl, role: ledger}
+      - {path: "/mnt/backup5tb/text-state/<region>.sqlite", machine: a8, role: ledger}   # copia
     partition: region
     desc: >-
       lo escribe merge junto con text.corpus. El bootstrap desde corpus y el lazo
@@ -64,8 +64,10 @@ nodes:
     code_paths: [src/text/merge.py]
     paths:
       - {path: "/mnt/backup5tb/text-corpus/<region>/<sub>/<country>/<source>/news.csv", machine: a8}
-      - {path: "/Volumes/SSKJL/data/text/<region>/<sub>/<country>/<source>/news.csv", machine: sskjl}
     inputs: [text.delta, text.ledger]
+    desc: >-
+      el 5 TB es la copia principal. Backup frío: archives/text-corpus-20261013.tar.zst
+      en OneDrive (subido 14/10). SSKJL ya no guarda text (desde 15/10 solo embed store).
     partition: fuente (append-only; lógica fuente × semana de evento)
     freshness: todo run con .done está .merged en <= 1 día
     checks:
@@ -73,7 +75,6 @@ nodes:
       - {color: rojo, desc: n_news del ledger != URLs del news.csv}
       - {color: rojo, desc: URL duplicada no vacía}
       - {color: rojo, desc: fecha > hoy UTC}
-      - {color: amarillo, desc: copia del 5 TB != SSKJL}
       - {color: amarillo, desc: carpeta <outlet>_<country> sin config}
 
   text.keywords:

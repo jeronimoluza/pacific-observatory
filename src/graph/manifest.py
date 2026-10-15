@@ -17,7 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_DIR = Path(__file__).resolve().parent / "manifests"
 
 ESTADOS = ("prod", "dev", "humano", "fuera_mvp")
-MACHINES = ("a8", "mac", "sskjl")
+MACHINES = ("a8", "mac")
 ROLES = ("output", "state", "ledger", "status")
 COLORS = ("rojo", "amarillo")
 
