@@ -14,8 +14,6 @@ import re
 import sys
 from pathlib import Path
 
-import pandas as pd
-
 STAGING_ROOT = Path.home() / "text_staging"
 REGIONS = ["menaap", "sar", "eap", "ssa", "lac", "eca"]
 STATES = ["DONE", "TIMEOUT", "FAIL", "STUCK"]
@@ -50,6 +48,8 @@ def read_events(log: Path) -> tuple[dict[str, int], dict[str, str]]:
 
 
 def news_rows(news_csv: Path) -> int:
+    import pandas as pd
+
     return len(pd.read_csv(news_csv, usecols=["url"]))
 
 
@@ -142,7 +142,31 @@ def compare_status_md(status: dict, run_dir: Path) -> list[str]:
     return diffs
 
 
+def observe(node) -> list[dict]:
+    """Graph contract (`text.corpus`): one row per region of the newest run; done = the
+    run was merged into the corpus (``.merged``). A run with ``.done`` and an unmerged
+    region is drift."""
+    from datetime import datetime, timezone
+
+    from graph.observe import row
+
+    if not STAGING_ROOT.is_dir() or not list_runs(STAGING_ROOT):
+        return []
+    run_dir = STAGING_ROOT / list_runs(STAGING_ROOT)[-1]
+    st = run_status(run_dir)
+    ts = datetime.strptime(st["run"], "%Y%m%dT%H%MZ").replace(tzinfo=timezone.utc).timestamp()
+    out = []
+    for r in st["regions"]:
+        drift = ["done_not_merged"] if st["done"] and not r["merged"] else []
+        out.append(row(node, r["region"], r["merged"], r["news_rows"], ts, drift=drift,
+                       extra={k: r[k] for k in ("run", "done", "timeout", "fail", "stuck",
+                                                "sources_with_rows", "merged_note")}))
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
+    import pandas as pd
+
     ap = argparse.ArgumentParser(prog="python -m graph.observers.text_delta")
     ap.add_argument("--run", help="run id (default: newest)")
     ap.add_argument("--staging-root", type=Path, default=STAGING_ROOT)

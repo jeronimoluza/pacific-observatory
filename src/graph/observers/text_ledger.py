@@ -16,8 +16,6 @@ import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-import pandas as pd
-
 STATE_DIR = Path.home() / "text_state"
 CORPUS_ROOT = Path("/mnt/backup5tb/text-corpus")
 
@@ -42,6 +40,8 @@ def ledger_sources(region: str, state_dir: Path = STATE_DIR) -> dict[str, dict]:
 
 def corpus_news(news_csv: Path, today: date) -> dict:
     """Rows, distinct non-empty URLs and newest valid date (≤ today + 1) of one news.csv."""
+    import pandas as pd
+
     urls: set[str] = set()
     rows = 0
     newest = None
@@ -99,7 +99,38 @@ def ledger_vs_corpus(region: str, state_dir: Path = STATE_DIR, corpus_root: Path
     return rows
 
 
+def observe(node) -> list[dict]:
+    """Graph contract (`text.ledger`): one row per source of every ``<region>.sqlite``.
+    Drift compares keys only (``not_in_corpus``, ``not_in_ledger``, ``blocked``); the
+    n_news/watermark comparison reads every news.csv and stays in ``main``. Without
+    the corpus mount, keys are not compared."""
+    from graph.observe import row
+
+    out = []
+    for sqlite in sorted(STATE_DIR.glob("*.sqlite")):
+        region = sqlite.stem
+        ledger = ledger_sources(region, STATE_DIR)
+        have_corpus = (CORPUS_ROOT / region).is_dir()
+        on_disk = set(corpus_keys(region, CORPUS_ROOT)) if have_corpus else set()
+        for key in sorted(set(ledger) | on_disk):
+            led = ledger.get(key)
+            drift = []
+            if led is None:
+                drift.append("not_in_ledger")
+            elif led["blocked"]:
+                drift.append("blocked")
+            if have_corpus and key not in on_disk:
+                drift.append("not_in_corpus")
+            out.append(row(node, f"{region}/{key}", led is not None and not led["blocked"],
+                           (led or {}).get("n_news"), (led or {}).get("ledger_updated"), drift=drift,
+                           extra={"watermark": (led or {}).get("watermark"),
+                                  "corpus_checked": have_corpus}))
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
+    import pandas as pd
+
     ap = argparse.ArgumentParser(prog="python -m graph.observers.text_ledger")
     ap.add_argument("--region", required=True)
     ap.add_argument("--state-dir", type=Path, default=STATE_DIR)
