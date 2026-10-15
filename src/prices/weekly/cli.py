@@ -7,6 +7,7 @@ from pathlib import Path
 
 import click
 
+from prices.weekly.chain import ORDER, run_chain
 from prices.weekly.guards import (
     ALERT_USED_PCT,
     BACKUP_MOUNT,
@@ -121,3 +122,20 @@ def diff_command(c: Context, a: Path, b: Path, only: str | None):
     from prices.weekly.diff import diff_trees
 
     sys.exit(diff_trees(a, b, resolve_countries(only) or c.countries))
+
+
+@weekly.command("run")
+@click.option("--from", "first", type=click.Choice(ORDER), default=ORDER[0], show_default=True)
+@click.option("--to", "last", type=click.Choice(ORDER), default=ORDER[-1], show_default=True)
+@click.option("--week", default=None, help="Overrides the group's --week.")
+@click.option("--countries", default=None, help="Overrides the group's --countries.")
+@click.option("--dry-run", is_flag=True, help="List the steps, their units and gates; run nothing.")
+@click.pass_obj
+def run_command(c: Context, first, last, week, countries, dry_run):
+    """Run the steps --from..--to in order, each gated on the one before it ending DONE."""
+    if week:
+        c.week = week
+    if countries:
+        c.countries = resolve_countries(countries)
+    c.dry_run = c.dry_run or dry_run
+    sys.exit(run_chain(c, first, last))

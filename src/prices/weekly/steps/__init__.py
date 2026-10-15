@@ -35,4 +35,6 @@ STEPS: dict[str, Step] = {
     "stage_b": Step(
         "stage_b", "16G", lambda ctx: py_argv("prices.weekly.steps.stage_b", ctx)
     ),
+    # PX-25. The runner only orchestrates: each sub-step gets its own unit and MemoryMax.
+    "build": Step("build", "1G", lambda ctx: py_argv("prices.weekly.steps.build", ctx)),
 }
