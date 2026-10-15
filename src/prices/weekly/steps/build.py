@@ -271,7 +271,7 @@ def _unit(args, status: Status, name: str, mem: int, argv: list[str], tmp: Path)
         return 1
     cmd = [
         "systemd-run", "--user", "--scope", "-q", f"--unit={unit}",
-        "-p", f"MemoryMax={mem}G", "-p", "MemorySwapMax=1G",
+        "-p", f"MemoryMax={mem}G", "-p", f"MemorySwapMax={args.swap_max}G",
         "env", f"PYTHONPATH={REPO_ROOT / 'src'}", f"TMPDIR={tmp}",
         "/usr/bin/time", "-f", "   STEP_TIME %e s, peak %M KB",
         sys.executable, "-u", *argv,
@@ -363,6 +363,8 @@ def main() -> int:
     ap.add_argument("--out", type=Path, default=None, help="default: <repo>/outputs/prices/build_wNN")
     ap.add_argument("--as-of", default=None, help="YYYY-MM-DD; assemble drops later rows (default today, UTC)")
     ap.add_argument("--memory-cap", type=int, default=None, help="GiB; caps every sub-step's MemoryMax")
+    # The 215-country typical mass needs ~21G: under a 20G cap it fits only with swap.
+    ap.add_argument("--swap-max", type=int, default=1, help="GiB of swap per sub-step")
     ap.add_argument("--resume", action="store_true")
     ap.add_argument("--train-stage-b", type=Path, default=None, help="Stage B the global parts train on")
     ap.add_argument("--train-decisions", type=Path, default=None,
