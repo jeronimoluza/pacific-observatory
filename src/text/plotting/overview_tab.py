@@ -2,25 +2,32 @@
 
 Read ``outputs/text/<region>/overview.json`` (written by
 ``src/text/analysis/explorations/overview.py``). A dropdown picks the region,
-a subregion or a country. Per unit: KPIs, filter toggles, one full-width card
-per topic (bursting, elevated, cooling, or with a 7-day state) and, for the
-region and subregions, a heat grid of countries x top topics. The Uncertainty
-Topics tab stays the place to explore topic combinations.
+a subregion or a country; "compared with" picks the baseline T1 (2024, the
+past 12 or 24 months).
 
-A card: the weekly Baker index as x usual (index / its mean over the
-comparison period; the "Compare with" switch picks 2024, the past year, 26 or
-8 weeks) for the last 52 weeks, burst weeks marked; the last 7 days as daily
-bars against the expected daily count; two badge slots:
+Per unit: two KPIs (articles in the database, last 7 days) and one ranked
+list of story cards. Every topic, subtopic and theme has a Baker index of the
+last 4 weeks on the monthly index's scale with T1 as its baseline (``q``, x
+usual) and is ranked by how far
+that sits above usual in counting noise, (n - n/q) / sqrt(n/q) for its n
+articles. A topic whose articles mostly also mention a bigger topic (``co``:
+same articles, overview.py) belongs to that topic's card; going down the
+ranking, each card is led by the biggest topic its first topic belongs to
+and pulls in the topics belonging there, those sharing a concept with it,
+then the parents and subtopics of everything in the card. A card ranks by
+its strongest topic; its lines are sorted by x usual and it opens on the first.
 
-- Week (the last calendar week, Mon-Sun): Bursting 1st wk / Nth wk / rising
-  N wks / past peak, Cooling (stopped bursting k weeks ago), Elevated N wks
-  (4-week mean 1.5x its 2024 level for N weeks; long crises stop bursting).
-- Last 7 days (the 7 UTC days ending on the newest day with articles in the
-  region, to become the current time once collection runs continuously):
-  Pressing (>= 2 of the last 3 days, >= 1.5x expected, >= 5 articles), Came
-  back (none in the 14 days before, >= 10 in 2024), Gone quiet (important in
-  the last 4 weeks, none in 7 days), else on or below pace. Expected = usual
-  weekly count x the unit's articles in the 7 days / its usual weekly articles.
+A card gives the focused topic's x usual and the last calendar month at or
+above it ("highest since"), a rising or cooling flag from the weekly index,
+the countries furthest above usual (region and subregions) and its driving
+concepts. Its chart draws, on that one scale, the focused topic's weeks as
+small dots, its calendar months (Baker's monthly) as large dots, the 4 weeks to
+each week as a smooth line ending at the last 4 weeks (a red bar), and the
+card's other topics as faint lines.
+
+Filter toggles: Bursting, Cooling (weekly), Elevated (monthly); Pressing, Came back,
+Gone quiet (the 7 UTC days ending on the newest day with articles in the
+region).
 
 ``THEME_HEAD`` is the World Bank careers site look (worldbank.org/ext/en/careers):
 Open Sans and its colours, as CSS variables the dashboard's pages already use.
@@ -58,14 +65,6 @@ select { padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; 
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
 .x { font-weight: 700; font-variant-numeric: tabular-nums; }
 .n { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
-.badge { display: inline-block; font-size: 10.5px; font-weight: 600; border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
-.b-burst { border: 1px solid var(--red); color: var(--red); background: #fff; }
-.b-cool { border: 1px solid var(--border); color: var(--muted); background: #fff; }
-.b-elev { border: 1px solid #8a5f00; color: #8a5f00; background: #fff; }
-.b-press { background: var(--red); color: #fff; }
-.b-back { background: var(--green); color: #fff; }
-.b-quiet { background: var(--muted); color: #fff; }
-.pace { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .more { border: 0; background: none; color: var(--accent2); cursor: pointer; font-size: 12px; padding: 6px 0 0; font-weight: 600; }
 .empty { color: var(--muted); padding: 12px 0; }
 """
@@ -73,35 +72,15 @@ select { padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; 
 SHARED_JS = r"""
 const O = __OVERVIEW_JSON__;
 const NAMES = __NAMES_JSON__;
-const PERIODS = [['2024', '2024'], ['52', 'Past year'], ['26', '26 wk'], ['8', '8 wk']];
-let per = 2;
+let per = 1;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const name = u => NAMES[u] || u.replace(/_/g, ' ').replace(/\b./g, x => x.toUpperCase());
 const parts = g => { const l = O.labels[g] || g; const i = l.indexOf(' · '); return i < 0 ? ['', l] : [l.slice(0, i), l.slice(i + 3)]; };
 const fx = v => v === null || !isFinite(v) ? '–' : (v >= 10 ? Math.round(v) : v.toFixed(1)) + '×';
-// No ratio: either no source with 2024 data covers it (u, ranked last) or it was absent in the period (all extra).
-const score = r => r.u ? 0 : r.r[per] === null || r.r[per] <= 0 ? r.n : r.n - r.n / r.r[per];
 const arts = n => `${n.toLocaleString('en')} article${n === 1 ? '' : 's'}`;
-const ord = k => k + (k % 100 >= 11 && k % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][k % 10] || 'th');
 const DAY = 864e5;
 const fmtDay = (d, o = {}) => new Date(typeof d === 'string' ? d + 'T00:00:00Z' : d).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', timeZone: 'UTC', ...o});
-const W0 = Date.parse(O.series_start + 'T00:00:00Z');
-const weekEnd = k => W0 + k * 7 * DAY;
-const weekLabel = () => { const e = Date.parse(O.week + 'T00:00:00Z'); return `Week of ${fmtDay(e - 6 * DAY)}–${fmtDay(e)}`; };
-// The week slot: the calendar week's burst status, and elevated if so.
-function weekBadges(r) {
-    if (!r) return [];
-    const out = [];
-    if (r.b) {
-        const [k, v] = r.b;
-        const t = k === 'new' ? 'Bursting · 1st wk' : k === 'wk' ? `Bursting · ${ord(v)} wk` : k === 'rise' ? `Bursting · rising ${v} wks`
-            : k === 'peak' ? 'Bursting · past peak' : `Cooling · ${v} wk ago`;
-        const tip = k === 'peak' ? `peaked ${v} week${v > 1 ? 's' : ''} ago` : k === 'fade' ? `stopped bursting ${v} week${v > 1 ? 's' : ''} ago` : 'weekly count well above its trailing 26-week share';
-        out.push(`<span class="badge b-${k === 'fade' ? 'cool' : 'burst'}" title="${tip}">${t}</span>`);
-    }
-    if (r.p) out.push(`<span class="badge b-elev" title="4-week mean above 1.5× its 2024 level for ${r.p} weeks in a row">Elevated ${r.p} wks</span>`);
-    return out;
-}
+const fmtMonth = t => fmtDay(t, {day: undefined, month: 'short', year: 'numeric'});
 // Heartbeat: the 7 UTC days ending on the newest day with articles in the region
 // (later: the current time), from the unit's 21 published days.
 const B0 = Date.parse(O.beat_start + 'T00:00:00Z');
@@ -128,8 +107,6 @@ function beat(u, g) {
         : n7 >= exp ? 'on' : 'below';
     return {g, idx, win, n7, a7, exp, state, i: row.i, u: row.u[per]};
 }
-const stateBadge = bt => !bt ? '' : BEAT_STATES[bt.state] ? `<span class="badge b-${bt.state}">${BEAT_STATES[bt.state]}</span>`
-    : `<span class="pace">${bt.state === 'on' ? 'On pace' : 'Below pace'}</span>`;
 const lastDay = () => fmtDay(dayOf(todayIdx()));
 const asofText = () => {
     const d = new Date(O.asof), f = (o) => d.toLocaleString('en-GB', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', ...o});
@@ -144,47 +121,64 @@ OVERVIEW_TEMPLATE = r"""<!DOCTYPE html>
 <style>__SHARED_CSS__
 .kpis { display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 14px; }
 .kpi .v { font-size: 1.7em; font-weight: 700; color: var(--accent); line-height: 1.1; }
-.kpi .v small { font-size: .5em; color: var(--muted); font-weight: 400; }
 .kpi .t { color: var(--muted); font-size: 12px; }
-.kpi .d { font-size: 12px; font-weight: 600; }
-.up { color: var(--green); } .down { color: var(--red); }
-.filters { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; padding: 10px 0; border-top: 1px solid var(--soft); border-bottom: 1px solid var(--soft); margin-bottom: 8px; }
-.fg { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.fg > span { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; margin-right: 2px; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 10px 0; border-top: 1px solid var(--soft); border-bottom: 1px solid var(--soft); margin-bottom: 8px; }
 .tog { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 14px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
 .tog b { font-variant-numeric: tabular-nums; margin-left: 4px; color: var(--muted); }
 .tog.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 .tog.on b { color: #fff; }
 .tog:disabled { opacity: .45; cursor: default; }
+.sep { width: 1px; height: 18px; background: var(--border); margin: 0 6px; }
 .clear { border: 0; background: none; color: var(--accent2); cursor: pointer; font-size: 12px; font-weight: 600; }
-.tc { display: grid; grid-template-columns: minmax(200px, 1.1fr) minmax(220px, 2.4fr) 132px minmax(170px, .9fr); gap: 18px; align-items: center; padding: 12px 4px; border-top: 1px solid var(--soft); }
+.tc { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(280px, 2.4fr); gap: 22px; align-items: start; padding: 16px 4px; border-top: 1px solid var(--soft); }
 .tc:first-child { border-top: 0; }
 .tc .tp { color: var(--muted); font-size: 11px; }
 .tc .sn { font-weight: 700; font-size: 14px; }
-.tc .cx { color: var(--muted); font-size: 11px; margin-top: 2px; }
-.ch { position: relative; height: 70px; }
+.tc .hl { font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 6px; }
+.tc .hl span { font-size: 12px; font-weight: 400; color: var(--muted); }
+.tc .h2 { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.tr { font-size: 10px; font-weight: 600; border-radius: 8px; padding: 1px 6px; margin-left: 4px; white-space: nowrap; }
+.tr.up { background: #fde8e9; color: var(--red); }
+.tr.dn { background: var(--soft); color: var(--muted); }
+.tc .hd { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; margin-top: 10px; }
+.chip { display: inline-block; border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 12px; padding: 1px 8px; margin: 3px 3px 0 0; font-size: 11px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.chip:hover { border-color: var(--accent2); }
+.chip.dc { cursor: default; }
+.ask { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; margin-bottom: 12px; }
+.chip.dc:hover { border-color: var(--border); }
+.ch { position: relative; height: 120px; }
 .ch svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .ch .ax { position: absolute; left: -2px; font-size: 9.5px; color: var(--muted); transform: translate(-100%, -50%); }
 .ch .lbl { position: absolute; bottom: -14px; font-size: 9.5px; color: var(--muted); }
-.bars { height: 52px; }
-.bars svg { width: 100%; height: 100%; display: block; }
-.slot { margin-bottom: 6px; }
-.slot .sl { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
-.slot .bs { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-.num .x { font-size: 15px; }
-h3.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 22px 0 8px; }
-.grid { overflow-x: auto; }
-table.hg { border-collapse: separate; border-spacing: 2px; font-size: 11px; }
-table.hg th.c { height: 130px; vertical-align: bottom; padding: 0 0 4px; font-weight: 600; color: var(--muted); }
-table.hg th.c div { writing-mode: vertical-rl; transform: rotate(180deg); max-height: 126px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 46px; text-align: left; margin: 0 auto; }
-table.hg td { width: 46px; height: 24px; text-align: center; border-radius: 3px; font-variant-numeric: tabular-nums; cursor: default; }
-table.hg td.cn { width: auto; text-align: left; padding-right: 10px; white-space: nowrap; }
-table.hg tr.sr td { padding-top: 8px; font-weight: 700; color: var(--muted); text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; }
-table.hg td.na { color: var(--border); }
-table.hg td .m { font-size: 8px; vertical-align: top; margin-left: 1px; }
-.country { cursor: pointer; color: var(--accent); font-weight: 600; border: 0; background: none; font-size: 12px; text-align: left; padding: 0; }
-.country:hover { text-decoration: underline; }
-.legend { color: var(--muted); font-size: 11px; margin-top: 6px; }
+.ch .vd { display: none; position: absolute; bottom: -15px; transform: translateX(-50%); font-size: 10px; color: var(--text); background: var(--panel); padding: 0 4px; z-index: 1; white-space: nowrap; }
+.hv .vl { stroke: #b9c4cf; stroke-dasharray: 3 3; opacity: 0; }
+.hv:hover .vl { opacity: 1; }
+.lg { display: flex; flex-wrap: wrap; gap: 2px 12px; margin-top: 20px; }
+.lg button { border: 0; background: none; cursor: pointer; font-size: 11px; color: var(--text); padding: 1px 0; display: inline-flex; align-items: center; gap: 4px; opacity: .55; }
+.lg button.on { opacity: 1; font-weight: 600; }
+.lg i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; }
+.lg i.hd { width: 7px; height: 7px; border-radius: 50%; margin-right: -2px; }
+.cl2 { margin-top: 8px; display: grid; gap: 7px; }
+.ci { display: grid; grid-template-columns: 14px 1fr; gap: 6px; align-items: start; }
+.ci > i { width: 14px; height: 3px; border-radius: 2px; margin-top: 9px; }
+.cn1 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.cn1 b { font-size: 14px; font-weight: 700; }
+.cn1 .cx { font-size: 16px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.cn1 .cnn { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cin { font-size: 11px; color: var(--muted); }
+.tls { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11.5px; color: var(--muted); }
+.tls b { font-weight: 600; color: var(--text); }
+.ts { position: relative; height: 170px; margin: 4px 0 18px 30px; }
+.ts svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.ts .ya { position: absolute; left: -6px; transform: translate(-100%, -50%); font-size: 9.5px; color: var(--muted); }
+.ts .xa { position: absolute; bottom: -15px; transform: translateX(-50%); font-size: 9.5px; color: var(--muted); white-space: nowrap; }
+.ts .xh { display: none; position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--muted); pointer-events: none; }
+.ts .tt { display: none; position: absolute; top: 0; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,.08); pointer-events: none; z-index: 2; white-space: nowrap; }
+.ts .tt div { display: flex; align-items: center; gap: 6px; }
+.ts .tt i { width: 10px; height: 3px; border-radius: 2px; }
+.ts .tt span { margin-left: auto; padding-left: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ts.on .xh, .ts.on .tt { display: block; }
+.country { cursor: pointer; }
 details.how { margin-top: 18px; color: var(--muted); font-size: 12px; }
 details.how summary { cursor: pointer; font-weight: 600; color: var(--text); }
 details.how li { margin: 4px 0 0 18px; }
@@ -197,169 +191,327 @@ details.how li { margin: 4px 0 0 18px; }
     <h1>What is happening now</h1>
     <div class="sub" id="window"></div>
   </div>
-  <div class="controls"><span id="seg"></span><select id="unit">__UNIT_OPTIONS__</select></div>
+  <div class="controls"><select id="unit">__UNIT_OPTIONS__</select></div>
 </div>
+<div class="ask" id="ask"></div>
 <div class="card" id="app"></div>
 <script>__SHARED_JS__
-const TOP = 12, GRID = 10;
+const TOP = 12, CAP = 8;
+const ASK = ['2024', 'the past 12 months', 'the past 24 months'];
+const COLORS = ['#169af3', '#e19d00', '#388004', '#8a3ffc', '#da1e28', '#00a3a3', '#b0517a', '#6f7d8c'];
 const sel = document.getElementById('unit');
-const open = new Set(), on = new Set();
+const open = new Set(), on = new Set(), focus = new Map();
 const key = v => v.startsWith('region:') ? 'region' : v;
-const FILTERS = [
-    ['week', [['burst', 'Bursting'], ['elev', 'Elevated'], ['cool', 'Cooling']]],
-    ['days', [['press', 'Pressing'], ['back', 'Came back'], ['quiet', 'Gone quiet']]],
-];
-const ratioOf = (s, k) => s && s.z[k] !== null && s.m[per] > 0 ? s.z[k] / s.m[per] : null;
-const nowOf = s => ratioOf(s, s ? s.z.length - 1 : 0);
+const FILTERS = [['burst', 'Bursting'], ['elev', 'Elevated'], ['cool', 'Cooling'], null, ['press', 'Pressing'], ['back', 'Came back'], ['quiet', 'Gone quiet']];
+const sub = g => parts(g)[1];
+const weekTo = () => fmtDay(O.week);
 
-// Topics of a unit: its weekly rows (bursting, elevated, cooling) and the groups
-// with a 7-day state, each tagged with the filters it matches.
-function items(u) {
-    const U = O.units[u];
-    if (!U) return [];
-    const map = new Map();
-    for (const r of [...U.rows, ...U.fading]) map.set(r.g, {g: r.g, r});
-    for (const g of Object.keys(U.beat.g)) {
-        const bt = beat(u, g);
-        if (map.has(g)) map.get(g).bt = bt;
-        else if (BEAT_STATES[bt.state]) map.set(g, {g, bt});
-    }
-    return [...map.values()].map(it => {
-        const b = it.r && it.r.b, tags = new Set();
-        if (b && b[0] !== 'fade') tags.add('burst');
-        if (b && b[0] === 'fade') tags.add('cool');
-        if (it.r && it.r.p) tags.add('elev');
-        if (it.bt && BEAT_STATES[it.bt.state]) tags.add(it.bt.state);
-        // Articles above a usual week (this week) or above expected (7 days).
-        const sc = Math.max(it.r ? score(it.r) : -Infinity, it.bt ? it.bt.n7 - it.bt.exp : -Infinity);
-        const late = tags.size === 1 && tags.has('cool') || tags.has('quiet') && tags.size === 1;
-        return {...it, tags, sc, late};
-    }).sort((a, b) => a.late - b.late || b.sc - a.sc);
+// The chart's time axis: the published weeks (week k of n ends n - 1 - k
+// weeks before the week's end), calendar months and 4-week blocks on it.
+const END = Date.parse(O.week + 'T00:00:00Z');
+const weekEnd = (k, n) => END - (n - 1 - k) * 7 * DAY;
+const monthStart = (k, n) => { const d = new Date(END); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - (n - 1 - k), 1); };
+// Rolling: the 4 weeks to each week, the mean of their weekly values (a
+// 4-week block is the mean of its weeks: one sigma and mean per source).
+const roll4 = v => v.map((_, k) => k < 3 || v.slice(k - 3, k + 1).some(x => x === null) ? null : v.slice(k - 3, k + 1).reduce((a, b) => a + b, 0) / 4);
+// Monotone cubic (Fritsch-Carlson) through each unbroken run of points
+// (X(k), Y(v[k])): it passes through every value and never overshoots.
+function smoothPath(v, X, Y) {
+    let d = '';
+    const runs = []; let cur = [];
+    v.forEach((x, k) => { if (x === null) { if (cur.length) runs.push(cur); cur = []; } else cur.push([X(k), Y(x)]); });
+    if (cur.length) runs.push(cur);
+    runs.forEach(P => {
+        const n = P.length, dx = [], m = [], t = [];
+        for (let i = 0; i < n - 1; i++) { dx.push(P[i + 1][0] - P[i][0]); m.push((P[i + 1][1] - P[i][1]) / dx[i]); }
+        for (let i = 0; i < n; i++) t.push(i === 0 ? (m[0] ?? 0) : i === n - 1 ? m[n - 2] : m[i - 1] * m[i] <= 0 ? 0 : 3 * (dx[i - 1] + dx[i]) / ((2 * dx[i] + dx[i - 1]) / m[i - 1] + (dx[i] + 2 * dx[i - 1]) / m[i]));
+        d += `M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}`;
+        for (let i = 0; i < n - 1; i++) {
+            const h = dx[i] / 3;
+            d += `C${(P[i][0] + h).toFixed(1)},${(P[i][1] + t[i] * h).toFixed(1)} ${(P[i + 1][0] - h).toFixed(1)},${(P[i + 1][1] - t[i + 1] * h).toFixed(1)} ${P[i + 1][0].toFixed(1)},${P[i + 1][1].toFixed(1)}`;
+        }
+    });
+    return d;
 }
 
-function chart(s) {
-    const W = 520, H = 70, n = s ? s.z.length : 0;
-    if (!n) return '<div class="ch"><div class="empty">No weekly index</div></div>';
-    const v = s.z.map((_, k) => ratioOf(s, k));
-    const top = Math.max(2, ...v.filter(x => x !== null).map(x => Math.min(x, 8)));
-    const X = k => k / (n - 1) * W, Y = x => H - Math.min(x, top) / top * H;
-    let d = '', pen = false;
-    v.forEach((x, k) => { if (x === null) { pen = false; return; } d += `${pen ? 'L' : 'M'}${X(k).toFixed(1)},${Y(x).toFixed(1)}`; pen = true; });
-    const burst = new Set(s.f || []);
-    const ticks = [...burst].map(k => `<rect x="${X(k) - 2}" y="${H - 4}" width="4" height="4" fill="var(--red)"/>`).join('');
-    const tips = v.map((x, k) => `<rect x="${X(k) - W / n / 2}" y="0" width="${W / n}" height="${H}" fill="transparent"><title>Week to ${fmtDay(weekEnd(k), {year: 'numeric'})}: ${fx(x)} usual${burst.has(k) ? ' · bursting' : ''}</title></rect>`).join('');
-    const last = v[n - 1];
-    return `<div class="ch"><span class="ax" style="top:${Y(1)}px">1×</span><span class="ax" style="top:0">${fx(top)}${v.some(x => x > top) ? '+' : ''}</span>
+// Concepts lead each card: the keywords driving its topics (the concepts
+// with the most articles above a usual week this week, at most CONCEPTS),
+// each on its own Baker index (the same rule as the topics). The text lists
+// them with their x usual and the card topics they belong to; the chart draws
+// them on one timeline, each as the 4 weeks to each week (a smooth line),
+// with a crosshair and the week's values on hover.
+const CONCEPTS = 5, CCOL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4'];
+function cardConcepts(u, lines) {
+    const U = O.units[u], cs = [];
+    for (const g of lines) for (const [c] of U.dc[g] || []) if (!cs.includes(c) && U.s['c:' + c]) cs.push(c);
+    const S = c => U.s['c:' + c];
+    return cs.sort((a, b) => (S(b).q[per] ?? -1) - (S(a).q[per] ?? -1)).slice(0, CONCEPTS);
+}
+// The card topics a concept belongs to: its group (or the group's parent)
+// and the themes listing it.
+const topicsOf = (c, lines) => lines.filter(g => g === O.cgroup[c] || (O.kids[g] || []).includes(O.cgroup[c]) || (themeOf(g) && themeOf(g).members.includes(c)));
+const TS = {};
+function conceptChart(u, id, cs) {
+    const U = O.units[u], W = 600, H = 170;
+    const v = cs.map(c => roll4(U.s['c:' + c].wh[per]));
+    const nw = v[0].length, t0 = weekEnd(0, nw) - 7 * DAY, tx = t => (t - t0) / (END - t0) * W;
+    const xs = v.flat().filter(x => x !== null && x > 0).map(x => x / 100);
+    const lo = Math.max(.25, Math.min(.5, ...xs)), hi = Math.min(16, Math.max(2, ...xs));
+    const L = x => Math.log2(Math.min(Math.max(x, lo), hi)), Y = x => H - (L(x) - Math.log2(lo)) / (Math.log2(hi) - Math.log2(lo)) * H;
+    const ticks = [.25, .5, 1, 2, 4, 8, 16].filter(t => t >= lo && t <= hi);
+    const wx = k => tx(weekEnd(k, nw) - 3 * DAY);
+    TS[id] = {nw, cs: cs.map((c, i) => ({n: O.clabels[c], col: CCOL[i], v: v[i]})), x: k => wx(k) / W};
+    const months = [];
+    for (let k = 0; k < nw; k++) { const d = new Date(weekEnd(k, nw)); if (d.getUTCDate() <= 7 && d.getUTCMonth() % 3 === 0) months.push(k); }
+    return `<div class="ts" data-id="${id}">
+      ${ticks.map(t => `<span class="ya" style="top:${(Y(t) / H * 100).toFixed(1)}%">${t < 1 ? t : t + '×'}</span>`).join('')}
+      ${months.map(k => `<span class="xa" style="left:${(wx(k) / W * 100).toFixed(1)}%">${fmtMonth(weekEnd(k, nw))}</span>`).join('')}
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+        ${ticks.map(t => `<line x1="0" x2="${W}" y1="${Y(t).toFixed(1)}" y2="${Y(t).toFixed(1)}" stroke="var(--border)" ${t === 1 ? 'stroke-dasharray="4 3"' : 'opacity=".5"'} vector-effect="non-scaling-stroke"/>`).join('')}
+        ${v.map((s, i) => `<path d="${smoothPath(s, wx, x => Y(x / 100))}" fill="none" stroke="${CCOL[i]}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`).reverse().join('')}
+      </svg><i class="xh"></i><div class="tt"></div></div>`;
+}
+function onTs(e) {
+    const el = e.target.closest && e.target.closest('.ts');
+    document.querySelectorAll('.ts.on').forEach(x => { if (x !== el) x.classList.remove('on'); });
+    if (!el) return;
+    const T = TS[el.dataset.id], r = el.getBoundingClientRect(), f = (e.clientX - r.left) / r.width;
+    let k = 0;
+    for (let j = 0; j < T.nw; j++) if (Math.abs(T.x(j) - f) < Math.abs(T.x(k) - f)) k = j;
+    const xh = el.querySelector('.xh'), tt = el.querySelector('.tt');
+    xh.style.left = (T.x(k) * 100) + '%';
+    const rows = T.cs.map(c => [c, c.v[k]]).sort((a, b) => (b[1] ?? -1) - (a[1] ?? -1));
+    tt.innerHTML = `<b>4 weeks to ${fmtDay(weekEnd(k, T.nw), {year: 'numeric'})}</b>` + rows.map(([c, x]) => `<div><i style="background:${c.col}"></i>${esc(c.n)}<span>${x === null ? '–' : fx(x / 100)}</span></div>`).join('');
+    tt.style.left = T.x(k) > .6 ? '' : `calc(${T.x(k) * 100}% + 12px)`;
+    tt.style.right = T.x(k) > .6 ? `calc(${(1 - T.x(k)) * 100}% + 12px)` : '';
+    el.classList.add('on');
+}
+document.addEventListener('mousemove', onTs);
+
+// Index view: the focused topic's weeks as dots, its calendar months (Baker's
+// monthly) as larger dots and the 4 weeks to each week as a smooth line, all
+// x usual on the same scale (one sigma and mean per source: the monthly
+// index's, overview.py); the card's other topics as faint lines. The line
+// passes through each week's 4-week value; between weeks it is a monotone
+// curve (no overshoot), so every point on it read at a week is a Baker value.
+function chart(u, lines, f, color) {
+    const U = O.units[u], W = 600, H = 120, s = U.s[f], wk = s.wh[per], nw = wk.length;
+    const t0 = weekEnd(0, nw) - 7 * DAY, span = END - t0, tx = t => (t - t0) / span * W;
+    const dataEnd = Date.parse(O.data_end + 'T00:00:00Z') + DAY;
+    const months = g => { const v = U.s[g].mh[per], n = v.length; return v.map((x, k) => ({x, a: monthStart(k, n), b: k === n - 1 ? Math.min(dataEnd, END + DAY) : monthStart(k + 1, n), part: k === n - 1})).filter(p => p.x !== null && p.b > t0); };
+    const rl = Object.fromEntries(lines.map(g => [g, roll4(U.s[g].wh[per])]));
+    const mo = months(f);
+    const vals = [...wk, ...mo.map(p => p.x), ...Object.values(rl).flat()].filter(x => x !== null).map(x => x / 100);
+    const max = Math.max(...vals), top = Math.max(2, Math.min(max, CAP)), Y = x => H - Math.min(x, top) / top * H;
+    const wx = k => tx(weekEnd(k, nw) - 3 * DAY);
+    // Monotone cubic (Fritsch-Carlson) through each unbroken run of points.
+    const curve = (g, w, op) => `<path d="${smoothPath(rl[g], wx, x => Y(x / 100))}" fill="none" stroke="${color(g)}" stroke-width="${w}" opacity="${op}" vector-effect="non-scaling-stroke"/>`;
+    const others = lines.filter(g => g !== f).map(g => curve(g, 1, .3)).join('');
+    const r = 2.2 * W / 600;
+    // Months: a larger dot at the month's middle (hollow: the month so far).
+    const mdots = mo.map(p => { const x = tx((Math.max(p.a, t0) + p.b) / 2), y = Y(p.x / 100); return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${r * 1.7}" ry="${r * 1.7 * 1.5}" fill="${p.part ? 'var(--panel)' : color(f)}" stroke="${color(f)}" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`; }).join('');
+    const mine = curve(f, 2, 1) + mdots;
+    const q = s.q[per], last = q === null ? '' : `<line x1="${tx(END - (O.days - 1) * DAY).toFixed(1)}" x2="${tx(END + DAY).toFixed(1)}" y1="${Y(q)}" y2="${Y(q)}" stroke="var(--red)" stroke-width="3.5" vector-effect="non-scaling-stroke"/>`;
+    // Weeks with no article on it: a faint small dot on the axis.
+    const dots = wk.map((x, k) => x === null ? '' : `<ellipse cx="${tx(weekEnd(k, nw) - 3 * DAY).toFixed(1)}" cy="${Y(x / 100).toFixed(1)}" rx="${x ? r : r * .6}" ry="${(x ? r : r * .6) * 1.5}" fill="${color(f)}" opacity="${x ? .45 : .12}"/>`).join('');
+    const monthAt = t => { const p = mo.find(p => t >= p.a && t < p.b); return p ? p.x : null; };
+    const text = k => {
+        const t = weekEnd(k, nw) - 3 * DAY, w = wk[k];
+        return [`${sub(f)}: week ${w === null ? '–' : fx(w / 100)}, month ${fx((monthAt(t) ?? NaN) / 100)}`, ...lines.map(g => `${sub(g)}: 4 weeks ${fx((rl[g][k] ?? NaN) / 100)}`)].join('\n');
+    };
+    const tips = wk.map((_, k) => { const x = tx(weekEnd(k, nw) - 7 * DAY), w = tx(weekEnd(k, nw)) - x; return `<g class="hv" data-t="${weekEnd(k, nw)}" data-x="${(x + w / 2) / W}"><line class="vl" x1="${x + w / 2}" x2="${x + w / 2}" y1="0" y2="${H}" vector-effect="non-scaling-stroke"/><rect x="${x}" y="0" width="${w}" height="${H}" fill="transparent"><title>Week to ${fmtDay(weekEnd(k, nw), {year: 'numeric'})}\n${text(k)}</title></rect></g>`; }).join('');
+    return `<div class="ch"><span class="vd"></span>
+      <span class="ax" style="top:${Y(1) / H * 120}px">1×</span><span class="ax" style="top:0">${fx(top)}${max > top ? '+' : ''}</span>
+      <span class="lbl" style="left:0">${fmtDay(t0 + DAY, {year: 'numeric'})}</span><span class="lbl" style="right:0">${weekTo()}</span>
       <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
         <line x1="0" x2="${W}" y1="${Y(1)}" y2="${Y(1)}" stroke="var(--border)" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/>
-        ${ticks}<path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
-        ${last !== null ? `<rect x="${X(n - 1) - 3}" y="${Y(last) - 3}" width="6" height="6" fill="var(--accent)"/>` : ''}${tips}
-      </svg><span class="lbl" style="left:0">${fmtDay(weekEnd(0), {year: 'numeric'})}</span><span class="lbl" style="right:0">${fmtDay(weekEnd(n - 1))}</span></div>`;
+        ${others}${dots}${mine}${last}${tips}
+      </svg></div>`;
+}
+function onHover(e) {
+    const g = e.target.closest('.hv'), ch = e.target.closest('.ch');
+    if (!g || !ch) return;
+    const vd = ch.querySelector('.vd');
+    vd.textContent = fmtDay(+g.dataset.t, {year: 'numeric'});
+    vd.style.left = (+g.dataset.x * 100) + '%';
+    vd.style.display = 'block';
+}
+document.addEventListener('mouseover', onHover);
+document.addEventListener('mouseout', e => { const ch = e.target.closest && e.target.closest('.ch'); if (ch && !ch.contains(e.relatedTarget)) ch.querySelector('.vd').style.display = 'none'; });
+
+// Stories: every topic, subtopic and theme ranked together by how far its
+// last 4 weeks' Baker index (q, x usual, the comparison period as T1) sits
+// above usual in counting noise: its n articles against the n / q a usual 4
+// weeks would have, (n - n/q) / sqrt(n/q). A topic qualifies with >= N_MIN
+// articles from >= MIN_SOURCES sources in those days and either >= Z_MIN or
+// a state.
+// Grouping: a topic's home is the topic >= Z_MIN, among the bigger ones
+// most of its articles also mention (U.co), with the highest lift; its
+// root follows homes up. Going down the ranking, a topic not yet placed
+// opens a story led by its root, which pulls in every topic with that root,
+// those sharing a concept with the root or the first topic (a theme's
+// members, a group's and its subgroups' concepts), then the parents and
+// subtopics of everything in the story. A story ranks by its first topic
+// (its strongest); its lines are sorted by x usual and it opens on the first.
+const Z_MIN = 3, N_MIN = 10, MIN_SOURCES = 3, LINES = 6;
+const above = (q, n) => q > 0 && n ? (n - n / q) / Math.sqrt(n / q) : -Infinity;
+const mentions = n => `${n.toLocaleString('en')} mention${n === 1 ? '' : 's'}`;
+const count = g => g.startsWith('t:') ? mentions : arts;
+const parentOf = {};
+for (const [p, ks] of Object.entries(O.kids)) for (const k of ks) parentOf[k] = p;
+const themeOf = g => g.startsWith('t:') ? O.themes[+g.slice(2)] : null;
+const conceptsOf = g => new Set(themeOf(g) ? themeOf(g).members : [g, ...(O.kids[g] || [])].flatMap(x => O.gconcepts[x] || []));
+
+function topics(u) {
+    const U = O.units[u], rows = new Map([...U.rows, ...U.fading].map(r => [r.g, r]));
+    return Object.keys(U.s).filter(g => !g.startsWith('c:')).map(g => {
+        const s = U.s[g], r = rows.get(g), bt = U.beat.g[g] ? beat(u, g) : null, tags = new Set();
+        if (r && r.b && r.b[0] !== 'fade') tags.add('burst');
+        if (r && r.b && r.b[0] === 'fade') tags.add('cool');
+        if (r && r.p) tags.add('elev');
+        if (g.startsWith('t:') && s.b) tags.add('burst');
+        if (bt && BEAT_STATES[bt.state]) tags.add(bt.state);
+        return {g, n: s.nd, ns: s.ns, q: s.q[per] === null ? 0 : s.q[per], z: above(s.q[per], s.nd), tags, cs: conceptsOf(g)};
+    });
 }
 
-function bars(bt) {
-    if (!bt) return '<div class="bars"></div>';
-    const W = 132, H = 52, bw = W / 7, e = bt.exp / 7;
-    const top = Math.max(1, e, ...bt.win.map(x => x || 0));
-    const out = bt.win.map((x, k) => {
-        const day = fmtDay(dayOf(bt.idx[k]), {weekday: 'short'});
-        const h = (x || 0) / top * (H - 12);
-        const fill = x === null ? 'url(#hatch)' : 'var(--accent)';
-        return `<rect x="${k * bw + 2}" y="${H - 12 - (x === null ? H - 12 : h)}" width="${bw - 4}" height="${x === null ? H - 12 : Math.max(h, x > 0 ? 1 : 0)}" fill="${fill}" opacity="${k === 6 ? 1 : .75}"><title>${day}: ${x === null ? 'excluded (suspect source dump)' : arts(x)}</title></rect>
-            <text x="${k * bw + bw / 2}" y="${H - 1}" font-size="8.5" text-anchor="middle" fill="var(--muted)">${day.slice(0, 1)}</text>`;
+const kin = (a, b) => parentOf[a.g] === b.g || parentOf[b.g] === a.g;
+const shares = (a, b) => [...a.cs].some(c => b.cs.has(c));
+
+function stories(u) {
+    const live = topics(u).filter(t => t.n >= N_MIN && t.ns >= MIN_SOURCES && (t.z >= Z_MIN || t.tags.size)).sort((a, b) => b.z - a.z);
+    const byG = new Map(live.map(t => [t.g, t])), co = O.units[u].co || {};
+    const home = g => (co[g] || []).filter(([b]) => byG.has(b) && byG.get(b).z >= Z_MIN).sort((a, b) => b[2] - a[2])[0] || null;
+    const root = g => { const seen = new Set([g]); let h; while ((h = home(g)) && !seen.has(h[0])) { g = h[0]; seen.add(g); } return g; };
+    const used = new Set(), out = [];
+    for (const t of live) {
+        if (used.has(t.g)) continue;
+        const r = byG.get(root(t.g));
+        if (used.has(r.g)) continue;
+        const lines = [r, ...live.filter(o => o !== r && !used.has(o.g) && root(o.g) === r.g)];
+        lines.forEach(o => used.add(o.g));
+        const take = ok => { for (const o of live) if (!used.has(o.g) && ok(o)) { lines.push(o); used.add(o.g); } };
+        take(o => shares(r, o) || shares(t, o));
+        for (let k = 0; k < lines.length; k++) take(o => kin(lines[k], o));
+        const tags = new Set(lines.flatMap(x => [...x.tags]));
+        lines.sort((a, b) => b.z - a.z);  // the card opens on the line that ranks it
+        out.push({lead: r, lines, tags, late: [...tags].every(x => x === 'cool' || x === 'quiet')});
+    }
+    return out.sort((a, b) => a.late - b.late);  // stable: the ranking otherwise
+}
+
+// A topic's place: theme (with the headings it spans) or heading (and parent).
+function where(g) {
+    const t = themeOf(g);
+    if (t) return 'Theme · ' + t.headings.join(' · ');
+    return parts(g)[0] + (parentOf[g] ? ' · in ' + sub(parentOf[g]) : '');
+}
+
+// "Highest since": the last complete calendar month at or above the last 4
+// weeks, when that is before last month (null: none since 2015).
+function since(s) {
+    const hs = s.hs[per];
+    if (hs === null) return ' · highest since 2015';
+    const t = Date.parse(hs + '-01T00:00:00Z');
+    return t < monthStart(0, 2) ? ` · highest since ${fmtMonth(t)}` : '';
+}
+
+// The other comparison, from the same index: the last 4 weeks against 2024
+// (level) when the past months are picked, against the past 12 months
+// (change) when 2024 is; and how long the monthly index has run at >= 1.5x
+// its 2024 level, counting back from the last complete month (>= 2 months).
+function also(s) {
+    const o = per === 0 ? 1 : 0, x = s.q[o];
+    const vs = x === null ? '' : `${fx(x)} ${o === 0 ? 'its 2024 level' : 'the past 12 months'}`;
+    const m = s.mh[0], n = m.length;
+    let k = 0;
+    while (k < n - 1 && m[n - 2 - k] !== null && m[n - 2 - k] >= 150) k++;
+    const run = k < 2 ? '' : `above 1.5× its 2024 level since ${fmtMonth(monthStart(n - 1 - k, n))}`;
+    return [vs, run].filter(Boolean).join(' · ');
+}
+
+function storyCard(u, st) {
+    const U = O.units[u], ck = u + st.lead.g;
+    const lines = st.lines.slice(0, LINES).map(x => x.g);
+    const f = lines.includes(focus.get(ck)) ? focus.get(ck) : lines[0];
+    const color = g => g === lines[0] ? 'var(--accent)' : COLORS[(lines.indexOf(g) - 1) % COLORS.length];
+    const s = U.s[f], q = s.q[per];
+    const tr = s.tr === 1 ? '<span class="tr up">rising this week</span>' : s.tr === -1 ? '<span class="tr dn">cooling this week</span>' : '';
+    const w = (s.w || [])[per] || [];
+    const where_ = w.length ? `<div class="hd">Where</div>${w.map(([c, x, n]) => `<button class="chip country" data-c="${c}" title="${count(f)(n)} in the 4 weeks to ${weekTo()}">${esc(name(c))} ${fx(x)} · ${count(f)(n)}</button>`).join('')}` : '';
+    const cs = cardConcepts(u, lines).filter(c => U.s['c:' + c].wh);
+    if (!cs.length) {  // no driving concepts: the topic view
+        const head = q === null ? '<div class="hl">No usual level to compare with</div>'
+            : `<div class="hl">${fx(q)} <span>usual, last 4 weeks · ${count(f)(s.nd)}${q >= 1 ? since(s) : ''}</span></div>`;
+        const a = q === null ? '' : also(s);
+        const lg = lines.length < 2 ? '' : `<div class="lg">${lines.map(g => `<button class="${g === f ? 'on' : ''}" data-k="${ck}" data-g="${g}" title="${esc(where(g))}"><i style="background:${color(g)}"></i>${esc(sub(g))}</button>`).join('')}</div>`;
+        return `<div class="tc" id="st-${esc(st.lead.g)}">
+          <div><div class="tp">${esc(where(f))}</div><div class="sn">${esc(sub(f))} ${tr}</div>${head}${a ? `<div class="h2">${a}</div>` : ''}${where_}</div>
+          <div>${chart(u, lines, f, color)}${lg}</div></div>`;
+    }
+    const cl = cs.map((c, i) => {
+        const S = U.s['c:' + c], x = S.q[per], ts = topicsOf(c, lines);
+        return `<div class="ci"><i style="background:${CCOL[i]}"></i><div><div class="cn1"><b>${esc(O.clabels[c])}</b><span class="cx">${x === null ? 'new' : fx(x)}</span><span class="cnn">${arts(S.nd)}</span></div>
+          <div class="cin">${ts.length ? 'in ' + ts.map(g => esc(sub(g))).join(' · ') : esc(sub(O.cgroup[c]))}</div></div></div>`;
     }).join('');
-    const ey = H - 12 - e / top * (H - 12);
-    return `<div class="bars"><svg viewBox="0 0 ${W} ${H}"><defs><pattern id="hatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1" height="3" fill="var(--border)"/></pattern></defs>
-      ${out}<line x1="0" x2="${W}" y1="${ey}" y2="${ey}" stroke="var(--red)" stroke-dasharray="3 2" stroke-width="1"><title>Expected per day: ${e.toFixed(1)}</title></line></svg></div>
-      <div class="pace">${bt.n7.toLocaleString('en')} in 7 days · ${Math.round(bt.exp).toLocaleString('en')} expected</div>`;
+    const tl = lines.map(g => { const x = U.s[g].q[per]; return `<span class="tl"><b>${esc(sub(g))}</b> ${fx(x)}</span>`; }).join('');
+    const a = q === null ? '' : also(s);
+    return `<div class="tc" id="st-${esc(st.lead.g)}">
+      <div><div class="tp">${esc(where(f))} ${tr}</div>
+        <div class="cl2">${cl}</div>
+        <div class="hd">Topics, × usual in the last 4 weeks</div><div class="tls">${tl}</div>
+        <div class="h2">${esc(sub(f))}: ${count(f)(s.nd)}${q !== null && q >= 1 ? since(s) : ''}${a ? ' · ' + a : ''}</div>
+        ${where_}</div>
+      <div>${conceptChart(u, ck, cs)}</div></div>`;
 }
 
-function card(u, it) {
-    const [topic, sub] = parts(it.g), r = it.r, s = O.units[u].s[it.g];
-    const extra = [r && r.c && r.c.length ? esc(r.c.join(', ')) : '', r && r.in && r.in.length ? 'Bursting in ' + r.in.slice(0, 4).map(name).map(esc).join(', ') + (r.in.length > 4 ? ` +${r.in.length - 4}` : '') : ''].filter(Boolean);
-    const now = r ? (r.u ? null : r.r[per]) : nowOf(s);
-    const wb = weekBadges(r);
-    return `<div class="tc">
-      <div><div class="tp">${esc(topic)}</div><div class="sn">${esc(sub)}</div>${extra.map(x => `<div class="cx">${x}</div>`).join('')}</div>
-      ${chart(s)}
-      <div>${bars(it.bt)}</div>
-      <div>
-        <div class="num"><span class="x">${fx(now)} usual</span> <span class="n">${r ? arts(r.n) + ' this week' : ''}</span></div>
-        <div class="slot"><span class="sl">${weekLabel()}</span><span class="bs">${wb.join('') || '<span class="pace">No burst</span>'}</span></div>
-        <div class="slot"><span class="sl">Last 7 days, to ${lastDay()}</span><span class="bs">${stateBadge(it.bt) || '<span class="pace">Not mentioned</span>'}</span></div>
-      </div></div>`;
-}
-
-function kpis(u, list) {
-    const k = O.units[u].kpi, usual = k.usual[per], d = usual ? (k.articles / usual - 1) * 100 : null;
-    const b = O.units[u].beat, t = todayIdx();
+// Lean on purpose: the database and the last 7 days.
+function kpis(u) {
+    const k = O.units[u].kpi, b = O.units[u].beat, t = todayIdx();
     const a7 = b.a.slice(Math.max(0, t - 6), t + 1).reduce((s, x) => s + (x || 0), 0);
-    const cnt = tag => list.filter(x => x.tags.has(tag)).length;
-    const members = u === 'region' ? Object.values(O.subregions).flat() : u.startsWith('subregion:') ? O.subregions[u.slice(10)] : null;
     return `<div class="kpis">
-      <div class="kpi"><div class="v">${k.articles.toLocaleString('en')}</div><div class="t">articles, ${weekLabel().replace('Week of ', '')}</div>${d === null ? '' : `<div class="d ${d >= 0 ? 'up' : 'down'}">${d >= 0 ? '+' : ''}${d.toFixed(0)}% vs avg week (${PERIODS[per][1]})</div>`}</div>
-      <div class="kpi"><div class="v">${a7.toLocaleString('en')}</div><div class="t">articles, last 7 days to ${lastDay()}</div></div>
-      <div class="kpi"><div class="v">${cnt('burst')}</div><div class="t">topics bursting${members ? ' in at least one country' : ''}</div></div>
-      <div class="kpi"><div class="v">${cnt('press')}</div><div class="t">topics pressing</div></div>
-      ${members ? `<div class="kpi"><div class="v">${k.countries}<small> / ${members.length}</small></div><div class="t">countries with a burst</div></div>` : ''}
+      ${k.total ? `<div class="kpi"><div class="v">${k.total.toLocaleString('en')}</div><div class="t">articles in the database, to ${fmtDay(O.db_latest)}</div></div>` : ''}
+      <div class="kpi"><div class="v">${a7.toLocaleString('en')}</div><div class="t">articles, last 7 days</div></div>
     </div>`;
 }
 
 function filters(list) {
     const cnt = tag => list.filter(x => x.tags.has(tag)).length;
-    const lab = {week: weekLabel(), days: `Last 7 days, to ${lastDay()}`};
-    return `<div class="filters">${FILTERS.map(([grp, fs]) => `<div class="fg"><span>${lab[grp]}</span>${fs.map(([t, l]) =>
-        `<button class="tog ${on.has(t) ? 'on' : ''}" data-t="${t}" ${cnt(t) ? '' : 'disabled'}>${l}<b>${cnt(t)}</b></button>`).join('')}</div>`).join('')}
+    return `<div class="filters">${FILTERS.map(f => !f ? '<span class="sep"></span>' :
+        `<button class="tog ${on.has(f[0]) ? 'on' : ''}" data-t="${f[0]}" ${cnt(f[0]) ? '' : 'disabled'}>${f[1]}<b>${cnt(f[0])}</b></button>`).join('')}
       ${on.size ? '<button class="clear">Show all</button>' : ''}</div>`;
 }
 
-// Countries x the unit's top topics: x usual this week, burst (●) and pressing (▲) marks.
-function grid(u, list) {
-    const subs = u === 'region' ? Object.keys(O.subregions) : u.startsWith('subregion:') ? [u.slice(10)] : [];
-    const cols = list.filter(x => O.units[u].s[x.g]).slice(0, GRID).map(x => x.g);
-    if (!subs.length || !cols.length) return '';
-    const cell = (c, g) => {
-        const U = O.units[c], s = U && U.s[g], v = nowOf(s);
-        if (v === null) return `<td class="na" title="${esc(name(c))} · ${esc(parts(g)[1])}: no index">·</td>`;
-        const r = [...U.rows, ...U.fading].find(x => x.g === g), bt = beat(c, g);
-        const burst = r && r.b && r.b[0] !== 'fade', press = bt && bt.state === 'press';
-        const a = Math.min(1, Math.abs(Math.log2(Math.max(v, 1e-3))) / 2);
-        const bg = v >= 1 ? `rgba(218,30,40,${(a * .85).toFixed(2)})` : `rgba(22,154,243,${(a * .35).toFixed(2)})`;
-        return `<td style="background:${bg};color:${v >= 1 && a > .6 ? '#fff' : 'var(--text)'}" title="${esc(name(c))} · ${esc(parts(g)[1])}: ${fx(v)} usual${burst ? ' · bursting' : ''}${press ? ' · pressing' : ''}">${fx(v).replace('×', '')}${burst ? '<span class="m">●</span>' : ''}${press ? '<span class="m">▲</span>' : ''}</td>`;
-    };
-    const rows = subs.map(sr => {
-        const cs = O.subregions[sr].filter(c => O.units[c]).sort((a, b) => cols.reduce((t, g) => t + (nowOf(O.units[b].s[g]) || 0) - (nowOf(O.units[a].s[g]) || 0), 0));
-        return (subs.length > 1 ? `<tr class="sr"><td colspan="${cols.length + 1}">${esc(name(sr))}</td></tr>` : '')
-            + cs.map(c => `<tr><td class="cn"><button class="country" data-c="${c}">${esc(name(c))}</button></td>${cols.map(g => cell(c, g)).join('')}</tr>`).join('');
-    }).join('');
-    return `<h3 class="sec">Countries × top topics, ${weekLabel().replace('Week of ', 'week of ')}</h3>
-      <div class="grid"><table class="hg"><tr><th></th>${cols.map(g => `<th class="c"><div title="${esc(O.labels[g] || g)}">${esc(parts(g)[1])}</div></th>`).join('')}</tr>${rows}</table></div>
-      <div class="legend">Cell = × usual this week (red above, blue below; Compare with sets "usual"). ● bursting this week · ▲ pressing in the last 7 days · "·" no index. Click a country to open it.</div>`;
-}
-
 const HOW = `<details class="how"><summary>How to read this</summary><ul>
-  <li><b>× usual</b>: the weekly Baker index (each source's share of articles standardized by its 2024 variation, averaged over sources that published in at least half of 2024's weeks; regions average their countries) over its average in the comparison period. 1× = a usual week; "–" = none of those sources covers it.</li>
-  <li><b>Chart</b>: the last 52 weeks; dashed line = usual; red ticks = weeks it burst (in at least one country, for a region).</li>
-  <li><b>Bursting</b>: weekly count ≥ 2.5× expected from its trailing 26-week share, ≥ 5 articles, Poisson p < 1e-4, per country. <b>Elevated N wks</b>: the 4-week average has stayed 1.5× its 2024 level for N weeks (long crises stop bursting). <b>Cooling</b>: stopped bursting in the last 3 weeks.</li>
-  <li><b>Last 7 days</b>: the 7 UTC days up to the newest article. Bars = articles per day, dashed red = expected per day (a usual week of the comparison period, scaled by this unit's articles in those 7 days). <b>Pressing</b>: on ≥ 2 of the last 3 days, ≥ 1.5× expected, ≥ 5 articles. <b>Came back</b>: none in the 14 days before, ≥ 10 articles in 2024. <b>Gone quiet</b>: bursting or elevated in the last 4 weeks, none in 7 days.</li>
-  <li>Topics rank by articles above a usual week (or above expected, for the last 7 days). Toggles show topics matching any of those picked.</li></ul></details>`;
+  <li><b>× usual</b>: the monthly Baker index (Baker, Bloom and Davis 2016) with the "compared with" period as the baseline T1: each source's share of articles mentioning the topic per calendar month, over its standard deviation across T1's months, averaged over the sources that published in at least half of T1's weeks, scaled so T1's months average 1×. The same shares over a week, or over the last 4 weeks, divided by the same standard deviations and scaled the same way, put weeks and the last 4 weeks on that scale: 4 weeks are the mean of their weeks. The headline is the last 4 weeks, recomputed each week. A source counts towards a topic only with ≥ 10 articles on it in T1. Regions and subregions average their countries with equal weights. "Highest since": the last complete month at or above the last 4 weeks. Under the headline, the same 4 weeks against the other baseline (2024, the level; or the past 12 months, the change), and, when the monthly index has stayed at or above 1.5× its 2024 level for 2+ complete months up to last month, since when.</li>
+  <li><b>Ranking</b>: how far the index sits above usual given how many articles it rests on: its n articles in the last 4 weeks against the n / q a usual 4 weeks would have at q× usual, in counting noise, (n − n/q) / √(n/q). 2× on 1,000 articles ranks above 3× on 20. A topic needs ≥ 10 articles from ≥ 3 sources in the 4 weeks and ≥ 3 on that scale, or a state.</li>
+  <li><b>Grouping</b>: a topic whose articles this week mostly (≥ 50%) also mention a bigger topic that qualifies, at least 4× more often than all articles do (lift), belongs to that topic's card. Each card gathers the biggest topic its topics belong to, the topics sharing a keyword concept with it, then parents and subtopics. Cards rank by their strongest topic (the ranking above); a card's lines are sorted the same way and it opens on the first, the one that ranks it. Click a legend entry to follow another line.</li>
+  <li><b>Concepts</b> lead each card: the keywords driving its topics (the concepts with the most articles above a usual week this week, at most 5), each on its own index by the same rule, with its × usual and articles in the last 4 weeks and the card topics it belongs to. The chart draws them on one timeline (log scale, dashed: usual), each as the 4 weeks to each week, a smooth line through the weekly values; hover for a week's values. Below them, the card's topics with their × usual (secondary).</li>
+  <li><b>Chart</b> (cards without driving concepts), two years on one × usual scale: small dots = the focused topic's weeks (faint on the axis: no article that week); large dots = its calendar months (Baker's monthly; hollow: the month so far); line = the 4 weeks to each week, drawn as a smooth curve through the weekly values; red = the last 4 weeks (the headline, where the line ends); faint lines = the card's other topics; dashed line = usual.</li>
+  <li><b>Rising / cooling this week</b>: the last week above the last 4 weeks' level and above each of the 3 weeks before it (rising), or below both (cooling).</li>
+  <li><b>Where</b> (region and subregions): the countries furthest above usual on the same scale, ranked like the cards (× usual and articles together), with their × usual and articles in the last 4 weeks. Click one to open it. <b>Driven by</b>: the topic's keyword concepts with the most articles above a usual week this week.</li>
+  <li><b>Themes</b>: concepts whose weekly swings move together across countries, whatever their heading, found by fixed rules (themes.py). A theme's index averages its members' indices; its counts are summed mentions (an article naming two members counts twice).</li>
+  <li><b>Toggles</b>: Bursting (weekly count ≥ 2.5× expected from its trailing 26-week share, ≥ 5 articles, Poisson p < 1e-4, in a country), Elevated (monthly index above 1.5× its 2024 level in each of the last 2+ complete months), Cooling (stopped bursting in the last 3 weeks); Pressing (on ≥ 2 of the last 3 days, ≥ 1.5× expected, ≥ 5 articles), Came back (none in the 14 days before, ≥ 10 articles in 2024), Gone quiet (bursting or elevated in the last 4 weeks, none in 7 days). A card shows when one of its topics matches any picked.</li></ul></details>`;
 
 function render() {
-    document.getElementById('window').textContent = `${weekLabel()} · last 7 days to ${lastDay()} UTC (newest article) · ${asofText()}`;
-    document.getElementById('seg').innerHTML = `<div class="seg"><span>Compare with</span>${PERIODS.map(([, t], i) => `<button data-p="${i}" class="${i === per ? 'on' : ''}">${t}</button>`).join('')}</div>`;
+    document.getElementById('window').textContent = `4 weeks to ${weekTo()}, daily to ${lastDay()} · built ${fmtDay(O.asof.slice(0, 10))}`;
+    document.getElementById('window').title = asofText();
+    document.getElementById('ask').innerHTML = `How far above usual is each topic in the last 4 weeks, compared with
+      <span class="seg">${ASK.map((t, i) => `<button data-p="${i}" class="${i === per ? 'on' : ''}">${t}</button>`).join('')}</span>?`;
     const u = key(sel.value), U = O.units[u];
     if (!U) { document.getElementById('app').innerHTML = '<div class="empty">No data for this unit.</div>'; return; }
-    const all = items(u);
+    const all = stories(u);
     const shown = on.size ? all.filter(x => [...on].some(t => x.tags.has(t))) : all;
     const k = 'cards:' + u, list = open.has(k) ? shown : shown.slice(0, TOP);
-    document.getElementById('app').innerHTML = kpis(u, all) + filters(all)
-        + (list.length ? list.map(it => card(u, it)).join('') : '<div class="empty">No topic matches.</div>')
+    document.getElementById('app').innerHTML = kpis(u) + filters(shown)
+        + (list.length ? list.map(st => storyCard(u, st)).join('') : '<div class="empty">No topic matches.</div>')
         + (shown.length > TOP ? `<button class="more" data-k="${k}">${open.has(k) ? 'Show top ' + TOP : 'Show all ' + shown.length}</button>` : '')
-        + grid(u, shown) + HOW;
-    document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { per = +b.dataset.p; render(); });
-    document.querySelectorAll('.tog').forEach(b => b.onclick = () => { on.has(b.dataset.t) ? on.delete(b.dataset.t) : on.add(b.dataset.t); render(); });
+        + HOW;
+    document.querySelectorAll('.ask button[data-p]').forEach(b => b.onclick = () => { per = +b.dataset.p; render(); });
+    document.querySelectorAll('.tog[data-t]').forEach(b => b.onclick = () => { on.has(b.dataset.t) ? on.delete(b.dataset.t) : on.add(b.dataset.t); render(); });
     document.querySelectorAll('.clear').forEach(b => b.onclick = () => { on.clear(); render(); });
     document.querySelectorAll('.more').forEach(b => b.onclick = () => { open.has(b.dataset.k) ? open.delete(b.dataset.k) : open.add(b.dataset.k); render(); });
+    document.querySelectorAll('.lg button').forEach(b => b.onclick = () => { focus.set(b.dataset.k, b.dataset.g); render(); });
     document.querySelectorAll('.country').forEach(b => b.onclick = () => { sel.value = b.dataset.c; render(); window.scrollTo(0, 0); });
 }
 sel.onchange = render;
