@@ -581,10 +581,12 @@ from prices.source_sanity import (  # noqa: E402
 )
 from prices.cc_ledger import cc_ledger_command as _prices_cc_ledger  # noqa: E402
 from prices.weekly.cli import weekly as _prices_weekly  # noqa: E402
+from text.panel.cli import panel as _text_panel  # noqa: E402
 from prices.cc_exhaustion import (  # noqa: E402
     cc_exhaustion_command as _prices_cc_exhaustion,
 )
 
+text.add_command(_text_panel, name="panel")
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
 prices.add_command(_prices_common_crawl, name="common-crawl")
