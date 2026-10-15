@@ -20,4 +20,15 @@ STEPS: dict[str, Step] = {
     "embed": Step(
         "embed", "12G", lambda ctx: py_argv("prices.weekly.steps.embed", ctx)
     ),
+    # PX-13. W42 caps: score 14G, classify 16G per country; phases run one at a time.
+    "score_classify": Step(
+        "score_classify",
+        "16G",
+        lambda ctx: py_argv(
+            "prices.weekly.steps.score_classify",
+            ctx,
+            "--backup-mount",
+            str(ctx.backup_mount),
+        ),
+    ),
 }
