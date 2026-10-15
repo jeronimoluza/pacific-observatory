@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 import click
@@ -140,13 +141,22 @@ def cli():
 @cli.command("assemble")
 @click.option("--stage-b", type=click.Path(path_type=Path), required=True)
 @click.option("--out", type=click.Path(path_type=Path), required=True)
-def assemble(stage_b: Path, out: Path):
+@click.option("--as-of", type=click.DateTime(["%Y-%m-%d"]), default=None,
+              help="Drop rows dated after this day (default: today, UTC).")
+def assemble(stage_b: Path, out: Path, as_of):
     dirs = _country_dirs(stage_b)
+    # A row dated after the build is not an observation yet: a weekly board
+    # dated by the END of its validity week (namboard_ehis_swz) made the
+    # dashboards claim data through a day that had not happened. The next
+    # build after that day picks the row up.
+    as_of = pd.Timestamp(as_of or datetime.now(timezone.utc).date()).normalize()
+    cutoff = as_of + pd.Timedelta(days=1)
     out.mkdir(parents=True, exist_ok=True)
     schema = _schema(dirs[0])
     w_all = pq.ParquetWriter(out / OBS, schema, compression="zstd")
     w_tr = pq.ParquetWriter(out / TRUSTED, schema, compression="zstd")
     cells, n_all, n_tr, expect_all, expect_tr = [], 0, 0, 0, 0
+    future_all, future_tr = 0, 0
     try:
         for d in dirs:
             country, src = d.name, pq.ParquetFile(d / "observations.parquet")
@@ -158,6 +168,13 @@ def assemble(stage_b: Path, out: Path):
             # cell columns are held until its cells are taken.
             for batch in src.iter_batches(batch_size=BATCH_ROWS):
                 obs = _with_old_columns(batch.to_pandas(), country, classifier)
+                future = obs["observation_date"].ge(cutoff).to_numpy()
+                if future.any():
+                    future_all += int(future.sum())
+                    future_tr += int((future & obs["trusted"].to_numpy()).sum())
+                    for source, n in obs.loc[future, "source"].value_counts().items():
+                        click.echo(f"{country}: dropped {n:,} rows of {source} dated after {as_of.date()}")
+                    obs = obs[~future]
                 table = pa.Table.from_pandas(obs[schema.names], schema=schema, preserve_index=False)
                 tr = table.filter(pa.array(obs["trusted"].to_numpy()))
                 w_all.write_table(table)
@@ -171,14 +188,16 @@ def assemble(stage_b: Path, out: Path):
     finally:
         w_all.close()
         w_tr.close()
-    if (n_all, n_tr) != (expect_all, expect_tr):
+    if (n_all + future_all, n_tr + future_tr) != (expect_all, expect_tr):
         raise click.ClickException(
-            f"row counts moved: wrote {n_all:,}/{n_tr:,}, Stage B has {expect_all:,}/{expect_tr:,}"
+            f"row counts moved: wrote {n_all:,}/{n_tr:,} + {future_all:,}/{future_tr:,} future, "
+            f"Stage B has {expect_all:,}/{expect_tr:,}"
         )
     summary = pd.concat(cells, ignore_index=True)
     summary.to_parquet(out / SUMMARY, index=False)
     click.echo(
         f"{len(dirs)} countries; {n_all:,} rows, {n_tr:,} trusted; "
+        f"{future_all:,} ({future_tr:,} trusted) dated after {as_of.date()} dropped; "
         f"{len(summary):,} cells, {int((summary['n_trusted'] > 0).sum()):,} with a trusted row"
     )
 
