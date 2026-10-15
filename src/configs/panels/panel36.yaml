@@ -1,0 +1,47 @@
+# MVP panel of 36 countries: 6 per region, two each of small/medium/large by prices rows.
+# Generated from vault specs/graph-engineering/2026-10-15-panel-36.tsv (461 prices sources).
+# Used by `po prices weekly --countries panel36`; slugs are checked against
+# src/configs/countries.yaml and the region against src/configs/regions.yaml.
+countries:
+  eap:
+    - solomon_islands
+    - french_polynesia
+    - mongolia
+    - new_zealand
+    - vietnam
+    - south_korea
+  eca:
+    - azerbaijan
+    - bosnia_and_herzegovina
+    - kyrgyz_republic
+    - moldova
+    - kazakhstan
+    - ukraine
+  lac:
+    - haiti
+    - venezuela_rb
+    - honduras
+    - uruguay
+    - brazil
+    - mexico
+  menaap:
+    - algeria
+    - jordan
+    - morocco
+    - iraq
+    - pakistan
+    - egypt
+  sar:
+    - bhutan
+    - nepal
+    - maldives
+    - bangladesh
+    - india
+    - sri_lanka
+  ssa:
+    - cote_divoire
+    - congo_rep
+    - ghana
+    - senegal
+    - cameroon
+    - nigeria
