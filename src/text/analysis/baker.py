@@ -51,6 +51,16 @@ def _period(
     return dates.dt.to_period("M").dt.to_timestamp()
 
 
+def block_start(cutoff_start: str | None, freq: str) -> str | None:
+    """The first "<k>D" block label inside a baseline starting at
+    ``cutoff_start``: blocks are labelled by their last day, so a block lies
+    in the baseline from k - 1 days after its start."""
+    if cutoff_start is None:
+        return None
+    first = pd.Timestamp(cutoff_start) + pd.Timedelta(days=int(freq[:-1]) - 1)
+    return f"{first:%Y-%m-%d}"
+
+
 def _shares(
     sources_daily: pd.DataFrame,
     terms_daily: pd.DataFrame,
@@ -152,8 +162,11 @@ def index(
     would dominate the mean.
 
     ``anchor``: the last day of the latest period at freq "<k>D" (periods are
-    k-day blocks counted back from it, labelled by their last day).
+    k-day blocks counted back from it, labelled by their last day). A block
+    is in the baseline only when it lies entirely inside it (``block_start``).
     """
+    if freq.endswith("D"):
+        cutoff_start = block_start(cutoff_start, freq)
     A, t = _shares(sources_daily, terms_daily, panel, freq, anchor)
     if t.empty:  # no panel source (or none with articles)
         return pd.DataFrame(
@@ -162,6 +175,42 @@ def index(
     Z = _z(A, t, _sigma(A, t, cutoff_start, cutoff_end, min_base_articles))
     mean = Z[baseline_mask(A.index, cutoff_start, cutoff_end).to_numpy()].mean()
     return 100 * Z / mean.where(mean > 0)
+
+
+def stepped(
+    sources_daily: pd.DataFrame,
+    terms_daily: pd.DataFrame,
+    panel: set[str],
+    freq: str,
+    step: int,
+    cutoff_start: str,
+    cutoff_end: str,
+    min_base_articles: int = 0,
+    anchor: pd.Timestamp | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """The "<k>D" index (as ``index``) and the same k days moved back ``step``
+    days at a time from ``anchor`` (a moving window), read with the blocks'
+    sigma_i and mean 100: on a block's last day the two are the same value."""
+    cutoff_start = block_start(cutoff_start, freq)
+    A, t = _shares(sources_daily, terms_daily, panel, freq, anchor)
+    if t.empty:  # no panel source (or none with articles)
+        none = pd.DataFrame(index=A.index, columns=pd.Index([], dtype=object))
+        return none.astype(float), none.astype(float)
+    sigma = _sigma(A, t, cutoff_start, cutoff_end, min_base_articles)
+    Z = _z(A, t, sigma)
+    mean = Z[baseline_mask(A.index, cutoff_start, cutoff_end).to_numpy()].mean()
+    mean = mean.where(mean > 0)
+    parts = [100 * Z / mean]
+    for back in range(step, int(freq[:-1]), step):
+        At, tt = _shares(
+            sources_daily,
+            terms_daily,
+            panel,
+            freq,
+            anchor - pd.Timedelta(days=back),
+        )
+        parts.append(100 * _z(At, tt, sigma).reindex(columns=Z.columns) / mean)
+    return parts[0], pd.concat(parts).sort_index()
 
 
 def monthly_family(
@@ -217,22 +266,26 @@ def combine(
 
 
 def combine_family(
-    families: list[dict[str, pd.DataFrame]], cutoff_start: str, cutoff_end: str
+    families: list[dict[str, pd.DataFrame]],
+    cutoff_start: str,
+    cutoff_end: str,
+    ref: str = "M",
 ) -> dict[str, pd.DataFrame]:
     """``combine`` for ``monthly_family`` outputs: each country scaled by the
     std of its monthly index over the baseline at every frequency, averaged,
     and over the mean of the monthly average, so the frequencies stay on one
-    scale."""
+    scale. ``ref``: the family member read in place of the monthly index
+    (``stepped``: the blocks)."""
     sds = [
-        f["M"][baseline_mask(f["M"].index, cutoff_start, cutoff_end).to_numpy()].std()
+        f[ref][baseline_mask(f[ref].index, cutoff_start, cutoff_end).to_numpy()].std()
         for f in families
     ]
     out = {}
     for k in families[0]:
         scaled = [f[k] / sd.where(sd > 0) for f, sd in zip(families, sds)]
         out[k] = pd.concat(scaled).groupby(level=0).mean()
-    mean = out["M"][
-        baseline_mask(out["M"].index, cutoff_start, cutoff_end).to_numpy()
+    mean = out[ref][
+        baseline_mask(out[ref].index, cutoff_start, cutoff_end).to_numpy()
     ].mean()
     return {k: 100 * Z / mean.where(mean > 0) for k, Z in out.items()}
 

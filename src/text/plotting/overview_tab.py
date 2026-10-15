@@ -2,8 +2,7 @@
 
 Read ``outputs/text/<region>/overview.json`` (written by
 ``src/text/analysis/explorations/overview.py``). A dropdown picks the region,
-a subregion or a country; "compared with" picks the baseline T1 (2024, the
-past 12 or 24 months).
+a subregion or a country; the baseline T1 is 2024.
 
 Per unit: two KPIs (articles in the database, last 7 days) and one ranked
 list of story cards. Every topic, subtopic and theme has a Baker index of the
@@ -20,14 +19,11 @@ its strongest topic; its lines are sorted by x usual and it opens on the first.
 A card gives the focused topic's x usual and the last calendar month at or
 above it ("highest since"), a rising or cooling flag from the weekly index,
 the countries furthest above usual (region and subregions) and its driving
-concepts. Its chart draws, on that one scale, the focused topic's weeks as
-small dots, its calendar months (Baker's monthly) as large dots, the 4 weeks to
-each week as a smooth line ending at the last 4 weeks (a red bar), and the
-card's other topics as faint lines.
-
-Filter toggles: Bursting, Cooling (weekly), Elevated (monthly); Pressing, Came back,
-Gone quiet (the 7 UTC days ending on the newest day with articles in the
-region).
+concepts. Every card has one chart, the focused topic thick and its concepts
+thin, in three sections: 4-week blocks counted back from the last day with
+data or calendar months (a page toggle) from January 2024 to a draggable
+line, the 4 weeks to each week from there to the last day (read with the
+blocks' sigma and mean), and an empty "this week" band.
 
 ``THEME_HEAD`` is the World Bank careers site look (worldbank.org/ext/en/careers):
 Open Sans and its colours, as CSS variables the dashboard's pages already use.
@@ -72,7 +68,7 @@ select { padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; 
 SHARED_JS = r"""
 const O = __OVERVIEW_JSON__;
 const NAMES = __NAMES_JSON__;
-let per = 1;
+const per = 0;  // T1: 2024, the first of each per-window array
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const name = u => NAMES[u] || u.replace(/_/g, ' ').replace(/\b./g, x => x.toUpperCase());
 const parts = g => { const l = O.labels[g] || g; const i = l.indexOf(' · '); return i < 0 ? ['', l] : [l.slice(0, i), l.slice(i + 3)]; };
@@ -122,14 +118,6 @@ OVERVIEW_TEMPLATE = r"""<!DOCTYPE html>
 .kpis { display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 14px; }
 .kpi .v { font-size: 1.7em; font-weight: 700; color: var(--accent); line-height: 1.1; }
 .kpi .t { color: var(--muted); font-size: 12px; }
-.filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 10px 0; border-top: 1px solid var(--soft); border-bottom: 1px solid var(--soft); margin-bottom: 8px; }
-.tog { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 14px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
-.tog b { font-variant-numeric: tabular-nums; margin-left: 4px; color: var(--muted); }
-.tog.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-.tog.on b { color: #fff; }
-.tog:disabled { opacity: .45; cursor: default; }
-.sep { width: 1px; height: 18px; background: var(--border); margin: 0 6px; }
-.clear { border: 0; background: none; color: var(--accent2); cursor: pointer; font-size: 12px; font-weight: 600; }
 .tc { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(280px, 2.4fr); gap: 22px; align-items: start; padding: 16px 4px; border-top: 1px solid var(--soft); }
 .tc:first-child { border-top: 0; }
 .tc .tp { color: var(--muted); font-size: 11px; }
@@ -146,13 +134,6 @@ OVERVIEW_TEMPLATE = r"""<!DOCTYPE html>
 .chip.dc { cursor: default; }
 .ask { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; margin-bottom: 12px; }
 .chip.dc:hover { border-color: var(--border); }
-.ch { position: relative; height: 120px; }
-.ch svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.ch .ax { position: absolute; left: -2px; font-size: 9.5px; color: var(--muted); transform: translate(-100%, -50%); }
-.ch .lbl { position: absolute; bottom: -14px; font-size: 9.5px; color: var(--muted); }
-.ch .vd { display: none; position: absolute; bottom: -15px; transform: translateX(-50%); font-size: 10px; color: var(--text); background: var(--panel); padding: 0 4px; z-index: 1; white-space: nowrap; }
-.hv .vl { stroke: #b9c4cf; stroke-dasharray: 3 3; opacity: 0; }
-.hv:hover .vl { opacity: 1; }
 .lg { display: flex; flex-wrap: wrap; gap: 2px 12px; margin-top: 20px; }
 .lg button { border: 0; background: none; cursor: pointer; font-size: 11px; color: var(--text); padding: 1px 0; display: inline-flex; align-items: center; gap: 4px; opacity: .55; }
 .lg button.on { opacity: 1; font-weight: 600; }
@@ -168,16 +149,20 @@ OVERVIEW_TEMPLATE = r"""<!DOCTYPE html>
 .cin { font-size: 11px; color: var(--muted); }
 .tls { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11.5px; color: var(--muted); }
 .tls b { font-weight: 600; color: var(--text); }
-.ts { position: relative; height: 170px; margin: 4px 0 18px 30px; }
-.ts svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.ts .ya { position: absolute; left: -6px; transform: translate(-100%, -50%); font-size: 9.5px; color: var(--muted); }
-.ts .xa { position: absolute; bottom: -15px; transform: translateX(-50%); font-size: 9.5px; color: var(--muted); white-space: nowrap; }
-.ts .xh { display: none; position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--muted); pointer-events: none; }
-.ts .tt { display: none; position: absolute; top: 0; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,.08); pointer-events: none; z-index: 2; white-space: nowrap; }
-.ts .tt div { display: flex; align-items: center; gap: 6px; }
-.ts .tt i { width: 10px; height: 3px; border-radius: 2px; }
-.ts .tt span { margin-left: auto; padding-left: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.ts.on .xh, .ts.on .tt { display: block; }
+.c3 { margin: 4px 0 18px 30px; }
+.c3 .pl { position: relative; height: 170px; touch-action: none; }
+.c3 svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.c3 .ya { position: absolute; left: -6px; transform: translate(-100%, -50%); font-size: 9.5px; color: var(--muted); }
+.c3 .xa { position: absolute; bottom: -15px; transform: translateX(-50%); font-size: 9.5px; color: var(--muted); white-space: nowrap; }
+.c3 .xa.r { transform: translateX(calc(-100% - 3px)); }
+.c3 .d1 { position: absolute; top: 0; bottom: 0; width: 12px; transform: translateX(-50%); cursor: ew-resize; z-index: 1; }
+.c3 .xh { display: none; position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--muted); pointer-events: none; }
+.c3 .xd { display: none; position: absolute; bottom: -16px; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: var(--text); background: var(--soft); border-radius: 3px; padding: 0 4px; white-space: nowrap; pointer-events: none; z-index: 1; }
+.c3 .tt { display: none; position: absolute; bottom: calc(100% + 6px); background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,.08); pointer-events: none; z-index: 3; white-space: nowrap; }
+.c3 .tt td { padding: 1px 4px; }
+.c3 .tt i { display: block; width: 12px; border-radius: 2px; }
+.c3 .tt .x { text-align: right; font-size: 11px; }
+.c3.on .xh, .c3.on .xd, .c3.on .tt { display: block; }
 .country { cursor: pointer; }
 details.how { margin-top: 18px; color: var(--muted); font-size: 12px; }
 details.how summary { cursor: pointer; font-weight: 600; color: var(--text); }
@@ -191,55 +176,27 @@ details.how li { margin: 4px 0 0 18px; }
     <h1>What is happening now</h1>
     <div class="sub" id="window"></div>
   </div>
-  <div class="controls"><select id="unit">__UNIT_OPTIONS__</select></div>
+  <div class="controls"><span class="seg" id="view"><span>Chart</span><button data-v="4w" class="on">4-week</button><button data-v="cal">calendar</button></span><select id="unit">__UNIT_OPTIONS__</select></div>
 </div>
 <div class="ask" id="ask"></div>
 <div class="card" id="app"></div>
 <script>__SHARED_JS__
-const TOP = 12, CAP = 8;
-const ASK = ['2024', 'the past 12 months', 'the past 24 months'];
-const COLORS = ['#169af3', '#e19d00', '#388004', '#8a3ffc', '#da1e28', '#00a3a3', '#b0517a', '#6f7d8c'];
+const TOP = 12;
 const sel = document.getElementById('unit');
-const open = new Set(), on = new Set(), focus = new Map();
+const open = new Set(), focus = new Map();
 const key = v => v.startsWith('region:') ? 'region' : v;
-const FILTERS = [['burst', 'Bursting'], ['elev', 'Elevated'], ['cool', 'Cooling'], null, ['press', 'Pressing'], ['back', 'Came back'], ['quiet', 'Gone quiet']];
 const sub = g => parts(g)[1];
 const weekTo = () => fmtDay(O.week);
 
-// The chart's time axis: the published weeks (week k of n ends n - 1 - k
-// weeks before the week's end), calendar months and 4-week blocks on it.
+// Calendar months counted back from the week's end ("highest since").
 const END = Date.parse(O.week + 'T00:00:00Z');
-const weekEnd = (k, n) => END - (n - 1 - k) * 7 * DAY;
 const monthStart = (k, n) => { const d = new Date(END); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - (n - 1 - k), 1); };
-// Rolling: the 4 weeks to each week, the mean of their weekly values (a
-// 4-week block is the mean of its weeks: one sigma and mean per source).
-const roll4 = v => v.map((_, k) => k < 3 || v.slice(k - 3, k + 1).some(x => x === null) ? null : v.slice(k - 3, k + 1).reduce((a, b) => a + b, 0) / 4);
-// Monotone cubic (Fritsch-Carlson) through each unbroken run of points
-// (X(k), Y(v[k])): it passes through every value and never overshoots.
-function smoothPath(v, X, Y) {
-    let d = '';
-    const runs = []; let cur = [];
-    v.forEach((x, k) => { if (x === null) { if (cur.length) runs.push(cur); cur = []; } else cur.push([X(k), Y(x)]); });
-    if (cur.length) runs.push(cur);
-    runs.forEach(P => {
-        const n = P.length, dx = [], m = [], t = [];
-        for (let i = 0; i < n - 1; i++) { dx.push(P[i + 1][0] - P[i][0]); m.push((P[i + 1][1] - P[i][1]) / dx[i]); }
-        for (let i = 0; i < n; i++) t.push(i === 0 ? (m[0] ?? 0) : i === n - 1 ? m[n - 2] : m[i - 1] * m[i] <= 0 ? 0 : 3 * (dx[i - 1] + dx[i]) / ((2 * dx[i] + dx[i - 1]) / m[i - 1] + (dx[i] + 2 * dx[i - 1]) / m[i]));
-        d += `M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}`;
-        for (let i = 0; i < n - 1; i++) {
-            const h = dx[i] / 3;
-            d += `C${(P[i][0] + h).toFixed(1)},${(P[i][1] + t[i] * h).toFixed(1)} ${(P[i + 1][0] - h).toFixed(1)},${(P[i + 1][1] - t[i + 1] * h).toFixed(1)} ${P[i + 1][0].toFixed(1)},${P[i + 1][1].toFixed(1)}`;
-        }
-    });
-    return d;
-}
 
 // Concepts lead each card: the keywords driving its topics (the concepts
 // with the most articles above a usual week this week, at most CONCEPTS),
 // each on its own Baker index (the same rule as the topics). The text lists
 // them with their x usual and the card topics they belong to; the chart draws
-// them on one timeline, each as the 4 weeks to each week (a smooth line),
-// with a crosshair and the week's values on hover.
+// them as thin lines next to the card's topic.
 const CONCEPTS = 5, CCOL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4'];
 function cardConcepts(u, lines) {
     const U = O.units[u], cs = [];
@@ -250,94 +207,117 @@ function cardConcepts(u, lines) {
 // The card topics a concept belongs to: its group (or the group's parent)
 // and the themes listing it.
 const topicsOf = (c, lines) => lines.filter(g => g === O.cgroup[c] || (O.kids[g] || []).includes(O.cgroup[c]) || (themeOf(g) && themeOf(g).members.includes(c)));
-const TS = {};
-function conceptChart(u, id, cs) {
-    const U = O.units[u], W = 600, H = 170;
-    const v = cs.map(c => roll4(U.s['c:' + c].wh[per]));
-    const nw = v[0].length, t0 = weekEnd(0, nw) - 7 * DAY, tx = t => (t - t0) / (END - t0) * W;
-    const xs = v.flat().filter(x => x !== null && x > 0).map(x => x / 100);
-    const lo = Math.max(.25, Math.min(.5, ...xs)), hi = Math.min(16, Math.max(2, ...xs));
-    const L = x => Math.log2(Math.min(Math.max(x, lo), hi)), Y = x => H - (L(x) - Math.log2(lo)) / (Math.log2(hi) - Math.log2(lo)) * H;
-    const ticks = [.25, .5, 1, 2, 4, 8, 16].filter(t => t >= lo && t <= hi);
-    const wx = k => tx(weekEnd(k, nw) - 3 * DAY);
-    TS[id] = {nw, cs: cs.map((c, i) => ({n: O.clabels[c], col: CCOL[i], v: v[i]})), x: k => wx(k) / W};
-    const months = [];
-    for (let k = 0; k < nw; k++) { const d = new Date(weekEnd(k, nw)); if (d.getUTCDate() <= 7 && d.getUTCMonth() % 3 === 0) months.push(k); }
-    return `<div class="ts" data-id="${id}">
-      ${ticks.map(t => `<span class="ya" style="top:${(Y(t) / H * 100).toFixed(1)}%">${t < 1 ? t : t + '×'}</span>`).join('')}
-      ${months.map(k => `<span class="xa" style="left:${(wx(k) / W * 100).toFixed(1)}%">${fmtMonth(weekEnd(k, nw))}</span>`).join('')}
-      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-        ${ticks.map(t => `<line x1="0" x2="${W}" y1="${Y(t).toFixed(1)}" y2="${Y(t).toFixed(1)}" stroke="var(--border)" ${t === 1 ? 'stroke-dasharray="4 3"' : 'opacity=".5"'} vector-effect="non-scaling-stroke"/>`).join('')}
-        ${v.map((s, i) => `<path d="${smoothPath(s, wx, x => Y(x / 100))}" fill="none" stroke="${CCOL[i]}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`).reverse().join('')}
-      </svg><i class="xh"></i><div class="tt"></div></div>`;
-}
-function onTs(e) {
-    const el = e.target.closest && e.target.closest('.ts');
-    document.querySelectorAll('.ts.on').forEach(x => { if (x !== el) x.classList.remove('on'); });
-    if (!el) return;
-    const T = TS[el.dataset.id], r = el.getBoundingClientRect(), f = (e.clientX - r.left) / r.width;
-    let k = 0;
-    for (let j = 0; j < T.nw; j++) if (Math.abs(T.x(j) - f) < Math.abs(T.x(k) - f)) k = j;
-    const xh = el.querySelector('.xh'), tt = el.querySelector('.tt');
-    xh.style.left = (T.x(k) * 100) + '%';
-    const rows = T.cs.map(c => [c, c.v[k]]).sort((a, b) => (b[1] ?? -1) - (a[1] ?? -1));
-    tt.innerHTML = `<b>4 weeks to ${fmtDay(weekEnd(k, T.nw), {year: 'numeric'})}</b>` + rows.map(([c, x]) => `<div><i style="background:${c.col}"></i>${esc(c.n)}<span>${x === null ? '–' : fx(x / 100)}</span></div>`).join('');
-    tt.style.left = T.x(k) > .6 ? '' : `calc(${T.x(k) * 100}% + 12px)`;
-    tt.style.right = T.x(k) > .6 ? `calc(${(1 - T.x(k)) * 100}% + 12px)` : '';
-    el.classList.add('on');
-}
-document.addEventListener('mousemove', onTs);
 
-// Index view: the focused topic's weeks as dots, its calendar months (Baker's
-// monthly) as larger dots and the 4 weeks to each week as a smooth line, all
-// x usual on the same scale (one sigma and mean per source: the monthly
-// index's, overview.py); the card's other topics as faint lines. The line
-// passes through each week's 4-week value; between weeks it is a monotone
-// curve (no overshoot), so every point on it read at a week is a Baker value.
-function chart(u, lines, f, color) {
-    const U = O.units[u], W = 600, H = 120, s = U.s[f], wk = s.wh[per], nw = wk.length;
-    const t0 = weekEnd(0, nw) - 7 * DAY, span = END - t0, tx = t => (t - t0) / span * W;
-    const dataEnd = Date.parse(O.data_end + 'T00:00:00Z') + DAY;
-    const months = g => { const v = U.s[g].mh[per], n = v.length; return v.map((x, k) => ({x, a: monthStart(k, n), b: k === n - 1 ? Math.min(dataEnd, END + DAY) : monthStart(k + 1, n), part: k === n - 1})).filter(p => p.x !== null && p.b > t0); };
-    const rl = Object.fromEntries(lines.map(g => [g, roll4(U.s[g].wh[per])]));
-    const mo = months(f);
-    const vals = [...wk, ...mo.map(p => p.x), ...Object.values(rl).flat()].filter(x => x !== null).map(x => x / 100);
-    const max = Math.max(...vals), top = Math.max(2, Math.min(max, CAP)), Y = x => H - Math.min(x, top) / top * H;
-    const wx = k => tx(weekEnd(k, nw) - 3 * DAY);
-    // Monotone cubic (Fritsch-Carlson) through each unbroken run of points.
-    const curve = (g, w, op) => `<path d="${smoothPath(rl[g], wx, x => Y(x / 100))}" fill="none" stroke="${color(g)}" stroke-width="${w}" opacity="${op}" vector-effect="non-scaling-stroke"/>`;
-    const others = lines.filter(g => g !== f).map(g => curve(g, 1, .3)).join('');
-    const r = 2.2 * W / 600;
-    // Months: a larger dot at the month's middle (hollow: the month so far).
-    const mdots = mo.map(p => { const x = tx((Math.max(p.a, t0) + p.b) / 2), y = Y(p.x / 100); return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${r * 1.7}" ry="${r * 1.7 * 1.5}" fill="${p.part ? 'var(--panel)' : color(f)}" stroke="${color(f)}" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`; }).join('');
-    const mine = curve(f, 2, 1) + mdots;
-    const q = s.q[per], last = q === null ? '' : `<line x1="${tx(END - (O.days - 1) * DAY).toFixed(1)}" x2="${tx(END + DAY).toFixed(1)}" y1="${Y(q)}" y2="${Y(q)}" stroke="var(--red)" stroke-width="3.5" vector-effect="non-scaling-stroke"/>`;
-    // Weeks with no article on it: a faint small dot on the axis.
-    const dots = wk.map((x, k) => x === null ? '' : `<ellipse cx="${tx(weekEnd(k, nw) - 3 * DAY).toFixed(1)}" cy="${Y(x / 100).toFixed(1)}" rx="${x ? r : r * .6}" ry="${(x ? r : r * .6) * 1.5}" fill="${color(f)}" opacity="${x ? .45 : .12}"/>`).join('');
-    const monthAt = t => { const p = mo.find(p => t >= p.a && t < p.b); return p ? p.x : null; };
-    const text = k => {
-        const t = weekEnd(k, nw) - 3 * DAY, w = wk[k];
-        return [`${sub(f)}: week ${w === null ? '–' : fx(w / 100)}, month ${fx((monthAt(t) ?? NaN) / 100)}`, ...lines.map(g => `${sub(g)}: 4 weeks ${fx((rl[g][k] ?? NaN) / 100)}`)].join('\n');
-    };
-    const tips = wk.map((_, k) => { const x = tx(weekEnd(k, nw) - 7 * DAY), w = tx(weekEnd(k, nw)) - x; return `<g class="hv" data-t="${weekEnd(k, nw)}" data-x="${(x + w / 2) / W}"><line class="vl" x1="${x + w / 2}" x2="${x + w / 2}" y1="0" y2="${H}" vector-effect="non-scaling-stroke"/><rect x="${x}" y="0" width="${w}" height="${H}" fill="transparent"><title>Week to ${fmtDay(weekEnd(k, nw), {year: 'numeric'})}\n${text(k)}</title></rect></g>`; }).join('');
-    return `<div class="ch"><span class="vd"></span>
-      <span class="ax" style="top:${Y(1) / H * 120}px">1×</span><span class="ax" style="top:0">${fx(top)}${max > top ? '+' : ''}</span>
-      <span class="lbl" style="left:0">${fmtDay(t0 + DAY, {year: 'numeric'})}</span><span class="lbl" style="right:0">${weekTo()}</span>
-      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-        <line x1="0" x2="${W}" y1="${Y(1)}" y2="${Y(1)}" stroke="var(--border)" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/>
-        ${others}${dots}${mine}${last}${tips}
-      </svg></div>`;
+// The chart, x usual with 2024 as T1, in three sections split by two dashed
+// lines, each section keeping its width: (1) from January 2024 to line 1,
+// the 4-week blocks counted back from t0 (the last day with data) or the
+// calendar months (Baker's monthly); (2) from line 1 to t0, the 4 weeks to
+// each week, read with the blocks' sigma and mean (on a block's last day it
+// is that block); (3) this week, empty for now. A point sits on its
+// period's last day. Dragging line 1 moves the date it stands for, on every
+// card (in the 4-week view, to a block's end).
+const T0 = Date.parse(O.data_end + 'T00:00:00Z'), JAN = Date.UTC(2024, 0, 1), WK = 7 * DAY;
+const NM = Math.floor((T0 - Date.UTC(2024, 0, 28)) / WK) + 1;  // weekly points (overview.py)
+const SHARE = [.46, .46], CW = 600, CHH = 170;
+let view = '4w', cut = 12;  // weeks from line 1 to t0
+const CHARTS = {};
+const cutW = () => view === '4w' ? Math.max(4, Math.round(cut / 4) * 4) : cut;
+function xmap() {
+    const L = T0 - cutW() * WK, a = SHARE[0] * CW, b = (SHARE[0] + SHARE[1]) * CW;
+    return {L, a, b, X: t => t <= L ? (t - JAN) / (L - JAN) * a : a + (t - L) / (T0 - L) * (b - a),
+        T: x => x <= a ? JAN + x / a * (L - JAN) : L + (x - a) / (b - a) * (T0 - L)};
 }
-function onHover(e) {
-    const g = e.target.closest('.hv'), ch = e.target.closest('.ch');
-    if (!g || !ch) return;
-    const vd = ch.querySelector('.vd');
-    vd.textContent = fmtDay(+g.dataset.t, {year: 'numeric'});
-    vd.style.left = (+g.dataset.x * 100) + '%';
-    vd.style.display = 'block';
+// A line's points per section: {t, x (x 100), n (articles)}.
+function pts(s, L) {
+    const nb = s.b4.length, nm = s.m4.length;
+    const one = view === '4w'
+        ? s.b4.map((x, j) => ({t: T0 - (nb - 1 - j) * 4 * WK, x, n: s.n4[nm - 1 - (nb - 1 - j) * 4]}))
+        : s.mo.map((x, j) => ({t: Date.UTC(2024, j + 1, 1) - DAY, x, n: s.nm[j]}));
+    const two = s.m4.map((x, j) => ({t: T0 - (nm - 1 - j) * WK, x, n: s.n4[j]}));
+    return [one.filter(p => p.t <= L), two.filter(p => p.t >= L)];
 }
-document.addEventListener('mouseover', onHover);
-document.addEventListener('mouseout', e => { const ch = e.target.closest && e.target.closest('.ch'); if (ch && !ch.contains(e.relatedTarget)) ch.querySelector('.vd').style.display = 'none'; });
+function c3(u, id, f, cs) {
+    const U = O.units[u];
+    CHARTS[id] = [{s: U.s[f], n: sub(f), col: 'var(--accent)', w: 2.6, cnt: count(f)},
+        ...cs.map((c, i) => ({s: U.s['c:' + c], n: O.clabels[c], col: CCOL[i], w: 1.4, cnt: arts}))];
+    return `<div class="c3" data-id="${esc(id)}"><div class="pl">${plot(id)}</div></div>`;
+}
+function plot(id) {
+    const C = CHARTS[id], M = xmap(), P = C.map(l => pts(l.s, M.L));
+    const xs = P.flat(2).map(p => p.x).filter(x => x !== null);
+    const max = Math.max(100, ...xs) / 100;
+    const step = [1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1000].find(v => v >= max / 5) || Math.ceil(max / 5);
+    const top = Math.max(2, Math.ceil(max / step) * step), Y = x => CHH - x / top * CHH;
+    const grid = [];
+    for (let v = step; v <= top; v += step) grid.push(v);
+    if (!grid.includes(1)) grid.push(1);
+    const path = ps => { let d = '', pen = false; for (const p of ps) { if (p.x === null) { pen = false; continue; } d += `${pen ? 'L' : 'M'}${M.X(p.t).toFixed(1)},${Y(p.x / 100).toFixed(1)}`; pen = true; } return d; };
+    const pc = x => (x / CW * 100).toFixed(2) + '%';
+    const xl = [];
+    for (let k = 0; ; k++) {  // section 1: quarters
+        const a = Date.UTC(2024, 3 * k, 1), b = Math.min(Date.UTC(2024, 3 * k + 3, 1), M.L);
+        if (a >= M.L) break;
+        if (M.X(b) - M.X(a) >= 22) xl.push([(M.X(a) + M.X(b)) / 2, `Q${k % 4 + 1} '${String(24 + Math.floor(k / 4)).padStart(2, '0')}`]);
+    }
+    // Section 2: every 4 weeks back from t0 (every 8, 12... when they would crowd).
+    const by = 4 * WK * Math.ceil(30 / (M.X(T0) - M.X(T0 - 4 * WK)));
+    for (let t = T0 - by; t >= M.L; t -= by) if (M.X(t) - M.a >= 18 && M.X(T0) - M.X(t) >= 30) xl.push([M.X(t), fmtDay(t)]);
+    xl.push([M.b, fmtDay(T0), 'r'], [(M.b + CW) / 2, 'this week']);
+    const vl = x => `<line x1="${x}" x2="${x}" y1="0" y2="${CHH}" stroke="var(--muted)" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/>`;
+    return `${[0, ...grid].filter(v => v !== 1 || step === 1 || Y(0) - Y(1) >= 12).map(v => `<span class="ya" style="top:${(Y(v) / CHH * 100).toFixed(1)}%">${v ? v + '×' : 0}</span>`).join('')}
+      ${xl.map(([x, t, r]) => `<span class="xa${r ? ' r' : ''}" style="left:${pc(x)}">${t}</span>`).join('')}
+      <svg viewBox="0 0 ${CW} ${CHH}" preserveAspectRatio="none">
+        <rect x="${M.b}" y="0" width="${CW - M.b}" height="${CHH}" fill="var(--soft)" opacity=".6"/>
+        <line x1="0" x2="${CW}" y1="${CHH}" y2="${CHH}" stroke="var(--border)" vector-effect="non-scaling-stroke"/>
+        ${grid.map(v => `<line x1="0" x2="${M.b}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="var(--border)" ${v === 1 ? 'stroke-dasharray="4 3"' : 'opacity=".55"'} vector-effect="non-scaling-stroke"/>`).join('')}
+        ${C.map((l, i) => P[i].map(ps => `<path d="${path(ps)}" fill="none" stroke="${l.col}" stroke-width="${l.w}" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`).join('')).reverse().join('')}
+        ${vl(M.a)}${vl(M.b)}
+      </svg><i class="xh"></i><span class="xd"></span><div class="tt"></div>
+      <div class="d1" style="left:${pc(M.a)}" title="Drag: where the weekly view starts"></div>`;
+}
+const redraw = () => document.querySelectorAll('.c3').forEach(el => { el.querySelector('.pl').innerHTML = plot(el.dataset.id); });
+// Hover: a line at the mouse, the nearest period highlighted on the x axis
+// and its values in a table above the chart.
+function onMove(e) {
+    const pl = !drag && e.target.closest ? e.target.closest('.c3 .pl') : null;
+    document.querySelectorAll('.c3.on').forEach(x => { if (!pl || x !== pl.parentElement) x.classList.remove('on'); });
+    if (!pl) return;
+    const C = CHARTS[pl.parentElement.dataset.id], r = pl.getBoundingClientRect(), M = xmap();
+    const x = Math.min(Math.max((e.clientX - r.left) / r.width * CW, 0), CW);
+    const xh = pl.querySelector('.xh'), xd = pl.querySelector('.xd'), tt = pl.querySelector('.tt');
+    xh.style.left = x / CW * 100 + '%';
+    pl.parentElement.classList.add('on');
+    if (x > M.b) { xd.textContent = 'this week'; xd.style.left = (M.b + CW) / 2 / CW * 100 + '%'; tt.style.visibility = 'hidden'; return; }
+    const sec = x <= M.a ? 0 : 1, P = C.map(l => pts(l.s, M.L)[sec]), t = M.T(x);
+    if (!P[0].length) return;
+    let k = 0;
+    P[0].forEach((p, j) => { if (Math.abs(p.t - t) < Math.abs(P[0][k].t - t)) k = j; });
+    const p0 = P[0][k];
+    xd.textContent = sec === 0 && view === 'cal' ? fmtMonth(p0.t) : `4 weeks to ${fmtDay(p0.t, {year: 'numeric'})}`;
+    xd.style.left = M.X(p0.t) / CW * 100 + '%';
+    tt.innerHTML = '<table>' + C.map((l, i) => { const p = P[i][k]; return `<tr><td><i style="background:${l.col};height:${l.w > 2 ? 4 : 2}px"></i></td><td>${esc(l.n)}</td><td class="x">${p.x === null ? '–' : fx(p.x / 100)}</td><td class="n">${p.n == null ? '' : l.cnt(p.n)}</td></tr>`; }).join('') + '</table>';
+    tt.style.visibility = '';
+    const w = tt.offsetWidth, cx = x / CW * r.width;
+    tt.style.left = Math.min(Math.max(cx - w / 2, 0), Math.max(0, r.width - w)) + 'px';
+}
+let drag = null;
+document.addEventListener('mousemove', onMove);
+document.documentElement.addEventListener('mouseleave', () => document.querySelectorAll('.c3.on').forEach(x => x.classList.remove('on')));
+document.addEventListener('pointerdown', e => {
+    const h = e.target.closest && e.target.closest('.d1');
+    if (!h) return;
+    drag = {r: h.parentElement.getBoundingClientRect(), M: xmap()};
+    document.querySelectorAll('.c3.on').forEach(x => x.classList.remove('on'));
+    e.preventDefault();
+});
+document.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const x = Math.min(Math.max((e.clientX - drag.r.left) / drag.r.width * CW, 0), drag.M.b);
+    const c = Math.min(Math.max(Math.round((T0 - drag.M.T(x)) / WK), 4), NM - 9), w = cutW();
+    cut = c;
+    if (cutW() !== w) redraw();
+});
+document.addEventListener('pointerup', () => { drag = null; });
 
 // Stories: every topic, subtopic and theme ranked together by how far its
 // last 4 weeks' Baker index (q, x usual, the comparison period as T1) sits
@@ -416,17 +396,17 @@ function since(s) {
     return t < monthStart(0, 2) ? ` · highest since ${fmtMonth(t)}` : '';
 }
 
-// The other comparison, from the same index: the last 4 weeks against 2024
-// (level) when the past months are picked, against the past 12 months
-// (change) when 2024 is; and how long the monthly index has run at >= 1.5x
-// its 2024 level, counting back from the last complete month (>= 2 months).
+// The other comparison, from the same index: the last 4 weeks against the
+// past 12 months (change); and how long the monthly index has run at >= 1.5x
+// its 2024 level, counting back from the last complete month (>= 2 months,
+// back to January 2024 at most: the chart's months).
 function also(s) {
-    const o = per === 0 ? 1 : 0, x = s.q[o];
-    const vs = x === null ? '' : `${fx(x)} ${o === 0 ? 'its 2024 level' : 'the past 12 months'}`;
-    const m = s.mh[0], n = m.length;
+    const x = s.q[1];
+    const vs = x === null ? '' : `${fx(x)} the past 12 months`;
+    const m = s.mo, n = m.length;
     let k = 0;
-    while (k < n - 1 && m[n - 2 - k] !== null && m[n - 2 - k] >= 150) k++;
-    const run = k < 2 ? '' : `above 1.5× its 2024 level since ${fmtMonth(monthStart(n - 1 - k, n))}`;
+    while (k < n && m[n - 1 - k] !== null && m[n - 1 - k] >= 150) k++;
+    const run = k < 2 ? '' : `above 1.5× its 2024 level since ${fmtMonth(Date.UTC(2024, n - k, 1))}`;
     return [vs, run].filter(Boolean).join(' · ');
 }
 
@@ -434,20 +414,19 @@ function storyCard(u, st) {
     const U = O.units[u], ck = u + st.lead.g;
     const lines = st.lines.slice(0, LINES).map(x => x.g);
     const f = lines.includes(focus.get(ck)) ? focus.get(ck) : lines[0];
-    const color = g => g === lines[0] ? 'var(--accent)' : COLORS[(lines.indexOf(g) - 1) % COLORS.length];
     const s = U.s[f], q = s.q[per];
     const tr = s.tr === 1 ? '<span class="tr up">rising this week</span>' : s.tr === -1 ? '<span class="tr dn">cooling this week</span>' : '';
     const w = (s.w || [])[per] || [];
     const where_ = w.length ? `<div class="hd">Where</div>${w.map(([c, x, n]) => `<button class="chip country" data-c="${c}" title="${count(f)(n)} in the 4 weeks to ${weekTo()}">${esc(name(c))} ${fx(x)} · ${count(f)(n)}</button>`).join('')}` : '';
-    const cs = cardConcepts(u, lines).filter(c => U.s['c:' + c].wh);
-    if (!cs.length) {  // no driving concepts: the topic view
+    const cs = cardConcepts(u, lines);
+    if (!cs.length) {  // no driving concepts: the topic's text
         const head = q === null ? '<div class="hl">No usual level to compare with</div>'
             : `<div class="hl">${fx(q)} <span>usual, last 4 weeks · ${count(f)(s.nd)}${q >= 1 ? since(s) : ''}</span></div>`;
         const a = q === null ? '' : also(s);
-        const lg = lines.length < 2 ? '' : `<div class="lg">${lines.map(g => `<button class="${g === f ? 'on' : ''}" data-k="${ck}" data-g="${g}" title="${esc(where(g))}"><i style="background:${color(g)}"></i>${esc(sub(g))}</button>`).join('')}</div>`;
+        const lg = lines.length < 2 ? '' : `<div class="lg">${lines.map(g => `<button class="${g === f ? 'on' : ''}" data-k="${ck}" data-g="${g}" title="${esc(where(g))}"><i style="background:${g === f ? 'var(--accent)' : 'var(--border)'}"></i>${esc(sub(g))}</button>`).join('')}</div>`;
         return `<div class="tc" id="st-${esc(st.lead.g)}">
           <div><div class="tp">${esc(where(f))}</div><div class="sn">${esc(sub(f))} ${tr}</div>${head}${a ? `<div class="h2">${a}</div>` : ''}${where_}</div>
-          <div>${chart(u, lines, f, color)}${lg}</div></div>`;
+          <div>${c3(u, ck, f, [])}${lg}</div></div>`;
     }
     const cl = cs.map((c, i) => {
         const S = U.s['c:' + c], x = S.q[per], ts = topicsOf(c, lines);
@@ -462,7 +441,7 @@ function storyCard(u, st) {
         <div class="hd">Topics, × usual in the last 4 weeks</div><div class="tls">${tl}</div>
         <div class="h2">${esc(sub(f))}: ${count(f)(s.nd)}${q !== null && q >= 1 ? since(s) : ''}${a ? ' · ' + a : ''}</div>
         ${where_}</div>
-      <div>${conceptChart(u, ck, cs)}</div></div>`;
+      <div>${c3(u, ck, f, cs)}</div></div>`;
 }
 
 // Lean on purpose: the database and the last 7 days.
@@ -475,46 +454,39 @@ function kpis(u) {
     </div>`;
 }
 
-function filters(list) {
-    const cnt = tag => list.filter(x => x.tags.has(tag)).length;
-    return `<div class="filters">${FILTERS.map(f => !f ? '<span class="sep"></span>' :
-        `<button class="tog ${on.has(f[0]) ? 'on' : ''}" data-t="${f[0]}" ${cnt(f[0]) ? '' : 'disabled'}>${f[1]}<b>${cnt(f[0])}</b></button>`).join('')}
-      ${on.size ? '<button class="clear">Show all</button>' : ''}</div>`;
-}
-
 const HOW = `<details class="how"><summary>How to read this</summary><ul>
-  <li><b>× usual</b>: the monthly Baker index (Baker, Bloom and Davis 2016) with the "compared with" period as the baseline T1: each source's share of articles mentioning the topic per calendar month, over its standard deviation across T1's months, averaged over the sources that published in at least half of T1's weeks, scaled so T1's months average 1×. The same shares over a week, or over the last 4 weeks, divided by the same standard deviations and scaled the same way, put weeks and the last 4 weeks on that scale: 4 weeks are the mean of their weeks. The headline is the last 4 weeks, recomputed each week. A source counts towards a topic only with ≥ 10 articles on it in T1. Regions and subregions average their countries with equal weights. "Highest since": the last complete month at or above the last 4 weeks. Under the headline, the same 4 weeks against the other baseline (2024, the level; or the past 12 months, the change), and, when the monthly index has stayed at or above 1.5× its 2024 level for 2+ complete months up to last month, since when.</li>
+  <li><b>× usual</b>: the monthly Baker index (Baker, Bloom and Davis 2016) with 2024 as the baseline T1: each source's share of articles mentioning the topic per calendar month, over its standard deviation across T1's months, averaged over the sources that published in at least half of T1's weeks, scaled so T1's months average 1×. The same shares over a week, or over the last 4 weeks, divided by the same standard deviations and scaled the same way, put weeks and the last 4 weeks on that scale: 4 weeks are the mean of their weeks. The headline is the last 4 weeks, recomputed each week. A source counts towards a topic only with ≥ 10 articles on it in T1. Regions and subregions average their countries with equal weights. "Highest since": the last complete month at or above the last 4 weeks. Under the headline, the same 4 weeks against the past 12 months (the change), and, when the monthly index has stayed at or above 1.5× its 2024 level for 2+ complete months up to last month, since when.</li>
   <li><b>Ranking</b>: how far the index sits above usual given how many articles it rests on: its n articles in the last 4 weeks against the n / q a usual 4 weeks would have at q× usual, in counting noise, (n − n/q) / √(n/q). 2× on 1,000 articles ranks above 3× on 20. A topic needs ≥ 10 articles from ≥ 3 sources in the 4 weeks and ≥ 3 on that scale, or a state.</li>
   <li><b>Grouping</b>: a topic whose articles this week mostly (≥ 50%) also mention a bigger topic that qualifies, at least 4× more often than all articles do (lift), belongs to that topic's card. Each card gathers the biggest topic its topics belong to, the topics sharing a keyword concept with it, then parents and subtopics. Cards rank by their strongest topic (the ranking above); a card's lines are sorted the same way and it opens on the first, the one that ranks it. Click a legend entry to follow another line.</li>
-  <li><b>Concepts</b> lead each card: the keywords driving its topics (the concepts with the most articles above a usual week this week, at most 5), each on its own index by the same rule, with its × usual and articles in the last 4 weeks and the card topics it belongs to. The chart draws them on one timeline (log scale, dashed: usual), each as the 4 weeks to each week, a smooth line through the weekly values; hover for a week's values. Below them, the card's topics with their × usual (secondary).</li>
-  <li><b>Chart</b> (cards without driving concepts), two years on one × usual scale: small dots = the focused topic's weeks (faint on the axis: no article that week); large dots = its calendar months (Baker's monthly; hollow: the month so far); line = the 4 weeks to each week, drawn as a smooth curve through the weekly values; red = the last 4 weeks (the headline, where the line ends); faint lines = the card's other topics; dashed line = usual.</li>
+  <li><b>Concepts</b> lead each card: the keywords driving its topics (the concepts with the most articles above a usual week this week, at most 5), each on its own index by the same rule, with its × usual and articles in the last 4 weeks and the card topics it belongs to. Below them, the card's topics with their × usual (secondary).</li>
+  <li><b>Chart</b>, × usual with 2024 as T1 on a linear scale from 0 (dashed: usual): the card's topic as a thick line, its concepts as thin ones, in three sections split by dashed lines. Left, from January 2024: in the 4-week view, 4-week blocks counted back from the last day with data (each source's standard deviation and the 1× from the blocks lying entirely inside 2024); in the calendar view, calendar months (the monthly index; the month in progress left out). Middle, the last weeks: the 4 weeks to each week, read with the blocks' standard deviations and 1×, so on a block's last day it is that block (in the calendar view the join to the months is close, not exact); it ends on the last day with data. Right: this week, empty for now. Drag the first dashed line to move where the middle section starts, on every card. Hover for the values and articles of the nearest period. A point sits on its period's last day.</li>
   <li><b>Rising / cooling this week</b>: the last week above the last 4 weeks' level and above each of the 3 weeks before it (rising), or below both (cooling).</li>
   <li><b>Where</b> (region and subregions): the countries furthest above usual on the same scale, ranked like the cards (× usual and articles together), with their × usual and articles in the last 4 weeks. Click one to open it. <b>Driven by</b>: the topic's keyword concepts with the most articles above a usual week this week.</li>
   <li><b>Themes</b>: concepts whose weekly swings move together across countries, whatever their heading, found by fixed rules (themes.py). A theme's index averages its members' indices; its counts are summed mentions (an article naming two members counts twice).</li>
-  <li><b>Toggles</b>: Bursting (weekly count ≥ 2.5× expected from its trailing 26-week share, ≥ 5 articles, Poisson p < 1e-4, in a country), Elevated (monthly index above 1.5× its 2024 level in each of the last 2+ complete months), Cooling (stopped bursting in the last 3 weeks); Pressing (on ≥ 2 of the last 3 days, ≥ 1.5× expected, ≥ 5 articles), Came back (none in the 14 days before, ≥ 10 articles in 2024), Gone quiet (bursting or elevated in the last 4 weeks, none in 7 days). A card shows when one of its topics matches any picked.</li></ul></details>`;
+  <li><b>States</b>: Bursting (weekly count ≥ 2.5× expected from its trailing 26-week share, ≥ 5 articles, Poisson p < 1e-4, in a country), Elevated (monthly index above 1.5× its 2024 level in each of the last 2+ complete months), Cooling (stopped bursting in the last 3 weeks); Pressing (on ≥ 2 of the last 3 days, ≥ 1.5× expected, ≥ 5 articles), Came back (none in the 14 days before, ≥ 10 articles in 2024), Gone quiet (bursting or elevated in the last 4 weeks, none in 7 days).</li></ul></details>`;
 
 function render() {
     document.getElementById('window').textContent = `4 weeks to ${weekTo()}, daily to ${lastDay()} · built ${fmtDay(O.asof.slice(0, 10))}`;
     document.getElementById('window').title = asofText();
-    document.getElementById('ask').innerHTML = `How far above usual is each topic in the last 4 weeks, compared with
-      <span class="seg">${ASK.map((t, i) => `<button data-p="${i}" class="${i === per ? 'on' : ''}">${t}</button>`).join('')}</span>?`;
+    document.getElementById('ask').textContent = 'How far above usual is each topic in the last 4 weeks?';
     const u = key(sel.value), U = O.units[u];
     if (!U) { document.getElementById('app').innerHTML = '<div class="empty">No data for this unit.</div>'; return; }
-    const all = stories(u);
-    const shown = on.size ? all.filter(x => [...on].some(t => x.tags.has(t))) : all;
+    const shown = stories(u);
     const k = 'cards:' + u, list = open.has(k) ? shown : shown.slice(0, TOP);
-    document.getElementById('app').innerHTML = kpis(u) + filters(shown)
+    document.getElementById('app').innerHTML = kpis(u)
         + (list.length ? list.map(st => storyCard(u, st)).join('') : '<div class="empty">No topic matches.</div>')
         + (shown.length > TOP ? `<button class="more" data-k="${k}">${open.has(k) ? 'Show top ' + TOP : 'Show all ' + shown.length}</button>` : '')
         + HOW;
-    document.querySelectorAll('.ask button[data-p]').forEach(b => b.onclick = () => { per = +b.dataset.p; render(); });
-    document.querySelectorAll('.tog[data-t]').forEach(b => b.onclick = () => { on.has(b.dataset.t) ? on.delete(b.dataset.t) : on.add(b.dataset.t); render(); });
-    document.querySelectorAll('.clear').forEach(b => b.onclick = () => { on.clear(); render(); });
     document.querySelectorAll('.more').forEach(b => b.onclick = () => { open.has(b.dataset.k) ? open.delete(b.dataset.k) : open.add(b.dataset.k); render(); });
     document.querySelectorAll('.lg button').forEach(b => b.onclick = () => { focus.set(b.dataset.k, b.dataset.g); render(); });
     document.querySelectorAll('.country').forEach(b => b.onclick = () => { sel.value = b.dataset.c; render(); window.scrollTo(0, 0); });
 }
 sel.onchange = render;
+document.querySelectorAll('#view button').forEach(b => b.onclick = () => {
+    view = b.dataset.v;
+    document.querySelectorAll('#view button').forEach(x => x.classList.toggle('on', x === b));
+    redraw();
+});
 render();
 </script>
 </body>
