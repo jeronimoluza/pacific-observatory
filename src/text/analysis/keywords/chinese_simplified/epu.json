@@ -12,7 +12,6 @@
     "authority": "权威",
     "authorities": "当局",
     "minister": "部长",
-    "ministry": "部",
     "parliament": "议会",
     "parliamentary": "议会",
     "tax": "税",
@@ -21,7 +20,15 @@
     "central bank": "中央银行",
     "IMF": "IMF",
     "International Monetary Fund": "国际货币基金组织",
-    "World Bank": "世界银行"
+    "World Bank": "世界银行",
+    "government department": "政府部门",
+    "education ministry": "教育部",
+    "foreign ministry": "外交部",
+    "finance ministry": "财政部",
+    "commerce ministry": "商务部",
+    "agriculture ministry": "农业部",
+    "defence ministry": "国防部",
+    "public security ministry": "公安部"
   },
   "uncertainty": {
     "uncertain": "不确定",

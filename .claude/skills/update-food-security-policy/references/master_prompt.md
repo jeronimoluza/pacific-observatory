@@ -2,7 +2,7 @@
 
 This is the research brief for the `update-food-security-policy` skill.
 It governs how the regional Excel workbooks under
-`data/text/policy_tracker/food_security/` are updated before
+`outputs/text/policy_tracker/food_security/` are updated before
 `po text build-policy-addons --tracker food` regenerates the dashboard
 HTML addons.
 
@@ -47,10 +47,10 @@ fertilizer-energy costs are the operative mechanism.
 
 # Regional workbooks
 
-`data/text/policy_tracker/food_security/<region>.xlsx` for region keys
+`outputs/text/policy_tracker/food_security/<newest YYYY-MM-DD>/<region>.xlsx` for region keys
 `eap`, `eca`, `menaap`, `sar`, `ssa`, `lac`.
 
-**Do not open or write `data/text/policy_tracker/<region>.xlsx`** — that
+**Do not open or write `outputs/text/policy_tracker/fuel/`** — that
 is the fuel tracker.
 
 Important regional rule: Afghanistan and Pakistan are tracked under
@@ -256,6 +256,8 @@ Document the update window in `Update_Audit`.
   withdrawn, or superseded. Export bans in particular are frequently
   time-limited and quietly lapse — always re-verify status.
 - Preserve valid rows unless clearly wrong or duplicative.
+- Never delete or retitle a row dated before the current year. Past-year
+  rows are verified history; the addon build refuses an edition that drops one.
 - Do not delete uncertain rows silently. Mark `Unverified`,
   `Needs follow-up`, `Superseded`, or `Excluded`.
 - Split overly broad rows into distinct instruments; consolidate only
@@ -464,14 +466,44 @@ Flag caveats, e.g.:
 
 # Regional coverage rules
 
+Every region's country universe is the slugs under `<region>.subregions`
+in `src/configs/regions.yaml`, and each country belongs to exactly one
+region's workbook. A country already having rows in a workbook does not
+put it in scope: Mauritania sat in MENAAP that way while regions.yaml
+puts it in SSA. Boundary cases: Mauritania is `ssa`; Djibouti and Malta
+are `menaap`. Malta is the one exception to regions.yaml, which still
+lists it under `eca.western_europe` because the prices pipeline keys
+its data paths there; the ECA pass skips Malta. A measure found for a
+country outside the region goes to that country's own region, not
+this workbook.
+
 ## EAP
 
-East Asia and Pacific, including Pacific island economies. Pacific
-island food security is dominated by **cyclone and drought crop damage,
-import dependence, and shipping/freight disruption** — search those
-channels explicitly, and check SPC and Pacific Islands Forum outputs.
-Ensure the 12 World Bank PICs appear so the
-`World Bank PICs only (12)` view populates.
+The country universe is every slug listed under `eap.subregions` in
+`src/configs/regions.yaml` — 38 economies across `east_asia`,
+`pacific_islands` and `southeast_asia`. Enumerate that file at the start of
+the pass and work the whole list. Do not improvise a country list, and do
+not infer scope from which countries already have rows: an economy missing
+from the workbook is a gap to fill, not evidence that it is out of scope.
+
+Write the `Country` cell using the spelling in
+`references/country_names.md`. The dashboard matches country names by exact
+string, so a spelling that drifts drops the row out of its country group
+without any error.
+
+An economy you searched and found no verified measure for must still be
+named in the audit note, so its absence reads as covered rather than
+skipped. This matters most for Guam, American Samoa, Northern Mariana
+Islands, French Polynesia and New Caledonia, where the operative measures
+are often US or French federal programmes rather than local ones.
+
+Pacific island food security is dominated by **cyclone and drought crop
+damage, import dependence, and shipping/freight disruption** — search those
+channels explicitly for the PICs, and check SPC and Pacific Islands Forum
+outputs.
+
+All 12 World Bank PICs must appear, so the `World Bank PICs only (12)` view
+populates with exactly 12 members.
 
 ## SAR
 
@@ -483,7 +515,8 @@ relevant.
 
 ## MENAAP
 
-Middle East, North Africa, Afghanistan, and Pakistan. Wheat import
+Middle East, North Africa, Afghanistan, Pakistan per `menaap.subregions`
+in regions.yaml, plus Malta (see above) (Mauritania is SSA). Wheat import
 dependence, bread subsidy programs, and strategic reserve policy are the
 dominant channels.
 
@@ -495,7 +528,8 @@ from coverage-audit rows.
 
 ## SSA
 
-Sub-Saharan Africa. Fertilizer subsidy programs, maize export/import
+Sub-Saharan Africa per `ssa.subregions` in regions.yaml (Mauritania
+included, Djibouti excluded). Fertilizer subsidy programs, maize export/import
 restrictions, strategic grain reserves, drought and flood emergency
 responses, and pest outbreaks (fall armyworm, locusts) are the dominant
 channels. IPC / Cadre Harmonisé and FEWS NET are essential.
@@ -567,7 +601,9 @@ existence, timing, and country attribution.
     closed v6 enum.
 12. Confirm every row is a government action, not a hazard description.
 13. Confirm each row's `Reason` names the shock it responds to.
-14. For EAP, confirm the 12 World Bank PICs are present.
+14. For EAP, confirm the `World Bank PICs only (12)` view contains
+    exactly 12 members. Fewer means a country name drifted from
+    `references/country_names.md` — fix the spelling, not the view.
 15. Add an `Update_Audit` note summarizing window, searches, additions,
     uncertainties, and excluded candidates.
 
@@ -659,7 +695,7 @@ Before finalizing:
   mechanisms; `Reduce consumption - restricting quantities` only for
   rationing, purchase caps, and quantity limits.
 - Afghanistan and Pakistan are not in SAR.
-- EAP has the 12 World Bank PIC countries present.
+- EAP's `World Bank PICs only (12)` view contains exactly 12 members.
 - Export bans and price ceilings have their expiry/status re-verified.
 - Long policy descriptions are concise but specific.
 - Exact dates are not invented.

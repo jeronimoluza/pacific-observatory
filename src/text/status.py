@@ -138,6 +138,7 @@ DATABASE_STATUS_FIELDS = [
     "article_count",
     "earliest_date",
     "latest_date",
+    "future_dated",
 ]
 
 
@@ -149,7 +150,9 @@ def compute_database_status(region_filter: str | None = None) -> dict:
     Only includes sources whose news.csv exists and contains at least one article.
     Skips template/example configs that don't sit under a region/subregion/country path.
     Dates are parsed with pandas (errors coerced to NaT) so min/max reflect real
-    timestamps, not lexicographic order over mixed-format strings.
+    timestamps, not lexicographic order over mixed-format strings. Rows dated
+    after the scan are excluded from the reported range and counted in
+    ``future_dated`` — ``article_count`` still includes them.
     """
     import pandas as pd
     import yaml
@@ -157,6 +160,8 @@ def compute_database_status(region_filter: str | None = None) -> dict:
     from core.config import discover_pipeline_configs, parse_config_path
 
     configs = discover_pipeline_configs(CONFIGS_DIR)
+
+    scan_ts = pd.Timestamp.now(tz="UTC")
 
     rows: list[dict] = []
     for cfg in sorted(configs):
@@ -190,6 +195,13 @@ def compute_database_status(region_filter: str | None = None) -> dict:
 
         parsed = pd.to_datetime(df["date"], errors="coerce", utc=True)
         valid = parsed.dropna()
+        # An article cannot be published after the scan. Such dates are bad
+        # source data, and a single one drags latest_date years out (one row in
+        # dnevnik's 1.09M reported 2031-12-01). Keep them out of the reported
+        # range but count them, so the defect stays visible instead of silently
+        # disappearing.
+        dated = valid[valid <= scan_ts]
+        future_dated = int(len(valid) - len(dated))
         rows.append(
             {
                 "region": region,
@@ -200,12 +212,13 @@ def compute_database_status(region_filter: str | None = None) -> dict:
                 "base_url": meta["base_url"],
                 "language": meta["language"],
                 "article_count": int(len(df)),
-                "earliest_date": valid.min().strftime("%Y-%m-%d")
-                if not valid.empty
+                "earliest_date": dated.min().strftime("%Y-%m-%d")
+                if not dated.empty
                 else None,
-                "latest_date": valid.max().strftime("%Y-%m-%d")
-                if not valid.empty
+                "latest_date": dated.max().strftime("%Y-%m-%d")
+                if not dated.empty
                 else None,
+                "future_dated": future_dated,
             }
         )
 
@@ -226,6 +239,7 @@ def compute_database_status(region_filter: str | None = None) -> dict:
             "articles_total": articles_total,
             "earliest_date": earliest_overall,
             "latest_date": latest_overall,
+            "future_dated": sum(r["future_dated"] for r in rows),
         },
         "sources": rows,
     }
@@ -308,6 +322,7 @@ def merge_region_exports(base_dir: Path = DATABASE_STATUS_DIR) -> dict:
                 "articles_total": totals.get("articles_total"),
                 "earliest_date": totals.get("earliest_date"),
                 "latest_date": totals.get("latest_date"),
+                "future_dated": totals.get("future_dated"),
                 "scanned_at": payload.get("generated_at"),
             }
         )

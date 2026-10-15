@@ -24,16 +24,34 @@ if [ -z "$COUNTRY" ]; then
 fi
 
 if [ -n "$SOURCE" ]; then
-  PATTERN="po text collect --country $COUNTRY --source $SOURCE"
+  PATTERN="text collect --country $COUNTRY --source $SOURCE"
 else
-  PATTERN="po text collect --country $COUNTRY"
+  PATTERN="text collect --country $COUNTRY"
 fi
 
-# Match exactly the python command (not the bash wrapper).
-PIDS=$(pgrep -f -x "$(which poetry || echo poetry) run $PATTERN" 2>/dev/null || true)
-if [ -z "$PIDS" ]; then
-  # Fallback: looser match against the venv python
-  PIDS=$(ps aux | grep -F "$PATTERN" | grep -v grep | grep "/.venv/bin/" | awk '{print $2}' || true)
+# Match on the subcommand and its arguments, not on the entrypoint. The console
+# script (`po`), the module runner (`run.py`) and a bare venv python all reach
+# the same code, and which one shows up in the process table depends on how the
+# caller resolved `po` -- a shim or a poetry venv. Anchoring on `po ` or on
+# `/.venv/bin/` matched neither, so every kill was a no-op and the wall-clock
+# cap logged TIMEOUT while the collect ran on (2026-09-08 ssa refresh: four
+# sources still running at 17m against a 3m budget).
+#
+# The wrapper stays safe because runner.sh's own command line is
+# `runner.sh <country>|<source>` -- it never contains "text collect".
+PIDS=$(pgrep -f "$PATTERN" 2>/dev/null || true)
+
+# A country-only job must not reap that country's per-source collects, which
+# carry the same prefix.
+if [ -z "$SOURCE" ] && [ -n "$PIDS" ]; then
+  KEPT=""
+  for PID in $PIDS; do
+    case "$(ps -o command= -p "$PID" 2>/dev/null)" in
+      *--source*) ;;
+      *) KEPT="$KEPT $PID" ;;
+    esac
+  done
+  PIDS=$(echo "$KEPT" | tr -s ' ' '\n' | sed '/^$/d')
 fi
 
 if [ -z "$PIDS" ]; then

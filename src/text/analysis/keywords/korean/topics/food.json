@@ -296,7 +296,6 @@
     "벼",
     "곡물",
     "알곡",
-    "밀",
     "옥수수",
     "카사바",
     "타로",
@@ -336,7 +335,8 @@
     "sugar cane",
     "staple crop",
     "breadfruit",
-    "plantain"
+    "plantain",
+    "밀가루"
   ],
   "fisheries": [
     "어업",

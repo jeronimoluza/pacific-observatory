@@ -47,7 +47,7 @@ legacy v5 `Categories` sheet was retired). When in doubt, use that sheet
 as the closed-enum source of truth.
 
 Assignment rule: if a policy is sourced from the v6 consolidated file
-(`data/text/policy_tracker/consolidated_policies/consolidated_policy_responses_v6.xlsx`),
+(`outputs/text/policy_tracker/fuel/consolidated_policies/consolidated_policy_responses_v6.xlsx`),
 copy the v6 row's `category` and `subcategory` verbatim (lowercased,
 trimmed). For policies sourced elsewhere (existing workbook rows, new
 research), pick the closest match from the closed enum above based on
@@ -57,7 +57,7 @@ blank.
 # Regional workbooks
 
 The current regional trackers live at
-`data/text/policy_tracker/<region>.xlsx` for these region keys:
+`outputs/text/policy_tracker/fuel/<newest YYYY-MM-DD>/<region>.xlsx` (edit today's edition, see SKILL.md step 1) for these region keys:
 
 - `eap`
 - `eca`
@@ -333,6 +333,8 @@ For every existing policy row:
   withdrawn, or was superseded.
 - Preserve valid rows unless there is clear evidence they are wrong or
   duplicative.
+- Never delete or retitle a row dated before the current year. Past-year
+  rows are verified history; the addon build refuses an edition that drops one.
 - Do not delete uncertain rows silently. Mark them as `Unverified`,
   `Needs follow-up`, `Superseded`, or `Excluded from dashboard`,
   depending on the workbook convention.
@@ -548,13 +550,39 @@ and what source confirms it. It should also flag caveats, such as:
 
 # Regional coverage rules
 
+Every region's country universe is the slugs under `<region>.subregions`
+in `src/configs/regions.yaml`, and each country belongs to exactly one
+region's workbook. A country already having rows in a workbook does not
+put it in scope: Mauritania sat in MENAAP that way while regions.yaml
+puts it in SSA. Boundary cases: Mauritania is `ssa`; Djibouti and Malta
+are `menaap`. Malta is the one exception to regions.yaml, which still
+lists it under `eca.western_europe` because the prices pipeline keys
+its data paths there; the ECA pass skips Malta. A measure found for a
+country outside the region goes to that country's own region, not
+this workbook.
+
 ## EAP
 
-Track East Asia and Pacific countries/economies, including Pacific
-island economies and high-income economies where included in the
-workbook. Preserve any existing workbook country-group logic, such as
-Pacific-only, East Asia-only, high-income, and low/middle-income views,
-if present.
+The country universe is every slug listed under `eap.subregions` in
+`src/configs/regions.yaml` — 38 economies across `east_asia`,
+`pacific_islands` and `southeast_asia`. Enumerate that file at the start of
+the pass and work the whole list. Do not improvise a country list, and do
+not infer scope from which countries already have rows: an economy missing
+from the workbook is a gap to fill, not evidence that it is out of scope.
+
+Write the `Country` cell using the spelling in
+`references/country_names.md`. The dashboard matches country names by exact
+string, so a spelling that drifts drops the row out of its country group
+without any error.
+
+An economy you searched and found no verified measure for must still be
+named in the audit note, so its absence reads as covered rather than
+skipped. This matters most for Guam, American Samoa, Northern Mariana
+Islands, French Polynesia and New Caledonia, where the operative measures
+are often US or French federal programmes rather than local ones.
+
+Preserve any existing workbook country-group logic, such as Pacific-only,
+East Asia-only, high-income, and low/middle-income views, if present.
 
 The converter exposes the EAP `World Bank PICs only (12)` view
 automatically when those 12 countries appear in the workbook.
@@ -578,9 +606,9 @@ Typical SAR countries after exclusion:
 
 ## MENAAP
 
-Track Middle East, North Africa, Afghanistan, and Pakistan, according to
-the workbook's existing country list. Afghanistan and Pakistan belong
-here for this project's current division of labor.
+Track Middle East, North Africa, Afghanistan, Pakistan per `menaap.subregions`
+in regions.yaml, plus Malta (see above). Afghanistan and Pakistan belong
+here for this project's current division of labor. Mauritania is SSA.
 
 ## ECA
 
@@ -595,8 +623,8 @@ in the workbook as audit notes if useful.
 
 ## SSA
 
-Track Sub-Saharan Africa according to the workbook's existing country
-list. Include fuel price stabilization, subsidies, tax changes,
+Track Sub-Saharan Africa per `ssa.subregions` in regions.yaml
+(Mauritania included, Djibouti excluded). Include fuel price stabilization, subsidies, tax changes,
 rationing, utility support, import/supply measures, and emergency
 declarations where verified.
 
@@ -695,8 +723,9 @@ For each workbook:
 13. Confirm all dashboard-required fields are populated for valid rows.
 14. Confirm labels use the approved category names.
 15. Confirm no duplicate rows describe the same instrument.
-16. For EAP, confirm the 12 World Bank PICs are present so the
-    `World Bank PICs only (12)` view populates.
+16. For EAP, confirm the `World Bank PICs only (12)` view contains
+    exactly 12 members. Fewer means a country name drifted from
+    `references/country_names.md` — fix the spelling, not the view.
 17. Confirm every Policies row has a non-blank (Category, Subcategory)
     pair in the closed v6 enum (see `Taxonomy` sheet).
 18. Add an audit note summarizing the update window, searches performed,
@@ -794,8 +823,8 @@ Before finalizing:
   rationing, caps, vehicle restrictions, work-from-home rules, travel
   cuts, conservation orders, and other non-price restrictions.
 - Check that Afghanistan and Pakistan are not included in SAR.
-- Check that EAP has the 12 World Bank PIC countries present so the
-  dashboard's `World Bank PICs only (12)` view populates.
+- Check that EAP's `World Bank PICs only (12)` view contains exactly
+  12 members.
 - Check that dashboard-relevant rows are not merely no-policy-found
   audit rows.
 - Check that long policy descriptions are concise but specific.

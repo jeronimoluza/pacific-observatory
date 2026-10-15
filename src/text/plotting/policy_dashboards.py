@@ -2,7 +2,7 @@
 addons consumed by ``small_dashboard_integrated_w_policy``.
 
 Pipeline:
-    data/text/policy_tracker/<region>.xlsx
+    outputs/text/policy_tracker/<tracker>/YYYY-MM-DD/<region>.xlsx  (newest edition)
       -> src/text/plotting/addons/<tracker>/<region>_policy_addon.html
 
 CLI:
@@ -23,24 +23,30 @@ import re
 import sys
 import zipfile
 from collections import Counter
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from openpyxl import load_workbook
 
+from core.config import load_countries
+from text.plotting.policy_subregions import fold
+
 from text.plotting.trackers import (
     DEFAULT_TRACKER,
     TRACKERS,
+    WORKBOOK_ROOT,
     addon_filename,
     get_tracker,
+    latest_workbook,
+    previous_workbook,
     tracker_dir,
     tracker_label,
     workbook_dir,
 )
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_INPUT_DIR = PROJECT_ROOT / "data" / "text" / "policy_tracker"
+DEFAULT_INPUT_DIR = WORKBOOK_ROOT
 DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "addons"
 
 
@@ -306,6 +312,61 @@ WB_PIC_MEMBERS = [
     "Tuvalu",
     "Vanuatu",
 ]
+
+# Spellings that name a country the workbooks already list under another name.
+# They arrive from analysts typing free text and from corpus discovery, which
+# share no vocabulary. Left alone a country splits in two: the dropdown offers
+# both, the year bars divide between them, and -- because the PIC view matches
+# WB_PIC_MEMBERS by exact string -- rows filed under the variant drop out of
+# "PICs only (12)" entirely. Keys are `fold`ed, so a newly invented separator
+# or an accent lands on the canonical name without another entry.
+#
+# These are the overrides only: names where the workbook's own spelling is
+# canonical and countries.yaml disagrees. Everything else resolves against
+# countries.yaml itself, so a region does not need entries here just because
+# its analysts type accents.
+COUNTRY_ALIASES = {
+    "hongkongsarchina": "Hong Kong SAR, China",
+    "marshallislands": "RMI",
+    "micronesiafedsts": "FSM",
+    "micronesiafederatedstatesof": "FSM",
+    "timorleste": "Timor-Leste",
+    "papuanewguinea": "PNG",
+    "laopdr": "Laos",
+    "vietnam": "Vietnam",
+    # Long forms countries.yaml carries only in World Bank short form.
+    "democraticrepublicofcongo": "Congo, Dem. Rep.",
+    "republicofcongo": "Congo, Rep.",
+}
+
+
+@lru_cache(maxsize=1)
+def _names_by_fold() -> Dict[str, str]:
+    """Every countries.yaml display name, keyed by its folded form."""
+    return {
+        fold(props["name"]): props["name"]
+        for props in load_countries().values()
+        if props.get("name")
+    }
+
+
+def canonical_country(value: Any) -> str:
+    """One spelling per country, so a name cannot split the same country in two.
+
+    Two layers, overrides last. countries.yaml decides the spelling for every
+    country in every region -- which is what makes "Côte d'Ivoire" and
+    "Cote d'Ivoire" one country without an SSA-specific entry. COUNTRY_ALIASES
+    then wins where the workbook's abbreviation is canonical, because the PIC
+    view matches WB_PIC_MEMBERS ("RMI", "FSM", "PNG") by exact string and
+    resolving those to their countries.yaml long forms would empty it.
+    """
+    name = clean_text(value)
+    key = fold(name)
+    if key in COUNTRY_ALIASES:
+        return COUNTRY_ALIASES[key]
+    resolved = _names_by_fold().get(key, name)
+    return COUNTRY_ALIASES.get(fold(resolved), resolved)
+
 
 REGIONS: List[Dict[str, Any]] = [
     {"key": "ssa", "display_name": "Sub-Saharan Africa"},
@@ -601,7 +662,7 @@ def compact_join(parts: Iterable[Tuple[str, str]]) -> str:
 
 
 def normalize_row(raw: Dict[str, str], seq_num: int) -> Optional[Dict[str, str]]:
-    country = find_value(raw, "country")
+    country = canonical_country(find_value(raw, "country"))
     policy = find_value(raw, "policy")
 
     direction = find_value(raw, "direction")
@@ -1200,7 +1261,11 @@ render();
 
 
 def find_workbook(input_dir: Path, region_key: str) -> Path:
-    """Locate ``<region>.xlsx`` (preferred) or any ``*<region>*.xlsx`` fallback."""
+    """Locate the newest dated ``YYYY-MM-DD/<region>.xlsx`` edition, else a flat
+    ``<region>.xlsx`` or any ``*<region>*.xlsx`` in ``input_dir``."""
+    latest = latest_workbook(input_dir, region_key)
+    if latest is not None:
+        return latest
     canonical = input_dir / f"{region_key}.xlsx"
     if canonical.exists():
         return canonical
@@ -1225,18 +1290,62 @@ def find_workbook(input_dir: Path, region_key: str) -> Path:
     return matches[0]
 
 
+def dropped_history(
+    workbook: Path, previous: Path, sheet: Optional[str]
+) -> List[Dict[str, str]]:
+    """Rows dated before this year that ``previous`` holds and ``workbook`` lacks.
+
+    Past-year rows are history that discovery and lookback passes found; a
+    weekly research edit has no reason to remove them. EAP lost 148 verified
+    2010-2025 measures this way, unnoticed, because nothing compared editions.
+    """
+    from text.plotting.policy_dashboards_v6 import _policy_year
+
+    this_year = dt.date.today().year
+
+    def key(r: Dict[str, str]) -> Tuple[str, str]:
+        return norm_country(r["Country"]), norm_key(r["Policy"])
+
+    current = {key(r) for r in load_policy_rows(workbook, sheet)[0]}
+    return [
+        r
+        for r in load_policy_rows(previous, sheet)[0]
+        if (_policy_year(r["Active or Proposed Date"]) or this_year) < this_year
+        and key(r) not in current
+    ]
+
+
 def generate_region(
     region_cfg: Dict[str, Any],
     input_dir: Path,
     output_dir: Path,
     chart_title: str,
     tracker: Optional[str] = None,
+    timeline_path: Optional[Path] = None,
+    coverage_path: Optional[Path] = None,
+    discovered_path: Optional[Path] = None,
+    allow_history_drop: bool = False,
 ) -> Dict[str, Any]:
     key = region_cfg["key"]
     display = region_cfg.get("display_name", key)
     print(f"[{key}] {display}")
     workbook = find_workbook(input_dir, key)
-    print(f"  workbook: {workbook.name}")
+    print(f"  workbook: {workbook.parent.name}/{workbook.name}")
+    previous = previous_workbook(input_dir, workbook)
+    if previous is not None and not allow_history_drop:
+        dropped = dropped_history(
+            workbook, previous, region_cfg.get("sheet", CANONICAL_SHEET)
+        )
+        if dropped:
+            listed = "\n".join(
+                f"    {r['Country']}: {r['Policy']} [{r['Active or Proposed Date']}]"
+                for r in dropped[:25]
+            )
+            raise ValueError(
+                f"{workbook.parent.name}/{workbook.name} drops {len(dropped)} past-year "
+                f"rows that {previous.parent.name} holds. Restore them, or pass "
+                f"--allow-history-drop if each removal is deliberate:\n{listed}"
+            )
     rows, sheet_name, header_row = load_policy_rows(
         workbook, region_cfg.get("sheet", CANONICAL_SHEET)
     )
@@ -1258,12 +1367,52 @@ def generate_region(
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / addon_filename(key)
 
+    timeline = None
+    if timeline_path and Path(timeline_path).exists():
+        timeline = json.loads(Path(timeline_path).read_text())
+        print(f"  timeline source: {Path(timeline_path).name} ({len(timeline)} keys)")
+
+    coverage = None
+    if coverage_path and Path(coverage_path).exists():
+        coverage = json.loads(Path(coverage_path).read_text())
+        print(
+            f"  coverage source: {Path(coverage_path).name} ({len(coverage)} countries)"
+        )
+
+    # Corpus-discovered measures ride alongside the workbook as
+    # ``discovered_<region>.json``. Without the sidecar convention this argument
+    # is unreachable: build_addons loops over regions, so one path cannot serve
+    # them, and every addon silently shipped workbook rows only.
+    if discovered_path is None:
+        sidecar = input_dir / f"discovered_{key}.json"
+        if sidecar.exists():
+            discovered_path = sidecar
+    discovered = None
+    if discovered_path and Path(discovered_path).exists():
+        discovered = json.loads(Path(discovered_path).read_text())
+        # These rows skip normalize_row -- v6 appends them to the workbook rows
+        # verbatim -- so they need the same country vocabulary applied here.
+        for row in discovered:
+            row["Country"] = canonical_country(row.get("Country"))
+        print(
+            f"  discovered source: {Path(discovered_path).name} ({len(discovered)} rows)"
+        )
+
     if has_v6_columns(rows):
         print("  taxonomy: v6 (Category + Subcategory)")
         groups = build_country_groups(rows, region_cfg)
         display_names = build_display_names(sort_countries_by_count(rows))
         data, colors = build_v6_dashboard_data(
-            rows, region_cfg, workbook, sheet_name, excluded, groups, display_names
+            rows,
+            region_cfg,
+            workbook,
+            sheet_name,
+            excluded,
+            groups,
+            display_names,
+            timeline=timeline,
+            coverage=coverage,
+            discovered=discovered,
         )
         html = make_v6_html(
             data,
@@ -1311,6 +1460,7 @@ def build_addons(
     input_dir: Optional[Path] = None,
     output_dir: Optional[Path] = None,
     tracker: Optional[str] = None,
+    allow_history_drop: bool = False,
 ) -> List[Dict[str, Any]]:
     """Programmatic entry point used by the ``po text build-policy-addons`` CLI."""
     in_dir = workbook_dir(input_dir or DEFAULT_INPUT_DIR, tracker)
@@ -1322,7 +1472,16 @@ def build_addons(
     regions = _resolve_regions(only)
     summary: List[Dict[str, Any]] = []
     for region_cfg in regions:
-        summary.append(generate_region(region_cfg, in_dir, out_dir, title, tracker))
+        summary.append(
+            generate_region(
+                region_cfg,
+                in_dir,
+                out_dir,
+                title,
+                tracker,
+                allow_history_drop=allow_history_drop,
+            )
+        )
     return summary
 
 
@@ -1342,7 +1501,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         "--input-dir",
         type=Path,
         default=DEFAULT_INPUT_DIR,
-        help=f"Folder with <region>.xlsx workbooks. Default: {DEFAULT_INPUT_DIR}",
+        help=f"Root holding <tracker>/YYYY-MM-DD/<region>.xlsx editions. Default: {DEFAULT_INPUT_DIR}",
     )
     parser.add_argument(
         "--output-dir",
@@ -1365,6 +1524,11 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         default=DEFAULT_TRACKER,
         choices=sorted(TRACKERS),
         help="Policy-tracker variant to build. Default: fuel.",
+    )
+    parser.add_argument(
+        "--allow-history-drop",
+        action="store_true",
+        help="Build even if the newest edition lacks past-year rows the previous one holds.",
     )
     parser.add_argument(
         "--zip",
@@ -1400,7 +1564,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         try:
             summary.append(
                 generate_region(
-                    region_cfg, in_dir, args.output_dir, title, args.tracker
+                    region_cfg,
+                    in_dir,
+                    args.output_dir,
+                    title,
+                    args.tracker,
+                    allow_history_drop=args.allow_history_drop,
                 )
             )
         except Exception as exc:

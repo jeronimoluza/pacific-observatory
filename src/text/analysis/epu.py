@@ -529,11 +529,17 @@ class EPU:
                 )
             else:
                 monthly_dates = pd.DatetimeIndex([])
-            # Daily part: from tail_ts to max_date (guard against NaT when no tail articles)
+            # Daily part: from tail_ts to max_date (guard against NaT when no tail articles).
+            # Bounded by the tail month — the dashboard buckets daily rows by
+            # day-of-month under one month key, so a run spanning two months
+            # would collide Sep 1 with Aug 1.
             if pd.isna(max_date) or pd.Timestamp(max_date) < tail_ts:
                 daily_dates = pd.DatetimeIndex([])
             else:
-                daily_dates = pd.date_range(start=tail_ts, end=max_date, freq="D")
+                month_end = tail_ts + pd.offsets.MonthEnd(0)
+                daily_dates = pd.date_range(
+                    start=tail_ts, end=min(pd.Timestamp(max_date), month_end), freq="D"
+                )
             all_dates = monthly_dates.append(daily_dates)
         else:
             all_dates = pd.date_range(start=min_date, end=max_date, freq="MS")

@@ -168,9 +168,10 @@ class URLTracker:
             logger.info(f"Loaded {len(urls)} existing URLs from urls.csv")
             return urls
 
-        except Exception as e:
-            logger.error(f"Failed to get existing URLs from {file_path}: {e}")
+        except pd.errors.EmptyDataError:
             return set()
+        # Any other read error propagates: an empty seen set would make the
+        # scraper re-discover and re-scrape the whole source into duplicates.
 
     def append_thumbnails_to_urls(
         self,
@@ -212,24 +213,25 @@ class URLTracker:
 
         # Load existing data if file exists
         if file_path.exists():
-            try:
-                existing_df = pd.read_csv(file_path, encoding="utf-8")
-                # Merge and deduplicate by URL (keep last occurrence to update old entries)
-                combined_df = pd.concat([existing_df, new_df], ignore_index=True)
-                combined_df = combined_df.drop_duplicates(subset=["url"], keep="last")
-                logger.info(
-                    f"Merged {len(new_df)} new URLs with {len(existing_df)} existing. "
-                    f"Total after dedup: {len(combined_df)}"
-                )
-            except Exception as e:
-                logger.warning(f"Failed to load existing urls.csv, overwriting: {e}")
-                combined_df = new_df
+            # A read error propagates: overwriting with only the new rows would
+            # erase the source's whole discovery ledger.
+            existing_df = pd.read_csv(file_path, encoding="utf-8")
+            # Merge and deduplicate by URL (keep last occurrence to update old entries)
+            combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+            combined_df = combined_df.drop_duplicates(subset=["url"], keep="last")
+            logger.info(
+                f"Merged {len(new_df)} new URLs with {len(existing_df)} existing. "
+                f"Total after dedup: {len(combined_df)}"
+            )
         else:
             combined_df = new_df
             logger.info(f"Creating new urls.csv with {len(combined_df)} URLs")
 
-        # Save to CSV
-        combined_df.to_csv(file_path, index=False, encoding="utf-8")
+        # Save via a temp file + rename: a kill or disk hang mid-write must not
+        # leave a truncated urls.csv (egypt/youm7, 2026-09-28).
+        tmp_path = file_path.with_suffix(".csv.tmp")
+        combined_df.to_csv(tmp_path, index=False, encoding="utf-8")
+        os.replace(tmp_path, file_path)
         logger.info(f"Saved {len(combined_df)} URLs to {file_path}")
 
         return file_path

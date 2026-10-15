@@ -156,9 +156,10 @@ class BuildSummary:
 
         return "\n".join(lines)
 
-    def write_markdown(self, output_dir: Path) -> Path:
+    def write_markdown(self, output_dir: Path, scope: str = "all") -> Path:
+        """Write ``build_<scope>_<ts>.md``, named like the collect reports."""
         ts = datetime.now(tz=timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        path = output_dir / f"build_report_{ts}.md"
+        path = output_dir / f"build_{scope}_{ts}.md"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(self.render_markdown(), encoding="utf-8")
         return path

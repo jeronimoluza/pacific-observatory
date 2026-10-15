@@ -145,14 +145,29 @@
     "oil": "油",
     "gas": "气体",
     "fuel": "燃料",
-    "electricity": "电",
     "power": "力量",
     "energy prices": "能源价格",
     "energy costs": "能源成本",
     "energy shortages": "能源短缺",
     "energy supply": "能源供应",
     "renewable energy": "可再生能源",
-    "energy crisis": "能源危机"
+    "energy crisis": "能源危机",
+    "electric power": "电力",
+    "power generation": "发电",
+    "power supply": "供电",
+    "electricity consumption": "用电",
+    "power grid": "电网",
+    "nuclear power": "核电",
+    "hydropower": "水电",
+    "wind power": "风电",
+    "thermal power": "火电",
+    "charging": "充电",
+    "power outage": "停电",
+    "power plant": "电厂",
+    "electricity price": "电价",
+    "electricity tariff": "电费",
+    "battery": "电池",
+    "transmission": "输电"
   },
   "food_security": {
     "food": "食物",
@@ -165,7 +180,8 @@
     "grain": "粮食",
     "wheat": "小麦",
     "corn": "玉米",
-    "rice": "米"
+    "rice (husked)": "大米",
+    "paddy rice": "稻米"
   },
   "housing_real_estate": {
     "housing": "住房",
