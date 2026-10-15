@@ -465,6 +465,7 @@ from prices.source_sanity import (  # noqa: E402
     source_sanity_command as _prices_source_sanity,
 )
 from prices.cc_ledger import cc_ledger_command as _prices_cc_ledger  # noqa: E402
+from prices.weekly.cli import weekly as _prices_weekly  # noqa: E402
 from prices.cc_exhaustion import (  # noqa: E402
     cc_exhaustion_command as _prices_cc_exhaustion,
 )
@@ -496,6 +497,7 @@ prices.add_command(_prices_drop_ledger, name="drop-ledger")
 prices.add_command(_prices_cc_ledger, name="cc-ledger")
 prices.add_command(_prices_cc_exhaustion, name="cc-exhaustion")
 prices.add_command(_prices_dashboards, name="dashboards")
+prices.add_command(_prices_weekly, name="weekly")
 
 
 @prices.command("build")
