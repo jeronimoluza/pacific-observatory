@@ -7,6 +7,7 @@ floor watchdog, then DONE / FAILED / ABORTED, all through STATUS_<step>.
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -49,17 +50,32 @@ class Step:
     argv: Callable[[Context], list[str]]
 
 
-def unit_argv(step: Step, argv: list[str]) -> list[str]:
+def unit_name(step: Step, ctx: Context) -> str:
+    return re.sub(r"[^A-Za-z0-9_.-]", "-", f"po-weekly-{ctx.week}-{step.name}")
+
+
+def _unit_active(unit: str) -> bool:
+    try:
+        r = subprocess.run(
+            ["systemctl", "--user", "is-active", "--quiet", f"{unit}.scope"]
+        )
+    except FileNotFoundError:
+        return False
+    return r.returncode == 0
+
+
+def unit_argv(step: Step, ctx: Context) -> list[str]:
     return [
         "systemd-run",
         "--user",
         "--scope",
         "-q",
+        f"--unit={unit_name(step, ctx)}",
         "-p",
         f"MemoryMax={step.memory_max}",
         "-p",
         "MemorySwapMax=1G",
-        *argv,
+        *step.argv(ctx),
     ]
 
 
@@ -73,14 +89,19 @@ def _sha() -> str:
 
 
 def run_step(step: Step, ctx: Context) -> int:
-    argv = unit_argv(step, step.argv(ctx))
+    argv = unit_argv(step, ctx)
+    unit = unit_name(step, ctx)
     if ctx.dry_run:
         click.echo(f"[dry-run] {step.name}: {' '.join(argv)}")
         return 0
+    # cron has no login session: point systemd-run/systemctl --user at the user manager.
+    os.environ.setdefault("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")
     status = Status(ctx.week_dir, step.name)
     disks = [ctx.backup_mount, *ctx.disk_paths]
     try:
         require_mounted(ctx.backup_mount)
+        if _unit_active(unit):
+            raise Refused(f"unit {unit}.scope is already active")
         alerts = disk_gate(disks)
     except Refused as e:
         status.write("BLOCKED", f"{e}; {step.name} not started")
@@ -93,10 +114,9 @@ def run_step(step: Step, ctx: Context) -> int:
         "RUNNING",
         f"{' '.join(step.argv(ctx))} @{_sha()}, MemoryMax={step.memory_max}, log {log}",
     )
-    env = {"XDG_RUNTIME_DIR": f"/run/user/{os.getuid()}", **os.environ}
     with open(log, "a") as out:
         proc = subprocess.Popen(
-            argv, cwd=REPO_ROOT, stdout=out, stderr=subprocess.STDOUT, env=env
+            argv, cwd=REPO_ROOT, stdout=out, stderr=subprocess.STDOUT
         )
         while True:
             try:
@@ -105,7 +125,8 @@ def run_step(step: Step, ctx: Context) -> int:
             except subprocess.TimeoutExpired:
                 floor = below_floor(disks)
                 if floor:
-                    proc.terminate()
+                    # Stopping the scope kills its whole cgroup, children included.
+                    subprocess.run(["systemctl", "--user", "stop", f"{unit}.scope"])
                     proc.wait()
                     status.write("ABORTED", f"{floor}; {step.name} stopped, log {log}")
                     return 1
