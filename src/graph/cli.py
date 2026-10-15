@@ -70,3 +70,56 @@ def fingerprint_cmd(manifest_dir, only, as_json):
         notes = d["warnings"] + [f"sin archivos: {g}" for g in d["missing"]]
         click.echo(f"{d['fingerprint']}  {d['own']}  {nid:<24} files={d['n_files']}"
                    + (f"  [{'; '.join(notes)}]" if notes else ""))
+
+
+@graph.command("status")
+@_manifests_opt
+@click.option("--week", default=None, help="ISO week, e.g. 2026-W42 (default: current, UTC). Fills <wk> and wNN.")
+@click.option("--countries", default=None, help="Comma-separated slugs or a panel name (panel36).")
+@click.option("--node", "only", multiple=True, help="Observe only these nodes.")
+@click.option("--detail", is_flag=True, help="Also list every partition with drift or a check color.")
+@click.option("--json", "as_json", is_flag=True, help="Rows, check findings and summary as JSON.")
+def status_cmd(manifest_dir, week, countries, only, detail, as_json):
+    """Observed state per node and partition: done, rows, freshness, SHA, drift, check colors."""
+    import os
+
+    from core.config import load_countries
+    from graph.manifest import load
+    from graph.status import (collect, color_of, keep_countries, matrix, render_matrix,
+                              render_summary, run_checks, summary)
+    from prices.weekly.panels import resolve_countries
+
+    if week:
+        os.environ["PO_GRAPH_WEEK"] = week
+    from graph.observe import week as current
+
+    nodes, errors = load(manifest_dir)
+    if errors:
+        raise click.ClickException("; ".join(errors))
+    wanted = resolve_countries(countries)
+    all_countries = set(load_countries())
+    rows = collect(nodes, only)
+    if wanted:
+        rows = keep_countries(rows, wanted, all_countries)
+    findings = run_checks(rows)
+    summ = summary(rows, findings)
+    if as_json:
+        click.echo(json.dumps({"week": current(), "countries": wanted, "summary": summ,
+                               "findings": findings, "rows": rows}, indent=1, default=str))
+        return
+    click.echo(f"week {current()}  countries {countries or 'all'}  checks {len(findings)} findings")
+    click.echo(render_summary(summ))
+    if wanted:
+        click.echo("")
+        click.echo(render_matrix(*matrix(rows, wanted, all_countries)))
+    if detail:
+        colors = color_of(findings)
+        msgs = {}
+        for f in findings:
+            msgs.setdefault((f["node"], f["partition"]), []).append(f"{f['color']}: {f['msg']}")
+        click.echo("")
+        for r in rows:
+            k = (r["node"], r["partition"])
+            if r["drift"] or k in colors:
+                click.echo(f"{r['node']:<22} {r['partition']:<50} {colors.get(k, 'verde'):<8} "
+                           + "; ".join(r["drift"] + msgs.get(k, [])))
