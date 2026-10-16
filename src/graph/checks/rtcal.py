@@ -3,7 +3,9 @@
 - #1 red: imputed rows whose missingness type the release policy marks ``do_not_release``
   (types read from ``<build>/rtcal/selected_release_thresholds.csv``);
 - #2 red: rows without local currency, FX, source or input_hash
-  (``unit_value_local``, ``fx_rate``, ``currency``, ``source``, ``input_hash`` null).
+  (``unit_value_local``, ``fx_rate``, ``currency``, ``source``, ``input_hash`` null);
+  amarillo instead for fills with source and input_hash but all three local columns null:
+  USD-only on purpose (month without a rate, or FX suspect, so Stage B does not publish it).
 
 ``read`` streams only those columns and keeps one row of counts per country; PX-52
 (``graph.checks.pages``) reuses it.
@@ -19,6 +21,7 @@ from pathlib import Path
 NODE = "prices.rtcal"
 RTCAL_OBS = "trusted_observations_rtcal.parquet"
 REQUIRED = ["unit_value_local", "fx_rate", "currency", "source", "input_hash"]
+LOCAL = ["unit_value_local", "fx_rate", "currency"]
 
 
 def dnr_types(build: Path) -> set[str]:
@@ -49,6 +52,11 @@ def read(build: Path, countries: list[str] | None = None) -> list[dict]:
         flags["n_missing"] = flags[f"null_{REQUIRED[0]}"]
         for c in REQUIRED[1:]:
             flags["n_missing"] = pc.or_(flags["n_missing"], flags[f"null_{c}"])
+        usd_only = pc.and_(imputed, pc.and_(pc.invert(flags["null_source"]), pc.invert(flags["null_input_hash"])))
+        for c in LOCAL:
+            usd_only = pc.and_(usd_only, flags[f"null_{c}"])
+        flags["n_usd_only"] = usd_only
+        flags["n_missing"] = pc.and_(flags["n_missing"], pc.invert(usd_only))
         t = pa.table({"country": pc.cast(b.column("country"), pa.string()), **{k: pc.cast(v, pa.int64()) for k, v in flags.items()}})
         g = t.group_by("country").aggregate([(k, "sum") for k in flags] + [("country", "count")])
         for r in g.to_pylist():
@@ -82,6 +90,12 @@ def evaluate(rows: list[dict]) -> list[dict]:
         out.append({"node": NODE, "partition": "*", "color": "rojo",
                     "msg": f"#2 {missing:,} filas sin moneda local/fx/fuente/input_hash "
                            f"({fills:,} imputadas; nulos: {cols})"})
+    usd = sum(r["n_usd_only"] for r in rows)
+    if usd:
+        top = ", ".join(f"{r['country']} {r['n_usd_only']:,}"
+                        for r in sorted(rows, key=lambda r: -r["n_usd_only"])[:5] if r["n_usd_only"])
+        out.append({"node": NODE, "partition": "*", "color": "amarillo",
+                    "msg": f"#2 {usd:,} fills solo en USD (sin tasa o FX sospechoso; {top})"})
     return out
 
 
