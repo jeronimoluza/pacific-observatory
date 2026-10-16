@@ -432,12 +432,17 @@ def build_country_outputs(
     resolved["price_basis"] = (
         resolved["source_key"].astype(str).str.split(",").str[0].map(basis)
     )
+    # Per date: a family is "retail" on the days all its series are retail.
+    day = pd.to_datetime(resolved["observation_date"]).dt.strftime("%Y-%m-%d")
     family_basis = (
-        resolved.groupby("fuel_family")["price_basis"]
+        resolved.assign(_d=day)
+        .groupby(["_d", "fuel_family"])["price_basis"]
         .agg(lambda s: ",".join(sorted(set(s.dropna()))))
-        .to_dict()
     )
-    family["price_basis"] = family["fuel_family"].map(family_basis)
+    family["price_basis"] = [
+        family_basis.get((d, f))
+        for d, f in zip(family["observation_date"], family["fuel_family"])
+    ]
     save_csv(
         resolved,
         product_path,
