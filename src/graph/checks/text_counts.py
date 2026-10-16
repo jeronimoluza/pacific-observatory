@@ -5,6 +5,8 @@
 - red (T26): ``tails[key].n_rows`` != rows of the news.csv files that map to that key
   under ``--corpus-root``, one row per url (the build's dedup);
 - red: a folder whose news.csv has more rows than unique urls;
+- red: a folder without a config whose urls are (>= 95%) inside a folder with a config
+  of the same country, and not in the alias map (a renamed slug counted twice);
 - yellow: ``tails[key].last_date`` older than the newest ledger watermark of those dirs
   (``<state-dir>/<region>.sqlite``, opened read-only);
 - yellow: ``keyword_hashes`` != the hash of the current keyword packs (fingerprint).
@@ -28,8 +30,8 @@ STATE_DIR = Path.home() / "text_state"
 PARAMS = "source_counts.params.json"
 
 
-def news_rows(news_csv: Path) -> tuple[int, int]:
-    """(rows, rows after the build's dedup: one per url, rows without a url all kept)."""
+def news_rows(news_csv: Path) -> tuple[int, int, set[str]]:
+    """(rows, rows after the build's dedup: one per url, rows without a url all kept, urls)."""
     import pandas as pd
 
     n = no_url = 0
@@ -38,7 +40,24 @@ def news_rows(news_csv: Path) -> tuple[int, int]:
         n += len(c)
         no_url += int(c["url"].isna().sum())
         urls.update(c["url"].dropna())
-    return n, len(urls) + no_url
+    return n, len(urls) + no_url, urls
+
+
+def orphan_copies(country_dir: Path, urls_by_dir: dict[str, set[str]]) -> dict[str, tuple[str, float]]:
+    """Folders without a config whose urls are >= 95% inside a folder with one: folder -> (that folder, %)."""
+    from text.source_keys import ALIASES_FILE
+
+    configs = ALIASES_FILE.parents[1] / country_dir.relative_to(country_dir.parents[2])
+    has_cfg = {y.stem for y in configs.glob("*.yaml")}
+    out = {}
+    for d, s in urls_by_dir.items():
+        if d in has_cfg or not s:
+            continue
+        best = max(((len(s & a) / len(s), w) for w, a in urls_by_dir.items() if w in has_cfg and a),
+                   default=None)
+        if best and best[0] >= 0.95:
+            out[d] = (best[1], round(100 * best[0], 1))
+    return out
 
 
 def corpus_by_key(country_dir: Path) -> dict[str, list[Path]]:
@@ -73,14 +92,15 @@ def read(cache_root: Path = CACHE_ROOT, corpus_root: Path = CORPUS_ROOT, state_d
         r = {"region": region, "country": country, "params": str(pp),
              "dup_keys": {k: n for k, n in Counter(params.get("source_set", [])).items() if n > 1},
              "tails": params.get("tails", {}), "hash_ok": hashes == current_hashes(hashes),
-             "corpus_rows": None, "dirs": None, "dup_url_dirs": {}, "watermark": None}
+             "corpus_rows": None, "dirs": None, "dup_url_dirs": {}, "orphans": {}, "watermark": None}
         country_dir = corpus_root / region / sub / country
         if country_dir.is_dir():
             by_key = corpus_by_key(country_dir)
             r["dirs"] = {k: [p.parent.name for p in ps] for k, ps in by_key.items()}
             counted = {p: news_rows(p) for ps in by_key.values() for p in ps}
             r["corpus_rows"] = {k: sum(counted[p][1] for p in ps) for k, ps in by_key.items()}
-            r["dup_url_dirs"] = {p.parent.name: n for p, n in counted.items() if n[0] > n[1]}
+            r["dup_url_dirs"] = {p.parent.name: n[:2] for p, n in counted.items() if n[0] > n[1]}
+            r["orphans"] = orphan_copies(country_dir, {p.parent.name: n[2] for p, n in counted.items()})
             if (state_dir / f"{region}.sqlite").exists():
                 if region not in ledgers:
                     ledgers[region] = ledger_sources(region, state_dir)
@@ -115,6 +135,8 @@ def evaluate(rows: list[dict]) -> list[dict]:
                 add(r, "rojo", f"T23 {k}: carpetas con la misma clave: {', '.join(ds)}")
         for d, (rows, uniq) in sorted(r["dup_url_dirs"].items()):
             add(r, "rojo", f"URLs duplicadas en {d}: {rows:,} filas > {uniq:,} URLs únicas")
+        for d, (w, pct) in sorted(r["orphans"].items()):
+            add(r, "rojo", f"carpeta sin config {d}: {pct}% de sus URLs están en {w} (sumarla al mapa de alias)")
         if r["corpus_rows"] is not None:
             for k, t in sorted(r["tails"].items()):
                 have = r["corpus_rows"].get(k, 0)

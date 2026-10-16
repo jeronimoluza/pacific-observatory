@@ -60,3 +60,25 @@ vanuatu/vanuatu_daily_post: daily_post
 vanuatu/rnz_vanuatu: rnz
 vietnam/abc_au_vietnam: abc_au
 vietnam/rnz_vietnam: rnz
+
+# Renamed slugs (no key clash, so TX-18 missed them): old folder without config -> active folder.
+# All 11 are 100% contained in the active folder (a8:~/scratch/textkeys/pairs11.csv, 2026-10-16).
+french_polynesia/tntv: tntv_news
+iraq/rudaw_english: rudaw
+mongolia/news.mn: news_mn_english
+mongolia/ub_post: ubpost
+solomon_islands/the_island_sun: island_sun
+south_korea/the_korea_herald: korea_herald
+south_korea/the_korea_times: korea_times
+south_korea/yonhap_news_agency: yna
+vietnam/dan_tri: dantri
+vietnam/tuoi_tre: tuoitre
+new_zealand/new_zealand_herald: nz_herald
+
+# Found by the text_counts orphan check (no config, 100% of urls inside the active folder), 2026-10-16.
+cambodia/kampuchea_thmey_daily: kpt_daily
+cambodia/khmer_times: khmertimes
+malaysia/malay_mail: malaymail
+philippines/asia_news_network: ann
+philippines/philippine_star: philstar
+singapore/the_straits_times: straits_times
