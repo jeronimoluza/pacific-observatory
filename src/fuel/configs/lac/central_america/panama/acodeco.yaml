@@ -6,6 +6,7 @@ fallback_date: 2017-04-01
 priority: 10
 cadence: monthly
 carry_forward: true
+station_type: city
 
 # Acodeco publishes a cumulative "HistoricoCombustible_Panama" PDF with
 # monthly average retail prices in the Panama City + San Miguelito metro

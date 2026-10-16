@@ -22,7 +22,8 @@ the requested combination:
 
 Each query returns roughly the last ~7 years ending at the requested year.
 Two slices (anio=17 and anio=24) together cover 2011-01-04 → 2024-02-20.
-We average the three zones to a national reference per (date, product).
+We emit one row per zone (``subnational_area``); the build takes the median
+across zones (``station_aggregate`` in the YAML).
 
 Pricing regime: the FERE ("Fórmula de Estructura de Reajustes Económicos")
 is a biweekly state-set reference; distributors set retail prices at or
@@ -38,7 +39,6 @@ import logging
 import re
 import time
 from datetime import date, datetime
-from statistics import mean
 
 import pandas as pd
 import urllib3
@@ -69,7 +69,7 @@ _SOURCE_KEY = "sv_dgehm_biweekly"
 # anio=17 → 2011-2017, anio=24 → 2018-2024. Any later year just truncates
 # from the same Feb-2024 tail.
 _YEAR_SLICES = ("17", "24")
-_ZONES = ("1", "2", "3")
+_ZONES = {"1": "Zona Occidental", "2": "Zona Central", "3": "Zona Oriental"}
 _FUELS = {
     "GS": "Gasolina Especial",
     "GR": "Gasolina Regular",
@@ -174,22 +174,20 @@ def _query(session, year: str, fuel: str, zone: str) -> tuple[list[date], list[f
 
 
 def fetch_sv_dgehm(cutoff: date) -> pd.DataFrame | None:
-    """Fetch El Salvador DGEHM biweekly national-avg reference prices (USD/gal)."""
+    """Fetch El Salvador DGEHM biweekly per-zone reference prices (USD/gal)."""
     session = make_session(**_HEADERS)
 
-    # Per (fuel, date) accumulate observations from each zone, then
-    # average across zones for a national figure.
-    bucket: dict[tuple[str, str], list[float]] = {}
+    bucket: dict[tuple[str, str, str], float] = {}
     for year in _YEAR_SLICES:
         for fuel_code, fuel_name in _FUELS.items():
-            for zone in _ZONES:
+            for zone, zone_name in _ZONES.items():
                 dates, prices = _query(session, year, fuel_code, zone)
                 time.sleep(_REQUEST_DELAY_S)
                 for d, p in zip(dates, prices):
                     if d <= cutoff:
                         continue
-                    key = (fuel_name, d.strftime("%Y-%m-%d"))
-                    bucket.setdefault(key, []).append(p)
+                    key = (fuel_name, d.strftime("%Y-%m-%d"), zone_name)
+                    bucket.setdefault(key, p)
                 logger.info(
                     "[sv_dgehm] anio=%s fuel=%s zone=%s → %d obs",
                     year,
@@ -203,27 +201,23 @@ def fetch_sv_dgehm(cutoff: date) -> pd.DataFrame | None:
         return None
 
     rows: list[dict] = []
-    for (fuel_name, date_str), zone_prices in bucket.items():
-        # National average = simple mean across the available zones for that
-        # (fuel, date). If a zone happened to miss this date, we still emit
-        # the row with the remaining zones — this is the same convention the
-        # DGEHM chart uses when a zone reports late.
-        nat_avg = mean(zone_prices)
+    for (fuel_name, date_str, zone_name), price in bucket.items():
         rows.append(
             {
                 "observation_date": date_str,
                 "country": _COUNTRY,
                 "fuel_product": fuel_name,
-                "price_local": round(nat_avg, 4),
+                "price_local": round(price, 4),
                 "currency": _CURRENCY,
                 "source_key": _SOURCE_KEY,
                 "unit": "GAL",
+                "subnational_area": zone_name,
             }
         )
 
     out = (
         pd.DataFrame(rows)
-        .sort_values(["observation_date", "fuel_product"])
+        .sort_values(["observation_date", "fuel_product", "subnational_area"])
         .reset_index(drop=True)
     )
     logger.info("[sv_dgehm] Returning %d rows (cutoff: %s)", len(out), cutoff)
