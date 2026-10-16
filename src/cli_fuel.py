@@ -36,7 +36,7 @@ def register(fuel_group, opts: dict):
         # Parallel-market rates are mostly monthly; refetch at most weekly.
         import time
 
-        from fuel.fx_parallel import PARALLEL_CACHE, refresh_parallel_cache
+        from prices.fx.parallel import PARALLEL_CACHE, refresh_parallel_cache
 
         age = (
             time.time() - PARALLEL_CACHE.stat().st_mtime

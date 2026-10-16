@@ -15,7 +15,9 @@ from core.storage import save_csv
 
 from .config import ProductSpec, build_fuel_registry
 from .fx import DEFAULT_FX_CACHE, attach_fx_and_usd
-from .fx_parallel import PARALLEL_CACHE, attach_parallel
+from prices.fx.parallel import PARALLEL_CACHE
+
+from .fx_parallel import attach_parallel
 from .station_aggregate import (
     STATION_COLUMNS,
     attach_station_stats,
@@ -312,7 +314,9 @@ def _resolve_overlaps(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _build_family_output(
-    df: pd.DataFrame, fx_cache_path: Path = DEFAULT_FX_CACHE
+    df: pd.DataFrame,
+    fx_cache_path: Path = DEFAULT_FX_CACHE,
+    parallel_cache_path: Path = PARALLEL_CACHE,
 ) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=_FAMILY_COLUMNS)
@@ -343,9 +347,7 @@ def _build_family_output(
     )
     grouped["unit"] = grouped["fuel_family"].map(_CANONICAL_FAMILY_UNITS)
     with_fx = attach_fx_and_usd(grouped, cache_path=fx_cache_path)
-    with_fx = attach_parallel(
-        with_fx, cache_path=fx_cache_path.with_name(PARALLEL_CACHE.name)
-    )
+    with_fx = attach_parallel(with_fx, cache_path=parallel_cache_path)
     with_fx["observation_date"] = pd.to_datetime(
         with_fx["observation_date"], errors="coerce"
     ).dt.strftime("%Y-%m-%d")
@@ -360,6 +362,7 @@ def build_country_outputs(
     data_dir: Path = DATA_DIR,
     outputs_dir: Path = OUTPUTS_DIR,
     fx_cache_path: Path = DEFAULT_FX_CACHE,
+    parallel_cache_path: Path = PARALLEL_CACHE,
 ) -> dict[str, Path | int]:
     enabled_entries = [entry for entry in entries if entry.get("enabled", True)]
     skipped = [
@@ -417,7 +420,9 @@ def build_country_outputs(
     collapsed = _collapse_source_rows(combined)
     expanded = _expand_with_carry_forward(collapsed)
     resolved = _resolve_overlaps(expanded)
-    family = _build_family_output(resolved, fx_cache_path=fx_cache_path)
+    family = _build_family_output(
+        resolved, fx_cache_path=fx_cache_path, parallel_cache_path=parallel_cache_path
+    )
 
     resolved = attach_station_stats(resolved, station_stats)
     save_csv(resolved, product_path, columns=_PRODUCT_COLUMNS + STATION_COLUMNS)
@@ -437,6 +442,7 @@ def run_build(
     data_dir: Path = DATA_DIR,
     outputs_dir: Path = OUTPUTS_DIR,
     fx_cache_path: Path = DEFAULT_FX_CACHE,
+    parallel_cache_path: Path = PARALLEL_CACHE,
 ) -> list[dict[str, Path | int]]:
     registry = build_fuel_registry(region=region, subregion=subregion, country=country)
     if not registry:
@@ -459,6 +465,7 @@ def run_build(
                 data_dir=data_dir,
                 outputs_dir=outputs_dir,
                 fx_cache_path=fx_cache_path,
+                parallel_cache_path=parallel_cache_path,
             )
             results.append(result)
         except Exception:
