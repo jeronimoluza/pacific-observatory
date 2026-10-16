@@ -29,5 +29,5 @@ selectors:
 cleaning:
   date: handle_mixed_dates
 
-max_pages: 20
+max_pages: 8  # 2026-10-16 verify: 20 pages hit the 300 s cap
 max_articles: null
