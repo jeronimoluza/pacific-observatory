@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 import time
 import unicodedata
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlparse
 
@@ -62,6 +62,7 @@ _CDX_URL = (
 )
 _WAYBACK_FMT = "https://web.archive.org/web/{ts}id_/{url}"
 _THROTTLE_S = 0.6
+_GUESS_WINDOW_DAYS = 92
 _CURRENT_YEAR = date.today().year
 _LIVE_PDF_BASE = "https://csph.cm/dashboard/assets/uploads/pdfs/"
 _PDF_PATH_RE = re.compile(
@@ -299,7 +300,12 @@ def _candidate_slug_urls(cutoff: date) -> set[str]:
         for month in _FR_MONTH_NAMES:
             for variant in (month, month.upper(), month.lower(), month.capitalize()):
                 urls.add(f"{_LIVE_PDF_BASE}{variant}_{year}.pdf")
-    return urls
+    # Guess only recent months: with the cutoff stuck at 2025-03 every run
+    # re-probed ~144 filenames (8.6 min). Older PDFs that do exist surface
+    # through the index pages or the Wayback CDX listing.
+    today = date.today()
+    floor = max(cutoff, today - timedelta(days=_GUESS_WINDOW_DAYS)).replace(day=1)
+    return {u for u in urls if (d := _date_from_url(u)) is None or floor <= d <= today}
 
 
 def _wayback_pdf_urls(session, cutoff: date) -> dict[str, list[str]]:
