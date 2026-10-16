@@ -5,6 +5,7 @@ url: https://beninpetro.com/
 fallback_date: 2021-01-01
 priority: 10
 cadence: monthly
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:

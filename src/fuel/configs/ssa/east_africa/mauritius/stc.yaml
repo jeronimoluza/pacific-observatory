@@ -4,7 +4,8 @@ function: fetch_stc_mu
 url: https://www.stcmu.com/ppm/retail-prices
 fallback_date: 2004-04-02
 priority: 10
-cadence: monthly
+cadence: irregular  # was monthly; observed gaps (2026-10 audit)
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 # State Trading Corporation's Petroleum Pricing Committee publishes the

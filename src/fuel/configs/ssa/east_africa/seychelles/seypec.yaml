@@ -4,7 +4,8 @@ function: fetch_seypec_sc
 url: https://www.seypec.com/fuel-prices
 fallback_date: 2020-01-01
 priority: 10
-cadence: monthly
+cadence: irregular  # was monthly; observed gaps (2026-10 audit)
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 # SeyPEC publishes current retail prices for Gasoline, Gasoil, Kerosene

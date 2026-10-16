@@ -14,6 +14,8 @@ import yaml
 from core.storage import save_csv
 
 from .config import ProductSpec, build_fuel_registry
+from . import gates
+from .fill_rule import carry_end
 from .fx import DEFAULT_FX_CACHE, attach_fx_and_usd
 from prices.fx.parallel import PARALLEL_CACHE
 
@@ -39,21 +41,6 @@ _CANONICAL_FAMILY_UNITS = {
     "lpg": "L",
 }
 _FAMILY_USD_FAMILIES = {"gasoline", "diesel", "kerosene", "lpg"}
-_CADENCE_DAYS = {
-    "daily": 1,
-    "weekly": 7,
-    "biweekly": 14,
-    "monthly": 31,
-    "quarterly": 92,
-    "yearly": 366,
-    # Irregular sources (regulated prices that change when the authority
-    # decides) hold a price until the next observation, but at most ~6 months
-    # so a dead source stops instead of reaching today. 184 days covers the
-    # 90th-percentile gap between observations of the irregular carry-forward
-    # sources (CRI 42, COL 62, NPL 32, PRY 143, URY 172 days; LKA 185) and
-    # stops Burundi (annual, last 2018).
-    "irregular": 184,
-}
 _PRODUCT_COLUMNS = [
     "observation_date",
     "region",
@@ -247,7 +234,10 @@ def _collapse_source_rows(df: pd.DataFrame) -> pd.DataFrame:
     return collapsed
 
 
-def _expand_with_carry_forward(df: pd.DataFrame) -> pd.DataFrame:
+def _expand_with_carry_forward(
+    df: pd.DataFrame, rules: dict[str, tuple[str, pd.Timestamp | None]]
+) -> pd.DataFrame:
+    """``rules``: source_key -> (publication, last_ok); see fill_rule."""
     if df.empty:
         return df
     today = pd.Timestamp(date.today()).normalize()
@@ -255,18 +245,14 @@ def _expand_with_carry_forward(df: pd.DataFrame) -> pd.DataFrame:
     group_cols = ["country_slug", "source_key", "series_key"]
     for _, group in df.groupby(group_cols, dropna=False, sort=False):
         ordered = group.sort_values("observation_date").reset_index(drop=True)
+        dates = [pd.Timestamp(d).normalize() for d in ordered["observation_date"]]
         for idx, row in ordered.iterrows():
-            start = pd.Timestamp(row["observation_date"]).normalize()
+            start = dates[idx]
             end = start
             if bool(row["carry_forward"]):
-                window = max(_CADENCE_DAYS[row["cadence"]] - 1, 0)
-                end = start + pd.Timedelta(days=window)
-                if idx + 1 < len(ordered):
-                    next_date = pd.Timestamp(
-                        ordered.iloc[idx + 1]["observation_date"]
-                    ).normalize()
-                    end = min(end, next_date - pd.Timedelta(days=1))
-                end = min(end, today)
+                publication, last_ok = rules.get(row["source_key"], ("scheduled", None))
+                nxt = dates[idx + 1] if idx + 1 < len(dates) else None
+                end = carry_end(start, nxt, row["cadence"], publication, last_ok, today)
             for obs_date in pd.date_range(start, end, freq="D"):
                 item = row.to_dict()
                 item["observation_date"] = obs_date
@@ -424,7 +410,18 @@ def build_country_outputs(
     combined = pd.concat(frames, ignore_index=True)
     combined, station_stats = station_outputs(combined, enabled_entries, out_dir)
     collapsed = _collapse_source_rows(combined)
-    expanded = _expand_with_carry_forward(collapsed)
+    region = enabled_entries[0]["region"]
+    last_ok = gates.read_status(region, data_dir / "_status").get("last_ok", {})
+    rules = {
+        e["source_key"]: (
+            e.get("publication", "scheduled"),
+            pd.Timestamp(last_ok[e["source_key"]][:10])
+            if e["source_key"] in last_ok
+            else None,
+        )
+        for e in enabled_entries
+    }
+    expanded = _expand_with_carry_forward(collapsed, rules)
     resolved = _resolve_overlaps(expanded)
     family = _build_family_output(
         resolved, fx_cache_path=fx_cache_path, parallel_cache_path=parallel_cache_path

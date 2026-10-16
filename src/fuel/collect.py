@@ -144,6 +144,7 @@ def run_collection(
 
     keys_to_run = [source_key] if source_key else list(registry)
     recorder = FailureRecorder()
+    returned_rows: set[str] = set()
     logging.getLogger().addHandler(recorder)
 
     if rebuild and source_key:
@@ -197,6 +198,8 @@ def run_collection(
 
         set_checked(state, key, run_ts)
 
+        if new_df is not None and not new_df.empty:
+            returned_rows.add(key)
         if new_df is None or new_df.empty:
             logger.info("No new rows for %s", key)
             continue
@@ -229,7 +232,11 @@ def run_collection(
         _write_state_merged(state, initial, state_path)
         if status_region:
             record_collect(
-                status_region, keys_to_run, recorder.failed, base_dir / "_status"
+                status_region,
+                keys_to_run,
+                recorder.failed,
+                base_dir / "_status",
+                returned_rows=returned_rows,
             )
 
     logger.info("Done.")

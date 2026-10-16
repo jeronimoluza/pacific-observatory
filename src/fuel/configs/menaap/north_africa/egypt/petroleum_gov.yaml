@@ -4,7 +4,8 @@ function: fetch_eg_petroleum
 url: https://www.petroleum.gov.eg/ar-eg/Pages/HomePage.aspx
 fallback_date: 2020-02-01
 priority: 10
-cadence: quarterly
+cadence: irregular  # was quarterly; observed gaps (2026-10 audit)
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:

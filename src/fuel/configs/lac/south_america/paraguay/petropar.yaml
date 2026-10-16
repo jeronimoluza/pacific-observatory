@@ -5,6 +5,7 @@ url: https://www.petropar.gov.py/?page_id=4460
 fallback_date: 2024-01-01
 priority: 10
 cadence: irregular
+publication: announcement  # published only when the price changes
 carry_forward: true
 # PETROPAR page shows current prices only: never --rebuild.
 history_irrecoverable: true

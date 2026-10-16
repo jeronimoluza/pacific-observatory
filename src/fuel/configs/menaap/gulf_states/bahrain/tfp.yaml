@@ -5,6 +5,7 @@ url: https://www.thefuelprice.com/Fbh/en
 fallback_date: 2008-04-01
 priority: 50
 cadence: monthly
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:

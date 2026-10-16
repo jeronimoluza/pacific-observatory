@@ -5,6 +5,7 @@ url: https://www.bera.co.bw/petroleum.php
 fallback_date: 2020-01-01
 priority: 5
 cadence: yearly  # a level holds until the next one; carried up to 365 days
+publication: announcement  # published only when the price changes
 carry_forward: true
 full_refresh: true
 station_type: city

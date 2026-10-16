@@ -66,13 +66,20 @@ def record_collect(
     sources_run: list[str],
     failed: dict[str, str],
     status_dir: Path = STATUS_DIR,
+    returned_rows: set[str] | frozenset[str] = frozenset(),
 ) -> Path:
     status = read_status(region, status_dir)
+    now = _now()
     status["collect"] = {
-        "run_ts_utc": _now(),
+        "run_ts_utc": now,
         "sources_run": len(sources_run),
         "failed_sources": dict(sorted(failed.items())),
     }
+    # Last collect in which each source returned rows without logging an error
+    # (liveness for the fill rule of announcement-driven sources).
+    last_ok = status.get("last_ok", {})
+    last_ok.update({k: now for k in returned_rows if k not in failed})
+    status["last_ok"] = dict(sorted(last_ok.items()))
     return _write_status(status, status_dir)
 
 

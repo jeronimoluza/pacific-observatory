@@ -5,6 +5,7 @@ url: https://www.recope.go.cr/productos/precios-nacionales/historicos/
 fallback_date: 1994-01-01
 priority: 10
 cadence: irregular
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:

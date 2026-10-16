@@ -5,6 +5,7 @@ url: https://www.ancap.com.uy/10564/1/historico-precios-combustibles.html
 fallback_date: 2005-01-01
 priority: 10
 cadence: irregular
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:

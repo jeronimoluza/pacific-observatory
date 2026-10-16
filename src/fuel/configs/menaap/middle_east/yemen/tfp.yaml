@@ -6,6 +6,7 @@ fallback_date: 2003-01-01
 first_row_only: true
 priority: 50
 cadence: monthly
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:

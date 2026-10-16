@@ -163,6 +163,9 @@ class FuelSourceConfig(BaseModel):
     # The source serves only its latest prices: stored history cannot be
     # re-downloaded, so collect only appends (no --rebuild, no full_refresh).
     history_irrecoverable: bool = False
+    # announcement: published only when the price changes; scheduled: on a
+    # calendar. Sets how far a price is carried forward (fuel/fill_rule.py).
+    publication: Literal["announcement", "scheduled"] = "scheduled"
     # What one raw row's location is; rows without one are "national".
     # What the published price is. Retail pump prices are the target; where no
     # retail source exists a labelled fallback is published instead.
@@ -396,6 +399,7 @@ def build_fuel_registry(
             "station_type": cfg.station_type,
             "price_basis": cfg.price_basis,
             "history_irrecoverable": cfg.history_irrecoverable,
+            "publication": cfg.publication,
             "country_slug": cfg.country_slug,
             "country_name": cfg.country_name,
             "iso3": cfg.iso3,

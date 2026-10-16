@@ -4,7 +4,7 @@ function: fetch_in_cardekho_diesel
 url: https://www.cardekho.com/fuel-price
 fallback_date: 2020-01-01
 priority: 10
-cadence: daily
+cadence: weekly  # was daily; observed gaps (2026-10 audit)
 carry_forward: true
 currency: INR
 

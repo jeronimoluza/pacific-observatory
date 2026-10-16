@@ -5,6 +5,7 @@ url: https://www.thefuelprice.com/Fkw/en
 fallback_date: 2014-01-01
 priority: 50
 cadence: monthly
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:

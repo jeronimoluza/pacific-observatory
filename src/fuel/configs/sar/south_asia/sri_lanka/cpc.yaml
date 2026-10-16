@@ -5,6 +5,7 @@ url: https://ceypetco.gov.lk/historical-prices/
 fallback_date: 1990-01-01
 priority: 10
 cadence: irregular
+publication: announcement  # published only when the price changes
 carry_forward: true
 currency: LKR
 

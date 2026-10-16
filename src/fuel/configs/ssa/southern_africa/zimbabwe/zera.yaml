@@ -6,6 +6,7 @@ currency: USD
 fallback_date: 2025-01-01
 priority: 10
 cadence: monthly
+publication: announcement  # published only when the price changes
 carry_forward: true
 # ZERA homepage widget shows current prices only, no archive: never --rebuild.
 history_irrecoverable: true

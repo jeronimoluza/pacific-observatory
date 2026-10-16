@@ -5,6 +5,7 @@ url: https://noc.org.np/retailprice
 fallback_date: 2020-01-01
 priority: 10
 cadence: irregular
+publication: announcement  # published only when the price changes
 carry_forward: true
 currency: NPR
 
