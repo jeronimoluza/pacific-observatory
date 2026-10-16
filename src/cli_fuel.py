@@ -82,6 +82,11 @@ def register(fuel_group, opts: dict):
         if not cfgs:
             raise click.ClickException(f"no _watch config for {country!r}")
         for cfg in cfgs:
+            if not cfg.get("enabled", True):
+                click.echo(
+                    f"{cfg['country']}: disabled ({cfg.get('disabled_reason', 'no reason given')})"
+                )
+                continue
             alerts, results = watch.watch_country(
                 cfg,
                 state_dir or watch.STATE_DIR,

@@ -4,12 +4,12 @@ currency: BWP
 broken_after: 3          # consecutive failed fetches of one item -> rojo "vigilancia rota"
 lookback_days: 10        # news items older than this never alert
 
-# Our own levels. Rows in configs/_quarantine/observations.yaml are ignored.
-# Add the documented manual BERA table here when it lands (same columns, or map them
-# with `columns: {date: ..., product: ..., price: ...}`).
+# Our own levels: the hand-curated BERA table (thebe/L). CSV paths also work (observation
+# columns, or map them with `columns: {date: ..., product: ..., price: ...}`); rows in
+# configs/_quarantine/observations.yaml are ignored there.
 levels:
   paths:
-    - data/fuel/ssa/southern_africa/botswana/bera/observations.csv
+    - src/fuel/configs/_manual/bera_bw_levels.yaml
   stale_months: 3
 
 # GlobalPetrolPrices: REFERENCE ONLY, never data. products: GPP product -> our product.

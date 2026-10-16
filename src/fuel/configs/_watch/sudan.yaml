@@ -1,0 +1,16 @@
+# `po fuel watch --country sudan`: DISABLED, kept so the country stays on the target list.
+country: sudan
+currency: SDG
+enabled: false
+disabled_reason: "2026-10-16 triage: no official or stable source. Since the war, prices are set by state with an informal market, quoted per gallon, and only reported by press (Dabanga, AllAfrica); ministry sites do not respond and SUNA returns 403. GPP (SDG 630/L) is ~16x below press reports (SDG 38,805/gallon, White Nile, Sep-2026). A national series would mislead."
+broken_after: 3
+lookback_days: 10
+news:
+  - q: 'أسعار الوقود السودان البنزين الجازولين'
+    hl: ar
+    gl: SD
+  - q: 'Sudan fuel prices gallon'
+    hl: en
+    gl: SD
+must: ['sudan', 'السودان', 'khartoum', 'port sudan']
+keywords: [fuel, petrol, diesel, gasoline, gallon, الوقود, البنزين, الجازولين]

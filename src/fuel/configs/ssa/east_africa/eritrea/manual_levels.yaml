@@ -1,0 +1,15 @@
+source_key: manual_er_levels
+module: ssa.east_africa.eritrea.manual_levels
+function: fetch_manual_er
+url: ""
+enabled: false
+disabled_reason: "2026-10-16 triage: Eritrean Petroleum Corporation holds the monopoly and prices are effectively frozen; no level 2023-2026 was found in any official or press source (shabait.com has no fuel price content). Nothing to publish or verify."
+fallback_date: 2023-01-01
+priority: 10
+cadence: yearly
+carry_forward: true
+full_refresh: true
+station_type: national
+
+# Hand-curated levels would live in configs/_manual/eritrea_levels.yaml (empty).
+products: {}

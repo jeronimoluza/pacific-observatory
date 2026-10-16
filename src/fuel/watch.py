@@ -13,7 +13,8 @@ One YAML per country under src/fuel/configs/_watch/. Each run, per country:
   title, its title must hold a `keywords` term and (when set) a `must` term (country,
   regulator), and be newer than `lookback_days`.
 - gpp: GlobalPetrolPrices as a reference only (see watch_gpp.py).
-- levels: our table; its latest row older than `stale_months` -> amarillo.
+- levels: our table (CSV or _manual YAML); its latest row, or the table's `last_checked`
+  date if newer, older than `stale_months` -> amarillo.
 
 Every fetch that fails (HTTP error, parse error, matching links gone, GPP stale) counts
 toward `broken_after`; at that count a rojo "vigilancia rota" goes out, and an info when
@@ -51,7 +52,7 @@ def load_configs(
     for p in sorted(config_dir.glob("*.yaml")):
         cfg = yaml.safe_load(p.read_text())
         if country in (None, cfg["country"]):
-            out.append(cfg)
+            out.append(cfg)  # enabled: false is reported and skipped by the caller
     return out
 
 
@@ -59,6 +60,41 @@ def _quarantined() -> set[str]:
     if not QUARANTINE.exists():
         return set()
     return {e["observation_hash"] for e in yaml.safe_load(QUARANTINE.read_text()) or []}
+
+
+def _level_rows(p: Path, cols: dict):
+    """(date str, product, price) from a CSV (observations / series) or a _manual YAML table."""
+    if p.suffix in (".yaml", ".yml"):
+        for r in yaml.safe_load(p.read_text(encoding="utf-8")).get("levels") or []:
+            price = r.get("price_local")
+            if (
+                price is None and r.get("thebe") is not None
+            ):  # BERA table: thebe per litre
+                price = r["thebe"] / 100.0
+            if price is not None and r.get("confidence") != "baja":
+                yield str(r["effective"]), r["product"], float(price)
+        return
+    bad = _quarantined()
+    with open(p, newline="") as f:
+        for r in csv.DictReader(f):
+            if (
+                r.get("observation_hash") not in bad
+                and r.get(cols["price"])
+                and r.get(cols["date"])
+            ):
+                yield r[cols["date"]], r[cols["product"]], float(r[cols["price"]])
+
+
+def _last_checked(lv: dict) -> list[date]:
+    """`last_checked:` dates of YAML tables: when someone last confirmed the level still holds."""
+    out = []
+    for p in lv["paths"]:
+        p = ROOT / p if not Path(p).is_absolute() else Path(p)
+        if p.suffix in (".yaml", ".yml") and p.exists():
+            d = yaml.safe_load(p.read_text(encoding="utf-8")).get("last_checked")
+            if d:
+                out.append(date.fromisoformat(str(d)))
+    return out
 
 
 def latest_levels(lv: dict, today: date) -> dict[str, tuple[date, float]] | None:
@@ -73,21 +109,12 @@ def latest_levels(lv: dict, today: date) -> dict[str, tuple[date, float]] | None
     paths = [p for p in paths if p.exists()]
     if not paths:
         return None
-    bad, out = _quarantined(), {}
+    out = {}
     for p in paths:
-        with open(p, newline="") as f:
-            for r in csv.DictReader(f):
-                if (
-                    r.get("observation_hash") in bad
-                    or not r.get(cols["price"])
-                    or not r.get(cols["date"])
-                ):
-                    continue
-                d = date.fromisoformat(r[cols["date"]][:10])
-                if d <= today and (
-                    r[cols["product"]] not in out or d >= out[r[cols["product"]]][0]
-                ):
-                    out[r[cols["product"]]] = (d, float(r[cols["price"]]))
+        for ds, product, price in _level_rows(p, cols):
+            d = date.fromisoformat(ds[:10])
+            if d <= today and (product not in out or d >= out[product][0]):
+                out[product] = (d, price)
     return out
 
 
@@ -111,14 +138,14 @@ def check_levels(cfg: dict, levels, today: date) -> list[tuple[str, str, str]]:
                 "tabla propia sin filas válidas (vacía o en cuarentena)",
             )
         ]
-    last = max(d for d, _ in levels.values())
+    last = max([d for d, _ in levels.values()] + _last_checked(lv))
     months = lv.get("stale_months", 3)
     if (today - last).days > months * 30.5:
         return [
             (
                 "amarillo",
                 f"stale:{last}",
-                f"tabla propia vencida: última fila {last} (> {months} meses)",
+                f"tabla propia vencida: última fila o last_checked {last} (> {months} meses)",
             )
         ]
     return []
