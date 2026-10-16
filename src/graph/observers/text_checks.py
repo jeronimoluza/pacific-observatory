@@ -1,7 +1,8 @@
 """Silent-zero check on ``text.delta``: a source that used to bring rows and now brings 0.
 
 Per source, the target run's staged news rows are compared with the median over the
-previous ``n`` runs where the source finished (state done). A done source with 0 rows
+previous ``n`` runs where the source finished (state done) or staged rows before it timed
+out, failed or got stuck. A done source with 0 rows
 after a positive baseline is yellow; 0 in two consecutive done runs is red. A source that
 timed out, failed or got stuck is reported with that state, never as a zero.
 """
@@ -29,7 +30,7 @@ def _level(history: list[dict], n: int) -> dict:
     while i >= 0 and history[i]["state"] == "done" and history[i]["news_rows"] == 0:
         i -= 1
     out["zero_streak"] = len(history) - 1 - i
-    before = [h["news_rows"] for h in history[: i + 1] if h["state"] == "done"][-n:]
+    before = [h["news_rows"] for h in history[: i + 1] if h["state"] == "done" or h["news_rows"]][-n:]
     out["baseline"] = statistics.median(before) if before else None
     if not out["baseline"]:
         out["level"] = "zero_no_baseline"

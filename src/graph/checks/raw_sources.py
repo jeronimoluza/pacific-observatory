@@ -1,14 +1,20 @@
 """Raw checks per source on ``prices.raw`` (PX-50).
 
-- red: a silent zero, the week's ledger says ``ok_norows`` and the source's baseline is > 0;
+- red: a silent zero, the week's last ledger record says ``ok_norows``, the week has 0 rows
+  on disk and the source's baseline is > 0. A fetcher (it only writes observations newer
+  than its cutoff) is red only if it brought rows in every collect week of the baseline
+  (at least 3) or its last ``observation_date`` is older than 3 median gaps between its
+  observation dates (at least 7 days) at the week's Monday; otherwise yellow;
 - red: rows dated after today UTC (#8), from ``observation_date`` of the fetcher CSV;
-- yellow: ledger status timeout, fail, blocked or runner_error;
+- yellow: ledger status timeout, stalled, fail, blocked or runner_error;
 - yellow: an active manifest that is in no ledger of the week.
 
-The week's ledgers are ``<logs>/<wk>/ledger_path`` (a later ledger's record replaces an
-earlier one), as in ``graph.observers.prices_collect``. The baseline is the median weekly
-row count over the ``n`` ISO weeks before the target one, counted from the source's first
-week on disk (an absent week counts 0): spiders by lines of
+The week's ledgers are ``<logs>/<wk>/ledger_path`` plus the retry runs next to them
+(``_fullrun_<YYYYMMDD>_<HHMMSS>/status.jsonl`` dated in the week), in run order; a later
+record replaces an earlier one. The baseline is the median weekly row count over the
+collect weeks among the ``n`` ISO weeks before the target one (a week where no source has
+rows had no collect), counted from the source's first week on disk (an absent week counts
+0): spiders by lines of
 ``raw_items/<source>_<YYYYMMDD>_<HHMMSS>.jsonl`` (largest file of the week), fetchers by
 rows of ``price_observations.csv`` grouped by the ISO week of ``scrape_ts``.
 """
@@ -26,7 +32,7 @@ from pathlib import Path
 NODE = "prices.raw"
 DATA_ROOT = Path.home() / "po/data/prices"
 LOGS_ROOT = Path.home() / "po/logs/weekly"
-YELLOW_STATUSES = {"timeout", "fail", "blocked", "runner_error"}
+YELLOW_STATUSES = {"timeout", "stalled", "fail", "blocked", "runner_error"}
 _RUN_TS = re.compile(r"_(\d{8})_\d{6}\.jsonl$")
 
 
@@ -69,6 +75,34 @@ def spider_weeks(source_dir: Path, start: date, end: date) -> tuple[dict[date, i
     return weeks, first
 
 
+def week_ledgers(listed: list[Path], start: date) -> list[Path]:
+    """The listed ledgers plus the sibling ``_fullrun_*`` runs dated in the ISO week, in run order."""
+    days = {(start + timedelta(days=i)).strftime("%Y%m%d") for i in range(7)}
+    found = set(listed)
+    for parent in {p.parent.parent for p in listed}:
+        found |= {p for p in parent.glob("_fullrun_*/status.jsonl") if p.parent.name[9:17] in days}
+    return sorted(found, key=lambda p: p.parent.name)
+
+
+def obs_dates(csv_path: Path) -> tuple[date | None, float | None]:
+    """Last observation_date of a fetcher CSV and the median gap in days between its dates."""
+    import pyarrow as pa
+    import pyarrow.compute as pc
+    import pyarrow.csv as pcsv
+
+    t = pcsv.read_csv(csv_path, convert_options=pcsv.ConvertOptions(
+        include_columns=["observation_date"], column_types={"observation_date": pa.string()}))
+    ds = []
+    for v in pc.unique(pc.utf8_slice_codeunits(t["observation_date"], 0, 10)).to_pylist():
+        try:
+            ds.append(date.fromisoformat(v))
+        except (TypeError, ValueError):
+            pass
+    ds.sort()
+    gaps = [(b - a).days for a, b in zip(ds, ds[1:])]
+    return (ds[-1] if ds else None), (statistics.median(gaps) if gaps else None)
+
+
 def fetcher_weeks(csv_path: Path, today: date) -> tuple[dict[date, int], date | None, int]:
     """Rows per ISO week of scrape_ts, first such week, and rows dated after today."""
     import pyarrow as pa
@@ -108,7 +142,7 @@ def read(week: str, ledgers: list[Path] | None = None, data_root: Path = DATA_RO
     start = date.fromisocalendar(int(y), int(w), 1)
     if ledgers is None:
         listed = (logs_root / week / "ledger_path").read_text().strip()
-        ledgers = [Path(p) for p in listed.split(",") if p]
+        ledgers = week_ledgers([Path(p) for p in listed.split(",") if p], start)
     records = ledger_records(ledgers)
     from prices.config import discover_prices_configs
     import yaml
@@ -131,15 +165,27 @@ def read(week: str, ledgers: list[Path] | None = None, data_root: Path = DATA_RO
                 fw, f2, future = fetcher_weeks(sdir / "price_observations.csv", today)
                 weeks = {k: max(weeks.get(k, 0), fw.get(k, 0)) for k in set(weeks) | set(fw)}
                 first = min([x for x in (first, f2) if x], default=None)
-        prior = [start - timedelta(weeks=i) for i in range(n, 0, -1)]
-        prior = [wk for wk in prior if first and wk >= first]
+        last_obs, obs_gap = None, None
+        if (e.get("scaffolding") == "fetcher" and e.get("status") == "ok_norows" and not weeks.get(start)
+                and sdir and (sdir / "price_observations.csv").exists()):
+            last_obs, obs_gap = obs_dates(sdir / "price_observations.csv")
         rows.append({
             "country": country, "source": source, "status": e.get("status"),
             "new_rows": e.get("new_rows"), "in_ledger": bool(e), "active": (country, source) in active,
             "dir": str(sdir) if sdir else None, "week_rows": weeks.get(start, 0),
-            "baseline": statistics.median([weeks.get(wk, 0) for wk in prior]) if prior else None,
-            "future_rows": future,
+            "future_rows": future, "scaffolding": e.get("scaffolding"),
+            "last_obs": last_obs, "obs_gap": obs_gap, "_weeks": weeks, "_first": first,
         })
+    prior = [start - timedelta(weeks=i) for i in range(n, 0, -1)]
+    collected = {wk for r in rows for wk, v in r["_weeks"].items() if v}
+    prior = [wk for wk in prior if wk in collected]
+    for r in rows:
+        weeks, first = r.pop("_weeks"), r.pop("_first")
+        mine = [weeks.get(wk, 0) for wk in prior if first and wk >= first]
+        r["baseline"] = statistics.median(mine) if mine else None
+        r["steady"] = len(mine) >= 3 and all(mine)
+        r["overdue"] = bool(r["last_obs"] and r["obs_gap"]
+                            and (start - r["last_obs"]).days > max(7, 3 * r["obs_gap"]))
     return rows
 
 
@@ -162,9 +208,15 @@ def evaluate(rows: list[dict]) -> list[dict]:
     out = []
     for r in rows:
         part = f"{r['country']}/{r['source']}"
-        if r["status"] == "ok_norows" and r["baseline"]:
-            out.append({"node": NODE, "partition": part, "color": "rojo",
-                        "msg": f"cero silencioso: ok_norows con baseline {r['baseline']:g}"})
+        if r["status"] == "ok_norows" and r["baseline"] and not r["week_rows"]:
+            if r["scaffolding"] != "fetcher" or r["steady"] or r["overdue"]:
+                out.append({"node": NODE, "partition": part, "color": "rojo",
+                            "msg": f"cero silencioso: ok_norows con baseline {r['baseline']:g}"
+                                   + (f", ultima observation_date {r['last_obs']}" if r["last_obs"] else "")})
+            else:
+                out.append({"node": NODE, "partition": part, "color": "amarillo",
+                            "msg": f"fetcher sin delta: ok_norows con baseline {r['baseline']:g}, "
+                                   f"ultima observation_date {r['last_obs']} (gap mediano {r['obs_gap']})"})
         if r["future_rows"]:
             out.append({"node": NODE, "partition": part, "color": "rojo",
                         "msg": f"#8 {r['future_rows']:,} filas con observation_date > hoy UTC"})

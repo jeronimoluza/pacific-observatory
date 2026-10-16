@@ -2,7 +2,8 @@
 
 A step starts only when the step before it in ORDER ended DONE for the same week: in
 this run, or, for the first step of a `--from` run, in an earlier one (its
-STATUS_<step>). A step that fails or is blocked stops the chain; nothing below it
+STATUS_<step>). `--trust-upstream` skips that one gate (reproducing from a step whose
+inputs were made elsewhere) and says so in STATUS_run. A step that fails or is blocked stops the chain; nothing below it
 starts. STATUS_run holds the chain's own line. A step in ORDER that this tree has not
 registered (`stage_b` lands from its own branch) blocks the chain where it would run.
 """
@@ -22,11 +23,14 @@ from prices.weekly.status import Status
 from prices.weekly.step import Context, run_step
 from prices.weekly.steps import STEPS
 
-ORDER = ["enrich", "fx", "embed", "score_classify", "stage_b", "build"]
+ORDER = ["collect", "enrich", "fx", "embed", "score_classify", "stage_b", "build"]
 
 
 def last_status(c: Context, step: str) -> str:
     f = c.week_dir / f"STATUS_{step}"
+    if step == "collect" and not f.exists():
+        # A week collected by scripts/weekly/collect.sh: its STATUS is the collect's.
+        f = c.week_dir / "STATUS"
     return f.read_text().strip() if f.exists() else "(no STATUS)"
 
 
@@ -42,7 +46,7 @@ def span(first: str, last: str) -> list[str]:
     return ORDER[i : j + 1]
 
 
-def _plan(c: Context, steps: list[str]) -> int:
+def _plan(c: Context, steps: list[str], trust_upstream: bool = False) -> int:
     click.echo(f"week {c.week}  logs {c.week_dir}  countries {len(c.countries or []) or 'all'}")
     try:
         require_mounted(c.backup_mount)
@@ -55,7 +59,8 @@ def _plan(c: Context, steps: list[str]) -> int:
     if prev:
         before = ORDER[prev - 1]
         line = last_status(c, before)
-        click.echo(f"gate {steps[0]}: STATUS_{before} DONE -> {'open' if _done(line) else 'BLOCKED'} ({line})")
+        verdict = "open" if _done(line) else "SKIPPED (--trust-upstream)" if trust_upstream else "BLOCKED"
+        click.echo(f"gate {steps[0]}: STATUS_{before} DONE -> {verdict} ({line})")
     for i, s in enumerate(steps):
         if i:
             click.echo(f"gate {s}: {steps[i - 1]} DONE in this run")
@@ -66,17 +71,20 @@ def _plan(c: Context, steps: list[str]) -> int:
     return 0
 
 
-def run_chain(c: Context, first: str, last: str) -> int:
+def run_chain(c: Context, first: str, last: str, trust_upstream: bool = False) -> int:
     steps = span(first, last)
     if c.dry_run:
-        return _plan(c, steps)
+        return _plan(c, steps, trust_upstream)
     status = Status(c.week_dir, "run")
     i = ORDER.index(first)
+    trusted = ""
     if i and not _done(last_status(c, ORDER[i - 1])):
         before = ORDER[i - 1]
-        status.write("BLOCKED", f"STATUS_{before} is not DONE ({last_status(c, before)}); {first} not started")
-        return 1
-    status.write("RUNNING", f"{first} -> {last}: {' '.join(steps)}")
+        if not trust_upstream:
+            status.write("BLOCKED", f"STATUS_{before} is not DONE ({last_status(c, before)}); {first} not started")
+            return 1
+        trusted = f"; --trust-upstream: gate STATUS_{before} skipped ({last_status(c, before)})"
+    status.write("RUNNING", f"{first} -> {last}: {' '.join(steps)}{trusted}")
     for k, s in enumerate(steps):
         rest = " ".join(steps[k + 1 :]) or "-"
         if s not in STEPS:

@@ -130,12 +130,17 @@ def diff_command(c: Context, a: Path, b: Path, only: str | None):
 @click.option("--week", default=None, help="Overrides the group's --week.")
 @click.option("--countries", default=None, help="Overrides the group's --countries.")
 @click.option("--dry-run", is_flag=True, help="List the steps, their units and gates; run nothing.")
+@click.option(
+    "--trust-upstream",
+    is_flag=True,
+    help="Skip the gate on the step before --from (its STATUS need not be DONE); written to STATUS_run.",
+)
 @click.pass_obj
-def run_command(c: Context, first, last, week, countries, dry_run):
+def run_command(c: Context, first, last, week, countries, dry_run, trust_upstream):
     """Run the steps --from..--to in order, each gated on the one before it ending DONE."""
     if week:
         c.week = week
     if countries:
         c.countries = resolve_countries(countries)
     c.dry_run = c.dry_run or dry_run
-    sys.exit(run_chain(c, first, last))
+    sys.exit(run_chain(c, first, last, trust_upstream))

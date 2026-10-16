@@ -1,0 +1,14 @@
+[Unit]
+Description=po prices weekly over panel36: collect -> build, after the text panel run
+Documentation=file:%h/po-worktrees/panel36/scripts/mvp/systemd/INSTALL.md
+After=po-text-panel.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/po-worktrees/panel36
+# Wait while the text panel run is still going (a oneshot is "activating" while it runs).
+ExecStartPre=/bin/sh -c 'while [ "$$(systemctl --user show -p ActiveState --value po-text-panel.service)" = activating ]; do sleep 60; done'
+# Steps run in their own systemd-run --user scopes with their own MemoryMax; this caps the driver.
+ExecStart=%h/venv/bin/python run.py prices weekly --countries panel36 --logs-root %h/prices_panel/logs run
+MemoryMax=1G
+TimeoutStartSec=36h

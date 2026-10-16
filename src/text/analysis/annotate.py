@@ -22,9 +22,9 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 import ahocorasick
-import numpy as np
 import pandas as pd
 
+from text.analysis.news_rows import clean_chunks
 from text.analysis.utils import (
     LANGUAGE_ALIASES,
     NON_SPACE_DELIMITED,
@@ -371,10 +371,6 @@ def annotate_source(
     """
     combo = build_combined_automaton(bundle)
 
-    cols = pd.read_csv(news_csv, encoding="utf-8", nrows=0).columns.tolist()
-    want = [c for c in ("date", "body", "language", "url") if c in cols]
-
-    seen: set[int] = set()
     frames: list[pd.DataFrame] = []
     n_total = 0
     n_dropped_nan_date = 0
@@ -382,39 +378,12 @@ def annotate_source(
     min_date = None
     max_date = None
 
-    reader = pd.read_csv(news_csv, encoding="utf-8", usecols=want, chunksize=chunksize)
-    for chunk in reader:
-        # One row per url, the first one in the file (the earliest written),
-        # BEFORE date parsing. Rows without a url fall back to the row content.
-        # The seen set keeps that global across chunks.
-        hashes = pd.util.hash_pandas_object(chunk, index=False).to_numpy()
-        if "url" in chunk.columns:
-            has_url = chunk["url"].notna().to_numpy()
-            url_hashes = pd.util.hash_pandas_object(chunk["url"], index=False).to_numpy()
-            hashes = np.where(has_url, url_hashes, hashes)
-        keep = []
-        for i, h in enumerate(hashes):
-            if h not in seen:
-                seen.add(h)
-                keep.append(i)
-        chunk = chunk.iloc[keep].reset_index(drop=True)
-
-        n_total += len(chunk)
-        chunk["date"] = pd.to_datetime(
-            chunk.get("date"), format="mixed", errors="coerce"
-        )
-        n_dropped_nan_date += int(chunk["date"].isna().sum())
-        chunk = chunk[~chunk["date"].isna()].reset_index(drop=True)
-
-        if subset_start is not None:
-            chunk = chunk[chunk["date"] >= subset_start]
-        if subset_end is not None:
-            chunk = chunk[chunk["date"] <= subset_end]
-        chunk = chunk.reset_index(drop=True)
-
-        if "body" in chunk.columns:
-            n_dropped_nan_body += int(chunk["body"].isna().sum())
-            chunk = chunk[~chunk["body"].isna()].reset_index(drop=True)
+    for chunk, n, n_nan_date, n_nan_body in clean_chunks(
+        news_csv, subset_start, subset_end, chunksize
+    ):
+        n_total += n
+        n_dropped_nan_date += n_nan_date
+        n_dropped_nan_body += n_nan_body
 
         if not chunk.empty:
             cmin, cmax = chunk["date"].min(), chunk["date"].max()

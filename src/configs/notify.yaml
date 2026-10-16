@@ -1,0 +1,30 @@
+# `po notify` and `po graph deadman`. PO_NOTIFY_CONFIG=<file> uses another file (scratch runs).
+backend: telegram          # telegram | file. telegram falls back to file while unconfigured or failing.
+telegram:
+  secret_id: ""            # Secrets Manager secret id holding the bot token and chat id; empty until created
+  token_key: token
+  chat_id_key: chat_id
+  exec: [asm-exec]         # resolves {{resolve:secretsmanager:...}} in the curl argv at runtime
+file:
+  log: /mnt/backup5tb/po-alerts/alerts.log
+  log_mount: /mnt/backup5tb    # alerts.log is skipped while this is not mounted
+  latest: ~/po-alerts/latest.md
+  latest_lines: 20
+deadman:
+  backup_mount: /mnt/backup5tb
+  min_free_gb: 15            # on /
+  state: ~/po-alerts/deadman.json   # alerts already sent, so the hourly timer does not repeat them
+  expect:
+    # at: daily-HH:MM or mon..sun-HH:MM, UTC. Rojo when no STATUS file matching `status` is
+    # newer than the last `at` once `grace_hours` have passed, or the newest one is RUNNING
+    # and older than `max_hours`.
+    text-panel:
+      at: daily-09:00
+      grace_hours: 2
+      max_hours: 12
+      status: ~/text_panel/logs/*/STATUS_run
+    prices-weekly:
+      at: mon-09:30          # its unit waits for po-text-panel.service to finish
+      grace_hours: 18
+      max_hours: 36
+      status: ~/prices_panel/logs/*/STATUS_run

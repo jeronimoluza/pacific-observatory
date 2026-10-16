@@ -619,6 +619,8 @@ prices.add_command(_prices_weekly, name="weekly")
 
 from graph.cli import graph as _graph  # noqa: E402
 po.add_command(_graph, name="graph")
+from notify.cli import notify_command as _notify  # noqa: E402
+po.add_command(_notify, name="notify")
 
 
 @prices.command("build")

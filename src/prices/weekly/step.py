@@ -50,6 +50,10 @@ class Step:
     name: str
     memory_max: str
     argv: Callable[[Context], list[str]]
+    # Read-only command whose output the dry-run prints (collect: lanes and caps).
+    plan: Callable[[Context], list[str]] | None = None
+    # Refuse to start when MemAvailable is below memory_max.
+    mem_gate: bool = False
 
 
 def unit_name(step: Step, ctx: Context) -> str:
@@ -81,6 +85,17 @@ def unit_argv(step: Step, ctx: Context) -> list[str]:
     ]
 
 
+def _mem_available() -> int:
+    for line in Path("/proc/meminfo").read_text().splitlines():
+        if line.startswith("MemAvailable:"):
+            return int(line.split()[1]) * 1024
+    return 0
+
+
+def _bytes(size: str) -> int:
+    return int(float(size[:-1]) * 1024 ** "KMGT".index(size[-1].upper()) * 1024)
+
+
 def _sha() -> str:
     r = subprocess.run(
         ["git", "-C", str(REPO_ROOT), "rev-parse", "--short", "HEAD"],
@@ -95,6 +110,8 @@ def run_step(step: Step, ctx: Context) -> int:
     unit = unit_name(step, ctx)
     if ctx.dry_run:
         click.echo(f"[dry-run] {step.name}: {' '.join(argv)}")
+        if step.plan:
+            subprocess.run(step.plan(ctx), cwd=REPO_ROOT)
         return 0
     # cron has no login session: point systemd-run/systemctl --user at the user manager.
     os.environ.setdefault("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")
@@ -104,6 +121,10 @@ def run_step(step: Step, ctx: Context) -> int:
         require_mounted(ctx.backup_mount)
         if _unit_active(unit):
             raise Refused(f"unit {unit}.scope is already active")
+        if step.mem_gate and _mem_available() < _bytes(step.memory_max):
+            raise Refused(
+                f"MemAvailable {_mem_available() / 2**30:.1f}G < MemoryMax={step.memory_max}"
+            )
         alerts = disk_gate(disks)
     except Refused as e:
         status.write("BLOCKED", f"{e}; {step.name} not started")

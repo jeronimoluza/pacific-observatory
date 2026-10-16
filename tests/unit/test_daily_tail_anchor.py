@@ -15,8 +15,8 @@ tail this is meant to prevent.
 import pandas as pd
 import pytest
 
+from src.text.analysis.cache_gate import _daily_backfill_cutoff
 from src.text.analysis.orchestrator import (
-    _daily_backfill_cutoff,
     frontier_date,
     resolve_tail_start,
 )
