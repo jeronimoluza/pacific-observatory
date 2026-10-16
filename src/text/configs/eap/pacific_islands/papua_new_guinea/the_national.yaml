@@ -16,7 +16,7 @@ listing:
     date: date
 
 client: http
-concurrency: 4
+concurrency: 2
 rate_limit: 0.2
 retries: 3
 retry_seconds: 2.0
@@ -34,4 +34,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: 400
+max_articles: 200
