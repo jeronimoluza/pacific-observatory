@@ -5,7 +5,7 @@ base_url: https://vesti.az
 
 # Custom CMS, no WP API. "novosti" section is world/international-heavy
 # (Trump/Ukraine/Iran); "politika" is Azerbaijan-domestic politics — used here.
-# 2026-10-16 (panel 20261016T0917Z): max_pages null walked the whole archive (32 rows in ledger) past the 300s cap
+# 2026-10-16 (panel 20261016T0917Z): max_pages null walked the whole archive (32 rows in ledger) past the 300s cap; 20 pages still ran 300s (640 rows), so 8
 listing:
   type: pagination
   url_template: "https://vesti.az/politika?page={num}"
@@ -31,5 +31,5 @@ cleaning:
   date: handle_mixed_dates
   url: clean_url
 
-max_pages: 20
+max_pages: 8
 max_articles: null

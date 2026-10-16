@@ -4,6 +4,7 @@ language: si
 base_url: https://www.ada.lk
 
 # Breaking/Local news(11) + Business(7); offset-paginated in steps of 30
+# 2026-10-16 (panel 20261016T0917Z): max_pages null on a new source (50 rows in ledger): 567 pages walked past the cap
 listing:
   type: pagination
   url_template:
@@ -31,5 +32,5 @@ cleaning:
   date: handle_mixed_dates
   url: clean_url
 
-max_pages: null
+max_pages: 20
 max_articles: null

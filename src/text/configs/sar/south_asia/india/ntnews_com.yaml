@@ -4,6 +4,7 @@ country: india
 base_url: https://www.ntnews.com
 
 # Categories: national(49, 77950), news(1, 476758), districts-localnews(73, 18581), andhrapradesh-news(48, 16457), news-in-pic(3519, 676)
+# 2026-10-16 (panel 20261016T0917Z): watermark 08-12 and ~10 s per API page: the walk back never finished and kept nothing
 listing:
   type: api
   pagination_type: page
@@ -35,5 +36,5 @@ cleaning:
   date: handle_mixed_dates
   body: clean_wp_html_body
 
-max_pages: null
+max_pages: 15
 max_articles: null
