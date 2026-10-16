@@ -3,9 +3,10 @@
 # Precio unico nacional en dobras nuevas (STN, desde 2018) por litro; las fuentes no distinguen zonas.
 # Productos no listados en una fecha siguen sin cambio desde su fila anterior.
 # Huecos conocidos: (1) no se encontro la fecha de vigencia del nivel 37/35 (solo el anuncio del 12-may-2023, "anunciou hoje"); no se pudo verificar que no hubo cambios intermedios entre may-2023 y ene-2025, aunque Lusa/Forbes (28-nov-2025) confirma 37/35/21 al asumir el gobierno en enero de 2025.
-#   (2) petroleo: 19 en may-2023 y 21 en ene-2025; la fecha del paso 19->21 no se encontro, por eso NO hay fila de petroleo en 2023 y la primera fila de petroleo (2025-04-05, 21) solo confirma el nivel vigente, no marca un cambio en esa fecha.
+#   (2) petroleo: 19 en may-2023 y 21 en ene-2025; la fecha del paso 19->21 no se encontro, por eso NO hay fila de petroleo en 2023; la primera fila de petroleo es la confirmacion del 2024-05-17 (21), y la del 2025-04-05 (21) tambien solo confirma el nivel; ninguna marca un cambio en esa fecha.
 #   (3) petroleo nov-2025 -> abr-2026: contradiccion (ver notas de 2025-11-27 y 2026-04-01).
-#   (4) no se hallaron cambios despues del 1-abr-2026; Rio Times (8-oct-2026) informa 31/30/19 sin cambios desde abril, en medio de desabastecimiento de gasolina y petroleo desde el 1-oct-2026. No hay evidencia fechada hoy, por eso no hay last_checked.
+#   (4) no se hallaron cambios despues del 1-abr-2026; Rio Times (8-oct-2026) informa 31/30/19 sin cambios desde abril, en medio de desabastecimiento de gasolina y petroleo desde el 1-oct-2026: cargado como fila de confirmacion 2026-10-08. No hay evidencia fechada hoy, por eso no hay last_checked.
+# Filas de confirmacion (method 'confirmation: ...'): 2024-05-17 (STP-Press, revendedores: 37/35/21) y 2026-10-08 (Rio Times: 31/30/19). Con ellas no queda ningun tramo de mas de 12 meses sin fila entre 2024-01-01 y hoy (maximo: 2024-05-17 -> 2025-04-05, ~11 meses). La cita de Lusa/Forbes (28-nov-2025) sobre ene-2025 es retrospectiva y no se carga como confirmacion.
 source_key: manual_st_levels
 country: Sao Tome and Principe
 currency: STN
@@ -57,6 +58,45 @@ levels:
   derived_from: []
   confidence: media-alta
   note: "'do gasoleo de 36 para 35'. FECHA = PUBLICACION, sin fecha de vigencia explicita. El mismo comunicado sube el petroleo de 17 a 19, pero no se carga porque en ene-2025 ya estaba en 21 y la fecha de ese cambio no se encontro."
+- effective: 2024-05-17
+  product: Gasolina
+  locality: national
+  price_local: 37
+  source_type: state_news
+  url: https://www.stp-press.st/2024/05/17/governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro/
+  archive_url: https://web.archive.org/web/20261016183040/https://www.stp-press.st/2024/05/17/governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro/
+  sha256: e101886de078f46da952405e02be631788dc1b565eea7039b1c1bf73b999b926
+  file: e101886de078_2024-05-17-governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro.html
+  method: "confirmation: nota de agencia estatal fechada cita el precio de venta vigente"
+  derived_from: []
+  confidence: media
+  note: "STP-Press 17-may-2024, conflicto de margenes de las gasolineras (cierre de bombas del 14-may): Tome Vera Cruz, vocero de la Associacao dos Vendedores e Revendedores de Combustivel, dice 'Ve o caso da gasolina: vendemos a 37 dobras o litro, - ganhamos 1.13 centimos'. Es el precio de venta al publico que aplican las bombas, citado por los revendedores (no por el Gobierno); confianza media. Coincide con el nivel del 12-may-2023."
+- effective: 2024-05-17
+  product: Gasoleo
+  locality: national
+  price_local: 35
+  source_type: state_news
+  url: https://www.stp-press.st/2024/05/17/governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro/
+  archive_url: https://web.archive.org/web/20261016183040/https://www.stp-press.st/2024/05/17/governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro/
+  sha256: e101886de078f46da952405e02be631788dc1b565eea7039b1c1bf73b999b926
+  file: e101886de078_2024-05-17-governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro.html
+  method: "confirmation: nota de agencia estatal fechada cita el precio de venta vigente"
+  derived_from: []
+  confidence: media
+  note: "STP-Press 17-may-2024, conflicto de margenes de las gasolineras (cierre de bombas del 14-may): Tome Vera Cruz, vocero de la Associacao dos Vendedores e Revendedores de Combustivel, dice 'o gasoleo vendemos a 35 ganhamos 55 centimos'. Es el precio de venta al publico que aplican las bombas, citado por los revendedores (no por el Gobierno); confianza media. Coincide con el nivel del 12-may-2023."
+- effective: 2024-05-17
+  product: Petroleo
+  locality: national
+  price_local: 21
+  source_type: state_news
+  url: https://www.stp-press.st/2024/05/17/governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro/
+  archive_url: https://web.archive.org/web/20261016183040/https://www.stp-press.st/2024/05/17/governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro/
+  sha256: e101886de078f46da952405e02be631788dc1b565eea7039b1c1bf73b999b926
+  file: e101886de078_2024-05-17-governo-pede-aos-vendedores-e-revendedores-de-combustivel-duas-a-tres-semanas-para-cumprir-os-tramites-legais-para-aumentar-a-margem-de-lucro.html
+  method: "confirmation: nota de agencia estatal fechada cita el precio de venta vigente"
+  derived_from: []
+  confidence: media
+  note: "STP-Press 17-may-2024, conflicto de margenes de las gasolineras (cierre de bombas del 14-may): Tome Vera Cruz, vocero de la Associacao dos Vendedores e Revendedores de Combustivel, dice 'petroleo 21 temos 29 centimos'. Es el precio de venta al publico que aplican las bombas, citado por los revendedores (no por el Gobierno); confianza media. Primera fila de petroleo: confirma 21 en may-2024; el paso 19->21 (despues de may-2023) sigue sin fecha."
 - effective: 2025-04-05
   product: Gasolina
   locality: national
@@ -239,3 +279,42 @@ levels:
   derived_from: []
   confidence: media
   note: "La fuente dice 'petroleo mantera-se em 19 dobras' / 'ira manter-se inalterado' (no anuncia una suba). CONTRADICE la fila de 2025-11-27 (18). Se carga 19 como nivel declarado vigente al 31-mar-2026; si hubo un paso 18->19 su fecha es desconocida. Confianza bajada un escalon."
+- effective: 2026-10-08
+  product: Gasolina
+  locality: national
+  price_local: 31
+  source_type: press
+  url: https://www.riotimesonline.com/sao-tome-fuel-shortage-petrol-kerosene-2026/
+  archive_url: https://web.archive.org/web/20261016183209/https://www.riotimesonline.com/sao-tome-fuel-shortage-petrol-kerosene-2026/
+  sha256: 095ba2fa140f4b274bfa6e6dcdac3905d3b59bc35824458b485d07e4fd070e3d
+  file: 095ba2fa140f_riotimes_sao-tome-fuel-shortage-petrol-kerosene-2026.html
+  method: "confirmation: nota de prensa fechada da el precio vigente (ultimo cambio 1-abr-2026)"
+  derived_from: []
+  confidence: media
+  note: "Rio Times 8-oct-2026 (desabastecimiento de gasolina y petroleo desde 1-oct; el ministro Guadalupe dijo el martes 6-oct que el Estado sigue absorbiendo el costo): 'The last price change reported by STP-Press... took effect on Wednesday, 1 April' y 'Petrol rose to 31 dobras a litre'... 'At 31 dobras a litre, Sao Tome petrol costs about US$5.35 a gallon'. Prensa extranjera que se apoya en STP-Press, sin cita oficial nueva del precio; vale como confirmacion de que no hubo cambio hasta el 8-oct, no como verificacion en surtidor (hay faltante de producto)."
+- effective: 2026-10-08
+  product: Gasoleo
+  locality: national
+  price_local: 30
+  source_type: press
+  url: https://www.riotimesonline.com/sao-tome-fuel-shortage-petrol-kerosene-2026/
+  archive_url: https://web.archive.org/web/20261016183209/https://www.riotimesonline.com/sao-tome-fuel-shortage-petrol-kerosene-2026/
+  sha256: 095ba2fa140f4b274bfa6e6dcdac3905d3b59bc35824458b485d07e4fd070e3d
+  file: 095ba2fa140f_riotimes_sao-tome-fuel-shortage-petrol-kerosene-2026.html
+  method: "confirmation: nota de prensa fechada da el precio vigente (ultimo cambio 1-abr-2026)"
+  derived_from: []
+  confidence: media
+  note: "Rio Times 8-oct-2026 (desabastecimiento de gasolina y petroleo desde 1-oct; el ministro Guadalupe dijo el martes 6-oct que el Estado sigue absorbiendo el costo): 'The last price change reported by STP-Press... took effect on Wednesday, 1 April' y 'diesel to 30 dobras'. Prensa extranjera que se apoya en STP-Press, sin cita oficial nueva del precio; vale como confirmacion de que no hubo cambio hasta el 8-oct, no como verificacion en surtidor (hay faltante de producto)."
+- effective: 2026-10-08
+  product: Petroleo
+  locality: national
+  price_local: 19
+  source_type: press
+  url: https://www.riotimesonline.com/sao-tome-fuel-shortage-petrol-kerosene-2026/
+  archive_url: https://web.archive.org/web/20261016183209/https://www.riotimesonline.com/sao-tome-fuel-shortage-petrol-kerosene-2026/
+  sha256: 095ba2fa140f4b274bfa6e6dcdac3905d3b59bc35824458b485d07e4fd070e3d
+  file: 095ba2fa140f_riotimes_sao-tome-fuel-shortage-petrol-kerosene-2026.html
+  method: "confirmation: nota de prensa fechada da el precio vigente (ultimo cambio 1-abr-2026)"
+  derived_from: []
+  confidence: media
+  note: "Rio Times 8-oct-2026 (desabastecimiento de gasolina y petroleo desde 1-oct; el ministro Guadalupe dijo el martes 6-oct que el Estado sigue absorbiendo el costo): 'The last price change reported by STP-Press... took effect on Wednesday, 1 April' y 'Household kerosene stayed at 19 dobras a litre'. Prensa extranjera que se apoya en STP-Press, sin cita oficial nueva del precio; vale como confirmacion de que no hubo cambio hasta el 8-oct, no como verificacion en surtidor (hay faltante de producto)."

@@ -8,6 +8,8 @@
 #   (2) entre sep-2024 y feb-2026: diesel 21.40 -> 20.55, petrol 20.60 -> 20.15, paraffin 15.75 -> 14.90 en uno o mas pasos (el triage cita un post del X del Gobierno del 6-nov-2025 con vigencia 7-nov y un paso previo de diesel a 21.00; no se pudo descargar ni el post ni una nota con cifras). Sin filas.
 #   (3) desde el 4-abr-2025 rige una tasa vial (Roads Authority levy) de E0.40/litro incorporada a la estructura de precio sin cambio en surtidor ese mes (Times of Eswatini 4-abr-2025); no es una fila.
 #   (4) mar-2024: la fuente unica (Times) repite por error las cifras del diesel para el petrol; ver nota.
+# Filas de confirmacion (method 'confirmation: ...'): home de ENPC (estatal, no fija precios) en capturas Wayback 2024-10-05, 2025-01-13, 2025-02-15 (media) y 2025-08-14 (baja, posible desactualizacion), y curl de hoy 2026-10-16 (media, = last_checked). Con carry de 92 dias quedan sin cubrir ~2025-05-16 -> 2026-02-05 (la captura de ago-2025 es baja y no se publica) y los tramos entre cambios de 2024 posteriores a 92 dias. ENPC muestra la misma cifra en 'Unleaded Petrol' y 'Replacement' (sustituto con plomo); se toma Unleaded.
+# Tramo >12 meses sin fila publicable: ninguno (maximo 2025-02-15 -> 2026-02-06, ~12 meses). Una busqueda extra de un comunicado o nota 2025 con cifras no encontro nada.
 # Todas las filas posteriores a ene-2024 son prensa citando el comunicado del MNRE (confianza media); casi todas 2026 con dos notas independientes.
 source_key: manual_sz_levels
 country: Eswatini
@@ -154,6 +156,162 @@ levels:
   derived_from: []
   confidence: media
   note: "Paraffin 'from E16.75/litre to E15.75/litre'. El previo 16.75 implica una baja no fechada desde 17.25 (mar-2024): hueco."
+- effective: 2024-10-05
+  product: ULP 95
+  locality: national
+  price_local: 20.60
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20241005062444/https://www.enpc.co.sz/
+  sha256: 9f54bdb6b255d2d6bc1acc9d9d4282aa060b3d3d744300acfec61150af1fbbef
+  file: 9f54bdb6b255_enpc_home_wayback_20241005062444.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 20.60 / litre Unleaded Petrol'. Captura Wayback 2024-10-05. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2024-10-05
+  product: Diesel 50ppm
+  locality: national
+  price_local: 21.40
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20241005062444/https://www.enpc.co.sz/
+  sha256: 9f54bdb6b255d2d6bc1acc9d9d4282aa060b3d3d744300acfec61150af1fbbef
+  file: 9f54bdb6b255_enpc_home_wayback_20241005062444.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 21.40 / litre Diesel'. Captura Wayback 2024-10-05. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2024-10-05
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 15.75
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20241005062444/https://www.enpc.co.sz/
+  sha256: 9f54bdb6b255d2d6bc1acc9d9d4282aa060b3d3d744300acfec61150af1fbbef
+  file: 9f54bdb6b255_enpc_home_wayback_20241005062444.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 15.75 / litre Paraffin'. Captura Wayback 2024-10-05. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2025-01-13
+  product: ULP 95
+  locality: national
+  price_local: 20.60
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250113222032/https://www.enpc.co.sz/
+  sha256: 40ff24aeb392b50474e48243a728b1918a76a9fb86a1d3782105858c6090e27a
+  file: 40ff24aeb392_enpc_home_wayback_20250113222032.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 20.60 / litre Unleaded Petrol'. Captura Wayback 2025-01-13. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2025-01-13
+  product: Diesel 50ppm
+  locality: national
+  price_local: 21.40
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250113222032/https://www.enpc.co.sz/
+  sha256: 40ff24aeb392b50474e48243a728b1918a76a9fb86a1d3782105858c6090e27a
+  file: 40ff24aeb392_enpc_home_wayback_20250113222032.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 21.40 / litre Diesel'. Captura Wayback 2025-01-13. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2025-01-13
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 15.75
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250113222032/https://www.enpc.co.sz/
+  sha256: 40ff24aeb392b50474e48243a728b1918a76a9fb86a1d3782105858c6090e27a
+  file: 40ff24aeb392_enpc_home_wayback_20250113222032.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 15.75 / litre Paraffin'. Captura Wayback 2025-01-13. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2025-02-15
+  product: ULP 95
+  locality: national
+  price_local: 20.60
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250215035529/https://www.enpc.co.sz/
+  sha256: 0e0a0774d66cdd8382d463fd0e75e28fc58044dedad70e19203f2753bc398d59
+  file: 0e0a0774d66c_enpc_home_wayback_20250215035529.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 20.60 / litre Unleaded Petrol'. Captura Wayback 2025-02-15. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2025-02-15
+  product: Diesel 50ppm
+  locality: national
+  price_local: 21.40
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250215035529/https://www.enpc.co.sz/
+  sha256: 0e0a0774d66cdd8382d463fd0e75e28fc58044dedad70e19203f2753bc398d59
+  file: 0e0a0774d66c_enpc_home_wayback_20250215035529.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 21.40 / litre Diesel'. Captura Wayback 2025-02-15. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2025-02-15
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 15.75
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250215035529/https://www.enpc.co.sz/
+  sha256: 0e0a0774d66cdd8382d463fd0e75e28fc58044dedad70e19203f2753bc398d59
+  file: 0e0a0774d66c_enpc_home_wayback_20250215035529.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 15.75 / litre Paraffin'. Captura Wayback 2025-02-15. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil."
+- effective: 2025-08-14
+  product: ULP 95
+  locality: national
+  price_local: 20.60
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250814212927/https://www.enpc.co.sz/
+  sha256: 0b7924505554fc7e5f82224691618412a0e817bd10037c989a9fd869b4e866ed
+  file: 0b7924505554_enpc_home_wayback_20250814212927.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: baja
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 20.60 / litre Unleaded Petrol'. Captura Wayback 2025-08-14. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil. BAJA: segun el triage (resumen de prensa no descargado) el diesel ya habria bajado a 21.00 antes de nov-2025 mientras ENPC seguia mostrando 21.40; esta captura puede estar desactualizada. Solo alerta."
+- effective: 2025-08-14
+  product: Diesel 50ppm
+  locality: national
+  price_local: 21.40
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250814212927/https://www.enpc.co.sz/
+  sha256: 0b7924505554fc7e5f82224691618412a0e817bd10037c989a9fd869b4e866ed
+  file: 0b7924505554_enpc_home_wayback_20250814212927.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: baja
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 21.40 / litre Diesel'. Captura Wayback 2025-08-14. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil. BAJA: segun el triage (resumen de prensa no descargado) el diesel ya habria bajado a 21.00 antes de nov-2025 mientras ENPC seguia mostrando 21.40; esta captura puede estar desactualizada. Solo alerta."
+- effective: 2025-08-14
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 15.75
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20250814212927/https://www.enpc.co.sz/
+  sha256: 0b7924505554fc7e5f82224691618412a0e817bd10037c989a9fd869b4e866ed
+  file: 0b7924505554_enpc_home_wayback_20250814212927.html
+  method: "confirmation: home de ENPC (captura Wayback) lista el precio vigente"
+  derived_from: []
+  confidence: baja
+  note: "ENPC (Eswatini National Petroleum Company, estatal; distribuye pero NO fija el precio) muestra en su home 'E 15.75 / litre Paraffin'. Captura Wayback 2025-08-14. Coincide con el nivel del comunicado MNRE del 6-sep-2024. ENPC actualiza con retraso: en dic-2023 y feb-2024 mostraba E22.80 de petrol cuando el MNRE fijaba 20.80/20.50; por eso es confirmacion debil. BAJA: segun el triage (resumen de prensa no descargado) el diesel ya habria bajado a 21.00 antes de nov-2025 mientras ENPC seguia mostrando 21.40; esta captura puede estar desactualizada. Solo alerta."
 - effective: 2026-02-06
   product: ULP 95
   locality: national
@@ -440,3 +598,42 @@ levels:
   derived_from: []
   confidence: media
   note: "Paraffin 'from E21.73 to E25.16' (Times)."
+- effective: 2026-10-16
+  product: ULP 95
+  locality: national
+  price_local: 29.40
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20261016183348/https://www.enpc.co.sz/
+  sha256: 6507e8e0e6ac3fa50db99bc6f6dd3bc146831abf1e4720223f18052856daa699
+  file: 6507e8e0e6ac_enpc_home_20261016.html
+  method: "confirmation: home de ENPC (curl 2026-10-16) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (estatal, no fija el precio) muestra hoy en su home 'E 29.40 / litre Unleaded Petrol' (curl 2026-10-16); coincide con el comunicado MNRE vigente desde el 2-oct-2026. Es la evidencia de last_checked."
+- effective: 2026-10-16
+  product: Diesel 50ppm
+  locality: national
+  price_local: 32.25
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20261016183348/https://www.enpc.co.sz/
+  sha256: 6507e8e0e6ac3fa50db99bc6f6dd3bc146831abf1e4720223f18052856daa699
+  file: 6507e8e0e6ac_enpc_home_20261016.html
+  method: "confirmation: home de ENPC (curl 2026-10-16) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (estatal, no fija el precio) muestra hoy en su home 'E 32.25 / litre Diesel' (curl 2026-10-16); coincide con el comunicado MNRE vigente desde el 2-oct-2026. Es la evidencia de last_checked."
+- effective: 2026-10-16
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 25.16
+  source_type: official_site
+  url: https://www.enpc.co.sz/
+  archive_url: https://web.archive.org/web/20261016183348/https://www.enpc.co.sz/
+  sha256: 6507e8e0e6ac3fa50db99bc6f6dd3bc146831abf1e4720223f18052856daa699
+  file: 6507e8e0e6ac_enpc_home_20261016.html
+  method: "confirmation: home de ENPC (curl 2026-10-16) lista el precio vigente"
+  derived_from: []
+  confidence: media
+  note: "ENPC (estatal, no fija el precio) muestra hoy en su home 'E 25.16 / litre Paraffin' (curl 2026-10-16); coincide con el comunicado MNRE vigente desde el 2-oct-2026. Es la evidencia de last_checked."
