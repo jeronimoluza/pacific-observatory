@@ -172,7 +172,11 @@ def run_collection(
 
         out_path = _source_csv_path(entry, base_dir=base_dir)
         existing = load_csv(out_path, columns=COLUMNS)
-        cutoff = _cutoff_from_df(existing, entry["fallback_date"])
+        cutoff = (
+            entry["fallback_date"]
+            if entry.get("full_refresh")
+            else _cutoff_from_df(existing, entry["fallback_date"])
+        )
 
         if dry_run:
             logger.info(
