@@ -11,8 +11,8 @@ Invalidation rules — see `is_stale`:
   - schema_version mismatch       → full re-annotate
   - source set differs             → full re-annotate
   - any keyword hash differs       → full re-annotate
-  - new article rows past tail     → tail-only annotate (handled separately by
-                                     `tail_extension`)
+  - a month's row count moved      → re-annotate the source from that month
+                                     and replace its cells (`first_stale_month`)
 """
 
 from __future__ import annotations
@@ -24,6 +24,8 @@ from pathlib import Path
 from typing import Iterable
 
 import pandas as pd
+
+from src.text.analysis.news_rows import clean_chunks
 
 
 SCHEMA_VERSION = 4
@@ -169,42 +171,33 @@ def is_stale(
     return False, None
 
 
-# ── Tail extension ───────────────────────────────────────────────────
+# ── Lateness window ──────────────────────────────────────────────────
 
 
-def tail_extension(
+def first_stale_month(
     news_csv: Path,
-    params: SourceCountsParams | None,
-    source_key: str,
-) -> tuple[pd.Timestamp | None, int] | None:
-    """Detect whether ``news.csv`` has rows newer than the cached tail.
+    cached_rows: pd.DataFrame,
+    subset_start: pd.Timestamp | None,
+    subset_end: pd.Timestamp | None,
+) -> pd.Timestamp | None:
+    """First month whose annotatable row count in ``news.csv`` differs from the cache.
 
-    Returns
-    -------
-    (cutoff, n_new) :
-        ``cutoff`` is the strict lower bound (rows with ``date > cutoff`` need
-        annotating); ``n_new`` is the number of such rows.
-        If there is no cached tail or the source has zero cached rows, returns
-        ``(None, n_total)`` so the caller falls back to a full annotate.
-    None :
-        ``news.csv`` could not be read (caller treats as full re-annotate).
+    ``cached_rows`` are the source's cached cells. A month moves when rows land
+    past the tail, when a merge brings in late rows dated at or before it, or
+    when rows leave the file. Returns the start of the earliest such month, or
+    ``None`` when every month matches or ``news.csv`` cannot be read.
     """
+    file_counts = pd.Series(dtype="int64")
     try:
-        dates = pd.to_datetime(
-            pd.read_csv(news_csv, usecols=["date"], encoding="utf-8")["date"],
-            format="mixed",
-            errors="coerce",
-        ).dropna()
+        for rows, *_ in clean_chunks(news_csv, subset_start, subset_end):
+            months = rows["date"].dt.to_period("M").value_counts()
+            file_counts = file_counts.add(months, fill_value=0)
     except Exception:
         return None
-
-    if params is None or source_key not in params.tails:
-        return (None, int(len(dates)))
-
-    last_iso = params.tails[source_key].get("last_date")
-    if not last_iso:
-        return (None, int(len(dates)))
-
-    cutoff = pd.Timestamp(last_iso)
-    new_rows = int((dates > cutoff).sum())
-    return (cutoff, new_rows)
+    cached = pd.Series(dtype="int64")
+    if not cached_rows.empty:
+        dates = pd.to_datetime(cached_rows["ym"].astype(str), format="mixed")
+        cached = cached_rows["A_total"].groupby(dates.dt.to_period("M").values).sum()
+    diff = file_counts.sub(cached, fill_value=0)
+    stale = diff.index[diff != 0]
+    return stale.min().to_timestamp() if len(stale) else None
