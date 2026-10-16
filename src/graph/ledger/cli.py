@@ -99,19 +99,21 @@ def show_cmd(ledger_dir, source):
 
 @ledger.command("zeros")
 @_dir_opt
-@click.option("--week", default=None, help="Prices: silent zeros of this ISO week (raw_sources rule).")
+@click.option("--week", default=None, help="Prices: silent zeros of this ISO week (graph.checks.raw_sources).")
 @click.option("--last", default=2, show_default=True, help="Text: 0 rows in each of the last N staged runs.")
 @click.option("-n", "n", default=4, show_default=True, help="Prices baseline weeks.")
 @click.option("--list", "show", is_flag=True)
 def zeros_cmd(ledger_dir, week, last, n, show):
-    """Silent zeros reproduced from the ledger (prices --week) or text zero runs."""
+    """Prices --week: silent zeros by graph.checks.raw_sources. Text: zero runs from the ledger."""
     from graph.ledger import store
 
-    runs = store.read(RUNS, ledger_dir)
     if week:
-        df = B.silent_zeros(runs, week, n)
-        click.echo(f"prices {week}: {len(df)} ceros silenciosos (ZERO en el ledger semanal, baseline {n} semanas > 0)")
+        df = B.silent_zeros(week, n)
+        red = int((df["color"] == "rojo").sum())
+        click.echo(f"prices {week}: {red} ceros silenciosos (rojo de graph.checks.raw_sources, baseline {n} semanas); "
+                   f"{len(df) - red} fetchers sin delta (amarillo)")
     else:
+        runs = store.read(RUNS, ledger_dir)
         ids, df = B.zero_runs(runs, last)
         click.echo(f"text {', '.join(ids)}: {len(df)} fuentes con 0 filas en las {len(ids)} corridas; "
                    f"por estados {df['statuses'].value_counts().to_dict()}")
