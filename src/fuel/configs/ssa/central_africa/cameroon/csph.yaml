@@ -3,6 +3,9 @@ module: ssa.central_africa.cameroon.csph
 function: fetch_csph_cm
 url: https://www.csph.cm/
 fallback_date: 2024-01-01
+# Disabled 2026-10: superseded by csph_cm_retail (retail line of the same PDFs).
+# This wholesale reader is frozen at 2025-03 (CSPH renamed the files).
+enabled: false
 priority: 10
 cadence: monthly
 publication: announcement  # published only when the price changes
