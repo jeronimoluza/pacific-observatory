@@ -40,7 +40,7 @@ def resolve_countries(value: str | None) -> list[str] | None:
     if not value:
         return None
     errors = []
-    if (PANELS_DIR / f"{value}.yaml").exists():
+    if "," not in value and (PANELS_DIR / f"{value}.yaml").exists():
         pairs = _panel_pairs(value, errors)
     else:
         pairs = [(None, c.strip()) for c in value.split(",") if c.strip()]
