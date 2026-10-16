@@ -4,7 +4,9 @@ Official rates stay in ``frankfurter`` / ``refresh``. This module keeps a
 second, monthly series per currency from the sources that report a real
 market rate: WFP VAM (BIF ETB IQD LBP LYD MWK SDG SSP YER), World Bank RTFX
 where its "unofficial" column is not the official rate (SOS SSP LBP), the
-Argentine blue dollar, Venezuela's paralelo and Bolivia's USDT rate. It is
+Argentine blue dollar, Venezuela's paralelo, Bolivia's USDT rate, Iran's
+tgju, Ethiopia's ethioblackmarket, Syria's sp-today, and (parallel_sources)
+Myanmar's CBM market rate, DZD/ZWG/MVR portals and Binance P2P. It is
 shared by fuel and prices; ``load_parallel`` reads the cache and pipelines
 attach it themselves (fuel: ``fuel.fx_parallel.attach_parallel``).
 """
@@ -19,6 +21,7 @@ from pathlib import Path
 import pandas as pd
 
 from core.http import make_session
+from prices.fx.parallel_sources import extra_series
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +98,7 @@ def refresh_parallel_cache(cache_path: Path = PARALLEL_CACHE) -> int:
         + frames
         + _market_series(session, cache_path)
         + _portal_series(session, cache_path)
+        + extra_series(session, load_parallel(cache_path))
     )
     out = (
         pd.concat(frames, ignore_index=True)[_COLUMNS]
