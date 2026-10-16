@@ -58,6 +58,7 @@ _DOWNLOAD_URL = f"{_TENANT}/personal/infoestadistica_cne_cl/_layouts/15/download
 _COUNTRY = "Chile"
 _CURRENCY = "CLP"
 _SOURCE_KEY = "cl_cne_bencina_monthly"
+_PLACEHOLDER_PRICE = 99_999.0
 _ROOT = Path(__file__).resolve().parents[6]
 _CONFIG_PATH = _ROOT / "src/fuel/configs/lac/south_america/chile/cne_bencina.yaml"
 _DATA_DIR = _ROOT / "data" / "fuel"
@@ -138,9 +139,13 @@ def _download_year(session, file_name: str) -> pd.DataFrame | None:
         df = pd.read_csv(
             io.BytesIO(raw),
             sep=sep,
-            usecols=["codigo", "combustible", "precio", "fecha_actualizacion"],
+            # Station id: `codigo` from 2023, `id` before.
+            usecols=lambda c: (
+                c in {"codigo", "id", "combustible", "precio", "fecha_actualizacion"}
+            ),
             dtype={
                 "codigo": "string",
+                "id": "string",
                 "combustible": "string",
                 "fecha_actualizacion": "string",
             },
@@ -149,9 +154,13 @@ def _download_year(session, file_name: str) -> pd.DataFrame | None:
         logger.exception("[cl_cne_bencina] Failed to parse %s", file_name)
         return None
 
+    df = df.rename(columns={"id": "codigo"})
     df["combustible"] = df["combustible"].replace(_LEGACY_PRODUCT_MAP)
     df["precio"] = pd.to_numeric(df["precio"], errors="coerce")
     df = df.dropna(subset=["combustible", "precio", "fecha_actualizacion"])
+    # 99999.999 is CNE's "no price" placeholder; with one or two stations the
+    # MAD trim cannot catch it (GNC 2026-08: 2 stations -> 50,453 CLP/m3).
+    df = df[df["precio"] < _PLACEHOLDER_PRICE]
     df = df[df["combustible"].isin(_PRODUCT_UNITS)]
     return df
 
