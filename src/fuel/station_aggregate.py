@@ -230,11 +230,17 @@ def station_outputs(
     return collapsed, stats
 
 
-STATION_COLUMNS = ["n_stations", "price_mean", "price_median"]
+STATION_COLUMNS = [
+    "price_mean",
+    "price_median",
+    "n_stations",
+    "n_dropped",
+    "dispersion",
+]
 
 
 def attach_station_stats(df: pd.DataFrame, stats: pd.DataFrame) -> pd.DataFrame:
-    """Add n_stations / price_mean / price_median of the observation date a row
+    """Add STATION_COLUMNS of the observation date a row
     comes from (``observed_on``) for station-aggregated sources; blank elsewhere."""
     if stats.empty:
         return df.assign(**{c: None for c in STATION_COLUMNS})

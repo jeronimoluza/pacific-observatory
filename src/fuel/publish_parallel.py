@@ -66,6 +66,35 @@ def parallel_sheets(
     return {"usd_parallel": wide, "fx_parallel": rates}
 
 
+def station_stats_sheet(countries: list[dict], history_years: int) -> pd.DataFrame:
+    """Long table of the station-aggregated series: mean and median side by side."""
+    cutoff = (date.today() - timedelta(days=365 * history_years)).isoformat()
+    frames = []
+    for c in countries:
+        path = c["output_dir"] / "station_stats.csv"
+        if path.exists():
+            st = pd.read_csv(path)
+            frames.append(
+                st[st["observation_date"] >= cutoff].assign(iso3=c.get("iso3", ""))
+            )
+    if not frames:
+        return pd.DataFrame()
+    cols = [
+        "iso3",
+        "source_key",
+        "series_key",
+        "observation_date",
+        "price_mean",
+        "price_median",
+        "price_trimmed_mean",
+        "n_stations",
+        "n_dropped",
+        "dispersion",
+        "flagged",
+    ]
+    return pd.concat(frames, ignore_index=True)[cols].sort_values(cols[:4])
+
+
 def _latest_rows(countries: list[dict]) -> list[dict]:
     fam = _family_frames(countries, history_years=1)
     if fam.empty:
