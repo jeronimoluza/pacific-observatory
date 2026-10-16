@@ -46,7 +46,13 @@ _CADENCE_DAYS = {
     "monthly": 31,
     "quarterly": 92,
     "yearly": 366,
-    "irregular": 1,
+    # Irregular sources (regulated prices that change when the authority
+    # decides) hold a price until the next observation, but at most ~6 months
+    # so a dead source stops instead of reaching today. 184 days covers the
+    # 90th-percentile gap between observations of the irregular carry-forward
+    # sources (CRI 42, COL 62, NPL 32, PRY 143, URY 172 days; LKA 185) and
+    # stops Burundi (annual, last 2018).
+    "irregular": 184,
 }
 _PRODUCT_COLUMNS = [
     "observation_date",
@@ -425,8 +431,22 @@ def build_country_outputs(
     )
 
     resolved = attach_station_stats(resolved, station_stats)
-    save_csv(resolved, product_path, columns=_PRODUCT_COLUMNS + STATION_COLUMNS)
-    save_csv(family, family_path, columns=_FAMILY_COLUMNS)
+    basis = {e["source_key"]: e.get("price_basis", "retail") for e in enabled_entries}
+    resolved["price_basis"] = (
+        resolved["source_key"].astype(str).str.split(",").str[0].map(basis)
+    )
+    family_basis = (
+        resolved.groupby("fuel_family")["price_basis"]
+        .agg(lambda s: ",".join(sorted(set(s.dropna()))))
+        .to_dict()
+    )
+    family["price_basis"] = family["fuel_family"].map(family_basis)
+    save_csv(
+        resolved,
+        product_path,
+        columns=_PRODUCT_COLUMNS + STATION_COLUMNS + ["price_basis"],
+    )
+    save_csv(family, family_path, columns=_FAMILY_COLUMNS + ["price_basis"])
     return {
         "product_path": product_path,
         "family_path": family_path,

@@ -30,13 +30,21 @@ REGIME_COLORS = {
     "Unknown": "#aec7e8",
 }
 
+# Each WB column has its own legend (second header row of the CSV).
+# Pricing mechanism: 1 deregulated, 2 regulated, 3 deregulated with government
+# intervention ("pseudo regulated": refinery subsidies, pressure to freeze
+# prices) -- treated as regulated unless a publish override says otherwise.
 _CODE_TO_BASE_REGIME = {
     0: "Market",
     1: "Market",
     2: "Price Control",
-    3: "Market",
+    3: "Price Control",
 }
 
+# Types of subsidy / price control measures: 1 regulated cap or level,
+# 2 price freeze (both are price control); 3-7 and 9 are subsidies; 0 none,
+# 8 lower blending (neither).
+_SUBSIDY_TYPE_TO_REGIME = {1: "Price Control", 2: "Price Control"}
 _SUBSIDY_TYPE_CODES = {3, 4, 5, 6, 7, 9}
 
 _PRODUCT_QUAL_KEYWORDS: dict[str, list[str]] = {
@@ -85,6 +93,7 @@ def _parse_product_qualifier(
     text: str,
     overall_base: str = "Unknown",
     overall_subsidy: bool = False,
+    subsidy_type: bool = False,
 ) -> dict[str, dict]:
     if not text or str(text).lower().strip() in ("nan", "none", ""):
         return {
@@ -93,7 +102,9 @@ def _parse_product_qualifier(
         }
 
     per_product: dict[str, dict] = {}
-    for entry in _split_not_in_parens(str(text)):
+    for entry in (
+        e for line in str(text).splitlines() for e in _split_not_in_parens(line)
+    ):
         m_qual = re.search(r"\(([^)]+)\)", entry)
         if not m_qual:
             continue
@@ -102,8 +113,12 @@ def _parse_product_qualifier(
         if not m_code:
             continue
         code = int(m_code.group(1))
-        base = _CODE_TO_BASE_REGIME.get(code, overall_base)
-        subsidy = code in _SUBSIDY_TYPE_CODES or overall_subsidy
+        if subsidy_type:
+            base = _SUBSIDY_TYPE_TO_REGIME.get(code, overall_base)
+            subsidy = code in _SUBSIDY_TYPE_CODES or overall_subsidy
+        else:
+            base = _CODE_TO_BASE_REGIME.get(code, overall_base)
+            subsidy = overall_subsidy
 
         matched = [
             p
@@ -199,9 +214,14 @@ def load_regime_data(
         pm = row["pricing_mechanism"]
         return _CODE_TO_BASE_REGIME.get(int(pm) if pd.notna(pm) else -1, "Unknown")
 
+    stype_codes = (
+        df[stype_col].astype(str).str.findall(r"\b(\d)\b")
+        if stype_col is not None
+        else pd.Series([[]] * len(df), index=df.index)
+    )
+
     def classify_subsidy(row):
-        st = row["subsidy_type"]
-        return int(st) in _SUBSIDY_TYPE_CODES if pd.notna(st) else False
+        return any(int(c) in _SUBSIDY_TYPE_CODES for c in stype_codes.at[row.name])
 
     out["base_regime"] = out.apply(classify_base, axis=1)
     out["subsidy_flag"] = out.apply(classify_subsidy, axis=1)
@@ -222,7 +242,9 @@ def load_regime_data(
         base = out.at[idx, "base_regime"]
         sub = bool(out.at[idx, "subsidy_flag"])
         pm_prods = _parse_product_qualifier(raw_mech.at[idx], base, sub)
-        st_prods = _parse_product_qualifier(raw_stype.at[idx], base, False)
+        st_prods = _parse_product_qualifier(
+            raw_stype.at[idx], base, False, subsidy_type=True
+        )
         merged: dict[str, dict] = dict(pm_prods)
         for prod, info in st_prods.items():
             if (

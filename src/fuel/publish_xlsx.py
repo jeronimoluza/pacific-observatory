@@ -35,28 +35,6 @@ def _load_country_prices(country_dir: Path, cutoff: str) -> pd.DataFrame:
     return df
 
 
-def _carry_forward_keys(region: str) -> set[tuple[str, str]]:
-    """Return {(iso3, label)} for products whose source config sets carry_forward=true.
-
-    Honors per-product override: spec.carry_forward if set, else source default.
-    """
-    registry = build_fuel_registry(region=region)
-    keys: set[tuple[str, str]] = set()
-    for entry in registry.values():
-        iso3 = entry.get("iso3", "")
-        source_default = bool(entry.get("carry_forward", False))
-        for raw_name, spec in entry.get("products", {}).items():
-            cf = spec.carry_forward
-            effective = source_default if cf is None else bool(cf)
-            if not effective:
-                continue
-            if not getattr(spec, "include_in_build", True):
-                continue
-            label = spec.label or spec.series_key or raw_name
-            keys.add((iso3, label))
-    return keys
-
-
 def _build_data_sheet(
     region: str, countries: list[dict], history_years: int
 ) -> pd.DataFrame:
@@ -97,24 +75,59 @@ def _build_data_sheet(
         columns="observation_date",
         values="price_local",
     )
-    # Reindex date columns to a contiguous daily range so ffill can bridge gaps.
+    # Contiguous daily columns; cells hold only what the build wrote, carried-
+    # forward days included, so the Excel and the dashboard show the same fill.
     if not wide.columns.empty:
         all_dates = pd.date_range(
             wide.columns.min(), wide.columns.max(), freq="D"
         ).strftime("%Y-%m-%d")
         wide = wide.reindex(columns=all_dates)
 
-    cf_keys = _carry_forward_keys(region)
-    if cf_keys and not wide.empty:
-        mask = pd.Series(
-            [(iso3, fp) in cf_keys for iso3, fp, *_ in wide.index],
-            index=wide.index,
-        )
-        if mask.any():
-            wide.loc[mask] = wide.loc[mask].ffill(axis=1)
-
     wide = wide.reset_index().sort_values(["iso3", "fuel_product"])
     return wide
+
+
+def _build_freshness_sheet(countries: list[dict]) -> pd.DataFrame:
+    """Per series: the last date with a real observation and the last date the
+    data sheet shows (carried forward within the source's cadence window)."""
+    frames = []
+    for c in countries:
+        path = c["output_dir"] / "fuel_product_local_prices.csv"
+        if not path.exists():
+            continue
+        df = pd.read_csv(path, low_memory=False)
+        if df.empty:
+            continue
+        observed = df["observed_on"].astype(str).str.split(",").str[-1].str[:10]
+        frames.append(
+            df.assign(
+                iso3=df["iso3"].fillna(c.get("iso3", "")),
+                fuel_product=df["label"].fillna(df["series_key"]),
+                observed=observed,
+                shown=df["observation_date"].astype(str).str[:10],
+                price_basis=df["price_basis"] if "price_basis" in df else "retail",
+            )
+            .groupby(["iso3", "fuel_product"], as_index=False)
+            .agg(
+                last_observed=("observed", "max"),
+                last_shown=("shown", "max"),
+                price_basis=(
+                    "price_basis",
+                    lambda s: ",".join(sorted(set(s.dropna()))),
+                ),
+            )
+        )
+    if not frames:
+        return pd.DataFrame(
+            columns=[
+                "iso3",
+                "fuel_product",
+                "last_observed",
+                "last_shown",
+                "price_basis",
+            ]
+        )
+    return pd.concat(frames, ignore_index=True).sort_values(["iso3", "fuel_product"])
 
 
 def _build_sources_sheet(region: str, countries: list[dict]) -> pd.DataFrame:
@@ -123,6 +136,7 @@ def _build_sources_sheet(region: str, countries: list[dict]) -> pd.DataFrame:
         k: {
             "url": v.get("url", ""),
             "display_name": v.get("display_name") or k,
+            "price_basis": v.get("price_basis", "retail"),
         }
         for k, v in registry.items()
     }
@@ -156,10 +170,11 @@ def _build_sources_sheet(region: str, countries: list[dict]) -> pd.DataFrame:
                     "iso3": iso3,
                     "source": meta.get("display_name") or key,
                     "url": meta.get("url", ""),
+                    "price_basis": meta.get("price_basis", "retail"),
                 }
             )
     if not rows:
-        return pd.DataFrame(columns=["iso3", "source", "url"])
+        return pd.DataFrame(columns=["iso3", "source", "url", "price_basis"])
     return pd.DataFrame(rows).sort_values(["iso3", "source"]).reset_index(drop=True)
 
 
@@ -184,6 +199,9 @@ def export_region_xlsx(
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
         data_sheet.to_excel(writer, sheet_name="data", index=False)
         sources_sheet.to_excel(writer, sheet_name="sources", index=False)
+        _build_freshness_sheet(countries).to_excel(
+            writer, sheet_name="freshness", index=False
+        )
         for name, sheet in extra.items():
             sheet.to_excel(writer, sheet_name=name, index=False)
 

@@ -161,6 +161,11 @@ class FuelSourceConfig(BaseModel):
     carry_forward: bool = False
     station_aggregate: StationAggregate | None = None
     # What one raw row's location is; rows without one are "national".
+    # What the published price is. Retail pump prices are the target; where no
+    # retail source exists a labelled fallback is published instead.
+    price_basis: Literal[
+        "retail", "wholesale", "ex_refinery", "floor", "indicative"
+    ] = "retail"
     station_type: Literal[
         "station", "market", "city", "region", "national"
     ] | None = None
@@ -386,6 +391,7 @@ def build_fuel_registry(
             "carry_forward": cfg.carry_forward,
             "station_aggregate": cfg.station_aggregate,
             "station_type": cfg.station_type,
+            "price_basis": cfg.price_basis,
             "country_slug": cfg.country_slug,
             "country_name": cfg.country_name,
             "iso3": cfg.iso3,

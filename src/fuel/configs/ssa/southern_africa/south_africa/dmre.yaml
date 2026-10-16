@@ -6,6 +6,8 @@ fallback_date: 2020-01-01
 priority: 10
 cadence: monthly
 carry_forward: true
+# Not a retail pump price (diesel and paraffin are regulated wholesale; petrol is retail (fuelsindustry covers petrol)); published as a labelled fallback.
+price_basis: wholesale
 
 # DMRE publishes annual Fuel Price History PDFs in South African cents/litre.
 # The fetcher converts cents/litre to ZAR/litre and keeps Inland/Coast areas.

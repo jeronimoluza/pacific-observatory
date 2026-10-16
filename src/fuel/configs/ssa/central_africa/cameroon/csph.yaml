@@ -6,6 +6,8 @@ fallback_date: 2024-01-01
 priority: 10
 cadence: monthly
 carry_forward: true
+# Not a retail pump price (CSPH line read is the depot outlet price, not the pump price (pump fixed since 2024-02)); published as a labelled fallback.
+price_basis: wholesale
 station_type: city
 
 products:
