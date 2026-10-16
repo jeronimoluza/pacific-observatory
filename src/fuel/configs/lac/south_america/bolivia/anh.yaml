@@ -3,22 +3,25 @@ module: lac.south_america.bolivia.anh
 function: fetch_bo_anh
 url: https://www.anh.gob.bo/w2019/contenido.php?s=13&Y=2026
 fallback_date: 2020-01-01
-priority: 10
+priority: 50  # foreign-plate price; out of the main series (bo_retail_levels is priority 5)
 cadence: monthly
 carry_forward: true
 
 # ANH publishes "Precios Internacionales" monthly via resolución
 # administrativa: state-set prices applied to foreign-plated vehicles,
-# aviation and industry. The mercado-interno (subsidized Bolivian)
-# prices are frozen since 2005 and image-only on the site; the
-# internacional series IS the one that actually changes, so we ingest
-# it here. carry_forward=true because the resolución sets the price
+# aviation and industry. This is the foreign-plate price, kept as a
+# fallback only: the mercado-interno (Bolivian-plate) price is image-only
+# on the site and is hand-curated in bo_retail_levels (priority 5), which
+# shares these series keys and so wins on every date it covers.
+# price_basis stays retail: it is a pump price, just for foreign plates
+# (equal to the domestic diesel price since Jan-2026).
+# carry_forward=true because the resolución sets the price
 # until the next month's update — daily gaps should be filled forward.
 
 products:
   "Gasolina Especial Internacional":
-    label: Gasoline Especial
-    series_key: gasoline_premium_intl
+    label: Gasoline Especial (foreign-plate)
+    series_key: gasoline_especial  # same key as bo_retail_levels so the domestic price wins
     fuel_family: gasoline
     unit: liter
     include_in_build: true

@@ -1,0 +1,58 @@
+source_key: ec_retail_levels
+module: lac.south_america.ecuador.retail_levels
+function: fetch_ec_retail_levels
+url: https://www.controlrecursosyenergia.gob.ec/
+fallback_date: 2021-01-01
+priority: 5
+cadence: monthly  # band adjustment on the 12th of each month
+publication: announcement  # a level holds until the next one
+carry_forward: true
+full_refresh: true
+price_basis: retail
+
+# Hand-curated precio de venta al publico (ARCH communiques as reported by
+# the press; ARCH's site is down), read from
+# configs/_manual/ec_retail_levels.yaml; nothing is scraped. Series keys
+# match ec_petroecuador_monthly so these retail levels win per date over the
+# terminal (wholesale) fallback.
+
+products:
+  "Gasolina Extra":
+    label: Gasoline Extra
+    series_key: gasoline_regular_85
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular
+    octane_ron: 85
+  "Gasolina Ecopaís":
+    label: Gasoline Ecopais
+    series_key: gasoline_ecopais
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular_ethanol
+  "Gasolina Súper":
+    label: Gasoline Super 95 (referential)
+    series_key: gasoline_premium_95
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Diésel Premium":
+    label: Diesel Premium
+    series_key: diesel
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: true
+    grade: premium
+  "GLP doméstico 15 kg":
+    label: LPG household (15 kg)
+    series_key: lpg_household
+    fuel_family: lpg
+    unit: cylinder
+    amount: 15
+    density_l_per_kg: 1.96
+    include_in_build: true
+    grade: subsidized
