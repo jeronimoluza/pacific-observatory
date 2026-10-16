@@ -401,6 +401,8 @@ class Prober:
         code = r.status_code
         if CF_BODY.search(body[:20000]) and (cf or code in (403, 503, 429)):
             p.status, p.detail = "cloudflare", f"challenge page (HTTP {code})"
+        elif "/.well-known/sgcaptcha/" in body[:5000]:  # SiteGround's bot wall
+            p.status, p.detail = "cloudflare", f"SiteGround captcha (HTTP {code})"
         elif code in (404, 410):
             p.status, p.detail = (
                 "not_found",
