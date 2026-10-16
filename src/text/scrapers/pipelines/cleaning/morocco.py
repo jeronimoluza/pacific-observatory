@@ -19,11 +19,12 @@ def clean_arc_fusion_body(script_text: str) -> str:
         script_text: Text of the <script> holding Fusion.globalContent
 
     Returns:
-        The text paragraphs joined by spaces, tags stripped; empty if absent
+        The text paragraphs joined by spaces, tags stripped. Text without the
+        marker is returned as is: collect cleans the body twice.
     """
     start = (script_text or "").find("Fusion.globalContent=")
     if start < 0:
-        return ""
+        return script_text or ""
     try:
         content, _ = json.JSONDecoder().raw_decode(script_text, start + len("Fusion.globalContent="))
     except ValueError:

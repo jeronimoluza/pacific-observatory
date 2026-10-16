@@ -5,3 +5,6 @@
 # - theinformant247: 20-28 s per request; only ~15 articles fit 300 s.
 venezuela_rb: [runrun_es]
 nigeria: [theinformant247]
+# - antara: was in text_exclude_sources (tarpit); re-run 15:58 UTC answered (66 rows, newest 10-16) but
+#   too slow for 300 s, so slow lane instead of parked.
+indonesia: [antara]
