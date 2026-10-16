@@ -24,6 +24,8 @@ RUNS = "RUNS"
 APPLIED = "APPLIED"
 # One line per source written, so a re-run after a refusal skips them instead of refusing them.
 APPLIED_SOURCES = "APPLIED_SOURCES"
+# A newer plan folded this one's runs in: two open plans on one corpus file would refuse each other.
+SUPERSEDED = "SUPERSEDED"
 COLUMNS = ["region", "key", "file", "target", "target_sha256", "target_rows_before", "new_rows", "from"]
 
 
@@ -37,13 +39,14 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def planned_runs(pending_root: Path) -> set[str]:
-    """`<run>/<region>` of every plan not yet applied: step merge does not plan them twice."""
+def open_plans(pending_root: Path) -> dict[Path, list[Path]]:
+    """Plans neither applied nor superseded -> their <run>/<region> dirs."""
     if not pending_root.is_dir():
-        return set()
+        return {}
     return {
-        line for p in pending_root.glob(f"*/{RUNS}") if not (p.parent / APPLIED).exists()
-        for line in p.read_text().split()
+        p.parent: [Path(line) for line in p.read_text().split()]
+        for p in sorted(pending_root.glob(f"*/{RUNS}"))
+        if not (p.parent / APPLIED).exists() and not (p.parent / SUPERSEDED).exists()
     }
 
 
@@ -98,7 +101,7 @@ def plan(run_regions: list[Path], countries: set[str], corpus_root: Path, plan_d
         w = csv.DictWriter(f, COLUMNS, delimiter="\t")
         w.writeheader()
         w.writerows(rows)
-    (plan_dir / RUNS).write_text("".join(f"{rd.parent.name}/{rd.name}\n" for rd in run_regions))
+    (plan_dir / RUNS).write_text("".join(f"{rd}\n" for rd in run_regions))
     return rows
 
 
@@ -115,9 +118,10 @@ def apply(plan_dir: Path, staging_root: Path) -> int:
     from text.ledger import Ledger
     from text.merge import MERGED_MARKER, merge_source
 
-    if (plan_dir / APPLIED).exists():
-        print(f"{plan_dir.name}: already applied ({(plan_dir / APPLIED).read_text().strip()})")
-        return 1
+    for marker in (APPLIED, SUPERSEDED):
+        if (plan_dir / marker).exists():
+            print(f"{plan_dir.name}: {marker} ({(plan_dir / marker).read_text().strip()})")
+            return 1
     with open(plan_dir / PLAN, newline="") as f:
         rows = list(csv.DictReader(f, delimiter="\t"))
     by_source: dict[tuple[str, str], list[dict]] = {}
@@ -159,8 +163,8 @@ def apply(plan_dir: Path, staging_root: Path) -> int:
         return 1
     # Only the panel's own staging runs are marked merged; prod's run dirs are never written.
     for line in (plan_dir / RUNS).read_text().split():
-        rd = staging_root / line
-        if rd.is_dir():
+        rd = Path(line)
+        if rd.is_dir() and rd.is_relative_to(staging_root):
             (rd / MERGED_MARKER).write_text(f"{stamp} signoff {plan_dir.name}\n")
     (plan_dir / APPLIED).write_text(
         f"{stamp} " + "; ".join(f"{g}: {n} sources +{a} news +{b} urls" for g, (n, a, b) in sorted(done.items())) + "\n"

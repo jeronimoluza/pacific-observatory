@@ -156,10 +156,16 @@ def step_merge(a) -> int:
     if not a.staging_root.is_dir():
         print(f"no staging root {a.staging_root}")
         return 1
-    planned = signoff.planned_runs(a.pending_root)
-    run_regions = []
+    # Runs of plans still awaiting sign-off are planned again, together with the new ones.
+    plan_dir = a.pending_root / a.run_id
+    if plan_dir.exists():
+        print(f"{plan_dir} exists: a run id plans once")
+        return 1
+    folded = signoff.open_plans(a.pending_root)
+    planned = {rd for rds in folded.values() for rd in rds}
+    run_regions = sorted(planned)
     for region in _regions(srcs):
-        runs = [r for r in pending_runs(a.staging_root, region) if f"{r.name}/{region}" not in planned]
+        runs = [r for r in pending_runs(a.staging_root, region) if r / region not in planned]
         outside = sorted(
             f"{run.name}/{region}/{d.relative_to(run / region)}"
             for run in runs for d in (run / region).glob("*/*/*")
@@ -173,9 +179,11 @@ def step_merge(a) -> int:
     if not run_regions:
         print("nothing to plan")
         return 0
-    plan_dir = a.pending_root / a.run_id
-    rows = signoff.plan(sorted(run_regions, key=lambda p: p.parent.name), {c for (_, _, c) in srcs},
+    rows = signoff.plan(sorted(run_regions, key=lambda p: (p.parent.name, p.name)), {c for (_, _, c) in srcs},
                         a.corpus_root, plan_dir)
+    for old in folded:
+        (old / signoff.SUPERSEDED).write_text(f"by {plan_dir.name}\n")
+        print(f"{old.name}: superseded by {plan_dir.name}")
     print(f"plan {plan_dir}: {signoff.summary(rows)}")
     print(f"apply with: po text panel signoff {a.run_id}")
     return 0
