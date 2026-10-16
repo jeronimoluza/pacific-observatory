@@ -7,6 +7,7 @@ selector per country; concatenate and prepare both honour it.
 After prepare, every prepared parquet in scope is listed against the step's start:
 an old mtime is not a failure (prepare skips a country whose shards did not change)
 but it is printed, which is how W42's stale `bahamas.parquet` would have shown.
+A country in scope with no prepared parquet at all fails the step.
 """
 
 from __future__ import annotations
@@ -41,7 +42,7 @@ def _stage(stage: str, countries: list[str] | None) -> int:
     return 0
 
 
-def _report(countries: list[str] | None, start: float) -> None:
+def _report(countries: list[str] | None, start: float) -> list[str]:
     from prices.enrich.prepare_shards import PREPARED_DIR
 
     files = _common.prepared_files(PREPARED_DIR, countries)
@@ -60,6 +61,8 @@ def _report(countries: list[str] | None, start: float) -> None:
         missing = [c for c in countries if c not in have]
         if missing:
             print(f"  no prepared parquet: {', '.join(missing)}", flush=True)
+        return missing
+    return []
 
 
 def main() -> int:
@@ -77,7 +80,10 @@ def main() -> int:
             _common.say(status, f"{stage} FAILED rc={rc}")
             return rc
         _common.say(status, f"{stage} rc=0")
-    _report(countries, start)
+    missing = _report(countries, start)
+    if missing:
+        _common.say(status, f"FAILED {len(missing)} countries without a prepared parquet")
+        return 1
     return 0
 
 

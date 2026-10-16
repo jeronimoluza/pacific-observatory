@@ -85,13 +85,16 @@ def weekly(ctx, week, countries, logs_root, backup_mount, dry_run):
 
     Without a subcommand, prints the plan for --countries (implies --dry-run).
     """
+    data = REPO_ROOT / "data"
     ctx.obj = Context(
         week=week,
         logs_root=logs_root,
         countries=resolve_countries(countries),
         dry_run=dry_run or ctx.invoked_subcommand is None,
         backup_mount=backup_mount,
-        disk_paths=[Path("/")],
+        # The disk the step writes to: `/` for a tree whose data lives on a8, the
+        # 5TB for an output tree there.
+        disk_paths=[data.resolve() if data.exists() else Path("/")],
     )
     if ctx.invoked_subcommand is None:
         _print_plan(ctx.obj)
@@ -122,6 +125,19 @@ def diff_command(c: Context, a: Path, b: Path, only: str | None):
     from prices.weekly.diff import diff_trees
 
     sys.exit(diff_trees(a, b, resolve_countries(only) or c.countries))
+
+
+@weekly.command("diff-enrich")
+@click.argument("a", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.argument("b", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.pass_obj
+def diff_enrich_command(c: Context, a: Path, b: Path):
+    """Compare the enrich outputs (shards, prepared, classify, pred) of two tree roots per country."""
+    from prices.weekly.diff_enrich import diff_enrich
+
+    if not c.countries:
+        raise click.UsageError("diff-enrich needs the group's --countries")
+    sys.exit(diff_enrich(a, b, c.countries))
 
 
 @weekly.command("run")
