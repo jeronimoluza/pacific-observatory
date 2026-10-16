@@ -22,7 +22,7 @@ from prices.writers import (
 _PRICES_DIR = Path(__file__).resolve().parent
 _PROJECT_ROOT = _PRICES_DIR.parent.parent
 _PRICES_CONFIGS_DIR = _PRICES_DIR / "configs"
-_DATA_ROOT = _PROJECT_ROOT / "data"
+_DATA_ROOT = Path(os.environ.get("PO_DATA_ROOT") or _PROJECT_ROOT / "data")
 _FETCHERS_PACKAGE = "prices.fetchers"
 
 logger = logging.getLogger(__name__)

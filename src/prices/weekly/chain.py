@@ -23,11 +23,14 @@ from prices.weekly.status import Status
 from prices.weekly.step import Context, run_step
 from prices.weekly.steps import STEPS
 
-ORDER = ["enrich", "fx", "embed", "score_classify", "stage_b", "build"]
+ORDER = ["collect", "enrich", "fx", "embed", "score_classify", "stage_b", "build"]
 
 
 def last_status(c: Context, step: str) -> str:
     f = c.week_dir / f"STATUS_{step}"
+    if step == "collect" and not f.exists():
+        # A week collected by scripts/weekly/collect.sh: its STATUS is the collect's.
+        f = c.week_dir / "STATUS"
     return f.read_text().strip() if f.exists() else "(no STATUS)"
 
 

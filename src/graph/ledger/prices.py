@@ -30,7 +30,7 @@ WEEKLY_LOGS = HOME / "po/logs/weekly"
 DATA_ROOT = HOME / "po/data/prices"
 UTC_STAMPS_FROM = datetime(2026, 6, 1, tzinfo=timezone.utc)
 STATUS = {"ok": "DONE", "ok_norows": "ZERO", "timeout": "TIMEOUT", "fail": "FAIL",
-          "runner_error": "FAIL", "blocked": "BLOCKED"}
+          "runner_error": "FAIL", "blocked": "BLOCKED", "stalled": "STALLED"}
 _LOG_TS = re.compile(rb"^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d) ")
 _STATS = re.compile(rb"Crawled (\d+) pages .*scraped (\d+) items")
 _REQS = re.compile(rb"'downloader/request_count': (\d+)")
@@ -113,7 +113,8 @@ def ledger_rows(ledger: Path, week_of: dict[str, str]) -> list[dict]:
             "country": e.get("country"), "source": e.get("source"), "week": week,
             "start_utc": start, "end_utc": end, "duration_s": secs,
             "new_rows": e.get("new_rows"), "status": STATUS.get(e.get("status"), str(e.get("status")).upper()),
-            "rc": e.get("rc"), "requests": info["requests"], "max_stall_s": info["max_stall_s"],
+            "rc": e.get("rc"), "requests": info["requests"],
+            "max_stall_s": e.get("stall_s", info["max_stall_s"]),
             "weekly": weekly, "origin": "ledger", "log": str(log) if log else None,
         })
     return rows

@@ -6,7 +6,7 @@
   (at least 3) or its last ``observation_date`` is older than 3 median gaps between its
   observation dates (at least 7 days) at the week's Monday; otherwise yellow;
 - red: rows dated after today UTC (#8), from ``observation_date`` of the fetcher CSV;
-- yellow: ledger status timeout, fail, blocked or runner_error;
+- yellow: ledger status timeout, stalled, fail, blocked or runner_error;
 - yellow: an active manifest that is in no ledger of the week.
 
 The week's ledgers are ``<logs>/<wk>/ledger_path`` plus the retry runs next to them
@@ -32,7 +32,7 @@ from pathlib import Path
 NODE = "prices.raw"
 DATA_ROOT = Path.home() / "po/data/prices"
 LOGS_ROOT = Path.home() / "po/logs/weekly"
-YELLOW_STATUSES = {"timeout", "fail", "blocked", "runner_error"}
+YELLOW_STATUSES = {"timeout", "stalled", "fail", "blocked", "runner_error"}
 _RUN_TS = re.compile(r"_(\d{8})_\d{6}\.jsonl$")
 
 

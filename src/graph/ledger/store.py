@@ -19,7 +19,8 @@ BUDGETS = "source_budgets.parquet"
 RAW_CACHE = "raw_files.parquet"
 
 # status: DONE (rows > 0, or rows unknown), ZERO (finished with 0 rows), TIMEOUT (killed by
-# the wall-clock cap), FAIL (non-zero exit, or text STUCK), BLOCKED (prices blocklist; the
+# the wall-clock cap), STALLED (killed by the weekly collect after no progress), FAIL
+# (non-zero exit, or text STUCK), BLOCKED (prices blocklist; the
 # source was not run). origin: where the row came from.
 COLUMNS = {
     "pipeline": "string", "run_id": "string", "region": "string", "country": "string",

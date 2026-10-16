@@ -97,32 +97,24 @@ def derive(runs, n: int = N, margin: float = MARGIN, floor_s: int = FLOOR_S, sta
     return df
 
 
-def silent_zeros(runs, week: str, n: int = 4):
-    """``graph.checks.raw_sources``'s silent zero from the ledger: the week's last status
-    over its weekly ledgers is ZERO and the median weekly raw rows over the ``n`` weeks
-    before (from the source's first raw week, an absent week = 0) is > 0."""
-    import statistics
-
+def silent_zeros(week: str, n: int = 4):
+    """Prices silent zeros of ``week``, by ``graph.checks.raw_sources`` itself (one definition):
+    its red ``cero silencioso`` findings, plus the fetchers without delta it holds yellow.
+    It reads the week's ledgers with their ``_fullrun`` retries and the raw files on disk;
+    the ledger's weekly rows alone miss the retries and the fetchers' observation dates."""
     import pandas as pd
 
-    from graph.ledger.store import iso_week, week_monday
+    from graph.checks import raw_sources as R
 
-    led = runs[(runs["pipeline"] == "prices") & (runs["origin"] == "ledger") & (runs["week"] == week)
-               & runs["weekly"].fillna(False).astype(bool)].sort_values("run_id")
-    final = led.groupby(["country", "source"]).tail(1)
-    raw = runs[(runs["pipeline"] == "prices") & (runs["origin"] == "raw_items")]
-    by = {k: dict(zip(g["week"], g["new_rows"])) for k, g in raw.groupby(["region", "country", "source"])}
-    start = week_monday(week)
-    prior = [iso_week(start - pd.Timedelta(weeks=i)) for i in range(n, 0, -1)]
+    rows = {f"{r['country']}/{r['source']}": r for r in R.read(week, n=n)}
     out = []
-    for r in final[final["status"] == "ZERO"].itertuples():
-        weeks = by.get((r.region, r.country, r.source), {})
-        first = min(weeks, default=None)
-        p = [w for w in prior if first and w >= first]
-        base = statistics.median([int(weeks.get(w, 0)) for w in p]) if p else None
-        if base:
-            out.append({"country": r.country, "source": r.source, "baseline": base, "run_id": r.run_id})
-    return pd.DataFrame(out, columns=["country", "source", "baseline", "run_id"])
+    for f in R.evaluate(list(rows.values())):
+        color = {"cero silencioso": "rojo", "fetcher sin delta": "amarillo"}.get(f["msg"].split(":")[0])
+        if color:
+            r = rows[f["partition"]]
+            out.append({"country": r["country"], "source": r["source"], "color": color,
+                        "baseline": r["baseline"], "last_obs": r["last_obs"], "scaffolding": r["scaffolding"]})
+    return pd.DataFrame(out, columns=["country", "source", "color", "baseline", "last_obs", "scaffolding"])
 
 
 def zero_runs(runs, last: int = 2):
