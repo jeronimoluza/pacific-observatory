@@ -1,0 +1,186 @@
+# Togo: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Gobierno, por arrêté interministériel (Comercio / Economía-Finanzas / Energía); Comité de suivi des fluctuations des prix des produits pétroliers (CSFPPP).
+# Régimen: precio de venta al detalle fijado ad hoc con mecanismo de ajuste automático y subsidio parcial; nacional (el arrêté de mayo-2026 autoriza +20 F CFA máx. en localidades alejadas de estaciones).
+# Canales: comunicado del Gobierno en commerce.gouv.tg (solo dic-2024 hallado ahí), prensa (Koaci, Togomatin, L-Frii, republicoftogo.com, APA).
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos: Gasoil 850 -> 775 (fecha no encontrada; probablemente el ajuste del 28/01/2023 que menciona Beninwebtv, sin cifras) => sin fila de gasoil vigente al 2024-01 (775 solo se deduce del comunicado dic-2024 "diminution de 80");
+#   no se halló el texto oficial de los arrêtés de mayo-2026 y sep-2026 (solo prensa); capmad.com y afrique-sur7.fr (sep-2026) devuelven 403 y no tienen captura Wayback.
+source_key: manual_tg_levels
+country: Togo
+currency: XOF
+unit: XOF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Super sans plomb":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gas-oil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole lampant":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+levels:
+- effective: 2022-07-19
+  product: Super sans plomb
+  locality: national
+  price_local: 700
+  source_type: press
+  url: https://www.koaci.com/article/2022/07/19/togo/societe/togo-prix-du-carburant-en-hausse-le-super-sans-plomb-passe-a-700-f_161696.html
+  archive_url: https://web.archive.org/web/20221001220326/https://www.koaci.com/article/2022/07/19/togo/societe/togo-prix-du-carburant-en-hausse-le-super-sans-plomb-passe-a-700-f_161696.html
+  sha256: 440d12722d3b83083fbefbfb0b5c420b9580728a95e14f219e86375e3a80ce49
+  file: 440d12722d3b_koaci_2022-07-19_togo-super-700.html
+  method: press quote
+  derived_from: []
+  confidence: media
+  note: "Koaci 19/07/2022: nueva alza 'entrée en vigueur à compter de ce mardi 19 juillet 2022', según comunicado del gobierno del 18/07/2022; Super sans plomb 700 (ministro Adedze: costo real 878, subvención 178). Nivel vigente al 2024-01: el comunicado oficial del 10/12/2024 baja Super en 20 F a 680 y republicoftogo.com (09/12/2024) dice 'de 700 à 680'. Hubo un ajuste el 28/01/2023 (Beninwebtv, sin cifras) que no parece haber tocado el Super."
+- effective: 2022-07-19
+  product: Pétrole lampant
+  locality: national
+  price_local: 650
+  source_type: press
+  url: https://www.koaci.com/article/2022/07/19/togo/societe/togo-prix-du-carburant-en-hausse-le-super-sans-plomb-passe-a-700-f_161696.html
+  archive_url: https://web.archive.org/web/20221001220326/https://www.koaci.com/article/2022/07/19/togo/societe/togo-prix-du-carburant-en-hausse-le-super-sans-plomb-passe-a-700-f_161696.html
+  sha256: 440d12722d3b83083fbefbfb0b5c420b9580728a95e14f219e86375e3a80ce49
+  file: 440d12722d3b_koaci_2022-07-19_togo-super-700.html
+  method: press quote
+  derived_from: []
+  confidence: media
+  note: "Koaci 19/07/2022: pétrole lampant a la pompa 650 (costo real 810, subvención 160). republicoftogo.com 09/12/2024: 'le prix du pétrole lampant reste inchangé à 650'. Misma nota trae Gasoil 850, NO cargado porque el gasoil cambió luego a 775 en fecha desconocida."
+- effective: 2024-12-10
+  product: Super sans plomb
+  locality: national
+  price_local: 680
+  source_type: communique
+  url: https://commerce.gouv.tg/le-gouvernement-informe-la-population-qua-travers-larrete-interministeriel-n035-mcacl-mef-mmre-du-09-decembre-2024-il-a-ete-procede-a-un-reajustement-a-la-baisse-des-prix-de-v/
+  archive_url: https://web.archive.org/web/20260510013840/https://commerce.gouv.tg/le-gouvernement-informe-la-population-qua-travers-larrete-interministeriel-n035-mcacl-mef-mmre-du-09-decembre-2024-il-a-ete-procede-a-un-reajustement-a-la-baisse-des-prix-de-v/
+  sha256: c5a26317c013d0edea186acb1a20d6ba8565638e34551af2e3fe945364a8b753
+  file: c5a26317c013_commerce-gouv-tg_arrete-035_2024-12-09.html
+  method: HTML text
+  derived_from:
+  - https://commerce.gouv.tg/wp-content/uploads/2024/12/WhatsApp-Image-2024-12-10-a-12.15.00_f14c174b.jpg
+  confidence: alta
+  note: "Comunicado del Gobierno (Lomé, 10/12/2024) en commerce.gouv.tg: arrêté interministériel n°035/MCACL/MEF/MMRE del 09/12/2024, 'nouveaux tarifs entrent en vigueur à compter de ce 10 décembre 2024'; Super sans plomb 680, 'soit une diminution de 20 F CFA/litre'. Imagen del comunicado firmado (sha256 0dc2413d5fd3..., OCR) coincide."
+- effective: 2024-12-10
+  product: Gas-oil
+  locality: national
+  price_local: 695
+  source_type: communique
+  url: https://commerce.gouv.tg/le-gouvernement-informe-la-population-qua-travers-larrete-interministeriel-n035-mcacl-mef-mmre-du-09-decembre-2024-il-a-ete-procede-a-un-reajustement-a-la-baisse-des-prix-de-v/
+  archive_url: https://web.archive.org/web/20260510013840/https://commerce.gouv.tg/le-gouvernement-informe-la-population-qua-travers-larrete-interministeriel-n035-mcacl-mef-mmre-du-09-decembre-2024-il-a-ete-procede-a-un-reajustement-a-la-baisse-des-prix-de-v/
+  sha256: c5a26317c013d0edea186acb1a20d6ba8565638e34551af2e3fe945364a8b753
+  file: c5a26317c013_commerce-gouv-tg_arrete-035_2024-12-09.html
+  method: HTML text
+  derived_from:
+  - https://commerce.gouv.tg/wp-content/uploads/2024/12/WhatsApp-Image-2024-12-10-a-12.15.00_f14c174b.jpg
+  confidence: alta
+  note: "Mismo comunicado oficial: Gas-oil 695, 'soit une diminution de 80 F CFA/litre' (=> previo 775, sin fecha de vigencia conocida)."
+- effective: 2024-12-10
+  product: Pétrole lampant
+  locality: national
+  price_local: 650
+  source_type: communique
+  url: https://commerce.gouv.tg/le-gouvernement-informe-la-population-qua-travers-larrete-interministeriel-n035-mcacl-mef-mmre-du-09-decembre-2024-il-a-ete-procede-a-un-reajustement-a-la-baisse-des-prix-de-v/
+  archive_url: https://web.archive.org/web/20260510013840/https://commerce.gouv.tg/le-gouvernement-informe-la-population-qua-travers-larrete-interministeriel-n035-mcacl-mef-mmre-du-09-decembre-2024-il-a-ete-procede-a-un-reajustement-a-la-baisse-des-prix-de-v/
+  sha256: c5a26317c013d0edea186acb1a20d6ba8565638e34551af2e3fe945364a8b753
+  file: c5a26317c013_commerce-gouv-tg_arrete-035_2024-12-09.html
+  method: HTML text
+  derived_from: []
+  confidence: alta
+  note: "Mismo comunicado oficial: 'Pétrole lampant : 650 F CFA/litre' (sin variación indicada; republicoftogo.com: 'reste inchangé')."
+- effective: 2026-05-27
+  product: Super sans plomb
+  locality: national
+  price_local: 725
+  source_type: press
+  url: https://www.koaci.com/article/2026/05/26/togo/societe/togo-hausse-des-prix-du-carburant-le-litre-du-super-sans-plomb-fixe-a-725-f-cfa_196982.html
+  archive_url: https://web.archive.org/web/20261016175732/https://www.koaci.com/article/2026/05/26/togo/societe/togo-hausse-des-prix-du-carburant-le-litre-du-super-sans-plomb-fixe-a-725-f-cfa_196982.html
+  sha256: ffaa8bc2bf414f154f407aba0b415b1a71aaf4182426946a8175ecaa22929f3a
+  file: ffaa8bc2bf41_koaci_2026-05-26_togo-super-725.html
+  method: press quote
+  derived_from:
+  - https://www.republicoftogo.com/content/download/120730/3089309/1
+  - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
+  confidence: media
+  note: "Koaci 26/05/2026 cita el arrêté interministériel publicado el 26/05 (Finanzas, Economía, Energía): 'les nouveaux prix prennent effet à compter du 27 mai 2026'; Super 680 -> 725. Togomatin y L-Frii del 11/09/2026 confirman 725 'depuis la dernière révision du 27 mai'. Arrêté no hallado; +20 F máx. en localidades alejadas."
+- effective: 2026-05-27
+  product: Gas-oil
+  locality: national
+  price_local: 750
+  source_type: press
+  url: https://www.koaci.com/article/2026/05/26/togo/societe/togo-hausse-des-prix-du-carburant-le-litre-du-super-sans-plomb-fixe-a-725-f-cfa_196982.html
+  archive_url: https://web.archive.org/web/20261016175732/https://www.koaci.com/article/2026/05/26/togo/societe/togo-hausse-des-prix-du-carburant-le-litre-du-super-sans-plomb-fixe-a-725-f-cfa_196982.html
+  sha256: ffaa8bc2bf414f154f407aba0b415b1a71aaf4182426946a8175ecaa22929f3a
+  file: ffaa8bc2bf41_koaci_2026-05-26_togo-super-725.html
+  method: press quote
+  derived_from:
+  - https://www.republicoftogo.com/content/download/120730/3089309/1
+  - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
+  confidence: media
+  note: "Koaci 26/05/2026: 'Le prix du litre de Gasoil est fixé à 750 F CFA soit une augmentation de 55 F CFA' (695+55=750, coherente). Togomatin y L-Frii (11/09/2026) dan 750 como nivel previo a sep-2026."
+- effective: 2026-05-27
+  product: Pétrole lampant
+  locality: national
+  price_local: 1040
+  source_type: press
+  url: https://www.koaci.com/article/2026/05/26/togo/societe/togo-hausse-des-prix-du-carburant-le-litre-du-super-sans-plomb-fixe-a-725-f-cfa_196982.html
+  archive_url: https://web.archive.org/web/20261016175732/https://www.koaci.com/article/2026/05/26/togo/societe/togo-hausse-des-prix-du-carburant-le-litre-du-super-sans-plomb-fixe-a-725-f-cfa_196982.html
+  sha256: ffaa8bc2bf414f154f407aba0b415b1a71aaf4182426946a8175ecaa22929f3a
+  file: ffaa8bc2bf41_koaci_2026-05-26_togo-super-725.html
+  method: press quote
+  derived_from:
+  - https://www.republicoftogo.com/content/download/120730/3089309/1
+  - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
+  confidence: media
+  note: "Koaci 26/05/2026: pétrole lampant 'va désormais coûter 1 040 F CFA, soit une augmentation de 590 F CFA' -- el delta es inconsistente con el 650 oficial de dic-2024 (1040-650=390). El nivel 1040 lo confirman Togomatin y L-Frii (11/09/2026: 'de 1 040 à 1 056'). No se sabe si hubo un cambio intermedio del lampant entre dic-2024 y may-2026."
+- effective: 2026-09-11
+  product: Super sans plomb
+  locality: national
+  price_local: 817
+  source_type: press
+  url: https://www.republicoftogo.com/content/download/120730/3089309/1
+  archive_url: https://web.archive.org/web/20261016175853/https://www.republicoftogo.com/content/download/120730/3089309/1
+  sha256: a245e795560e3da3ca49771fcdd938da1cb3af6694f3b4644619401399095e9e
+  file: a245e795560e_republicoftogo_download_120730.bin
+  method: embedded text
+  derived_from:
+  - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
+  confidence: media
+  note: "PDF del diario Togomatin n°1651 (11/09/2026), alojado en republicoftogo.com: 'À compter du 11 septembre 2026, une nouvelle grille tarifaire entre en vigueur... conformément à un arrêté interministériel'; Super 817 'contre 725 FCFA depuis la dernière révision du 27 mai'. L-Frii 11/09/2026 (arrêté firmado por Economía, Finanzas y Energía) coincide. Koaci 11/09/2026 da 817 en el titular pero su tabla repite los precios de mayo (725/1040/750/811): error de la nota."
+- effective: 2026-09-11
+  product: Gas-oil
+  locality: national
+  price_local: 766
+  source_type: press
+  url: https://www.republicoftogo.com/content/download/120730/3089309/1
+  archive_url: https://web.archive.org/web/20261016175853/https://www.republicoftogo.com/content/download/120730/3089309/1
+  sha256: a245e795560e3da3ca49771fcdd938da1cb3af6694f3b4644619401399095e9e
+  file: a245e795560e_republicoftogo_download_120730.bin
+  method: embedded text
+  derived_from:
+  - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
+  confidence: media
+  note: "Togomatin 11/09/2026: 'Le gasoil passe de 750 à 766 FCFA'; L-Frii: 'Gaz-oil : 766 Fcfa contre 750 FCFA avant'. Koaci 11/09 dice +16 pero su tabla muestra 750 (inconsistente)."
+- effective: 2026-09-11
+  product: Pétrole lampant
+  locality: national
+  price_local: 1056
+  source_type: press
+  url: https://www.republicoftogo.com/content/download/120730/3089309/1
+  archive_url: https://web.archive.org/web/20261016175853/https://www.republicoftogo.com/content/download/120730/3089309/1
+  sha256: a245e795560e3da3ca49771fcdd938da1cb3af6694f3b4644619401399095e9e
+  file: a245e795560e_republicoftogo_download_120730.bin
+  method: embedded text
+  derived_from:
+  - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
+  confidence: media
+  note: "Togomatin 11/09/2026: 'le pétrole lampant évolue de 1 040 à 1 056 FCFA'; L-Frii coincide (1056 contra 1040)."

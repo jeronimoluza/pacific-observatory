@@ -1,0 +1,84 @@
+# Niger: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Ministère du Commerce et de l'Industrie (arrêté de prix plafond, visado por Pétrole y Finances); ARSE publica la tarifa vigente. Régimen: precio plafond fijado ad hoc por arrêté, nacional (mismo precio en todo el territorio).
+# Canales: arse.ne/tarif-hydrocarbures/ (HTML + PDF del arrêté), comunicado del SGG relayado por ANP/AFP, página Facebook de la Presidencia.
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos: arrêtés mensuales intermedios entre ago-2022 y jun-2024 no encontrados (el arrêté n°0055 del 28/06/2024, abrogado por el 0067, no se halló; sus precios se desconocen pero el comunicado SGG del 17/07/2024 dice que antes regían 540/668);
+#   el arrêté 0067 dice "pour la période du 23 juillet au 31 août 2024" y no se encontró arrêté de prórroga; FOD (457) y mélange 2 temps omitidos (no son gasolina/gasoil/kerosene);
+#   pétrole lampant no figura en los arrêtés 2022/2024.
+source_key: manual_ne_levels
+country: Niger
+currency: XOF
+unit: XOF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+last_checked: 2026-10-16
+# last_checked: https://arse.ne/tarif-hydrocarbures/ (descargada 2026-10-16: Super 91 499, Gasoil 618, arrêté 0067 del 22/07/2024)
+# last_checked: https://burkina24.com/2026/10/10/niger-jai-instruit-le-gouvernement-de-ne-proceder-a-aucune-augmentation-du-prix-du-carburant-a-la-pompe-abdourahamane-tiani/ (Tiani 10/10/2026: "Super reste à 499 F, Gasoil à 618 F")
+products:
+  "Super 91":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+levels:
+- effective: 2022-08-01
+  product: Super 91
+  locality: national
+  price_local: 540
+  source_type: arrete
+  url: https://www.arse.ne/wp-content/uploads/2024/05/Structure-des-prix-Hydrcarbures-Aout-2022.pdf
+  archive_url: https://web.archive.org/web/20240725160845/https://www.arse.ne/wp-content/uploads/2024/05/Structure-des-prix-Hydrcarbures-Aout-2022.pdf
+  sha256: 796b6ad3f5771e7016904a25211f9fab4eaf87756abd999cdb8910b4704b506f
+  file: 796b6ad3f577_Structure-des-prix-Hydrcarbures-Aout-2022.pdf
+  method: OCR
+  derived_from: []
+  confidence: alta
+  note: "Arrêté n°0057/MC/SG/DGC/DCI/LCVC (escaneado, publicado por ARSE): precios 'pour le mois d'août 2022', aplicables desde 01/08/2022 00h; abroga el arrêté n°050 del 12/07/2022. Anexo: PRIX DE VENTE DETAIL AU LITRE Super 91 540. Es el nivel vigente al 2024-01: ARSE seguía mostrando este arrêté (540/668) en la captura Wayback 20240711190854, y el comunicado SGG del 17/07/2024 (AFP) da 540/668 como precio previo a la baja. Ojo: la misma página ARSE mostró hasta jul-2023 un texto desactualizado de 2019 (gasoil 538)."
+- effective: 2022-08-01
+  product: Gasoil
+  locality: national
+  price_local: 668
+  source_type: arrete
+  url: https://www.arse.ne/wp-content/uploads/2024/05/Structure-des-prix-Hydrcarbures-Aout-2022.pdf
+  archive_url: https://web.archive.org/web/20240725160845/https://www.arse.ne/wp-content/uploads/2024/05/Structure-des-prix-Hydrcarbures-Aout-2022.pdf
+  sha256: 796b6ad3f5771e7016904a25211f9fab4eaf87756abd999cdb8910b4704b506f
+  file: 796b6ad3f577_Structure-des-prix-Hydrcarbures-Aout-2022.pdf
+  method: OCR
+  derived_from: []
+  confidence: alta
+  note: "Arrêté n°0057 (agosto 2022), anexo: Gasoil 668 (incluye 'appui à l'énergie' 62,65). Mismo caveat que la fila Super: arrêté formalmente mensual; 668 confirmado como nivel previo a jul-2024 por ARSE (Wayback 2024-07-11) y por el comunicado SGG del 17/07/2024."
+- effective: 2024-07-23
+  product: Super 91
+  locality: national
+  price_local: 499
+  source_type: arrete
+  url: https://arse.ne/wp-content/uploads/2024/08/Arrete-fixant-les-nouveaux-prix-des-hydrocarbures_0001.pdf
+  archive_url: https://web.archive.org/web/20250317103652/https://www.arse.ne/wp-content/uploads/2024/08/Arrete-fixant-les-nouveaux-prix-des-hydrocarbures_0001.pdf
+  sha256: dce1b2432fb8769f272a25a04035c6be5da3e989512b5cdcc6323b08a9ced52e
+  file: dce1b2432fb8_Arrete-fixant-les-nouveaux-prix-des-hydrocarbures_0001.pdf
+  method: OCR
+  derived_from:
+  - https://arse.ne/tarif-hydrocarbures/
+  confidence: alta
+  note: "Arrêté n°0067/MC/I/SG/DGC/DCI/LCVC del 22/07/2024 (escaneado): prix plafonds 'pour la période du 23 juillet au 31 août 2024', aplicables desde 23/07/2024 00h; abroga el arrêté n°0055 del 28/06/2024; cita el comunicado SGG del 17/07/2024. Anexo: Super 91 499. Pese al plazo, la página ARSE (sha256 1ab1b81a8ff1..., Wayback 20261016174610) sigue mostrándolo como vigente en oct-2026 y el presidente Tiani reafirmó 499 el 10/10/2026; no se halló arrêté de prórroga."
+- effective: 2024-07-23
+  product: Gasoil
+  locality: national
+  price_local: 618
+  source_type: arrete
+  url: https://arse.ne/wp-content/uploads/2024/08/Arrete-fixant-les-nouveaux-prix-des-hydrocarbures_0001.pdf
+  archive_url: https://web.archive.org/web/20250317103652/https://www.arse.ne/wp-content/uploads/2024/08/Arrete-fixant-les-nouveaux-prix-des-hydrocarbures_0001.pdf
+  sha256: dce1b2432fb8769f272a25a04035c6be5da3e989512b5cdcc6323b08a9ced52e
+  file: dce1b2432fb8_Arrete-fixant-les-nouveaux-prix-des-hydrocarbures_0001.pdf
+  method: OCR
+  derived_from:
+  - https://arse.ne/tarif-hydrocarbures/
+  confidence: alta
+  note: "Arrêté n°0067 del 22/07/2024, anexo: Gasoil 618 (appui à l'énergie 47,63). Mismo caveat de período 23/07-31/08/2024; ARSE (oct-2026) y Tiani (10/10/2026, 'Gasoil à 618 F') lo dan como vigente."
