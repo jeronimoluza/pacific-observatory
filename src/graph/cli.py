@@ -123,3 +123,8 @@ def status_cmd(manifest_dir, week, countries, only, detail, as_json):
             if r["drift"] or k in colors:
                 click.echo(f"{r['node']:<22} {r['partition']:<50} {colors.get(k, 'verde'):<8} "
                            + "; ".join(r["drift"] + msgs.get(k, [])))
+
+
+from graph.ledger.cli import ledger  # noqa: E402
+
+graph.add_command(ledger)
