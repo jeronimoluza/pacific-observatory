@@ -1,8 +1,11 @@
 # `po fuel watch --country sao_tome_and_principe`. Schema and checks: src/fuel/watch.py.
-# Triage lane 2026-10-16: manual+alerta. No `levels:` yet: add the manual
-# table's path when it exists; until then GPP changes alert on their own.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
 country: sao_tome_and_principe
 currency: STN
+levels:
+  paths:
+  - src/fuel/configs/_manual/sao_tome_and_principe_levels.yaml
+  stale_months: 6
 broken_after: 3
 lookback_days: 10
 pages:

@@ -1,0 +1,442 @@
+# Eswatini: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Ministry of Natural Resources and Energy (MNRE), comunicado firmado por el/la Principal Secretary (Dorcas N. Dlamini hasta 2024; Lindiwe F. Mbingo desde 2024). ESERA no interviene en el anuncio. Regimen: precio administrado con revision mensual contra el BFP (crudo + E/USD); cambio por over/under-recovery, parte absorbida por el Strategic Oil Reserve Fund. Vigencia: medianoche del jueves, efectivo el viernes. Canales: PDF en gov.sz (sueltos, sin listado; ultimo hallado ene-2024, gov.sz inaccesible desde aqui), X/Facebook del Eswatini Government, prensa (Times of Eswatini, Eswatini Observer, Swazi24, Eswatini Positive News). ENPC (estatal) muestra los precios vigentes en su home, con retraso historico.
+# Locality: "national". Las fuentes no dicen que el precio sea de Mbabane/Matsapha: es un precio nacional unico fijado por el MNRE.
+# Rehecho desde cero sobre series_eswatini.csv (triage): se quitaron las filas inferidas de jun-2024 (diesel), del paso 2025 21.40->21.00 y las fechas supuestas; se agregaron fuentes para mar-2024, sep-2024, jul-2026 y ago-2026 y paraffin en todas las fechas.
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos (entre 2024-03-08 y 2026-02-06 la serie esta INCOMPLETA y el arrastre da niveles equivocados en partes del periodo):
+#   (1) entre mar y sep-2024 hubo una baja de diesel 22.90 -> 22.40 y de paraffin 17.25 -> 16.75 (niveles "from" del comunicado de sep-2024); fecha no hallada (Wayback de ENPC sugiere jun-2024, no es fuente). Sin fila.
+#   (2) entre sep-2024 y feb-2026: diesel 21.40 -> 20.55, petrol 20.60 -> 20.15, paraffin 15.75 -> 14.90 en uno o mas pasos (el triage cita un post del X del Gobierno del 6-nov-2025 con vigencia 7-nov y un paso previo de diesel a 21.00; no se pudo descargar ni el post ni una nota con cifras). Sin filas.
+#   (3) desde el 4-abr-2025 rige una tasa vial (Roads Authority levy) de E0.40/litro incorporada a la estructura de precio sin cambio en surtidor ese mes (Times of Eswatini 4-abr-2025); no es una fila.
+#   (4) mar-2024: la fuente unica (Times) repite por error las cifras del diesel para el petrol; ver nota.
+# Todas las filas posteriores a ene-2024 son prensa citando el comunicado del MNRE (confianza media); casi todas 2026 con dos notas independientes.
+source_key: manual_sz_levels
+country: Eswatini
+currency: SZL
+unit: SZL_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+last_checked: 2026-10-16
+# last_checked: https://www.enpc.co.sz/ (home de ENPC, curl 2026-10-16: "E 29.40 / litre Unleaded Petrol", "E 32.25 / litre Diesel"; copia 6507e8e0e6ac_enpc_home_20261016.html)
+products:
+  "ULP 95":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular                                   # unica gasolina vendida en Eswatini; es el precio "regular" del pais
+    octane_ron: 95
+  "Diesel 50ppm":
+    series_key: diesel_50ppm
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: 50ppm
+  "Illuminating Paraffin":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: domestic
+levels:
+- effective: 2024-01-05
+  product: ULP 95
+  locality: national
+  price_local: 20.50
+  source_type: official_site
+  url: https://gov.sz/images/natural-resources/Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  archive_url: https://web.archive.org/web/20240522063306/https://www.gov.sz/images/natural-resources/Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  sha256: f509672e90b87b522cd0eed14173b036e59c6795be621e6bfa69d66107d36d16
+  file: f509672e90b8_Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: "Comunicado MNRE firmado por la PS Dorcas N. Dlamini (3-ene-2024): ULP 95 baja 30c 'from E20.80 / litre to E20.50 / litre'; 'come into effect at Midnight, Thursday, 4th January, 2024 (effective Friday, 5th January, 2024)'. gov.sz inaccesible desde aqui (timeout); copia y texto tomados de la captura Wayback. Nivel vigente al 2024-01-01: E20.80 (fecha de inicio no buscada). Times of Eswatini 4-ene-2024 coincide."
+- effective: 2024-01-05
+  product: Diesel 50ppm
+  locality: national
+  price_local: 21.80
+  source_type: official_site
+  url: https://gov.sz/images/natural-resources/Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  archive_url: https://web.archive.org/web/20240522063306/https://www.gov.sz/images/natural-resources/Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  sha256: f509672e90b87b522cd0eed14173b036e59c6795be621e6bfa69d66107d36d16
+  file: f509672e90b8_Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: "Mismo comunicado: Diesel 50 ppm S 'from E22.60 to E21.80'."
+- effective: 2024-01-05
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 16.75
+  source_type: official_site
+  url: https://gov.sz/images/natural-resources/Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  archive_url: https://web.archive.org/web/20240522063306/https://www.gov.sz/images/natural-resources/Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  sha256: f509672e90b87b522cd0eed14173b036e59c6795be621e6bfa69d66107d36d16
+  file: f509672e90b8_Press_Release_fuel_price_adjustment._January_2024_3.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: "Mismo comunicado: Illuminating Paraffin 'from E17.55 to E16.75'."
+- effective: 2024-03-08
+  product: Diesel 50ppm
+  locality: national
+  price_local: 22.90
+  source_type: press
+  url: http://www.times.co.sz/news/144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  archive_url: https://web.archive.org/web/20240307065815/http://www.times.co.sz/news/144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  sha256: dddfdbb3653179b573e391b45bf764c92ef00223fc55e329540e79a9265c4b70
+  file: dddfdbb36531_times_144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Times of Eswatini 7-mar-2024 cita el comunicado MNRE 'announced yesterday': diesel 'which currently costs E21.80 per litre, will hike by E1.10 to E22.90'; vigencia 'from tomorrow' (= vie 8-mar-2024). Copia de Wayback (la URL original ya da 404). Unica nota hallada."
+- effective: 2024-03-08
+  product: ULP 95
+  locality: national
+  price_local: 21.60
+  source_type: press
+  url: http://www.times.co.sz/news/144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  archive_url: https://web.archive.org/web/20240307065815/http://www.times.co.sz/news/144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  sha256: dddfdbb3653179b573e391b45bf764c92ef00223fc55e329540e79a9265c4b70
+  file: dddfdbb36531_times_144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  method: HTML text
+  derived_from: ["https://gov.sz/images/natural-resources/Press_Release_fuel_price_adjustment._January_2024_3.pdf", "http://www.times.co.sz/news/146938-fuel-prices-drop-by-e1.html"]
+  confidence: media
+  note: "CONTRADICCION en la fuente: la nota dice 'a hike of E1.10 in the price of petrol and diesel' pero luego 'unleaded petrol, which is currently sold at E21.80 per litre, will hike to E22.90', que repite las cifras del diesel (el petrol estaba en E20.50 segun el comunicado de enero). Se carga 21.60 = 20.50 + 1.10, y ese nivel lo confirma explicitamente el comunicado de sep-2024 ('from E21.60 to E20.60'). Combinacion de fuentes, no cifra literal de esta nota."
+- effective: 2024-03-08
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 17.25
+  source_type: press
+  url: http://www.times.co.sz/news/144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  archive_url: https://web.archive.org/web/20240307065815/http://www.times.co.sz/news/144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  sha256: dddfdbb3653179b573e391b45bf764c92ef00223fc55e329540e79a9265c4b70
+  file: dddfdbb36531_times_144246-plea-to-cushion-motorists-from-fuel-price-hike.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Misma nota: paraffin 'currently sold at E16.75, will be increased by E0.50, meaning it will be sold at E17.25 from tomorrow'."
+- effective: 2024-09-06
+  product: ULP 95
+  locality: national
+  price_local: 20.60
+  source_type: press
+  url: http://www.times.co.sz/news/146938-fuel-prices-drop-by-e1.html
+  archive_url: https://web.archive.org/web/20240905105928/http://www.times.co.sz/news/146938-fuel-prices-drop-by-e1.html
+  sha256: 46e03b3f9c06e159fae2266a1ec3e34b5598271f379de158d2dd5415db3e2ed7
+  file: 46e03b3f9c06_times_146938-fuel-prices-drop-by-e1.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Times of Eswatini 5-sep-2024 cita a la PS Lindiwe Mbingo: 'come into effect at midnight, Thursday, September 5, 2024 (effective Friday, September 6, 2024)'; ULP 95 'from E21.60 to E20.60/litre'. Copia de Wayback (URL original 404)."
+- effective: 2024-09-06
+  product: Diesel 50ppm
+  locality: national
+  price_local: 21.40
+  source_type: press
+  url: http://www.times.co.sz/news/146938-fuel-prices-drop-by-e1.html
+  archive_url: https://web.archive.org/web/20240905105928/http://www.times.co.sz/news/146938-fuel-prices-drop-by-e1.html
+  sha256: 46e03b3f9c06e159fae2266a1ec3e34b5598271f379de158d2dd5415db3e2ed7
+  file: 46e03b3f9c06_times_146938-fuel-prices-drop-by-e1.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Diesel (0.005% S) 'from E22.40/litre to E21.40/litre'. El nivel previo 22.40 implica una baja de diesel entre mar y sep-2024 (22.90 -> 22.40) cuya fecha no se encontro: hueco."
+- effective: 2024-09-06
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 15.75
+  source_type: press
+  url: http://www.times.co.sz/news/146938-fuel-prices-drop-by-e1.html
+  archive_url: https://web.archive.org/web/20240905105928/http://www.times.co.sz/news/146938-fuel-prices-drop-by-e1.html
+  sha256: 46e03b3f9c06e159fae2266a1ec3e34b5598271f379de158d2dd5415db3e2ed7
+  file: 46e03b3f9c06_times_146938-fuel-prices-drop-by-e1.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Paraffin 'from E16.75/litre to E15.75/litre'. El previo 16.75 implica una baja no fechada desde 17.25 (mar-2024): hueco."
+- effective: 2026-02-06
+  product: ULP 95
+  locality: national
+  price_local: 19.45
+  source_type: press
+  url: https://swazi24.com/40630/news/fuel-prices-drop-by-70-cents-from-friday/
+  archive_url: https://web.archive.org/web/20261016181035/https://swazi24.com/40630/news/fuel-prices-drop-by-70-cents-from-friday/
+  sha256: a136e20040504ea68960cb7eb78e9def3d519a72a4c88fce868be1531c18a4fb
+  file: a136e2004050_swazi24.com_40630_news_fuel-prices-drop-by-70-cents-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Swazi24 4-feb-2026 cita el comunicado MNRE firmado por la PS Lindiwe F. Mbingo: 'Unleaded Petrol 95 will drop from E20.15 per litre to E19.45'; 'comes into effect at midnight on Thursday, February 5, 2026', vigente desde el viernes 6-feb. El nivel previo 20.15 (y 20.55 diesel, 14.90 paraffin) no tiene fila: la fecha en que empezo (nov-2025 segun el triage, sin fuente descargada) no se pudo documentar."
+- effective: 2026-02-06
+  product: Diesel 50ppm
+  locality: national
+  price_local: 19.85
+  source_type: press
+  url: https://swazi24.com/40630/news/fuel-prices-drop-by-70-cents-from-friday/
+  archive_url: https://web.archive.org/web/20261016181035/https://swazi24.com/40630/news/fuel-prices-drop-by-70-cents-from-friday/
+  sha256: a136e20040504ea68960cb7eb78e9def3d519a72a4c88fce868be1531c18a4fb
+  file: a136e2004050_swazi24.com_40630_news_fuel-prices-drop-by-70-cents-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "'Diesel with 0.005 percent sulphur content will move from E20.55 per litre to E19.85'."
+- effective: 2026-02-06
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 14.20
+  source_type: press
+  url: https://swazi24.com/40630/news/fuel-prices-drop-by-70-cents-from-friday/
+  archive_url: https://web.archive.org/web/20261016181035/https://swazi24.com/40630/news/fuel-prices-drop-by-70-cents-from-friday/
+  sha256: a136e20040504ea68960cb7eb78e9def3d519a72a4c88fce868be1531c18a4fb
+  file: a136e2004050_swazi24.com_40630_news_fuel-prices-drop-by-70-cents-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "'illuminating paraffin will decrease from E14.90 per litre to E14.20'."
+- effective: 2026-04-03
+  product: ULP 95
+  locality: national
+  price_local: 22.35
+  source_type: press
+  url: https://swazi24.com/43195/news/government-announces-major-fuel-increase-from-friday/
+  archive_url: http://web.archive.org/web/20260402082253/https://swazi24.com/43195/news/government-announces-major-fuel-increase-from-friday/
+  sha256: 5e723fb92d4c51869bd52bb0377e990d136dee0c2f9d1c217480e54794cdb059
+  file: 5e723fb92d4c_swazi24.com_43195_news_government-announces-major-fuel-increase-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Swazi24 1-abr-2026 cita comunicado MNRE: vigente 'at midnight on Thursday, 2 April 2026... applicable on Friday, 3 April 2026'; ULP 95 'from E19.45 per litre to E22.35'. El comunicado de mayo confirma 22.35 como nivel previo."
+- effective: 2026-04-03
+  product: Diesel 50ppm
+  locality: national
+  price_local: 25.20
+  source_type: press
+  url: https://swazi24.com/43195/news/government-announces-major-fuel-increase-from-friday/
+  archive_url: http://web.archive.org/web/20260402082253/https://swazi24.com/43195/news/government-announces-major-fuel-increase-from-friday/
+  sha256: 5e723fb92d4c51869bd52bb0377e990d136dee0c2f9d1c217480e54794cdb059
+  file: 5e723fb92d4c_swazi24.com_43195_news_government-announces-major-fuel-increase-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "'Diesel 0.005 percent S will rise from E19.85 per litre to E25.20'; confirmado como previo por el comunicado de mayo."
+- effective: 2026-04-03
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 19.50
+  source_type: press
+  url: https://swazi24.com/43195/news/government-announces-major-fuel-increase-from-friday/
+  archive_url: http://web.archive.org/web/20260402082253/https://swazi24.com/43195/news/government-announces-major-fuel-increase-from-friday/
+  sha256: 5e723fb92d4c51869bd52bb0377e990d136dee0c2f9d1c217480e54794cdb059
+  file: 5e723fb92d4c_swazi24.com_43195_news_government-announces-major-fuel-increase-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "'Illuminating Paraffin will increase from E14.20 per litre to E19.50'."
+- effective: 2026-05-08
+  product: ULP 95
+  locality: national
+  price_local: 25.27
+  source_type: press
+  url: https://www.eswatiniobserver.com/fuel-price-increase-eswatini-may-2026/
+  archive_url: https://web.archive.org/web/20260518053315/https://www.eswatiniobserver.com/fuel-price-increase-eswatini-may-2026/
+  sha256: bdf878c4cf71187ef9272549266fb4fe05ba697bebe70b6653863afb9766cd93
+  file: bdf878c4cf71_eswatiniobserver.com_fuel-price-increase-eswatini-may-2026.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Eswatini Observer 6-may-2026 cita a la PS Lindiwe Mbingo: 'effective midnight on Thursday, May 7, 2026'; ULP95 'from E22.35 to E25.27'. Swazi24 6-may-2026 (https://swazi24.com/45326/news/fuel-prices-shoot-up-at-midnight/, copia 9302921c1c1e) da las mismas cifras y 'from Friday' (8-may). Gobierno absorbe 25% del under-recovery via Strategic Oil Reserve Fund."
+- effective: 2026-05-08
+  product: Diesel 50ppm
+  locality: national
+  price_local: 31.60
+  source_type: press
+  url: https://www.eswatiniobserver.com/fuel-price-increase-eswatini-may-2026/
+  archive_url: https://web.archive.org/web/20260518053315/https://www.eswatiniobserver.com/fuel-price-increase-eswatini-may-2026/
+  sha256: bdf878c4cf71187ef9272549266fb4fe05ba697bebe70b6653863afb9766cd93
+  file: bdf878c4cf71_eswatiniobserver.com_fuel-price-increase-eswatini-may-2026.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Diesel (0.005% S) 'from E25.20 to E31.60'; Swazi24 coincide."
+- effective: 2026-05-08
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 26.28
+  source_type: press
+  url: https://www.eswatiniobserver.com/fuel-price-increase-eswatini-may-2026/
+  archive_url: https://web.archive.org/web/20260518053315/https://www.eswatiniobserver.com/fuel-price-increase-eswatini-may-2026/
+  sha256: bdf878c4cf71187ef9272549266fb4fe05ba697bebe70b6653863afb9766cd93
+  file: bdf878c4cf71_eswatiniobserver.com_fuel-price-increase-eswatini-may-2026.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Paraffin 'from E19.50 to E26.28'; Swazi24 coincide."
+- effective: 2026-06-05
+  product: ULP 95
+  locality: national
+  price_local: 26.17
+  source_type: press
+  url: https://times.co.sz/33886/news/third-fuel-hike-in-8-weeks-petrol-hits-e26-17/
+  archive_url: https://web.archive.org/web/20260604034317/https://www.times.co.sz/news/readmore.php?bhsadjgfoh=Third+fuel+hike+in+8+weeks,+petrol+hits+E26.17&yiphi=4080&bvhdgsj=News
+  sha256: 977e05d1bf14c07285e754038ad30ade16fb3105adb5bb0e1bdad2013f83ab4d
+  file: 977e05d1bf14_times.co.sz_33886_news_third-fuel-hike-in-8-weeks-petrol-hits-e26-17.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Times of Eswatini 4-jun-2026: 'take effect at midnight tonight and become effective tomorrow'; ULP95 'from E25.27 to E26.17'. Swazi24 3-jun-2026 (https://swazi24.com/46928/business/new-fuel-prices-to-hit-on-friday/, copia 46cb72932d5f) cita el comunicado: 'midnight on Thursday, June 4, 2026, and will be effective Friday, June 5, 2026', mismas cifras. archive_url es la captura de la misma nota bajo el esquema viejo de URL de times.co.sz (readmore.php)."
+- effective: 2026-06-05
+  product: Diesel 50ppm
+  locality: national
+  price_local: 29.20
+  source_type: press
+  url: https://times.co.sz/33886/news/third-fuel-hike-in-8-weeks-petrol-hits-e26-17/
+  archive_url: https://web.archive.org/web/20260604034317/https://www.times.co.sz/news/readmore.php?bhsadjgfoh=Third+fuel+hike+in+8+weeks,+petrol+hits+E26.17&yiphi=4080&bvhdgsj=News
+  sha256: 977e05d1bf14c07285e754038ad30ade16fb3105adb5bb0e1bdad2013f83ab4d
+  file: 977e05d1bf14_times.co.sz_33886_news_third-fuel-hike-in-8-weeks-petrol-hits-e26-17.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Diesel (50ppm S) baja E2.40 'from E31.60 to E29.20'; Swazi24 coincide."
+- effective: 2026-06-05
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 23.38
+  source_type: press
+  url: https://times.co.sz/33886/news/third-fuel-hike-in-8-weeks-petrol-hits-e26-17/
+  archive_url: https://web.archive.org/web/20260604034317/https://www.times.co.sz/news/readmore.php?bhsadjgfoh=Third+fuel+hike+in+8+weeks,+petrol+hits+E26.17&yiphi=4080&bvhdgsj=News
+  sha256: 977e05d1bf14c07285e754038ad30ade16fb3105adb5bb0e1bdad2013f83ab4d
+  file: 977e05d1bf14_times.co.sz_33886_news_third-fuel-hike-in-8-weeks-petrol-hits-e26-17.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Paraffin baja E2.90 'from E26.28 to E23.38'; Swazi24 coincide."
+- effective: 2026-07-03
+  product: ULP 95
+  locality: national
+  price_local: 24.67
+  source_type: press
+  url: https://www.eswatiniobserver.com/relief-as-fuel-prices-drop-midnight/
+  archive_url: http://web.archive.org/web/20260714155252/https://www.eswatiniobserver.com/relief-as-fuel-prices-drop-midnight/
+  sha256: f37c910971794cf0b44502b728ec0006e8af913b32fc373ef6d6468aa6d597b6
+  file: f37c91097179_eswatiniobserver.com_relief-as-fuel-prices-drop-midnight.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Eswatini Observer 2-jul-2026 cita a la PS Lindiwe Mbingo: vigente 'at midnight on Thursday' (2-jul -> viernes 3-jul); petrol 'from E26.17 to E24.67'. Swazi24 1-jul-2026 (https://swazi24.com/48482/business/eswatini-announces-another-drop-in-fuel-prices/, copia 0afeeb82e245): mismas cifras, 'take effect on Friday'. El triage no tenia fuente para julio (fecha supuesta); ahora documentada."
+- effective: 2026-07-03
+  product: Diesel 50ppm
+  locality: national
+  price_local: 26.20
+  source_type: press
+  url: https://www.eswatiniobserver.com/relief-as-fuel-prices-drop-midnight/
+  archive_url: http://web.archive.org/web/20260714155252/https://www.eswatiniobserver.com/relief-as-fuel-prices-drop-midnight/
+  sha256: f37c910971794cf0b44502b728ec0006e8af913b32fc373ef6d6468aa6d597b6
+  file: f37c91097179_eswatiniobserver.com_relief-as-fuel-prices-drop-midnight.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Diesel baja E3 'from E29.20 to E26.20'; Swazi24 coincide."
+- effective: 2026-07-03
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 20.38
+  source_type: press
+  url: https://www.eswatiniobserver.com/relief-as-fuel-prices-drop-midnight/
+  archive_url: http://web.archive.org/web/20260714155252/https://www.eswatiniobserver.com/relief-as-fuel-prices-drop-midnight/
+  sha256: f37c910971794cf0b44502b728ec0006e8af913b32fc373ef6d6468aa6d597b6
+  file: f37c91097179_eswatiniobserver.com_relief-as-fuel-prices-drop-midnight.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Paraffin baja E3 'from E23.38 to E20.38'; Swazi24 coincide."
+- effective: 2026-08-07
+  product: Diesel 50ppm
+  locality: national
+  price_local: 27.50
+  source_type: press
+  url: https://eswatinipositivenews.online/petrol-holds-steady-as-diesel-rises-e1-30/
+  archive_url: https://web.archive.org/web/20261016181606/https://eswatinipositivenews.online/petrol-holds-steady-as-diesel-rises-e1-30/
+  sha256: 6586ea6ac820b75860f2435493f3d5a4be6ff26995c4b0f53f196e669ff15c1e
+  file: 6586ea6ac820_eswatinipositivenews.online_petrol-holds-steady-as-diesel-rises-e1-30.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Eswatini Positive News 5-ago-2026 cita el comunicado MNRE: 'The price of Diesel 50ppm S will increase by E1.30 per litre, whilst the prices of both Unleaded Petrol and Illuminating Paraffin will remain unchanged'; diesel 'from E26.20 to E27.50'; 'midnight on Thursday, 6 August 2026', 'from Friday, 7 August 2026'. Petrol (24.67) y paraffin (20.38) sin cambio, sin fila. Una sola nota, pero el comunicado de sep-2026 confirma 27.50 como nivel previo."
+- effective: 2026-09-04
+  product: ULP 95
+  locality: national
+  price_local: 25.97
+  source_type: press
+  url: https://swazi24.com/50035/news/energy/fuel-prices-increase-from-friday/
+  archive_url: ""
+  sha256: 31c2af1344a4b2fb41f9419a79a6489e2ae8304e432158358350d28a9087909a
+  file: 31c2af1344a4_swazi24.com_50035_news_energy_fuel-prices-increase-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Swazi24 2-sep-2026 cita al MNRE: 'take effect at midnight on Thursday, 3 September' (viernes 4-sep); ULP 95 'from E24.67 to E25.97'. Eswatini Observer 3-sep-2026 (https://www.eswatiniobserver.com/another-fuel-hike-tomorrow/, copia d579f9c9e867, captura https://web.archive.org/web/20261016181950/https://www.eswatiniobserver.com/another-fuel-hike-tomorrow/; el save de Swazi24 fallo) cita a la PS Mbingo con las mismas cifras."
+- effective: 2026-09-04
+  product: Diesel 50ppm
+  locality: national
+  price_local: 28.85
+  source_type: press
+  url: https://swazi24.com/50035/news/energy/fuel-prices-increase-from-friday/
+  archive_url: ""
+  sha256: 31c2af1344a4b2fb41f9419a79a6489e2ae8304e432158358350d28a9087909a
+  file: 31c2af1344a4_swazi24.com_50035_news_energy_fuel-prices-increase-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Diesel 0.005% S 'from E27.50 to E28.85'; Eswatini Observer coincide."
+- effective: 2026-09-04
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 21.73
+  source_type: press
+  url: https://swazi24.com/50035/news/energy/fuel-prices-increase-from-friday/
+  archive_url: ""
+  sha256: 31c2af1344a4b2fb41f9419a79a6489e2ae8304e432158358350d28a9087909a
+  file: 31c2af1344a4_swazi24.com_50035_news_energy_fuel-prices-increase-from-friday.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Paraffin 'from E20.38 to E21.73'; Eswatini Observer coincide."
+- effective: 2026-10-02
+  product: ULP 95
+  locality: national
+  price_local: 29.40
+  source_type: press
+  url: https://times.co.sz/45228/news/tough-times-as-fuel-prices-edge-close-to-e30-per-litre/
+  archive_url: http://web.archive.org/web/20261006084358/https://times.co.sz/45228/news/tough-times-as-fuel-prices-edge-close-to-e30-per-litre/
+  sha256: fcfdedebb5d4765293f24fb44eeb9868a6530e139285b9d000a99972e0779477
+  file: fcfdedebb5d4_times.co.sz_45228_news_tough-times-as-fuel-prices-edge-close-to-e30-per-litre.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Times of Eswatini 1-oct-2026: el MNRE anuncio que ULP 95 'would rise from E25.97 to E29.40 per litre'; 'take effect at midnight on Thursday, October 1, 2026, and will therefore apply from tomorrow' (vie 2-oct). Eswatini Observer 1-oct-2026 (https://www.eswatiniobserver.com/fuel-prices-hike-by-e3-43/, copia de4d6579b36b) cita a la PS Mbingo con 29.40. La home de ENPC (estatal) muestra E 29.40 el 16-oct-2026 (copia 6507e8e0e6ac)."
+- effective: 2026-10-02
+  product: Diesel 50ppm
+  locality: national
+  price_local: 32.25
+  source_type: press
+  url: https://times.co.sz/45228/news/tough-times-as-fuel-prices-edge-close-to-e30-per-litre/
+  archive_url: http://web.archive.org/web/20261006084358/https://times.co.sz/45228/news/tough-times-as-fuel-prices-edge-close-to-e30-per-litre/
+  sha256: fcfdedebb5d4765293f24fb44eeb9868a6530e139285b9d000a99972e0779477
+  file: fcfdedebb5d4_times.co.sz_45228_news_tough-times-as-fuel-prices-edge-close-to-e30-per-litre.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Diesel 0.005% S 'from E28.85 to E32.25' (+3.40). El titular y la nota del Observer dicen que 'all three' suben E3.43, pero ambos dan 32.25 para el diesel; se carga la cifra. ENPC muestra E 32.25 el 16-oct-2026."
+- effective: 2026-10-02
+  product: Illuminating Paraffin
+  locality: national
+  price_local: 25.16
+  source_type: press
+  url: https://times.co.sz/45228/news/tough-times-as-fuel-prices-edge-close-to-e30-per-litre/
+  archive_url: http://web.archive.org/web/20261006084358/https://times.co.sz/45228/news/tough-times-as-fuel-prices-edge-close-to-e30-per-litre/
+  sha256: fcfdedebb5d4765293f24fb44eeb9868a6530e139285b9d000a99972e0779477
+  file: fcfdedebb5d4_times.co.sz_45228_news_tough-times-as-fuel-prices-edge-close-to-e30-per-litre.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Paraffin 'from E21.73 to E25.16' (Times)."

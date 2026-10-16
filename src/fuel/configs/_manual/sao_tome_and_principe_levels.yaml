@@ -1,0 +1,241 @@
+# Sao Tome and Principe: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Gobierno (Ministro de Estado de Economia y Finanzas anuncia; mecanismo de ajuste automatico del decreto-ley de 2018, umbral +-10%); ENCO importa y distribuye. Regimen: precio administrado y fuertemente subsidiado, ajustes ad hoc. Canales: declaraciones del ministro y comunicados del Gobierno, recogidos por STP-Press (agencia estatal); Lusa/Forbes Africa Lusofona como segunda fuente. ENCO y ANP-STP no publican lista de precios.
+# Precio unico nacional en dobras nuevas (STN, desde 2018) por litro; las fuentes no distinguen zonas.
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos: (1) no se encontro la fecha de vigencia del nivel 37/35 (solo el anuncio del 12-may-2023, "anunciou hoje"); no se pudo verificar que no hubo cambios intermedios entre may-2023 y ene-2025, aunque Lusa/Forbes (28-nov-2025) confirma 37/35/21 al asumir el gobierno en enero de 2025.
+#   (2) petroleo: 19 en may-2023 y 21 en ene-2025; la fecha del paso 19->21 no se encontro, por eso NO hay fila de petroleo en 2023 y la primera fila de petroleo (2025-04-05, 21) solo confirma el nivel vigente, no marca un cambio en esa fecha.
+#   (3) petroleo nov-2025 -> abr-2026: contradiccion (ver notas de 2025-11-27 y 2026-04-01).
+#   (4) no se hallaron cambios despues del 1-abr-2026; Rio Times (8-oct-2026) informa 31/30/19 sin cambios desde abril, en medio de desabastecimiento de gasolina y petroleo desde el 1-oct-2026. No hay evidencia fechada hoy, por eso no hay last_checked.
+source_key: manual_st_levels
+country: Sao Tome and Principe
+currency: STN
+unit: STN_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Gasolina":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoleo":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Petroleo":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: domestic
+levels:
+- effective: 2023-05-12
+  product: Gasolina
+  locality: national
+  price_local: 37
+  source_type: state_news
+  url: https://www.stp-press.st/2023/05/12/preco-da-gasolina-e-do-gasoleo-baixa-uma-dobras-enquanto-o-petroleo-sobe-duas-dobras/
+  archive_url: https://web.archive.org/web/20261016180353/https://www.stp-press.st/2023/05/12/preco-da-gasolina-e-do-gasoleo-baixa-uma-dobras-enquanto-o-petroleo-sobe-duas-dobras/
+  sha256: e96f224f247fb0e89ec2faef424e8c3428155bd1a6101a097cba9c4a01ea375e
+  file: e96f224f247f_2023-05-12-preco-da-gasolina-e-do-gasoleo-baixa-uma-dobras-enquanto-o-petroleo-sobe-duas-dobras.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "STP-Press 12-may-2023 cita comunicado del Gabinete de Estudos e Politicas Economicas (Ministerio de Planeamento, Financas e Economia Azul): 'anunciou hoje a reducao do preco da gasolina de 38 para 37 dobras'. FECHA = PUBLICACION; la fuente no da fecha de vigencia. Es el nivel vigente al 2024-01-01 (sin cambio hallado hasta abr-2025; Lusa/Forbes 28-nov-2025 confirma 37 al asumir el gobierno en ene-2025)."
+- effective: 2023-05-12
+  product: Gasoleo
+  locality: national
+  price_local: 35
+  source_type: state_news
+  url: https://www.stp-press.st/2023/05/12/preco-da-gasolina-e-do-gasoleo-baixa-uma-dobras-enquanto-o-petroleo-sobe-duas-dobras/
+  archive_url: https://web.archive.org/web/20261016180353/https://www.stp-press.st/2023/05/12/preco-da-gasolina-e-do-gasoleo-baixa-uma-dobras-enquanto-o-petroleo-sobe-duas-dobras/
+  sha256: e96f224f247fb0e89ec2faef424e8c3428155bd1a6101a097cba9c4a01ea375e
+  file: e96f224f247f_2023-05-12-preco-da-gasolina-e-do-gasoleo-baixa-uma-dobras-enquanto-o-petroleo-sobe-duas-dobras.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "'do gasoleo de 36 para 35'. FECHA = PUBLICACION, sin fecha de vigencia explicita. El mismo comunicado sube el petroleo de 17 a 19, pero no se carga porque en ene-2025 ya estaba en 21 y la fecha de ese cambio no se encontro."
+- effective: 2025-04-05
+  product: Gasolina
+  locality: national
+  price_local: 35
+  source_type: state_news
+  url: https://www.stp-press.st/2025/04/04/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada/
+  archive_url: http://web.archive.org/web/20260123200706/https://www.stp-press.st/2025/04/04/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada/
+  sha256: e43be34ddc4cc064b0f88a227f5304fddfdbe2c6a599faf3d8d731e390bd6b04
+  file: e43be34ddc4c_2025-04-04-governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "Ministro Gareth Guadalupe (STP-Press 4-abr-2025; el dateline dice '04 Marc' por error): reduccion 'ja a partir de sabado, dia 05', gasolina de 37 para 35."
+- effective: 2025-04-05
+  product: Gasoleo
+  locality: national
+  price_local: 33
+  source_type: state_news
+  url: https://www.stp-press.st/2025/04/04/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada/
+  archive_url: http://web.archive.org/web/20260123200706/https://www.stp-press.st/2025/04/04/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada/
+  sha256: e43be34ddc4cc064b0f88a227f5304fddfdbe2c6a599faf3d8d731e390bd6b04
+  file: e43be34ddc4c_2025-04-04-governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "gasoleo de 35 para 33 dobras desde el sabado 5-abr-2025."
+- effective: 2025-04-05
+  product: Petroleo
+  locality: national
+  price_local: 21
+  source_type: state_news
+  url: https://www.stp-press.st/2025/04/04/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada/
+  archive_url: http://web.archive.org/web/20260123200706/https://www.stp-press.st/2025/04/04/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada/
+  sha256: e43be34ddc4cc064b0f88a227f5304fddfdbe2c6a599faf3d8d731e390bd6b04
+  file: e43be34ddc4c_2025-04-04-governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-duas-dobras-cada.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "'o petroleo mantem em 21 Dobras por litros' (sin cambio). NO es un cambio en esta fecha: es la primera confirmacion fechada del nivel 21, que ya regia antes (Lusa/Forbes: 21 en ene-2025); fecha de inicio del 21 desconocida."
+- effective: 2025-06-14
+  product: Gasolina
+  locality: national
+  price_local: 32
+  source_type: state_news
+  url: https://www.stp-press.st/2025/06/15/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada/
+  archive_url: http://web.archive.org/web/20260119174405/https://www.stp-press.st/2025/06/15/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada/
+  sha256: ac22e3c5e3632aa1aacf4629e021c3533029b511eb179f157987484c455283b9
+  file: ac22e3c5e363_2025-06-15-governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "STP-Press 15-jun-2025 (domingo): 'a partir deste sabado, dia 14, com a gasolina a baixar de 35 Dobras para 32'; declaraciones del ministro Guadalupe. El triage la fechaba 15-jun (fecha de publicacion); la vigencia es el 14."
+- effective: 2025-06-14
+  product: Gasoleo
+  locality: national
+  price_local: 30
+  source_type: state_news
+  url: https://www.stp-press.st/2025/06/15/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada/
+  archive_url: http://web.archive.org/web/20260119174405/https://www.stp-press.st/2025/06/15/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada/
+  sha256: ac22e3c5e3632aa1aacf4629e021c3533029b511eb179f157987484c455283b9
+  file: ac22e3c5e363_2025-06-15-governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "gasoleo de 33 para 30."
+- effective: 2025-06-14
+  product: Petroleo
+  locality: national
+  price_local: 19
+  source_type: state_news
+  url: https://www.stp-press.st/2025/06/15/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada/
+  archive_url: http://web.archive.org/web/20260119174405/https://www.stp-press.st/2025/06/15/governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada/
+  sha256: ac22e3c5e3632aa1aacf4629e021c3533029b511eb179f157987484c455283b9
+  file: ac22e3c5e363_2025-06-15-governo-anuncia-reducao-de-precos-dos-combustiveis-com-gasolina-e-gasoleo-a-baixar-tres-dobras-cada.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "petroleo de 21 para 19."
+- effective: 2025-10-03
+  product: Gasolina
+  locality: national
+  price_local: 30
+  source_type: state_news
+  url: https://www.stp-press.st/2025/10/03/governo-anuncia-reducao-de-precos-dos-combustiveis/
+  archive_url: https://web.archive.org/web/20261016180518/https://www.stp-press.st/2025/10/03/governo-anuncia-reducao-de-precos-dos-combustiveis/
+  sha256: 32d45d3b030dda35dc05e3393cc56e1eab2ae7c25659c258182535c2ba9ece16
+  file: 32d45d3b030d_2025-10-03-governo-anuncia-reducao-de-precos-dos-combustiveis.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "Guadalupe (declaraciones del jueves 2-oct): 'a gasolina que era 32 vai passar a ser 30'; efecto 'a partir de amanha [hoje, sexta-feira, dia 03 de Outubro]'. El petroleo se mantiene en 19."
+- effective: 2025-10-03
+  product: Gasoleo
+  locality: national
+  price_local: 29
+  source_type: state_news
+  url: https://www.stp-press.st/2025/10/03/governo-anuncia-reducao-de-precos-dos-combustiveis/
+  archive_url: https://web.archive.org/web/20261016180518/https://www.stp-press.st/2025/10/03/governo-anuncia-reducao-de-precos-dos-combustiveis/
+  sha256: 32d45d3b030dda35dc05e3393cc56e1eab2ae7c25659c258182535c2ba9ece16
+  file: 32d45d3b030d_2025-10-03-governo-anuncia-reducao-de-precos-dos-combustiveis.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "'O gasoleo que era 30 dobras passara a ser 29'."
+- effective: 2025-11-27
+  product: Gasolina
+  locality: national
+  price_local: 28
+  source_type: state_news
+  url: https://www.stp-press.st/2025/11/25/governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano/
+  archive_url: http://web.archive.org/web/20251215152400/https://www.stp-press.st/2025/11/25/governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano/
+  sha256: 94d9128c1b2d3a2c69b650f5b8aa70b7f0fe3bc88299478d02d362bbb9cd41fb
+  file: 94d9128c1b2d_2025-11-25-governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "STP-Press 25-nov-2025 cita comunicado del Gobierno: reduccion 'a partir de quinta-feira, dia 27', gasolina de 30 para 28. El 28 lo confirma el anuncio de abr-2026 ('vendida hoje a 28') y Lusa/Forbes 28-nov-2025."
+- effective: 2025-11-27
+  product: Gasoleo
+  locality: national
+  price_local: 27
+  source_type: state_news
+  url: https://www.stp-press.st/2025/11/25/governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano/
+  archive_url: http://web.archive.org/web/20251215152400/https://www.stp-press.st/2025/11/25/governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano/
+  sha256: 94d9128c1b2d3a2c69b650f5b8aa70b7f0fe3bc88299478d02d362bbb9cd41fb
+  file: 94d9128c1b2d_2025-11-25-governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "gasoleo de 29 para 27; Lusa/Forbes 28-nov-2025 dice 27 'corrigindo o valor divulgado' (hubo una cifra anterior distinta, no identificada); el anuncio de abr-2026 confirma 27 como precio vigente."
+- effective: 2025-11-27
+  product: Petroleo
+  locality: national
+  price_local: 18
+  source_type: state_news
+  url: https://www.stp-press.st/2025/11/25/governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano/
+  archive_url: http://web.archive.org/web/20251215152400/https://www.stp-press.st/2025/11/25/governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano/
+  sha256: 94d9128c1b2d3a2c69b650f5b8aa70b7f0fe3bc88299478d02d362bbb9cd41fb
+  file: 94d9128c1b2d_2025-11-25-governo-baixar-precos-de-combustiveis-pela-4-vez-em-menos-de-um-ano.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "'petroleo a sair de 19 para 18 Dobras' (comunicado del Gobierno, tambien Lusa/Forbes: 18). CONTRADICCION: el anuncio del 31-mar-2026 (STP-Press y Lusa/Forbes) dice que el petroleo 'mantem-se em 19', y Rio Times (oct-2026) informa 19. O el recorte a 18 no se aplico o se revirtio sin anuncio hallado; confianza bajada un escalon."
+- effective: 2026-04-01
+  product: Gasolina
+  locality: national
+  price_local: 31
+  source_type: state_news
+  url: https://www.stp-press.st/2026/03/31/governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente/
+  archive_url: https://web.archive.org/web/20261016180639/https://www.stp-press.st/2026/03/31/governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente/
+  sha256: 8d6172d4a1d9b2a113638879fb40f7682418af4d64becd1d2e1a6e9a7ee46d0a
+  file: 8d6172d4a1d9_2026-03-31-governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "Ministro de Financas Gareth Guadalupe (STP-Press 31-mar-2026): aumento 'esta quarta-feira, dia 01 Abril', gasolina de 28 para 31; el Estado asume 90% del aumento. Lusa/Forbes 1-abr-2026 coincide."
+- effective: 2026-04-01
+  product: Gasoleo
+  locality: national
+  price_local: 30
+  source_type: state_news
+  url: https://www.stp-press.st/2026/03/31/governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente/
+  archive_url: https://web.archive.org/web/20261016180639/https://www.stp-press.st/2026/03/31/governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente/
+  sha256: 8d6172d4a1d9b2a113638879fb40f7682418af4d64becd1d2e1a6e9a7ee46d0a
+  file: 8d6172d4a1d9_2026-03-31-governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "gasoleo de 27 para 30 desde el miercoles 1-abr-2026."
+- effective: 2026-04-01
+  product: Petroleo
+  locality: national
+  price_local: 19
+  source_type: state_news
+  url: https://www.stp-press.st/2026/03/31/governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente/
+  archive_url: https://web.archive.org/web/20261016180639/https://www.stp-press.st/2026/03/31/governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente/
+  sha256: 8d6172d4a1d9b2a113638879fb40f7682418af4d64becd1d2e1a6e9a7ee46d0a
+  file: 8d6172d4a1d9_2026-03-31-governo-anuncia-aumento-dos-precos-de-combustiveis-face-a-crise-no-medio-oriente.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "La fuente dice 'petroleo mantera-se em 19 dobras' / 'ira manter-se inalterado' (no anuncia una suba). CONTRADICE la fila de 2025-11-27 (18). Se carga 19 como nivel declarado vigente al 31-mar-2026; si hubo un paso 18->19 su fecha es desconocida. Confianza bajada un escalon."
