@@ -4,8 +4,8 @@ then `signoff <run_id>` -> counts -> check. Nothing writes the corpus before the
 Steps run through `prices.weekly.step.run_step`, the `po prices weekly` runner: each one in
 its own `systemd-run --user` scope with a MemoryMax, refused unless the 5TB is mounted,
 through the disk gate, with STATUS_<step> and events.log under <logs-root>/<run_id>/.
-Corpus, ledger and staging live on the 5TB; only logs and the counts cache
-(data/text/cache, outputs/text) are written on a8.
+Corpus and ledger live on the 5TB; staging, pending plans, logs and the counts cache
+(data/text/cache, outputs/text) are written on a8 (staging/pending under ~/scratch/textsources).
 """
 
 from __future__ import annotations
@@ -25,9 +25,10 @@ from prices.weekly.step import REPO_ROOT, Context, Step, run_step
 
 CORPUS_ROOT = BACKUP_MOUNT / "text-corpus"
 STATE_DIR = BACKUP_MOUNT / "text-panel" / "state"
-STAGING_ROOT = BACKUP_MOUNT / "text-panel" / "staging"
+# 2026-10-16, user rule: the 5TB is backup only; run outputs default to a8 (floor 10G on /).
+STAGING_ROOT = Path.home() / "scratch" / "textsources" / "staging"
 # merge writes sign-off plans here; only `signoff` writes the corpus.
-PENDING_ROOT = BACKUP_MOUNT / "text-panel" / "pending"
+PENDING_ROOT = Path.home() / "scratch" / "textsources" / "pending"
 LOGS_ROOT = Path.home() / "text_panel" / "logs"
 # a8 has no poetry; runner.sh calls `poetry run po`, which this shim maps to ~/venv.
 POETRY_SHIM = Path.home() / "text_collect" / "bin"
@@ -125,7 +126,7 @@ def _under_mount(ctx, param, value: Path) -> Path:
     mount = ctx.params.get("backup_mount", BACKUP_MOUNT)
     value = value.expanduser().absolute()
     if not value.is_relative_to(mount):
-        raise click.BadParameter(f"{value} is not under {mount}: corpus, ledger and staging live on the 5TB")
+        raise click.BadParameter(f"{value} is not under {mount}: corpus and ledger live on the 5TB")
     return value
 
 
@@ -142,8 +143,8 @@ def _under_mount(ctx, param, value: Path) -> Path:
 @click.option("--run-id", default=_run_id, show_default="now, UTC (YYYYmmddTHHMMZ)")
 @click.option("--corpus-root", type=click.Path(path_type=Path), default=CORPUS_ROOT, show_default=True, callback=_under_mount)
 @click.option("--state-dir", type=click.Path(path_type=Path), default=STATE_DIR, show_default=True, callback=_under_mount)
-@click.option("--staging-root", type=click.Path(path_type=Path), default=STAGING_ROOT, show_default=True, callback=_under_mount)
-@click.option("--pending-root", type=click.Path(path_type=Path), default=PENDING_ROOT, show_default=True, callback=_under_mount)
+@click.option("--staging-root", type=click.Path(path_type=Path), default=STAGING_ROOT, show_default=True)
+@click.option("--pending-root", type=click.Path(path_type=Path), default=PENDING_ROOT, show_default=True)
 @click.option("--logs-root", type=click.Path(path_type=Path), default=LOGS_ROOT, show_default=True)
 @click.option("--parallel", "-P", type=int, default=12, show_default=True, help="Parallel sources in collect.")
 @click.option("--cap", type=int, default=300, show_default=True, help="Seconds per source in collect.")
