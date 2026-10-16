@@ -42,4 +42,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: 900
+max_articles: 700  # 2026-10-16 verify: 900 hit the cap

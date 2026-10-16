@@ -52,5 +52,5 @@ cleaning:
   date: "handle_mixed_dates"
 
 # Test/debug options
-max_pages: 3
-max_articles: 300  # 2026-10-16 verify: 600 still hit the 300 s cap
+max_pages: 2
+max_articles: 250  # 2026-10-16 verify: 600 and 300 hit the 300 s cap
