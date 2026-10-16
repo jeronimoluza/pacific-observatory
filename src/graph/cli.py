@@ -123,3 +123,22 @@ def status_cmd(manifest_dir, week, countries, only, detail, as_json):
             if r["drift"] or k in colors:
                 click.echo(f"{r['node']:<22} {r['partition']:<50} {colors.get(k, 'verde'):<8} "
                            + "; ".join(r["drift"] + msgs.get(k, [])))
+
+
+@graph.command("deadman")
+@click.option("--expect", "expects", multiple=True, metavar="NAME@AT",
+              help="Override deadman.expect.NAME.at, e.g. text-panel@daily-09:00 or prices-weekly@mon-09:30 (UTC).")
+@click.option("--backup-mount", type=click.Path(path_type=Path), default=None,
+              help="Default deadman.backup_mount of the notify config.")
+def deadman_cmd(expects, backup_mount):
+    """Rojo alert when an expected run has no fresh STATUS, the 5TB is not mounted or / is low."""
+    from graph.deadman import run_deadman
+    from notify.send import load_config
+
+    overrides = {}
+    for e in expects:
+        name, sep, at = e.partition("@")
+        if not sep:
+            raise click.BadParameter(f"{e}: expected NAME@AT")
+        overrides[name] = at
+    sys.exit(run_deadman(load_config(), overrides, backup_mount, echo=click.echo))

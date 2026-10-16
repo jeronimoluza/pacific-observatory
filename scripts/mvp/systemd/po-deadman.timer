@@ -1,0 +1,9 @@
+[Unit]
+Description=po graph deadman, hourly
+
+[Timer]
+OnCalendar=hourly
+Persistent=false
+
+[Install]
+WantedBy=timers.target

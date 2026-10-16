@@ -1,0 +1,11 @@
+[Unit]
+Description=po text panel over text36eap: collect -> merge plan, then AWAITING_SIGNOFF
+Documentation=file:%h/po-worktrees/panel36/scripts/mvp/systemd/INSTALL.md
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/po-worktrees/panel36
+# Steps run in their own systemd-run --user scopes with their own MemoryMax; this caps the driver.
+ExecStart=%h/venv/bin/python run.py text panel --countries text36eap run
+MemoryMax=1G
+TimeoutStartSec=20h

@@ -1,0 +1,10 @@
+[Unit]
+Description=po graph deadman: expected runs, 5TB mount, free space on /
+Documentation=file:%h/po-worktrees/panel36/scripts/mvp/systemd/INSTALL.md
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/po-worktrees/panel36
+ExecStart=%h/venv/bin/python run.py graph deadman
+MemoryMax=512M
+TimeoutStartSec=10min

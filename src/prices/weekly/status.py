@@ -1,7 +1,8 @@
 """STATUS_<step> and events.log, in the same one-line format the W42 shell runners wrote.
 
 STATUS_<step> holds the step's latest line (overwritten); events.log gets every line,
-prefixed with the step name:
+prefixed with the step name. `write` hands BLOCKED / FAILED / ABORTED, AWAITING_SIGNOFF and
+the end of a run to `po notify` (notify.from_status):
 
     STATUS_enrich  2026-10-14T14:38:16Z DONE concatenate + prepare rc=0, free 45G
     events.log     2026-10-14T14:38:16Z enrich: DONE concatenate + prepare rc=0, free 45G
@@ -34,6 +35,9 @@ class Status:
         (self.week_dir / f"STATUS_{self.step}").write_text(f"{ts} {state} {msg}\n")
         with open(self.week_dir / "events.log", "a") as f:
             f.write(f"{ts} {self.step}: {state} {msg}\n")
+        from notify.send import from_status
+
+        from_status(self.week_dir, self.step, state, msg)
 
     def event(self, msg: str) -> None:
         self.week_dir.mkdir(parents=True, exist_ok=True)
