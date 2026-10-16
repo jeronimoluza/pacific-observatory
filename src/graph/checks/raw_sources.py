@@ -189,18 +189,32 @@ def read(week: str, ledgers: list[Path] | None = None, data_root: Path = DATA_RO
     return rows
 
 
+def zero_color(r: dict) -> str | None:
+    """The one definition of a prices source in zero for its week, used by this check, by
+    ``graph status`` and by ``po graph ledger zeros``: the week's last ledger record says
+    ``ok_norows``, the week has 0 rows on disk and the baseline is > 0. "rojo" (silent zero)
+    for a spider, or for a fetcher that is steady or overdue; "amarillo" for a fetcher
+    without delta; None otherwise."""
+    if r["status"] != "ok_norows" or not r["baseline"] or r["week_rows"]:
+        return None
+    return "rojo" if r["scaffolding"] != "fetcher" or r["steady"] or r["overdue"] else "amarillo"
+
+
 def check(rows: list[dict]) -> list[dict]:
-    """Registry hook over the collect observer rows: ledger statuses only. The baseline
-    and the dates need the raw files, so the node also points at the direct run."""
+    """Registry hook for ``graph status``: the direct run (`read` + `evaluate`) for the observed
+    week and countries, so status colors ``prices.raw`` with the same findings as
+    ``python -m graph.checks.raw_sources``. Partitions are mapped to the observer's
+    ``<region>/<country>/<source>``."""
+    from graph.observe import week
+
     raw = [r for r in rows if r["node"] == NODE and r["partition"] != "_week"]
     if not raw:
         return []
-    out = [{"node": NODE, "partition": r["partition"], "color": "amarillo",
-            "msg": f"status {r['extra'].get('status')}"}
-           for r in raw if r["extra"].get("status") in YELLOW_STATUSES]
-    out.append({"node": NODE, "partition": "*", "color": "amarillo",
-                "msg": "ceros vs baseline y fechas futuras requieren corrida directa: "
-                       "python -m graph.checks.raw_sources --week <wk>"})
+    part = {tuple(r["partition"].split("/")[1:3]): r["partition"] for r in raw}
+    out = []
+    for f in evaluate(read(week(), countries=sorted({c for c, _ in part}))):
+        f["partition"] = part.get(tuple(f["partition"].split("/")), f["partition"])
+        out.append(f)
     return out
 
 
@@ -208,8 +222,9 @@ def evaluate(rows: list[dict]) -> list[dict]:
     out = []
     for r in rows:
         part = f"{r['country']}/{r['source']}"
-        if r["status"] == "ok_norows" and r["baseline"] and not r["week_rows"]:
-            if r["scaffolding"] != "fetcher" or r["steady"] or r["overdue"]:
+        zero = zero_color(r)
+        if zero:
+            if zero == "rojo":
                 out.append({"node": NODE, "partition": part, "color": "rojo",
                             "msg": f"cero silencioso: ok_norows con baseline {r['baseline']:g}"
                                    + (f", ultima observation_date {r['last_obs']}" if r["last_obs"] else "")})
