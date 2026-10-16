@@ -43,7 +43,7 @@ def _country_files(root: Path, country: str) -> dict[str, Path]:
 
 def _pred_digests(root: Path, countries: list[str]) -> dict[str, tuple[int, int]]:
     """country -> (rows, order-free uint64 sum of row hashes) over every pred bucket."""
-    acc = {c: [0, np.uint64(0)] for c in countries}
+    acc = {c: [0, 0] for c in countries}
     files = sorted((root / PRED).glob("*/pred_*.parquet"))
     for f in files:
         df = pd.read_parquet(f)
@@ -56,9 +56,9 @@ def _pred_digests(root: Path, countries: list[str]) -> dict[str, tuple[int, int]
             h = pd.util.hash_pandas_object(df.astype(str), index=False).to_numpy()
         for c, idx in df.groupby("country", sort=False).indices.items():
             acc[c][0] += len(idx)
-            acc[c][1] += h[idx].sum(dtype=np.uint64)
+            acc[c][1] = (acc[c][1] + int(h[idx].sum(dtype=np.uint64))) % 2**64
     click.echo(f"pred {root}: {len(files)} buckets")
-    return {c: (n, int(s)) for c, (n, s) in acc.items()}
+    return {c: (n, s) for c, (n, s) in acc.items()}
 
 
 def diff_enrich(a: Path, b: Path, countries: list[str]) -> int:
