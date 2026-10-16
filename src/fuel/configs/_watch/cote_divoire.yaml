@@ -1,17 +1,21 @@
 # `po fuel watch --country cote_divoire`. Schema and checks: src/fuel/watch.py.
-# Triage lane 2026-10-16: fetcher. No `levels:` yet: add the manual
-# table's path when it exists; until then GPP changes alert on their own.
+# Triage lane 2026-10-16: fetcher (dgh). levels: its observations; a missed monthly
+# publication shows up as staleness, an unloaded change as a GPP move.
 # gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
 country: cote_divoire
 currency: XOF
+levels:
+  paths:
+  - data/fuel/ssa/west_africa/cote_divoire/dgh/observations.csv
+  stale_months: 2
 broken_after: 3
 lookback_days: 10
 gpp:
   slug: Ivory-Coast
   name: Ivory Coast
   products:
-    gasoline: super_sans_plomb
-    diesel: gasoil_moteur
+    gasoline: Super sans plomb
+    diesel: Gasoil moteur
   move_pct: 3
   diverge_pct: 5
   diverge_runs: 3

@@ -1,17 +1,21 @@
 # `po fuel watch --country senegal`. Schema and checks: src/fuel/watch.py.
-# Triage lane 2026-10-16: fetcher. No `levels:` yet: add the manual
-# table's path when it exists; until then GPP changes alert on their own.
+# Triage lane 2026-10-16: fetcher (crse). levels: its observations; a missed monthly
+# publication shows up as staleness, an unloaded change as a GPP move.
 # gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
 country: senegal
 currency: XOF
+levels:
+  paths:
+  - data/fuel/ssa/west_africa/senegal/crse/observations.csv
+  stale_months: 2
 broken_after: 3
 lookback_days: 10
 gpp:
   slug: Senegal
   name: Senegal
   products:
-    gasoline: supercarburant
-    diesel: gasoil
+    gasoline: Super
+    diesel: Gasoil
   move_pct: 3
   diverge_pct: 5
   diverge_runs: 3
