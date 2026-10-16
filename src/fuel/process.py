@@ -14,6 +14,7 @@ import yaml
 from core.storage import save_csv
 
 from .config import ProductSpec, build_fuel_registry
+from .family_key import base_family, family_key
 from .fx import DEFAULT_FX_CACHE, attach_fx_and_usd
 from prices.fx.parallel import PARALLEL_CACHE
 
@@ -330,6 +331,7 @@ def _build_family_output(
     family = df[df["fuel_family"].isin(_FAMILY_USD_FAMILIES)].copy()
     if family.empty:
         return pd.DataFrame(columns=_FAMILY_COLUMNS)
+    family["fuel_family"] = family_key(family)
 
     grouped = (
         family.groupby(
@@ -351,7 +353,7 @@ def _build_family_output(
         )
         .round({"price_local": 6})
     )
-    grouped["unit"] = grouped["fuel_family"].map(_CANONICAL_FAMILY_UNITS)
+    grouped["unit"] = base_family(grouped["fuel_family"]).map(_CANONICAL_FAMILY_UNITS)
     with_fx = attach_fx_and_usd(grouped, cache_path=fx_cache_path)
     with_fx = attach_parallel(with_fx, cache_path=parallel_cache_path)
     with_fx["observation_date"] = pd.to_datetime(
@@ -436,7 +438,8 @@ def build_country_outputs(
         resolved["source_key"].astype(str).str.split(",").str[0].map(basis)
     )
     family_basis = (
-        resolved.groupby("fuel_family")["price_basis"]
+        resolved.assign(fuel_family=family_key(resolved))
+        .groupby("fuel_family")["price_basis"]
         .agg(lambda s: ",".join(sorted(set(s.dropna()))))
         .to_dict()
     )
