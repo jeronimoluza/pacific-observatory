@@ -15,7 +15,8 @@ def register(fuel_group, opts: dict):
 
     @fuel_group.command("refresh-fx")
     @region_opt
-    def fuel_refresh_fx(region):
+    @click.option("--force-parallel", is_flag=True, help="Refetch RTFX even if fresh")
+    def fuel_refresh_fx(region, force_parallel):
         """Bring the shared FX cache current to today (UTC).
 
         Run once per weekly run, after the parallel collects and before the
@@ -31,6 +32,29 @@ def register(fuel_group, opts: dict):
         currencies = {e["currency"] for e in registry.values() if e.get("currency")}
         n_new = refresh_fx_cache(sorted(currencies))
         click.echo(f"FX cache: {n_new} new rows for {len(currencies)} currencies")
+
+        # Parallel-market rates (RTFX) are monthly; refetch at most weekly.
+        import time
+
+        from core.config import load_countries
+        from fuel.fx_parallel import PARALLEL_CACHE, refresh_parallel_cache
+
+        age = (
+            time.time() - PARALLEL_CACHE.stat().st_mtime
+            if PARALLEL_CACHE.exists()
+            else None
+        )
+        if age is not None and age < 6 * 86400 and not force_parallel:
+            click.echo("Parallel FX cache is < 6 days old; skipped")
+            return
+        meta = load_countries()
+        iso3_currency = {
+            meta[s]["iso3"]: meta[s]["currency"]
+            for s in {e["country_slug"] for e in registry.values()}
+            if meta.get(s, {}).get("iso3") and meta[s].get("currency")
+        }
+        n_par = refresh_parallel_cache(iso3_currency)
+        click.echo(f"Parallel FX cache: {n_par} monthly rows")
 
     @fuel_group.command("gate-baseline")
     @region_opt

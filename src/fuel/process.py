@@ -13,6 +13,7 @@ from core.storage import save_csv
 
 from .config import ProductSpec, build_fuel_registry
 from .fx import DEFAULT_FX_CACHE, attach_fx_and_usd
+from .fx_parallel import PARALLEL_CACHE, attach_parallel
 from .paths import canonical_observations_path_for_entry
 
 logger = logging.getLogger(__name__)
@@ -70,6 +71,8 @@ _FAMILY_COLUMNS = [
     "fx_rate",
     "fx_rate_date",
     "price_usd",
+    "fx_rate_parallel",
+    "price_usd_parallel",
 ]
 
 
@@ -173,9 +176,9 @@ def _load_source_frame(entry: dict, data_dir: Path = DATA_DIR) -> pd.DataFrame:
     df["cadence"] = entry["cadence"]
     source_default = entry["carry_forward"]
     df["carry_forward"] = df["product_spec"].map(
-        lambda spec: source_default
-        if spec.carry_forward is None
-        else spec.carry_forward
+        lambda spec: (
+            source_default if spec.carry_forward is None else spec.carry_forward
+        )
     )
     return df
 
@@ -314,6 +317,9 @@ def _build_family_output(
     )
     grouped["unit"] = grouped["fuel_family"].map(_CANONICAL_FAMILY_UNITS)
     with_fx = attach_fx_and_usd(grouped, cache_path=fx_cache_path)
+    with_fx = attach_parallel(
+        with_fx, cache_path=fx_cache_path.with_name(PARALLEL_CACHE.name)
+    )
     with_fx["observation_date"] = pd.to_datetime(
         with_fx["observation_date"], errors="coerce"
     ).dt.strftime("%Y-%m-%d")

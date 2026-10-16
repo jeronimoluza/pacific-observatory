@@ -399,6 +399,7 @@ def run_publish(
     """Generate fuel policy dashboards and Excels for one or all regions."""
     from .publish_html import gen_policy_html
     from .publish_xlsx import export_region_xlsx
+    from .publish_parallel import inject_parallel_section
 
     if region:
         regions_to_publish = [region]
@@ -468,6 +469,8 @@ def run_publish(
             out=out_path,
             region_label=region_label,
         )
+        if inject_parallel_section(out_path, countries):
+            logger.info("Added the official vs parallel FX section")
         logger.info("Dashboard written to %s", out_path)
         xlsx_path = export_region_xlsx(
             reg, countries, outputs_dir / "excels", history_years=history_years

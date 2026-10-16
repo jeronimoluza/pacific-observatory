@@ -15,6 +15,7 @@ from pathlib import Path
 import pandas as pd
 
 from .config import build_fuel_registry
+from .publish_parallel import parallel_sheets
 
 logger = logging.getLogger(__name__)
 
@@ -175,9 +176,13 @@ def export_region_xlsx(
     data_sheet = _build_data_sheet(region, countries, history_years=history_years)
     sources_sheet = _build_sources_sheet(region, countries)
 
+    extra = parallel_sheets(countries, history_years=history_years)
+
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
         data_sheet.to_excel(writer, sheet_name="data", index=False)
         sources_sheet.to_excel(writer, sheet_name="sources", index=False)
+        for name, sheet in extra.items():
+            sheet.to_excel(writer, sheet_name=name, index=False)
 
     logger.info(
         "Wrote %s (data: %d rows, sources: %d rows)",
