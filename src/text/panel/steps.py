@@ -4,8 +4,10 @@
 - collect: staged collect of the panel's enabled sources into <staging-root>/<run_id>/, with
            the refresh-text-region runner.sh (watchdog, per-source cap), STATUS.md and .done
            in the format of staged_collect_all.sh, so graph.observers.text_delta reads it.
-- merge:   `po text merge` of every pending run under <staging-root> into <corpus-root>;
-           refuses if a staged source is outside the panel.
+- merge:   plan, not write: every unplanned run under <staging-root> becomes a sign-off plan
+           under <pending-root>/<run_id>/ (text.panel.signoff); refuses if a staged source is
+           outside the panel.
+- signoff: apply that plan to <corpus-root> and the panel ledger, after the user signs.
 - counts:  EPU build per panel country (source_counts cache + outputs) from the corpus.
 - check:   text.counts checks (T23/T26/watermark/hash) and silent zeros of this run.
 """
@@ -145,19 +147,19 @@ def step_collect(a) -> int:
 
 
 def step_merge(a) -> int:
-    from text import ledger
-    from text.merge import pending_runs, run_merge
+    """Plan only: the corpus is written by `po text panel signoff <run_id>`."""
+    from text.merge import pending_runs
+    from text.panel import signoff
 
-    if ledger.STATE_DIR != a.state_dir:
-        print(f"TEXT_STATE_DIR is {ledger.STATE_DIR}, step was given {a.state_dir}")
-        return 1
     srcs = panel_sources(a.countries)
     allowed = {(region, f"{sub}/{c}") for (region, sub, c) in srcs}
     if not a.staging_root.is_dir():
         print(f"no staging root {a.staging_root}")
         return 1
+    planned = signoff.planned_runs(a.pending_root)
+    run_regions = []
     for region in _regions(srcs):
-        runs = pending_runs(a.staging_root, region)
+        runs = [r for r in pending_runs(a.staging_root, region) if f"{r.name}/{region}" not in planned]
         outside = sorted(
             f"{run.name}/{region}/{d.relative_to(run / region)}"
             for run in runs for d in (run / region).glob("*/*/*")
@@ -166,9 +168,27 @@ def step_merge(a) -> int:
         if outside:
             print(f"{region}: staged sources outside --countries, refusing to merge: {', '.join(outside[:20])}")
             return 1
-        print(f"== {region}: {len(runs)} pending run(s) -> {a.corpus_root / region}", flush=True)
-        run_merge(region=region, staging=a.staging_root, data_base=a.corpus_root)
+        print(f"== {region}: {len(runs)} unplanned run(s)", flush=True)
+        run_regions += [run / region for run in runs]
+    if not run_regions:
+        print("nothing to plan")
+        return 0
+    plan_dir = a.pending_root / a.run_id
+    rows = signoff.plan(sorted(run_regions, key=lambda p: p.parent.name), {c for (_, _, c) in srcs},
+                        a.corpus_root, plan_dir)
+    print(f"plan {plan_dir}: {signoff.summary(rows)}")
+    print(f"apply with: po text panel signoff {a.run_id}")
     return 0
+
+
+def step_signoff(a) -> int:
+    from text import ledger
+    from text.panel import signoff
+
+    if ledger.STATE_DIR != a.state_dir:
+        print(f"TEXT_STATE_DIR is {ledger.STATE_DIR}, step was given {a.state_dir}")
+        return 1
+    return signoff.apply(a.pending_root / a.run_id, a.staging_root)
 
 
 def _link_corpus(regions, corpus_root: Path) -> str | None:
@@ -275,19 +295,20 @@ def step_check(a) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="text.panel.steps")
-    ap.add_argument("step", choices=["ledger", "collect", "merge", "counts", "check"])
+    ap.add_argument("step", choices=["ledger", "collect", "merge", "signoff", "counts", "check"])
     ap.add_argument("--run-id", required=True)
     ap.add_argument("--countries", required=True)
     ap.add_argument("--corpus-root", type=Path, required=True)
     ap.add_argument("--state-dir", type=Path, required=True)
     ap.add_argument("--staging-root", type=Path, required=True)
+    ap.add_argument("--pending-root", type=Path, required=True)
     ap.add_argument("--parallel", type=int, default=12)
     ap.add_argument("--cap", type=int, default=300)
     ap.add_argument("--parallel-sources", type=int, default=2, help="counts: --max-parallel-sources of the build")
     a = ap.parse_args(argv)
     a.countries = [c for c in a.countries.split(",") if c]
     return {"ledger": step_ledger, "collect": step_collect, "merge": step_merge,
-            "counts": step_counts, "check": step_check}[a.step](a)
+            "signoff": step_signoff, "counts": step_counts, "check": step_check}[a.step](a)
 
 
 if __name__ == "__main__":
