@@ -9,6 +9,7 @@ import pandas as pd
 from core.config import load_countries
 from prices.enrich import config
 from prices.enrich.source_canonical import canonical_source
+from prices.enrich.stages.currency_pick import modal_currency
 from prices.enrich.versioning import input_hash
 
 # Currencies that use European-style number formatting:
@@ -350,6 +351,7 @@ def _derive(raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def _aggregate(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.assign(currency=modal_currency(df, log=True))
     agg = dict(
         product_name_original=("product_name_original", "first"),
         product_url=("product_url", _first_non_empty),
@@ -377,7 +379,9 @@ def product_months(df: pd.DataFrame) -> pd.DataFrame:
     grain (vault `stage-b-trust.md`, Grain). `source` rides along so a scoped
     prepare can merge forward by source, as it does for products. A row with no
     date keeps a null month rather than vanishing."""
-    work = df.assign(month=month_of(df["observation_date"]))
+    work = df.assign(
+        month=month_of(df["observation_date"]), currency=modal_currency(df)
+    )
     agg = dict(
         price=("price", "median"),
         n_rows=("input_hash", "size"),

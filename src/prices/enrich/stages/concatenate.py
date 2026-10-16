@@ -352,16 +352,16 @@ def _iter_source_files(
     out: list[tuple[str, Path]] = []
     raw = source_dir / "raw_items"
     if raw.is_dir():
-        out.extend(("jsonl", p) for p in raw.glob("*.jsonl"))
+        out.extend(("jsonl", p) for p in sorted(raw.glob("*.jsonl")))
     wb = source_dir / "wayback_items"
     if wb.is_dir():
-        out.extend(("wayback", p) for p in wb.glob("*.jsonl"))
+        out.extend(("wayback", p) for p in sorted(wb.glob("*.jsonl")))
     cc = source_dir / "common_crawl_data" / "items"
     if cc.is_dir():
         # Both layouts: one JSON per record (pre-compaction) and one JSONL per
         # crawl. A corpus captured before the change is still read in place.
-        out.extend(("cc", p) for p in cc.glob("*.json"))
-        out.extend(("cc_jsonl", p) for p in cc.glob("*.jsonl"))
+        out.extend(("cc", p) for p in sorted(cc.glob("*.json")))
+        out.extend(("cc_jsonl", p) for p in sorted(cc.glob("*.jsonl")))
     obs = source_dir / "price_observations.csv"
     if obs.is_file() and (country, source) in _classifier_csv_map():
         out.append(("price_obs", obs))
