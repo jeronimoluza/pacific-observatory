@@ -9,6 +9,11 @@
 #   Por eso las filas 645/520 van como confidence baja (alerta, no publicar). Ecomatin (10-02-2026) proyectaba 720/595 sumando 75 a 645/520: no ocurrió.
 #   No hay texto del Decreto 40/2026 ni del BOE online; la nota de Ahora EG del 28-05-2026 (anuncio de vigencia 1-jun) dio 403 y no tiene captura.
 #   Sin evidencia de precios posteriores a jun-2026 (oct-2026: crisis de abastecimiento, sin cambio de precio publicado); por eso no hay last_checked.
+#   CPDS (cpdsge.org, sin fecha) también da 570/545 pero dice que el decreto se firmó el 13-05-2026 (Imperio GE: 13-03; Ahora EG según buscador: 3-03).
+#   CONTRADICCIÓN ago-2026: el ranking EcoMatin (tchadinfos 05-08, Gabon Media Time 06-08) pone a Guinea Ecuatorial en 645, cuando rige 570 desde 01-06-2026: no es confirmación.
+# Filas de confirmación: 2025-03-15 (lampante, web oficial), 2025-03-20 (gasolina 495, gasóleo 470; AFP: aplicación del decreto pendiente), 2026-06-01 (lampante).
+# Tramos >12 meses sin confirmación: gasolina y gasóleo 2024-01-01 -> 2025-03-20 (la fila 2022-03-01 cubre hasta ~2023-03) y 2025-03-20 -> 2026-06-01 (~14 meses;
+#   Ecomatin 10-02-2026 suponía 645/520 vigentes: contradice, no confirma); lampante 2024-01-01 -> 2025-03-15.
 source_key: manual_gq_levels
 country: Equatorial Guinea
 currency: XAF
@@ -99,6 +104,46 @@ levels:
   derived_from: []
   confidence: baja
   note: 'NO PUBLICAR (alerta). Decreto 26/2025 en web oficial: "b. Gasóleo, 520 FCFA/Litro". Misma duda de aplicación que la fila Gasolina 645: el FMI (dic-2025) da por incumplida la subida de 2025 y el Decreto 40/2026 lleva el gasóleo a 545 = 470 + 75 (si 520 hubiera regido, la suba sería de 25, no de 75 como dice el FMI).'
+- effective: 2025-03-15
+  product: Petróleo lampante
+  locality: national
+  price_local: 215
+  source_type: official_site
+  url: https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_que_actualiza_la_estructura_de_precios_de_productos_refinados_en_la_republica_de_guinea_ecuatorial
+  archive_url: https://web.archive.org/web/20261016180643/https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_que_actualiza_la_estructura_de_precios_de_productos_refinados_en_la_republica_de_guinea_ecuatorial
+  sha256: 2540c4373e1f98f4a2c3ee55351cf528112dc3e7272d01267a288e3605378885
+  file: 2540c4373e1f_gepress_decreto_estructura_precios_2025.html
+  method: 'confirmation: Decreto 26/2025 en web oficial mantiene el queroseno en 215'
+  derived_from:
+  - https://www.sikafinance.com/marches/guinee-equatoriale-avec-la-chute-des-recettes-petrolieres-letat-augmente-les-prix-des-carburants_51541
+  confidence: media-alta
+  note: 'Decreto 26/2025 (web oficial, 15-03-2025): "c. Petróleo Lampante (Queroseno), 215 FCFA/Litro." Mismo precio que desde 2022, así que la duda sobre la aplicación del decreto (ver filas 645/520) no cambia el nivel. Sikafinance 17-03-2025: "a été maintenu à 215 FCFA/litre".'
+- effective: 2025-03-20
+  product: Gasolina
+  locality: national
+  price_local: 495
+  source_type: press
+  url: https://afrique.le360.ma/economie/la-guinee-equatoriale-augmente-les-prix-du-carburant_PPHB7IX2FJFG3LM6RWC33KWVVQ/
+  archive_url: https://web.archive.org/web/20261016181248/https://afrique.le360.ma/economie/la-guinee-equatoriale-augmente-les-prix-du-carburant_PPHB7IX2FJFG3LM6RWC33KWVVQ/
+  sha256: 0a314613c057ab337ef8fa86c503b69cba2e35dde4e483477e460adda1f18ecf
+  file: 0a314613c057_le360_gq_augmente_prix.html
+  method: 'confirmation: AFP, el decreto sube la essence "de 495 à 645" pero la fecha de aplicación queda por fijar'
+  derived_from: []
+  confidence: media
+  note: 'Le360/AFP 20-03-2025: "L''essence passe de 495 à 645 FCFA le litre ... et le gasoil de 470 à 520 FCFA"; "La date d''augmentation reste à fixer par arrêté du ministère des hydrocarbures et du développement minier, selon le décret". O sea, 495 seguía en surtidor al 20-03-2025. Coherente con el FMI (dic-2025) y con el Decreto 40/2026 (495 + 75).'
+- effective: 2025-03-20
+  product: Gasóleo
+  locality: national
+  price_local: 470
+  source_type: press
+  url: https://afrique.le360.ma/economie/la-guinee-equatoriale-augmente-les-prix-du-carburant_PPHB7IX2FJFG3LM6RWC33KWVVQ/
+  archive_url: https://web.archive.org/web/20261016181248/https://afrique.le360.ma/economie/la-guinee-equatoriale-augmente-les-prix-du-carburant_PPHB7IX2FJFG3LM6RWC33KWVVQ/
+  sha256: 0a314613c057ab337ef8fa86c503b69cba2e35dde4e483477e460adda1f18ecf
+  file: 0a314613c057_le360_gq_augmente_prix.html
+  method: 'confirmation: AFP, el decreto sube el gasoil "de 470 à 520" pero la fecha de aplicación queda por fijar'
+  derived_from: []
+  confidence: media
+  note: 'Le360/AFP 20-03-2025: "le gasoil de 470 à 520 FCFA"; "La date d''augmentation reste à fixer par arrêté". 470 seguía vigente al 20-03-2025.'
 - effective: 2026-06-01
   product: Gasolina
   locality: national
@@ -127,3 +172,16 @@ levels:
   - https://www.guineaecuatorialpress.com/noticias/el_gobierno_aclara_la_aplicacion_del_decreto_402026_y_garantiza_el_suministro_de_combustible
   confidence: media
   note: 'Imperio GE: Decreto 40/2026 vigente desde lunes 01-06-2026, "el litro de gasóleo queda fijado en 545 XAF"; "el precio del petróleo Lampante (queroseno) se mantiene sin variación, estableciéndose en 215 XAF"; Jet A1 nacional 505. 545 = 470 + 75. Ver nota de la fila Gasolina 2026-06-01 sobre confirmación oficial (existencia y aplicación del decreto, sin cifras) y fuentes no descargables.'
+- effective: 2026-06-01
+  product: Petróleo lampante
+  locality: national
+  price_local: 215
+  source_type: press
+  url: https://imperio-ge.com/usuario/articulo.php?id_publicacion=598
+  archive_url: https://web.archive.org/web/20261016180811/https://imperio-ge.com/usuario/articulo.php?id_publicacion=598
+  sha256: 8cf2e3ed5b714f890c4ecd8ccc271c9bc2a9ed1a1b16348f853775d096733833
+  file: 8cf2e3ed5b71_imperio_ge_598_precios_combustible.html
+  method: 'confirmation: Decreto 40/2026 mantiene el queroseno en 215'
+  derived_from: []
+  confidence: media
+  note: 'Imperio GE (~01-06-2026): "el precio del petróleo Lampante (queroseno) se mantiene sin variación, estableciéndose en 215 XAF por litro".'

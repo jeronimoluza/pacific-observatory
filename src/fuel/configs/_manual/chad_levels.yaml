@@ -7,7 +7,11 @@
 #   fecha real de inicio de Super 518 y Pétrole lampant 392 desconocida (anterior a abr/may-2023; las filas usan la primera fecha en que una fuente las fija);
 #   Pétrole lampant en feb-2024 no aparece en las notas (se asume sin cambio porque jun-2024 lo da en 392 sin mencionar baja);
 #   GLP no cubierto; Jet A1 omitido (no es combustible de bomba).
-# Sin evidencia posterior al 2026-08-05 (tchadinfos: 700 super "restent en vigueur selon les données disponibles"; no da gasoil 2026); por eso no hay last_checked.
+# Sin evidencia posterior al 2026-08-05 (tchadinfos: 700 super / 800 gasoil "restent en vigueur selon les données disponibles"); por eso no hay last_checked.
+# Filas de confirmación: 2026-08-05 (Super, Gasoil; tchadinfos) y 2026-08-06 (Super; Gabon Media Time, mismo ranking EcoMatin).
+# Tramos >12 meses sin confirmación: Super y Gasoil 2024-06-17 -> 2026-08-05 (~25 meses; en 2025 solo notas de escasez sin precio, p. ej. tchadinfos 28-04-2025);
+#   Pétrole lampant 2024-06-17 -> hoy (ninguna fuente fechada posterior lo cita).
+# Contradicción menor: Le N'Djam Post 15-02-2024 dice arrêté "signé le 14 février 2024" (tchadinfos y Ecomatin: 13-02).
 source_key: manual_td_levels
 country: Chad
 currency: XAF
@@ -145,3 +149,44 @@ levels:
   derived_from: []
   confidence: media
   note: 'Sin cambio de nivel (392 = mismo que may-2023); se carga porque el arrêté del 14-06-2024 lo reafirma: "super carburant, gasoil, Jet-A1 et pétrole lampant ... 700, 800, 580 et 392 F". Solo una nota lo da para esta fecha.'
+# --- Filas de confirmación (effective = fecha de la fuente) ---
+- effective: 2026-08-05
+  product: Super
+  locality: N'Djamena
+  price_local: 700
+  source_type: press
+  url: https://tchadinfos.com/2026/08/05/carburants-en-zone-franc-le-tchad-parmi-les-pays-les-plus-abordables/
+  archive_url: https://web.archive.org/web/20261016174900/https://tchadinfos.com/2026/08/05/carburants-en-zone-franc-le-tchad-parmi-les-pays-les-plus-abordables/
+  sha256: df48c95f315590ab183669c6c5286ac60b14c3cdab376539766e5c8199ec3b58
+  file: df48c95f3155_tchadinfos_2026-08-05_zone_franc.html
+  method: 'confirmation: nota de prensa, super 700 a N''Djamena sigue vigente (decisión de junio-2024)'
+  derived_from:
+  - https://gabonmediatime.com/prix-de-lessence-gabon-2e-pays-avec-le-litre-de-super-le-plus-abordable-en-zone-fcfa/
+  confidence: media
+  note: 'Tchadinfos 05-08-2026 (sobre un ranking de EcoMatin del 04-08-2026): "Au Tchad, le prix du super à 700 FCFA le litre (prix de référence à N''Djamena) résulte d''une décision de juin 2024 ... Ces prix restent en vigueur selon les données disponibles". No cita una fuente oficial nueva.'
+- effective: 2026-08-05
+  product: Gasoil
+  locality: N'Djamena
+  price_local: 800
+  source_type: press
+  url: https://tchadinfos.com/2026/08/05/carburants-en-zone-franc-le-tchad-parmi-les-pays-les-plus-abordables/
+  archive_url: https://web.archive.org/web/20261016174900/https://tchadinfos.com/2026/08/05/carburants-en-zone-franc-le-tchad-parmi-les-pays-les-plus-abordables/
+  sha256: df48c95f315590ab183669c6c5286ac60b14c3cdab376539766e5c8199ec3b58
+  file: df48c95f3155_tchadinfos_2026-08-05_zone_franc.html
+  method: 'confirmation: nota de prensa, gasoil 800 sigue vigente (decisión de junio-2024)'
+  derived_from: []
+  confidence: media
+  note: 'Tchadinfos 05-08-2026: "le gasoil passait de 828 FCFA à 800 FCFA. Ces prix restent en vigueur selon les données disponibles, même si, dans les provinces, ils sont majorés des frais de transport."'
+- effective: 2026-08-06
+  product: Super
+  locality: N'Djamena
+  price_local: 700
+  source_type: press
+  url: https://gabonmediatime.com/prix-de-lessence-gabon-2e-pays-avec-le-litre-de-super-le-plus-abordable-en-zone-fcfa/
+  archive_url: https://web.archive.org/web/20261016183423/https://gabonmediatime.com/prix-de-lessence-gabon-2e-pays-avec-le-litre-de-super-le-plus-abordable-en-zone-fcfa/
+  sha256: d0d53936f3b06f3f137268d1323364ea721a49e97b5baacc3440537f93a97f0b
+  file: d0d53936f3b0_gabonmediatime_prix_essence_zone_fcfa.html
+  method: 'confirmation: ranking de precios de la zona FCFA, Tchad 700'
+  derived_from: []
+  confidence: media
+  note: 'Gabon Media Time 06-08-2026: "Qu''il s''agisse de la Guinée Équatoriale qui a un prix de 645 FCFA ou du Tchad avec 700 FCFA". Mismo documento EcoMatin que tchadinfos (no independiente). OJO: el mismo ranking da Guinea Ecuatorial a 645, que contradice el Decreto 40/2026 (570 desde 01-06-2026): el ranking puede arrastrar datos viejos.'

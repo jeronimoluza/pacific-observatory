@@ -5,6 +5,8 @@
 # Productos no listados en una fecha siguen sin cambio desde su fila anterior.
 # Huecos conocidos: ningún texto de arrêté a la vista; fecha exacta de vigencia de la suba de 2026 dudosa (arrêté publicado sáb 9-05, La Gazette dice "entreront en vigueur dès ce lundi 11 mai");
 #   la vuelta a 750/650/350 se apoya en el comunicado de suspensión del 16-05-2026 (AFP, Xinhua), que no repite las cifras; algunas estaciones mantuvieron el precio alto unos días esperando el arrêté de baja.
+#   Sin filas de confirmación: tramo 2024-01-01 -> 2026-05-11 (~28 meses) sin ninguna fuente fechada que cite 750/650/350 vigentes (busqué 2024-2025:
+#   solo notas de 2026 que dan esos precios como "anteriores" el mismo día de la suba; La Gazette 11-05-2026: "les tarifs sont restés inchangés jusqu'à aujourd'hui").
 #   Sin evidencia de precios posteriores a jun-2026 (pénurie, quotas de 3.000 L/estación; la suspensión es "temporal"); por eso no hay last_checked.
 source_key: manual_km_levels
 country: Comoros

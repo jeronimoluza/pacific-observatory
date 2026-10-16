@@ -7,6 +7,9 @@
 #   no se pudo descargar (conexión rechazada, sin captura Wayback); el pétrole lampant 12.000 solo está confirmado para 2022 (las confirmaciones 2024-2026 hablan de essence y gasoil;
 #   la tabla de sonapguinee.com tiene columna PETROLE pero la fila "Marché TTC Réseau" trae solo dos cifras, 12000 y 12000).
 # Sin cambios 2024..hoy: 12.000 GNF/L vigente desde 2022-06-01.
+# Filas de confirmación (al final): 2024-02-15, 2026-04-01, 2026-05-16, 2026-08-17 (solo essence), 2026-10-06 (solo essence), 2026-10-07 (solo essence), 2026-10-16.
+# Tramos >12 meses sin confirmación: essence y gasoil 2024-02-15 -> 2026-04-01 (~25 meses; en 2025 solo encontré notas de escasez/mercado negro
+#   sin el precio oficial: Guinéenews 13-10-2025 y 25-11-2025); pétrole todo 2024-01-01..hoy (ninguna fuente fechada lo cita).
 source_key: manual_gn_levels
 country: Guinea
 currency: GNF
@@ -73,3 +76,149 @@ levels:
   derived_from: []
   confidence: media
   note: 'Comunicado MEF 31-05-2022: "l''essence, le gasoil et le pétrole passe de 10 000 GNF à 12 000 GNF à la pompe" desde 01-06-2022. A diferencia de essence/gasoil, no encontré confirmación posterior explícita del pétrole a 12.000 (los desmentidos 2024/2026 solo nombran essence y gasoil); no hay evidencia de cambio, pero la vigencia actual es menos segura.'
+# --- Filas de confirmación (effective = fecha de la fuente; repiten el nivel vigente citado por la fuente) ---
+- effective: 2024-02-15
+  product: Essence
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://guineenews.org/2024/02/15/guinee-la-sonap-dement-toute-augmentation-du-prix-des-produits-petroliers/
+  archive_url: https://web.archive.org/web/20261016175837/https://guineenews.org/2024/02/15/guinee-la-sonap-dement-toute-augmentation-du-prix-des-produits-petroliers/
+  sha256: 70026cd382ea0b0bf195894c008121b5fdfb3a5e564332fb73f1732fcfc3aa14
+  file: 70026cd382ea_guineenews_2024-02-15_sonap_dement.html
+  method: 'confirmation: comunicado SONAP desmiente suba, essence y gasoil siguen a 12.000'
+  derived_from:
+  - https://guineenews.org/2024/02/15/les-stations-prises-dassaut-les-citoyens-saffolent-la-sonap-rassure-pas-de-hausse-des-prix-et-il-y-a-de-lessence/
+  confidence: media
+  note: 'Guinéenews 15-02-2024 cita el comunicado de SONAP: "l''actuelle structure des prix des hydrocarbures ne comporte aucune augmentation de prix sur toute l''étendue du territoire national et reste pour l''heure à 12.000 GNF le litre de gasoil et d''essence à la pompe dans les stations de service". Segunda nota Guinéenews del mismo día (responsable SONAP: "il n''y aura pas d''augmentation du prix du litre").'
+- effective: 2024-02-15
+  product: Gasoil
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://guineenews.org/2024/02/15/guinee-la-sonap-dement-toute-augmentation-du-prix-des-produits-petroliers/
+  archive_url: https://web.archive.org/web/20261016175837/https://guineenews.org/2024/02/15/guinee-la-sonap-dement-toute-augmentation-du-prix-des-produits-petroliers/
+  sha256: 70026cd382ea0b0bf195894c008121b5fdfb3a5e564332fb73f1732fcfc3aa14
+  file: 70026cd382ea_guineenews_2024-02-15_sonap_dement.html
+  method: 'confirmation: comunicado SONAP desmiente suba, essence y gasoil siguen a 12.000'
+  derived_from:
+  - https://guineenews.org/2024/02/15/les-stations-prises-dassaut-les-citoyens-saffolent-la-sonap-rassure-pas-de-hausse-des-prix-et-il-y-a-de-lessence/
+  confidence: media
+  note: 'Mismo comunicado SONAP (Guinéenews 15-02-2024): "reste pour l''heure à 12.000 GNF le litre de gasoil et d''essence à la pompe".'
+- effective: 2026-04-01
+  product: Essence
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://soleilfmguinee.net/nouvelle-structure-des-prix-des-produits-petroliers-la-guinee-maintient-le-prix-a-12-000-gnf-mais-ajuste-les-tarifs-sectoriels/
+  archive_url: http://web.archive.org/web/20260410114954/https://soleilfmguinee.net/nouvelle-structure-des-prix-des-produits-petroliers-la-guinee-maintient-le-prix-a-12-000-gnf-mais-ajuste-les-tarifs-sectoriels/
+  sha256: dc16853ccc80d80b417b2491b32a41f56e9567f8340cf6b52db58ec871fdf3b2
+  file: dc16853ccc80_soleilfm_structure_prix_12000.html
+  method: 'confirmation: nueva estructura de precios SONAP desde 01-04-2026 mantiene 12.000'
+  derived_from: []
+  confidence: media
+  note: 'Soleil FM 01-04-2026: "À compter du 1er avril 2026, la SONAP a dévoilé une nouvelle structure des prix"; "Dans un document officiel publié par le Comité paritaire des prix des produits pétroliers, la SONAP confirme que le prix du litre d''essence et de gasoil reste fixé à 12 000 francs guinéens, aussi bien dans le réseau des stations-service que hors réseau".'
+- effective: 2026-04-01
+  product: Gasoil
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://soleilfmguinee.net/nouvelle-structure-des-prix-des-produits-petroliers-la-guinee-maintient-le-prix-a-12-000-gnf-mais-ajuste-les-tarifs-sectoriels/
+  archive_url: http://web.archive.org/web/20260410114954/https://soleilfmguinee.net/nouvelle-structure-des-prix-des-produits-petroliers-la-guinee-maintient-le-prix-a-12-000-gnf-mais-ajuste-les-tarifs-sectoriels/
+  sha256: dc16853ccc80d80b417b2491b32a41f56e9567f8340cf6b52db58ec871fdf3b2
+  file: dc16853ccc80_soleilfm_structure_prix_12000.html
+  method: 'confirmation: nueva estructura de precios SONAP desde 01-04-2026 mantiene 12.000'
+  derived_from: []
+  confidence: media
+  note: 'Soleil FM 01-04-2026, estructura SONAP desde 01-04-2026: "le prix du litre d''essence et de gasoil reste fixé à 12 000 francs guinéens". Las tarifas sectoriales de gasoil (minería 15.500, etc.) no son precio público.'
+- effective: 2026-05-16
+  product: Essence
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://koumamedia.com/guinee-carburant-les-documents-officiels-confirment-une-disparite-massive-des-prix-et-renforcent-les-soupcons-de-detournement-vers-les-zones-minieres/
+  archive_url: https://web.archive.org/web/20261016183137/https://koumamedia.com/guinee-carburant-les-documents-officiels-confirment-une-disparite-massive-des-prix-et-renforcent-les-soupcons-de-detournement-vers-les-zones-minieres/
+  sha256: 6c301fb5454a66532eaf16394323776c79ae326c437cf177d9e159bc4c387782
+  file: 6c301fb5454a_koumamedia_disparite_prix.html
+  method: 'confirmation: cita la estructura de precios SPP de mayo-2026 e instrucción MEFB del 01-05-2026'
+  derived_from: []
+  confidence: media
+  note: 'KoumaMedia 16-05-2026, citando la instrucción ministerial (SPP mayo 2026): "le litre d''essence et de gasoil vendu au public reste fixé à 12 000 GNF TTC". Las tarifas sectoriales que da (minería 20.000, exonéré 19.600) difieren de las de abr-2026 y de las de sonapguinee.com hoy.'
+- effective: 2026-05-16
+  product: Gasoil
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://koumamedia.com/guinee-carburant-les-documents-officiels-confirment-une-disparite-massive-des-prix-et-renforcent-les-soupcons-de-detournement-vers-les-zones-minieres/
+  archive_url: https://web.archive.org/web/20261016183137/https://koumamedia.com/guinee-carburant-les-documents-officiels-confirment-une-disparite-massive-des-prix-et-renforcent-les-soupcons-de-detournement-vers-les-zones-minieres/
+  sha256: 6c301fb5454a66532eaf16394323776c79ae326c437cf177d9e159bc4c387782
+  file: 6c301fb5454a_koumamedia_disparite_prix.html
+  method: 'confirmation: cita la estructura de precios SPP de mayo-2026 e instrucción MEFB del 01-05-2026'
+  derived_from: []
+  confidence: media
+  note: 'KoumaMedia 16-05-2026: "le litre d''essence et de gasoil vendu au public reste fixé à 12 000 GNF TTC" (SPP mayo 2026).'
+- effective: 2026-08-17
+  product: Essence
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://www.visionguinee.info/hydrocarbures-malgre-la-hausse-des-cours-mondiaux-letat-guineen-continue-de-subventionner-le-carburant/
+  archive_url: ""
+  sha256: 0cae0832f7d28c0c3af4f32a0db6b9f8f13260dce9218a948d9a381f865ac737
+  file: 0cae0832f7d2_visionguinee_subventionner_carburant.html
+  method: 'confirmation: nota de prensa, essence sigue a 12.000 desde 01-06-2022'
+  derived_from: []
+  confidence: media
+  note: 'Vision Guinée 17-08-2026: "Depuis le 1er juin 2022, le litre d''essence reste vendu à 12 000 GNF à la pompe". Solo essence.'
+- effective: 2026-10-06
+  product: Essence
+  locality: national
+  price_local: 12000
+  source_type: state_news
+  url: https://agpguinee.com/conakry-carburant-des-files-dattente-observees-devant-des-stations-service/
+  archive_url: https://web.archive.org/web/20261016182958/https://agpguinee.com/conakry-carburant-des-files-dattente-observees-devant-des-stations-service/
+  sha256: 53258a9b689272cfd850582066d70e23b2b6555d1c9f33882e4d6c5e63d1360a
+  file: 53258a9b6892_agp_files_attente_stations.html
+  method: 'confirmation: agencia estatal AGP, precio oficial de la essence 12.000'
+  derived_from: []
+  confidence: media-alta
+  note: 'AGP (Agence guinéenne de presse) 06-10-2026: "Malgré les files d''attente, le litre d''essence coûte 12.000 francs guinéens à la pompe, prix officiel." Solo essence.'
+- effective: 2026-10-07
+  product: Essence
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://mediaguinee.com/2026/10/panique-dans-les-stations-a-qui-profitent-les-fausses-rumeurs-sur-le-carburant-en-guinee
+  archive_url: http://web.archive.org/web/20261010031736/https://mediaguinee.com/2026/10/panique-dans-les-stations-a-qui-profitent-les-fausses-rumeurs-sur-le-carburant-en-guinee/
+  sha256: 52a36319e0414c0d7ccba860fcb3652e40c5d238f5e3ab781346941028e93d76
+  file: 52a36319e041_mediaguinee_2026-10_panique_rumeurs.html
+  method: 'confirmation: nota de prensa, precio oficial de la essence 12.000 desde 01-06-2022'
+  derived_from: []
+  confidence: media
+  note: 'MediaGuinée 07-10-2026: "Depuis le 1er juin 2022, le prix officiel du litre d''essence à la pompe est fixé à 12 000 francs guinéens. Un niveau que les autorités guinéennes maintiennent depuis plus de quatre ans". Solo essence.'
+- effective: 2026-10-16
+  product: Essence
+  locality: national
+  price_local: 12000
+  source_type: official_site
+  url: https://sonapguinee.com/
+  archive_url: https://web.archive.org/web/20261016175725/https://sonapguinee.com/
+  sha256: 5ab94a58c53279accb0826eff952cbcf845b9cccd2d4240c2bf5bba8d6cebb8f
+  file: 5ab94a58c532_sonapguinee_home.html
+  method: 'confirmation: tabla oficial "PRIX OFFICIELS DES PRODUITS PETROLIERS EN GNF/ LITRE" en la web de SONAP'
+  derived_from: []
+  confidence: alta
+  note: 'sonapguinee.com descargado el 16-10-2026 (= last_checked): columnas "ESSENCE | GASOIL | PETROLE", fila "Marché TTC Réseau | 12000 | 12000" (dos cifras: essence y gasoil, como en la fila "Ambassades 12400 | 14400"). La tabla no tiene fecha propia.'
+- effective: 2026-10-16
+  product: Gasoil
+  locality: national
+  price_local: 12000
+  source_type: official_site
+  url: https://sonapguinee.com/
+  archive_url: https://web.archive.org/web/20261016175725/https://sonapguinee.com/
+  sha256: 5ab94a58c53279accb0826eff952cbcf845b9cccd2d4240c2bf5bba8d6cebb8f
+  file: 5ab94a58c532_sonapguinee_home.html
+  method: 'confirmation: tabla oficial "PRIX OFFICIELS DES PRODUITS PETROLIERS EN GNF/ LITRE" en la web de SONAP'
+  derived_from: []
+  confidence: alta
+  note: 'sonapguinee.com 16-10-2026: fila "Marché TTC Réseau | 12000 | 12000" (essence, gasoil). Sin fecha propia en la tabla; fecha = descarga.'
