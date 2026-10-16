@@ -1,0 +1,129 @@
+# Equatorial Guinea: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Presidente de la República por decreto (estructura de precios de productos refinados), a propuesta de Hidrocarburos y Desarrollo Minero + Hacienda; en el marco del SMP del FMI.
+# Régimen: precio subvencionado fijado ad hoc por decreto para el "mercado subvencionado" (estaciones de servicio, personas físicas, tope 100 L/día gasolina-gasóleo y 40 L/día queroseno); fuera de eso, precio liberalizado.
+# Canales: guineaecuatorialpress.com (página oficial del Gobierno) publica decretos y notas; cifras y fechas de aplicación sobre todo en prensa privada (Real Equatorial Guinea, Ahora EG, Imperio GE, Ecomatin).
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos y CONTRADICCIÓN PRINCIPAL: el Decreto 26/2025 (3-03-2025, publicado 15-03-2025) fija 645/520, pero NO hay evidencia de que se aplicara en surtidor:
+#   el FMI (3ª revisión SMP, dic-2025) dice que el compromiso de subir 150 FCFA/L antes de fin-sep-2025 "not met" y llama "first price increase" a la de 75 prevista para feb-2026;
+#   y el Decreto 40/2026 (vigente 01-06-2026) da 570/545 = 495/470 + 75, Jet A1 505 = 430 + 75, presentado como subida ("Golpe al bolsillo").
+#   Por eso las filas 645/520 van como confidence baja (alerta, no publicar). Ecomatin (10-02-2026) proyectaba 720/595 sumando 75 a 645/520: no ocurrió.
+#   No hay texto del Decreto 40/2026 ni del BOE online; la nota de Ahora EG del 28-05-2026 (anuncio de vigencia 1-jun) dio 403 y no tiene captura.
+#   Sin evidencia de precios posteriores a jun-2026 (oct-2026: crisis de abastecimiento, sin cambio de precio publicado); por eso no hay last_checked.
+source_key: manual_gq_levels
+country: Equatorial Guinea
+currency: XAF
+unit: XAF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Gasolina":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasóleo":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Petróleo lampante":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: domestic
+levels:
+- effective: 2022-03-01
+  product: Gasolina
+  locality: national
+  price_local: 495
+  source_type: press
+  url: https://realequatorialguinea.com/minas-e-hidrocarburos/la-subida-del-precio-del-carburante-ya-es-una-realidad-en-guinea-ecuatorial/
+  archive_url: https://web.archive.org/web/20261016181006/https://realequatorialguinea.com/minas-e-hidrocarburos/la-subida-del-precio-del-carburante-ya-es-una-realidad-en-guinea-ecuatorial/
+  sha256: 7a05c822015774018236acca9151fb92da43f6cd55b455e918fcb1e5467e50e8
+  file: 7a05c8220157_realeg_subida_ya_es_realidad.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: 'Real Equatorial Guinea 04-03-2022: "Desde este pasado 1 de marzo 2022 han entrado en vigor los cambios de los precios ... Decreto nº 139/2021, de fecha 5 de noviembre"; "el litro de la gasolina sube 15 XAF más y se sitúa actualmente en 495 XAF". Nivel vigente al 2024-01-01 y, según FMI dic-2025 y Decreto 40/2026, probablemente hasta el 31-05-2026. El precio anterior 495 lo repiten AFP/Le360 20-03-2025 y Sikafinance 17-03-2025 ("de 495 à 645").'
+- effective: 2022-03-01
+  product: Gasóleo
+  locality: national
+  price_local: 470
+  source_type: press
+  url: https://realequatorialguinea.com/minas-e-hidrocarburos/la-subida-del-precio-del-carburante-ya-es-una-realidad-en-guinea-ecuatorial/
+  archive_url: https://web.archive.org/web/20261016181006/https://realequatorialguinea.com/minas-e-hidrocarburos/la-subida-del-precio-del-carburante-ya-es-una-realidad-en-guinea-ecuatorial/
+  sha256: 7a05c822015774018236acca9151fb92da43f6cd55b455e918fcb1e5467e50e8
+  file: 7a05c8220157_realeg_subida_ya_es_realidad.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: 'Real Equatorial Guinea 04-03-2022: Decreto 139/2021 en vigor desde 01-03-2022, "el litro de diésel se paga a 470 XAF", "que supone un aumento de 120 XAF/L". Real EG 07-07-2022 confirma gasoil 470 sin cambio. AFP/Le360 y Sikafinance mar-2025 dan 470 como precio previo al Decreto 26/2025.'
+- effective: 2022-03-01
+  product: Petróleo lampante
+  locality: national
+  price_local: 215
+  source_type: press
+  url: https://realequatorialguinea.com/minas-e-hidrocarburos/la-subida-del-precio-del-carburante-ya-es-una-realidad-en-guinea-ecuatorial/
+  archive_url: https://web.archive.org/web/20261016181006/https://realequatorialguinea.com/minas-e-hidrocarburos/la-subida-del-precio-del-carburante-ya-es-una-realidad-en-guinea-ecuatorial/
+  sha256: 7a05c822015774018236acca9151fb92da43f6cd55b455e918fcb1e5467e50e8
+  file: 7a05c8220157_realeg_subida_ya_es_realidad.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: 'Real EG 04-03-2022: "el petróleo lampante se mantiene en 215 XAF/L" (sin cambio con el Decreto 139/2021; vigente desde antes, fecha real desconocida; la fila usa 01-03-2022 por ser la primera fecha documentada). El Decreto 26/2025 (texto en GE Press) y el Decreto 40/2026 (Imperio GE) lo mantienen en 215: sin cambios hasta hoy según las fuentes.'
+- effective: 2025-03-15
+  product: Gasolina
+  locality: national
+  price_local: 645
+  source_type: official_site
+  url: https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_que_actualiza_la_estructura_de_precios_de_productos_refinados_en_la_republica_de_guinea_ecuatorial
+  archive_url: https://web.archive.org/web/20261016180643/https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_que_actualiza_la_estructura_de_precios_de_productos_refinados_en_la_republica_de_guinea_ecuatorial
+  sha256: 2540c4373e1f98f4a2c3ee55351cf528112dc3e7272d01267a288e3605378885
+  file: 2540c4373e1f_gepress_decreto_estructura_precios_2025.html
+  method: HTML text
+  derived_from: []
+  confidence: baja
+  note: 'NO PUBLICAR (alerta). Texto íntegro del Decreto 26/2025 "de fecha 03 de marzo" en la web oficial (nota fechada 15-03-2025): "a. Gasolina, 645 FCFA/Litro. b. Gasóleo, 520 FCFA/Litro. c. Petróleo Lampante (Queroseno), 215". Disposición final: "entrará en vigor a partir de la fecha de su publicación en el Boletín Oficial del Estado" (fecha BOE desconocida; 15-03 es la fecha de la nota oficial). Prensa: Ecomatin 17-03-2025 "a procédé, le 15 mars"; AFP/Le360 20-03-2025 "La date d''augmentation reste à fixer par arrêté du ministère des hydrocarbures"; Real EG/Sikafinance repiten el decreto. CONTRADICCIÓN: FMI CR 26/28 (3ª revisión SMP, dic-2025): subir 150 FCFA/L antes de fin-sep-2025 "Not met", y la de 75 en 2026 sería la "first price increase"; Decreto 40/2026 parte de 495/470. Lo más probable es que 645 nunca se aplicara en surtidor.'
+- effective: 2025-03-15
+  product: Gasóleo
+  locality: national
+  price_local: 520
+  source_type: official_site
+  url: https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_que_actualiza_la_estructura_de_precios_de_productos_refinados_en_la_republica_de_guinea_ecuatorial
+  archive_url: https://web.archive.org/web/20261016180643/https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_que_actualiza_la_estructura_de_precios_de_productos_refinados_en_la_republica_de_guinea_ecuatorial
+  sha256: 2540c4373e1f98f4a2c3ee55351cf528112dc3e7272d01267a288e3605378885
+  file: 2540c4373e1f_gepress_decreto_estructura_precios_2025.html
+  method: HTML text
+  derived_from: []
+  confidence: baja
+  note: 'NO PUBLICAR (alerta). Decreto 26/2025 en web oficial: "b. Gasóleo, 520 FCFA/Litro". Misma duda de aplicación que la fila Gasolina 645: el FMI (dic-2025) da por incumplida la subida de 2025 y el Decreto 40/2026 lleva el gasóleo a 545 = 470 + 75 (si 520 hubiera regido, la suba sería de 25, no de 75 como dice el FMI).'
+- effective: 2026-06-01
+  product: Gasolina
+  locality: national
+  price_local: 570
+  source_type: press
+  url: https://imperio-ge.com/usuario/articulo.php?id_publicacion=598
+  archive_url: https://web.archive.org/web/20261016180811/https://imperio-ge.com/usuario/articulo.php?id_publicacion=598
+  sha256: 8cf2e3ed5b714f890c4ecd8ccc271c9bc2a9ed1a1b16348f853775d096733833
+  file: 8cf2e3ed5b71_imperio_ge_598_precios_combustible.html
+  method: HTML text
+  derived_from:
+  - https://www.guineaecuatorialpress.com/noticias/el_gobierno_aclara_la_aplicacion_del_decreto_402026_y_garantiza_el_suministro_de_combustible
+  confidence: media
+  note: 'Imperio GE ("Golpe al bolsillo: Así quedan los precios de combustible", ~01-06-2026): "Los nuevos precios ... ya son efectivos en todo el territorio nacional desde este lunes 1 de junio de 2026, conforme a lo dispuesto en el Decreto Presidencial número 40/2026, firmado el pasado 13 de marzo ... el litro de gasolina pasa a costar 570 francos CFA". La web oficial (GE Press 29-07-2026) confirma que el Decreto 40/2026 "sobre la nueva estructura de precios de los combustibles" está en aplicación, sin cifras. Ahora EG 28-05-2026 ("entrará en vigor a partir del 1 de junio") visto solo en buscador (403, sin captura); según el buscador da firma 3-03, Imperio GE 13-03. 570 = 495 + 75, coherente con el compromiso FMI de +75 (previsto fin-feb-2026, aplicado 1-jun). Contradice la proyección de Ecomatin 10-02-2026 (720).'
+- effective: 2026-06-01
+  product: Gasóleo
+  locality: national
+  price_local: 545
+  source_type: press
+  url: https://imperio-ge.com/usuario/articulo.php?id_publicacion=598
+  archive_url: https://web.archive.org/web/20261016180811/https://imperio-ge.com/usuario/articulo.php?id_publicacion=598
+  sha256: 8cf2e3ed5b714f890c4ecd8ccc271c9bc2a9ed1a1b16348f853775d096733833
+  file: 8cf2e3ed5b71_imperio_ge_598_precios_combustible.html
+  method: HTML text
+  derived_from:
+  - https://www.guineaecuatorialpress.com/noticias/el_gobierno_aclara_la_aplicacion_del_decreto_402026_y_garantiza_el_suministro_de_combustible
+  confidence: media
+  note: 'Imperio GE: Decreto 40/2026 vigente desde lunes 01-06-2026, "el litro de gasóleo queda fijado en 545 XAF"; "el precio del petróleo Lampante (queroseno) se mantiene sin variación, estableciéndose en 215 XAF"; Jet A1 nacional 505. 545 = 470 + 75. Ver nota de la fila Gasolina 2026-06-01 sobre confirmación oficial (existencia y aplicación del decreto, sin cifras) y fuentes no descargables.'

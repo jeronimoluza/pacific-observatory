@@ -1,0 +1,147 @@
+# Chad: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: arrêté conjoint Ministerio de Industria y Comercio + Ministerio de Finanzas y Presupuesto (anunciado a veces por el Primer Ministro o el ministro de Hidrocarburos).
+# Régimen: precio fijado ad hoc por arrêté, subsidiado; precio de referencia en N'Djamena, provincias = N'Djamena + frais de transport en valeur absolue.
+# Canales: el arrêté no se publica online (petrole.gouv.td placeholder, gouvernement.td/primature.td/sgg.td sin respuesta); se conoce por prensa privada (tchadinfos, Ecomatin).
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos: ningún texto del arrêté a la vista (todas las filas son prensa privada citando el arrêté -> confidence media);
+#   fecha real de inicio de Super 518 y Pétrole lampant 392 desconocida (anterior a abr/may-2023; las filas usan la primera fecha en que una fuente las fija);
+#   Pétrole lampant en feb-2024 no aparece en las notas (se asume sin cambio porque jun-2024 lo da en 392 sin mencionar baja);
+#   GLP no cubierto; Jet A1 omitido (no es combustible de bomba).
+# Sin evidencia posterior al 2026-08-05 (tchadinfos: 700 super "restent en vigueur selon les données disponibles"; no da gasoil 2026); por eso no hay last_checked.
+source_key: manual_td_levels
+country: Chad
+currency: XAF
+unit: XAF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Super":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole lampant":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: domestic
+levels:
+- effective: 2023-04-17
+  product: Gasoil
+  locality: N'Djamena
+  price_local: 700
+  source_type: press
+  url: https://ecomatin.net/tchad-le-gouvernement-augmente-de-2171-le-prix-du-gasoil
+  archive_url: http://web.archive.org/web/20260510044443/https://ecomatin.net/tchad-le-gouvernement-augmente-de-2171-le-prix-du-gasoil
+  sha256: dc765e17fb9f45daee5d6ad7591bd3cf64826156fac05032b118a6713407c872
+  file: dc765e17fb9f_ecomatin_tchad_gasoil_2171.html
+  method: HTML text
+  derived_from:
+  - https://tchadinfos.com/2023/05/06/penurie-de-carburant-un-arrete-interdit-strictement-la-vente-a-lair-libre-des-produits-inflammables/
+  confidence: media
+  note: 'Ecomatin 19-04-2023: "Depuis le 17 avril 2023, le prix d''1 litre de gasoil à la pompe est officiellement passé de 548 FCFA à 700 F", cita al ministro de Hidrocarburos Djerassem Le Bemadjiel. Confirmado por tchadinfos 06-05-2023 (arrêté conjoint: gasoil 700 a N''Djamena). Nivel vigente al 2024-01-01.'
+- effective: 2023-04-17
+  product: Super
+  locality: N'Djamena
+  price_local: 518
+  source_type: press
+  url: https://ecomatin.net/tchad-le-gouvernement-augmente-de-2171-le-prix-du-gasoil
+  archive_url: http://web.archive.org/web/20260510044443/https://ecomatin.net/tchad-le-gouvernement-augmente-de-2171-le-prix-du-gasoil
+  sha256: dc765e17fb9f45daee5d6ad7591bd3cf64826156fac05032b118a6713407c872
+  file: dc765e17fb9f_ecomatin_tchad_gasoil_2171.html
+  method: HTML text
+  derived_from:
+  - https://tchadinfos.com/2023/05/06/penurie-de-carburant-un-arrete-interdit-strictement-la-vente-a-lair-libre-des-produits-inflammables/
+  confidence: media
+  note: 'NO es una fecha de cambio: el ministro dice el 17-04-2023 que "le prix de l''essence reste officiellement à 518 FCFA"; la fecha real desde la que rige 518 es anterior y desconocida. Confirmado por tchadinfos 06-05-2023 (arrêté conjoint: Super 518) y por tchadinfos/Ecomatin feb-2024 ("730F au lieu de 518F"). Nivel vigente al 2024-01-01.'
+- effective: 2023-05-06
+  product: Pétrole lampant
+  locality: N'Djamena
+  price_local: 392
+  source_type: press
+  url: https://tchadinfos.com/2023/05/06/penurie-de-carburant-un-arrete-interdit-strictement-la-vente-a-lair-libre-des-produits-inflammables/
+  archive_url: https://web.archive.org/web/20261016175317/https://tchadinfos.com/2023/05/06/penurie-de-carburant-un-arrete-interdit-strictement-la-vente-a-lair-libre-des-produits-inflammables/
+  sha256: c2dc5de7df3e4beec220f6ae1cd23d2fb301164e17cd332fc91a701f34f3d65d
+  file: c2dc5de7df3e_tchadinfos_2023-05-06_arrete_vente_air_libre.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: 'Fecha = publicación de la nota (fecha del arrêté y de inicio real desconocidas). Tchadinfos cita el arrêté conjoint Comercio + Finanzas: "Super (essence) est de 518 FCFA, du gasoil 700 FCFA, de Jet A1 580 FCFA et du pétrole lampant de 392 FCFA" a N''Djamena. El mismo 392 reaparece en el arrêté del 14-06-2024 (tchadinfos 15-06-2024), de modo que no cambió en el medio según las fuentes. Nivel vigente al 2024-01-01.'
+- effective: 2024-02-13
+  product: Super
+  locality: N'Djamena
+  price_local: 730
+  source_type: press
+  url: https://tchadinfos.com/2024/02/15/tchad-les-prix-du-carburant-connaissent-une-nouvelle-hausse-vertigineuse-a-la-pompe/
+  archive_url: https://web.archive.org/web/20261016174738/https://tchadinfos.com/2024/02/15/tchad-les-prix-du-carburant-connaissent-une-nouvelle-hausse-vertigineuse-a-la-pompe/
+  sha256: 5347fec4d6dc8453c451b3942926e15dfd983d82f383a95533cf99a552724cd3
+  file: 5347fec4d6dc_tchadinfos_2024-02-15_hausse.html
+  method: HTML text
+  derived_from:
+  - https://ecomatin.net/tchad-deuxieme-augmentation-des-prix-des-produits-petroliers-a-la-pompe-en-moins-dun-an
+  confidence: media
+  note: 'Tchadinfos 14-02-2024: arrêté conjoint Comercio + Finanzas firmado el 13-02, "à compter du 13 février ... Essence : 730F CFA au lieu de 518F". Ecomatin 15-02-2024 (independiente) confirma: arrêté firmado el 13-02-2024 por Tahir Hamid Nguilin (Finanzas) y Ahmat Abdelkerim Ahmat (Comercio), super 730 "depuis le 13 février 2024". El triage decía 14-02; ambas notas dicen 13-02.'
+- effective: 2024-02-13
+  product: Gasoil
+  locality: N'Djamena
+  price_local: 828
+  source_type: press
+  url: https://tchadinfos.com/2024/02/15/tchad-les-prix-du-carburant-connaissent-une-nouvelle-hausse-vertigineuse-a-la-pompe/
+  archive_url: https://web.archive.org/web/20261016174738/https://tchadinfos.com/2024/02/15/tchad-les-prix-du-carburant-connaissent-une-nouvelle-hausse-vertigineuse-a-la-pompe/
+  sha256: 5347fec4d6dc8453c451b3942926e15dfd983d82f383a95533cf99a552724cd3
+  file: 5347fec4d6dc_tchadinfos_2024-02-15_hausse.html
+  method: HTML text
+  derived_from:
+  - https://ecomatin.net/tchad-deuxieme-augmentation-des-prix-des-produits-petroliers-a-la-pompe-en-moins-dun-an
+  confidence: media
+  note: 'Tchadinfos 14-02-2024: "Gasoil : 828F CFA au lieu de 700F", à compter du 13 février. Ecomatin 15-02-2024 confirma gasoil 828 desde el 13-02-2024 ("En passant de 700 FCfa à 828 F Cfa").'
+- effective: 2024-06-17
+  product: Super
+  locality: N'Djamena
+  price_local: 700
+  source_type: press
+  url: https://tchadinfos.com/2024/06/15/tchad-voici-les-nouveaux-prix-des-produits-petroliers/
+  archive_url: https://web.archive.org/web/20261016174621/https://tchadinfos.com/2024/06/15/tchad-voici-les-nouveaux-prix-des-produits-petroliers/
+  sha256: 7eda2804ae2c113cf6860ffdc43840629632bce5836673be35ba2a42bf3c54b4
+  file: 7eda2804ae2c_tchadinfos_2024-06-15_nouveaux_prix.html
+  method: HTML text
+  derived_from:
+  - https://tchadinfos.com/2024/06/13/le-premier-ministre-annonce-une-baisse-des-prix-de-carburant-a-partir-de-lundi/
+  - https://ecomatin.net/tchad-le-gouvernement-revise-legerement-a-la-baisse-les-prix-du-carburant-sans-susciter-de-lenthousiasme
+  confidence: media
+  note: 'Tchadinfos 15-06-2024: arrêté del 14-06, super 700 (730 auparavant). Vigencia 17-06-2024: anuncio del PM Allah-Maye Halina ante el CNT el 13-06 ("À partir du lundi 17 juin 2024 ... super baissera de 730 à 700", tchadinfos 13-06-2024) y Ecomatin 18-06-2024 ("depuis le lundi 17 juin"). CONTRADICCIÓN: Ecomatin 18-06 invierte las etiquetas (super 828->800, gasoil 730->700); tchadinfos 13-06 y 15-06 y tchadinfos 05-08-2026 dan super 730->700, coherente con feb-2024; se toma esa versión.'
+- effective: 2024-06-17
+  product: Gasoil
+  locality: N'Djamena
+  price_local: 800
+  source_type: press
+  url: https://tchadinfos.com/2024/06/15/tchad-voici-les-nouveaux-prix-des-produits-petroliers/
+  archive_url: https://web.archive.org/web/20261016174621/https://tchadinfos.com/2024/06/15/tchad-voici-les-nouveaux-prix-des-produits-petroliers/
+  sha256: 7eda2804ae2c113cf6860ffdc43840629632bce5836673be35ba2a42bf3c54b4
+  file: 7eda2804ae2c_tchadinfos_2024-06-15_nouveaux_prix.html
+  method: HTML text
+  derived_from:
+  - https://tchadinfos.com/2024/06/13/le-premier-ministre-annonce-une-baisse-des-prix-de-carburant-a-partir-de-lundi/
+  - https://ecomatin.net/tchad-le-gouvernement-revise-legerement-a-la-baisse-les-prix-du-carburant-sans-susciter-de-lenthousiasme
+  confidence: media
+  note: 'Tchadinfos 15-06-2024: arrêté del 14-06, gasoil 800 (828 auparavant); vigencia lunes 17-06-2024 según anuncio del PM (tchadinfos 13-06) y Ecomatin 18-06. Ver contradicción de etiquetas de Ecomatin en la fila Super. Tchadinfos 05-08-2026 repite "le gasoil passait de 828 FCFA à 800 FCFA" y dice que "ces prix restent en vigueur selon les données disponibles".'
+- effective: 2024-06-17
+  product: Pétrole lampant
+  locality: N'Djamena
+  price_local: 392
+  source_type: press
+  url: https://tchadinfos.com/2024/06/15/tchad-voici-les-nouveaux-prix-des-produits-petroliers/
+  archive_url: https://web.archive.org/web/20261016174621/https://tchadinfos.com/2024/06/15/tchad-voici-les-nouveaux-prix-des-produits-petroliers/
+  sha256: 7eda2804ae2c113cf6860ffdc43840629632bce5836673be35ba2a42bf3c54b4
+  file: 7eda2804ae2c_tchadinfos_2024-06-15_nouveaux_prix.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: 'Sin cambio de nivel (392 = mismo que may-2023); se carga porque el arrêté del 14-06-2024 lo reafirma: "super carburant, gasoil, Jet-A1 et pétrole lampant ... 700, 800, 580 et 392 F". Solo una nota lo da para esta fecha.'

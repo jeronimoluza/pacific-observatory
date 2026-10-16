@@ -1,0 +1,75 @@
+# Guinea: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Gobierno (Ministerio de Economía y Finanzas + Hidrocarburos; comunicado del MEF en 2022); SONAP (Société Nationale des Pétroles) publica la estructura de precios (Comité paritaire des prix des produits pétroliers).
+# Régimen: precio único nacional fijado ad hoc (essence = gasoil = pétrole en 2022), subsidiado; tarifas sectoriales distintas para minería, EDG, SEG, embajadas, soutes (no cargadas: no son precio de bomba al público).
+# Canales: comunicados MEF/SONAP difundidos por prensa (Guinéenews, Soleil FM, MediaGuinée); sonapguinee.com muestra hoy la tabla "PRIX OFFICIELS DES PRODUITS PETROLIERS EN GNF/ LITRE".
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos: no hay copia del comunicado MEF del 31-05-2022 (solo la nota de Guinéenews que lo cita); la nota de AllAfrica de mar-2026 (desmentido SONAP)
+#   no se pudo descargar (conexión rechazada, sin captura Wayback); el pétrole lampant 12.000 solo está confirmado para 2022 (las confirmaciones 2024-2026 hablan de essence y gasoil;
+#   la tabla de sonapguinee.com tiene columna PETROLE pero la fila "Marché TTC Réseau" trae solo dos cifras, 12000 y 12000).
+# Sin cambios 2024..hoy: 12.000 GNF/L vigente desde 2022-06-01.
+source_key: manual_gn_levels
+country: Guinea
+currency: GNF
+unit: GNF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+last_checked: 2026-10-16
+# last_checked: https://sonapguinee.com/ (descargado 2026-10-16, captura https://web.archive.org/web/20261016175725/https://sonapguinee.com/: "Marché TTC Réseau | 12000 | 12000"; copia data/fuel/ssa/west_africa/guinea/manual_sources/5ab94a58c532_sonapguinee_home.html)
+products:
+  "Essence":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: domestic
+levels:
+- effective: 2022-06-01
+  product: Essence
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://guineenews.org/2022/06/01/guinee-le-prix-du-litre-dessence-passe-de-10-mille-a-12-mille-gnf-officiel/
+  archive_url: http://web.archive.org/web/20250909011520/https://guineenews.org/2022/06/01/guinee-le-prix-du-litre-dessence-passe-de-10-mille-a-12-mille-gnf-officiel/
+  sha256: 2afd434fa2b9450b8dfd7aa4f3629d39c395c82fd33ef0c2bb5f927af14b2f86
+  file: 2afd434fa2b9_guineenews_2022-06-01_prix_12000.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: 'Guinéenews 01-06-2022 cita el comunicado del Ministerio de Economía, Finanzas y Plan (noche del 31-05-2022): "le prix des produits pétroliers, notamment l''essence, le gasoil et le pétrole passe de 10 000 GNF à 12 000 GNF à la pompe ... à compter de demain mercredi 1er juin 2022". Nivel vigente al 2024-01-01 y hoy. Confirmaciones posteriores sin cambio: comunicado SONAP 15-02-2024 ("reste pour l''heure à 12.000 GNF le litre de gasoil et d''essence", guineenews.org/2024/02/15/guinee-la-sonap-dement-toute-augmentation-du-prix-des-produits-petroliers/, sha 70026cd382ea); Soleil FM 01-04-2026, nueva estructura SONAP desde 01-04-2026 mantiene essence y gasoil a 12.000 (sha dc16853ccc80); MediaGuinée 07-10-2026 "Depuis le 1er juin 2022, le prix officiel du litre d''essence à la pompe est fixé à 12 000" (sha 52a36319e041); sonapguinee.com 16-10-2026 tabla oficial Réseau 12000. Una sola nota para la fecha de vigencia (sin segunda nota independiente de 2022 descargable), por eso media y no más.'
+- effective: 2022-06-01
+  product: Gasoil
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://guineenews.org/2022/06/01/guinee-le-prix-du-litre-dessence-passe-de-10-mille-a-12-mille-gnf-officiel/
+  archive_url: http://web.archive.org/web/20250909011520/https://guineenews.org/2022/06/01/guinee-le-prix-du-litre-dessence-passe-de-10-mille-a-12-mille-gnf-officiel/
+  sha256: 2afd434fa2b9450b8dfd7aa4f3629d39c395c82fd33ef0c2bb5f927af14b2f86
+  file: 2afd434fa2b9_guineenews_2022-06-01_prix_12000.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: 'Mismo comunicado MEF 31-05-2022 (essence, gasoil y pétrole 10.000 -> 12.000 desde 01-06-2022). Gasoil 12.000 reconfirmado por SONAP 15-02-2024 (Guinéenews, desmentido de alza tras rumores y colas: "l''actuelle structure des prix ... reste pour l''heure à 12.000 GNF le litre de gasoil et d''essence"), por la estructura SONAP del 01-04-2026 (Soleil FM: "le prix du litre d''essence et de gasoil reste fixé à 12 000 francs guinéens, aussi bien dans le réseau des stations-service que hors réseau") y por sonapguinee.com hoy. Las tarifas sectoriales de gasoil difieren entre Soleil FM abr-2026 (minería 15.500, exonéré 16.400, EDG 14.100, SEG 14.300) y la tabla actual de sonapguinee.com (exonéré 17.000, minería 17.300, EDG 14.600, SEG 14.900): no afectan el precio público pero indican una revisión sectorial posterior a abr-2026 sin fecha.'
+- effective: 2022-06-01
+  product: Pétrole
+  locality: national
+  price_local: 12000
+  source_type: press
+  url: https://guineenews.org/2022/06/01/guinee-le-prix-du-litre-dessence-passe-de-10-mille-a-12-mille-gnf-officiel/
+  archive_url: http://web.archive.org/web/20250909011520/https://guineenews.org/2022/06/01/guinee-le-prix-du-litre-dessence-passe-de-10-mille-a-12-mille-gnf-officiel/
+  sha256: 2afd434fa2b9450b8dfd7aa4f3629d39c395c82fd33ef0c2bb5f927af14b2f86
+  file: 2afd434fa2b9_guineenews_2022-06-01_prix_12000.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: 'Comunicado MEF 31-05-2022: "l''essence, le gasoil et le pétrole passe de 10 000 GNF à 12 000 GNF à la pompe" desde 01-06-2022. A diferencia de essence/gasoil, no encontré confirmación posterior explícita del pétrole a 12.000 (los desmentidos 2024/2026 solo nombran essence y gasoil); no hay evidencia de cambio, pero la vigencia actual es menos segura.'

@@ -1,0 +1,158 @@
+# Comoros: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Gobierno por arrêté conjoint (Energía + Finanzas + Economía) que fija los precios de venta al por menor en todo el territorio; SCH (Société comorienne des hydrocarbures) importador monopólico.
+# Régimen: precio nacional único fijado ad hoc, subsidiado y muy rígido (750/650/350 de mayo-2022 a mayo-2026).
+# Canales: arrêtés no publicados online; anuncio del ministro o del Presidente, difusión por Al-Watwan (estatal), La Gazette des Comores (PDF), Mayotte Hebdo, Le Journal de Mayotte, AFP.
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos: ningún texto de arrêté a la vista; fecha exacta de vigencia de la suba de 2026 dudosa (arrêté publicado sáb 9-05, La Gazette dice "entreront en vigueur dès ce lundi 11 mai");
+#   la vuelta a 750/650/350 se apoya en el comunicado de suspensión del 16-05-2026 (AFP, Xinhua), que no repite las cifras; algunas estaciones mantuvieron el precio alto unos días esperando el arrêté de baja.
+#   Sin evidencia de precios posteriores a jun-2026 (pénurie, quotas de 3.000 L/estación; la suspensión es "temporal"); por eso no hay last_checked.
+source_key: manual_km_levels
+country: Comoros
+currency: KMF
+unit: KMF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Essence":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole lampant":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: domestic
+levels:
+- effective: 2022-05-31
+  product: Essence
+  locality: national
+  price_local: 750
+  source_type: state_news
+  url: https://alwatwan.net/societe/hausse-des-prix-des-produits-p%C3%A9troliers-i-le-gouvernement-parle-d%E2%80%99une-mesure-dict%C3%A9e-par-la-conjoncture-mondiale.html
+  archive_url: https://web.archive.org/web/20261016182128/https://alwatwan.net/societe/hausse-des-prix-des-produits-p%C3%A9troliers-i-le-gouvernement-parle-d%E2%80%99une-mesure-dict%C3%A9e-par-la-conjoncture-mondiale.html
+  sha256: 34d73742aa4cfe1708434eab4405c8ec3415bc78ee68d0417f5d49a00ba41dbb
+  file: 34d73742aa4c_alwatwan_hausse_conjoncture_mondiale.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: 'Al-Watwan (diario estatal) cita al ministro de Economía (anuncio la noche del 30-05-2022): "l''essence, le litre à la pompe coûtera 750 francs au lieu 600 francs. Ces prix entreront en vigueur dès demain matin (ce mardi 31 mai, Ndlr)". Confirmado por La Gazette des Comores ("l''essence de 600 FC à 750 FC") y Habari za Comores (05-2022). Nivel vigente al 2024-01-01; La Gazette 11-05-2026: "les tarifs sont restés inchangés jusqu''à aujourd''hui".'
+- effective: 2022-05-31
+  product: Gasoil
+  locality: national
+  price_local: 650
+  source_type: state_news
+  url: https://alwatwan.net/societe/hausse-des-prix-des-produits-p%C3%A9troliers-i-le-gouvernement-parle-d%E2%80%99une-mesure-dict%C3%A9e-par-la-conjoncture-mondiale.html
+  archive_url: https://web.archive.org/web/20261016182128/https://alwatwan.net/societe/hausse-des-prix-des-produits-p%C3%A9troliers-i-le-gouvernement-parle-d%E2%80%99une-mesure-dict%C3%A9e-par-la-conjoncture-mondiale.html
+  sha256: 34d73742aa4cfe1708434eab4405c8ec3415bc78ee68d0417f5d49a00ba41dbb
+  file: 34d73742aa4c_alwatwan_hausse_conjoncture_mondiale.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: 'Al-Watwan: "pour le gazole, le litre à la pompe ... est ainsi passé de 450 fc à 650 fc", en vigor desde el martes 31-05-2022 según el ministro de Economía. Confirmado por La Gazette des Comores y Habari za Comores 2022; La Gazette y Le Journal de Mayotte (mayo-2026) dan 650 como precio previo a la suba de 2026.'
+- effective: 2022-05-31
+  product: Pétrole lampant
+  locality: national
+  price_local: 350
+  source_type: state_news
+  url: https://alwatwan.net/societe/hausse-des-prix-des-produits-p%C3%A9troliers-i-le-gouvernement-parle-d%E2%80%99une-mesure-dict%C3%A9e-par-la-conjoncture-mondiale.html
+  archive_url: https://web.archive.org/web/20261016182128/https://alwatwan.net/societe/hausse-des-prix-des-produits-p%C3%A9troliers-i-le-gouvernement-parle-d%E2%80%99une-mesure-dict%C3%A9e-par-la-conjoncture-mondiale.html
+  sha256: 34d73742aa4cfe1708434eab4405c8ec3415bc78ee68d0417f5d49a00ba41dbb
+  file: 34d73742aa4c_alwatwan_hausse_conjoncture_mondiale.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: 'Al-Watwan: "le prix du litre du pétrole lampant connaitra une hausse de 100 fcs, soit 350 francs au lieu de 250 francs", desde 31-05-2022. Le Journal de Mayotte 11-05-2026 da 350 como precio previo a la suba de 2026 ("passe de 350 francs ... à 450 francs").'
+- effective: 2026-05-11
+  product: Essence
+  locality: national
+  price_local: 1000
+  source_type: press
+  url: https://lagazettedescomores.com/assets/images2026/PDF/lagazette-5119.pdf
+  archive_url: http://web.archive.org/web/20260519172436/https://lagazettedescomores.com/assets/images2026/PDF/lagazette-5119.pdf
+  sha256: 2756c3fc3fbac25115deb89f6514e0be80dab81a4a449a7bde99a22c58674a0b
+  file: 2756c3fc3fba_lagazette-5119.pdf
+  method: embedded text
+  derived_from:
+  - https://lejournaldemayotte.yt/?p=51191
+  confidence: media
+  note: 'La Gazette des Comores n° 5119 (lunes 11-05-2026): "le gouvernement a publié les arrêtés ... le litre d''essence à la pompe passe de 750 à 1 000 KMF"; "Ces arrêtés entreront en vigueur dès ce lundi 11 mai" (frase dicha tras el arrêté de abattement de taxes; se toma como vigencia de todos). Le Journal de Mayotte 11-05-2026: arrêté conjoint "publié ce samedi 9 mai", essence 750 -> 1000. Mayotte Hebdo 12-05-2026: transportistas no pueden abastecerse "avec les nouveaux tarifs" horas después de la publicación (posible aplicación desde 9/10-05). AFP da +35% (redondeo) en vez de +33%. Suspendido el 16-05-2026 (ver filas siguientes): nivel efímero de ~6 días.'
+- effective: 2026-05-11
+  product: Gasoil
+  locality: national
+  price_local: 950
+  source_type: press
+  url: https://lagazettedescomores.com/assets/images2026/PDF/lagazette-5119.pdf
+  archive_url: http://web.archive.org/web/20260519172436/https://lagazettedescomores.com/assets/images2026/PDF/lagazette-5119.pdf
+  sha256: 2756c3fc3fbac25115deb89f6514e0be80dab81a4a449a7bde99a22c58674a0b
+  file: 2756c3fc3fba_lagazette-5119.pdf
+  method: embedded text
+  derived_from:
+  - https://lejournaldemayotte.yt/?p=51191
+  confidence: media
+  note: 'La Gazette 11-05-2026: "le gasoil passe de 650 à 950 KMF" y, citando el arrêté conjoint, "le prix du Gasoil passe de 650 kmf à 950 kmf le litre, avec une hausse de 46%". Le Journal de Mayotte 11-05-2026 confirma 950 (arrêté publicado sáb 9-05). Ver nota de Essence sobre la fecha (9 vs 11 de mayo).'
+- effective: 2026-05-11
+  product: Pétrole lampant
+  locality: national
+  price_local: 450
+  source_type: press
+  url: https://lagazettedescomores.com/assets/images2026/PDF/lagazette-5119.pdf
+  archive_url: http://web.archive.org/web/20260519172436/https://lagazettedescomores.com/assets/images2026/PDF/lagazette-5119.pdf
+  sha256: 2756c3fc3fbac25115deb89f6514e0be80dab81a4a449a7bde99a22c58674a0b
+  file: 2756c3fc3fba_lagazette-5119.pdf
+  method: embedded text
+  derived_from:
+  - https://lejournaldemayotte.yt/?p=51191
+  confidence: media
+  note: 'La Gazette 11-05-2026: "pour le pétrole lampant, le prix subventionné par le Gouvernement passe à 450 kmf le litre, soit une hausse de 28%". Le Journal de Mayotte 11-05-2026: "passe de 350 francs ... à 450 francs".'
+- effective: 2026-05-16
+  product: Essence
+  locality: national
+  price_local: 750
+  source_type: press
+  url: https://www.boursorama.com/actualite-economique/actualites/les-comores-suspendent-la-hausse-des-prix-du-carburant-apres-des-affrontements-mortels-0bcdd2dd1c678a83938b77cd497e99db
+  archive_url: http://web.archive.org/web/20260518023108/https://www.boursorama.com/actualite-economique/actualites/les-comores-suspendent-la-hausse-des-prix-du-carburant-apres-des-affrontements-mortels-0bcdd2dd1c678a83938b77cd497e99db
+  sha256: a45a4c6060eb372f1e44592a0b8a800b3e6e2a1b29635634ef2c7620416962e7
+  file: a45a4c6060eb_boursorama_afp_2026-05-16_suspension.html
+  method: HTML text
+  derived_from:
+  - http://french.china.org.cn/foreign/txt/2026-05/17/content_118498552.htm
+  - https://www.mayottehebdo.com/actualite/societe/comores-annulation-de-la-hausse-du-carburant-apres-deux-morts-a-anjouan/
+  confidence: media
+  note: 'AFP vía Boursorama 16-05-2026 20:02: el gobierno anunció el sábado 16-05 "la suspension de la hausse des prix du carburant". Xinhua 17-05: comunicado del sábado, "suspension temporaire des arrêtés relatifs à la hausse du prix du carburant", vida normal "dès lundi" (18-05). Mayotte Hebdo 18-05 cita el comunicado de la Secretaría General del Gobierno. Las fuentes NO repiten la cifra 750: el nivel sale de que se suspende el arrêté del 9-05 y rige de nuevo el precio anterior. Según la prensa, algunas estaciones mantuvieron 1000 unos días esperando un arrêté de baja. Lavoixdefrance (jul-2026) fecha la suspensión el 17-05 (citando RFI): contradicción menor. La suspensión es "temporal"; sin evidencia de nuevo cambio hasta jun-2026.'
+- effective: 2026-05-16
+  product: Gasoil
+  locality: national
+  price_local: 650
+  source_type: press
+  url: https://www.boursorama.com/actualite-economique/actualites/les-comores-suspendent-la-hausse-des-prix-du-carburant-apres-des-affrontements-mortels-0bcdd2dd1c678a83938b77cd497e99db
+  archive_url: http://web.archive.org/web/20260518023108/https://www.boursorama.com/actualite-economique/actualites/les-comores-suspendent-la-hausse-des-prix-du-carburant-apres-des-affrontements-mortels-0bcdd2dd1c678a83938b77cd497e99db
+  sha256: a45a4c6060eb372f1e44592a0b8a800b3e6e2a1b29635634ef2c7620416962e7
+  file: a45a4c6060eb_boursorama_afp_2026-05-16_suspension.html
+  method: HTML text
+  derived_from:
+  - http://french.china.org.cn/foreign/txt/2026-05/17/content_118498552.htm
+  - https://www.mayottehebdo.com/actualite/societe/comores-annulation-de-la-hausse-du-carburant-apres-deux-morts-a-anjouan/
+  confidence: media
+  note: 'Suspensión de la suba anunciada el 16-05-2026 (AFP, Xinhua, Mayotte Hebdo 18-05). Vuelta a 650 = nivel previo al arrêté suspendido; las fuentes no repiten la cifra. Mismas salvedades que la fila Essence 2026-05-16.'
+- effective: 2026-05-16
+  product: Pétrole lampant
+  locality: national
+  price_local: 350
+  source_type: press
+  url: https://www.boursorama.com/actualite-economique/actualites/les-comores-suspendent-la-hausse-des-prix-du-carburant-apres-des-affrontements-mortels-0bcdd2dd1c678a83938b77cd497e99db
+  archive_url: http://web.archive.org/web/20260518023108/https://www.boursorama.com/actualite-economique/actualites/les-comores-suspendent-la-hausse-des-prix-du-carburant-apres-des-affrontements-mortels-0bcdd2dd1c678a83938b77cd497e99db
+  sha256: a45a4c6060eb372f1e44592a0b8a800b3e6e2a1b29635634ef2c7620416962e7
+  file: a45a4c6060eb_boursorama_afp_2026-05-16_suspension.html
+  method: HTML text
+  derived_from:
+  - http://french.china.org.cn/foreign/txt/2026-05/17/content_118498552.htm
+  confidence: media
+  note: 'Suspensión de los arrêtés de suba del 9-05 anunciada el 16-05-2026; el pétrole lampant estaba en el mismo arrêté (Le Journal de Mayotte: 350 -> 450), así que vuelve a 350. Ninguna fuente repite la cifra 350 tras la suspensión.'
