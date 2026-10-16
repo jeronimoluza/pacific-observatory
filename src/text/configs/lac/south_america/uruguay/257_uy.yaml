@@ -37,3 +37,5 @@ cleaning:
 
 max_pages: null
 max_articles: null
+# Parked 2026-10-16 (user decision, panel 20261016T0917Z): 257.uy and www.257.uy no longer resolve in DNS. Config kept; re-enable if the domain returns.
+enabled: false

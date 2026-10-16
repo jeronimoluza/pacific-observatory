@@ -5,7 +5,7 @@
            the refresh-text-region runner.sh (watchdog, per-source cap), STATUS.md and .done
            in the format of staged_collect_all.sh, so graph.observers.text_delta reads it.
 - drain:   the heavy tier (TX-38): the sources in src/configs/panels/text_heavy_sources.yaml
-           again, as a run of its own with a larger --max-articles and cap, at nice/idle IO
+           and the slow lane (text_slow_sources.yaml, left out of the weekly collect) again, as a run of its own with a larger --max-articles and cap, at nice/idle IO
            priority, 2 at a time; a source is not started while a panel collect, merge or
            signoff or a corpus apply runs, so the backlog drains without holding the chain.
 - merge:   plan, not write: every unplanned run under <staging-root> becomes a sign-off plan
@@ -43,16 +43,13 @@ DRAIN_WRAP = (
     'exec nice -n 19 ionice -c 3 bash "$RUNNER" "$1"'
 )
 EXCLUDE_FILE = REPO_ROOT / "src" / "configs" / "panels" / "text_exclude_sources.yaml"
+SLOW_FILE = REPO_ROOT / "src" / "configs" / "panels" / "text_slow_sources.yaml"
 
 
 def panel_sources(countries: list[str]) -> dict[tuple[str, str, str], list[str]]:
-    """(region, sub, country) -> enabled source keys, filtered like launch_refresh.sh,
-    minus src/configs/panels/text_exclude_sources.yaml."""
+    """(region, sub, country) -> enabled source keys, filtered like launch_refresh.sh."""
     from core.config import get_country_path
 
-    import yaml
-
-    exclude = yaml.safe_load(EXCLUDE_FILE.read_text()) or {} if EXCLUDE_FILE.exists() else {}
     out = {}
     for c in countries:
         try:
@@ -62,9 +59,29 @@ def panel_sources(countries: list[str]) -> dict[tuple[str, str, str], list[str]]
             region, sub = d.parent.parent.name, d.parent.name
         d = CONFIGS / region / sub / c
         out[(region, sub, c)] = sorted(
-            y.stem for y in d.glob("*.yaml")
-            if not y.stem.startswith("_") and not DISABLED.search(y.read_text()) and y.stem not in exclude.get(c, [])
+            y.stem for y in d.glob("*.yaml") if not y.stem.startswith("_") and not DISABLED.search(y.read_text())
         )
+    return out
+
+
+def lane_sources(countries: list[str], drain: bool) -> dict[tuple[str, str, str], list[str]]:
+    """What a collect runs: panel_sources minus text_exclude_sources.yaml; the weekly collect
+    also minus text_slow_sources.yaml, the drain only text_heavy_sources + text_slow_sources.
+    Ledger, merge and counts keep every panel source, so an excluded source's corpus stays."""
+    import yaml
+
+    def load(f):
+        return (yaml.safe_load(f.read_text()) or {}) if f.exists() else {}
+
+    exclude, slow, heavy = load(EXCLUDE_FILE), load(SLOW_FILE), load(HEAVY_FILE)
+    out = {}
+    for k, v in panel_sources(countries).items():
+        c = k[2]
+        keep = [s for s in v if s not in exclude.get(c, [])]
+        keep = [s for s in keep if s in heavy.get(c, []) + slow.get(c, [])] if drain else [
+            s for s in keep if s not in slow.get(c, [])]
+        if keep:
+            out[k] = keep
     return out
 
 
@@ -120,14 +137,9 @@ def _staged_rows(region_dir: Path) -> tuple[int, int]:
 
 
 def step_collect(a) -> int:
-    srcs = panel_sources(a.countries)
     drain = a.step == "drain"
+    srcs = lane_sources(a.countries, drain)
     if drain:
-        import yaml
-
-        heavy = yaml.safe_load(HEAVY_FILE.read_text()) or {}
-        srcs = {k: [s for s in v if s in heavy.get(k[2], [])] for k, v in srcs.items()}
-        srcs = {k: v for k, v in srcs.items() if v}
         a.parallel = min(a.parallel, 2)
     regions = _regions(srcs)
     missing = [r for r in regions if not (a.state_dir / f"{r}.sqlite").exists()]

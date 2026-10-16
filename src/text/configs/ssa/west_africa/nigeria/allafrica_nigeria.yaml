@@ -31,3 +31,5 @@ cleaning:
 
 max_pages: null
 max_articles: null
+# Parked 2026-10-16 (user decision, panel 20261016T0917Z): allafrica.com refuses connections on 80/443 from a8 (retried 15:55 UTC). Config kept; re-enable if it answers again.
+enabled: false
