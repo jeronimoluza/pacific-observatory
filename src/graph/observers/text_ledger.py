@@ -100,31 +100,40 @@ def ledger_vs_corpus(region: str, state_dir: Path = STATE_DIR, corpus_root: Path
 
 
 def observe(node) -> list[dict]:
-    """Graph contract (`text.ledger`): one row per source of every ``<region>.sqlite``.
-    Drift compares keys only (``not_in_corpus``, ``not_in_ledger``, ``blocked``); the
-    n_news/watermark comparison reads every news.csv and stays in ``main``. Without
+    """Graph contract (`text.ledger`): per owner (manifest ``owners``), one row per source of
+    every ``<state>/<region>.sqlite``. Drift compares keys only (``not_in_corpus``,
+    ``not_in_ledger`` among the corpus folders of countries the owner owns, ``blocked``);
+    the n_news/watermark comparison reads every news.csv and stays in ``main``. Without
     the corpus mount, keys are not compared."""
     from graph.observe import row
+    from graph.observers.text_owners import country_of_key, owner_of, root
 
+    owners = node.owners or {"prod": {"state": str(STATE_DIR)}}
     out = []
-    for sqlite in sorted(STATE_DIR.glob("*.sqlite")):
-        region = sqlite.stem
-        ledger = ledger_sources(region, STATE_DIR)
-        have_corpus = (CORPUS_ROOT / region).is_dir()
-        on_disk = set(corpus_keys(region, CORPUS_ROOT)) if have_corpus else set()
-        for key in sorted(set(ledger) | on_disk):
-            led = ledger.get(key)
-            drift = []
-            if led is None:
-                drift.append("not_in_ledger")
-            elif led["blocked"]:
-                drift.append("blocked")
-            if have_corpus and key not in on_disk:
-                drift.append("not_in_corpus")
-            out.append(row(node, f"{region}/{key}", led is not None and not led["blocked"],
-                           (led or {}).get("n_news"), (led or {}).get("ledger_updated"), drift=drift,
-                           extra={"watermark": (led or {}).get("watermark"),
-                                  "corpus_checked": have_corpus}))
+    for owner, spec in owners.items():
+        state = root(spec, "state")
+        if not state or not state.is_dir():
+            continue
+        for sqlite in sorted(state.glob("*.sqlite")):
+            region = sqlite.stem
+            ledger = ledger_sources(region, state)
+            have_corpus = (CORPUS_ROOT / region).is_dir()
+            on_disk = {k for k in (corpus_keys(region, CORPUS_ROOT) if have_corpus else [])
+                       if owner_of(owners, region, country_of_key(k)) == owner}
+            for key in sorted(set(ledger) | on_disk):
+                led = ledger.get(key)
+                drift = []
+                if led is None:
+                    drift.append("not_in_ledger")
+                elif led["blocked"]:
+                    drift.append("blocked")
+                if have_corpus and key not in on_disk and owner_of(owners, region, country_of_key(key)) == owner:
+                    drift.append("not_in_corpus")
+                out.append(row(node, f"{owner}/{region}/{key}", led is not None and not led["blocked"],
+                               (led or {}).get("n_news"), (led or {}).get("ledger_updated"), drift=drift,
+                               extra={"owner": owner, "watermark": (led or {}).get("watermark"),
+                                      "owned": owner_of(owners, region, country_of_key(key)) == owner,
+                                      "corpus_checked": have_corpus}))
     return out
 
 

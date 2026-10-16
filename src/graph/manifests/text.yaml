@@ -7,6 +7,30 @@
 pipeline: text
 code_ref: origin/main
 
+# Dueños (particiones de escritura). Desde 2026-10-16 el panel (panel36 ∪ EAP, `po text panel`)
+# es el único escritor de sus fuentes; prod (timer text-collect-staged, lun/vie 06:00 UTC,
+# staged_collect_all.sh) collecta el resto: lo que el panel posee es exactamente prod.exclude.
+# Una raíz `mac:~/...` vive en la Mac (en otra máquina se lee de PO_GRAPH_MAC_MIRROR).
+# Leídas por graph.observers.text_owners; todas solo lectura.
+owners:
+  prod:
+    desc: timer text-collect-staged en a8; merge, build y publish en la Mac (hasta S6)
+    exclude: ~/text_collect/exclude.txt
+    staging: ~/text_staging
+    merged_mac: mac:~/text_staging
+    state: ~/text_state
+    cache: mac:~/wb/pacificobservatory/repo/template-repo/data/text/cache
+    outputs: mac:~/wb/pacificobservatory/repo/pacific-observatory/outputs/text
+    dashboards: mac:~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/dashboards/fuel
+  panel:
+    desc: po text panel (panel36 ∪ EAP) en a8; merge por plan con firma del usuario
+    staging: ~/text_panel/staging
+    state: ~/text_panel/state
+    pending: /mnt/backup5tb/text-panel/pending
+    logs: ~/text_panel/logs
+    cache: ~/text_panel/build/cache
+    outputs: ~/text_panel/build/outputs
+
 nodes:
   text.config:
     estado: prod
@@ -27,7 +51,8 @@ nodes:
       - {path: "~/text_state/<region>.sqlite", machine: a8}
       - {path: "~/text_state/<region>.sqlite", machine: mac, role: ledger}
       - {path: "/mnt/backup5tb/text-state/<region>.sqlite", machine: a8, role: ledger}   # copia
-    partition: region
+      - {path: "~/text_panel/state/<region>.sqlite", machine: a8}                          # panel
+    partition: dueño × región
     desc: >-
       lo escribe merge junto con text.corpus. El bootstrap desde corpus y el lazo
       run -> ledger son temporales (el run N lee el ledger de N-1), no aristas del DAG.
@@ -48,8 +73,11 @@ nodes:
       - {path: "~/text_staging/<run_id>/STATUS.md", machine: a8, role: status}
       - {path: "~/text_staging/<run_id>/.done", machine: a8, role: status}
       - {path: "~/text_staging/<run_id>/events_<r>.log", machine: a8, role: ledger}
+      - {path: "~/text_panel/staging/<run_id>/<region>/<sub>/<country>/<source>/news.csv", machine: a8}
+      - {path: "~/text_panel/staging/<run_id>/events_<r>.log", machine: a8, role: ledger}
+      - {path: "~/text_panel/logs/<run_id>/events.log", machine: a8, role: ledger}   # @sha del collect
     inputs: [text.config, text.ledger]
-    partition: source × run (lun y vie; semana ISO del run)
+    partition: dueño × fuente × run (prod lun y vie; panel diario)
     fingerprint:
       note: además el commit de STATUS.md
     freshness: un run cada <= 4 días (26 h después del disparo); objetivo 6 h en S6
@@ -60,6 +88,7 @@ nodes:
       - {color: amarillo, desc: fail > 0}
       - {color: amarillo, desc: fuente en 0 una vez}
       - {color: amarillo, desc: share de timeouts > baseline}
+      - {color: rojo, desc: fuente escrita por un dueño que no la posee (owner_conflict)}
 
   text.corpus:
     estado: prod
@@ -67,14 +96,18 @@ nodes:
     code_paths: [src/text/merge.py]
     paths:
       - {path: "/mnt/backup5tb/text-corpus/<region>/<sub>/<country>/<source>/news.csv", machine: a8}
+      - {path: "~/text_staging/<run_id>/<region>/.merged", machine: mac, role: status}   # merge de prod
+      - {path: "/mnt/backup5tb/text-panel/pending/<plan_id>/{PLAN.tsv,RUNS}", machine: a8, role: ledger}
     inputs: [text.delta, text.ledger]
     desc: >-
       el 5 TB es la copia principal. Backup frío: archives/text-corpus-20261013.tar.zst
       en OneDrive (subido 14/10). SSKJL ya no guarda text (desde 15/10 solo embed store).
-    partition: fuente (append-only; lógica fuente × semana de evento)
+    partition: fuente (append-only; lógica fuente × semana de evento); el status la ve por dueño × run × región
     freshness: todo run con .done está .merged en <= 1 día
     checks:
       - {color: rojo, desc: run .done sin .merged después de 2 días}
+      - {color: rojo, desc: pending/<run_id> sin PLAN.tsv (merge rehusó)}
+      - {color: amarillo, desc: run .done esperando firma o sin merge todavía}
       - {color: rojo, desc: n_news del ledger != URLs del news.csv}
       - {color: rojo, desc: URL duplicada no vacía}
       - {color: rojo, desc: fecha > hoy UTC}
@@ -87,12 +120,14 @@ nodes:
 
   text.counts:
     estado: prod
+    observer: text_build
     code_paths:
       - src/text/analysis/annotate.py
       - src/text/analysis/orchestrator.py
       - src/text/analysis/source_counts.py
     paths:
       - {path: "~/wb/pacificobservatory/repo/template-repo/data/text/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: mac}
+      - {path: "~/text_panel/build/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: a8}   # panel
     inputs: [text.corpus, text.keywords]
     partition: country
     fingerprint:
@@ -108,6 +143,7 @@ nodes:
 
   text.epu:
     estado: prod
+    observer: text_build
     code_paths:
       - src/text/analysis/epu.py
       - src/text/analysis/indices.py
@@ -115,8 +151,9 @@ nodes:
       - src/text/analysis/standardize.py
       - src/text/analysis/utils.py
     paths:
-      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/<region>/<sub>/<country|_aggregate>/epu/epu.csv", machine: mac}
-      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/<region>/<sub>/<country|_aggregate>/uncertainty_attribution/*.csv", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/<region>/<sub>/<country|_aggregate>/epu/epu.csv", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/<region>/<sub>/<country|_aggregate>/uncertainty_attribution/*.csv", machine: mac}
+      - {path: "~/text_panel/build/outputs/<region>/<sub>/<country>/epu/epu.csv", machine: a8}   # panel
     inputs: [text.counts]
     partition: country (los agregados se derivan)
     fingerprint:
@@ -167,15 +204,16 @@ nodes:
 
   text.dashboard:
     estado: prod
+    observer: text_build
     code_paths:
       - src/text/publish.py
       - src/text/plotting/**/*.py
     paths:
-      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/dashboards/fuel/<r>_policy_dashboard_fuel.html", machine: mac}
-      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/dashboard_data/*", machine: mac}
-      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/text/small_dashboard_integrated.html", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/dashboards/fuel/<r>_policy_dashboard_fuel.html", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/dashboard_data/*", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/small_dashboard_integrated.html", machine: mac}
     inputs: [text.epu, text.addons, text.database_status]
-    partition: región
+    partition: dueño × región (el panel todavía no publica)
     freshness: posterior al último .merged
     checks:
       - {color: rojo, desc: rojo aguas arriba (S4b)}

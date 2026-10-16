@@ -15,7 +15,10 @@ Rule (written here so the number can be argued with):
 - budget_prev_s = the same rule without the last run; over_budget = the last run's
   duration > budget_prev_s (needs >= 2 earlier runs);
 - zero_streak = consecutive most recent runs with new_rows == 0 (a run with unknown rows
-  ends the count); new_zero_streak = zero_streak >= 2 and the source had rows before it;
+  ends the count); new_zero_streak = zero_streak >= 2 and the source had rows before it,
+  text only: a prices week with 0 raw rows is not a zero by itself (a fetcher without
+  delta writes none); whether a prices source is in zero is
+  ``graph.checks.raw_sources.zero_color``, read by ``silent_zeros`` and ``graph status``;
 - stalled = the last run went ``stall_min`` minutes or more without progress (prices:
   Scrapy logstats with neither pages nor items growing; text: runner STUCK).
 """
@@ -83,7 +86,7 @@ def derive(runs, n: int = N, margin: float = MARGIN, floor_s: int = FLOOR_S, sta
             "budget_prev_s": budget_prev,
             "over_budget": bool(budget_prev is not None and pd.notna(last_dur) and last_dur > budget_prev),
             "zero_streak": streak, "had_rows_before": had_rows,
-            "new_zero_streak": streak >= 2 and had_rows,
+            "new_zero_streak": pipeline == "text" and streak >= 2 and had_rows,
             "last_run_id": last["run_id"], "last_status": last["status"],
             "last_rows": last["new_rows"], "last_duration_s": last_dur,
             "last_start_utc": last["start_utc"], "last_max_stall_s": stall,
@@ -106,12 +109,10 @@ def silent_zeros(week: str, n: int = 4):
 
     from graph.checks import raw_sources as R
 
-    rows = {f"{r['country']}/{r['source']}": r for r in R.read(week, n=n)}
     out = []
-    for f in R.evaluate(list(rows.values())):
-        color = {"cero silencioso": "rojo", "fetcher sin delta": "amarillo"}.get(f["msg"].split(":")[0])
+    for r in R.read(week, n=n):
+        color = R.zero_color(r)
         if color:
-            r = rows[f["partition"]]
             out.append({"country": r["country"], "source": r["source"], "color": color,
                         "baseline": r["baseline"], "last_obs": r["last_obs"], "scaffolding": r["scaffolding"]})
     return pd.DataFrame(out, columns=["country", "source", "color", "baseline", "last_obs", "scaffolding"])

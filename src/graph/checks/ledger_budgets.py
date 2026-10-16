@@ -1,6 +1,7 @@
 """Ledger checks per source, from ``source_budgets.parquet`` (``po graph ledger budgets``).
 
-- red: a new zero streak, >= 2 runs in a row with 0 rows after the source had rows;
+- red (text only): a new zero streak, >= 2 runs in a row with 0 rows after the source had
+  rows. Prices zeros are ``graph.checks.raw_sources.zero_color`` (its own check);
 - yellow: the last run took longer than the budget derived from the runs before it.
 
 Findings go on ``prices.raw`` (partition ``<region>/<country>/<source>``, as its observer)
@@ -27,7 +28,7 @@ def check(rows: list[dict]) -> list[dict]:
         if node not in seen:
             continue
         part = f"{r.region}/{r.country}/{r.source}"
-        if r.new_zero_streak:
+        if r.pipeline == "text" and r.new_zero_streak:
             out.append({"node": node, "partition": part, "color": "rojo",
                         "msg": f"racha nueva de ceros: {r.zero_streak} corridas con 0 filas"})
         if r.over_budget:

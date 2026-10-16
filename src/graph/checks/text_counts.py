@@ -11,6 +11,9 @@
   (``<state-dir>/<region>.sqlite``, opened read-only);
 - yellow: ``keyword_hashes`` != the hash of the current keyword packs (fingerprint).
 
+``graph status`` runs ``check`` over the ``text_build`` rows (params.json only: T23 and the
+hash); the corpus checks need ``main``.
+
 The corpus and ledger checks are skipped when their roots are not on this machine
 (the cache is on the Mac, the corpus and ledgers on a8).
 """
@@ -113,11 +116,25 @@ def read(cache_root: Path = CACHE_ROOT, corpus_root: Path = CORPUS_ROOT, state_d
 
 
 def check(rows: list[dict]) -> list[dict]:
-    """Registry hook: no observer reads the counts cache, so this points at the direct run."""
-    if not any(r["node"] == NODE for r in rows):
+    """Registry hook over the ``text_build`` observer rows (params.json only): red T23 for a
+    key repeated in ``source_set``, yellow for a stale keyword hash. T26, duplicate urls and
+    unconfigured copies read every news.csv: they stay in the direct run, named once on "*"."""
+    mine = [r for r in rows if r["node"] == NODE and r["done"]]
+    if not mine:
         return []
-    return [{"node": NODE, "partition": "*", "color": "amarillo",
-             "msg": "T23/T26 requieren corrida directa: python -m graph.checks.text_counts"}]
+    out = []
+    for r in mine:
+        dup = r["extra"].get("dup_keys") or {}
+        if dup:
+            out.append({"node": NODE, "partition": r["partition"], "color": "rojo",
+                        "msg": "T23 claves repetidas en source_set: "
+                               + ", ".join(f"{k} x{n}" for k, n in sorted(dup.items()))})
+        if r["extra"].get("hash_ok") is False:
+            out.append({"node": NODE, "partition": r["partition"], "color": "amarillo",
+                        "msg": "keyword_hashes != hash actual de los packs"})
+    out.append({"node": NODE, "partition": "*", "color": "amarillo",
+                "msg": "T26/URLs duplicadas/copias sin config: python -m graph.checks.text_counts --cache-root <cache>"})
+    return out
 
 
 def evaluate(rows: list[dict]) -> list[dict]:

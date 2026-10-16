@@ -12,6 +12,7 @@ import argparse
 import glob
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 STAGING_ROOT = Path.home() / "text_staging"
@@ -47,6 +48,7 @@ def read_events(log: Path) -> tuple[dict[str, int], dict[str, str]]:
     return counts, last
 
 
+@lru_cache(maxsize=None)
 def news_rows(news_csv: Path) -> int:
     import pandas as pd
 
@@ -142,25 +144,107 @@ def compare_status_md(status: dict, run_dir: Path) -> list[str]:
     return diffs
 
 
+def plans(pending_root: Path | None) -> list[dict]:
+    """Sign-off plans under ``pending_root``: the ``<run>/<region>`` dirs each covers, its new
+    rows per region (PLAN.tsv, news.csv lines), and whether it was applied or superseded."""
+    import csv
+
+    out = []
+    if not pending_root or not pending_root.is_dir():
+        return out
+    for d in sorted(p for p in pending_root.iterdir() if p.is_dir()):
+        runs = (d / "RUNS").read_text().split() if (d / "RUNS").exists() else []
+        new_rows: dict[str, int] = {}
+        if (d / "PLAN.tsv").exists():
+            with open(d / "PLAN.tsv", newline="") as f:
+                for r in csv.DictReader(f, delimiter="\t"):
+                    if r.get("file") == "news.csv":
+                        new_rows[r["region"]] = new_rows.get(r["region"], 0) + int(r["new_rows"] or 0)
+        out.append({"plan": d.name, "dir": d, "runs": runs, "has_plan": (d / "PLAN.tsv").exists(),
+                    "new_rows": new_rows, "applied": (d / "APPLIED").exists(),
+                    "superseded": (d / "SUPERSEDED").exists()})
+    return out
+
+
+def _stamp(marker: Path) -> str | None:
+    head = marker.read_text().split(maxsplit=1)
+    return head[0] if head and re.match(r"\d{4}-\d{2}-\d{2}T", head[0]) else None
+
+
+def merge_state(run_dir: Path, region: str, mac_staging: Path | None,
+                all_plans: list[dict]) -> tuple[str | None, list[str], str | None]:
+    """How ``<run>/<region>`` reached the corpus (None = not yet) and the drift on the way.
+
+    Evidence, first hit wins: ``.merged`` in the staging run on this machine; ``.merged`` in
+    the Mac's copy of the run (prod merged there until S6); an applied plan covering it; a
+    plan covering it whose PLAN.tsv brings 0 new news rows for the region (already in the
+    corpus). An open plan with new rows is awaiting sign-off; a pending dir named after the
+    run without PLAN.tsv means merge refused before planning. The third value is the
+    merge time a marker records."""
+    if merged_marker(run_dir, region) is not None:
+        return "marker", [], _stamp(run_dir / region / ".merged")
+    if mac_staging and (mac_staging / run_dir.name / region / ".merged").exists():
+        return "marker_mac", [], _stamp(mac_staging / run_dir.name / region / ".merged")
+    drift = []
+    me = str(run_dir / region)
+    for p in all_plans:
+        if me not in p["runs"]:
+            continue
+        if p["applied"]:
+            return f"plan {p['plan']} applied", [], None
+        if p["has_plan"] and not p["superseded"] and p["new_rows"].get(region, 0) == 0:
+            return f"plan {p['plan']}: 0 new rows", [], None
+        if p["has_plan"] and not p["superseded"]:
+            drift.append(f"awaiting_signoff {p['plan']} ({p['new_rows'].get(region, 0)} new rows)")
+    for p in all_plans:
+        if p["plan"] == run_dir.name and not p["has_plan"]:
+            drift.append(f"pending/{p['plan']} sin PLAN.tsv (merge rehusó)")
+    return None, drift, None
+
+
+def _run_sha(logs_root: Path | None, run: str) -> str | None:
+    """The collect commit the run's step log recorded (``... @<sha>``), if the owner keeps one."""
+    events = logs_root / run / "events.log" if logs_root else None
+    if not events or not events.exists():
+        return None
+    for line in events.read_text(errors="replace").splitlines():
+        m = re.search(r" collect: RUNNING .*@([0-9a-f]{7,40})", line)
+        if m:
+            return m.group(1)
+    return None
+
+
 def observe(node) -> list[dict]:
-    """Graph contract (`text.corpus`): one row per region of the newest run; done = the
-    run was merged into the corpus (``.merged``). A run with ``.done`` and an unmerged
-    region is drift."""
+    """Graph contract (`text.corpus`): per owner (manifest ``owners``), one row per run and
+    region of that owner's staging; done = the region reached the corpus (``merge_state``).
+    STATUS.md is never read: counts come from the events logs and the staged files."""
     from datetime import datetime, timezone
 
     from graph.observe import row
+    from graph.observers.text_owners import root
 
-    if not STAGING_ROOT.is_dir() or not list_runs(STAGING_ROOT):
-        return []
-    run_dir = STAGING_ROOT / list_runs(STAGING_ROOT)[-1]
-    st = run_status(run_dir)
-    ts = datetime.strptime(st["run"], "%Y%m%dT%H%MZ").replace(tzinfo=timezone.utc).timestamp()
+    owners = node.owners or {"prod": {"staging": str(STAGING_ROOT)}}
+    all_plans = [p for spec in owners.values() for p in plans(root(spec, "pending"))]
     out = []
-    for r in st["regions"]:
-        drift = ["done_not_merged"] if st["done"] and not r["merged"] else []
-        out.append(row(node, r["region"], r["merged"], r["news_rows"], ts, drift=drift,
-                       extra={k: r[k] for k in ("run", "done", "timeout", "fail", "stuck",
-                                                "sources_with_rows", "merged_note")}))
+    for owner, spec in owners.items():
+        staging = root(spec, "staging")
+        if not staging or not staging.is_dir():
+            continue
+        for run in list_runs(staging):
+            run_dir = staging / run
+            st = run_status(run_dir)
+            ts = datetime.strptime(run, "%Y%m%dT%H%MZ").replace(tzinfo=timezone.utc).timestamp()
+            sha = _run_sha(root(spec, "logs"), run)
+            for r in st["regions"]:
+                how, drift, at = merge_state(run_dir, r["region"], root(spec, "merged_mac"), all_plans)
+                if st["done"] and how is None:
+                    drift = ["done_not_merged"] + drift
+                out.append(row(node, f"{owner}/{run}/{r['region']}", how is not None, r["news_rows"], ts,
+                               sha=sha, drift=drift,
+                               extra={"owner": owner, "run": run, "run_done": st["done"], "merged_by": how,
+                                      "merged_at": at,
+                                      **{k: r[k] for k in ("done", "timeout", "fail", "stuck",
+                                                           "sources_with_rows", "events_log")}}))
     return out
 
 

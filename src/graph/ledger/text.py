@@ -21,7 +21,7 @@ from pathlib import Path
 from graph.ledger.store import frame, iso_week, utc
 
 HOME = Path.home()
-STAGING_ROOTS = {"": HOME / "text_staging", "panel/": Path("/mnt/backup5tb/text-panel/staging")}
+STAGING_ROOTS = {"": HOME / "text_staging", "panel/": HOME / "text_panel/staging"}
 LEGACY_LOGS = HOME / "text_collect/logs"
 STALL_SECONDS = 300
 EVENT = re.compile(r"\[(START|DONE|FAIL|TIMEOUT|STUCK)\s*\]\s+(\S+)[^\n@]*@ (\d+)")
