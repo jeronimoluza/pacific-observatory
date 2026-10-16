@@ -259,8 +259,9 @@ def _ensure_country_source_counts(
         if diag.get("max_date") is not None:
             new_tails[sk] = {
                 "last_date": diag["max_date"].strftime("%Y-%m-%d"),
-                "n_rows": int(diag.get("n_total", 0))
-                + int(new_tails.get(sk, {}).get("n_rows", 0)),
+                # n_total counts the whole deduped file, before the subset
+                # filter, so it replaces the cached count rather than adding to it.
+                "n_rows": int(diag.get("n_total", 0)),
             }
 
     # Replace the cached tail rows for affected sources with the new ones.
