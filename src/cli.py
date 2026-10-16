@@ -141,7 +141,7 @@ def fuel_collect(region, subregion, country, source, dry_run, rebuild, force):
         force=force,
         rebuild=rebuild,
         dry_run=dry_run,
-        refresh_fx=bool(region and region != "global"),
+        status_region=None if (subregion or country or source) else region,
     )
 
 
@@ -162,20 +162,9 @@ def fuel_build(region, subregion, country):
         raise click.ClickException(str(exc))
 
 
-@fuel.command("publish")
-@_region_opt
-@_subregion_opt
-def fuel_publish(region, subregion):
-    """Generate fuel policy dashboards."""
-    import logging
+from cli_fuel import register as _register_fuel  # noqa: E402
 
-    from fuel.publish import run_publish
-
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
-    try:
-        run_publish(region=region, subregion=subregion)
-    except ValueError as exc:
-        raise click.ClickException(str(exc))
+_register_fuel(fuel, {"region": _region_opt, "subregion": _subregion_opt})
 
 
 # ── Text subcommands ────────────────────────────────────────────────
@@ -618,8 +607,10 @@ prices.add_command(_prices_dashboards, name="dashboards")
 prices.add_command(_prices_weekly, name="weekly")
 
 from graph.cli import graph as _graph  # noqa: E402
+
 po.add_command(_graph, name="graph")
 from notify.cli import notify_command as _notify  # noqa: E402
+
 po.add_command(_notify, name="notify")
 
 

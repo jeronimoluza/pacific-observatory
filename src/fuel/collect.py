@@ -13,7 +13,7 @@ from core.hashing import observation_hash
 from core.state import read_state, set_checked, set_last_data_date, write_state
 from core.storage import load_csv, save_csv
 
-from .fx import DEFAULT_FX_CACHE, build_fx_table
+from .gates import FailureRecorder, record_collect
 from .paths import canonical_observations_path_for_entry
 
 logger = logging.getLogger(__name__)
@@ -102,7 +102,7 @@ def run_collection(
     force: bool = False,
     rebuild: bool = False,
     dry_run: bool = False,
-    refresh_fx: bool = False,
+    status_region: str | None = None,
 ) -> None:
     """Fetch new data from one or all configured fuel sources.
 
@@ -113,7 +113,7 @@ def run_collection(
         force: Run even if source has enabled=false.
         rebuild: Delete existing observations and re-fetch from fallback_date.
         dry_run: Print plan without writing data.
-        refresh_fx: Also refresh FX cache for currencies in the registry.
+        status_region: Record failed sources in data/fuel/_status/<region>.json.
     """
     if rebuild and not source_key:
         logger.error("--rebuild requires --source KEY")
@@ -123,6 +123,8 @@ def run_collection(
     state = read_state(state_path)
 
     keys_to_run = [source_key] if source_key else list(registry)
+    recorder = FailureRecorder()
+    logging.getLogger().addHandler(recorder)
 
     if rebuild and source_key:
         entry = registry[source_key]
@@ -155,12 +157,15 @@ def run_collection(
         logger.info("--- %s (cutoff: %s) ---", key, cutoff)
         run_ts = datetime.now(tz=timezone.utc)
 
+        recorder.current = key
         try:
             new_df = entry["fn"](cutoff)
         except Exception:
             logger.exception("Fetcher %s failed", key)
             set_checked(state, key, run_ts)
             continue
+        finally:
+            recorder.current = None
 
         set_checked(state, key, run_ts)
 
@@ -190,34 +195,12 @@ def run_collection(
                 except (ValueError, TypeError):
                     pass
 
+    logging.getLogger().removeHandler(recorder)
     if not dry_run:
         write_state(state, state_path)
-
-    # Refresh FX cache for non-USD currencies in the registry
-    if not dry_run and refresh_fx:
-        currencies = sorted(
-            {
-                entry.get("currency", "")
-                for entry in registry.values()
-                if entry.get("currency") and entry["currency"] != "USD"
-            }
-        )
-        if currencies:
-            logger.info("Refreshing FX cache for %d currencies ...", len(currencies))
-            try:
-                today = pd.Timestamp.now().normalize()
-                window_start = today - pd.Timedelta(days=60)
-                span = pd.date_range(window_start, today, freq="D")
-                dummy = pd.DataFrame(
-                    [
-                        {"observation_date": d.strftime("%Y-%m-%d"), "currency": c}
-                        for c in currencies
-                        for d in (span[0], span[-1])
-                    ]
-                )
-                build_fx_table(dummy, cache_path=base_dir / DEFAULT_FX_CACHE.name)
-                logger.info("FX cache updated.")
-            except Exception:
-                logger.exception("FX refresh failed (non-fatal)")
+        if status_region:
+            record_collect(
+                status_region, keys_to_run, recorder.failed, base_dir / "_status"
+            )
 
     logger.info("Done.")
