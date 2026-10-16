@@ -419,6 +419,15 @@ def run_publish(
         countries = discover_publish_countries(
             outputs_dir, region=reg, subregion=subregion
         )
+        with_data = set(gates.countries_with_data(reg, countries))
+        stale = sorted(
+            c["country_slug"] for c in countries if c["country_slug"] not in with_data
+        )
+        if stale:
+            logger.warning(
+                "Skipping %s countries without current data: %s", reg, ", ".join(stale)
+            )
+        countries = [c for c in countries if c["country_slug"] in with_data]
         if not countries:
             logger.warning("No countries with build outputs for region=%s", reg)
             continue
