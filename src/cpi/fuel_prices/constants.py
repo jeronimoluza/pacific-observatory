@@ -97,6 +97,7 @@ FUEL_PRODUCT_MAP: dict[str, str | None] = {
     "Premium 98": "gasoline_premium",
     "Hi Premium 97": "gasoline_premium",
     "RON 100": "gasoline_premium",
+    "RON 97/100": "gasoline_premium",
     "High-octane gasoline": "gasoline_premium",
     "High-octane Gasoline": "gasoline_premium",
     "Petrol 98 RON": "gasoline_premium",
