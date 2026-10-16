@@ -83,6 +83,16 @@ LANGUAGE_ALIASES: dict[str, str] = {
     "tr": "turkish",
     "uk": "ukrainian",
     "uz": "uzbek",
+    "bn": "bengali",
+    "gu": "gujarati",
+    "kn": "kannada",
+    "ml": "malayalam",
+    "mr": "marathi",
+    "ne": "nepali",
+    "or": "odia",
+    "pa": "punjabi",
+    "si": "sinhala",
+    "te": "telugu",
 }
 
 
