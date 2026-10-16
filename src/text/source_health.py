@@ -17,7 +17,7 @@ import socket
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 import httpx
 
@@ -227,9 +227,9 @@ def empty_reason(body: str, kind: str, role: str, cfg: dict) -> str:
     if role == "api":
         if s in ("[]", "{}"):
             return "API returned an empty list"
-        if "/wp-json/" in cfg.get("_probe_url", "") and not s.startswith(
-            ("[", "{", "﻿")
-        ):
+        if re.search(
+            r"/wp-json/|rest_route=", cfg.get("_probe_url", "")
+        ) and not s.startswith(("[", "{", "﻿")):
             return "WP REST URL did not return JSON"
         return ""
     if role in ("sitemap_index", "sitemap"):
@@ -258,11 +258,25 @@ def _host(u: str) -> str:
     return h[4:] if h.startswith("www.") else h
 
 
+# A redirect to one of these is a dead outlet, not a move.
+PARKED = re.compile(
+    r"suspendedpage\.cgi|suspended\.page|hugedomains\.com|expireddomains\.com|sedo\.com|"
+    r"afternic\.com|dan\.com/|godaddy\.com/domain|parkingcrew|bodis\.com|recaptcha\.cloud",
+    re.I,
+)
+
+
+def _norm_path(path: str) -> str:
+    """Unquoted, no trailing slash, and page 1 (`/page/1`, `/1`) folded into the base:
+    WordPress answers /category/x/page/1/ with a redirect to /category/x/."""
+    return re.sub(r"/(page/)?1$", "", unquote(path).rstrip("/"))
+
+
 def _moved(url: str, final: str) -> str:
     a, b = urlsplit(url), urlsplit(final)
     if _host(url) != _host(final):
         return f"host -> {b.netloc}"
-    if a.path.rstrip("/") != b.path.rstrip("/"):
+    if _norm_path(a.path) != _norm_path(b.path):
         return f"path -> {b.path or '/'}"
     return ""
 
@@ -406,7 +420,12 @@ class Prober:
             )
             mv = _moved(p.url, p.final_url)
             empty = empty_reason(body, kind, p.role, {**cfg, "_probe_url": p.url})
-            if hj:
+            if PARKED.search(p.final_url):
+                p.status, p.detail = (
+                    "hijacked",
+                    f"redirects to a parked/suspended page {p.final_url[:80]}",
+                )
+            elif hj:
                 p.status, p.detail = "hijacked", hj
             elif mv:
                 p.status, p.detail = "redirect_moved", mv
