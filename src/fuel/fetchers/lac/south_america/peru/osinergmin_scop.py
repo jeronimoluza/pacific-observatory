@@ -42,7 +42,7 @@ URL = (
 _COUNTRY = "Peru"
 _CURRENCY = "PEN"
 _SOURCE_KEY = "pe_osinergmin_scop_monthly"
-_PRODUCTS = {"Diesel B5 S-50 UV", "GASOHOL REGULAR", "GASOHOL PREMIUM"}
+_PRODUCTS = {"Diesel B5 S-50 UV", "GASOHOL REGULAR", "GASOHOL PREMIUM", "GASOLINA 84"}
 # ACTIVIDAD, REGISTRO, DEPARTAMENTO, FECHA, PRODUCTO, PRECIO
 _USECOLS = [1, 2, 5, 9, 10, 11]
 _NAMES = ["act", "station", "dep", "ts", "product", "price"]

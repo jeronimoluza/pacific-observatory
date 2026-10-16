@@ -34,6 +34,16 @@ products:
     unit: gallon
     include_in_build: true
     grade: regular
+  "GASOLINA 84":
+    # Same series as PR1's Gasohol 84 so the retail price wins over the
+    # indicative reference.
+    label: Gasoline 84 (retail)
+    series_key: gasohol_84
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular
+    octane_ron: 84
   "GASOHOL PREMIUM":
     label: Gasohol Premium (retail)
     series_key: gasohol_premium
