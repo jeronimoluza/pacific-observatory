@@ -1,0 +1,50 @@
+source_key: npa_gh_omc_pump
+module: ssa.west_africa.ghana.npa_omc
+function: fetch_npa_gh_omc
+url: https://npa.gov.gh/wp-content/uploads/
+fallback_date: 2024-01-01
+priority: 10
+cadence: daily
+carry_forward: true
+price_basis: retail
+
+# NPA's near-daily "Ex-Pump Prices of OMCs and LPGMCs" workbooks: the pump
+# price each oil/LPG marketing company charges (from April 2024). One row per
+# company; the build publishes the median across companies.
+station_type: station
+station_aggregate: {stat: median, trim: none, min_stations: 2, max_dispersion: 0.25}
+
+products:
+  "Petrol":
+    series_key: petrol_pump
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+  "Premium Petrol":
+    series_key: petrol_premium_pump
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: premium
+    octane_ron: 95
+  "Diesel":
+    series_key: diesel_pump
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Kerosene":
+    series_key: kerosene_pump
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "LPG":
+    series_key: lpg_pump
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: true
+    density_l_per_kg: 1.96
+    grade: standard

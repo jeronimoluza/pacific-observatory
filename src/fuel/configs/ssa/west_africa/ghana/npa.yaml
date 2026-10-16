@@ -2,6 +2,11 @@ source_key: npa_gh_price_floors
 module: ssa.west_africa.ghana.npa
 function: fetch_npa_gh
 url: https://npa.gov.gh/indicative-prices/
+# Disabled 2026-10-16: ex-pump price FLOORS are a regulatory minimum, not the
+# pump price consumers pay. Kept as a reference; npa_omc.yaml (per-OMC pump
+# prices) replaces it.
+enabled: false
+price_basis: floor
 fallback_date: 2024-01-01
 priority: 10
 cadence: biweekly
