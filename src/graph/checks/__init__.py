@@ -8,6 +8,7 @@ Partition "*" colors the whole node. Checks only read; they never fix.
 
 CHECKS: list = []
 
-from graph.checks import fx, ledger_budgets, pages, raw_sources, rtcal, text_counts  # noqa: E402
+from graph.checks import fx, ledger_budgets, pages, raw_sources, rtcal, text_counts, text_graph  # noqa: E402
 
-CHECKS += [raw_sources.check, rtcal.check, pages.check, fx.check, text_counts.check, ledger_budgets.check]
+CHECKS += [raw_sources.check, rtcal.check, pages.check, fx.check, text_counts.check, text_graph.check,
+           ledger_budgets.check]

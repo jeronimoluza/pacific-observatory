@@ -43,6 +43,7 @@ class Node:
     fingerprint: dict = field(default_factory=dict)
     checks: list[dict] = field(default_factory=list)
     observer: str | None = None
+    owners: dict = field(default_factory=dict)
     raw: dict = field(default_factory=dict)
 
 
@@ -80,8 +81,13 @@ def load(manifest_dir: Path = MANIFEST_DIR) -> tuple[dict[str, Node], list[str]]
     for f in sorted(Path(manifest_dir).glob("*.yaml")):
         doc = yaml.safe_load(f.read_text()) or {}
         pipeline = doc.get("pipeline", f.stem)
-        if set(doc) - {"pipeline", "code_ref", "nodes"}:
-            errors.append(f"{f.name}: claves de nivel superior desconocidas {sorted(set(doc) - {'pipeline', 'code_ref', 'nodes'})}")
+        top = {"pipeline", "code_ref", "nodes", "owners"}
+        if set(doc) - top:
+            errors.append(f"{f.name}: claves de nivel superior desconocidas {sorted(set(doc) - top)}")
+        owners = doc.get("owners") or {}
+        if not isinstance(owners, dict) or not all(isinstance(v, dict) for v in owners.values()):
+            errors.append(f"{f.name}: owners debe ser un mapping dueño -> mapping")
+            owners = {}
         for nid, spec in (doc.get("nodes") or {}).items():
             errs = _schema_errors(nid, spec)
             if nid in nodes:
@@ -100,6 +106,7 @@ def load(manifest_dir: Path = MANIFEST_DIR) -> tuple[dict[str, Node], list[str]]
                 fingerprint=spec.get("fingerprint", {}),
                 checks=spec.get("checks", []),
                 observer=spec.get("observer"),
+                owners=owners,
                 raw=spec,
             )
     return nodes, errors

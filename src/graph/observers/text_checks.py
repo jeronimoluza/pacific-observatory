@@ -62,20 +62,29 @@ def silent_zeros(staging_root: Path = STAGING_ROOT, run: str | None = None, n: i
 
 
 def observe(node) -> list[dict]:
-    """Graph contract (`text.delta`): one row per source of the newest run, with its
-    silent-zero level from ``silent_zeros``."""
+    """Graph contract (`text.delta`): per owner (manifest ``owners``), one row per source of
+    that owner's newest run, with its silent-zero level from ``silent_zeros``. A source
+    staged by the owner that does not own its country is drift ``owner_conflict`` (the
+    panel is the only writer of what prod excludes)."""
     from datetime import datetime, timezone
 
     from graph.observe import row
+    from graph.observers.text_owners import country_of_key, owner_of, root
 
-    if not STAGING_ROOT.is_dir() or not list_runs(STAGING_ROOT):
-        return []
+    owners = node.owners or {"prod": {"staging": str(STAGING_ROOT)}}
     out = []
-    for s in silent_zeros(STAGING_ROOT):
-        ts = datetime.strptime(s["run"], "%Y%m%dT%H%MZ").replace(tzinfo=timezone.utc).timestamp()
-        out.append(row(node, f"{s['region']}/{s['key'] or s['tag']}", s["state"] == "done",
-                       s["news_rows"], ts,
-                       extra={k: s[k] for k in ("run", "state", "level", "baseline", "zero_streak")}))
+    for owner, spec in owners.items():
+        staging = root(spec, "staging")
+        if not staging or not staging.is_dir() or not list_runs(staging):
+            continue
+        for s in silent_zeros(staging):
+            ts = datetime.strptime(s["run"], "%Y%m%dT%H%MZ").replace(tzinfo=timezone.utc).timestamp()
+            country = country_of_key(s["key"], s["tag"])
+            drift = [] if owner_of(owners, s["region"], country) == owner else ["owner_conflict"]
+            out.append(row(node, f"{owner}/{s['region']}/{s['key'] or s['tag']}", s["state"] == "done",
+                           s["news_rows"], ts, drift=drift,
+                           extra={"owner": owner, **{k: s[k] for k in ("run", "state", "level", "baseline",
+                                                                        "zero_streak")}}))
     return out
 
 
