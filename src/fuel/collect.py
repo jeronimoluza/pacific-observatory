@@ -148,6 +148,14 @@ def run_collection(
 
     if rebuild and source_key:
         entry = registry[source_key]
+        if entry.get("history_irrecoverable"):
+            logger.error(
+                "Refusing --rebuild of %s: history_irrecoverable is set (the source "
+                "serves only its latest prices, so deleting observations.csv would "
+                "lose history that cannot be re-downloaded). Collect appends only.",
+                source_key,
+            )
+            sys.exit(1)
         out_path = _source_csv_path(entry, base_dir=base_dir)
         if out_path.exists():
             out_path.unlink()
@@ -200,7 +208,7 @@ def run_collection(
             lambda row: observation_hash(row, hash_fields(row, _HASH_FIELDS)), axis=1
         )
 
-        if entry.get("full_refresh"):
+        if entry.get("full_refresh") and not entry.get("history_irrecoverable"):
             existing = pd.DataFrame(columns=existing.columns)
 
         merged = _merge_new_rows(existing, new_df)

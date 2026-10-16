@@ -7,6 +7,8 @@ fallback_date: 2025-01-01
 priority: 10
 cadence: monthly
 carry_forward: true
+# ZERA homepage widget shows current prices only, no archive: never --rebuild.
+history_irrecoverable: true
 
 # ZERA publishes only the CURRENT regulated prices on the homepage widget
 # "Current Energy Prices". Both USD and ZWG are shown; this fetcher captures

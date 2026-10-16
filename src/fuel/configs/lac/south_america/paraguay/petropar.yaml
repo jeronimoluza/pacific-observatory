@@ -6,6 +6,8 @@ fallback_date: 2024-01-01
 priority: 10
 cadence: irregular
 carry_forward: true
+# PETROPAR page shows current prices only: never --rebuild.
+history_irrecoverable: true
 
 products:
   "Nafta Kape 88":

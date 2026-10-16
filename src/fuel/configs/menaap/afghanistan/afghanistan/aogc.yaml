@@ -6,6 +6,8 @@ fallback_date: 2023-12-01
 priority: 10
 cadence: daily
 carry_forward: true
+# AOGC API returns the latest rate per item and location only: never --rebuild.
+history_irrecoverable: true
 currency: USD
 # AOGC directorate/port rates in USD/ton: a wholesale price, kept as a
 # labelled fallback. The retail pump series is af_wfp_monthly (wfp_hdx.yaml).
