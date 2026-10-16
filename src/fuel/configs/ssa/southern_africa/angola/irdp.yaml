@@ -37,5 +37,5 @@ products:
     series_key: jet_a1
     fuel_family: jet_fuel
     unit: liter
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
     grade: standard

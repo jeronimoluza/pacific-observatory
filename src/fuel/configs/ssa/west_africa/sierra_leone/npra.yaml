@@ -30,5 +30,5 @@ products:
     series_key: fuel_oil
     fuel_family: fuel_oil
     unit: liter
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
     grade: standard

@@ -32,7 +32,7 @@ products:
     label: LDO Diesel
     fuel_family: diesel
     unit: liter
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
     grade: light
     series_key: ldo
   "SKO":
@@ -45,6 +45,6 @@ products:
   "JP-1":
     fuel_family: kerosene
     unit: liter
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
     grade: jet
     series_key: kerosene_jp1
