@@ -29,7 +29,7 @@ SOURCE_META = [
 ]
 
 import io
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 import pandas as pd
 
@@ -208,7 +208,9 @@ def fetch_nz_gaspy_stats_daily(cutoff: date) -> pd.DataFrame:
     averages = datamine.get("Averages", {}) if isinstance(datamine, dict) else {}
     updated = datamine.get("Updated") if isinstance(datamine, dict) else None
 
-    obs_date = _parse_gaspy_updated(updated) or date.today()
+    # Gaspy stamps NZ local time, which runs up to a day ahead of the UTC run date.
+    today_utc = datetime.now(timezone.utc).date()
+    obs_date = min(_parse_gaspy_updated(updated) or today_utc, today_utc)
     if obs_date <= cutoff:
         print("  [nz_gaspy] No new rows after cutoff")
         return pd.DataFrame()
