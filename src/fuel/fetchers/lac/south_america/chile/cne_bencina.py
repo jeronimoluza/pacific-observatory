@@ -16,10 +16,9 @@ a price-change event for one station, with columns:
   es_gasolinera.
 
 Strategy: download every year file >= cutoff.year, aggregate to national
-monthly prices per product, return rows with observation_date > cutoff. With
-``station_aggregate`` in the YAML the monthly price is the robust per-station
-median of ``fuel.station_aggregate`` (stats in station_stats.csv); without it,
-the mean of all price-change events.
+one row per station, product and month (the station's last report; code in
+``station``), return rows with observation_date > cutoff. The build turns
+stations into a national price (``station_aggregate`` in the YAML).
 """
 
 from __future__ import annotations
@@ -29,14 +28,10 @@ import io
 import logging
 import urllib.parse
 from datetime import date
-from pathlib import Path
 
 import pandas as pd
 
-from core.config import load_countries
 from core.http import make_session
-from fuel.config import load_source_config
-from fuel.station_aggregate import aggregate, write_stats
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +54,6 @@ _COUNTRY = "Chile"
 _CURRENCY = "CLP"
 _SOURCE_KEY = "cl_cne_bencina_monthly"
 _PLACEHOLDER_PRICE = 99_999.0
-_ROOT = Path(__file__).resolve().parents[6]
-_CONFIG_PATH = _ROOT / "src/fuel/configs/lac/south_america/chile/cne_bencina.yaml"
-_DATA_DIR = _ROOT / "data" / "fuel"
 
 _PRODUCT_UNITS = {
     "93": "L",
@@ -114,10 +106,6 @@ def _list_year_files(session) -> list[str]:
         if item.get("Name", "").endswith(".csv.bz2")
     ]
     return names
-
-
-def _source_config():
-    return load_source_config(_CONFIG_PATH, load_countries())
 
 
 def _download_year(session, file_name: str) -> pd.DataFrame | None:
@@ -196,68 +184,29 @@ def fetch_cl_cne_bencina(cutoff: date) -> pd.DataFrame | None:
     df = df.assign(fecha=fecha).dropna(subset=["fecha"])
     df["month"] = df["fecha"].dt.to_period("M").dt.to_timestamp().dt.date
 
-    cfg = _source_config()
-    if cfg.station_aggregate is not None:
-        stats = aggregate(
-            df,
-            ["month", "combustible"],
-            "codigo",
-            "precio",
-            "fecha",
-            cfg.station_aggregate,
-        )
-        stats = stats[stats["month"] > cutoff]
-        # Flags only matter for products the build uses (GNC has ~3 stations).
-        built = {k for k, spec in cfg.products.items() if spec.include_in_build}
-        stats.loc[~stats["combustible"].isin(built), "flagged"] = False
-        if not stats.empty:
-            path = write_stats(
-                stats.assign(month=stats["month"].astype(str)),
-                _DATA_DIR / cfg.region / cfg.subregion / cfg.country_slug / cfg.source,
-                ["month", "combustible"],
-            )
-            logger.info(
-                "[cl_cne_bencina] station stats: %d rows, %d flagged -> %s",
-                len(stats),
-                int(stats["flagged"].sum()),
-                path,
-            )
-        grouped = stats.rename(
-            columns={"price": "price_local", "combustible": "fuel_product"}
-        )
-    else:
-        grouped = (
-            df.groupby(["month", "combustible"], as_index=False)["precio"]
-            .mean()
-            .rename(columns={"precio": "price_local", "combustible": "fuel_product"})
-        )
-
-    rows: list[dict] = []
-    for _, r in grouped.iterrows():
-        obs_date: date = r["month"]
-        if obs_date <= cutoff:
-            continue
-        product = str(r["fuel_product"])
-        rows.append(
-            {
-                "observation_date": obs_date.strftime("%Y-%m-%d"),
-                "country": _COUNTRY,
-                "fuel_product": product,
-                "price_local": round(float(r["price_local"]), 4),
-                "currency": _CURRENCY,
-                "source_key": _SOURCE_KEY,
-                "unit": _PRODUCT_UNITS[product],
-            }
-        )
-
-    if not rows:
+    # One row per station and month (its last report), station code kept, so
+    # the raw keeps every station; the build aggregates them robustly
+    # (station_aggregate in the YAML).
+    df = df[df["month"] > cutoff]
+    if df.empty:
         logger.info("[cl_cne_bencina] No new rows after cutoff %s", cutoff)
         return None
-
-    out = (
-        pd.DataFrame(rows)
-        .sort_values(["observation_date", "fuel_product"])
-        .reset_index(drop=True)
+    last = (
+        df.sort_values("fecha")
+        .groupby(["month", "combustible", "codigo"], as_index=False)["precio"]
+        .last()
     )
+    out = pd.DataFrame(
+        {
+            "observation_date": pd.to_datetime(last["month"]).dt.strftime("%Y-%m-%d"),
+            "country": _COUNTRY,
+            "fuel_product": last["combustible"].astype(str),
+            "price_local": last["precio"].astype(float).round(4),
+            "currency": _CURRENCY,
+            "source_key": _SOURCE_KEY,
+            "unit": last["combustible"].astype(str).map(_PRODUCT_UNITS),
+            "station": last["codigo"].astype(str),
+        }
+    ).sort_values(["observation_date", "fuel_product", "station"])
     logger.info("[cl_cne_bencina] Returning %d rows (cutoff: %s)", len(out), cutoff)
-    return out
+    return out.reset_index(drop=True)

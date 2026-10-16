@@ -33,6 +33,7 @@ COLUMNS = [
     "subnational_area",
     "city",
     "address",
+    "station",
     "scrape_ts",
     "observation_hash",
 ]
@@ -192,8 +193,16 @@ def run_collection(
 
         new_df = new_df.copy()
         new_df["scrape_ts"] = run_ts.isoformat()
+        # station joins the hash only when set, so rows of sources without it
+        # keep the hashes they were stored with.
         new_df["observation_hash"] = new_df.apply(
-            lambda row: observation_hash(row, _HASH_FIELDS), axis=1
+            lambda row: observation_hash(
+                row,
+                _HASH_FIELDS + ["station"]
+                if pd.notna(row.get("station"))
+                else _HASH_FIELDS,
+            ),
+            axis=1,
         )
 
         if entry.get("full_refresh"):

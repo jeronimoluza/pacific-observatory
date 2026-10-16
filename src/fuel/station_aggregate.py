@@ -12,13 +12,14 @@ the same regulated price does not drop every station a cent away; the national
 price is the median (or mean) of the rest. Per row it keeps n_stations,
 n_dropped and dispersion = IQR / median of the kept stations, and flags
 periods with fewer than ``min_stations`` or dispersion above
-``max_dispersion``. The stats go to ``station_stats.csv`` next to the source's
-``observations.csv``; publish turns flagged periods yellow.
+``max_dispersion``. The raw keeps every station (``station`` column, else
+address/city/subnational area); the build aggregates and writes the stats to
+``station_stats.csv`` in the country's outputs, and publish turns flagged
+periods yellow.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Literal
 
 import pandas as pd
@@ -35,6 +36,8 @@ class StationAggregate(BaseModel):
     k: float = 3.0
     min_stations: int = 5
     max_dispersion: float = 0.25
+    # Location labels that are aggregates themselves (RTEP's "national_avg").
+    exclude: list[str] = []
 
 
 def aggregate(
@@ -79,15 +82,39 @@ def aggregate(
     return pd.DataFrame(rows)
 
 
-def write_stats(stats: pd.DataFrame, source_dir: Path, keys: list[str]) -> Path:
-    """Upsert ``stats`` into ``source_dir/station_stats.csv``."""
-    path = source_dir / STATS_FILE
-    if path.exists():
-        old = pd.read_csv(path, dtype={k: str for k in keys})
-        stats = pd.concat(
-            [old, stats.astype({k: str for k in keys})], ignore_index=True
+def _station_column(df: pd.DataFrame) -> pd.Series:
+    """The most specific location a row carries: station, else address, city,
+    subnational area."""
+    out = pd.Series(pd.NA, index=df.index, dtype="object")
+    for col in ("subnational_area", "city", "address", "station"):
+        if col in df.columns:
+            out = df[col].where(df[col].notna() & df[col].astype(str).ne(""), out)
+    return out.fillna("_national")
+
+
+def collapse_stations(
+    df: pd.DataFrame, configs: dict[str, StationAggregate]
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Replace the station-level rows of sources with ``station_aggregate`` by
+    one robust row per (source, date, series); return (rows, station stats)."""
+    keys = ["source_key", "observation_date", "series_key"]
+    mask = df["source_key"].isin(list(configs))
+    if not mask.any():
+        return df, pd.DataFrame()
+    rest, frames, stats = df[~mask], [], []
+    for source_key, sub in df[mask].groupby("source_key"):
+        sub = sub.assign(_station=_station_column(sub))
+        sub = sub[~sub["_station"].isin(configs[source_key].exclude)]
+        order = "scrape_ts" if "scrape_ts" in sub.columns else "observation_date"
+        st = aggregate(sub, keys, "_station", "price_local", order, configs[source_key])
+        meta = sub.drop_duplicates(keys).drop(columns=["price_local", "_station"])
+        frames.append(
+            meta.merge(st[[*keys, "price"]], on=keys).rename(
+                columns={"price": "price_local"}
+            )
         )
-        stats = stats.drop_duplicates(subset=keys, keep="last")
-    source_dir.mkdir(parents=True, exist_ok=True)
-    stats.sort_values(keys).to_csv(path, index=False)
-    return path
+        stats.append(st)
+    return (
+        pd.concat([rest, *frames], ignore_index=True),
+        pd.concat(stats, ignore_index=True),
+    )

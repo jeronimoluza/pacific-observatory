@@ -380,6 +380,7 @@ def build_fuel_registry(
             "priority": cfg.priority,
             "cadence": cfg.cadence,
             "carry_forward": cfg.carry_forward,
+            "station_aggregate": cfg.station_aggregate,
             "country_slug": cfg.country_slug,
             "country_name": cfg.country_name,
             "iso3": cfg.iso3,
