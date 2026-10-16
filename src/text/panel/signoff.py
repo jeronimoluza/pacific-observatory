@@ -6,7 +6,8 @@
          and row count now, and PLAN.tsv. The corpus and the staging runs are only read.
 - apply: `po text panel signoff <plan_id>`: per source, refuse if a corpus file's sha256 is no
          longer the planned one, else append with text.merge.merge_source (tmp + os.replace),
-         update the panel ledger, mark the panel's own staging runs merged, write APPLIED.
+         update the panel ledger, mark the panel's own staging runs merged, write APPLIED,
+         then prune_staging.
 """
 
 from __future__ import annotations
@@ -26,6 +27,9 @@ APPLIED = "APPLIED"
 APPLIED_SOURCES = "APPLIED_SOURCES"
 # A newer plan folded this one's runs in: two open plans on one corpus file would refuse each other.
 SUPERSEDED = "SUPERSEDED"
+# One line per staging run folder pruned after APPLIED.
+PRUNED = "STAGING_PRUNED"
+BACKUP_MOUNT = Path("/mnt/backup5tb")
 COLUMNS = ["region", "key", "file", "target", "target_sha256", "target_rows_before", "new_rows", "from"]
 
 
@@ -169,4 +173,50 @@ def apply(plan_dir: Path, staging_root: Path) -> int:
     (plan_dir / APPLIED).write_text(
         f"{stamp} " + "; ".join(f"{g}: {n} sources +{a} news +{b} urls" for g, (n, a, b) in sorted(done.items())) + "\n"
     )
+    prune_staging(plan_dir, staging_root)
     return 0
+
+
+def prune_staging(plan_dir: Path, staging_root: Path) -> None:
+    """Free the plan's staging runs once it is APPLIED and every planned row is in the plan folder
+    (pending, on the 5TB): each staged source folder is emptied down to news.rows, its staged row
+    count, which graph.observers.text_delta reads for the silent-zero baseline. events_*.log,
+    STATUS.md and .done stay. A staging root on the 5TB (runs before 20261016) is never pruned."""
+    from graph.observers.text_delta import news_rows
+    from text.merge import MERGED_MARKER
+
+    if staging_root.resolve().is_relative_to(BACKUP_MOUNT):
+        print(f"staging {staging_root} is on the 5TB: not pruned", flush=True)
+        return
+    if not (plan_dir / APPLIED).exists():
+        return
+    with open(plan_dir / PLAN, newline="") as f:
+        rows = list(csv.DictReader(f, delimiter="\t"))
+    for r in rows:
+        want = int(r["new_rows"])
+        if not want:
+            continue
+        kept = plan_dir / r["region"] / r["key"] / r["file"]
+        got = len(pd.read_csv(kept, dtype=str, keep_default_na=False)) if kept.exists() else -1
+        if got != want:
+            print(f"staging not pruned: {kept} holds {got} rows, the plan says {want}", flush=True)
+            return
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    for line in (plan_dir / RUNS).read_text().split():
+        rd = Path(line)
+        if not rd.is_dir() or not rd.is_relative_to(staging_root) or not (rd / MERGED_MARKER).exists():
+            continue
+        n, freed = 0, 0
+        for d in sorted(p for p in rd.glob("*/*/*") if p.is_dir()):
+            news = d / "news.csv"
+            staged = news_rows(news) if news.exists() else None
+            freed += sum(f.stat().st_size for f in d.rglob("*") if f.is_file())
+            shutil.rmtree(d)
+            d.mkdir()
+            if staged is not None:
+                (d / "news.rows").write_text(f"{staged}\n")
+            n += 1
+        msg = f"{stamp} pruned {rd}: {n} sources, {freed / 2**20:.1f} MiB, rows kept in {plan_dir}"
+        print(msg, flush=True)
+        with open(plan_dir / PRUNED, "a") as f:
+            f.write(msg + "\n")

@@ -48,8 +48,12 @@ def read_events(log: Path) -> tuple[dict[str, int], dict[str, str]]:
 
 
 def news_rows(news_csv: Path) -> int:
+    """Staged rows; a staging run pruned after sign-off keeps the count in news.rows."""
     import pandas as pd
 
+    if not news_csv.exists():
+        kept = news_csv.with_suffix(".rows")
+        return int(kept.read_text()) if kept.exists() else 0
     return len(pd.read_csv(news_csv, usecols=["url"]))
 
 
@@ -79,8 +83,8 @@ def delta_sources(run_dir: Path, region: str) -> list[dict]:
             "run": run_dir.name, "region": region, "tag": tag,
             "key": str(d.relative_to(run_dir / region)),
             "state": last.get(tag, "no_event"),
-            "has_news_csv": news.exists(),
-            "news_rows": news_rows(news) if news.exists() else 0,
+            "has_news_csv": news.exists() or news.with_suffix(".rows").exists(),
+            "news_rows": news_rows(news),
         })
     for tag in sorted(set(last) - seen):
         rows.append({
@@ -95,6 +99,7 @@ def region_status(run_dir: Path, region: str) -> dict:
     log = run_dir / f"events_{region}.log"
     counts, _ = read_events(log)
     files = glob.glob(str(run_dir / region / "*" / "*" / "*" / "news.csv"))
+    files += [str(Path(f).with_suffix(".csv")) for f in glob.glob(str(run_dir / region / "*" / "*" / "*" / "news.rows"))]
     merged = merged_marker(run_dir, region)
     return {
         "run": run_dir.name, "region": region,

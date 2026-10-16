@@ -39,6 +39,8 @@ class Context:
     disk_paths: list[Path] = field(default_factory=list)
     # Passed through to the step's runner: `weekly step stage_b -- --out X`.
     extra: tuple[str, ...] = ()
+    # A stricter floor than FLOOR_FREE_GB on disk_paths (text panel: 10G on /); None keeps the default.
+    floor_free_gb: int | None = None
 
     @property
     def week_dir(self) -> Path:
@@ -105,6 +107,15 @@ def _sha() -> str:
     return r.stdout.strip() or "?"
 
 
+def _own_floor(ctx: Context) -> str | None:
+    if ctx.floor_free_gb is None:
+        return None
+    for p in ctx.disk_paths:
+        if free_gb(p) < ctx.floor_free_gb:
+            return f"disk {p} {free_gb(p)}G free < floor {ctx.floor_free_gb}G"
+    return None
+
+
 def run_step(step: Step, ctx: Context) -> int:
     argv = unit_argv(step, ctx)
     unit = unit_name(step, ctx)
@@ -146,7 +157,7 @@ def run_step(step: Step, ctx: Context) -> int:
                 rc = proc.wait(timeout=WATCH_SECS)
                 break
             except subprocess.TimeoutExpired:
-                floor = below_floor(disks)
+                floor = below_floor(disks) or _own_floor(ctx)
                 if floor:
                     # Stopping the scope kills its whole cgroup, children included.
                     subprocess.run(["systemctl", "--user", "stop", f"{unit}.scope"])

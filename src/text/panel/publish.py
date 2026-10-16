@@ -20,6 +20,7 @@ publish: `po text publish` (every region in outputs/text, one call per tracker) 
 from __future__ import annotations
 
 import os
+import shutil
 import time
 from pathlib import Path
 
@@ -31,6 +32,9 @@ PUBLISH_LINKS = ("dashboards", "dashboard_data", "database_status", "small_dashb
 # Addon HTMLs of `po text build-policy-addons`, copied from the prod checkout (untracked there).
 ADDONS_DIR = Path.home() / "text_panel" / "addons"
 TRACKERS = {"fuel": "fuel", "food": "food_security"}
+# Publish runs kept under <publish-root>; older ones are removed only after a successful publish.
+PUBLISH_KEEP = 5
+BACKUP_MOUNT = Path("/mnt/backup5tb")
 
 
 def _anchor(files: list[Path]) -> str:
@@ -171,4 +175,24 @@ def step_publish(a) -> int:
         flag = "" if 12 <= mb <= 75 else "  OUTSIDE 12-75 MB"
         print(f"  {h.relative_to(out)}  {mb:.1f} MB{flag}")
     print(f"publish {out}: {len(htmls)} dashboards")
-    return rc if htmls else 1
+    if rc or not htmls:
+        return 1
+    _keep_newest(a.publish_root)
+    return 0
+
+
+def _keep_newest(root: Path) -> None:
+    """Remove publish runs beyond the newest PUBLISH_KEEP (by mtime), logged in RETENTION.log."""
+    if root.resolve().is_relative_to(BACKUP_MOUNT):
+        print(f"{root} is on the 5TB: no retention", flush=True)
+        return
+    runs = sorted((p for p in root.iterdir() if p.is_dir() and (p / "dashboards").is_dir()),
+                  key=lambda p: p.stat().st_mtime)
+    stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    for old in runs[:-PUBLISH_KEEP]:
+        mb = sum(f.stat().st_size for f in old.rglob("*") if f.is_file()) / 1e6
+        shutil.rmtree(old)
+        msg = f"{stamp} removed {old} ({mb:.0f} MB), keeping the newest {PUBLISH_KEEP}"
+        print(msg, flush=True)
+        with open(root / "RETENTION.log", "a") as f:
+            f.write(msg + "\n")

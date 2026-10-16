@@ -5,9 +5,12 @@ before the user signs off; a red check stops aggregate and publish (`step <name>
 Steps run through `prices.weekly.step.run_step`, the `po prices weekly` runner: each one in
 its own `systemd-run --user` scope with a MemoryMax, refused unless the 5TB is mounted,
 through the disk gate, with STATUS_<step> and events.log under <logs-root>/<run_id>/.
-Corpus and staging live on the 5TB; ledger, logs and the dashboards of publish on a8's disk.
-The counts cache and outputs go where the worktree's data/text/cache and outputs/text/<region>
-links point. The disk gate measures / and the 5TB.
+Corpus and sign-off plans (pending, the backup of every merged row) live on the 5TB; ledger,
+staging, logs and the dashboards of publish on a8's disk. The counts cache and outputs go where
+the worktree's data/text/cache and outputs/text/<region> links point. The disk gate measures /
+and the 5TB: start at 15G free, and the panel stops a step below 10G on / (prices keeps 5G).
+A staging run is pruned by signoff once its plan is applied (text.panel.signoff.prune_staging);
+publish keeps the newest PUBLISH_KEEP runs.
 """
 
 from __future__ import annotations
@@ -29,7 +32,8 @@ CORPUS_ROOT = BACKUP_MOUNT / "text-corpus"
 # The panel ledger lives on a8's disk (the 5TB is backup only). It is never created
 # here: a missing dir would mean an empty ledger and a re-seeded collect.
 STATE_DIR = Path.home() / "text_panel" / "state"
-STAGING_ROOT = BACKUP_MOUNT / "text-panel" / "staging"
+# Collect output on a8's disk; signoff prunes a run once its rows are in the applied plan.
+STAGING_ROOT = Path.home() / "text_panel" / "staging"
 # merge writes sign-off plans here; only `signoff` writes the corpus.
 PENDING_ROOT = BACKUP_MOUNT / "text-panel" / "pending"
 # Internal dashboards (TX-32), one folder per run id, on a8's own disk: the 5TB is backup only.
@@ -140,7 +144,7 @@ def _under_mount(ctx, param, value: Path) -> Path:
     mount = ctx.params.get("backup_mount", BACKUP_MOUNT)
     value = value.expanduser().absolute()
     if not value.is_relative_to(mount):
-        raise click.BadParameter(f"{value} is not under {mount}: corpus, ledger and staging live on the 5TB")
+        raise click.BadParameter(f"{value} is not under {mount}: corpus and plans live on the 5TB")
     return value
 
 
@@ -165,7 +169,7 @@ def _existing_dir(ctx, param, value: Path) -> Path:
 @click.option("--run-id", default=_run_id, show_default="now, UTC (YYYYmmddTHHMMZ)")
 @click.option("--corpus-root", type=click.Path(path_type=Path), default=CORPUS_ROOT, show_default=True, callback=_under_mount)
 @click.option("--state-dir", type=click.Path(path_type=Path), default=STATE_DIR, show_default=True, callback=_existing_dir)
-@click.option("--staging-root", type=click.Path(path_type=Path), default=STAGING_ROOT, show_default=True, callback=_under_mount)
+@click.option("--staging-root", type=click.Path(path_type=Path), default=STAGING_ROOT, show_default=True)
 @click.option("--pending-root", type=click.Path(path_type=Path), default=PENDING_ROOT, show_default=True, callback=_under_mount)
 @click.option("--publish-root", type=click.Path(path_type=Path), default=PUBLISH_ROOT, show_default=True)
 @click.option("--logs-root", type=click.Path(path_type=Path), default=LOGS_ROOT, show_default=True)
@@ -186,6 +190,7 @@ def panel(ctx, backup_mount, countries, run_id, corpus_root, state_dir, staging_
         dry_run=dry_run or ctx.invoked_subcommand is None,
         backup_mount=backup_mount,
         disk_paths=[Path("/")],
+        floor_free_gb=10,
         corpus_root=corpus_root,
         state_dir=state_dir,
         staging_root=staging_root,

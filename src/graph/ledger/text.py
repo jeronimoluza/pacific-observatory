@@ -72,7 +72,7 @@ def staged_rows(run_dir: Path, run_id: str) -> list[dict]:
             if e["state"] is None:
                 continue
             news = staged[tag] / "news.csv" if tag in staged else None
-            n = news_rows(news) if news and news.exists() else 0
+            n = news_rows(news) if news else 0
             rows.append(_row(run_id, region, tag, e, n, log))
     return rows
 
