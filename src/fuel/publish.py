@@ -208,6 +208,7 @@ def assemble_publish_data(
     from .reference.commodities import load_commodity_series
     from .reference.gdp import load_gdp
     from .reference.population import load_population
+    from .regimes import apply_regime_table
     from .reference.subsidies import (
         PRODUCTS,
         REGIME_COLORS,
@@ -232,6 +233,12 @@ def assemble_publish_data(
     regime_csv = cache_dir / "worldbank" / "subsidies_price_controls.csv"
     df_regime, product_regimes = load_regime_data(
         regime_csv, overrides=regime_overrides
+    )
+    df_regime, product_regimes = apply_regime_table(
+        df_regime,
+        product_regimes,
+        {c["iso3"] for c in countries if c.get("iso3")},
+        regime_notes,
     )
 
     logger.info("Loading IMF subsidies ...")
