@@ -40,6 +40,7 @@ NOHUP_LOG="/tmp/refresh_${REGION}_nohup.log"
 # Build the job queue: walk src/text/configs/<region>/<subregion>/<country>/*.yaml
 # Always per-source — no whole-country grouping.
 poetry run python - "$REGION" "$JOBS_FILE" <<'PY'
+import os
 import re
 import sys
 from pathlib import Path
@@ -51,9 +52,15 @@ base = Path(f"src/text/configs/{region}")
 if not base.exists():
     sys.exit(f"missing {base}")
 
+# Regions or country slugs listed here (one per line, # comments) are never queued.
+ex = Path(os.environ.get("TEXT_COLLECT_EXCLUDE", Path.home() / "text_collect/exclude.txt"))
+excluded = {l.split("#")[0].strip() for l in ex.read_text().splitlines()} - {""} if ex.is_file() else set()
+
 jobs = []
 for country_dir in sorted(p for p in base.glob("*/*") if p.is_dir() and not p.name.startswith("_")):
     country = country_dir.name
+    if region in excluded or country in excluded:
+        continue
     sources = sorted(
         y.stem for y in country_dir.glob("*.yaml")
         if not y.stem.startswith("_0_") and not y.stem.startswith("_")
@@ -64,7 +71,7 @@ for country_dir in sorted(p for p in base.glob("*/*") if p.is_dir() and not p.na
     for src in sources:
         jobs.append(f"{country}|{src}")
 
-out.write_text("\n".join(jobs) + "\n")
+out.write_text("".join(f"{j}\n" for j in jobs))
 print(f"queued {len(jobs)} jobs → {out}", file=sys.stderr)
 PY
 
