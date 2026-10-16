@@ -37,7 +37,7 @@ def register(fuel_group, opts: dict):
         import time
 
         from core.config import load_countries
-        from fuel.fx_parallel import PARALLEL_CACHE, refresh_parallel_cache
+        from fuel.fx_parallel import EAP_RTFX, PARALLEL_CACHE, refresh_parallel_cache
 
         age = (
             time.time() - PARALLEL_CACHE.stat().st_mtime
@@ -53,7 +53,7 @@ def register(fuel_group, opts: dict):
             for s in {e["country_slug"] for e in registry.values()}
             if meta.get(s, {}).get("iso3") and meta[s].get("currency")
         }
-        n_par = refresh_parallel_cache(iso3_currency)
+        n_par = refresh_parallel_cache({**iso3_currency, **EAP_RTFX})
         click.echo(f"Parallel FX cache: {n_par} monthly rows")
 
     @fuel_group.command("gate-baseline")

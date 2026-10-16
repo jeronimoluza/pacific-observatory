@@ -89,6 +89,7 @@ def refresh_parallel_cache(
     if not frames:
         logger.warning("RTFX: no parallel rates fetched; cache left as is")
         return 0
+    frames += _market_series(session, cache_path)
     out = pd.concat(frames, ignore_index=True)[_COLUMNS].sort_values(
         ["currency", "date"]
     )
@@ -97,12 +98,74 @@ def refresh_parallel_cache(
     out.to_csv(tmp, index=False, date_format="%Y-%m-%d")
     os.replace(tmp, cache_path)
     logger.info(
-        "RTFX parallel rates: %d rows for %s -> %s",
+        "Parallel FX rates: %d rows for %s -> %s",
         len(out),
         ", ".join(sorted(out["currency"].unique())),
         cache_path,
     )
     return len(out)
+
+
+# EAP still runs on the legacy pipeline; RTFX covers these three of its
+# currencies, kept here so the series exists when EAP moves to src/fuel.
+EAP_RTFX = {"MMR": "MMK", "LAO": "LAK", "IDN": "IDR"}
+
+_ARS_BLUE_URL = "https://api.argentinadatos.com/v1/cotizaciones/dolares/blue"
+_BOB_URL = "https://bo.dolarapi.com/v1/dolares"
+SOURCE_ARS = "argentinadatos:dolar-blue:venta-monthly-median"
+SOURCE_BOB = "dolarapi-bo:binance:venta"
+
+
+def _market_series(session, cache_path: Path) -> list[pd.DataFrame]:
+    """Parallel rates outside RTFX: Argentina's blue dollar (daily history,
+    monthly median) and Bolivia's USDT/Binance rate (current value only, so
+    earlier months are carried over from the existing cache)."""
+    out: list[pd.DataFrame] = []
+    try:
+        daily = pd.DataFrame(session.get(_ARS_BLUE_URL, timeout=60).json())
+        daily = daily.assign(
+            date=pd.to_datetime(daily["fecha"]).dt.to_period("M").dt.to_timestamp(),
+            rate=pd.to_numeric(daily["venta"], errors="coerce"),
+        ).dropna(subset=["rate"])
+        monthly = daily.groupby("date").agg(
+            rate_usd_to_local=("rate", "median"), markets=("rate", "size")
+        )
+        out.append(
+            monthly.reset_index().assign(currency="ARS", iso3="ARG", source=SOURCE_ARS)
+        )
+    except Exception as exc:
+        logger.warning("ARS blue fetch failed: %s", exc)
+    previous = load_parallel(cache_path)
+    bob = previous[previous["source"].eq(SOURCE_BOB)]
+    try:
+        quotes = session.get(_BOB_URL, timeout=60).json()
+        quote = next(q for q in quotes if q.get("casa") == "binance")
+        month = (
+            pd.Timestamp.now(tz="UTC").tz_localize(None).to_period("M").to_timestamp()
+        )
+        bob = pd.concat(
+            [
+                bob[bob["date"] != month],
+                pd.DataFrame(
+                    [
+                        {
+                            "date": month,
+                            "rate_usd_to_local": float(quote["venta"]),
+                            "markets": 1,
+                            "currency": "BOB",
+                            "iso3": "BOL",
+                            "source": SOURCE_BOB,
+                        }
+                    ]
+                ),
+            ],
+            ignore_index=True,
+        )
+    except Exception as exc:
+        logger.warning("BOB parallel fetch failed: %s", exc)
+    if not bob.empty:
+        out.append(bob)
+    return out
 
 
 def load_parallel(cache_path: Path = PARALLEL_CACHE) -> pd.DataFrame:
