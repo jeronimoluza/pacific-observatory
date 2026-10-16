@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import collections
 import html as htmllib
+import json
 import re
 import socket
 import time
@@ -198,13 +199,20 @@ def lang_scripts(language) -> set:
 
 
 def hijack_reason(
-    text: str, language: str, country_scripts: frozenset = frozenset()
+    text: str,
+    language: str,
+    country_scripts: frozenset = frozenset(),
+    items: list | None = None,
 ) -> str:
     """Why this listing is not the configured outlet ('' if it looks fine). A script that
     some other config of the same country is written in is a wrong language tag, not a
-    hijack, so it does not count."""
-    hits = GAMBLING.findall(text)
-    if len(hits) >= 5:
+    hijack, so it does not count. Gambling: half the listed posts (`items`), or 20 hits
+    on a page without posts; real outlets run a few sponsored casino posts."""
+    if items:
+        g = sum(bool(GAMBLING.search(i)) for i in items)
+        if g / len(items) >= 0.5:
+            return f"gambling terms in {g}/{len(items)} posts"
+    elif len(hits := GAMBLING.findall(text)) >= 20:
         return f"gambling terms x{len(hits)} ({', '.join(sorted({h.lower() for h in hits})[:4])})"
     n, share = script_share(text)
     if n < 300 or not share:
@@ -219,6 +227,17 @@ def hijack_reason(
     ):
         return f"script {top} {share[top]:.0%}, expected {'/'.join(sorted(expected))}"
     return ""
+
+
+def _posts(body: str) -> list | None:
+    """One string per post of a JSON list listing (None if it is not one)."""
+    try:
+        data = json.loads(body.lstrip("\ufeff"))
+    except ValueError:
+        return None
+    if isinstance(data, list) and data and all(isinstance(x, dict) for x in data):
+        return [json.dumps(x, ensure_ascii=False) for x in data]
+    return None
 
 
 def empty_reason(body: str, kind: str, role: str, cfg: dict) -> str:
@@ -263,6 +282,11 @@ PARKED = re.compile(
     r"suspendedpage\.cgi|suspended\.page|hugedomains\.com|expireddomains\.com|sedo\.com|"
     r"afternic\.com|dan\.com/|godaddy\.com/domain|parkingcrew|bodis\.com|recaptcha\.cloud",
     re.I,
+)
+
+
+GAMBLING_HOST = re.compile(
+    r"slot|casino|togel|judi|poker|baccarat|ufabet|\dbet|bet\d", re.I
 )
 
 
@@ -414,13 +438,21 @@ class Prober:
                     text,
                     cfg.get("language", "en"),
                     cfg.get("_country_scripts", frozenset()),
+                    _posts(body) if kind == "json" else None,
                 )
                 if kind != "xml"
                 else (hijack_reason(body, "en") if GAMBLING.search(body) else "")
             )
             mv = _moved(p.url, p.final_url)
             empty = empty_reason(body, kind, p.role, {**cfg, "_probe_url": p.url})
-            if PARKED.search(p.final_url):
+            if _host(p.url) != _host(p.final_url) and GAMBLING_HOST.search(
+                _host(p.final_url)
+            ):
+                p.status, p.detail = (
+                    "hijacked",
+                    f"redirects to gambling site {_host(p.final_url)}",
+                )
+            elif PARKED.search(p.final_url):
                 p.status, p.detail = (
                     "hijacked",
                     f"redirects to a parked/suspended page {p.final_url[:80]}",
