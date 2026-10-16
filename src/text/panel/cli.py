@@ -46,6 +46,8 @@ def _argv(step: str):
             "env",
             f"PYTHONPATH={REPO_ROOT / 'src'}",
             f"TEXT_STATE_DIR={c.state_dir}",
+            # The panel is the sole writer of what prod excludes; prod's exclude list must not stop its merge.
+            "TEXT_COLLECT_EXCLUDE=/dev/null",
             f"PATH={POETRY_SHIM}:{os.environ.get('PATH', '/usr/bin:/bin')}",
             sys.executable,
             "-u",
