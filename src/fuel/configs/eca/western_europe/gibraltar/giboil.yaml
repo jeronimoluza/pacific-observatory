@@ -29,6 +29,9 @@ products:
     include_in_build: true
     grade: standard
     series_key: diesel
-  # Ad Blue is captured by the fetcher but omitted here:
-  # the validator has no fuel_family for it (it's DEF, not a fuel).
-  # Rows still land in observations.csv and are dropped by build for lack of mapping.
+  # Diesel exhaust fluid (DEF), not a fuel: mapped so the build accepts the
+  # fetcher's rows, kept out of the build, no fuel_family.
+  "Ad Blue":
+    unit: liter
+    include_in_build: false
+    series_key: ad_blue

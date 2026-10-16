@@ -34,7 +34,8 @@ class ProductSpec(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     series_key: str
-    fuel_family: str
+    # None only for non-fuel products kept out of the build (e.g. AdBlue/DEF).
+    fuel_family: str | None = None
     unit: str = "liter"
     amount: float | None = None
     density_l_per_kg: float | None = None
@@ -119,6 +120,10 @@ class ProductSpec(BaseModel):
 
     @model_validator(mode="after")
     def _validate_lpg_density(self) -> "ProductSpec":
+        if self.fuel_family is None and self.include_in_build:
+            raise ValueError(
+                f"fuel_family is required for '{self.series_key}' unless include_in_build is false"
+            )
         if self.fuel_family == "lpg":
             if self.density_l_per_kg is None:
                 raise ValueError(
