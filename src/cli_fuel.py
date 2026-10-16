@@ -32,6 +32,31 @@ def register(fuel_group, opts: dict):
         n_new = refresh_fx_cache(sorted(currencies))
         click.echo(f"FX cache: {n_new} new rows for {len(currencies)} currencies")
 
+    @fuel_group.command("gate-baseline")
+    @region_opt
+    @click.option("--seed", is_flag=True, help="Write the baseline (default: show it)")
+    @click.option("--outputs-dir", type=click.Path(path_type=Path), default=None)
+    @click.option("--status-dir", type=click.Path(path_type=Path), default=None)
+    def fuel_gate_baseline(region, seed, outputs_dir, status_dir):
+        """Show or seed the publish gate's country baseline from current build outputs."""
+        from fuel import gates
+        from fuel.publish import _OUTPUTS_DIR, discover_publish_countries
+
+        outputs_dir = outputs_dir or _OUTPUTS_DIR
+        status_dir = status_dir or gates.STATUS_DIR
+        regions = [region] if region else ["eca", "menaap", "sar", "ssa", "lac"]
+        for reg in regions:
+            countries = discover_publish_countries(outputs_dir, region=reg)
+            if seed:
+                with_data, path = gates.seed_baseline(reg, countries, status_dir)
+                click.echo(f"{reg}: {len(with_data)} countries seeded -> {path}")
+            else:
+                with_data = gates.countries_with_data(reg, countries)
+                click.echo(f"{reg}: {len(with_data)} countries with data (dry run)")
+            skipped = sorted({c["country_slug"] for c in countries} - set(with_data))
+            if skipped:
+                click.echo(f"  not counted: {', '.join(skipped)}")
+
     @fuel_group.command("publish")
     @region_opt
     @subregion_opt

@@ -84,6 +84,49 @@ def known_failure_patterns(path: Path = KNOWN_FAILURES) -> list[str] | None:
     return sorted(set(re.findall(r"\b[a-z][a-z0-9*]*_[a-z0-9_*]+", text)))
 
 
+def _has_rows(csv_path: Path) -> bool:
+    if not csv_path.exists():
+        return False
+    with open(csv_path, encoding="utf-8") as f:
+        f.readline()
+        return bool(f.readline().strip())
+
+
+def countries_with_data(region: str, countries: list[dict]) -> list[str]:
+    """Slugs whose fuel_family_usd_prices.csv has rows and that have an enabled source.
+
+    The second condition drops stale outputs left by a disabled source, which
+    the build no longer rewrites but publish still discovers.
+    """
+    from .config import build_fuel_registry
+
+    enabled = {
+        e["country_slug"]
+        for e in build_fuel_registry(region=region).values()
+        if e.get("enabled", True)
+    }
+    return sorted(
+        c["country_slug"]
+        for c in countries
+        if c["country_slug"] in enabled
+        and _has_rows(c["output_dir"] / "fuel_family_usd_prices.csv")
+    )
+
+
+def seed_baseline(
+    region: str, countries: list[dict], status_dir: Path = STATUS_DIR
+) -> tuple[list[str], Path]:
+    """Record the countries with data today as the gate's last_published baseline."""
+    with_data = countries_with_data(region, countries)
+    status = read_status(region, status_dir)
+    status["last_published"] = {
+        "run_ts_utc": _now(),
+        "countries": with_data,
+        "seeded": True,
+    }
+    return with_data, _write_status(status, status_dir)
+
+
 def check_publish(
     region: str,
     countries: list[dict],
@@ -94,7 +137,7 @@ def check_publish(
 ) -> dict:
     """Run both gates; raise ClickException if the country gate blocks."""
     status = read_status(region, status_dir)
-    built = sorted(c["country_slug"] for c in countries)
+    built = countries_with_data(region, countries)
     last = status.get("last_published") or {}
     prev = last.get("countries")
     gate = {
