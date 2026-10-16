@@ -11,9 +11,11 @@ nodes:
     code_paths:
       - src/fuel/collect.py
       - src/fuel/fx.py
+      - src/fuel/fx_parallel.py
       - src/fuel/process.py
       - src/fuel/publish.py
       - src/fuel/publish_xlsx.py
+      - src/fuel/publish_parallel.py
       - src/fuel/gates.py
       - src/fuel/configs/**/*.yaml
     paths:
