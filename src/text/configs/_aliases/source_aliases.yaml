@@ -1,0 +1,62 @@
+# Retired corpus folders -> the folder that keeps the source (TX-19 decision b, 2026-10-16).
+# Generated from a8:~/scratch/tx18/duplicates.csv (TX-18): in each group of folders that give one
+# source key, the folder with an active config wins. Keys are <country>/<loser folder>. Losers are
+# left out of the build even while still on disk (src/text/source_keys.py).
+
+albania/monitor: monitor_albania
+australia/abc_australia: abc
+australia/guardian_australia: guardian
+australia/sbs_australia: sbs
+cambodia/abc_au_cambodia: abc_au
+cambodia/rnz_cambodia: rnz
+china/abc_au_china: abc_au
+china/rnz_china: rnz
+fiji/abc_au_fiji: abc_au
+fiji/rnz_fiji: rnz
+french_polynesia/abc_au_french_polynesia: abc_au
+french_polynesia/rnz_french_polynesia: rnz
+guam/rnz_guam: rnz
+indonesia/abc_au_indonesia: abc_au
+indonesia/rnz_indonesia: rnz
+jamaica/north_coast_times: north_coast_times_jamaica
+japan/abc_au_japan: abc_au
+japan/rnz_japan: rnz
+malaysia/abc_au_malaysia: abc_au
+malaysia/rnz_malaysia: rnz
+marshall_islands/abc_au_marshall_islands: abc_au
+marshall_islands/rnz_marshall_islands: rnz
+mongolia/abc_au_mongolia: abc_au
+mongolia/rnz_mongolia: rnz
+new_caledonia/abc_au_new_caledonia: abc_au
+new_caledonia/rnz_new_caledonia: rnz
+new_zealand/abc_au_new_zealand: abc_au
+pacific/abc_au_pacific: abc_au
+pacific/rnz_pacific: rnz
+palau/abc_au_palau: abc_au
+palau/rnz_palau: rnz
+papua_new_guinea/abc_au_papua_new_guinea: abc_au
+papua_new_guinea/rnz_papua_new_guinea: rnz
+philippines/abc_au_philippines: abc_au
+philippines/rnz_philippines: rnz
+samoa/abc_au_samoa: abc_au
+samoa/rnz_samoa: rnz
+serbia/standard: standard_serbia
+singapore/abc_au_singapore: abc_au
+singapore/rnz_singapore: rnz
+solomon_islands/abc_au_solomon_islands: abc_au
+solomon_islands/rnz_solomon_islands: rnz
+south_korea/abc_au_south_korea: abc_au
+south_korea/rnz_south_korea: rnz
+thailand/abc_au_thailand: abc_au
+thailand/nation_thailand: nationthailand
+thailand/rnz_thailand: rnz
+tonga/abc_au_tonga: abc_au
+tonga/matangi_tonga: matangi
+tonga/rnz_tonga: rnz
+tuvalu/abc_au_tuvalu: abc_au
+tuvalu/rnz_tuvalu: rnz
+vanuatu/abc_au_vanuatu: abc_au
+vanuatu/vanuatu_daily_post: daily_post
+vanuatu/rnz_vanuatu: rnz
+vietnam/abc_au_vietnam: abc_au
+vietnam/rnz_vietnam: rnz

@@ -1,8 +1,10 @@
 """Checks on ``text.counts`` per country (TX-14), from ``<cache>/<region>/<sub>/<country>/source_counts.params.json``.
 
-- red (T23): a key repeated in ``source_set``;
+- red (T23): a key repeated in ``source_set``, or two corpus folders with one key
+  (``text.source_keys``; folders retired by its alias map are left out, like the build does);
 - red (T26): ``tails[key].n_rows`` != rows of the news.csv files that map to that key
-  (``text.analysis.baseline.source_key_for_news_path``) under ``--corpus-root``;
+  under ``--corpus-root``, one row per url (the build's dedup);
+- red: a folder whose news.csv has more rows than unique urls;
 - yellow: ``tails[key].last_date`` older than the newest ledger watermark of those dirs
   (``<state-dir>/<region>.sqlite``, opened read-only);
 - yellow: ``keyword_hashes`` != the hash of the current keyword packs (fingerprint).
@@ -26,19 +28,26 @@ STATE_DIR = Path.home() / "text_state"
 PARAMS = "source_counts.params.json"
 
 
-def news_rows(news_csv: Path) -> int:
+def news_rows(news_csv: Path) -> tuple[int, int]:
+    """(rows, rows after the build's dedup: one per url, rows without a url all kept)."""
     import pandas as pd
 
-    return sum(len(c) for c in pd.read_csv(news_csv, usecols=["date"], dtype=str, chunksize=500_000))
+    n = no_url = 0
+    urls: set[str] = set()
+    for c in pd.read_csv(news_csv, usecols=["url"], dtype=str, chunksize=500_000):
+        n += len(c)
+        no_url += int(c["url"].isna().sum())
+        urls.update(c["url"].dropna())
+    return n, len(urls) + no_url
 
 
 def corpus_by_key(country_dir: Path) -> dict[str, list[Path]]:
-    from text.analysis.baseline import source_key_for_news_path
+    from text.source_keys import aliases, source_key
 
     out: dict[str, list[Path]] = {}
     for p in sorted(country_dir.glob("*/news.csv")):
-        if not p.parent.name.startswith("."):
-            out.setdefault(source_key_for_news_path(p), []).append(p)
+        if not p.parent.name.startswith(".") and f"{country_dir.name}/{p.parent.name}" not in aliases():
+            out.setdefault(source_key(p), []).append(p)
     return out
 
 
@@ -64,12 +73,14 @@ def read(cache_root: Path = CACHE_ROOT, corpus_root: Path = CORPUS_ROOT, state_d
         r = {"region": region, "country": country, "params": str(pp),
              "dup_keys": {k: n for k, n in Counter(params.get("source_set", [])).items() if n > 1},
              "tails": params.get("tails", {}), "hash_ok": hashes == current_hashes(hashes),
-             "corpus_rows": None, "dirs": None, "watermark": None}
+             "corpus_rows": None, "dirs": None, "dup_url_dirs": {}, "watermark": None}
         country_dir = corpus_root / region / sub / country
         if country_dir.is_dir():
             by_key = corpus_by_key(country_dir)
             r["dirs"] = {k: [p.parent.name for p in ps] for k, ps in by_key.items()}
-            r["corpus_rows"] = {k: sum(news_rows(p) for p in ps) for k, ps in by_key.items()}
+            counted = {p: news_rows(p) for ps in by_key.values() for p in ps}
+            r["corpus_rows"] = {k: sum(counted[p][1] for p in ps) for k, ps in by_key.items()}
+            r["dup_url_dirs"] = {p.parent.name: n for p, n in counted.items() if n[0] > n[1]}
             if (state_dir / f"{region}.sqlite").exists():
                 if region not in ledgers:
                     ledgers[region] = ledger_sources(region, state_dir)
@@ -99,11 +110,16 @@ def evaluate(rows: list[dict]) -> list[dict]:
         if r["dup_keys"]:
             add(r, "rojo", "T23 claves repetidas en source_set: "
                 + ", ".join(f"{k} x{n}" for k, n in sorted(r["dup_keys"].items())))
+        for k, ds in sorted((r["dirs"] or {}).items()):
+            if len(ds) > 1:
+                add(r, "rojo", f"T23 {k}: carpetas con la misma clave: {', '.join(ds)}")
+        for d, (rows, uniq) in sorted(r["dup_url_dirs"].items()):
+            add(r, "rojo", f"URLs duplicadas en {d}: {rows:,} filas > {uniq:,} URLs únicas")
         if r["corpus_rows"] is not None:
             for k, t in sorted(r["tails"].items()):
                 have = r["corpus_rows"].get(k, 0)
                 if t.get("n_rows") != have:
-                    add(r, "rojo", f"T26 {k}: tails.n_rows {t.get('n_rows'):,} != news.csv {have:,} "
+                    add(r, "rojo", f"T26 {k}: tails.n_rows {t.get('n_rows'):,} != news.csv dedup por url {have:,} "
                                    f"({'+'.join(r['dirs'].get(k, [])) or 'sin carpeta'})")
         for k, wm in sorted((r["watermark"] or {}).items()):
             last = r["tails"].get(k, {}).get("last_date")
