@@ -1,0 +1,161 @@
+# Congo, Dem. Rep.: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Ministère de l'Economie Nationale (arrêtés de prix) + Comité de Suivi des Prix des Produits Pétroliers (CSPPP); el Ministère des Hydrocarbures co-anuncia. Régimen: precio fijado por zona de aprovisionamiento (Ouest/Sud/Est/Nord), estructura de precios con subsidio (PMAG), ajustes irregulares. Canales: comunicado CSPPP/ministerio vía ACP y prensa; economie.gouv.cd/verite_prix_produits_petroliers publica las estructuras mensuales/trimestrales en PDF escaneado con meses de desfase.
+# Solo zona Ouest (Kinshasa). Precios Sud/Est/Nord distintos y no cargados.
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Las estructuras oficiales (copias en data/fuel/ssa/central_africa/congo_dem_rep/manual_sources/) confirman los niveles por mes, pero no traen fecha de vigencia del cambio:
+#   abr-sep 2025 2990/2979,76; oct 2025 2690/2680; dic 2025-mar 2026 2440(,01)/2430; abr-jun 2026 2640/2635 (essence/gasoil, CDF/L, OCR + lectura a ojo).
+# Huecos conocidos:
+#   - Nivel vigente al 2024-01-01 (essence 3225 / gasoil 3215, estructura del 23-10-2023 según prensa): no cargado; la nota original (AllAfrica/Radio Okapi) no fue accesible para copiarla.
+#   - 2024: ACP (03-10-2024) da como precio previo de la essence 3340 (y AllAfrica, según buscador, gasoil 3435), no 3475/3465. Probable ajuste intermedio may-sep 2024 no encontrado.
+#   - Nov 2025: no hay estructura Ouest de noviembre publicada; la fecha del cambio a 2440/2430 sale de la nota del Ministère des Hydrocarbures.
+#   - Sin evidencia posterior a la estructura T2-2026 (jun-2026, publicada 26-08-2026): no se confirma el nivel de hoy.
+#   - Pétrole lampant, Fomi y GLP omitidos (las notas de prensa no los cubren en todas las fechas).
+source_key: manual_cd_levels
+country: "Congo, Dem. Rep."
+currency: CDF
+unit: CDF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Essence":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+levels:
+- effective: 2024-04-25
+  product: Essence
+  locality: Kinshasa (zone Ouest)
+  price_local: 3475
+  source_type: press
+  url: https://actualite.cd/2024/04/25/rdc-le-gouvernement-revoit-la-hausse-le-prix-des-carburants-pour-preserver-lequilibre-du
+  archive_url: http://web.archive.org/web/20240427145257/https://actualite.cd/2024/04/25/rdc-le-gouvernement-revoit-la-hausse-le-prix-des-carburants-pour-preserver-lequilibre-du
+  sha256: 9be710e8a5323c61508b3d82e8a8a829137ee006302c09fbc0920e6ad2e2eb1b
+  file: 9be710e8a532_actualite_cd_20240425_hausse_carburants.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Actualite.cd (25-04-2024) cita el arrêté ministerial consultado el 24-04-2024: essence 3225 -> 3475 FC 'désormais' en zona Ouest. Fecha de vigencia 25-04-2024 según AllAfrica (no accesible hoy). Contradicción: ACP del 03-10-2024 da 3340 como precio previo a la baja de octubre."
+- effective: 2024-04-25
+  product: Gasoil
+  locality: Kinshasa (zone Ouest)
+  price_local: 3465
+  source_type: press
+  url: https://actualite.cd/2024/04/25/rdc-le-gouvernement-revoit-la-hausse-le-prix-des-carburants-pour-preserver-lequilibre-du
+  archive_url: http://web.archive.org/web/20240427145257/https://actualite.cd/2024/04/25/rdc-le-gouvernement-revoit-la-hausse-le-prix-des-carburants-pour-preserver-lequilibre-du
+  sha256: 9be710e8a5323c61508b3d82e8a8a829137ee006302c09fbc0920e6ad2e2eb1b
+  file: 9be710e8a532_actualite_cd_20240425_hausse_carburants.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Mismo arrêté: gasoil 3215 -> 3465 FC (pétrole 2650 -> 2900, Fomi 2005,24 -> 2084). Contradicción: según el buscador, AllAfrica (oct-2024) da 3435 como gasoil previo a la baja de octubre."
+- effective: 2024-10-03
+  product: Essence
+  locality: Kinshasa (zone Ouest)
+  price_local: 2990
+  source_type: state_news
+  url: https://acp.cd/economie/rdc-baisse-du-prix-des-carburants-terrestres-dans-la-zone-dapprovisionnement-ouest/
+  archive_url: http://web.archive.org/web/20241003203040/https://acp.cd/economie/rdc-baisse-du-prix-des-carburants-terrestres-dans-la-zone-dapprovisionnement-ouest/
+  sha256: afe36b4b6c60129c42aa4623e40e285182acea2b34182d810bf93f22fe146927
+  file: afe36b4b6c60_acp_20241003_baisse_zone_ouest.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "ACP, Kinshasa 03-10-2024, 'de source officielle' (arrêté del ministro de Economía): essence 3340 -> 2990 CDF en zona Ouest. Effective = fecha de publicación (la nota no da fecha de vigencia). La estructura oficial Ouest abr-2025 (ba99d0caee38) muestra 2990,00."
+- effective: 2024-10-03
+  product: Gasoil
+  locality: Kinshasa (zone Ouest)
+  price_local: 2979.73
+  source_type: state_news
+  url: https://acp.cd/economie/rdc-baisse-du-prix-des-carburants-terrestres-dans-la-zone-dapprovisionnement-ouest/
+  archive_url: http://web.archive.org/web/20241003203040/https://acp.cd/economie/rdc-baisse-du-prix-des-carburants-terrestres-dans-la-zone-dapprovisionnement-ouest/
+  sha256: afe36b4b6c60129c42aa4623e40e285182acea2b34182d810bf93f22fe146927
+  file: afe36b4b6c60_acp_20241003_baisse_zone_ouest.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "ACP 03-10-2024: 'le gasoil 2 979,73 FC' (pétrole 2530, Fomi 1520). Effective = fecha de publicación. Las estructuras oficiales abr-sep 2025 muestran 2979,76 (diferencia de 0,03); la prensa de oct-2025 lo redondea a 2980."
+- effective: 2025-10-08
+  product: Essence
+  locality: Kinshasa (zone Ouest)
+  price_local: 2690
+  source_type: press
+  url: https://actualite.cd/2025/10/08/rdc-baisse-de-10co-de-prix-de-carburant-dans-la-zone-ouest-mukoko-samba-confirme-la
+  archive_url: http://web.archive.org/web/20251115213053/https://actualite.cd/2025/10/08/rdc-baisse-de-10co-de-prix-de-carburant-dans-la-zone-ouest-mukoko-samba-confirme-la
+  sha256: 1036a064260a96170054272a8a958fb8fbb52be587f8f11367cb213b44d3f90e
+  file: 1036a064260a_actualite_cd_20251008_baisse_zone_ouest.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "VPM ministro de Economía Daniel Mukoko Samba en Top Congo FM (07-10-2025): 'demain, mercredi 8 octobre 2025' essence 2990 -> 2690 FC. Nivel confirmado por la estructura oficial Ouest oct-2025 (dbd3ebf23122: 'Prix à la pompe' 2690). Cambio no listado en el triage."
+- effective: 2025-10-08
+  product: Gasoil
+  locality: Kinshasa (zone Ouest)
+  price_local: 2680
+  source_type: press
+  url: https://actualite.cd/2025/10/08/rdc-baisse-de-10co-de-prix-de-carburant-dans-la-zone-ouest-mukoko-samba-confirme-la
+  archive_url: http://web.archive.org/web/20251115213053/https://actualite.cd/2025/10/08/rdc-baisse-de-10co-de-prix-de-carburant-dans-la-zone-ouest-mukoko-samba-confirme-la
+  sha256: 1036a064260a96170054272a8a958fb8fbb52be587f8f11367cb213b44d3f90e
+  file: 1036a064260a_actualite_cd_20251008_baisse_zone_ouest.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "Cita del ministro: gasoil 2980 -> 2680 FC (la bajada del artículo dice por error 'de 2890'). Nivel confirmado por la estructura oficial Ouest oct-2025 (2680)."
+- effective: 2025-11-17
+  product: Essence
+  locality: Kinshasa (zone Ouest)
+  price_local: 2440
+  source_type: official_site
+  url: https://hydrocarbures.gouv.cd/2025/11/17/kinshasa-acacia-bandubola-mbongo-verifie-leffectivite-de-la-baisse-des-prix-des-produits-petroliers-a-la-pompe/
+  archive_url: https://web.archive.org/web/20261016180105/https://hydrocarbures.gouv.cd/2025/11/17/kinshasa-acacia-bandubola-mbongo-verifie-leffectivite-de-la-baisse-des-prix-des-produits-petroliers-a-la-pompe/
+  sha256: 88129873eb2a47461880380f11f207b8d93f1e92db17939a12a783c3d4c6e3c5
+  file: 88129873eb2a_hydrocarbures_gouv_cd_20251117_baisse_pompe.html
+  method: HTML text
+  derived_from: []
+  confidence: alta
+  note: "Ministère des Hydrocarbures, lunes 17-11-2025 (visita de la ministra Bandubola a estaciones de Gombe): 'Dès ce lundi, le prix de carburant à la pompe passe à 2.440 FC pour l'essence'. No da el precio previo ni cita el arrêté. Estructura oficial Ouest dic-2025 (f85255cd6dea) muestra 2440."
+- effective: 2025-11-17
+  product: Gasoil
+  locality: Kinshasa (zone Ouest)
+  price_local: 2430
+  source_type: official_site
+  url: https://hydrocarbures.gouv.cd/2025/11/17/kinshasa-acacia-bandubola-mbongo-verifie-leffectivite-de-la-baisse-des-prix-des-produits-petroliers-a-la-pompe/
+  archive_url: https://web.archive.org/web/20261016180105/https://hydrocarbures.gouv.cd/2025/11/17/kinshasa-acacia-bandubola-mbongo-verifie-leffectivite-de-la-baisse-des-prix-des-produits-petroliers-a-la-pompe/
+  sha256: 88129873eb2a47461880380f11f207b8d93f1e92db17939a12a783c3d4c6e3c5
+  file: 88129873eb2a_hydrocarbures_gouv_cd_20251117_baisse_pompe.html
+  method: HTML text
+  derived_from: []
+  confidence: alta
+  note: "Misma nota: 'le gasoil passe à 2.430 FC' desde el lunes 17-11-2025. Estructura oficial Ouest dic-2025 y ene-mar 2026 muestran 2430."
+- effective: 2026-04-16
+  product: Essence
+  locality: Kinshasa (zone Ouest)
+  price_local: 2640
+  source_type: state_news
+  url: https://acp.cd/economie/rdc-adoption-de-nouvelles-structures-des-prix-des-produits-petroliers-en-zones-dapprovisionnement/
+  archive_url: ""
+  sha256: 4781b9d6deb2b5ad66fbffb843aa285496a97cad780775975e10663f8ba0e72b
+  file: 4781b9d6deb2_acp_20260416_nouvelles_structures.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "ACP, Kinshasa 16-04-2026, citando comunicado del ministerio: estructuras adoptadas el jueves 16-04-2026 por el CSPPP; essence 2440 -> 2640 Fc (Ouest). Effective = fecha de adopción (no se da fecha de vigencia). Actualite.cd 16-04-2026 (37952be4f3ab) da las mismas cifras (reunión del 15 y 16-04). Estructura oficial Ouest abr-2026 (d0d7f261cfc5, lectura a ojo) muestra 2640,00. Wayback /save falló."
+- effective: 2026-04-16
+  product: Gasoil
+  locality: Kinshasa (zone Ouest)
+  price_local: 2635
+  source_type: state_news
+  url: https://acp.cd/economie/rdc-adoption-de-nouvelles-structures-des-prix-des-produits-petroliers-en-zones-dapprovisionnement/
+  archive_url: ""
+  sha256: 4781b9d6deb2b5ad66fbffb843aa285496a97cad780775975e10663f8ba0e72b
+  file: 4781b9d6deb2_acp_20260416_nouvelles_structures.html
+  method: HTML text
+  derived_from: []
+  confidence: media-alta
+  note: "ACP 16-04-2026: gasoil 2430 -> 2635 Fc (Ouest); Actualite.cd igual. Estructura oficial Ouest abr-jun 2026 muestra 2635,00. Wayback /save falló."

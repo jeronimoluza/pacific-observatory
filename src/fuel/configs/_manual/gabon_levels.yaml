@@ -1,0 +1,56 @@
+# Gabon: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Commission Nationale des Prix des Produits Pétroliers (CNPPP, ley de abr-2019), bajo el Ministerio del Petróleo y Gas. Régimen: estructura de precios con nota/circular mensual a operadores, pero el precio en surtidor está subsidiado y en la práctica congelado; cambios ad hoc. Canales: nota/circular CNPPP a operadores, difundida solo por prensa (Ecomatin, Gabon Media Time, Gabonreview); no hay sitio oficial accesible (petrole.gouv.ga y otros no responden).
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos:
+#   - No encontré el texto de la circular CNPPP del 29-12-2023; las filas salen de prensa que la cita.
+#   - Nivel previo (605/585) y su fecha no cargados.
+#   - Sin ningún cambio confirmado después de ene-2024. La eliminación del subsidio prevista para el 01-01-2026 se suspendió (Ecomatin 07-11-2025); el Consejo de Ministros de oct-2026 (30 mil millones FCFA de subsidio en sep-2026) no anunció tarifa nueva (Bénin Web TV, 09-10-2026).
+# Contradicciones (sin resolver; no cargadas):
+#   - Ecomatin 07-11-2025 (d4443a951698) dice que los precios "demeurent" en 605 super / 585 gasoil / 400 pétrole: son los niveles PREVIOS a ene-2024 y no hallé ninguna suba que los restableciera. Lo trato como error de redacción.
+#   - Gabon Media Time 04-04-2026 (cc65fbfbc85d) dice gasoil "maintenu à 675 FCFA" en mar-2026, sin fuente; el mismo medio el 06-08-2026 da super 595. Sin respaldo oficial.
+# No pongo last_checked: ninguna fuente oficial de 2026 confirma 595/575.
+source_key: manual_ga_levels
+country: Gabon
+currency: XAF
+unit: XAF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Super":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+levels:
+- effective: 2024-01-01
+  product: Super
+  locality: national
+  price_local: 595
+  source_type: press
+  url: https://ecomatin.net/gabon-legere-baisse-des-prix-du-carburant-et-du-gaz-domestique
+  archive_url: http://web.archive.org/web/20250614150811/https://ecomatin.net/gabon-legere-baisse-des-prix-du-carburant-et-du-gaz-domestique
+  sha256: 5f5c2329ff67271648ab3a9e6098dc735a114440ecb62c9e83010021e503054a
+  file: 5f5c2329ff67_ecomatin_20240103_gabon_baisse.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Ecomatin 03-01-2024 cita la circular del 29-12-2023 firmada por Ernest Ndong Nguema (presidente de la CNPPP): 'Depuis le 1er Janvier 2024, le prix du litre de super est passé de 605 Fcfa à 595 Fcfa'. Gabon Media Time 02-01-2024 (fb93fc14f81d) confirma 595 en estaciones (1125 industriales)."
+- effective: 2024-01-01
+  product: Gasoil
+  locality: national
+  price_local: 575
+  source_type: press
+  url: https://ecomatin.net/gabon-legere-baisse-des-prix-du-carburant-et-du-gaz-domestique
+  archive_url: http://web.archive.org/web/20250614150811/https://ecomatin.net/gabon-legere-baisse-des-prix-du-carburant-et-du-gaz-domestique
+  sha256: 5f5c2329ff67271648ab3a9e6098dc735a114440ecb62c9e83010021e503054a
+  file: 5f5c2329ff67_ecomatin_20240103_gabon_baisse.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Misma circular CNPPP: gasoil 585 -> 575 FCFA para ene-2024 (pétrole lampant sin cambio en 450 según Ecomatin). Gabon Media Time 02-01-2024 confirma 575 en estaciones (1080 industriales)."

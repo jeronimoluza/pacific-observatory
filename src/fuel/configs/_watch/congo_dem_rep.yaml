@@ -1,17 +1,20 @@
 # `po fuel watch --country congo_dem_rep`. Schema and checks: src/fuel/watch.py.
-# Triage lane 2026-10-16: manual+alerta. No `levels:` yet: add the manual
-# table's path when it exists; until then GPP changes alert on their own.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
 # gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
 country: congo_dem_rep
 currency: CDF
+levels:
+  paths:
+  - src/fuel/configs/_manual/congo_dem_rep_levels.yaml
+  stale_months: 6
 broken_after: 3
 lookback_days: 10
 gpp:
   slug: Democratic-Republic-of-the-Congo
   name: Democratic Republic of the Congo
   products:
-    gasoline: Essence (zone Ouest)
-    diesel: Gasoil (zone Ouest)
+    gasoline: Essence
+    diesel: Gasoil
   move_pct: 3
   diverge_pct: 5
   diverge_runs: 3

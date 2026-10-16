@@ -1,0 +1,28 @@
+source_key: manual_cf_levels
+module: ssa.central_africa.central_african_republic.manual_levels
+function: fetch_manual_cf
+url: ''
+fallback_date: 2020-01-01
+priority: 10
+cadence: yearly
+carry_forward: true
+full_refresh: true
+station_type: national
+
+# Hand-curated levels with provenance, read from configs/_manual/central_african_republic_levels.yaml; nothing is scraped.
+# Rows with confidence baja stay in the table for `po fuel watch` but are not emitted.
+# How they were sourced: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+
+products:
+  Super:
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  Gasoil:
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard

@@ -1,0 +1,107 @@
+# Central African Republic: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Gobierno (arrêté conjunto Finanzas-Comercio-Energía en ene-2023; arrêté presidencial en jul-2023; anuncios del Ministro/a de Energía e Hidráulica en 2025-2026). Régimen: precio fijado ad hoc y subsidiado, sin fórmula periódica. Canales: conferencia de prensa / comunicado del ministro, visibles solo en prensa (Ecomatin, AFP, Alwihda, Financial Afrik); sin texto oficial en línea (gouv.cf no se actualiza).
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos:
+#   - Super entre jul-2023 y may-2025: la fila de 2023 da 1100, pero la baja de may-2025 se anunció como "-100 FCFA" hasta 1050, lo que implica 1150 previo. Hubo un cambio intermedio (2024, fecha no encontrada) o la baja del super fue de 50; no se carga nada inferido. La cadena del Super es por tanto inexacta entre esas fechas.
+#   - Pétrole lampant omitido: 850 (jul-2023), y en may-2025 Ecomatin dice 750 y Alwihda 700 (contradicción); sin dato en oct-2026.
+#   - Precios para "gros consommateurs" desde 01-10-2026 (super 1500, gasoil 1650) no cargados.
+#   - Ninguna fila tiene documento oficial: todo es prensa (confianza media como máximo).
+source_key: manual_cf_levels
+country: Central African Republic
+currency: XAF
+unit: XAF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+last_checked: 2026-10-16
+# last_checked: https://afrique.le360.ma/economie/centrafrique-le-bras-de-fer-autour-de-la-hausse-des-prix-des-carburants-se-poursuit_6KBQ7CT5DFBFLHFV6LTJWYQARA/ (AFP vía Le360, 12-10-2026: 1150/1400 siguen, ville morte parcial; sin reversión anunciada a esa fecha; copia d1c0b367603b)
+products:
+  "Super":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+levels:
+- effective: 2023-07-06
+  product: Super
+  locality: national
+  price_local: 1100
+  source_type: press
+  url: https://www.financialafrik.com/2023/07/10/rca-le-gouvernement-revoit-les-prix-des-carburants-a-la-baisse/
+  archive_url: https://web.archive.org/web/20261016180324/https://www.financialafrik.com/2023/07/10/rca-le-gouvernement-revoit-les-prix-des-carburants-a-la-baisse/
+  sha256: 01a5b1e744ec80243cc0b7cd0498420df0ae41b8d2bbc19cd5f9af5a9334c8cf
+  file: 01a5b1e744ec_financialafrik_20230710_rca_baisse.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Financial Afrik 10-07-2023: super 1300 -> 1100 FCFA por arrêté del Presidente Touadéra 'rendu public le 6 juillet 2023'. Effective = fecha de publicación del arrêté. Nivel vigente al 2024-01-01, pero ver hueco de 2024 en la cabecera."
+- effective: 2023-07-06
+  product: Gasoil
+  locality: national
+  price_local: 1350
+  source_type: press
+  url: https://www.financialafrik.com/2023/07/10/rca-le-gouvernement-revoit-les-prix-des-carburants-a-la-baisse/
+  archive_url: https://web.archive.org/web/20261016180324/https://www.financialafrik.com/2023/07/10/rca-le-gouvernement-revoit-les-prix-des-carburants-a-la-baisse/
+  sha256: 01a5b1e744ec80243cc0b7cd0498420df0ae41b8d2bbc19cd5f9af5a9334c8cf
+  file: 01a5b1e744ec_financialafrik_20230710_rca_baisse.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Mismo arrêté: gasoil 1450 -> 1350 FCFA (pétrole 1150 -> 850). Coherente con la baja de may-2025 (1350 - 100 = 1250)."
+- effective: 2025-05-05
+  product: Super
+  locality: national
+  price_local: 1050
+  source_type: press
+  url: https://ecomatin.net/republique-centrafricaine-le-gouvernement-annonce-la-baisse-des-prix-du-carburant-a-la-pompe
+  archive_url: http://web.archive.org/web/20261006084216/https://ecomatin.net/republique-centrafricaine-le-gouvernement-annonce-la-baisse-des-prix-du-carburant-a-la-pompe
+  sha256: e235a1944576b3161068567dca5a15096a258e978fe37866a230d11abe2e51c8
+  file: e235a1944576_ecomatin_20250503_rca_baisse.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Ministro de Hidráulica y Energía Arthur Bertrand Piri, conferencia de prensa del 02-05-2025: 'À partir de lundi [05 mai]... le super à 1050 Fcfa', anunciado como baja de 100. Alwihda 04-05-2025 (75620a3cf94b) confirma 1050 y vigencia 05-05-2025. Contradicción con la fila de 2023 (1100): ver cabecera."
+- effective: 2025-05-05
+  product: Gasoil
+  locality: national
+  price_local: 1250
+  source_type: press
+  url: https://ecomatin.net/republique-centrafricaine-le-gouvernement-annonce-la-baisse-des-prix-du-carburant-a-la-pompe
+  archive_url: http://web.archive.org/web/20261006084216/https://ecomatin.net/republique-centrafricaine-le-gouvernement-annonce-la-baisse-des-prix-du-carburant-a-la-pompe
+  sha256: e235a1944576b3161068567dca5a15096a258e978fe37866a230d11abe2e51c8
+  file: e235a1944576_ecomatin_20250503_rca_baisse.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Misma cita del ministro: gasoil a 1250 FCFA desde el lunes 05-05-2025. Alwihda confirma 1250 (pero da pétrole 700 frente a 750 de Ecomatin)."
+- effective: 2026-10-01
+  product: Super
+  locality: national
+  price_local: 1150
+  source_type: press
+  url: https://ecomatin.net/republique-centrafricaine-le-gouvernement-procede-a-une-nouvelle-hausse-du-prix-des-carburants-a-la-pompe
+  archive_url: http://web.archive.org/web/20261010113023/https://ecomatin.net/republique-centrafricaine-le-gouvernement-procede-a-une-nouvelle-hausse-du-prix-des-carburants-a-la-pompe
+  sha256: a75fc3ad627cffee53577edce1e2af29df24faf9ad3f38b9b9d84b094eccc13b
+  file: a75fc3ad627c_ecomatin_20261001_rca_hausse.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Ministra de Energía e Hidráulica Edwige Opportune Pouninguinza anunció el 01-10-2026 tarifas 'applicables immédiatement': super particulares 1050 -> 1150 FCFA (gros consommateurs 1500). AFP 04-10-2026 (3a9f1c34fee5) confirma 1150 (anuncio del jueves 01-10)."
+- effective: 2026-10-01
+  product: Gasoil
+  locality: national
+  price_local: 1400
+  source_type: press
+  url: https://ecomatin.net/republique-centrafricaine-le-gouvernement-procede-a-une-nouvelle-hausse-du-prix-des-carburants-a-la-pompe
+  archive_url: http://web.archive.org/web/20261010113023/https://ecomatin.net/republique-centrafricaine-le-gouvernement-procede-a-une-nouvelle-hausse-du-prix-des-carburants-a-la-pompe
+  sha256: a75fc3ad627cffee53577edce1e2af29df24faf9ad3f38b9b9d84b094eccc13b
+  file: a75fc3ad627c_ecomatin_20261001_rca_hausse.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Mismo anuncio: gasoil particulares 1250 -> 1400 FCFA (gros consommateurs 1650). AFP 04-10-2026 confirma. Política en disputa (huelgas, ville morte 12-10-2026): posible reversión."
