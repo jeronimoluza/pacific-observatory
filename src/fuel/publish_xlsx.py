@@ -35,28 +35,6 @@ def _load_country_prices(country_dir: Path, cutoff: str) -> pd.DataFrame:
     return df
 
 
-def _carry_forward_keys(region: str) -> set[tuple[str, str]]:
-    """Return {(iso3, label)} for products whose source config sets carry_forward=true.
-
-    Honors per-product override: spec.carry_forward if set, else source default.
-    """
-    registry = build_fuel_registry(region=region)
-    keys: set[tuple[str, str]] = set()
-    for entry in registry.values():
-        iso3 = entry.get("iso3", "")
-        source_default = bool(entry.get("carry_forward", False))
-        for raw_name, spec in entry.get("products", {}).items():
-            cf = spec.carry_forward
-            effective = source_default if cf is None else bool(cf)
-            if not effective:
-                continue
-            if not getattr(spec, "include_in_build", True):
-                continue
-            label = spec.label or spec.series_key or raw_name
-            keys.add((iso3, label))
-    return keys
-
-
 def _build_data_sheet(
     region: str, countries: list[dict], history_years: int
 ) -> pd.DataFrame:
@@ -97,21 +75,13 @@ def _build_data_sheet(
         columns="observation_date",
         values="price_local",
     )
-    # Reindex date columns to a contiguous daily range so ffill can bridge gaps.
+    # Contiguous daily columns; cells hold only what the build wrote, carried-
+    # forward days included, so the Excel and the dashboard show the same fill.
     if not wide.columns.empty:
         all_dates = pd.date_range(
             wide.columns.min(), wide.columns.max(), freq="D"
         ).strftime("%Y-%m-%d")
         wide = wide.reindex(columns=all_dates)
-
-    cf_keys = _carry_forward_keys(region)
-    if cf_keys and not wide.empty:
-        mask = pd.Series(
-            [(iso3, fp) in cf_keys for iso3, fp, *_ in wide.index],
-            index=wide.index,
-        )
-        if mask.any():
-            wide.loc[mask] = wide.loc[mask].ffill(axis=1)
 
     wide = wide.reset_index().sort_values(["iso3", "fuel_product"])
     return wide

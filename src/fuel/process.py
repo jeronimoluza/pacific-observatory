@@ -46,7 +46,13 @@ _CADENCE_DAYS = {
     "monthly": 31,
     "quarterly": 92,
     "yearly": 366,
-    "irregular": 1,
+    # Irregular sources (regulated prices that change when the authority
+    # decides) hold a price until the next observation, but at most ~6 months
+    # so a dead source stops instead of reaching today. 184 days covers the
+    # 90th-percentile gap between observations of the irregular carry-forward
+    # sources (CRI 42, COL 62, NPL 32, PRY 143, URY 172 days; LKA 185) and
+    # stops Burundi (annual, last 2018).
+    "irregular": 184,
 }
 _PRODUCT_COLUMNS = [
     "observation_date",
