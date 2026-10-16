@@ -36,5 +36,5 @@ selectors:
 cleaning:
   date: "handle_mixed_dates"
 
-max_pages: 5
-max_articles: 400
+max_pages: 3
+max_articles: 150  # 2026-10-16 verify: ~0.7 article/s, 400 hit the cap

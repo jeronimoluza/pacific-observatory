@@ -53,4 +53,4 @@ cleaning:
 
 # Test/debug options
 max_pages: 3
-max_articles: 600
+max_articles: 300  # 2026-10-16 verify: 600 still hit the 300 s cap
