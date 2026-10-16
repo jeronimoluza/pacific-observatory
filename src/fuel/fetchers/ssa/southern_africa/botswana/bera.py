@@ -61,6 +61,8 @@ _MONTHS = {
     "dec": 12,
     "december": 12,
 }
+# Plausible BWP/litre pump prices (2026: ~15-25).
+_PUMP_PRICE_RANGE = (8.0, 50.0)
 _DATE_RE = re.compile(r"(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z.]+)\s*,?\s+(\d{4})", re.I)
 _NUM_DATE_RE = re.compile(r"\b(\d{1,2})[./-](\d{1,2})[./-](20\d{2})\b")
 _PDF_RE = re.compile(r"\.pdf(?:$|[?#])", re.I)
@@ -206,11 +208,18 @@ def _extract_absolute_sentence_prices(text: str) -> dict[str, float]:
         for product, pattern in _PRODUCT_ALIASES:
             if product in prices or not pattern.search(line):
                 continue
-            match = re.search(r"(?:P|BWP|pula)\s*([0-9]+(?:\.[0-9]+)?)", line, re.I)
+            # The lookbehind keeps "ULP 95" from reading as "P 95"; the range
+            # drops octane numbers and per-litre levies (P1.41 recoveries).
+            match = re.search(
+                r"(?<![A-Za-z])(?:P|BWP|pula)\s*([0-9]+(?:\.[0-9]+)?)", line, re.I
+            )
             if not match:
                 continue
             value = _parse_number(match.group(1))
-            if value is not None:
+            if (
+                value is not None
+                and _PUMP_PRICE_RANGE[0] <= value <= _PUMP_PRICE_RANGE[1]
+            ):
                 prices[product] = value
     return prices
 
