@@ -25,7 +25,7 @@ owners:
   panel:
     desc: po text panel (panel36 ∪ EAP) en a8; merge por plan con firma del usuario
     staging: /mnt/backup5tb/text-panel/staging
-    state: /mnt/backup5tb/text-panel/state
+    state: ~/text_panel/state
     pending: /mnt/backup5tb/text-panel/pending
     logs: ~/text_panel/logs
     cache: /mnt/backup5tb/text-panel/build/cache
@@ -51,7 +51,7 @@ nodes:
       - {path: "~/text_state/<region>.sqlite", machine: a8}
       - {path: "~/text_state/<region>.sqlite", machine: mac, role: ledger}
       - {path: "/mnt/backup5tb/text-state/<region>.sqlite", machine: a8, role: ledger}   # copia
-      - {path: "/mnt/backup5tb/text-panel/state/<region>.sqlite", machine: a8}            # panel
+      - {path: "~/text_panel/state/<region>.sqlite", machine: a8}                          # panel
     partition: dueño × región
     desc: >-
       lo escribe merge junto con text.corpus. El bootstrap desde corpus y el lazo
