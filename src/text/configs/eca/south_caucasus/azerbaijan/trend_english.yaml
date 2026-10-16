@@ -6,6 +6,7 @@ base_url: https://www.trend.az
 # English edition of Trend. Articles hosted on www.trend.az. Sitemap index at
 # https://en.trend.az/sitemap_en.xml lists monthly archive sitemaps under
 # www.trend.az/sitemaps/sitemap_archive_en_YYYY_MM.xml.
+# 2026-10-16 (panel 20261016T0917Z): healthy, queue past the 300s cap (and killed by the trend kill, TX-09); cap the newest-first queue
 listing:
   type: sitemap
   sitemap_index_url: https://en.trend.az/sitemap_en.xml
@@ -40,4 +41,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 450

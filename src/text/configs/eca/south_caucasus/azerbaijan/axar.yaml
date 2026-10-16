@@ -8,6 +8,7 @@ base_url: https://axar.az
 # to 2012. Each carries thousands of URLs with <lastmod>. Articles at
 # /news/<category>/NNNNNN.html with body in span.article_body and
 # meta[property=article:published_time].
+# 2026-10-16 (panel 20261016T0917Z): healthy, queue past the 300s cap; cap the newest-first queue
 listing:
   type: sitemap
   sitemap_index_url: https://axar.az/sitemap_az.xml
@@ -42,4 +43,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 550

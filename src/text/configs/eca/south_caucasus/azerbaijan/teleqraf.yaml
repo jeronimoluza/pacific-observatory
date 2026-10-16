@@ -7,6 +7,7 @@ base_url: https://teleqraf.az
 # /sitemap_az.xml lists monthly archive sitemaps sitemap_archive_az_YYYY_MM.xml
 # going back to 2010. Articles at /news/<category>/NNNNNN.html with body in
 # div.main-content and meta[property=article:published_time].
+# 2026-10-16 (panel 20261016T0917Z): 521k-URL ledger backlog; cap the newest-first queue
 listing:
   type: sitemap
   sitemap_index_url: https://teleqraf.az/sitemap_az.xml
@@ -41,4 +42,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 450

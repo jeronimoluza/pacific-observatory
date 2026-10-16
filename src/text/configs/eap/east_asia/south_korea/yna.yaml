@@ -6,6 +6,7 @@ base_url: "https://www.yna.co.kr/"
 language: "korean"
 
 # Listing discovery configuration
+# 2026-10-16 (panel 20261016T0917Z): healthy, 2305 queued at ~2.7/s; cap the newest-first queue to finish inside 300s
 listing:
   type: "pagination"
   url_template:
@@ -41,4 +42,4 @@ cleaning:
 
 # Test/debug options
 max_pages: null
-max_articles: null
+max_articles: 850

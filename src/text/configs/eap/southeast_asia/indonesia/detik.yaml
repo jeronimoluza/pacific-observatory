@@ -6,6 +6,7 @@ base_url: "https://news.detik.com/"
 language: "indo"
 
 # Listing discovery configuration - using archive strategy for date-based URLs
+# 2026-10-16 (panel 20261016T0917Z): daily archive walked day by day back to the 07-24 watermark past the cap; max_pages counts days
 listing:
   type: "paginated_archive"
   start_url: "https://news.detik.com/berita/indeks?date={month}%2F{day}%2F{year}"
@@ -49,5 +50,5 @@ cleaning:
   date: "handle_mixed_dates"
 
 # Test/debug options
-max_pages: null
+max_pages: 3
 max_articles: null

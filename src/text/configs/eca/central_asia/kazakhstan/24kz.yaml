@@ -8,6 +8,7 @@ base_url: https://24.kz
 # category/tag). Each per-language sitemap is a flat urlset. Article URLs
 # follow /kz/{section}/{sub}/{id}-{slug}. No meta article:published_time —
 # visible date lives in .post-date; we use lastmod from the sitemap instead.
+# 2026-10-16 (panel 20261016T0917Z): healthy, queue past the 300s cap; cap the newest-first queue
 listing:
   type: sitemap
   sitemap_urls:
@@ -42,4 +43,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 500

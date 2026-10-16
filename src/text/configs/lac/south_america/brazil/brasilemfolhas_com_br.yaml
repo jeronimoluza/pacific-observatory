@@ -4,6 +4,7 @@ country: brazil
 base_url: https://www.brasilemfolhas.com.br
 
 # Categories: ultimas-noticias(11, 247587), politica(7, 57628), economia(4, 40054), agronegocio(2554, 538)
+# 2026-10-16 (panel 20261016T0917Z): ~450 posts/day and a 08-11 watermark: the API walk (74 pages in 300s) never finished, and discovery keeps nothing when killed
 listing:
   type: api
   pagination_type: page
@@ -35,5 +36,5 @@ cleaning:
   date: handle_mixed_dates
   body: clean_wp_html_body
 
-max_pages: null
+max_pages: 30
 max_articles: null

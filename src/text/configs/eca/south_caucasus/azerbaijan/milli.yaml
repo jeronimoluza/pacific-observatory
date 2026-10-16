@@ -10,6 +10,7 @@ base_url: https://news.milli.az
 # avoided. "politics" is Azerbaijan-domestic. Thumbnail listing has no reliable
 # year in its date snippet ("29 İyul 20:56"), so no thumbnail.date selector is
 # set — the article-page Yoast meta tag (has full year) is used instead.
+# 2026-10-16 (panel 20261016T0917Z): max_pages null walked the whole archive (25 rows in ledger) past the 300s cap
 listing:
   type: pagination
   url_template: "https://news.milli.az/politics/?page={num}"
@@ -35,5 +36,5 @@ cleaning:
   date: handle_mixed_dates
   url: clean_url
 
-max_pages: null
+max_pages: 20
 max_articles: null

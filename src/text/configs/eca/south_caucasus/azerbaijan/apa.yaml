@@ -7,6 +7,7 @@ base_url: https://apa.az
 # /sitemaps/sitemap_archive_az_YYYY_MM.xml monthly archives since 2008+.
 # Individual archive sitemaps contain <lastmod> and ~3000 URLs per month.
 # Articles have numeric suffix: https://apa.az/<category>/<slug>-NNNNNN
+# 2026-10-16 (panel 20261016T0917Z): healthy, queue past the 300s cap; cap the newest-first queue
 listing:
   type: sitemap
   sitemap_index_url: https://apa.az/sitemap_az.xml
@@ -41,4 +42,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 380

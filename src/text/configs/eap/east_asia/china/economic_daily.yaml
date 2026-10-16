@@ -10,6 +10,7 @@ country: "china"
 language: "zh"
 base_url: "http://www.ce.cn/xwzx/gnsz/gdxw/"
 
+# 2026-10-16 (panel 20261016T0917Z): healthy, 2710 queued at ~2.9/s; cap the newest-first queue to finish inside 300s
 listing:
   type: "pagination"
   start_url: "http://www.ce.cn/xwzx/gnsz/gdxw/"
@@ -36,4 +37,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 700

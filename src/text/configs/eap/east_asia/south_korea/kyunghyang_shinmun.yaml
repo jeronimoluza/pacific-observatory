@@ -5,6 +5,7 @@ country: "south_korea"
 language: "ko"
 base_url: "https://www.khan.co.kr"
 
+# 2026-10-16 (panel 20261016T0917Z): discovery of 2578 URLs plus a 5731 queue outran the 300s cap
 listing:
   type: "pagination"
   url_template:
@@ -35,5 +36,5 @@ selectors:
 cleaning:
   date: "handle_mixed_dates"
 
-max_pages: null
-max_articles: null
+max_pages: 5
+max_articles: 400

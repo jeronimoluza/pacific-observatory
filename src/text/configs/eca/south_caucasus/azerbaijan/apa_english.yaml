@@ -6,6 +6,7 @@ base_url: https://en.apa.az
 # English edition of APA (Azeri Press Agency). Sitemap index at
 # https://apa.az/sitemap_en.xml lists /sitemaps/sitemap_archive_en_YYYY_MM.xml
 # monthly archives. Article URLs live on the en.apa.az subdomain.
+# 2026-10-16 (panel 20261016T0917Z): healthy, queue past the 300s cap; cap the newest-first queue
 listing:
   type: sitemap
   sitemap_index_url: https://apa.az/sitemap_en.xml
@@ -40,4 +41,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 450

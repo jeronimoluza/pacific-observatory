@@ -3,6 +3,7 @@ language: en
 country: papua_new_guinea
 base_url: https://www.thenational.com.pg
 
+# 2026-10-16 (panel 20261016T0917Z): 9449 queued, 460 HTTP 403 at concurrency 10; slower and capped
 listing:
   type: api
   pagination_type: page
@@ -15,7 +16,7 @@ listing:
     date: date
 
 client: http
-concurrency: 10
+concurrency: 4
 rate_limit: 0.2
 retries: 3
 retry_seconds: 2.0
@@ -33,4 +34,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 400

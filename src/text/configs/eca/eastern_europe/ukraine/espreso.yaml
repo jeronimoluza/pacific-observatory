@@ -3,14 +3,17 @@ language: uk
 country: ukraine
 base_url: https://espreso.tv
 
+# 2026-10-16 (panel 20261016T0917Z): sitemap.xml 301s to itself (redirect loop)
+# so discovery found nothing; the RSS feed carries the latest 40 items.
+# 289 HTTP 429 at concurrency 5: slowed down.
 listing:
-  type: sitemap
-  sitemap_index_url: https://espreso.tv/sitemap.xml
-  sitemap_regex: "sitemap_news_[0-9]+\\.xml"
+  type: rss
+  feed_urls:
+    - "https://espreso.tv/rss"
 
 client: http
-concurrency: 5
-rate_limit: 0.5
+concurrency: 2
+rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
 
@@ -21,10 +24,10 @@ headers:
 
 selectors:
   thumbnail:
-    container: url
-    title: loc::text
-    url: loc::text
-    date: lastmod::text
+    container: item
+    title: title::text
+    url: link::text
+    date: pubDate::text
   article:
     title:
       - 'meta[property="og:title"]::attr(content)'
@@ -35,4 +38,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 200

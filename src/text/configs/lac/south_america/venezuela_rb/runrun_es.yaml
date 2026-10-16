@@ -4,6 +4,7 @@ country: venezuela_rb
 base_url: https://runrun.es
 
 # Categories: nacional(1012, 21925), noticias(36676, 62764)
+# 2026-10-16 (panel 20261016T0917Z): 92 HTTP 503 and 9 s/article at concurrency 8, connect timeouts from a8 on 10-16; slowed and capped
 listing:
   type: api
   pagination_type: page
@@ -17,8 +18,8 @@ listing:
     body: content.rendered
 
 client: http
-concurrency: 8
-rate_limit: 0.2
+concurrency: 2
+rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
 
@@ -36,4 +37,4 @@ cleaning:
   body: clean_wp_html_body
 
 max_pages: null
-max_articles: null
+max_articles: 100
