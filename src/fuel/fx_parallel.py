@@ -50,17 +50,12 @@ def _fetch_country(session, iso3: str) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 
-def refresh_parallel_cache(
-    iso3_currency: dict[str, str], cache_path: Path = PARALLEL_CACHE
-) -> int:
-    """Rebuild the cache for the given ``{iso3: currency}``; return rows written.
-
-    Countries RTFX does not cover, or quotes in another currency than the fuel
-    configs (e.g. dollarised markets), are skipped.
-    """
+def refresh_parallel_cache(cache_path: Path = PARALLEL_CACHE) -> int:
+    """Rebuild the cache from every provider; return rows written. Covers all
+    currencies with a usable parallel series, not only the fuel countries."""
     session = make_session()
     frames = []
-    for iso3, currency in sorted(iso3_currency.items()):
+    for iso3, currency in sorted(RTFX_PARALLEL.items()):
         if currency == "USD":
             continue
         try:
@@ -89,7 +84,6 @@ def refresh_parallel_cache(
     if not frames:
         logger.warning("RTFX: no parallel rates fetched; cache left as is")
         return 0
-    frames = [f for f in frames if f["currency"].iloc[0] not in RTFX_OFFICIAL_LIKE]
     # WFP VAM first, RTFX only for the months VAM does not cover (ETB after
     # 2025-06, SSP gaps).
     frames = _vam_series(session) + frames + _market_series(session, cache_path)
@@ -111,15 +105,11 @@ def refresh_parallel_cache(
     return len(out)
 
 
-# EAP still runs on the legacy pipeline; RTFX covers these three of its
-# currencies, kept here so the series exists when EAP moves to src/fuel.
-EAP_RTFX = {"MMR": "MMK", "LAO": "LAK", "IDN": "IDR"}
-
-# RTFX's "unofficial" column tracks the official rate for these currencies
-# (MMK: CBM reference ~2,100 flat since 2023 while the CBM market trading rate
-# is ~3,660; MWK 1,757 vs ~4,000; BIF ~3,000 vs ~6,100), so it is not used for
-# them. ETB before 2024-07 has the same problem but WFP VAM covers that span.
-RTFX_OFFICIAL_LIKE = {"MMK", "MWK", "BIF", "LYD", "IQD", "SDG"}
+# RTFX's "unofficial" column matches the official rate (within ~2%) for all
+# of its 37 countries except these (checked 2026-10-16; e.g. MMK sits on the
+# CBM reference 2,100 while the CBM market trading rate is ~3,660, MWK 1,757
+# vs ~4,000), so it is used only here. SSP months WFP VAM covers take VAM's.
+RTFX_PARALLEL = {"SOM": "SOS", "SSD": "SSP", "LBN": "LBP"}
 
 # WFP VAM Economic Explorer: monthly unofficial (market) rate, public API.
 _VAM_URL = (
@@ -167,6 +157,8 @@ def _vam_series(session) -> list[pd.DataFrame]:
     return out
 
 
+_VES_URL = "https://ve.dolarapi.com/v1/historicos/dolares"
+SOURCE_VES = "dolarapi-ve:paralelo:monthly-median"
 _ARS_BLUE_URL = "https://api.argentinadatos.com/v1/cotizaciones/dolares/blue"
 _BOB_URL = "https://bo.dolarapi.com/v1/dolares"
 SOURCE_ARS = "argentinadatos:dolar-blue:venta-monthly-median"
@@ -174,9 +166,10 @@ SOURCE_BOB = "dolarapi-bo:binance:venta"
 
 
 def _market_series(session, cache_path: Path) -> list[pd.DataFrame]:
-    """Parallel rates outside RTFX: Argentina's blue dollar (daily history,
-    monthly median) and Bolivia's USDT/Binance rate (current value only, so
-    earlier months are carried over from the existing cache)."""
+    """Parallel rates outside RTFX and VAM: Argentina's blue dollar (daily
+    since 2011) and Venezuela's paralelo (daily since 2026-02), both as monthly
+    medians, and Bolivia's USDT/Binance rate (current value only, so earlier
+    months are carried over from the existing cache)."""
     out: list[pd.DataFrame] = []
     try:
         daily = pd.DataFrame(session.get(_ARS_BLUE_URL, timeout=60).json())
@@ -192,6 +185,24 @@ def _market_series(session, cache_path: Path) -> list[pd.DataFrame]:
         )
     except Exception as exc:
         logger.warning("ARS blue fetch failed: %s", exc)
+    try:
+        hist = pd.DataFrame(session.get(_VES_URL, timeout=60).json())
+        hist = hist[hist["fuente"].eq("paralelo")].assign(
+            date=lambda d: (
+                pd.to_datetime(d["fecha"]).dt.to_period("M").dt.to_timestamp()
+            ),
+            rate=lambda d: pd.to_numeric(d["promedio"], errors="coerce"),
+        )
+        monthly = (
+            hist.dropna(subset=["rate"])
+            .groupby("date")
+            .agg(rate_usd_to_local=("rate", "median"), markets=("rate", "size"))
+        )
+        out.append(
+            monthly.reset_index().assign(currency="VES", iso3="VEN", source=SOURCE_VES)
+        )
+    except Exception as exc:
+        logger.warning("VES parallel fetch failed: %s", exc)
     previous = load_parallel(cache_path)
     bob = previous[previous["source"].eq(SOURCE_BOB)]
     try:

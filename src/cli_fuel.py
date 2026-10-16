@@ -33,11 +33,10 @@ def register(fuel_group, opts: dict):
         n_new = refresh_fx_cache(sorted(currencies))
         click.echo(f"FX cache: {n_new} new rows for {len(currencies)} currencies")
 
-        # Parallel-market rates (RTFX) are monthly; refetch at most weekly.
+        # Parallel-market rates are mostly monthly; refetch at most weekly.
         import time
 
-        from core.config import load_countries
-        from fuel.fx_parallel import EAP_RTFX, PARALLEL_CACHE, refresh_parallel_cache
+        from fuel.fx_parallel import PARALLEL_CACHE, refresh_parallel_cache
 
         age = (
             time.time() - PARALLEL_CACHE.stat().st_mtime
@@ -47,13 +46,7 @@ def register(fuel_group, opts: dict):
         if age is not None and age < 6 * 86400 and not force_parallel:
             click.echo("Parallel FX cache is < 6 days old; skipped")
             return
-        meta = load_countries()
-        iso3_currency = {
-            meta[s]["iso3"]: meta[s]["currency"]
-            for s in {e["country_slug"] for e in registry.values()}
-            if meta.get(s, {}).get("iso3") and meta[s].get("currency")
-        }
-        n_par = refresh_parallel_cache({**iso3_currency, **EAP_RTFX})
+        n_par = refresh_parallel_cache()
         click.echo(f"Parallel FX cache: {n_par} monthly rows")
 
     @fuel_group.command("gate-baseline")
