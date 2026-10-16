@@ -29,12 +29,17 @@ CONFIGS = REPO_ROOT / "src" / "text" / "configs"
 SCRIPTS = REPO_ROOT / ".claude" / "skills" / "refresh-text-region" / "scripts"
 DISABLED = re.compile(r"^enabled:\s*false\b", re.I | re.M)
 STATES = ("DONE", "TIMEOUT", "FAIL", "STUCK")
+EXCLUDE_FILE = REPO_ROOT / "src" / "configs" / "panels" / "text_exclude_sources.yaml"
 
 
 def panel_sources(countries: list[str]) -> dict[tuple[str, str, str], list[str]]:
-    """(region, sub, country) -> enabled source keys, filtered like launch_refresh.sh."""
+    """(region, sub, country) -> enabled source keys, filtered like launch_refresh.sh,
+    minus src/configs/panels/text_exclude_sources.yaml."""
     from core.config import get_country_path
 
+    import yaml
+
+    exclude = yaml.safe_load(EXCLUDE_FILE.read_text()) or {} if EXCLUDE_FILE.exists() else {}
     out = {}
     for c in countries:
         try:
@@ -44,7 +49,8 @@ def panel_sources(countries: list[str]) -> dict[tuple[str, str, str], list[str]]
             region, sub = d.parent.parent.name, d.parent.name
         d = CONFIGS / region / sub / c
         out[(region, sub, c)] = sorted(
-            y.stem for y in d.glob("*.yaml") if not y.stem.startswith("_") and not DISABLED.search(y.read_text())
+            y.stem for y in d.glob("*.yaml")
+            if not y.stem.startswith("_") and not DISABLED.search(y.read_text()) and y.stem not in exclude.get(c, [])
         )
     return out
 

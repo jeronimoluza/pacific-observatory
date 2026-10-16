@@ -1,0 +1,12 @@
+# Sources that `po text panel` leaves out of every text panel (country -> source keys).
+# Prod collect is not affected: these configs stay enabled.
+# 2026-10-16, user decision: Cloudflare/anti-bot 403 (or 428/tarpit) from a8 in panel
+# 20261016T0917Z, also with a library User-Agent; each burned the 300 s cap every run.
+ukraine: [unian, 24tv.ua, censor.net, fakty_ua, ekonomichna_pravda]
+bosnia_and_herzegovina: [6yka]
+myanmar: [gnlm]
+south_korea: [kukmin_ilbo]
+venezuela_rb: [la_patilla]
+iraq: [newsabah]
+vietnam: [dantri]
+indonesia: [antara]
