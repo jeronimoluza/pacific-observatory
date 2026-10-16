@@ -16,7 +16,11 @@ from core.storage import save_csv
 from .config import ProductSpec, build_fuel_registry
 from .fx import DEFAULT_FX_CACHE, attach_fx_and_usd
 from .fx_parallel import PARALLEL_CACHE, attach_parallel
-from .station_aggregate import STATS_FILE, collapse_stations
+from .station_aggregate import (
+    STATION_COLUMNS,
+    attach_station_stats,
+    station_outputs,
+)
 from .paths import canonical_observations_path_for_entry
 
 logger = logging.getLogger(__name__)
@@ -409,23 +413,14 @@ def build_country_outputs(
         return {"product_path": product_path, "family_path": family_path, "rows": 0}
 
     combined = pd.concat(frames, ignore_index=True)
-    combined, station_stats = collapse_stations(
-        combined,
-        {
-            e["source_key"]: e["station_aggregate"]
-            for e in enabled_entries
-            if e.get("station_aggregate") is not None
-        },
-    )
-    if not station_stats.empty:
-        out_dir.mkdir(parents=True, exist_ok=True)
-        station_stats.to_csv(out_dir / STATS_FILE, index=False, date_format="%Y-%m-%d")
+    combined, station_stats = station_outputs(combined, enabled_entries, out_dir)
     collapsed = _collapse_source_rows(combined)
     expanded = _expand_with_carry_forward(collapsed)
     resolved = _resolve_overlaps(expanded)
     family = _build_family_output(resolved, fx_cache_path=fx_cache_path)
 
-    save_csv(resolved, product_path, columns=_PRODUCT_COLUMNS)
+    resolved = attach_station_stats(resolved, station_stats)
+    save_csv(resolved, product_path, columns=_PRODUCT_COLUMNS + STATION_COLUMNS)
     save_csv(family, family_path, columns=_FAMILY_COLUMNS)
     return {
         "product_path": product_path,

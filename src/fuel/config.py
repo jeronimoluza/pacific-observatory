@@ -160,6 +160,10 @@ class FuelSourceConfig(BaseModel):
     ]
     carry_forward: bool = False
     station_aggregate: StationAggregate | None = None
+    # What one raw row's location is; rows without one are "national".
+    station_type: Literal[
+        "station", "market", "city", "region", "national"
+    ] | None = None
     products: dict[str, ProductSpec]  # raw_product_name → ProductSpec
 
     # Resolved from path + countries.yaml (not in YAML file)
@@ -381,6 +385,7 @@ def build_fuel_registry(
             "cadence": cfg.cadence,
             "carry_forward": cfg.carry_forward,
             "station_aggregate": cfg.station_aggregate,
+            "station_type": cfg.station_type,
             "country_slug": cfg.country_slug,
             "country_name": cfg.country_name,
             "iso3": cfg.iso3,

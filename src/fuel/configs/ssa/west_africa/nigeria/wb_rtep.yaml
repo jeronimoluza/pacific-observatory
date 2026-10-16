@@ -7,8 +7,9 @@ priority: 20
 cadence: monthly
 carry_forward: false
 # One row per RTEP market; the national price is their robust median, and the
-# RTEP national-average row is left out (it is an aggregate itself).
-station_aggregate: {stat: median, trim: mad, k: 3, min_stations: 5, max_dispersion: 0.25, exclude: [national_avg]}
+# RTEP national-average rows are left out (they are aggregates themselves).
+station_aggregate: {stat: median, trim: mad, k: 3, min_stations: 5, max_dispersion: 0.25, exclude: [national_avg, "Market Average"]}
+station_type: market
 
 products:
   "Fuel diesel":

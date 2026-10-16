@@ -15,6 +15,7 @@ from core.state import read_state, set_checked, set_last_data_date, write_state
 from core.storage import load_csv, save_csv
 
 from .gates import FailureRecorder, record_collect
+from .station_aggregate import fill_station, hash_fields
 from .paths import canonical_observations_path_for_entry
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ COLUMNS = [
     "city",
     "address",
     "station",
+    "station_type",
     "scrape_ts",
     "observation_hash",
 ]
@@ -193,16 +195,9 @@ def run_collection(
 
         new_df = new_df.copy()
         new_df["scrape_ts"] = run_ts.isoformat()
-        # station joins the hash only when set, so rows of sources without it
-        # keep the hashes they were stored with.
+        new_df = fill_station(new_df, entry.get("station_type"))
         new_df["observation_hash"] = new_df.apply(
-            lambda row: observation_hash(
-                row,
-                _HASH_FIELDS + ["station"]
-                if pd.notna(row.get("station"))
-                else _HASH_FIELDS,
-            ),
-            axis=1,
+            lambda row: observation_hash(row, hash_fields(row, _HASH_FIELDS)), axis=1
         )
 
         if entry.get("full_refresh"):
