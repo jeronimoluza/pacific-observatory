@@ -447,6 +447,7 @@ def run_publish(
                 allow_country_drop=allow_country_drop,
                 status_dir=status_dir,
                 known_failures=known_failures,
+                data_dir=data_dir,
             )
 
         logger.info("Assembling data for %s ...", reg)

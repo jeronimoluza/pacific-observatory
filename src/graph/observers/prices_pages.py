@@ -13,6 +13,15 @@ def observe(node) -> list[dict]:
     for page in declared(node, (".html",)):
         size = page.stat().st_size if page.exists() else 0
         drift = [] if size else ["missing" if not page.exists() else "empty"]
-        out.append(row(node, f"{page.parent.name}/{page.name}", size > 0, None, mtime(page),
-                       drift=drift, extra={"mb": round(size / 2**20, 1)}))
+        out.append(
+            row(
+                node,
+                f"{page.parent.name}/{page.name}",
+                size > 0,
+                None,
+                mtime(page),
+                drift=drift,
+                extra={"mb": round(size / 2**20, 1)},
+            )
+        )
     return out

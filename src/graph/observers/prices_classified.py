@@ -17,7 +17,10 @@ from graph.observe import mtime, node_path, parquet_rows, root_of, row
 def observe(node) -> list[dict]:
     ledger = Path(node_path(node, "ledger", "_decide.jsonl"))
     cache = root_of(node_path(node, "output", "decisions_hierlex"))
-    decisions_dir, classified_dir = cache / "decisions_hierlex", cache / "classified_hierlex"
+    decisions_dir, classified_dir = (
+        cache / "decisions_hierlex",
+        cache / "classified_hierlex",
+    )
     last: dict[str, dict] = {}
     if ledger.exists():
         for line in ledger.read_text().splitlines():
@@ -41,9 +44,21 @@ def observe(node) -> list[dict]:
         multi = e is not None and len(e.get("countries", [])) > 1
         if e is not None and n is not None and not multi and n != e.get("decisions"):
             drift.append(f"decisions_rows: ledger {e.get('decisions')} != parquet {n}")
-        extra = {k: e.get(k) for k in ("bundle", "tau", "policy", "classified", "states")} if e else {}
-        out.append(row(node, c, e is not None and c in on_disk,
-                       e.get("decisions") if e and not multi else n,
-                       e["written_at"] if e else mtime(dec), (e or {}).get("git_head", "")[:12] or None,
-                       drift, {**extra, "parquet_rows": n}))
+        extra = (
+            {k: e.get(k) for k in ("bundle", "tau", "policy", "classified", "states")}
+            if e
+            else {}
+        )
+        out.append(
+            row(
+                node,
+                c,
+                e is not None and c in on_disk,
+                e.get("decisions") if e and not multi else n,
+                e["written_at"] if e else mtime(dec),
+                (e or {}).get("git_head", "")[:12] or None,
+                drift,
+                {**extra, "parquet_rows": n},
+            )
+        )
     return out

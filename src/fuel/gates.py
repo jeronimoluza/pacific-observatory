@@ -171,6 +171,27 @@ def qa_jumps(countries: list[dict]) -> list[dict]:
     return out
 
 
+def station_flags(countries: list[dict], data_dir: Path) -> list[dict]:
+    """Flagged periods (few stations or wide dispersion) in the last year of any
+    station_stats.csv under the countries' data dirs."""
+    import pandas as pd
+
+    since = (datetime.now(timezone.utc) - pd.Timedelta(days=QA_LOOKBACK_DAYS)).strftime(
+        "%Y-%m-%d"
+    )
+    out: list[dict] = []
+    for c in countries:
+        base = data_dir / c["region"] / c["subregion"] / c["country_slug"]
+        for path in sorted(base.glob("*/station_stats.csv")):
+            st = pd.read_csv(path, dtype=str)
+            hit = st[st["flagged"].str.lower().eq("true") & (st.iloc[:, 0] >= since)]
+            for r in hit.to_dict("records"):
+                out.append(
+                    {"country": c["country_slug"], "source": path.parent.name, **r}
+                )
+    return out
+
+
 def check_publish(
     region: str,
     countries: list[dict],
@@ -178,6 +199,7 @@ def check_publish(
     allow_country_drop: bool = False,
     status_dir: Path = STATUS_DIR,
     known_failures: Path = KNOWN_FAILURES,
+    data_dir: Path = _PROJECT_ROOT / "data" / "fuel",
 ) -> dict:
     """Run both gates; raise ClickException if the country gate blocks."""
     status = read_status(region, status_dir)
@@ -215,6 +237,7 @@ def check_publish(
         )
 
     gate["qa_jumps"] = qa_jumps(countries)
+    gate["station_flags"] = station_flags(countries, data_dir)
     if gate["qa_jumps"]:
         logger.warning(
             "[gate] %s: %d price jump(s) > %sx the rolling median (marked, not dropped)",
@@ -235,7 +258,9 @@ def check_publish(
             f"fix the build or rerun with --allow-country-drop. Status: {path}"
         )
     gate["status"] = "published"
-    yellow = dropped or gate["new_failures"] or gate["qa_jumps"]
+    yellow = (
+        dropped or gate["new_failures"] or gate["qa_jumps"] or gate["station_flags"]
+    )
     gate["color"] = "amarillo" if yellow else "verde"
     return gate
 

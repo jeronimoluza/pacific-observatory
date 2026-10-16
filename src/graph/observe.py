@@ -19,30 +19,59 @@ from pathlib import Path
 
 from graph.manifest import Node
 
-ROW_KEYS = ("node", "partition", "done", "rows", "freshness_utc", "sha", "drift", "extra")
+ROW_KEYS = (
+    "node",
+    "partition",
+    "done",
+    "rows",
+    "freshness_utc",
+    "sha",
+    "drift",
+    "extra",
+)
 LOGS_ROOT = Path.home() / "po" / "logs" / "weekly"
 
 
 def week() -> str:
-    return os.environ.get("PO_GRAPH_WEEK") or datetime.now(timezone.utc).strftime("%G-W%V")
+    return os.environ.get("PO_GRAPH_WEEK") or datetime.now(timezone.utc).strftime(
+        "%G-W%V"
+    )
 
 
 def week_tag() -> str:
     return "w" + week().split("-W")[1]
 
 
-def row(node: Node, partition: str, done: bool, rows: int | None = None, freshness=None,
-        sha: str | None = None, drift: list[str] | None = None, extra: dict | None = None) -> dict:
+def row(
+    node: Node,
+    partition: str,
+    done: bool,
+    rows: int | None = None,
+    freshness=None,
+    sha: str | None = None,
+    drift: list[str] | None = None,
+    extra: dict | None = None,
+) -> dict:
     if isinstance(freshness, (int, float)):
         freshness = iso(freshness)
     elif freshness:
         try:
             dt = datetime.fromisoformat(str(freshness).replace("Z", "+00:00"))
-            freshness = iso((dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)).timestamp())
+            freshness = iso(
+                (dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)).timestamp()
+            )
         except ValueError:
             freshness = str(freshness)
-    return {"node": node.id, "partition": partition, "done": done, "rows": rows,
-            "freshness_utc": freshness, "sha": sha, "drift": drift or [], "extra": extra or {}}
+    return {
+        "node": node.id,
+        "partition": partition,
+        "done": done,
+        "rows": rows,
+        "freshness_utc": freshness,
+        "sha": sha,
+        "drift": drift or [],
+        "extra": extra or {},
+    }
 
 
 def iso(ts: float) -> str:
@@ -69,7 +98,7 @@ def node_path(node: Node, role: str = "output", contains: str = "") -> str | Non
 def root_of(template: str) -> Path:
     """The directory before the first placeholder or glob in `template`."""
     cut = re.search(r"[<*{]", template)
-    head = template[:cut.start()] if cut else template
+    head = template[: cut.start()] if cut else template
     return Path(head if head.endswith("/") or not cut else head.rsplit("/", 1)[0])
 
 
@@ -108,7 +137,14 @@ def observe(node: Node) -> list[dict]:
         mod = importlib.import_module(f"graph.observers.{node.observer}")
         rows = mod.observe(node)
     except Exception as e:  # noqa: BLE001 - one broken observer must not hide the others
-        return [row(node, "_observer", False, drift=[f"observer_error: {type(e).__name__}: {e}"])]
+        return [
+            row(
+                node,
+                "_observer",
+                False,
+                drift=[f"observer_error: {type(e).__name__}: {e}"],
+            )
+        ]
     for r in rows:
         r.setdefault("node", node.id)
         r.setdefault("drift", [])

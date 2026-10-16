@@ -28,9 +28,21 @@ def check(rows: list[dict]) -> list[dict]:
             continue
         part = f"{r.region}/{r.country}/{r.source}"
         if r.new_zero_streak:
-            out.append({"node": node, "partition": part, "color": "rojo",
-                        "msg": f"racha nueva de ceros: {r.zero_streak} corridas con 0 filas"})
+            out.append(
+                {
+                    "node": node,
+                    "partition": part,
+                    "color": "rojo",
+                    "msg": f"racha nueva de ceros: {r.zero_streak} corridas con 0 filas",
+                }
+            )
         if r.over_budget:
-            out.append({"node": node, "partition": part, "color": "amarillo",
-                        "msg": f"duración {r.last_duration_s:.0f}s > presupuesto {r.budget_prev_s:.0f}s"})
+            out.append(
+                {
+                    "node": node,
+                    "partition": part,
+                    "color": "amarillo",
+                    "msg": f"duración {r.last_duration_s:.0f}s > presupuesto {r.budget_prev_s:.0f}s",
+                }
+            )
     return out

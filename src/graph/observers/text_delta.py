@@ -22,12 +22,18 @@ EVENT = re.compile(r"^\[(DONE|TIMEOUT|FAIL|STUCK)\s*\]\s+(\S+)")
 
 
 def list_runs(staging_root: Path = STAGING_ROOT) -> list[str]:
-    return sorted(p.name for p in staging_root.iterdir() if p.is_dir() and RUN_ID.match(p.name))
+    return sorted(
+        p.name for p in staging_root.iterdir() if p.is_dir() and RUN_ID.match(p.name)
+    )
 
 
 def run_regions(run_dir: Path) -> list[str]:
-    found = {p.name[len("events_"):-len(".log")] for p in run_dir.glob("events_*.log")}
-    found |= {p.name for p in run_dir.iterdir() if p.is_dir() and not p.name.startswith(".")}
+    found = {
+        p.name[len("events_") : -len(".log")] for p in run_dir.glob("events_*.log")
+    }
+    found |= {
+        p.name for p in run_dir.iterdir() if p.is_dir() and not p.name.startswith(".")
+    }
     return [r for r in REGIONS if r in found] + sorted(found - set(REGIONS))
 
 
@@ -75,18 +81,29 @@ def delta_sources(run_dir: Path, region: str) -> list[dict]:
         tag = f"{d.parent.name}__{d.name}"
         seen.add(tag)
         news = d / "news.csv"
-        rows.append({
-            "run": run_dir.name, "region": region, "tag": tag,
-            "key": str(d.relative_to(run_dir / region)),
-            "state": last.get(tag, "no_event"),
-            "has_news_csv": news.exists(),
-            "news_rows": news_rows(news) if news.exists() else 0,
-        })
+        rows.append(
+            {
+                "run": run_dir.name,
+                "region": region,
+                "tag": tag,
+                "key": str(d.relative_to(run_dir / region)),
+                "state": last.get(tag, "no_event"),
+                "has_news_csv": news.exists(),
+                "news_rows": news_rows(news) if news.exists() else 0,
+            }
+        )
     for tag in sorted(set(last) - seen):
-        rows.append({
-            "run": run_dir.name, "region": region, "tag": tag, "key": None,
-            "state": last[tag], "has_news_csv": False, "news_rows": 0,
-        })
+        rows.append(
+            {
+                "run": run_dir.name,
+                "region": region,
+                "tag": tag,
+                "key": None,
+                "state": last[tag],
+                "has_news_csv": False,
+                "news_rows": 0,
+            }
+        )
     return rows
 
 
@@ -97,12 +114,17 @@ def region_status(run_dir: Path, region: str) -> dict:
     files = glob.glob(str(run_dir / region / "*" / "*" / "*" / "news.csv"))
     merged = merged_marker(run_dir, region)
     return {
-        "run": run_dir.name, "region": region,
-        "done": counts["DONE"], "timeout": counts["TIMEOUT"],
-        "fail": counts["FAIL"], "stuck": counts["STUCK"],
+        "run": run_dir.name,
+        "region": region,
+        "done": counts["DONE"],
+        "timeout": counts["TIMEOUT"],
+        "fail": counts["FAIL"],
+        "stuck": counts["STUCK"],
         "sources_with_rows": len(files),
         "news_rows": sum(news_rows(Path(f)) for f in files),
-        "events_log": log.exists(), "merged": merged is not None, "merged_note": merged,
+        "events_log": log.exists(),
+        "merged": merged is not None,
+        "merged_note": merged,
     }
 
 
@@ -122,7 +144,16 @@ def parse_status_md(run_dir: Path) -> list[dict]:
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
         if len(cells) != 8 or cells[0] in ("region", "---"):
             continue
-        keys = ["region", "done", "timeout", "fail", "stuck", "sources_with_rows", "news_rows", "note"]
+        keys = [
+            "region",
+            "done",
+            "timeout",
+            "fail",
+            "stuck",
+            "sources_with_rows",
+            "news_rows",
+            "note",
+        ]
         row = dict(zip(keys, cells))
         for k in keys[1:7]:
             row[k] = int(row[k]) if row[k] else None
@@ -138,7 +169,9 @@ def compare_status_md(status: dict, run_dir: Path) -> list[str]:
         mine = ours.get(row["region"])
         for c in cols:
             if mine is None or mine[c] != row[c]:
-                diffs.append(f"{row['region']}.{c}: STATUS.md={row[c]} observed={mine and mine[c]}")
+                diffs.append(
+                    f"{row['region']}.{c}: STATUS.md={row[c]} observed={mine and mine[c]}"
+                )
     return diffs
 
 
@@ -154,13 +187,36 @@ def observe(node) -> list[dict]:
         return []
     run_dir = STAGING_ROOT / list_runs(STAGING_ROOT)[-1]
     st = run_status(run_dir)
-    ts = datetime.strptime(st["run"], "%Y%m%dT%H%MZ").replace(tzinfo=timezone.utc).timestamp()
+    ts = (
+        datetime.strptime(st["run"], "%Y%m%dT%H%MZ")
+        .replace(tzinfo=timezone.utc)
+        .timestamp()
+    )
     out = []
     for r in st["regions"]:
         drift = ["done_not_merged"] if st["done"] and not r["merged"] else []
-        out.append(row(node, r["region"], r["merged"], r["news_rows"], ts, drift=drift,
-                       extra={k: r[k] for k in ("run", "done", "timeout", "fail", "stuck",
-                                                "sources_with_rows", "merged_note")}))
+        out.append(
+            row(
+                node,
+                r["region"],
+                r["merged"],
+                r["news_rows"],
+                ts,
+                drift=drift,
+                extra={
+                    k: r[k]
+                    for k in (
+                        "run",
+                        "done",
+                        "timeout",
+                        "fail",
+                        "stuck",
+                        "sources_with_rows",
+                        "merged_note",
+                    )
+                },
+            )
+        )
     return out
 
 
@@ -171,12 +227,23 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--run", help="run id (default: newest)")
     ap.add_argument("--staging-root", type=Path, default=STAGING_ROOT)
     ap.add_argument("--sources", action="store_true", help="print one row per source")
-    ap.add_argument("--check", action="store_true", help="exit 1 unless equal to STATUS.md")
+    ap.add_argument(
+        "--check", action="store_true", help="exit 1 unless equal to STATUS.md"
+    )
     a = ap.parse_args(argv)
     run_dir = a.staging_root / (a.run or list_runs(a.staging_root)[-1])
     st = run_status(run_dir)
     print(f"run {st['run']}  .done={st['done']}  STATUS.md={st['status_md']}")
-    cols = ["region", "done", "timeout", "fail", "stuck", "sources_with_rows", "news_rows", "merged"]
+    cols = [
+        "region",
+        "done",
+        "timeout",
+        "fail",
+        "stuck",
+        "sources_with_rows",
+        "news_rows",
+        "merged",
+    ]
     print(pd.DataFrame(st["regions"], columns=cols).to_string(index=False))
     if a.sources:
         rows = [s for r in run_regions(run_dir) for s in delta_sources(run_dir, r)]
@@ -184,7 +251,11 @@ def main(argv: list[str] | None = None) -> int:
             print(pd.DataFrame(rows).drop(columns="run").to_string(index=False))
     if a.check:
         diffs = compare_status_md(st, run_dir)
-        print("STATUS.md: identical" if not diffs else "STATUS.md differs:\n  " + "\n  ".join(diffs))
+        print(
+            "STATUS.md: identical"
+            if not diffs
+            else "STATUS.md differs:\n  " + "\n  ".join(diffs)
+        )
         return 1 if diffs else 0
     return 0
 

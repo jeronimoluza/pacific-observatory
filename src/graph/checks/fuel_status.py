@@ -42,7 +42,11 @@ def check(rows: list[dict]) -> list[dict]:
                     "msg": f"sin publish desde {fresh or 'nunca'}",
                 }
             )
-        new = [d for d in r["drift"] if d.startswith(("new_failures", "qa_jumps"))]
+        new = [
+            d
+            for d in r["drift"]
+            if d.startswith(("new_failures", "qa_jumps", "station_flags"))
+        ]
         if new:
             out.append(
                 {

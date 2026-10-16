@@ -21,7 +21,9 @@ from pathlib import Path
 NODE = "fx"
 CACHE = Path.home() / "po/data/prices/_fx/fx_cache.csv"
 
-_EXCURSION = re.compile(r"FX EXCURSION: (\S+) leaves .* for \d+ month\(s\) \((\S+)\.\.(\S+)\)")
+_EXCURSION = re.compile(
+    r"FX EXCURSION: (\S+) leaves .* for \d+ month\(s\) \((\S+)\.\.(\S+)\)"
+)
 _NO_OVERLAY = re.compile(r"get no overlay: (.*)$")
 _DECLARED = re.compile(r"(\w+) \(declared ([^)]*)\)")
 
@@ -45,8 +47,14 @@ def read_cache(path: Path) -> dict:
                 continue
             if last is None or d > last:
                 last = d
-    return {"kind": "cache", "path": str(path), "lines": n, "last_date": last,
-            "bad_lines": n_bad, "bad_examples": bad}
+    return {
+        "kind": "cache",
+        "path": str(path),
+        "lines": n,
+        "last_date": last,
+        "bad_lines": n_bad,
+        "bad_examples": bad,
+    }
 
 
 def read_logs(paths: list[Path]) -> list[dict]:
@@ -57,16 +65,28 @@ def read_logs(paths: list[Path]) -> list[dict]:
                 excursions[(m[1], m[2], m[3])] = line.split("FX EXCURSION: ", 1)[1]
             elif m := _NO_OVERLAY.search(line):
                 missing.update(dict(_DECLARED.findall(m[1])))
-    return ([{"kind": "excursion", "country": c, "start": s, "end": e, "line": t}
-             for (c, s, e), t in sorted(excursions.items())]
-            + [{"kind": "no_overlay", "country": c, "declared": d} for c, d in sorted(missing.items())])
+    return [
+        {"kind": "excursion", "country": c, "start": s, "end": e, "line": t}
+        for (c, s, e), t in sorted(excursions.items())
+    ] + [
+        {"kind": "no_overlay", "country": c, "declared": d}
+        for c, d in sorted(missing.items())
+    ]
 
 
-def read(cache: Path = CACHE, logs: list[Path] | None = None, today: date | None = None,
-         countries: list[str] | None = None) -> list[dict]:
+def read(
+    cache: Path = CACHE,
+    logs: list[Path] | None = None,
+    today: date | None = None,
+    countries: list[str] | None = None,
+) -> list[dict]:
     today = today or datetime.now(timezone.utc).date()
     rows = [{**read_cache(cache), "today": today}]
-    rows += [r for r in read_logs(logs or []) if countries is None or r["country"] in countries]
+    rows += [
+        r
+        for r in read_logs(logs or [])
+        if countries is None or r["country"] in countries
+    ]
     return rows
 
 
@@ -74,8 +94,14 @@ def check(rows: list[dict]) -> list[dict]:
     """Registry hook: no observer reads the cache, so this only points at the direct run."""
     if not any(r["node"] == NODE for r in rows):
         return []
-    return [{"node": NODE, "partition": "*", "color": "amarillo",
-             "msg": "requiere corrida directa: python -m graph.checks.fx --log <build log>"}]
+    return [
+        {
+            "node": NODE,
+            "partition": "*",
+            "color": "amarillo",
+            "msg": "requiere corrida directa: python -m graph.checks.fx --log <build log>",
+        }
+    ]
 
 
 def evaluate(rows: list[dict]) -> list[dict]:
@@ -87,33 +113,63 @@ def evaluate(rows: list[dict]) -> list[dict]:
             floor = r["today"] - timedelta(days=FX_MAX_LAG_DAYS)
             red = []
             if r["last_date"] is None or r["last_date"] < floor:
-                red.append(f"cache termina {r['last_date']}, < hoy - {FX_MAX_LAG_DAYS} d ({floor})")
+                red.append(
+                    f"cache termina {r['last_date']}, < hoy - {FX_MAX_LAG_DAYS} d ({floor})"
+                )
             if r["bad_lines"]:
-                red.append(f"{r['bad_lines']} líneas mal formadas: {'; '.join(r['bad_examples'])}")
-            out += [{"node": NODE, "partition": "*", "color": "rojo", "msg": m} for m in red]
+                red.append(
+                    f"{r['bad_lines']} líneas mal formadas: {'; '.join(r['bad_examples'])}"
+                )
+            out += [
+                {"node": NODE, "partition": "*", "color": "rojo", "msg": m} for m in red
+            ]
         elif r["kind"] == "excursion":
-            out.append({"node": NODE, "partition": r["country"], "color": "amarillo",
-                        "msg": f"excursión {r['start']}..{r['end']}: {r['line']}"})
+            out.append(
+                {
+                    "node": NODE,
+                    "partition": r["country"],
+                    "color": "amarillo",
+                    "msg": f"excursión {r['start']}..{r['end']}: {r['line']}",
+                }
+            )
         else:
-            out.append({"node": NODE, "partition": r["country"], "color": "amarillo",
-                        "msg": f"sin overlay de FX (moneda declarada {r['declared'] or '?'})"})
+            out.append(
+                {
+                    "node": NODE,
+                    "partition": r["country"],
+                    "color": "amarillo",
+                    "msg": f"sin overlay de FX (moneda declarada {r['declared'] or '?'})",
+                }
+            )
     return out
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m graph.checks.fx")
     ap.add_argument("--cache", type=Path, default=CACHE)
-    ap.add_argument("--log", type=Path, action="append", default=[],
-                    help="build log with the explorer's FX warnings (repeatable)")
-    ap.add_argument("--today", type=date.fromisoformat, help="YYYY-MM-DD (default: today UTC)")
-    ap.add_argument("--countries", help="comma-separated slugs or a panel name (panel36)")
+    ap.add_argument(
+        "--log",
+        type=Path,
+        action="append",
+        default=[],
+        help="build log with the explorer's FX warnings (repeatable)",
+    )
+    ap.add_argument(
+        "--today", type=date.fromisoformat, help="YYYY-MM-DD (default: today UTC)"
+    )
+    ap.add_argument(
+        "--countries", help="comma-separated slugs or a panel name (panel36)"
+    )
     a = ap.parse_args(argv)
     countries = None
     if a.countries:
         from prices.weekly.panels import resolve_countries
+
         countries = resolve_countries(a.countries)
     rows = read(a.cache, a.log, a.today, countries)
-    print(f"cache {rows[0]['path']}: {rows[0]['lines']:,} líneas, última fecha {rows[0]['last_date']}")
+    print(
+        f"cache {rows[0]['path']}: {rows[0]['lines']:,} líneas, última fecha {rows[0]['last_date']}"
+    )
     findings = evaluate(rows)
     for f in findings:
         print(f"{f['color']:<8} {f['node']}  {f['partition']:<24} {f['msg']}")

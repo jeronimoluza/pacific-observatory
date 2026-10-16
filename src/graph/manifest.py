@@ -22,9 +22,20 @@ ROLES = ("output", "state", "ledger", "status")
 COLORS = ("rojo", "amarillo")
 
 NODE_KEYS = {
-    "estado", "desc", "code_ref", "code_paths", "code_external", "run",
-    "paths", "inputs", "external_inputs", "partition", "fingerprint",
-    "freshness", "checks", "observer",
+    "estado",
+    "desc",
+    "code_ref",
+    "code_paths",
+    "code_external",
+    "run",
+    "paths",
+    "inputs",
+    "external_inputs",
+    "partition",
+    "fingerprint",
+    "freshness",
+    "checks",
+    "observer",
 }
 FINGERPRINT_KEYS = {"code", "config", "deps", "params", "reuse", "note"}
 PATH_KEYS = {"path", "machine", "role"}
@@ -52,14 +63,24 @@ def _schema_errors(nid: str, spec) -> list[str]:
     errs = [f"{nid}: clave desconocida {k!r}" for k in sorted(set(spec) - NODE_KEYS)]
     if spec.get("estado") not in ESTADOS:
         errs.append(f"{nid}: estado {spec.get('estado')!r} no está en {ESTADOS}")
-    for key in ("code_paths", "code_external", "inputs", "external_inputs", "paths", "checks"):
+    for key in (
+        "code_paths",
+        "code_external",
+        "inputs",
+        "external_inputs",
+        "paths",
+        "checks",
+    ):
         if key in spec and not isinstance(spec[key], list):
             errs.append(f"{nid}: {key} debe ser lista")
     fp = spec.get("fingerprint", {})
     if not isinstance(fp, dict):
         errs.append(f"{nid}: fingerprint debe ser mapping")
     else:
-        errs += [f"{nid}: fingerprint.{k} desconocida" for k in sorted(set(fp) - FINGERPRINT_KEYS)]
+        errs += [
+            f"{nid}: fingerprint.{k} desconocida"
+            for k in sorted(set(fp) - FINGERPRINT_KEYS)
+        ]
         if fp.get("reuse") and not re.fullmatch(r"[\w.]+:\w+", fp["reuse"]):
             errs.append(f"{nid}: fingerprint.reuse debe ser 'modulo:funcion'")
     for p in spec.get("paths", []) if isinstance(spec.get("paths"), list) else []:
@@ -68,7 +89,11 @@ def _schema_errors(nid: str, spec) -> list[str]:
         elif p.get("machine") not in MACHINES or p.get("role", "output") not in ROLES:
             errs.append(f"{nid}: machine/role inválido en {p['path']!r}")
     for c in spec.get("checks", []) if isinstance(spec.get("checks"), list) else []:
-        if not isinstance(c, dict) or set(c) - CHECK_KEYS or c.get("color") not in COLORS:
+        if (
+            not isinstance(c, dict)
+            or set(c) - CHECK_KEYS
+            or c.get("color") not in COLORS
+        ):
             errs.append(f"{nid}: check mal formado {c!r}")
     return errs
 
@@ -81,7 +106,9 @@ def load(manifest_dir: Path = MANIFEST_DIR) -> tuple[dict[str, Node], list[str]]
         doc = yaml.safe_load(f.read_text()) or {}
         pipeline = doc.get("pipeline", f.stem)
         if set(doc) - {"pipeline", "code_ref", "nodes"}:
-            errors.append(f"{f.name}: claves de nivel superior desconocidas {sorted(set(doc) - {'pipeline', 'code_ref', 'nodes'})}")
+            errors.append(
+                f"{f.name}: claves de nivel superior desconocidas {sorted(set(doc) - {'pipeline', 'code_ref', 'nodes'})}"
+            )
         for nid, spec in (doc.get("nodes") or {}).items():
             errs = _schema_errors(nid, spec)
             if nid in nodes:
@@ -113,7 +140,7 @@ def topo_order(nodes: dict[str, Node]) -> tuple[list[str], list[str]]:
         if state.get(nid) == "done":
             return
         if state.get(nid) == "open":
-            cycles.append(" -> ".join(stack[stack.index(nid):] + [nid]))
+            cycles.append(" -> ".join(stack[stack.index(nid) :] + [nid]))
             return
         state[nid] = "open"
         for dep in nodes[nid].inputs:
@@ -125,4 +152,3 @@ def topo_order(nodes: dict[str, Node]) -> tuple[list[str], list[str]]:
     for nid in sorted(nodes):
         visit(nid, [])
     return order, cycles
-

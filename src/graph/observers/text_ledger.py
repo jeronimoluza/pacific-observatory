@@ -25,14 +25,27 @@ def ledger_sources(region: str, state_dir: Path = STATE_DIR) -> dict[str, dict]:
     conn = sqlite3.connect(f"file:{state_dir / f'{region}.sqlite'}?mode=ro", uri=True)
     try:
         out = {
-            k: {"watermark": w, "n_news": nn, "n_urls": nu, "ledger_updated": u, "blocked": None}
+            k: {
+                "watermark": w,
+                "n_news": nn,
+                "n_urls": nu,
+                "ledger_updated": u,
+                "blocked": None,
+            }
             for k, w, nn, nu, u in conn.execute(
                 "SELECT key, watermark, n_news, n_urls, updated FROM sources ORDER BY key"
             )
         }
         for k, err in conn.execute("SELECT key, error FROM blocked ORDER BY key"):
-            out.setdefault(k, {"watermark": None, "n_news": None, "n_urls": None,
-                               "ledger_updated": None})["blocked"] = err
+            out.setdefault(
+                k,
+                {
+                    "watermark": None,
+                    "n_news": None,
+                    "n_urls": None,
+                    "ledger_updated": None,
+                },
+            )["blocked"] = err
     finally:
         conn.close()
     return out
@@ -45,29 +58,43 @@ def corpus_news(news_csv: Path, today: date) -> dict:
     urls: set[str] = set()
     rows = 0
     newest = None
-    for chunk in pd.read_csv(news_csv, usecols=["url", "date"], dtype=str, chunksize=500_000):
+    for chunk in pd.read_csv(
+        news_csv, usecols=["url", "date"], dtype=str, chunksize=500_000
+    ):
         rows += len(chunk)
         urls.update(chunk["url"].dropna().astype(str))
-        d = pd.to_datetime(chunk["date"].dropna().astype(str).str[:10], format="%Y-%m-%d",
-                           errors="coerce")
+        d = pd.to_datetime(
+            chunk["date"].dropna().astype(str).str[:10],
+            format="%Y-%m-%d",
+            errors="coerce",
+        )
         d = d[d <= pd.Timestamp(today + timedelta(days=1))].max()
         if not pd.isna(d) and (newest is None or d > newest):
             newest = d
     urls.discard("")
-    return {"corpus_rows": rows, "corpus_urls": len(urls),
-            "corpus_newest": newest.strftime("%Y-%m-%d") if newest is not None else None}
+    return {
+        "corpus_rows": rows,
+        "corpus_urls": len(urls),
+        "corpus_newest": newest.strftime("%Y-%m-%d") if newest is not None else None,
+    }
 
 
 def corpus_keys(region: str, corpus_root: Path = CORPUS_ROOT) -> list[str]:
     region_dir = corpus_root / region
     return sorted(
-        str(p.parent.relative_to(region_dir)) for p in region_dir.glob("*/*/*/news.csv")
+        str(p.parent.relative_to(region_dir))
+        for p in region_dir.glob("*/*/*/news.csv")
         if not p.parent.name.startswith(".")
     )
 
 
-def ledger_vs_corpus(region: str, state_dir: Path = STATE_DIR, corpus_root: Path = CORPUS_ROOT,
-                     today: date | None = None, keys: list[str] | None = None) -> list[dict]:
+def ledger_vs_corpus(
+    region: str,
+    state_dir: Path = STATE_DIR,
+    corpus_root: Path = CORPUS_ROOT,
+    today: date | None = None,
+    keys: list[str] | None = None,
+) -> list[dict]:
     """One row per source in the ledger or the corpus, with ``drift`` (comma-joined, empty
     when they agree) and ``age_days`` = today − watermark (freshness)."""
     today = today or datetime.now(timezone.utc).date()
@@ -75,10 +102,21 @@ def ledger_vs_corpus(region: str, state_dir: Path = STATE_DIR, corpus_root: Path
     on_disk = set(corpus_keys(region, corpus_root))
     rows = []
     for key in keys or sorted(set(ledger) | on_disk):
-        led = ledger.get(key, {"watermark": None, "n_news": None, "n_urls": None,
-                               "ledger_updated": None, "blocked": None})
-        cor = (corpus_news(corpus_root / region / key / "news.csv", today) if key in on_disk
-               else {"corpus_rows": None, "corpus_urls": None, "corpus_newest": None})
+        led = ledger.get(
+            key,
+            {
+                "watermark": None,
+                "n_news": None,
+                "n_urls": None,
+                "ledger_updated": None,
+                "blocked": None,
+            },
+        )
+        cor = (
+            corpus_news(corpus_root / region / key / "news.csv", today)
+            if key in on_disk
+            else {"corpus_rows": None, "corpus_urls": None, "corpus_newest": None}
+        )
         drift = []
         if key not in ledger:
             drift.append("not_in_ledger")
@@ -92,10 +130,16 @@ def ledger_vs_corpus(region: str, state_dir: Path = STATE_DIR, corpus_root: Path
             if led["watermark"] != cor["corpus_newest"]:
                 drift.append("watermark")
         wm = led["watermark"]
-        rows.append({
-            "region": region, "key": key, **led, **cor, "drift": ",".join(drift),
-            "age_days": (today - date.fromisoformat(wm)).days if wm else None,
-        })
+        rows.append(
+            {
+                "region": region,
+                "key": key,
+                **led,
+                **cor,
+                "drift": ",".join(drift),
+                "age_days": (today - date.fromisoformat(wm)).days if wm else None,
+            }
+        )
     return rows
 
 
@@ -121,10 +165,20 @@ def observe(node) -> list[dict]:
                 drift.append("blocked")
             if have_corpus and key not in on_disk:
                 drift.append("not_in_corpus")
-            out.append(row(node, f"{region}/{key}", led is not None and not led["blocked"],
-                           (led or {}).get("n_news"), (led or {}).get("ledger_updated"), drift=drift,
-                           extra={"watermark": (led or {}).get("watermark"),
-                                  "corpus_checked": have_corpus}))
+            out.append(
+                row(
+                    node,
+                    f"{region}/{key}",
+                    led is not None and not led["blocked"],
+                    (led or {}).get("n_news"),
+                    (led or {}).get("ledger_updated"),
+                    drift=drift,
+                    extra={
+                        "watermark": (led or {}).get("watermark"),
+                        "corpus_checked": have_corpus,
+                    },
+                )
+            )
     return out
 
 
@@ -135,12 +189,26 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--region", required=True)
     ap.add_argument("--state-dir", type=Path, default=STATE_DIR)
     ap.add_argument("--corpus-root", type=Path, default=CORPUS_ROOT)
-    ap.add_argument("--today", type=date.fromisoformat, help="YYYY-MM-DD (default: today UTC)")
-    ap.add_argument("--key", action="append", help="only these <sub>/<country>/<source> keys")
+    ap.add_argument(
+        "--today", type=date.fromisoformat, help="YYYY-MM-DD (default: today UTC)"
+    )
+    ap.add_argument(
+        "--key", action="append", help="only these <sub>/<country>/<source> keys"
+    )
     a = ap.parse_args(argv)
-    df = pd.DataFrame(ledger_vs_corpus(a.region, a.state_dir, a.corpus_root, a.today, a.key))
-    cols = ["key", "n_news", "corpus_urls", "corpus_rows", "watermark", "corpus_newest",
-            "age_days", "drift"]
+    df = pd.DataFrame(
+        ledger_vs_corpus(a.region, a.state_dir, a.corpus_root, a.today, a.key)
+    )
+    cols = [
+        "key",
+        "n_news",
+        "corpus_urls",
+        "corpus_rows",
+        "watermark",
+        "corpus_newest",
+        "age_days",
+        "drift",
+    ]
     with pd.option_context("display.max_rows", None, "display.width", 200):
         print(df[cols].to_string(index=False))
     drifted = df[df["drift"] != ""]

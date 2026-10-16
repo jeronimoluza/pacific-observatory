@@ -18,7 +18,10 @@ from pathlib import Path
 from graph.checks import rtcal
 
 NODE = "prices.pages"
-NONFOOD = ("global_prices_nonfood_observations.parquet", "global_prices_nonfood_trusted_observations.parquet")
+NONFOOD = (
+    "global_prices_nonfood_observations.parquet",
+    "global_prices_nonfood_trusted_observations.parquet",
+)
 
 
 def _country_counts(path: Path, countries: list[str] | None) -> dict[str, int]:
@@ -28,7 +31,9 @@ def _country_counts(path: Path, countries: list[str] | None) -> dict[str, int]:
 
     flt = pc.field("country").isin(countries) if countries else None
     out: dict[str, int] = {}
-    for b in ds.dataset(path).to_batches(columns=["country"], filter=flt, batch_size=2_000_000):
+    for b in ds.dataset(path).to_batches(
+        columns=["country"], filter=flt, batch_size=2_000_000
+    ):
         vc = pc.value_counts(pc.cast(b.column("country"), pa.string()))
         for v in vc.to_pylist():
             out[v["values"]] = out.get(v["values"], 0) + v["counts"]
@@ -52,10 +57,17 @@ def read(build: Path, countries: list[str] | None = None) -> list[dict]:
     rows = []
     for c in sorted(expected | set(by_country)):
         r = by_country.get(c, {})
-        rows.append({"country": c, "n_rows": r.get("n_rows", 0), "n_trusted": r.get("n_trusted", 0),
-                     "n_imputed": r.get("n_imputed", 0), "has_manifest": c in expected,
-                     "nf_rows": nf[0].get(c, 0) if nf else None,
-                     "nf_trusted": nf[1].get(c, 0) if nf else None})
+        rows.append(
+            {
+                "country": c,
+                "n_rows": r.get("n_rows", 0),
+                "n_trusted": r.get("n_trusted", 0),
+                "n_imputed": r.get("n_imputed", 0),
+                "has_manifest": c in expected,
+                "nf_rows": nf[0].get(c, 0) if nf else None,
+                "nf_trusted": nf[1].get(c, 0) if nf else None,
+            }
+        )
     return rows
 
 
@@ -63,8 +75,14 @@ def check(rows: list[dict]) -> list[dict]:
     """Registry hook: the pages observer only sees page files, so this points at the direct run."""
     if not any(r["node"] == NODE for r in rows):
         return []
-    return [{"node": NODE, "partition": "*", "color": "amarillo",
-             "msg": "#3/#12/#18 requieren corrida directa: python -m graph.checks.pages --build <build_wNN>"}]
+    return [
+        {
+            "node": NODE,
+            "partition": "*",
+            "color": "amarillo",
+            "msg": "#3/#12/#18 requieren corrida directa: python -m graph.checks.pages --build <build_wNN>",
+        }
+    ]
 
 
 def evaluate(rows: list[dict]) -> list[dict]:
@@ -72,29 +90,54 @@ def evaluate(rows: list[dict]) -> list[dict]:
     for r in rows:
         c = r["country"]
         if r["n_rows"] and not r["n_trusted"]:
-            out.append({"node": NODE, "partition": c, "color": "rojo",
-                        "msg": f"#3 publicado con 0 filas confiables ({r['n_imputed']:,} imputadas)"})
+            out.append(
+                {
+                    "node": NODE,
+                    "partition": c,
+                    "color": "rojo",
+                    "msg": f"#3 publicado con 0 filas confiables ({r['n_imputed']:,} imputadas)",
+                }
+            )
         elif not r["n_rows"] and r["has_manifest"]:
-            out.append({"node": NODE, "partition": c, "color": "amarillo",
-                        "msg": "#18 sin datos: tiene manifiestos y 0 filas en la página"})
+            out.append(
+                {
+                    "node": NODE,
+                    "partition": c,
+                    "color": "amarillo",
+                    "msg": "#18 sin datos: tiene manifiestos y 0 filas en la página",
+                }
+            )
         if r["nf_rows"] and not r["nf_trusted"]:
-            out.append({"node": NODE, "partition": c, "color": "amarillo",
-                        "msg": f"#12 non-food: {r['nf_rows']:,} filas, 0 confiables"})
+            out.append(
+                {
+                    "node": NODE,
+                    "partition": c,
+                    "color": "amarillo",
+                    "msg": f"#12 non-food: {r['nf_rows']:,} filas, 0 confiables",
+                }
+            )
     return out
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m graph.checks.pages")
-    ap.add_argument("--build", type=Path, required=True, help="build dir, e.g. .../build_w42")
-    ap.add_argument("--countries", help="comma-separated slugs or a panel name (panel36)")
+    ap.add_argument(
+        "--build", type=Path, required=True, help="build dir, e.g. .../build_w42"
+    )
+    ap.add_argument(
+        "--countries", help="comma-separated slugs or a panel name (panel36)"
+    )
     a = ap.parse_args(argv)
     countries = None
     if a.countries:
         from prices.weekly.panels import resolve_countries
+
         countries = resolve_countries(a.countries)
     rows = read(a.build, countries)
-    print(f"{a.build}: {len(rows)} países, {sum(1 for r in rows if r['n_trusted'])} con filas confiables"
-          + ("" if rows and rows[0]["nf_rows"] is not None else "; sin archivos non-food"))
+    print(
+        f"{a.build}: {len(rows)} países, {sum(1 for r in rows if r['n_trusted'])} con filas confiables"
+        + ("" if rows and rows[0]["nf_rows"] is not None else "; sin archivos non-food")
+    )
     findings = evaluate(rows)
     for f in findings:
         print(f"{f['color']:<8} {f['node']}  {f['partition']:<24} {f['msg']}")

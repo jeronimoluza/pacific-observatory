@@ -20,6 +20,8 @@ from pydantic import (
 
 from core.config import discover_pipeline_configs, load_countries, parse_config_path
 
+from .station_aggregate import StationAggregate
+
 logger = logging.getLogger(__name__)
 
 _FUEL_CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
@@ -157,6 +159,7 @@ class FuelSourceConfig(BaseModel):
         "irregular",
     ]
     carry_forward: bool = False
+    station_aggregate: StationAggregate | None = None
     products: dict[str, ProductSpec]  # raw_product_name → ProductSpec
 
     # Resolved from path + countries.yaml (not in YAML file)

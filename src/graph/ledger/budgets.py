@@ -37,13 +37,20 @@ def runs_in_order(runs):
     from graph.ledger.store import week_monday
 
     df = runs[runs["status"] != "BLOCKED"].copy()
-    led = df[df["origin"] == "ledger"][["pipeline", "country", "source", "week"]].drop_duplicates()
+    led = df[df["origin"] == "ledger"][
+        ["pipeline", "country", "source", "week"]
+    ].drop_duplicates()
     led["has_ledger"] = True
     df = df.merge(led, on=["pipeline", "country", "source", "week"], how="left")
     df = df[~((df["origin"] == "raw_items") & df["has_ledger"].eq(True))]
-    monday = pd.to_datetime(df["week"].map(lambda w: week_monday(w) if isinstance(w, str) else None), utc=True)
+    monday = pd.to_datetime(
+        df["week"].map(lambda w: week_monday(w) if isinstance(w, str) else None),
+        utc=True,
+    )
     df["order_ts"] = df["start_utc"].fillna(monday)
-    return df.sort_values(["pipeline", "country", "source", "order_ts", "run_id"]).drop(columns="has_ledger")
+    return df.sort_values(["pipeline", "country", "source", "order_ts", "run_id"]).drop(
+        columns="has_ledger"
+    )
 
 
 def _budget(durations: list[float], margin: float, floor_s: int):
@@ -55,16 +62,28 @@ def _budget(durations: list[float], margin: float, floor_s: int):
     return p50, p95, max(floor_s, math.ceil(p95 * margin / 60) * 60)
 
 
-def derive(runs, n: int = N, margin: float = MARGIN, floor_s: int = FLOOR_S, stall_min: int = STALL_MIN):
+def derive(
+    runs,
+    n: int = N,
+    margin: float = MARGIN,
+    floor_s: int = FLOOR_S,
+    stall_min: int = STALL_MIN,
+):
     import pandas as pd
 
     out = []
-    for (pipeline, country, source), g in runs_in_order(runs).groupby(["pipeline", "country", "source"], sort=False):
+    for (pipeline, country, source), g in runs_in_order(runs).groupby(
+        ["pipeline", "country", "source"], sort=False
+    ):
         timed = g[g["status"].isin(TIMED) & g["duration_s"].notna()]
         win = timed.tail(n)
         p50, p95, budget = _budget(win["duration_s"].tolist(), margin, floor_s)
         prev = timed.iloc[:-1].tail(n)
-        _, _, budget_prev = _budget(prev["duration_s"].tolist(), margin, floor_s) if len(prev) >= 2 else (None, None, None)
+        _, _, budget_prev = (
+            _budget(prev["duration_s"].tolist(), margin, floor_s)
+            if len(prev) >= 2
+            else (None, None, None)
+        )
         streak = 0
         for v in reversed(g["new_rows"].tolist()):
             if pd.isna(v) or v != 0:
@@ -75,21 +94,40 @@ def derive(runs, n: int = N, margin: float = MARGIN, floor_s: int = FLOOR_S, sta
         last = g.iloc[-1]
         last_dur = last["duration_s"]
         stall = last["max_stall_s"]
-        out.append({
-            "pipeline": pipeline, "region": last["region"], "country": country, "source": source,
-            "n_runs": len(g), "n_window": len(win), "p50_s": p50, "p95_s": p95, "budget_s": budget,
-            "margin": margin, "censored": bool((win["status"] == "TIMEOUT").any()),
-            "n_timeout_window": int((win["status"] == "TIMEOUT").sum()),
-            "budget_prev_s": budget_prev,
-            "over_budget": bool(budget_prev is not None and pd.notna(last_dur) and last_dur > budget_prev),
-            "zero_streak": streak, "had_rows_before": had_rows,
-            "new_zero_streak": streak >= 2 and had_rows,
-            "last_run_id": last["run_id"], "last_status": last["status"],
-            "last_rows": last["new_rows"], "last_duration_s": last_dur,
-            "last_start_utc": last["start_utc"], "last_max_stall_s": stall,
-            "stalled": bool(pd.notna(stall) and stall >= stall_min * 60),
-            "first_week": g["week"].min(), "last_week": g["week"].max(),
-        })
+        out.append(
+            {
+                "pipeline": pipeline,
+                "region": last["region"],
+                "country": country,
+                "source": source,
+                "n_runs": len(g),
+                "n_window": len(win),
+                "p50_s": p50,
+                "p95_s": p95,
+                "budget_s": budget,
+                "margin": margin,
+                "censored": bool((win["status"] == "TIMEOUT").any()),
+                "n_timeout_window": int((win["status"] == "TIMEOUT").sum()),
+                "budget_prev_s": budget_prev,
+                "over_budget": bool(
+                    budget_prev is not None
+                    and pd.notna(last_dur)
+                    and last_dur > budget_prev
+                ),
+                "zero_streak": streak,
+                "had_rows_before": had_rows,
+                "new_zero_streak": streak >= 2 and had_rows,
+                "last_run_id": last["run_id"],
+                "last_status": last["status"],
+                "last_rows": last["new_rows"],
+                "last_duration_s": last_dur,
+                "last_start_utc": last["start_utc"],
+                "last_max_stall_s": stall,
+                "stalled": bool(pd.notna(stall) and stall >= stall_min * 60),
+                "first_week": g["week"].min(),
+                "last_week": g["week"].max(),
+            }
+        )
     df = pd.DataFrame(out)
     for c in ("n_runs", "n_window", "zero_streak", "n_timeout_window"):
         df[c] = df[c].astype("int64")
@@ -109,12 +147,25 @@ def silent_zeros(week: str, n: int = 4):
     rows = {f"{r['country']}/{r['source']}": r for r in R.read(week, n=n)}
     out = []
     for f in R.evaluate(list(rows.values())):
-        color = {"cero silencioso": "rojo", "fetcher sin delta": "amarillo"}.get(f["msg"].split(":")[0])
+        color = {"cero silencioso": "rojo", "fetcher sin delta": "amarillo"}.get(
+            f["msg"].split(":")[0]
+        )
         if color:
             r = rows[f["partition"]]
-            out.append({"country": r["country"], "source": r["source"], "color": color,
-                        "baseline": r["baseline"], "last_obs": r["last_obs"], "scaffolding": r["scaffolding"]})
-    return pd.DataFrame(out, columns=["country", "source", "color", "baseline", "last_obs", "scaffolding"])
+            out.append(
+                {
+                    "country": r["country"],
+                    "source": r["source"],
+                    "color": color,
+                    "baseline": r["baseline"],
+                    "last_obs": r["last_obs"],
+                    "scaffolding": r["scaffolding"],
+                }
+            )
+    return pd.DataFrame(
+        out,
+        columns=["country", "source", "color", "baseline", "last_obs", "scaffolding"],
+    )
 
 
 def zero_runs(runs, last: int = 2):
@@ -124,6 +175,9 @@ def zero_runs(runs, last: int = 2):
     t = runs[(runs["pipeline"] == "text") & runs["new_rows"].notna()]
     ids = sorted(r for r in t["run_id"].unique() if RUN_DIR.match(r))[-last:]
     t = t[t["run_id"].isin(ids)]
-    g = t.groupby(["region", "country", "source"]).agg(n=("run_id", "nunique"), rows=("new_rows", "sum"),
-                                                      statuses=("status", lambda s: ",".join(sorted(set(s)))))
+    g = t.groupby(["region", "country", "source"]).agg(
+        n=("run_id", "nunique"),
+        rows=("new_rows", "sum"),
+        statuses=("status", lambda s: ",".join(sorted(set(s)))),
+    )
     return ids, g[(g["n"] == len(ids)) & (g["rows"] == 0)].reset_index()

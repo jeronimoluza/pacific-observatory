@@ -16,7 +16,10 @@ a price-change event for one station, with columns:
   es_gasolinera.
 
 Strategy: download every year file >= cutoff.year, aggregate to national
-monthly means per product, return rows with observation_date > cutoff.
+monthly prices per product, return rows with observation_date > cutoff. With
+``station_aggregate`` in the YAML the monthly price is the robust per-station
+median of ``fuel.station_aggregate`` (stats in station_stats.csv); without it,
+the mean of all price-change events.
 """
 
 from __future__ import annotations
@@ -26,10 +29,14 @@ import io
 import logging
 import urllib.parse
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 
+from core.config import load_countries
 from core.http import make_session
+from fuel.config import load_source_config
+from fuel.station_aggregate import aggregate, write_stats
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +58,9 @@ _DOWNLOAD_URL = f"{_TENANT}/personal/infoestadistica_cne_cl/_layouts/15/download
 _COUNTRY = "Chile"
 _CURRENCY = "CLP"
 _SOURCE_KEY = "cl_cne_bencina_monthly"
+_ROOT = Path(__file__).resolve().parents[6]
+_CONFIG_PATH = _ROOT / "src/fuel/configs/lac/south_america/chile/cne_bencina.yaml"
+_DATA_DIR = _ROOT / "data" / "fuel"
 
 _PRODUCT_UNITS = {
     "93": "L",
@@ -105,6 +115,10 @@ def _list_year_files(session) -> list[str]:
     return names
 
 
+def _source_config():
+    return load_source_config(_CONFIG_PATH, load_countries())
+
+
 def _download_year(session, file_name: str) -> pd.DataFrame | None:
     source_url = f"{_FOLDER}/{file_name}"
     try:
@@ -124,8 +138,12 @@ def _download_year(session, file_name: str) -> pd.DataFrame | None:
         df = pd.read_csv(
             io.BytesIO(raw),
             sep=sep,
-            usecols=["combustible", "precio", "fecha_actualizacion"],
-            dtype={"combustible": "string", "fecha_actualizacion": "string"},
+            usecols=["codigo", "combustible", "precio", "fecha_actualizacion"],
+            dtype={
+                "codigo": "string",
+                "combustible": "string",
+                "fecha_actualizacion": "string",
+            },
         )
     except Exception:
         logger.exception("[cl_cne_bencina] Failed to parse %s", file_name)
@@ -169,11 +187,41 @@ def fetch_cl_cne_bencina(cutoff: date) -> pd.DataFrame | None:
     df = df.assign(fecha=fecha).dropna(subset=["fecha"])
     df["month"] = df["fecha"].dt.to_period("M").dt.to_timestamp().dt.date
 
-    grouped = (
-        df.groupby(["month", "combustible"], as_index=False)["precio"]
-        .mean()
-        .rename(columns={"precio": "price_local", "combustible": "fuel_product"})
-    )
+    cfg = _source_config()
+    if cfg.station_aggregate is not None:
+        stats = aggregate(
+            df,
+            ["month", "combustible"],
+            "codigo",
+            "precio",
+            "fecha",
+            cfg.station_aggregate,
+        )
+        stats = stats[stats["month"] > cutoff]
+        # Flags only matter for products the build uses (GNC has ~3 stations).
+        built = {k for k, spec in cfg.products.items() if spec.include_in_build}
+        stats.loc[~stats["combustible"].isin(built), "flagged"] = False
+        if not stats.empty:
+            path = write_stats(
+                stats.assign(month=stats["month"].astype(str)),
+                _DATA_DIR / cfg.region / cfg.subregion / cfg.country_slug / cfg.source,
+                ["month", "combustible"],
+            )
+            logger.info(
+                "[cl_cne_bencina] station stats: %d rows, %d flagged -> %s",
+                len(stats),
+                int(stats["flagged"].sum()),
+                path,
+            )
+        grouped = stats.rename(
+            columns={"price": "price_local", "combustible": "fuel_product"}
+        )
+    else:
+        grouped = (
+            df.groupby(["month", "combustible"], as_index=False)["precio"]
+            .mean()
+            .rename(columns={"precio": "price_local", "combustible": "fuel_product"})
+        )
 
     rows: list[dict] = []
     for _, r in grouped.iterrows():

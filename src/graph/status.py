@@ -23,10 +23,16 @@ def country_of(partition: str, countries: set[str]) -> str | None:
     return next((p for p in partition.split("/") if p in countries), None)
 
 
-def keep_countries(rows: list[dict], wanted: list[str], countries: set[str]) -> list[dict]:
+def keep_countries(
+    rows: list[dict], wanted: list[str], countries: set[str]
+) -> list[dict]:
     """Rows of the wanted countries, plus rows that belong to no country (global)."""
     wanted = set(wanted)
-    return [r for r in rows if (c := country_of(r["partition"], countries)) is None or c in wanted]
+    return [
+        r
+        for r in rows
+        if (c := country_of(r["partition"], countries)) is None or c in wanted
+    ]
 
 
 def run_checks(rows: list[dict]) -> list[dict]:
@@ -49,9 +55,20 @@ def summary(rows: list[dict], findings: list[dict]) -> list[dict]:
     colors = color_of(findings)
     by_node: dict[str, dict] = {}
     for r in rows:
-        s = by_node.setdefault(r["node"], {"node": r["node"], "partitions": 0, "done": 0, "rows": 0,
-                                           "freshness_utc": None, "sha": set(), "drift": 0,
-                                           "rojo": 0, "amarillo": 0})
+        s = by_node.setdefault(
+            r["node"],
+            {
+                "node": r["node"],
+                "partitions": 0,
+                "done": 0,
+                "rows": 0,
+                "freshness_utc": None,
+                "sha": set(),
+                "drift": 0,
+                "rojo": 0,
+                "amarillo": 0,
+            },
+        )
         s["partitions"] += 1
         s["done"] += bool(r["done"])
         s["rows"] += r["rows"] or 0
@@ -73,7 +90,9 @@ def summary(rows: list[dict], findings: list[dict]) -> list[dict]:
     return list(by_node.values())
 
 
-def matrix(rows: list[dict], countries: list[str], all_countries: set[str]) -> tuple[list[str], dict]:
+def matrix(
+    rows: list[dict], countries: list[str], all_countries: set[str]
+) -> tuple[list[str], dict]:
     """country -> node -> [done, partitions, rows], for the given countries."""
     nodes = list(dict.fromkeys(r["node"] for r in rows))
     out = {c: {} for c in countries}
@@ -98,9 +117,15 @@ def render_summary(summ: list[dict]) -> str:
     head = f"{'node':<22} {'done/parts':>11} {'rows':>14} {'freshness_utc':<26} {'sha':<18} {'drift':>5}  color"
     lines = [head, "-" * len(head)]
     for s in summ:
-        lines.append(f"{s['node']:<22} {s['done']:>5}/{s['partitions']:<5} {s['rows']:>14,} "
-                     f"{s['freshness_utc'] or '-':<26} {s['sha'][:18]:<18} {s['drift']:>5}  {s['color']}"
-                     + (f" ({s['rojo']} rojo, {s['amarillo']} amarillo)" if s["color"] != "verde" else ""))
+        lines.append(
+            f"{s['node']:<22} {s['done']:>5}/{s['partitions']:<5} {s['rows']:>14,} "
+            f"{s['freshness_utc'] or '-':<26} {s['sha'][:18]:<18} {s['drift']:>5}  {s['color']}"
+            + (
+                f" ({s['rojo']} rojo, {s['amarillo']} amarillo)"
+                if s["color"] != "verde"
+                else ""
+            )
+        )
     return "\n".join(lines)
 
 

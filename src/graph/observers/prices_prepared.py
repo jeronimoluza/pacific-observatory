@@ -35,7 +35,10 @@ def observe(node) -> list[dict]:
         return []
     state = json.loads(state_file.read_text())
     state_ts = mtime(state_file)
-    on_disk = {str(p.relative_to(root))[: -len(".parquet")]: p for p in root.glob("*/*/*.parquet")}
+    on_disk = {
+        str(p.relative_to(root))[: -len(".parquet")]: p
+        for p in root.glob("*/*/*.parquet")
+    }
     months = root.parent / f"{root.name}_months"
     sha = step_status("enrich")["sha"]
     out = []
@@ -51,7 +54,19 @@ def observe(node) -> list[dict]:
             drift.append("parquet_missing")
         elif ts < state_ts - STALE_SECS:
             drift.append("older_than_last_prepare")
-        out.append(row(node, key, path is not None, parquet_rows(path) if path else None, ts, sha, drift,
-                       {"shards": len(state.get(key, [])),
-                        "months_parquet": (months / f"{key}.parquet").exists()}))
+        out.append(
+            row(
+                node,
+                key,
+                path is not None,
+                parquet_rows(path) if path else None,
+                ts,
+                sha,
+                drift,
+                {
+                    "shards": len(state.get(key, [])),
+                    "months_parquet": (months / f"{key}.parquet").exists(),
+                },
+            )
+        )
     return out

@@ -21,7 +21,10 @@ from pathlib import Path
 from graph.ledger.store import frame, iso_week, utc
 
 HOME = Path.home()
-STAGING_ROOTS = {"": HOME / "text_staging", "panel/": Path("/mnt/backup5tb/text-panel/staging")}
+STAGING_ROOTS = {
+    "": HOME / "text_staging",
+    "panel/": Path("/mnt/backup5tb/text-panel/staging"),
+}
 LEGACY_LOGS = HOME / "text_collect/logs"
 STALL_SECONDS = 300
 EVENT = re.compile(r"\[(START|DONE|FAIL|TIMEOUT|STUCK)\s*\]\s+(\S+)[^\n@]*@ (\d+)")
@@ -43,7 +46,9 @@ def read_events(log: Path) -> dict[str, dict]:
     return out
 
 
-def _row(run_id: str, region: str, tag: str, e: dict, rows: int | None, log: Path) -> dict:
+def _row(
+    run_id: str, region: str, tag: str, e: dict, rows: int | None, log: Path
+) -> dict:
     country, _, source = tag.partition("__")
     start, end = utc(e["start"]), utc(e["end"])
     state = e["state"]
@@ -51,13 +56,25 @@ def _row(run_id: str, region: str, tag: str, e: dict, rows: int | None, log: Pat
     if state == "DONE":
         status = "ZERO" if rows == 0 else "DONE"
     return {
-        "pipeline": "text", "run_id": run_id, "region": region, "country": country,
-        "source": source or country, "week": iso_week(start or end) if (start or end) else None,
-        "start_utc": start, "end_utc": end,
-        "duration_s": (e["end"] - e["start"]) if e["start"] is not None and e["end"] is not None else None,
-        "new_rows": rows, "status": status or "FAIL", "rc": None, "requests": None,
-        "max_stall_s": STALL_SECONDS if state == "STUCK" else None, "weekly": None,
-        "origin": "events", "log": str(log),
+        "pipeline": "text",
+        "run_id": run_id,
+        "region": region,
+        "country": country,
+        "source": source or country,
+        "week": iso_week(start or end) if (start or end) else None,
+        "start_utc": start,
+        "end_utc": end,
+        "duration_s": (e["end"] - e["start"])
+        if e["start"] is not None and e["end"] is not None
+        else None,
+        "new_rows": rows,
+        "status": status or "FAIL",
+        "rc": None,
+        "requests": None,
+        "max_stall_s": STALL_SECONDS if state == "STUCK" else None,
+        "weekly": None,
+        "origin": "events",
+        "log": str(log),
     }
 
 
@@ -66,8 +83,12 @@ def staged_rows(run_dir: Path, run_id: str) -> list[dict]:
 
     rows = []
     for log in sorted(run_dir.glob("events_*.log")):
-        region = log.name[len("events_"):-len(".log")]
-        staged = {f"{d.parent.name}__{d.name}": d for d in (run_dir / region).glob("*/*/*") if d.is_dir()}
+        region = log.name[len("events_") : -len(".log")]
+        staged = {
+            f"{d.parent.name}__{d.name}": d
+            for d in (run_dir / region).glob("*/*/*")
+            if d.is_dir()
+        }
         for tag, e in read_events(log).items():
             if e["state"] is None:
                 continue
@@ -80,7 +101,11 @@ def staged_rows(run_dir: Path, run_id: str) -> list[dict]:
 def legacy_rows(log: Path) -> list[dict]:
     m = LEGACY.match(log.name)
     run_id = f"refresh-{m[2]}"
-    return [_row(run_id, m[1], tag, e, None, log) for tag, e in read_events(log).items() if e["state"]]
+    return [
+        _row(run_id, m[1], tag, e, None, log)
+        for tag, e in read_events(log).items()
+        if e["state"]
+    ]
 
 
 def ingest(known: dict, refresh: bool = False, log=print):
@@ -88,7 +113,9 @@ def ingest(known: dict, refresh: bool = False, log=print):
     for prefix, root in STAGING_ROOTS.items():
         if not root.is_dir():
             continue
-        for run_dir in sorted(p for p in root.iterdir() if p.is_dir() and RUN_DIR.match(p.name)):
+        for run_dir in sorted(
+            p for p in root.iterdir() if p.is_dir() and RUN_DIR.match(p.name)
+        ):
             run_id = prefix + run_dir.name
             if not (run_dir / ".done").exists():
                 log(f"text {run_id}: sin .done, se saltea")
