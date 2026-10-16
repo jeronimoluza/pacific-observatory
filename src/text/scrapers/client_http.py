@@ -198,7 +198,7 @@ class AsyncHttpClient:
 
                 except httpx.RequestError as e:
                     if attempt == retry_count:  # Only log on final attempt
-                        logger.error(f"Request error for {url}: {e}")
+                        logger.error(f"Request error for {url}: {e!r}")
 
                 except Exception as e:
                     logger.error(f"Unexpected error for {url}: {e}")
