@@ -4,7 +4,11 @@
 # Canales: comunicado del Gobierno en commerce.gouv.tg (solo dic-2024 hallado ahí), prensa (Koaci, Togomatin, L-Frii, republicoftogo.com, APA).
 # Productos no listados en una fecha siguen sin cambio desde su fila anterior.
 # Huecos conocidos: Gasoil 850 -> 775 (fecha no encontrada; probablemente el ajuste del 28/01/2023 que menciona Beninwebtv, sin cifras) => sin fila de gasoil vigente al 2024-01 (775 solo se deduce del comunicado dic-2024 "diminution de 80");
+#   confirmación BCEAO 2023-12-31 (gasoil 775) cubre ese tramo, pero la fecha en que se fijó 775 sigue sin encontrarse;
+#   Pétrole lampant: sin fila del 2024-01-01 al 2024-12-09 y del 2025-12-12 al 2026-05-26 (BCEAO no publica lampant; no se halló fuente fechada en esos tramos);
+#   BCEAO (Bulletin mensuel ago-2026) da para Togo 2024 déc. 686/718: son promedios del mes, no el nivel (cambio del 10/12/2024); no usados;
 #   no se halló el texto oficial de los arrêtés de mayo-2026 y sep-2026 (solo prensa); capmad.com y afrique-sur7.fr (sep-2026) devuelven 403 y no tienen captura Wayback.
+# Filas de confirmación (method 'confirmation: ...'): fuente fechada que cita el precio vigente en esa fecha; effective = fecha de la fuente. Tablas BCEAO = precio de fin de mes (effective = último día del mes).
 source_key: manual_tg_levels
 country: Togo
 currency: XOF
@@ -42,7 +46,7 @@ levels:
   method: press quote
   derived_from: []
   confidence: media
-  note: "Koaci 19/07/2022: nueva alza 'entrée en vigueur à compter de ce mardi 19 juillet 2022', según comunicado del gobierno del 18/07/2022; Super sans plomb 700 (ministro Adedze: costo real 878, subvención 178). Nivel vigente al 2024-01: el comunicado oficial del 10/12/2024 baja Super en 20 F a 680 y republicoftogo.com (09/12/2024) dice 'de 700 à 680'. Hubo un ajuste el 28/01/2023 (Beninwebtv, sin cifras) que no parece haber tocado el Super."
+  note: 'Koaci 19/07/2022: nueva alza ''entrée en vigueur à compter de ce mardi 19 juillet 2022'', según comunicado del gobierno del 18/07/2022; Super sans plomb 700 (ministro Adedze: costo real 878, subvención 178). Nivel vigente al 2024-01: el comunicado oficial del 10/12/2024 baja Super en 20 F a 680 y republicoftogo.com (09/12/2024) dice ''de 700 à 680''. Hubo un ajuste el 28/01/2023 (Beninwebtv, sin cifras) que no parece haber tocado el Super.'
 - effective: 2022-07-19
   product: Pétrole lampant
   locality: national
@@ -55,7 +59,59 @@ levels:
   method: press quote
   derived_from: []
   confidence: media
-  note: "Koaci 19/07/2022: pétrole lampant a la pompa 650 (costo real 810, subvención 160). republicoftogo.com 09/12/2024: 'le prix du pétrole lampant reste inchangé à 650'. Misma nota trae Gasoil 850, NO cargado porque el gasoil cambió luego a 775 en fecha desconocida."
+  note: 'Koaci 19/07/2022: pétrole lampant a la pompa 650 (costo real 810, subvención 160). republicoftogo.com 09/12/2024: ''le prix du pétrole lampant reste inchangé à 650''. Misma nota trae Gasoil 850, NO cargado porque el gasoil cambió luego a 775 en fecha desconocida.'
+- effective: 2023-12-31
+  product: Super sans plomb
+  locality: national
+  price_local: 700
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2023 déc., columna Togo = 700'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2023 déc. Togo 700 FCFA/L. effective = último día del mes (precio de fin de mes).'
+- effective: 2023-12-31
+  product: Gas-oil
+  locality: national
+  price_local: 775
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2023 déc., columna Togo = 775'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2023 déc. Togo 775 FCFA/L. effective = último día del mes (precio de fin de mes). Única fuente fechada hallada para el gasoil 775 vigente al 2024-01; la Q4-2025 BCEAO (Tableau 11.3-2) también da 775 de 2023 sept. a 2024 nov. La fecha en que se fijó 775 sigue sin encontrarse.'
+- effective: 2024-11-30
+  product: Super sans plomb
+  locality: national
+  price_local: 700
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-04/Bulletin-Trimestriel-des-Statistiques-Quatri%C3%A8me-trimestre-2025.pdf
+  archive_url: https://web.archive.org/web/20260406193130/https://www.bceao.int/sites/default/files/2026-04/Bulletin-Trimestriel-des-Statistiques-Quatri%C3%A8me-trimestre-2025.pdf
+  sha256: f9f4b8ba44ccfb5164af69a1c5afae98c1ecae9f327924a73e8eca608555b388
+  file: f9f4b8ba44cc_Bulletin-Trimestriel-des-Statistiques-Quatrieme-trimestre-2025.pdf
+  method: 'confirmation: BCEAO Tableau 11.3-1 (essence super), fila 2024 nov., columna Togo = 700'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Trimestriel des Statistiques T4-2025 (pub. abr-2026), sección 11.3 ''Prix à la pompe des carburants'', Tableau 11.3-1 (essence super): 2024 nov. Togo 700 FCFA/L. effective = último día del mes.'
+- effective: 2024-11-30
+  product: Gas-oil
+  locality: national
+  price_local: 775
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-04/Bulletin-Trimestriel-des-Statistiques-Quatri%C3%A8me-trimestre-2025.pdf
+  archive_url: https://web.archive.org/web/20260406193130/https://www.bceao.int/sites/default/files/2026-04/Bulletin-Trimestriel-des-Statistiques-Quatri%C3%A8me-trimestre-2025.pdf
+  sha256: f9f4b8ba44ccfb5164af69a1c5afae98c1ecae9f327924a73e8eca608555b388
+  file: f9f4b8ba44cc_Bulletin-Trimestriel-des-Statistiques-Quatrieme-trimestre-2025.pdf
+  method: 'confirmation: BCEAO Tableau 11.3-2 (gazoil), fila 2024 nov., columna Togo = 775'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Trimestriel des Statistiques T4-2025 (pub. abr-2026), sección 11.3 ''Prix à la pompe des carburants'', Tableau 11.3-2 (gazoil): 2024 nov. Togo 775 FCFA/L. effective = último día del mes.'
 - effective: 2024-12-10
   product: Super sans plomb
   locality: national
@@ -69,7 +125,7 @@ levels:
   derived_from:
   - https://commerce.gouv.tg/wp-content/uploads/2024/12/WhatsApp-Image-2024-12-10-a-12.15.00_f14c174b.jpg
   confidence: alta
-  note: "Comunicado del Gobierno (Lomé, 10/12/2024) en commerce.gouv.tg: arrêté interministériel n°035/MCACL/MEF/MMRE del 09/12/2024, 'nouveaux tarifs entrent en vigueur à compter de ce 10 décembre 2024'; Super sans plomb 680, 'soit une diminution de 20 F CFA/litre'. Imagen del comunicado firmado (sha256 0dc2413d5fd3..., OCR) coincide."
+  note: 'Comunicado del Gobierno (Lomé, 10/12/2024) en commerce.gouv.tg: arrêté interministériel n°035/MCACL/MEF/MMRE del 09/12/2024, ''nouveaux tarifs entrent en vigueur à compter de ce 10 décembre 2024''; Super sans plomb 680, ''soit une diminution de 20 F CFA/litre''. Imagen del comunicado firmado (sha256 0dc2413d5fd3..., OCR) coincide.'
 - effective: 2024-12-10
   product: Gas-oil
   locality: national
@@ -83,7 +139,7 @@ levels:
   derived_from:
   - https://commerce.gouv.tg/wp-content/uploads/2024/12/WhatsApp-Image-2024-12-10-a-12.15.00_f14c174b.jpg
   confidence: alta
-  note: "Mismo comunicado oficial: Gas-oil 695, 'soit une diminution de 80 F CFA/litre' (=> previo 775, sin fecha de vigencia conocida)."
+  note: 'Mismo comunicado oficial: Gas-oil 695, ''soit une diminution de 80 F CFA/litre'' (=> previo 775, sin fecha de vigencia conocida).'
 - effective: 2024-12-10
   product: Pétrole lampant
   locality: national
@@ -96,7 +152,59 @@ levels:
   method: HTML text
   derived_from: []
   confidence: alta
-  note: "Mismo comunicado oficial: 'Pétrole lampant : 650 F CFA/litre' (sin variación indicada; republicoftogo.com: 'reste inchangé')."
+  note: 'Mismo comunicado oficial: ''Pétrole lampant : 650 F CFA/litre'' (sin variación indicada; republicoftogo.com: ''reste inchangé'').'
+- effective: 2025-08-31
+  product: Super sans plomb
+  locality: national
+  price_local: 680
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2025 août., columna Togo = 680'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2025 août. Togo 680 FCFA/L. effective = último día del mes (precio de fin de mes).'
+- effective: 2025-08-31
+  product: Gas-oil
+  locality: national
+  price_local: 695
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2025 août., columna Togo = 695'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2025 août. Togo 695 FCFA/L. effective = último día del mes (precio de fin de mes).'
+- effective: 2026-04-30
+  product: Super sans plomb
+  locality: national
+  price_local: 680
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2026 avril., columna Togo = 680'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2026 avril. Togo 680 FCFA/L. effective = último día del mes (precio de fin de mes).'
+- effective: 2026-04-30
+  product: Gas-oil
+  locality: national
+  price_local: 695
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2026 avril., columna Togo = 695'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2026 avril. Togo 695 FCFA/L. effective = último día del mes (precio de fin de mes).'
 - effective: 2026-05-27
   product: Super sans plomb
   locality: national
@@ -111,7 +219,7 @@ levels:
   - https://www.republicoftogo.com/content/download/120730/3089309/1
   - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
   confidence: media
-  note: "Koaci 26/05/2026 cita el arrêté interministériel publicado el 26/05 (Finanzas, Economía, Energía): 'les nouveaux prix prennent effet à compter du 27 mai 2026'; Super 680 -> 725. Togomatin y L-Frii del 11/09/2026 confirman 725 'depuis la dernière révision du 27 mai'. Arrêté no hallado; +20 F máx. en localidades alejadas."
+  note: 'Koaci 26/05/2026 cita el arrêté interministériel publicado el 26/05 (Finanzas, Economía, Energía): ''les nouveaux prix prennent effet à compter du 27 mai 2026''; Super 680 -> 725. Togomatin y L-Frii del 11/09/2026 confirman 725 ''depuis la dernière révision du 27 mai''. Arrêté no hallado; +20 F máx. en localidades alejadas.'
 - effective: 2026-05-27
   product: Gas-oil
   locality: national
@@ -126,7 +234,7 @@ levels:
   - https://www.republicoftogo.com/content/download/120730/3089309/1
   - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
   confidence: media
-  note: "Koaci 26/05/2026: 'Le prix du litre de Gasoil est fixé à 750 F CFA soit une augmentation de 55 F CFA' (695+55=750, coherente). Togomatin y L-Frii (11/09/2026) dan 750 como nivel previo a sep-2026."
+  note: 'Koaci 26/05/2026: ''Le prix du litre de Gasoil est fixé à 750 F CFA soit une augmentation de 55 F CFA'' (695+55=750, coherente). Togomatin y L-Frii (11/09/2026) dan 750 como nivel previo a sep-2026.'
 - effective: 2026-05-27
   product: Pétrole lampant
   locality: national
@@ -141,7 +249,33 @@ levels:
   - https://www.republicoftogo.com/content/download/120730/3089309/1
   - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
   confidence: media
-  note: "Koaci 26/05/2026: pétrole lampant 'va désormais coûter 1 040 F CFA, soit une augmentation de 590 F CFA' -- el delta es inconsistente con el 650 oficial de dic-2024 (1040-650=390). El nivel 1040 lo confirman Togomatin y L-Frii (11/09/2026: 'de 1 040 à 1 056'). No se sabe si hubo un cambio intermedio del lampant entre dic-2024 y may-2026."
+  note: 'Koaci 26/05/2026: pétrole lampant ''va désormais coûter 1 040 F CFA, soit une augmentation de 590 F CFA'' -- el delta es inconsistente con el 650 oficial de dic-2024 (1040-650=390). El nivel 1040 lo confirman Togomatin y L-Frii (11/09/2026: ''de 1 040 à 1 056''). No se sabe si hubo un cambio intermedio del lampant entre dic-2024 y may-2026.'
+- effective: 2026-08-31
+  product: Super sans plomb
+  locality: national
+  price_local: 725
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2026 août., columna Togo = 725'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2026 août. Togo 725 FCFA/L. effective = último día del mes (precio de fin de mes).'
+- effective: 2026-08-31
+  product: Gas-oil
+  locality: national
+  price_local: 750
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2026 août., columna Togo = 750'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2026 août. Togo 750 FCFA/L. effective = último día del mes (precio de fin de mes).'
 - effective: 2026-09-11
   product: Super sans plomb
   locality: national
@@ -155,7 +289,7 @@ levels:
   derived_from:
   - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
   confidence: media
-  note: "PDF del diario Togomatin n°1651 (11/09/2026), alojado en republicoftogo.com: 'À compter du 11 septembre 2026, une nouvelle grille tarifaire entre en vigueur... conformément à un arrêté interministériel'; Super 817 'contre 725 FCFA depuis la dernière révision du 27 mai'. L-Frii 11/09/2026 (arrêté firmado por Economía, Finanzas y Energía) coincide. Koaci 11/09/2026 da 817 en el titular pero su tabla repite los precios de mayo (725/1040/750/811): error de la nota."
+  note: 'PDF del diario Togomatin n°1651 (11/09/2026), alojado en republicoftogo.com: ''À compter du 11 septembre 2026, une nouvelle grille tarifaire entre en vigueur... conformément à un arrêté interministériel''; Super 817 ''contre 725 FCFA depuis la dernière révision du 27 mai''. L-Frii 11/09/2026 (arrêté firmado por Economía, Finanzas y Energía) coincide. Koaci 11/09/2026 da 817 en el titular pero su tabla repite los precios de mayo (725/1040/750/811): error de la nota.'
 - effective: 2026-09-11
   product: Gas-oil
   locality: national
@@ -169,7 +303,7 @@ levels:
   derived_from:
   - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
   confidence: media
-  note: "Togomatin 11/09/2026: 'Le gasoil passe de 750 à 766 FCFA'; L-Frii: 'Gaz-oil : 766 Fcfa contre 750 FCFA avant'. Koaci 11/09 dice +16 pero su tabla muestra 750 (inconsistente)."
+  note: 'Togomatin 11/09/2026: ''Le gasoil passe de 750 à 766 FCFA''; L-Frii: ''Gaz-oil : 766 Fcfa contre 750 FCFA avant''. Koaci 11/09 dice +16 pero su tabla muestra 750 (inconsistente).'
 - effective: 2026-09-11
   product: Pétrole lampant
   locality: national
@@ -183,4 +317,4 @@ levels:
   derived_from:
   - https://yop.l-frii.com/togo-817-fcfa-le-nouveau-prix-du-super-sans-plomb-fait-peter-les-plombs/
   confidence: media
-  note: "Togomatin 11/09/2026: 'le pétrole lampant évolue de 1 040 à 1 056 FCFA'; L-Frii coincide (1056 contra 1040)."
+  note: 'Togomatin 11/09/2026: ''le pétrole lampant évolue de 1 040 à 1 056 FCFA''; L-Frii coincide (1056 contra 1040).'

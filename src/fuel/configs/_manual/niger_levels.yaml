@@ -4,7 +4,9 @@
 # Productos no listados en una fecha siguen sin cambio desde su fila anterior.
 # Huecos conocidos: arrêtés mensuales intermedios entre ago-2022 y jun-2024 no encontrados (el arrêté n°0055 del 28/06/2024, abrogado por el 0067, no se halló; sus precios se desconocen pero el comunicado SGG del 17/07/2024 dice que antes regían 540/668);
 #   el arrêté 0067 dice "pour la période du 23 juillet au 31 août 2024" y no se encontró arrêté de prórroga; FOD (457) y mélange 2 temps omitidos (no son gasolina/gasoil/kerosene);
-#   pétrole lampant no figura en los arrêtés 2022/2024.
+#   pétrole lampant no figura en los arrêtés 2022/2024. Sin tramos >12 meses sin fila entre 2024-01 y hoy (con confirmaciones BCEAO, ARSE vía Wayback y Tiani).
+#   Capturas Wayback de ARSE 20251210 y 20260517 son páginas anti-bot ('One moment, please...'): no usadas.
+# Filas de confirmación (method 'confirmation: ...'): fuente fechada que cita el precio vigente en esa fecha; effective = fecha de la fuente. Tablas BCEAO = precio de fin de mes (effective = último día del mes).
 source_key: manual_ne_levels
 country: Niger
 currency: XOF
@@ -40,7 +42,7 @@ levels:
   method: OCR
   derived_from: []
   confidence: alta
-  note: "Arrêté n°0057/MC/SG/DGC/DCI/LCVC (escaneado, publicado por ARSE): precios 'pour le mois d'août 2022', aplicables desde 01/08/2022 00h; abroga el arrêté n°050 del 12/07/2022. Anexo: PRIX DE VENTE DETAIL AU LITRE Super 91 540. Es el nivel vigente al 2024-01: ARSE seguía mostrando este arrêté (540/668) en la captura Wayback 20240711190854, y el comunicado SGG del 17/07/2024 (AFP) da 540/668 como precio previo a la baja. Ojo: la misma página ARSE mostró hasta jul-2023 un texto desactualizado de 2019 (gasoil 538)."
+  note: 'Arrêté n°0057/MC/SG/DGC/DCI/LCVC (escaneado, publicado por ARSE): precios ''pour le mois d''août 2022'', aplicables desde 01/08/2022 00h; abroga el arrêté n°050 del 12/07/2022. Anexo: PRIX DE VENTE DETAIL AU LITRE Super 91 540. Es el nivel vigente al 2024-01: ARSE seguía mostrando este arrêté (540/668) en la captura Wayback 20240711190854, y el comunicado SGG del 17/07/2024 (AFP) da 540/668 como precio previo a la baja. Ojo: la misma página ARSE mostró hasta jul-2023 un texto desactualizado de 2019 (gasoil 538).'
 - effective: 2022-08-01
   product: Gasoil
   locality: national
@@ -53,7 +55,59 @@ levels:
   method: OCR
   derived_from: []
   confidence: alta
-  note: "Arrêté n°0057 (agosto 2022), anexo: Gasoil 668 (incluye 'appui à l'énergie' 62,65). Mismo caveat que la fila Super: arrêté formalmente mensual; 668 confirmado como nivel previo a jul-2024 por ARSE (Wayback 2024-07-11) y por el comunicado SGG del 17/07/2024."
+  note: 'Arrêté n°0057 (agosto 2022), anexo: Gasoil 668 (incluye ''appui à l''énergie'' 62,65). Mismo caveat que la fila Super: arrêté formalmente mensual; 668 confirmado como nivel previo a jul-2024 por ARSE (Wayback 2024-07-11) y por el comunicado SGG del 17/07/2024.'
+- effective: 2023-12-31
+  product: Super 91
+  locality: national
+  price_local: 540
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2023 déc., columna Niger = 540'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2023 déc. Niger 540 FCFA/L. effective = último día del mes (precio de fin de mes).'
+- effective: 2023-12-31
+  product: Gasoil
+  locality: national
+  price_local: 668
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2023 déc., columna Niger = 668'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2023 déc. Niger 668 FCFA/L. effective = último día del mes (precio de fin de mes).'
+- effective: 2024-07-11
+  product: Super 91
+  locality: national
+  price_local: 540
+  source_type: official_site
+  url: https://arse.ne/tarif-hydrocarbures/
+  archive_url: https://web.archive.org/web/20240711190854/https://arse.ne/tarif-hydrocarbures/
+  sha256: 2e2b8af94c5a4b9318bc5bd7d4fba02f1a588e590f8c989fc27ba1af39c5506d
+  file: 2e2b8af94c5a_arse_tarif-hydrocarbures_wb20240711190854.html
+  method: 'confirmation: página ARSE Tarifs hydrocarbures capturada 2024-07-11 muestra Super 91 540'
+  derived_from: []
+  confidence: alta
+  note: 'Captura Wayback 2024-07-11 de arse.ne/tarif-hydrocarbures/: ''Par Arrêté N 0057MC/SG/DGC/DCI/LCVC ... Super 91 540 F CFA/L, Gasoil 668 F CFA/L'' (vigente justo antes del arrêté 0067).'
+- effective: 2024-07-11
+  product: Gasoil
+  locality: national
+  price_local: 668
+  source_type: official_site
+  url: https://arse.ne/tarif-hydrocarbures/
+  archive_url: https://web.archive.org/web/20240711190854/https://arse.ne/tarif-hydrocarbures/
+  sha256: 2e2b8af94c5a4b9318bc5bd7d4fba02f1a588e590f8c989fc27ba1af39c5506d
+  file: 2e2b8af94c5a_arse_tarif-hydrocarbures_wb20240711190854.html
+  method: 'confirmation: página ARSE Tarifs hydrocarbures capturada 2024-07-11 muestra Gasoil 668'
+  derived_from: []
+  confidence: alta
+  note: 'Captura Wayback 2024-07-11 de arse.ne/tarif-hydrocarbures/: ''Par Arrêté N 0057MC/SG/DGC/DCI/LCVC ... Super 91 540 F CFA/L, Gasoil 668 F CFA/L'' (vigente justo antes del arrêté 0067).'
 - effective: 2024-07-23
   product: Super 91
   locality: national
@@ -67,7 +121,7 @@ levels:
   derived_from:
   - https://arse.ne/tarif-hydrocarbures/
   confidence: alta
-  note: "Arrêté n°0067/MC/I/SG/DGC/DCI/LCVC del 22/07/2024 (escaneado): prix plafonds 'pour la période du 23 juillet au 31 août 2024', aplicables desde 23/07/2024 00h; abroga el arrêté n°0055 del 28/06/2024; cita el comunicado SGG del 17/07/2024. Anexo: Super 91 499. Pese al plazo, la página ARSE (sha256 1ab1b81a8ff1..., Wayback 20261016174610) sigue mostrándolo como vigente en oct-2026 y el presidente Tiani reafirmó 499 el 10/10/2026; no se halló arrêté de prórroga."
+  note: 'Arrêté n°0067/MC/I/SG/DGC/DCI/LCVC del 22/07/2024 (escaneado): prix plafonds ''pour la période du 23 juillet au 31 août 2024'', aplicables desde 23/07/2024 00h; abroga el arrêté n°0055 del 28/06/2024; cita el comunicado SGG del 17/07/2024. Anexo: Super 91 499. Pese al plazo, la página ARSE (sha256 1ab1b81a8ff1..., Wayback 20261016174610) sigue mostrándolo como vigente en oct-2026 y el presidente Tiani reafirmó 499 el 10/10/2026; no se halló arrêté de prórroga.'
 - effective: 2024-07-23
   product: Gasoil
   locality: national
@@ -81,4 +135,136 @@ levels:
   derived_from:
   - https://arse.ne/tarif-hydrocarbures/
   confidence: alta
-  note: "Arrêté n°0067 del 22/07/2024, anexo: Gasoil 618 (appui à l'énergie 47,63). Mismo caveat de período 23/07-31/08/2024; ARSE (oct-2026) y Tiani (10/10/2026, 'Gasoil à 618 F') lo dan como vigente."
+  note: 'Arrêté n°0067 del 22/07/2024, anexo: Gasoil 618 (appui à l''énergie 47,63). Mismo caveat de período 23/07-31/08/2024; ARSE (oct-2026) y Tiani (10/10/2026, ''Gasoil à 618 F'') lo dan como vigente.'
+- effective: 2025-07-16
+  product: Super 91
+  locality: national
+  price_local: 499
+  source_type: official_site
+  url: https://arse.ne/tarif-hydrocarbures/
+  archive_url: https://web.archive.org/web/20250716192909/https://arse.ne/tarif-hydrocarbures/
+  sha256: b9c355df07c534ee7aeec0a3a6689f910694b2b48748e5108c6b31ef13801630
+  file: b9c355df07c5_arse_tarif-hydrocarbures_wb20250716192909.html
+  method: 'confirmation: página ARSE Tarifs hydrocarbures capturada 2025-07-16 muestra Super 91 499'
+  derived_from: []
+  confidence: alta
+  note: 'Captura Wayback 2025-07-16 de arse.ne/tarif-hydrocarbures/: ''Par Arrêté N 0067MC/I/SG/DGC/DCI/LCVC du 22 Juillet 2024 ... Super 91 499 FCFA par Litre, Gasoil 618 FCFA par Litre''.'
+- effective: 2025-07-16
+  product: Gasoil
+  locality: national
+  price_local: 618
+  source_type: official_site
+  url: https://arse.ne/tarif-hydrocarbures/
+  archive_url: https://web.archive.org/web/20250716192909/https://arse.ne/tarif-hydrocarbures/
+  sha256: b9c355df07c534ee7aeec0a3a6689f910694b2b48748e5108c6b31ef13801630
+  file: b9c355df07c5_arse_tarif-hydrocarbures_wb20250716192909.html
+  method: 'confirmation: página ARSE Tarifs hydrocarbures capturada 2025-07-16 muestra Gasoil 618'
+  derived_from: []
+  confidence: alta
+  note: 'Captura Wayback 2025-07-16 de arse.ne/tarif-hydrocarbures/: ''Par Arrêté N 0067MC/I/SG/DGC/DCI/LCVC du 22 Juillet 2024 ... Super 91 499 FCFA par Litre, Gasoil 618 FCFA par Litre''.'
+- effective: 2026-02-09
+  product: Super 91
+  locality: national
+  price_local: 499
+  source_type: official_site
+  url: https://arse.ne/tarif-hydrocarbures/
+  archive_url: https://web.archive.org/web/20260209052250/https://arse.ne/tarif-hydrocarbures/
+  sha256: 5a383cb3069c684ef1f1f85fde501d37c2c99f1fb59566cdaef180d717421e0c
+  file: 5a383cb3069c_arse_tarif-hydrocarbures_wb20260209052250.html
+  method: 'confirmation: página ARSE Tarifs hydrocarbures capturada 2026-02-09 muestra Super 91 499'
+  derived_from: []
+  confidence: alta
+  note: 'Captura Wayback 2026-02-09 de arse.ne/tarif-hydrocarbures/: ''Par Arrêté N 0067MC/I/SG/DGC/DCI/LCVC du 22 Juillet 2024 ... Super 91 499 FCFA par Litre, Gasoil 618 FCFA par Litre''.'
+- effective: 2026-02-09
+  product: Gasoil
+  locality: national
+  price_local: 618
+  source_type: official_site
+  url: https://arse.ne/tarif-hydrocarbures/
+  archive_url: https://web.archive.org/web/20260209052250/https://arse.ne/tarif-hydrocarbures/
+  sha256: 5a383cb3069c684ef1f1f85fde501d37c2c99f1fb59566cdaef180d717421e0c
+  file: 5a383cb3069c_arse_tarif-hydrocarbures_wb20260209052250.html
+  method: 'confirmation: página ARSE Tarifs hydrocarbures capturada 2026-02-09 muestra Gasoil 618'
+  derived_from: []
+  confidence: alta
+  note: 'Captura Wayback 2026-02-09 de arse.ne/tarif-hydrocarbures/: ''Par Arrêté N 0067MC/I/SG/DGC/DCI/LCVC du 22 Juillet 2024 ... Super 91 499 FCFA par Litre, Gasoil 618 FCFA par Litre''.'
+- effective: 2026-08-31
+  product: Super 91
+  locality: national
+  price_local: 499
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2026 août., columna Niger = 499'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2026 août. Niger 499 FCFA/L. effective = último día del mes (precio de fin de mes). La serie BCEAO muestra Niger 499/618 sin cambios de 2024 déc. a 2026 août.'
+- effective: 2026-08-31
+  product: Gasoil
+  locality: national
+  price_local: 618
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2026 août., columna Niger = 618'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2026 août. Niger 618 FCFA/L. effective = último día del mes (precio de fin de mes). La serie BCEAO muestra Niger 499/618 sin cambios de 2024 déc. a 2026 août.'
+- effective: 2026-10-10
+  product: Super 91
+  locality: national
+  price_local: 499
+  source_type: press
+  url: https://burkina24.com/2026/10/10/niger-jai-instruit-le-gouvernement-de-ne-proceder-a-aucune-augmentation-du-prix-du-carburant-a-la-pompe-abdourahamane-tiani/
+  archive_url: https://web.archive.org/web/20261016181045/https://burkina24.com/2026/10/10/niger-jai-instruit-le-gouvernement-de-ne-proceder-a-aucune-augmentation-du-prix-du-carburant-a-la-pompe-abdourahamane-tiani/
+  sha256: 5b4997e40f2aadcc4e5ceb7b99ed46d26203ac383d12eb253a396073fbea6ef4
+  file: 5b4997e40f2a_burkina24_2026-10-10_niger-tiani.html
+  method: 'confirmation: el presidente Tiani (Facebook, 10/10/2026) dice que Super 91 sigue a 499'
+  derived_from:
+  - https://lanouvelletribune.info/2026/10/niger-le-gouvernement-ecarte-une-hausse-du-carburant-et-sattaque-aux-fraudes/
+  confidence: media
+  note: 'Burkina24 10/10/2026 cita la página Facebook del presidente Tiani del 10/10/2026: « J''ai instruit le Gouvernement de ne procéder à aucune augmentation du prix du carburant à la pompe. Le litre de Super (essence) reste à 499 F et le litre de Gasoil à 618 F. » La Nouvelle Tribune 10/10/2026 (sha256 aa0ca68cfddf...): Conseil des ministres del 09/10/2026 descarta la suba propuesta por el CCR; ''Super ramené de 540 à 499, gasoil de 668 à 618''.'
+- effective: 2026-10-10
+  product: Gasoil
+  locality: national
+  price_local: 618
+  source_type: press
+  url: https://burkina24.com/2026/10/10/niger-jai-instruit-le-gouvernement-de-ne-proceder-a-aucune-augmentation-du-prix-du-carburant-a-la-pompe-abdourahamane-tiani/
+  archive_url: https://web.archive.org/web/20261016181045/https://burkina24.com/2026/10/10/niger-jai-instruit-le-gouvernement-de-ne-proceder-a-aucune-augmentation-du-prix-du-carburant-a-la-pompe-abdourahamane-tiani/
+  sha256: 5b4997e40f2aadcc4e5ceb7b99ed46d26203ac383d12eb253a396073fbea6ef4
+  file: 5b4997e40f2a_burkina24_2026-10-10_niger-tiani.html
+  method: 'confirmation: el presidente Tiani (Facebook, 10/10/2026) dice que Gasoil sigue a 618'
+  derived_from:
+  - https://lanouvelletribune.info/2026/10/niger-le-gouvernement-ecarte-une-hausse-du-carburant-et-sattaque-aux-fraudes/
+  confidence: media
+  note: 'Burkina24 10/10/2026 cita la página Facebook del presidente Tiani del 10/10/2026: « J''ai instruit le Gouvernement de ne procéder à aucune augmentation du prix du carburant à la pompe. Le litre de Super (essence) reste à 499 F et le litre de Gasoil à 618 F. » La Nouvelle Tribune 10/10/2026 (sha256 aa0ca68cfddf...): Conseil des ministres del 09/10/2026 descarta la suba propuesta por el CCR; ''Super ramené de 540 à 499, gasoil de 668 à 618''.'
+- effective: 2026-10-16
+  product: Super 91
+  locality: national
+  price_local: 499
+  source_type: official_site
+  url: https://arse.ne/tarif-hydrocarbures/
+  archive_url: https://web.archive.org/web/20261016174610/https://arse.ne/tarif-hydrocarbures/
+  sha256: 1ab1b81a8ff134deeeef3461e5447453e0f8fb92eb9a55e8431bd4a51f08c4af
+  file: 1ab1b81a8ff1_arse_tarif-hydrocarbures.html
+  method: 'confirmation: página ARSE descargada 2026-10-16 muestra Super 91 499'
+  derived_from: []
+  confidence: alta
+  note: 'arse.ne/tarif-hydrocarbures/ descargada 2026-10-16: ''Par Arrêté N 0067MC/I/SG/DGC/DCI/LCVC du 22 Juillet 2024 ... Super 91 499 FCFA par Litre, Gasoil 618 FCFA par Litre, FOD 457''.'
+- effective: 2026-10-16
+  product: Gasoil
+  locality: national
+  price_local: 618
+  source_type: official_site
+  url: https://arse.ne/tarif-hydrocarbures/
+  archive_url: https://web.archive.org/web/20261016174610/https://arse.ne/tarif-hydrocarbures/
+  sha256: 1ab1b81a8ff134deeeef3461e5447453e0f8fb92eb9a55e8431bd4a51f08c4af
+  file: 1ab1b81a8ff1_arse_tarif-hydrocarbures.html
+  method: 'confirmation: página ARSE descargada 2026-10-16 muestra Gasoil 618'
+  derived_from: []
+  confidence: alta
+  note: 'arse.ne/tarif-hydrocarbures/ descargada 2026-10-16: ''Par Arrêté N 0067MC/I/SG/DGC/DCI/LCVC du 22 Juillet 2024 ... Super 91 499 FCFA par Litre, Gasoil 618 FCFA par Litre, FOD 457''.'

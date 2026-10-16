@@ -5,6 +5,8 @@
 # Productos no listados en una fecha siguen sin cambio desde su fila anterior.
 # Huecos conocidos: arrêté de feb-2023 (n°2023-001, enlazado por Wakat Séra) da 404 y no tiene captura Wayback; no se halló arrêté de ago-2026 (solo declaración RTB);
 #   pétrole (kerosene, 980 en ago-2022) omitido: no hay fuente posterior que diga si cambió; precios de Bobo-Dioulasso y provincias no cargados.
+#   Sin tramos >12 meses sin fila entre 2024-01 y hoy (confirmaciones BCEAO dic-2023/dic-2024/dic-2025/jul-ago-2026 y Sidwaya 09/08/2026). BCEAO no indica localidad.
+# Filas de confirmación (method 'confirmation: ...'): fuente fechada que cita el precio vigente en esa fecha; effective = fecha de la fuente. Tablas BCEAO = precio de fin de mes (effective = último día del mes).
 source_key: manual_bf_levels
 country: Burkina Faso
 currency: XOF
@@ -37,7 +39,7 @@ levels:
   method: OCR
   derived_from: []
   confidence: alta
-  note: "Arrêté conjoint n°2022-019/MDICAPME/MEFP del 18/08/2022 (escaneado, firmado por Abdoulaye Tall y Seglaro Abel Some; alojado por Burkina24, no en sitio oficial), 'Il entre en vigueur pour compter du 19 AOUT 2022' (sello leído a ojo). Anexo I, structure Dépôt de Bingo: PRIX DE VENTE A LA POMPE Super 91 750 (Bobo-Dioulasso 745). Prensa: Burkina24 y Wakat Séra 18/08/2022 (715 -> 750)."
+  note: 'Arrêté conjoint n°2022-019/MDICAPME/MEFP del 18/08/2022 (escaneado, firmado por Abdoulaye Tall y Seglaro Abel Some; alojado por Burkina24, no en sitio oficial), ''Il entre en vigueur pour compter du 19 AOUT 2022'' (sello leído a ojo). Anexo I, structure Dépôt de Bingo: PRIX DE VENTE A LA POMPE Super 91 750 (Bobo-Dioulasso 745). Prensa: Burkina24 y Wakat Séra 18/08/2022 (715 -> 750).'
 - effective: 2022-08-19
   product: Gasoil
   locality: Ouagadougou
@@ -50,7 +52,7 @@ levels:
   method: OCR
   derived_from: []
   confidence: alta
-  note: "Arrêté conjoint n°2022-019, Anexo I Dépôt de Bingo: Gasoil 675 (Bobo 670). Nivel vigente al 2024-01 y hasta el 09/08/2026: el SG de la Primature dijo en RTB (09/08/2026) que 'le dernier réajustement du prix du gasoil remonte à août 2022' y Sidwaya 10/02/2023 que en feb-2023 'le prix du gazole reste inchangé'."
+  note: 'Arrêté conjoint n°2022-019, Anexo I Dépôt de Bingo: Gasoil 675 (Bobo 670). Nivel vigente al 2024-01 y hasta el 09/08/2026: el SG de la Primature dijo en RTB (09/08/2026) que ''le dernier réajustement du prix du gasoil remonte à août 2022'' y Sidwaya 10/02/2023 que en feb-2023 ''le prix du gazole reste inchangé''.'
 - effective: 2023-02-11
   product: Super 91
   locality: Ouagadougou
@@ -64,7 +66,124 @@ levels:
   derived_from:
   - https://www.wakatsera.com/?p=81448
   confidence: media-alta
-  note: "Sidwaya 10/02/2023 (el slug dice 2022 por error; título y cuerpo dicen 2023): el SG de la Primature anunció en el JT de RTB la decisión del Comité interministériel: Super 91 de 750 a 850, 'entre en vigueur à compter du 11 février 2023'; gasoil sin cambio. Wakat Séra 10/02/2023 (sha256 5a69a9f53ade...) coincide y enlaza el arrêté n°2023-001 (hoy 404). Super 850 sigue vigente según el SG de la Primature en RTB el 09/08/2026 ('Le Super 91, qui coûte actuellement 850')."
+  note: 'Sidwaya 10/02/2023 (el slug dice 2022 por error; título y cuerpo dicen 2023): el SG de la Primature anunció en el JT de RTB la decisión del Comité interministériel: Super 91 de 750 a 850, ''entre en vigueur à compter du 11 février 2023''; gasoil sin cambio. Wakat Séra 10/02/2023 (sha256 5a69a9f53ade...) coincide y enlaza el arrêté n°2023-001 (hoy 404). Super 850 sigue vigente según el SG de la Primature en RTB el 09/08/2026 (''Le Super 91, qui coûte actuellement 850'').'
+- effective: 2023-12-31
+  product: Super 91
+  locality: Ouagadougou
+  price_local: 850
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2023 déc., columna Burkina = 850'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2023 déc. Burkina 850 FCFA/L. effective = último día del mes (precio de fin de mes). (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'
+- effective: 2023-12-31
+  product: Gasoil
+  locality: Ouagadougou
+  price_local: 675
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2023 déc., columna Burkina = 675'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2023 déc. Burkina 675 FCFA/L. effective = último día del mes (precio de fin de mes). (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'
+- effective: 2024-12-31
+  product: Super 91
+  locality: Ouagadougou
+  price_local: 850
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2024 déc., columna Burkina = 850'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2024 déc. Burkina 850 FCFA/L. effective = último día del mes (precio de fin de mes). (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'
+- effective: 2024-12-31
+  product: Gasoil
+  locality: Ouagadougou
+  price_local: 675
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2024 déc., columna Burkina = 675'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2024 déc. Burkina 675 FCFA/L. effective = último día del mes (precio de fin de mes). (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'
+- effective: 2025-12-31
+  product: Super 91
+  locality: Ouagadougou
+  price_local: 850
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2025 déc., columna Burkina = 850'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2025 déc. Burkina 850 FCFA/L. effective = último día del mes (precio de fin de mes). (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'
+- effective: 2025-12-31
+  product: Gasoil
+  locality: Ouagadougou
+  price_local: 675
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2025 déc., columna Burkina = 675'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2025 déc. Burkina 675 FCFA/L. effective = último día del mes (precio de fin de mes). (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'
+- effective: 2026-07-31
+  product: Gasoil
+  locality: Ouagadougou
+  price_local: 675
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2026 juil., columna Burkina = 675'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2026 juil. Burkina 675 FCFA/L. effective = último día del mes (precio de fin de mes). (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'
+- effective: 2026-08-09
+  product: Super 91
+  locality: Ouagadougou
+  price_local: 850
+  source_type: state_news
+  url: https://www.sidwaya.info/hydrocarbures-le-prix-du-gasoil-passe-de-675-a-750-f-cfa-des-ce-lundi/
+  archive_url: https://web.archive.org/web/20260810054212/https://www.sidwaya.info/hydrocarbures-le-prix-du-gasoil-passe-de-675-a-750-f-cfa-des-ce-lundi/
+  sha256: d33c4bc4bf588849f676bae634f2e619af2d8d11fb24ae611eeed50f9ccb432a
+  file: d33c4bc4bf58_sidwaya_gasoil-675-750.html
+  method: 'confirmation: el SG de la Primature en RTB (09/08/2026) da Super 91 850 como precio actual'
+  derived_from: []
+  confidence: media-alta
+  note: 'Sidwaya transcribe al SG de la Primature (presidente del CIDPH) en el JT de RTB del 09/08/2026: « Le Super 91, qui coûte actuellement 850 francs CFA, aurait pu coûter 920 francs, sans la subvention. Le gasoil, dont il est question, qui coûte 675, aurait pu coûter 980 »; y ''le dernier réajustement du prix du gasoil ... remonte à août 2022''.'
+- effective: 2026-08-09
+  product: Gasoil
+  locality: Ouagadougou
+  price_local: 675
+  source_type: state_news
+  url: https://www.sidwaya.info/hydrocarbures-le-prix-du-gasoil-passe-de-675-a-750-f-cfa-des-ce-lundi/
+  archive_url: https://web.archive.org/web/20260810054212/https://www.sidwaya.info/hydrocarbures-le-prix-du-gasoil-passe-de-675-a-750-f-cfa-des-ce-lundi/
+  sha256: d33c4bc4bf588849f676bae634f2e619af2d8d11fb24ae611eeed50f9ccb432a
+  file: d33c4bc4bf58_sidwaya_gasoil-675-750.html
+  method: 'confirmation: el SG de la Primature en RTB (09/08/2026) da Gasoil 675 como precio actual'
+  derived_from: []
+  confidence: media-alta
+  note: 'Sidwaya transcribe al SG de la Primature (presidente del CIDPH) en el JT de RTB del 09/08/2026: « Le Super 91, qui coûte actuellement 850 francs CFA, aurait pu coûter 920 francs, sans la subvention. Le gasoil, dont il est question, qui coûte 675, aurait pu coûter 980 »; y ''le dernier réajustement du prix du gasoil ... remonte à août 2022''.'
 - effective: 2026-08-10
   product: Gasoil
   locality: Ouagadougou
@@ -78,4 +197,30 @@ levels:
   derived_from:
   - https://burkina24.com/?p=450172
   confidence: media-alta
-  note: "Sidwaya transcribe la intervención del SG de la Primature y presidente del CIDPH, Abdou-Salam Gampéné, en el JT 20h de RTB del 09/08/2026: gasoil 'passant ainsi de 675 à 750 F CFA le litre pour compter de 00 heure... à partir du lundi 10 août 2026'. Burkina24 09/08/2026 (sha256 38582b3a1b49..., Wayback 20261016180441) coincide. No se halló arrêté publicado."
+  note: 'Sidwaya transcribe la intervención del SG de la Primature y presidente del CIDPH, Abdou-Salam Gampéné, en el JT 20h de RTB del 09/08/2026: gasoil ''passant ainsi de 675 à 750 F CFA le litre pour compter de 00 heure... à partir du lundi 10 août 2026''. Burkina24 09/08/2026 (sha256 38582b3a1b49..., Wayback 20261016180441) coincide. No se halló arrêté publicado.'
+- effective: 2026-08-31
+  product: Super 91
+  locality: Ouagadougou
+  price_local: 850
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2026 août., columna Burkina = 850'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2026 août. Burkina 850 FCFA/L. effective = último día del mes (precio de fin de mes). (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'
+- effective: 2026-08-31
+  product: Gasoil
+  locality: Ouagadougou
+  price_local: 750
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2026 août., columna Burkina = 750'
+  derived_from: []
+  confidence: alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2026 août. Burkina 750 FCFA/L. effective = último día del mes (precio de fin de mes). Consistente con la suba del 10/08/2026. (BCEAO no indica localidad; se asume el precio de referencia de Ouagadougou.)'

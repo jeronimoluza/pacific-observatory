@@ -5,6 +5,11 @@
 # Huecos conocidos: nivel vigente al 2024-01 sin fila: las notas de oct-2024 dicen que el Super estaba a 850 y el gasoil a 800, pero no se encontró cuándo se fijaron (jun-2022 era 811/809);
 #   las filas de oct-2024 son "baja" (tres notas, cifras contradictorias); L-Frii (26/03/2025) menciona un "deuxième ajustement en début d'année 2025" sin cifras, no encontrado;
 #   ningún comunicado OMAP original descargado (todas las filas son prensa). Desde sep-2025 hay bloqueo de combustible (JNIM): los precios reales superan el plafond.
+#   Tramos >12 meses sin fila publicable: Supercarburant 2024-01-01..2024-12-30 y Gasoil 2024-01-01..2025-03-25 (solo filas 'baja' de oct-2024).
+#   CONTRADICCIONES BCEAO: el Bulletin Trimestriel T4-2025 da para Mali 811/809 hasta mar-2025, 800/750 abr-jun 2025, 775/725 jul-sep 2025 y 800/732-734 oct-dic 2025;
+#   el Bulletin mensuel ago-2026 da 866/864 en dic-2023, 800/800 en dic-2024 y 775/725 de ago-2025 a feb-2026. Solo se usaron como confirmación las celdas que coinciden con los niveles de prensa
+#   (super 800 dic-2024 con confianza media; sep-2025 y ago-2026 media-alta). El 866/864 de dic-2023 contradice el 850/800 previo que da la prensa: no cargado.
+# Filas de confirmación (method 'confirmation: ...'): fuente fechada que cita el precio vigente en esa fecha; effective = fecha de la fuente. Tablas BCEAO = precio de fin de mes (effective = último día del mes).
 source_key: manual_ml_levels
 country: Mali
 currency: XOF
@@ -38,7 +43,7 @@ levels:
   - https://yop.l-frii.com/mali-assimi-goita-prend-une-decision-qui-change-tout-il-baisse-le-prix-de-lessence/
   - https://afrique.le360.ma/economie/mali-la-baisse-du-prix-du-carburant-ne-fait-pas-que-des-heureux_VP6KXTLAINGENBX6ILUCB547AE/
   confidence: baja
-  note: "SOLO ALERTA. Beninwebtv 12/10/2024: 'depuis le vendredi 11 octobre 2024', essence 850 -> 800 (sin citar comunicado). L-Frii 13/10/2024 (sha256 d5df55df06e3...) coincide 850 -> 800. Le360 17/10/2024 (sha256 a5eb110d224f..., decisión de la Commission de suivi y el OMAP) dice en cambio 800 -> 700. Contradicción no resuelta; L-Frii 26/03/2025 y Alwihda dan 800 como previo a mar-2025, lo que favorece 800."
+  note: 'SOLO ALERTA. Beninwebtv 12/10/2024: ''depuis le vendredi 11 octobre 2024'', essence 850 -> 800 (sin citar comunicado). L-Frii 13/10/2024 (sha256 d5df55df06e3...) coincide 850 -> 800. Le360 17/10/2024 (sha256 a5eb110d224f..., decisión de la Commission de suivi y el OMAP) dice en cambio 800 -> 700. Contradicción no resuelta; L-Frii 26/03/2025 y Alwihda dan 800 como previo a mar-2025, lo que favorece 800.'
 - effective: 2024-10-11
   product: Gasoil
   locality: national
@@ -53,7 +58,20 @@ levels:
   - https://afrique.le360.ma/economie/mali-la-baisse-du-prix-du-carburant-ne-fait-pas-que-des-heureux_VP6KXTLAINGENBX6ILUCB547AE/
   - https://yop.l-frii.com/mali-assimi-goita-prend-une-decision-qui-change-tout-il-baisse-le-prix-de-lessence/
   confidence: baja
-  note: "SOLO ALERTA. Beninwebtv y Le360: gasoil 800 -> 750 desde el 11/10/2024; L-Frii 13/10/2024 dice 800 -> 700 pero a la vez 'baisse de 50' (inconsistente). L-Frii 26/03/2025 da 750 como previo a mar-2025. Sin comunicado oficial citado con cifras."
+  note: 'SOLO ALERTA. Beninwebtv y Le360: gasoil 800 -> 750 desde el 11/10/2024; L-Frii 13/10/2024 dice 800 -> 700 pero a la vez ''baisse de 50'' (inconsistente). L-Frii 26/03/2025 da 750 como previo a mar-2025. Sin comunicado oficial citado con cifras.'
+- effective: 2024-12-31
+  product: Supercarburant sans plomb
+  locality: national
+  price_local: 800
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2024 déc., columna Mali = 800'
+  derived_from: []
+  confidence: media
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2024 déc. Mali 800 FCFA/L. effective = último día del mes (precio de fin de mes). CONTRADICCIÓN entre ediciones BCEAO: el Bulletin Trimestriel T4-2025 da para Mali 811 en 2024 déc. (y 811 hasta 2025 mars). Esta edición (ago-2026) coincide con la prensa (800 desde el 11/10/2024). Gasoil no cargado: esta edición da 800 en 2024 déc., la prensa 750 y la T4-2025 809.'
 - effective: 2025-03-26
   product: Supercarburant sans plomb
   locality: national
@@ -67,7 +85,7 @@ levels:
   derived_from:
   - https://www.alwihdainfo.com/mali-baisse-des-prix-des-carburants-a-la-pompe-a139795/
   confidence: media
-  note: "L-Frii 26/03/2025: anuncio del PDG del ONAP Modibo Goro Diall en reunión de la Commission du mécanisme de fixation des prix (25/03/2025); supercarburant 800 -> 775. Alwihda 27/03/2025 (sha256 9ef49bce4e7e..., Wayback 20261016181225): 'a pris effet à partir du mercredi 26 mars 2025', super 775. APA y La Nouvelle Tribune (mar-2026) confirman 775 como nivel previo a la suba de mar-2026. L-Frii habla de un ajuste intermedio a inicios de 2025 no documentado."
+  note: 'L-Frii 26/03/2025: anuncio del PDG del ONAP Modibo Goro Diall en reunión de la Commission du mécanisme de fixation des prix (25/03/2025); supercarburant 800 -> 775. Alwihda 27/03/2025 (sha256 9ef49bce4e7e..., Wayback 20261016181225): ''a pris effet à partir du mercredi 26 mars 2025'', super 775. APA y La Nouvelle Tribune (mar-2026) confirman 775 como nivel previo a la suba de mar-2026. L-Frii habla de un ajuste intermedio a inicios de 2025 no documentado.'
 - effective: 2025-03-26
   product: Gasoil
   locality: national
@@ -81,7 +99,35 @@ levels:
   derived_from:
   - https://www.alwihdainfo.com/mali-baisse-des-prix-des-carburants-a-la-pompe-a139795/
   confidence: media
-  note: "L-Frii 26/03/2025: gasoil 750 -> 725 (anuncio del PDG del ONAP). Alwihda 27/03/2025: gasoil 725 y DDO 725 desde el 26/03/2025. Confirmado como previo por APA y La Nouvelle Tribune (mar-2026)."
+  note: 'L-Frii 26/03/2025: gasoil 750 -> 725 (anuncio del PDG del ONAP). Alwihda 27/03/2025: gasoil 725 y DDO 725 desde el 26/03/2025. Confirmado como previo por APA y La Nouvelle Tribune (mar-2026).'
+- effective: 2025-09-30
+  product: Supercarburant sans plomb
+  locality: national
+  price_local: 775
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2025 sept., columna Mali = 775'
+  derived_from:
+  - https://www.bceao.int/sites/default/files/2026-04/Bulletin-Trimestriel-des-Statistiques-Quatri%C3%A8me-trimestre-2025.pdf
+  confidence: media-alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2025 sept. Mali 775 FCFA/L. effective = último día del mes (precio de fin de mes). La edición T4-2025 del Bulletin Trimestriel da el mismo valor para 2025 sept. (775/725); pero para 2025 oct.-déc. la T4-2025 da super 800 y gasoil 732-734 mientras esta edición da 775/725: series BCEAO de Mali revisadas, por eso no es alta.'
+- effective: 2025-09-30
+  product: Gasoil
+  locality: national
+  price_local: 725
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2025 sept., columna Mali = 725'
+  derived_from:
+  - https://www.bceao.int/sites/default/files/2026-04/Bulletin-Trimestriel-des-Statistiques-Quatri%C3%A8me-trimestre-2025.pdf
+  confidence: media-alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2025 sept. Mali 725 FCFA/L. effective = último día del mes (precio de fin de mes). La edición T4-2025 del Bulletin Trimestriel da el mismo valor para 2025 sept. (775/725); pero para 2025 oct.-déc. la T4-2025 da super 800 y gasoil 732-734 mientras esta edición da 775/725: series BCEAO de Mali revisadas, por eso no es alta.'
 - effective: 2026-03-28
   product: Supercarburant sans plomb
   locality: national
@@ -95,7 +141,7 @@ levels:
   derived_from:
   - https://fr.apanews.net/not-to-be-missed/mali-crise-energetique-et-hausse-des-prix-des-carburants/
   confidence: media
-  note: "La Nouvelle Tribune 28/03/2026: nuevos prix plafonds de la Commission de suivi 'applicables à compter du samedi 28 mars 2026 à minuit', comunicado firmado en Bamako el 27/03 por Diakaridia Dembélé, PDG del OMAP; supercarburant 775 -> 875. APA 28/03/2026 (403 directo; copia desde Wayback 20260328121245, sha256 5413ce835632...) coincide. Sin evidencia de cambios posteriores hallada (búsqueda oct-2026), pero tampoco confirmación explícita de vigencia hoy."
+  note: 'La Nouvelle Tribune 28/03/2026: nuevos prix plafonds de la Commission de suivi ''applicables à compter du samedi 28 mars 2026 à minuit'', comunicado firmado en Bamako el 27/03 por Diakaridia Dembélé, PDG del OMAP; supercarburant 775 -> 875. APA 28/03/2026 (403 directo; copia desde Wayback 20260328121245, sha256 5413ce835632...) coincide. Sin evidencia de cambios posteriores hallada (búsqueda oct-2026), pero tampoco confirmación explícita de vigencia hoy.'
 - effective: 2026-03-28
   product: Gasoil
   locality: national
@@ -109,4 +155,30 @@ levels:
   derived_from:
   - https://fr.apanews.net/not-to-be-missed/mali-crise-energetique-et-hausse-des-prix-des-carburants/
   confidence: media
-  note: "La Nouvelle Tribune 28/03/2026 (comunicado OMAP del 27/03): gasoil 725 -> 940 (+215, +30%); DDO 940; fuel-oil 180 675; lampant y Jet A1 libres. APA 28/03/2026 coincide."
+  note: 'La Nouvelle Tribune 28/03/2026 (comunicado OMAP del 27/03): gasoil 725 -> 940 (+215, +30%); DDO 940; fuel-oil 180 675; lampant y Jet A1 libres. APA 28/03/2026 coincide.'
+- effective: 2026-08-31
+  product: Supercarburant sans plomb
+  locality: national
+  price_local: 875
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.1 (essence super), fila 2026 août., columna Mali = 875'
+  derived_from: []
+  confidence: media-alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.1 (essence super): 2026 août. Mali 875 FCFA/L. effective = último día del mes (precio de fin de mes). Serie BCEAO de Mali revisada entre ediciones; coincide con el comunicado OMAP de mar-2026.'
+- effective: 2026-08-31
+  product: Gasoil
+  locality: national
+  price_local: 940
+  source_type: official_site
+  url: https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  archive_url: https://web.archive.org/web/20261010132315/https://www.bceao.int/sites/default/files/2026-10/Bulletin%20mensuel%20des%20statistiques%20-%20Ao%C3%BBt%202026.pdf
+  sha256: a4173a7df8a23a3430b44457bfa9e12e7e4ce3ef42827c89ca7c0de5fb1d465b
+  file: a4173a7df8a2_Bulletin-mensuel-des-statistiques-Aout-2026.pdf
+  method: 'confirmation: BCEAO Tableau 2.3.3.2 (gazoil), fila 2026 août., columna Mali = 940'
+  derived_from: []
+  confidence: media-alta
+  note: 'BCEAO, Bulletin Mensuel des Statistiques - Août 2026 (pub. oct-2026), sección 2.3.3 ''Evolution des prix en fin de mois des carburants dans les pays de l''UEMOA'', Tableau 2.3.3.2 (gazoil): 2026 août. Mali 940 FCFA/L. effective = último día del mes (precio de fin de mes). Serie BCEAO de Mali revisada entre ediciones; coincide con el comunicado OMAP de mar-2026.'
