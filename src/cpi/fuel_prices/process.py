@@ -848,10 +848,15 @@ def _forward_fill_state_controlled_series(
     work = df.copy()
     work["_canonical_country"] = work["country"].map(_canonical_country_name)
 
-    eligible = work[work["_canonical_country"].isin(_STATE_CONTROLLED_COUNTRIES)].copy()
-    ineligible = work[
-        ~work["_canonical_country"].isin(_STATE_CONTROLLED_COUNTRIES)
-    ].copy()
+    from .fetchers import FETCHER_REGISTRY
+
+    # Only sources still in the registry are carried forward: a retired source's
+    # last price would otherwise be repeated up to today as if it were current.
+    fill_mask = work["_canonical_country"].isin(_STATE_CONTROLLED_COUNTRIES) & work[
+        "source_key"
+    ].isin(set(FETCHER_REGISTRY))
+    eligible = work[fill_mask].copy()
+    ineligible = work[~fill_mask].copy()
     if eligible.empty:
         return _strip_internal(df).reset_index(drop=True)
 
@@ -957,6 +962,7 @@ def apply_data_quality_rules(df: pd.DataFrame) -> pd.DataFrame:
 def build_enriched_frame(
     collect_dir: Path | None = None,
     incremental: bool = True,
+    df_existing: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Full pipeline: load → normalize → enrich → deduplicate.
 
@@ -979,10 +985,11 @@ def build_enriched_frame(
 
     if incremental and collect_dir == DATA_DIR and enriched_path.exists():
         enriched_mtime = enriched_path.stat().st_mtime
-        df_existing = pd.read_csv(enriched_path, low_memory=False)
-        df_existing["observation_date"] = pd.to_datetime(
-            df_existing["observation_date"], errors="coerce"
-        )
+        if df_existing is None:
+            df_existing = pd.read_csv(enriched_path, low_memory=False)
+            df_existing["observation_date"] = pd.to_datetime(
+                df_existing["observation_date"], errors="coerce"
+            )
 
         # Scan source files for any modified after enriched output was written
         dirty = _find_dirty_countries(collect_dir, enriched_mtime)
@@ -1080,6 +1087,7 @@ def materialize_outputs(
         collect_dir = DATA_DIR
 
     out_path = staged_dir / "enrich" / "retail_series_enriched.csv"
+    df_existing = None
 
     # Skip build + write entirely if output is up to date
     if incremental and out_path.exists():
@@ -1097,7 +1105,10 @@ def materialize_outputs(
             logger.info("Build skipped — output is up to date (%d rows)", row_count)
             return {"enriched_path": out_path, "enriched_rows": row_count}
 
-    df = build_enriched_frame(collect_dir=collect_dir, incremental=incremental)
+    # Hand the already-read cache over instead of reading the 1.7 GB CSV twice.
+    df = build_enriched_frame(
+        collect_dir=collect_dir, incremental=incremental, df_existing=df_existing
+    )
 
     # Ensure output contains exactly ENRICHED_COLUMNS in canonical order
     for col in ENRICHED_COLUMNS:
