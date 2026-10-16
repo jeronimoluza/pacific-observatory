@@ -142,3 +142,8 @@ def deadman_cmd(expects, backup_mount):
             raise click.BadParameter(f"{e}: expected NAME@AT")
         overrides[name] = at
     sys.exit(run_deadman(load_config(), overrides, backup_mount, echo=click.echo))
+
+
+from graph.ledger.cli import ledger  # noqa: E402
+
+graph.add_command(ledger)
