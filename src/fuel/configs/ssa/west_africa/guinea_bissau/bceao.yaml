@@ -3,25 +3,34 @@ module: ssa.west_africa.guinea_bissau.bceao
 function: fetch_bceao_gw
 url: https://www.bceao.int/fr/publications?field_description_value=bulletin
 fallback_date: 2017-06-30
-priority: 20
+priority: 20  # 2026-10-16 user decision: the national source (10) wins; BCEAO fills months it lacks
 cadence: monthly
 carry_forward: true
+# Newer editions revise past months: re-read every cached edition each run so the
+# newest value applies backwards (PDFs and text are cached by sha256, so it is cheap).
+full_refresh: true
 # BCEAO Bulletin mensuel / trimestriel des statistiques, "Evolution des prix en
 # fin de mois des carburants dans les pays de l'UEMOA": "Prix à la pompe de
 # l'essence super / du gazoil (FCFA/Litre)". One national end-of-month value
 # per month; the newest edition wins where editions disagree.
 price_basis: retail
 station_type: national
+# Guinea-Bissau publishes two retail series side by side: this one (the official
+# regulated pump price) and wb_rtep (WB RTEP market median). Their own series_key
+# (*_regulated) keeps the build from averaging them; `label` names them in the Excel
+# and dashboard.
 
 products:
   "Essence super":
-    series_key: gasoline_super
+    series_key: gasoline_super_regulated
+    label: Essence super (regulated, BCEAO)
     fuel_family: gasoline
     unit: liter
     include_in_build: true
     grade: super
   "Gasoil":
-    series_key: diesel
+    series_key: diesel_regulated
+    label: Gasoil (regulated, BCEAO)
     fuel_family: diesel
     unit: liter
     include_in_build: true

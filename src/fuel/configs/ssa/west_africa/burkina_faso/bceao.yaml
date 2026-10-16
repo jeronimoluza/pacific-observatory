@@ -3,9 +3,12 @@ module: ssa.west_africa.burkina_faso.bceao
 function: fetch_bceao_bf
 url: https://www.bceao.int/fr/publications?field_description_value=bulletin
 fallback_date: 2017-06-30
-priority: 20
+priority: 5  # 2026-10-16 user decision: BCEAO wins here; manual_levels (10) is the backup
 cadence: monthly
 carry_forward: true
+# Newer editions revise past months: re-read every cached edition each run so the
+# newest value applies backwards (PDFs and text are cached by sha256, so it is cheap).
+full_refresh: true
 # BCEAO Bulletin mensuel / trimestriel des statistiques, "Evolution des prix en
 # fin de mois des carburants dans les pays de l'UEMOA": "Prix à la pompe de
 # l'essence super / du gazoil (FCFA/Litre)". One national end-of-month value
@@ -16,12 +19,14 @@ station_type: national
 products:
   "Essence super":
     series_key: gasoline_regular
+    label: Super 91  # same name as the national source, so the series keeps one name
     fuel_family: gasoline
     unit: liter
     include_in_build: true
     grade: regular
   "Gasoil":
     series_key: diesel
+    label: Gasoil  # same name as the national source, so the series keeps one name
     fuel_family: diesel
     unit: liter
     include_in_build: true
