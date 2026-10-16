@@ -345,6 +345,8 @@ def _print_source_summary(results):
     stats = results.get("statistics", {})
     lines = [
         ("Thumbnails Discovered", stats.get("new_urls_discovered", 0)),
+        ("Listing URLs seen", stats.get("listing_urls_seen", 0)),
+        ("Listing URLs known (ledger)", stats.get("listing_urls_known", 0)),
         ("Articles Scraped", stats.get("articles_scraped", 0)),
         ("Skipped (ledger)", stats.get("skipped_by_ledger", 0)),
         ("Filtered (listing.filters)", stats.get("filtered_listing", 0)),
