@@ -5,7 +5,7 @@ before the user signs off; a red check stops aggregate and publish (`step <name>
 Steps run through `prices.weekly.step.run_step`, the `po prices weekly` runner: each one in
 its own `systemd-run --user` scope with a MemoryMax, refused unless the 5TB is mounted,
 through the disk gate, with STATUS_<step> and events.log under <logs-root>/<run_id>/.
-Corpus, ledger and staging live on the 5TB; logs and the dashboards of publish on a8's disk.
+Corpus and staging live on the 5TB; ledger, logs and the dashboards of publish on a8's disk.
 The counts cache and outputs go where the worktree's data/text/cache and outputs/text/<region>
 links point. The disk gate measures / and the 5TB.
 """
@@ -26,7 +26,9 @@ from prices.weekly.status import Status
 from prices.weekly.step import REPO_ROOT, Context, Step, run_step
 
 CORPUS_ROOT = BACKUP_MOUNT / "text-corpus"
-STATE_DIR = BACKUP_MOUNT / "text-panel" / "state"
+# The panel ledger lives on a8's disk (the 5TB is backup only). It is never created
+# here: a missing dir would mean an empty ledger and a re-seeded collect.
+STATE_DIR = Path.home() / "text_panel" / "state"
 STAGING_ROOT = BACKUP_MOUNT / "text-panel" / "staging"
 # merge writes sign-off plans here; only `signoff` writes the corpus.
 PENDING_ROOT = BACKUP_MOUNT / "text-panel" / "pending"
@@ -142,6 +144,14 @@ def _under_mount(ctx, param, value: Path) -> Path:
     return value
 
 
+def _existing_dir(ctx, param, value: Path) -> Path:
+    value = value.expanduser().absolute()
+    if not value.is_dir():
+        raise click.BadParameter(f"{value} does not exist: the panel ledger is not created empty "
+                                 "(migrate it, or mkdir it on purpose before `step ledger`)")
+    return value
+
+
 @click.group("panel", invoke_without_command=True)
 @click.option(
     "--backup-mount",
@@ -154,7 +164,7 @@ def _under_mount(ctx, param, value: Path) -> Path:
 @click.option("--countries", default="text36eap", show_default=True, help="Slugs or a panel name from src/configs/panels/.")
 @click.option("--run-id", default=_run_id, show_default="now, UTC (YYYYmmddTHHMMZ)")
 @click.option("--corpus-root", type=click.Path(path_type=Path), default=CORPUS_ROOT, show_default=True, callback=_under_mount)
-@click.option("--state-dir", type=click.Path(path_type=Path), default=STATE_DIR, show_default=True, callback=_under_mount)
+@click.option("--state-dir", type=click.Path(path_type=Path), default=STATE_DIR, show_default=True, callback=_existing_dir)
 @click.option("--staging-root", type=click.Path(path_type=Path), default=STAGING_ROOT, show_default=True, callback=_under_mount)
 @click.option("--pending-root", type=click.Path(path_type=Path), default=PENDING_ROOT, show_default=True, callback=_under_mount)
 @click.option("--publish-root", type=click.Path(path_type=Path), default=PUBLISH_ROOT, show_default=True)
