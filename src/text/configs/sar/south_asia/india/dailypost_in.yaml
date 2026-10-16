@@ -9,7 +9,7 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://dailypost.in/wp-json/wp/v2/posts?per_page=100&page={page}&categories=8,7,24,38&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://dailypost.in/?rest_route=/wp/v2/posts&per_page=100&page={page}&categories=8,7,24,38&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: link
     title: title.rendered
