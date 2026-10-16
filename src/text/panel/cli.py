@@ -5,8 +5,9 @@ before the user signs off; a red check stops aggregate and publish (`step <name>
 Steps run through `prices.weekly.step.run_step`, the `po prices weekly` runner: each one in
 its own `systemd-run --user` scope with a MemoryMax, refused unless the 5TB is mounted,
 through the disk gate, with STATUS_<step> and events.log under <logs-root>/<run_id>/.
-Corpus, ledger and staging live on the 5TB; only logs and the counts cache
-(data/text/cache, outputs/text) are written on a8.
+Corpus, ledger and staging live on the 5TB; logs and the dashboards of publish on a8's disk.
+The counts cache and outputs go where the worktree's data/text/cache and outputs/text/<region>
+links point. The disk gate measures / and the 5TB.
 """
 
 from __future__ import annotations
@@ -29,8 +30,9 @@ STATE_DIR = BACKUP_MOUNT / "text-panel" / "state"
 STAGING_ROOT = BACKUP_MOUNT / "text-panel" / "staging"
 # merge writes sign-off plans here; only `signoff` writes the corpus.
 PENDING_ROOT = BACKUP_MOUNT / "text-panel" / "pending"
-# Internal dashboards (TX-32), one folder per run id; nothing is published outside.
-PUBLISH_ROOT = BACKUP_MOUNT / "text-panel" / "publish"
+# Internal dashboards (TX-32), one folder per run id, on a8's own disk: the 5TB is backup only.
+# Nothing is published outside; they reach the Mac by rsync.
+PUBLISH_ROOT = Path.home() / "text_panel" / "publish"
 # One job over 8G at a time on a8.
 HEAVY_LOCK = Path.home() / "scratch" / "heavy.lock"
 LOGS_ROOT = Path.home() / "text_panel" / "logs"
@@ -155,7 +157,7 @@ def _under_mount(ctx, param, value: Path) -> Path:
 @click.option("--state-dir", type=click.Path(path_type=Path), default=STATE_DIR, show_default=True, callback=_under_mount)
 @click.option("--staging-root", type=click.Path(path_type=Path), default=STAGING_ROOT, show_default=True, callback=_under_mount)
 @click.option("--pending-root", type=click.Path(path_type=Path), default=PENDING_ROOT, show_default=True, callback=_under_mount)
-@click.option("--publish-root", type=click.Path(path_type=Path), default=PUBLISH_ROOT, show_default=True, callback=_under_mount)
+@click.option("--publish-root", type=click.Path(path_type=Path), default=PUBLISH_ROOT, show_default=True)
 @click.option("--logs-root", type=click.Path(path_type=Path), default=LOGS_ROOT, show_default=True)
 @click.option("--parallel", "-P", type=int, default=12, show_default=True, help="Parallel sources in collect.")
 @click.option("--cap", type=int, default=300, show_default=True, help="Seconds per source in collect.")

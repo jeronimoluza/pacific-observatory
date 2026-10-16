@@ -12,7 +12,7 @@ aggregate: per region, the subregion and region aggregates of `po text build --r
 
 publish: `po text publish` (every region in outputs/text, one call per tracker) with
   outputs/text/{dashboards,dashboard_data,database_status} and small_dashboard_integrated.html
-  linked into <publish-root>/<run_id>/, and src/text/plotting/addons linked to --addons-dir.
+  linked into <publish-root>/<run_id>/ (a8's disk), and src/text/plotting/addons linked to --addons-dir.
   The database-status rescan (TX-36, ~17 min over the whole corpus) is skipped, so the
   per-region xlsx has no `sources` sheet.
 """
@@ -29,7 +29,7 @@ from prices.weekly.step import REPO_ROOT
 
 PUBLISH_LINKS = ("dashboards", "dashboard_data", "database_status", "small_dashboard_integrated.html")
 # Addon HTMLs of `po text build-policy-addons`, copied from the prod checkout (untracked there).
-ADDONS_DIR = Path("/mnt/backup5tb/text-panel/addons")
+ADDONS_DIR = Path.home() / "text_panel" / "addons"
 TRACKERS = {"fuel": "fuel", "food": "food_security"}
 
 
