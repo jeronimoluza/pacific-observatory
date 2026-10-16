@@ -36,6 +36,7 @@ from src.text.analysis.runners import (  # noqa: E402
     run_incremental_epu,
 )
 from src.text.analysis.utils import load_all_groups  # noqa: E402
+from src.text.source_keys import active_news_files  # noqa: E402
 
 PROJECT_ROOT = _PROJECT_ROOT
 DATA_ROOT = PROJECT_ROOT / "data" / "text"
@@ -240,7 +241,7 @@ def _discover_units(
         rgn = d.parent.parent.name
         sub = d.parent.name
         ctry = d.name
-        news_dirs = sorted(d.glob("*/news.csv"))
+        news_dirs = active_news_files(sorted(d.glob("*/news.csv")))
         if news_dirs:
             src_langs = {str(fp): _source_language(fp) for fp in news_dirs}
             units.append(
@@ -264,7 +265,7 @@ def _discover_units(
     for (rgn, sub), dirs in sorted(subregion_groups.items()):
         all_news = []
         for d in dirs:
-            all_news.extend(sorted(d.glob("*/news.csv")))
+            all_news.extend(active_news_files(sorted(d.glob("*/news.csv"))))
         if all_news:
             src_langs = {str(fp): _source_language(fp) for fp in all_news}
             units.append(
@@ -285,7 +286,7 @@ def _discover_units(
     for rgn, dirs in sorted(region_groups.items()):
         all_news = []
         for d in dirs:
-            all_news.extend(sorted(d.glob("*/news.csv")))
+            all_news.extend(active_news_files(sorted(d.glob("*/news.csv"))))
         if all_news:
             src_langs = {str(fp): _source_language(fp) for fp in all_news}
             units.append(

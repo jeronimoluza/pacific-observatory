@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 import ahocorasick
+import numpy as np
 import pandas as pd
 
 from text.analysis.utils import (
@@ -383,10 +384,14 @@ def annotate_source(
 
     reader = pd.read_csv(news_csv, encoding="utf-8", usecols=want, chunksize=chunksize)
     for chunk in reader:
-        # Mirror legacy EPU.process_data: dedupe on loaded columns BEFORE date
-        # parsing. Hashing row content keeps that global across chunks; keeping
-        # the first sighting matches drop_duplicates' default.
+        # One row per url, the first one in the file (the earliest written),
+        # BEFORE date parsing. Rows without a url fall back to the row content.
+        # The seen set keeps that global across chunks.
         hashes = pd.util.hash_pandas_object(chunk, index=False).to_numpy()
+        if "url" in chunk.columns:
+            has_url = chunk["url"].notna().to_numpy()
+            url_hashes = pd.util.hash_pandas_object(chunk["url"], index=False).to_numpy()
+            hashes = np.where(has_url, url_hashes, hashes)
         keep = []
         for i, h in enumerate(hashes):
             if h not in seen:

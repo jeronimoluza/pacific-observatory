@@ -52,7 +52,7 @@ import os
 from typing import List, Union, Dict
 import pandas as pd
 import numpy as np
-from .baseline import baseline_mask
+from .baseline import baseline_mask, source_key_for_news_path
 from .utils import (
     match_keywords,
     load_topics_words,
@@ -267,9 +267,7 @@ class EPU:
         """
         total_files = len(self.filepath)
         for file_idx, fp in enumerate(self.filepath):
-            country = fp.parent.parent.name
-            newspaper = fp.parent.name.replace(country, "").strip("_")
-            source = f"{country}_{newspaper}"
+            source = source_key_for_news_path(fp)
             fp_key = str(fp)
             if preloaded is not None and fp_key in preloaded:
                 raw = preloaded[fp_key].copy()
