@@ -1,0 +1,35 @@
+source_key: dgh_ci_monthly
+module: ssa.west_africa.cote_divoire.dgh
+function: fetch_dgh_ci
+url: https://apisite.dgh.ci/?section=select%20data&collection=documentation&zone=zone&method=GET
+fallback_date: 2020-08-31
+priority: 10
+cadence: monthly
+carry_forward: true
+station_type: national
+
+# DGH monthly note "Prix maxima de detail des produits petroliers" (scanned
+# PDF, one JPEG), listed under Documentation > Prix maxima a la pompe. Notes
+# start September 2020. Prices are OCR'd (tesseract fra, several renderings,
+# majority vote); a month whose vote is unclear is skipped, not guessed.
+# Needs tesseract with the fra language pack and poppler (pdftoppm).
+
+products:
+  "Super sans plomb":
+    series_key: gasoline_super
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+  "Gasoil moteur":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole lampant":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
