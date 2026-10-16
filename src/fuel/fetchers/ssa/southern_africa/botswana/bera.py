@@ -4,7 +4,8 @@ Botswana Energy Regulatory Authority publishes petroleum press releases and
 official Control of Goods petroleum-price gazette PDFs at
 ``https://www.bera.co.bw/petroleum.php`` and the media listing. Gazette
 schedule tables provide absolute location prices in thebe per litre; this
-fetcher uses the Gaborone row as the country reference. Press releases that
+fetcher uses the Gaborone row as the country reference and labels every row
+``city`` Gaborone. Press releases that
 publish only product deltas are accumulated from the latest official absolute
 gazette anchor.
 """
@@ -312,6 +313,7 @@ def fetch_bera_bw(cutoff: date) -> pd.DataFrame | None:
                     "currency": _CURRENCY,
                     "unit": "L",
                     "source_key": _SOURCE_KEY,
+                    "city": "Gaborone",
                 }
             )
 

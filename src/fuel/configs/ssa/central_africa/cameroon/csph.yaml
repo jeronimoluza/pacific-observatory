@@ -6,6 +6,7 @@ fallback_date: 2024-01-01
 priority: 10
 cadence: monthly
 carry_forward: true
+station_type: city
 
 products:
   "Super":

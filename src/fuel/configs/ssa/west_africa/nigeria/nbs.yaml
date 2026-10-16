@@ -6,6 +6,11 @@ fallback_date: 2021-02-01
 priority: 10
 cadence: monthly
 carry_forward: false
+# The fetcher writes the 36 states + FCT to ``city``; they are states, so
+# type them here instead of moving them to subnational_area, which would
+# change every row's observation hash and stop new rows deduping against
+# the stored ones.
+station_type: region
 
 # NBS publishes four parallel monthly Price Watch series in the e-library:
 #   • Premium Motor Spirit (PMS) Price Watch          → gasoline

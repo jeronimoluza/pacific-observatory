@@ -6,6 +6,7 @@ fallback_date: 2023-01-01
 priority: 10
 cadence: monthly
 carry_forward: true
+station_type: city
 
 # BERA publishes official fuel price adjustment PDFs and petroleum-price
 # gazette PDFs. Gazette schedules are location-specific; the fetcher uses

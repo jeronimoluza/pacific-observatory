@@ -248,7 +248,8 @@ def attach_station_stats(df: pd.DataFrame, stats: pd.DataFrame) -> pd.DataFrame:
     st = stats[[*keys, *STATION_COLUMNS]].copy()
     st["observation_date"] = pd.to_datetime(st["observation_date"])
     out = df.copy()
-    out["_d"] = pd.to_datetime(out["observed_on"])
+    # observed_on can list several source dates ("2023-09-01,2023-10-01").
+    out["_d"] = pd.to_datetime(out["observed_on"].astype(str).str.split(",").str[-1])
     out = out.merge(
         st.rename(columns={"observation_date": "_d"}),
         on=["source_key", "_d", "series_key"],

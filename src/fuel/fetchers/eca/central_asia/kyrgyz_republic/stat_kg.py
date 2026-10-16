@@ -14,7 +14,8 @@ Layout (per sheet):
         (``Gasoline A-95`` / ``Gasoline A-92`` / ``Gasoline A-80`` /
         ``Diesel fuel``),
       - then a ``Kyrgyz Republic`` row (col 1) with the national prices,
-      - then city rows we ignore (we keep only the national series).
+      - then one row per city (``Bishkek city``, ``Chaek, Jumgal region``),
+        kept with ``city`` set; the national row keeps ``city`` empty.
 
 Not every sheet has every product — older sheets list A-80; more recent
 sheets (e.g. May 2026) skip A-80. The parser is product-agnostic.
@@ -76,6 +77,7 @@ _PRODUCT_LABELS = {
 }
 
 _NATIONAL_LABEL_RE = re.compile(r"\bKyrgyz\s+Republic\b", re.IGNORECASE)
+_CITY_LABEL_RE = re.compile(r"^(.+?)(?:\s+city)?$", re.IGNORECASE)
 _DAY_HEADER_RE = re.compile(r"^\s*([A-Za-z]+)\s+(\d{1,2})\s*$")
 
 
@@ -122,7 +124,7 @@ def _build_date_columns(
 
 
 def _parse_sheet(df: pd.DataFrame, sheet_year: int, sheet_month: int) -> list[dict]:
-    """Extract national rows for every product present on the sheet."""
+    """Extract national and city rows for every product present on the sheet."""
     if df.shape[0] < 5 or df.shape[1] < 5:
         return []
 
@@ -142,35 +144,39 @@ def _parse_sheet(df: pd.DataFrame, sheet_year: int, sheet_month: int) -> list[di
         if product is None:
             continue
 
-        # National row is normally i+1 but may include blank rows; search a small window.
-        national_idx = None
-        for j in range(i + 1, min(i + 4, len(en_col))):
-            if _NATIONAL_LABEL_RE.search(en_col.iloc[j]):
-                national_idx = j
+        # National row is normally i+1 but may include blank rows; city rows
+        # follow it until the next product header.
+        for j in range(i + 1, len(en_col)):
+            loc = " ".join(en_col.iloc[j].split())
+            if any(key in loc for key in _PRODUCT_LABELS):
                 break
-        if national_idx is None:
-            continue
-
-        national_row = df.iloc[national_idx]
-        for col_idx, obs_date in date_cols.items():
-            cell = national_row.iloc[col_idx]
-            try:
-                price = float(cell)
-            except (TypeError, ValueError):
+            if _NATIONAL_LABEL_RE.search(loc):
+                city = ""
+            elif loc.lower().endswith((" city", " region")):
+                city = _CITY_LABEL_RE.match(loc).group(1)
+            else:
                 continue
-            if not (price > 0):
-                continue
-            rows.append(
-                {
-                    "observation_date": obs_date,
-                    "country": _COUNTRY,
-                    "fuel_product": product,
-                    "price_local": round(price, 4),
-                    "currency": _CURRENCY,
-                    "source_key": _SOURCE_KEY,
-                    "unit": "L",
-                }
-            )
+            loc_row = df.iloc[j]
+            for col_idx, obs_date in date_cols.items():
+                cell = loc_row.iloc[col_idx]
+                try:
+                    price = float(cell)
+                except (TypeError, ValueError):
+                    continue
+                if not (price > 0):
+                    continue
+                rows.append(
+                    {
+                        "observation_date": obs_date,
+                        "country": _COUNTRY,
+                        "fuel_product": product,
+                        "price_local": round(price, 4),
+                        "currency": _CURRENCY,
+                        "source_key": _SOURCE_KEY,
+                        "unit": "L",
+                        "city": city,
+                    }
+                )
     return rows
 
 
