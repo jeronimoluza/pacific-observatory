@@ -259,6 +259,7 @@ def fetch_ni_ine(cutoff: date) -> pd.DataFrame | None:
                     "currency": _CURRENCY,
                     "source_key": _SOURCE_KEY,
                     "unit": "L",
+                    "city": "Managua",
                 }
             )
 

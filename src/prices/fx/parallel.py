@@ -4,7 +4,9 @@ Official rates stay in ``frankfurter`` / ``refresh``. This module keeps a
 second, monthly series per currency from the sources that report a real
 market rate: WFP VAM (BIF ETB IQD LBP LYD MWK SDG SSP YER), World Bank RTFX
 where its "unofficial" column is not the official rate (SOS SSP LBP), the
-Argentine blue dollar, Venezuela's paralelo and Bolivia's USDT rate. It is
+Argentine blue dollar, Venezuela's paralelo, Bolivia's USDT rate, Iran's
+tgju, Ethiopia's ethioblackmarket, Syria's sp-today, and (parallel_sources)
+Myanmar's CBM market rate, DZD/ZWG/MVR portals and Binance P2P. It is
 shared by fuel and prices; ``load_parallel`` reads the cache and pipelines
 attach it themselves (fuel: ``fuel.fx_parallel.attach_parallel``).
 """
@@ -13,11 +15,13 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from pathlib import Path
 
 import pandas as pd
 
 from core.http import make_session
+from prices.fx.parallel_sources import extra_series
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +93,13 @@ def refresh_parallel_cache(cache_path: Path = PARALLEL_CACHE) -> int:
         return 0
     # WFP VAM first, RTFX only for the months VAM does not cover (ETB after
     # 2025-06, SSP gaps).
-    frames = _vam_series(session) + frames + _market_series(session, cache_path)
+    frames = (
+        _vam_series(session)
+        + frames
+        + _market_series(session, cache_path)
+        + _portal_series(session, cache_path)
+        + extra_series(session, load_parallel(cache_path))
+    )
     out = (
         pd.concat(frames, ignore_index=True)[_COLUMNS]
         .drop_duplicates(subset=["currency", "date"], keep="first")
@@ -166,6 +176,94 @@ _ARS_BLUE_URL = "https://api.argentinadatos.com/v1/cotizaciones/dolares/blue"
 _BOB_URL = "https://bo.dolarapi.com/v1/dolares"
 SOURCE_ARS = "argentinadatos:dolar-blue:venta-monthly-median"
 SOURCE_BOB = "dolarapi-bo:binance:venta"
+
+
+_IRR_URL = "https://api.tgju.org/v1/market/indicator/summary-table-data/price_dollar_rl"
+_ETB_URL = "https://ethioblackmarket.com/api/price-history-range"
+_SYP_URL = "https://sp-today.com/en/currency/us_dollar"
+SOURCE_IRR = "tgju:price_dollar_rl:close-monthly-median"
+SOURCE_ETB = "ethioblackmarket:usd-monthly"
+SOURCE_SYP = "sp-today:damascus-buy"
+
+
+def _monthly(dates, rates, currency, iso3, source) -> pd.DataFrame:
+    df = pd.DataFrame(
+        {
+            "date": pd.to_datetime(dates).dt.to_period("M").dt.to_timestamp(),
+            "rate": pd.to_numeric(rates, errors="coerce"),
+        }
+    ).dropna()
+    monthly = df.groupby("date").agg(
+        rate_usd_to_local=("rate", "median"), markets=("rate", "size")
+    )
+    return monthly.reset_index().assign(currency=currency, iso3=iso3, source=source)
+
+
+def _portal_series(session, cache_path: Path) -> list[pd.DataFrame]:
+    """Parallel rates from market portals: Iran's free-market dollar (tgju,
+    daily since 2011, rial), Ethiopia's black-market rate (ethioblackmarket,
+    monthly since 2023, Binance-P2P based; fills months after WFP VAM ends) and
+    Syria's Damascus rate (sp-today page, current value only, new pound =
+    old / 100; earlier months carried over from the cache)."""
+    out: list[pd.DataFrame] = []
+    try:
+        rows = session.get(_IRR_URL, params={"start": 0, "length": 10000}, timeout=120)
+        rows = rows.json()["data"]
+        out.append(
+            _monthly(
+                pd.Series([r[6] for r in rows]).str.replace("/", "-"),
+                pd.Series([r[3] for r in rows]).str.replace(",", ""),
+                "IRR",
+                "IRN",
+                SOURCE_IRR,
+            )
+        )
+    except Exception as exc:
+        logger.warning("IRR parallel fetch failed: %s", exc)
+    try:
+        months = session.get(_ETB_URL, timeout=60).json()["monthlyPrices"]
+        out.append(
+            _monthly(
+                pd.Series([m["month"] + "-01" for m in months]),
+                pd.Series([m["value"].get("USD") for m in months]),
+                "ETB",
+                "ETH",
+                SOURCE_ETB,
+            )
+        )
+    except Exception as exc:
+        logger.warning("ETB parallel fetch failed: %s", exc)
+    previous = load_parallel(cache_path)
+    syp = previous[previous["source"].eq(SOURCE_SYP)]
+    try:
+        page = session.get(_SYP_URL, timeout=60).text
+        old_pounds = re.search(r'\\"damascus\\":\{\\"buy\\":(\d+)', page).group(1)
+        month = (
+            pd.Timestamp.now(tz="UTC").tz_localize(None).to_period("M").to_timestamp()
+        )
+        syp = pd.concat(
+            [
+                syp[syp["date"] != month],
+                pd.DataFrame(
+                    [
+                        {
+                            "date": month,
+                            "rate_usd_to_local": float(old_pounds) / 100,
+                            "markets": 1,
+                            "currency": "SYP",
+                            "iso3": "SYR",
+                            "source": SOURCE_SYP,
+                        }
+                    ]
+                ),
+            ],
+            ignore_index=True,
+        )
+    except Exception as exc:
+        logger.warning("SYP parallel fetch failed: %s", exc)
+    if not syp.empty:
+        out.append(syp)
+    return out
 
 
 def _market_series(session, cache_path: Path) -> list[pd.DataFrame]:

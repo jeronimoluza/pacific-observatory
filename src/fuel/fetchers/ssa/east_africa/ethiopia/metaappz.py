@@ -103,6 +103,7 @@ def fetch_metaappz_et(cutoff: date) -> pd.DataFrame | None:
                     "currency": _CURRENCY,
                     "unit": "L",
                     "source_key": _SOURCE_KEY,
+                    "city": "Addis Ababa",
                 }
             )
 

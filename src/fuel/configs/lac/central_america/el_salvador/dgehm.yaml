@@ -6,10 +6,15 @@ fallback_date: 2011-01-01
 priority: 10
 cadence: biweekly
 carry_forward: true
+# One row per FERE zone (Occidental / Central / Oriental). Regulated
+# reference prices: zone differences are set by the formula, not outliers,
+# so no trim; the national price is the median zone.
+station_aggregate: {stat: median, trim: none, min_stations: 3, max_dispersion: 0.25}
+station_type: region
 
 # DGEHM publishes biweekly FERE reference prices per zone (Occidental /
-# Central / Oriental) in USD/gallon. We average the three zones to a
-# single national figure per (date, fuel). The data series is currently
+# Central / Oriental) in USD/gallon, kept per zone (see station_aggregate
+# above). The data series is currently
 # frozen at 2024-02-20 (no fresh observations published since).
 #
 # Fuels covered:

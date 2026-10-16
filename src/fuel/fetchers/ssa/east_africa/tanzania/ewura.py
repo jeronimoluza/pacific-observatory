@@ -6,7 +6,9 @@ PDF filenames follow ``en-<unix_ts>-Cap Prices ...Month YYYY.pdf``.
 
 The first page contains a clean *Table 1: Retail Prices — TZS/Litre* with
 three port rows (Dar es Salaam, Tanga, Mtwara) × three product columns
-(Petrol, Diesel, Kerosene). That table is the canonical headline series.
+(Petrol, Diesel, Kerosene). The following pages hold a per-town table
+(S.No., Town, Petrol, Diesel, Kerosene; ~190 towns), kept with ``city`` set
+to the town; a town that repeats a port row is dropped as a duplicate.
 
 Effective date is parsed from the body line
     "EFFECTIVE WEDNESDAY, <Dth> <Month> <YYYY>"
@@ -69,6 +71,10 @@ _MONTHS = {
 }
 
 _PORTS = ("Dar es Salaam", "Tanga", "Mtwara")
+_TOWN_ROW_RE = re.compile(
+    r"^\d{1,3}\.? \| ([^|]*\D[^|]*) \| ([\d,]+) \| ([\d,]+) \| ([\d,]+)$"
+)
+_SPLIT_WORD_RE = re.compile(r"(?<=\w) (?=[a-z])(?!es\b)")
 _PRODUCTS = ("Petrol", "Diesel", "Kerosene")
 
 _THROTTLE_S = 2.0
@@ -188,6 +194,23 @@ def _extract_table1_rows(page) -> dict[str, dict[str, float]]:
     return out
 
 
+def _extract_town_rows(pages) -> dict[str, dict[str, float]]:
+    """Parse the per-town retail table rows: { town: { product: price } }."""
+    out: dict[str, dict[str, float]] = {}
+    for page in pages:
+        for table in page.extract_tables() or []:
+            for row in table:
+                cells = [c.strip() for c in row if c and c.strip()]
+                m = _TOWN_ROW_RE.match(" | ".join(cells))
+                if m:
+                    prices = map(_parse_price, m.group(2, 3, 4))
+                    # Some PDFs space letters inside a word ("Many oni"); only
+                    # "es" (Dar es Salaam) starts lowercase in a real name.
+                    town = _SPLIT_WORD_RE.sub("", " ".join(m.group(1).split()))
+                    out.setdefault(town, dict(zip(_PRODUCTS, prices)))
+    return out
+
+
 def _extract_from_pdf(pdf_bytes: bytes, filename: str) -> list[dict]:
     try:
         import pdfplumber
@@ -215,7 +238,8 @@ def _extract_from_pdf(pdf_bytes: bytes, filename: str) -> list[dict]:
                 )
                 return []
             iso = obs_date.strftime("%Y-%m-%d")
-            for port, prices in port_prices.items():
+            town_prices = _extract_town_rows(pdf.pages[1:])
+            for port, prices in [*port_prices.items(), *town_prices.items()]:
                 for product, price in prices.items():
                     rows.append(
                         {

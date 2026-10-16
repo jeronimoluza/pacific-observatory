@@ -503,8 +503,8 @@ _LOCALITY_ROW_RE = re.compile(
 )
 
 
-def _locality_row_prices(text: str) -> dict[str, float]:
-    """Extract retail prices from the DOUALA / YAOUNDE row of the locality table.
+def _locality_row_prices(text: str) -> tuple[str, dict[str, float]]:
+    """Extract (city, retail prices) from the DOUALA / YAOUNDE locality row.
 
     Each row has 6 numbers in pairs (wholesale, retail) for Premium, Kerosene, Diesel.
     OCR may render the retail column with stray punctuation; we take the integer
@@ -512,7 +512,8 @@ def _locality_row_prices(text: str) -> dict[str, float]:
     """
     for raw_line in text.splitlines():
         line = re.sub(r"\s+", " ", raw_line).strip()
-        if not _LOCALITY_ROW_RE.search(line):
+        match = _LOCALITY_ROW_RE.search(line)
+        if not match:
             continue
         vals = [v for v in _numbers(line, low=50, high=2000)]
         if len(vals) < 6:
@@ -520,19 +521,16 @@ def _locality_row_prices(text: str) -> dict[str, float]:
         retail = vals[1::2][:3]
         if len(retail) < 3:
             continue
-        product_map = {
-            "Super": retail[0],
-            "Pétrole Lampant": retail[1],
-            "Gasoil": retail[2],
-        }
-        return product_map
-    return {}
+        city = "Douala" if "DOUALA" in match.group(0).upper() else "Yaoundé"
+        return city, dict(zip(_PRODUCT_ORDER, retail))
+    return "", {}
 
 
-def _extract_prices(text: str) -> dict[str, float]:
-    locality_prices = _locality_row_prices(text)
+def _extract_prices(text: str) -> tuple[dict[str, float], dict[str, str]]:
+    """Return (prices, city per product); locality and depot rows carry a city."""
+    locality_city, locality_prices = _locality_row_prices(text)
     retail_rows: list[dict[str, float]] = []
-    depot_rows: list[dict[str, float]] = []
+    depot_rows: list[tuple[dict[str, float], str]] = []
     direct_prices: dict[str, float] = {}
     for raw_line in text.splitlines():
         line = re.sub(r"\s+", " ", raw_line).strip()
@@ -547,8 +545,9 @@ def _extract_prices(text: str) -> dict[str, float]:
         elif _DEPOT_LABEL_RE.search(clean):
             row = _row_prices(line)
             if row:
-                depot_rows.append(row)
+                depot_rows.append((row, "Yaoundé" if "yaound" in clean else "Douala"))
     prices: dict[str, float] = {}
+    cities = dict.fromkeys(locality_prices, locality_city)
     if locality_prices:
         prices.update(locality_prices)
     if retail_rows:
@@ -556,15 +555,16 @@ def _extract_prices(text: str) -> dict[str, float]:
             for product, value in row.items():
                 prices.setdefault(product, value)
     elif depot_rows and not prices:
-        for row in depot_rows:
+        for row, city in depot_rows:
             for product, value in row.items():
+                cities.setdefault(product, city)
                 prices.setdefault(product, value)
     for product, value in direct_prices.items():
         prices.setdefault(product, value)
-    return prices
+    return prices, cities
 
 
-def _row_for(obs_date: date, product: str, price: float) -> dict:
+def _row_for(obs_date: date, product: str, price: float, city: str = "") -> dict:
     unit = "cylinder" if product == "Gaz Butane" else "L"
     return {
         "observation_date": obs_date.isoformat(),
@@ -574,6 +574,7 @@ def _row_for(obs_date: date, product: str, price: float) -> dict:
         "currency": _CURRENCY,
         "unit": unit,
         "source_key": _SOURCE_KEY,
+        "city": city,
     }
 
 
@@ -645,7 +646,7 @@ def fetch_csph_cm(cutoff: date) -> pd.DataFrame | None:
         obs_date = obs_date_hint or _date_from_text(text)
         if obs_date is None or obs_date < cutoff:
             continue
-        prices = _extract_prices(text)
+        prices, cities = _extract_prices(text)
         if not prices:
             logger.warning("[csph_cm] no prices parsed from %s", fetched_url)
             continue
@@ -655,7 +656,7 @@ def fetch_csph_cm(cutoff: date) -> pd.DataFrame | None:
         seen_docs.add(doc_key)
         seen_months.add(obs_date)
         for product, price in prices.items():
-            rows.append(_row_for(obs_date, product, price))
+            rows.append(_row_for(obs_date, product, price, cities.get(product, "")))
         logger.info(
             "[csph_cm] %s -> %s, %d products, ocr=%s",
             fetched_url,

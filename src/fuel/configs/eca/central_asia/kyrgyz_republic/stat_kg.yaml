@@ -6,6 +6,11 @@ fallback_date: 2016-01-01
 priority: 10
 cadence: daily
 carry_forward: false
+# One row per city (17-19 towns) beside the national weighted mean, which is
+# kept in the raw but excluded here. City prices are averages of a few
+# stations, so no trim: the median of all towns.
+station_aggregate: {stat: median, trim: none, min_stations: 5, max_dispersion: 0.25, exclude: [national]}
+station_type: city
 currency: KGS
 
 products:

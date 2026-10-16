@@ -4,7 +4,10 @@ Source: datos.gob.ar dataset "Precios en Surtidor - Resolución 314/2016"
   - Current CSV (small, ~35MB): all station-level reports for recent months
   - Historical CSV (~770MB): full history from 2016 onward
 
-Strategy: aggregate to national monthly averages per product (Diurno rows only).
+Strategy: one row per station, product and month (Diurno rows only; the
+station's last report by fecha_vigencia; ``station`` = idempresa, with
+localidad and provincia). The build turns stations into a national price
+(``station_aggregate`` in the YAML).
 Pull current CSV always; pull historical only when cutoff is older than the
 oldest month in the current CSV.
 """
@@ -42,6 +45,7 @@ _UNIT_BY_PRODUCT = {
     "Gas Oil Grado 3": "L",
     "GNC": "m3",
 }
+_LOCATION = ["idempresa", "localidad", "provincia", "fecha_vigencia"]
 
 
 def _download_csv(session, url: str) -> bytes | None:
@@ -57,55 +61,49 @@ def _download_csv(session, url: str) -> bytes | None:
 def _load_frame(raw: bytes) -> pd.DataFrame:
     df = pd.read_csv(
         io.BytesIO(raw),
-        usecols=["indice_tiempo", "producto", "tipohorario", "precio"],
+        usecols=[*_LOCATION, "indice_tiempo", "producto", "tipohorario", "precio"],
         dtype={
-            "indice_tiempo": "string",
-            "producto": "string",
-            "tipohorario": "string",
+            c: "string"
+            for c in [*_LOCATION, "indice_tiempo", "producto", "tipohorario"]
         },
     )
     df = df[df["tipohorario"] == "Diurno"]
-    df = df.dropna(subset=["indice_tiempo", "producto", "precio"])
+    df = df.dropna(subset=["idempresa", "indice_tiempo", "producto", "precio"])
     df["precio"] = pd.to_numeric(df["precio"], errors="coerce")
     df = df.dropna(subset=["precio"])
     df = df[df["producto"].isin(_UNIT_BY_PRODUCT)]
     return df
 
 
-def _aggregate(df: pd.DataFrame, cutoff: date) -> list[dict]:
-    grouped = (
-        df.groupby(["indice_tiempo", "producto"], as_index=False)["precio"]
-        .mean()
-        .rename(columns={"precio": "price_local"})
+def _aggregate(df: pd.DataFrame, cutoff: date) -> pd.DataFrame:
+    last = (
+        df.sort_values("fecha_vigencia", kind="stable")
+        .groupby(["indice_tiempo", "producto", "idempresa"], as_index=False)
+        .last()
     )
-
-    rows: list[dict] = []
-    for _, r in grouped.iterrows():
-        ym = str(r["indice_tiempo"]).strip()
-        try:
-            year, month = ym.split("-")
-            obs_date = date(int(year), int(month), 1)
-        except (ValueError, AttributeError):
-            continue
-        if obs_date <= cutoff:
-            continue
-        product = str(r["producto"])
-        rows.append(
-            {
-                "observation_date": obs_date.strftime("%Y-%m-%d"),
-                "country": _COUNTRY,
-                "fuel_product": product,
-                "price_local": round(float(r["price_local"]), 4),
-                "currency": _CURRENCY,
-                "source_key": _SOURCE_KEY,
-                "unit": _UNIT_BY_PRODUCT[product],
-            }
-        )
-    return rows
+    obs = pd.to_datetime(
+        last["indice_tiempo"].str.strip() + "-01", format="%Y-%m-%d", errors="coerce"
+    )
+    last = last[obs.notna() & (obs.dt.date > cutoff)]
+    obs = obs[last.index]
+    return pd.DataFrame(
+        {
+            "observation_date": obs.dt.strftime("%Y-%m-%d"),
+            "country": _COUNTRY,
+            "fuel_product": last["producto"].astype(str),
+            "price_local": last["precio"].astype(float).round(4),
+            "currency": _CURRENCY,
+            "source_key": _SOURCE_KEY,
+            "unit": last["producto"].map(_UNIT_BY_PRODUCT),
+            "subnational_area": last["provincia"].fillna("").str.strip(),
+            "city": last["localidad"].fillna("").str.strip(),
+            "station": last["idempresa"].str.strip(),
+        }
+    )
 
 
 def fetch_ar_datos_argentina(cutoff: date) -> pd.DataFrame | None:
-    """Fetch Argentina retail fuel prices, aggregated to national monthly means."""
+    """Fetch Argentina retail fuel prices, one row per station and month."""
     session = make_session()
 
     current_raw = _download_csv(session, _CURRENT_CSV)
@@ -137,10 +135,12 @@ def fetch_ar_datos_argentina(cutoff: date) -> pd.DataFrame | None:
 
     combined = pd.concat(frames, ignore_index=True)
     rows = _aggregate(combined, cutoff)
-    if not rows:
+    if rows.empty:
         logger.info("[ar_datos] No new rows after cutoff %s", cutoff)
         return None
 
-    out = pd.DataFrame(rows).sort_values("observation_date").reset_index(drop=True)
+    out = rows.sort_values(["observation_date", "fuel_product", "station"]).reset_index(
+        drop=True
+    )
     logger.info("[ar_datos] Returning %d rows (cutoff: %s)", len(out), cutoff)
     return out

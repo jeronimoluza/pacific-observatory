@@ -13,6 +13,7 @@ nodes:
       - src/fuel/fx.py
       - src/fuel/fx_parallel.py
       - src/prices/fx/parallel.py
+      - src/prices/fx/parallel_sources.py
       - src/fuel/process.py
       - src/fuel/publish.py
       - src/fuel/publish_xlsx.py

@@ -10,7 +10,8 @@ through the present. Each event lists 13-18 main Colombian cities with:
 
 Prices are in COP/gallon (Colombian thousand-separator: "16.291" = 16291).
 We pair each table with the most recent "vigencia / partir del" date heading
-in DOM order, dedupe by date, and emit the national mean per product.
+in DOM order, dedupe by date, and emit one row per city and product
+(``city``); the build takes the median across cities (``station_aggregate``).
 """
 
 from __future__ import annotations
@@ -57,6 +58,9 @@ _DATE_TRIGGER_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Spelling variants across tables -> one city label.
+_CITY_ALIASES = {"Bogotá D.C.": "Bogotá", "Manizalez": "Manizales"}
+
 _PRODUCT_COLS = {
     "GASOLINA MC": 2,  # 3rd column (0-indexed): Gasolina MC ($/gal)
     "ACPM": 3,  # 4th column: ACPM ($/gal)
@@ -98,8 +102,8 @@ def _parse_price(value: str) -> float | None:
     return price
 
 
-def _extract_events(html: str) -> list[tuple[date, str, float]]:
-    """Yield (effective_date, product, national_mean_price) tuples."""
+def _extract_events(html: str) -> list[tuple[date, str, str, float]]:
+    """Yield (effective_date, product, city, price) tuples."""
     soup = BeautifulSoup(html, "html.parser")
     elements = soup.find_all(
         ["table", "p", "h2", "h3", "h4", "h5", "strong", "div", "span"]
@@ -107,7 +111,7 @@ def _extract_events(html: str) -> list[tuple[date, str, float]]:
 
     seen_dates: set[date] = set()
     current_date: date | None = None
-    events: list[tuple[date, str, float]] = []
+    events: list[tuple[date, str, str, float]] = []
 
     for el in elements:
         if el.name != "table":
@@ -123,7 +127,7 @@ def _extract_events(html: str) -> list[tuple[date, str, float]]:
                 seen_dates.add(current_date)
             continue
 
-        prices_by_product: dict[str, list[float]] = {p: [] for p in _PRODUCT_COLS}
+        seen_cities: set[str] = set()
         for row in el.find_all("tr"):
             cells = [c.get_text(" ", strip=True) for c in row.find_all(["td", "th"])]
             if len(cells) < 4:
@@ -132,19 +136,18 @@ def _extract_events(html: str) -> list[tuple[date, str, float]]:
             first = _normalize(cells[0]).lower()
             if not first.isdigit():
                 continue
+            city = _normalize(cells[1])
+            city = _CITY_ALIASES.get(city, city)
+            if not city or city in seen_cities:
+                continue
+            seen_cities.add(city)
             for product, col in _PRODUCT_COLS.items():
                 if col >= len(cells):
                     continue
                 price = _parse_price(cells[col])
                 if price is None:
                     continue
-                prices_by_product[product].append(price)
-
-        for product, values in prices_by_product.items():
-            if not values:
-                continue
-            mean = sum(values) / len(values)
-            events.append((current_date, product, mean))
+                events.append((current_date, product, city, price))
 
         seen_dates.add(current_date)
 
@@ -167,7 +170,7 @@ def fetch_co_creg(cutoff: date) -> pd.DataFrame | None:
         return None
 
     rows: list[dict] = []
-    for obs_date, product, price in events:
+    for obs_date, product, city, price in events:
         if obs_date <= cutoff:
             continue
         rows.append(
@@ -179,6 +182,7 @@ def fetch_co_creg(cutoff: date) -> pd.DataFrame | None:
                 "currency": _CURRENCY,
                 "source_key": _SOURCE_KEY,
                 "unit": "gal",
+                "city": city,
             }
         )
 
@@ -188,7 +192,7 @@ def fetch_co_creg(cutoff: date) -> pd.DataFrame | None:
 
     out = (
         pd.DataFrame(rows)
-        .sort_values(["observation_date", "fuel_product"])
+        .sort_values(["observation_date", "fuel_product", "city"])
         .reset_index(drop=True)
     )
     logger.info("[co_creg] Returning %d rows (cutoff: %s)", len(out), cutoff)

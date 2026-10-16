@@ -6,6 +6,7 @@ fallback_date: 2021-01-01
 priority: 10
 cadence: weekly
 carry_forward: false
+station_type: city
 
 # INE's "Monitoreo de Precios" weekly PDF reports Managua station averages
 # for Gasolina Regular, Súper, Diésel and Kerosene. These are explicitly

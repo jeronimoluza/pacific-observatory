@@ -6,6 +6,11 @@ fallback_date: 2022-10-01
 priority: 10
 cadence: monthly
 carry_forward: true
+# One row per station and month (~150-170 stations); the build takes the
+# median after dropping stations outside median +- 3 MAD. See
+# fuel/station_aggregate.py.
+station_aggregate: {stat: median, trim: mad, k: 3, min_stations: 5, max_dispersion: 0.25}
+station_type: station
 
 products:
   "GNCV":
