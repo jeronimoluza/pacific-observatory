@@ -118,15 +118,15 @@ class SitemapStrategy(ListingStrategy):
                     lastmod[url] = lm.get_text(strip=True) if lm else ""
 
         # Dedupe while preserving none-first then sort newest-first
-        if self.sitemap_order in ("natural_desc", "natural_asc"):
-            # String order puts page=99 before page=600; discovery stops at the
-            # first fully-known sub-sitemap, so the newest one must come first.
-            def key(u):
-                return [int(p) if p.isdigit() else p for p in re.split(r"(\d+)", u)]
+        # String order puts page=99 before page=600; discovery stops at the
+        # first fully-known sub-sitemap, so the newest one must come first.
+        def key(u):
+            return [int(p) if p.isdigit() else p for p in re.split(r"(\d+)", u)]
 
+        if self.sitemap_order in ("natural_desc", "natural_asc"):
             return sorted(set(sitemaps), key=key, reverse=self.sitemap_order == "natural_desc")
-        if self.sitemap_order == "lastmod_desc":
-            return sorted(set(sitemaps), key=lambda u: lastmod.get(u, ""), reverse=True)
+        if self.sitemap_order == "lastmod_desc":  # ties (same-day lastmod) in natural order
+            return sorted(set(sitemaps), key=lambda u: (lastmod.get(u, ""), key(u)), reverse=True)
         sitemaps = sorted(set(sitemaps), reverse=True)
         return sitemaps
 

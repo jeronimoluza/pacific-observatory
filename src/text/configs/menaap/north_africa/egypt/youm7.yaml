@@ -24,7 +24,10 @@ selectors:
     title: "h3 a::text"
     url: "h3 a::attr(href)"
   article:
-    body: "div#articleBody div"
+    body:
+      # 2026-10-16: paragraphs are now direct <p> children (426/470 empty bodies with div)
+      - "div#articleBody p"
+      - "div#articleBody div"
     date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:

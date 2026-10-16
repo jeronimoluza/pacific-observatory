@@ -44,5 +44,6 @@ selectors:
 cleaning:
   date: handle_mixed_dates
 
-max_pages: null
+# 2026-10-16: every 20k-URL sub-sitemap holds new URLs, so discovery walked all 9; _5_1 is the newest
+max_pages: 1
 max_articles: 800

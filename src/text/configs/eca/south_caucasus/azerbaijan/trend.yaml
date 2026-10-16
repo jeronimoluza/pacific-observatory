@@ -42,4 +42,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: 550
+max_articles: 400  # 2026-10-16 verify: 550 still hit the 300 s cap
