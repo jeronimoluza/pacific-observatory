@@ -1,0 +1,31 @@
+# Asset manifest: fuel (regions eca, menaap, sar, ssa, lac; EAP stays on the legacy
+# pipeline in ../pacific-observatory and is not a node here). Same schema as prices.yaml.
+# Mac paths: TR = ~/wb/pacificobservatory/repo/template-repo.
+pipeline: fuel
+code_ref: origin/mvp/fuel  # pasar a origin/main cuando mvp/fuel se mergee
+
+nodes:
+  fuel.publish:
+    estado: prod
+    observer: fuel_status
+    code_paths:
+      - src/fuel/collect.py
+      - src/fuel/fx.py
+      - src/fuel/process.py
+      - src/fuel/publish.py
+      - src/fuel/publish_xlsx.py
+      - src/fuel/gates.py
+      - src/fuel/configs/**/*.yaml
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/fuel/dashboards/<region>_fuel_dashboard.html", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/fuel/excels/<region>_fuel_prices.xlsx", machine: mac}
+      - {path: "~/wb/pacificobservatory/repo/template-repo/data/fuel/_status/<region>.json", machine: mac, role: status}
+    partition: region
+    run: >-
+      po fuel collect -r R (x5 en paralelo) -> po fuel refresh-fx -> po fuel build -r R
+      (secuencial) -> po fuel publish -r R
+    freshness: un publish por semana (<= 8 días)
+    checks:
+      - {color: rojo, desc: publish bloqueado por el gate de países (bajó el conteo)}
+      - {color: rojo, desc: sin publish en > 8 días}
+      - {color: amarillo, desc: fallas de fuente nuevas (no están en known_failures.md)}
