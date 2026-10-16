@@ -33,6 +33,14 @@ class MergeError(RuntimeError):
     pass
 
 
+def _excluded() -> set[str]:
+    """Regions or country slugs that prod collect and merge never touch."""
+    ex = Path(os.environ.get("TEXT_COLLECT_EXCLUDE", Path.home() / "text_collect/exclude.txt"))
+    if not ex.is_file():
+        return set()
+    return {line.split("#")[0].strip() for line in ex.read_text().splitlines()} - {""}
+
+
 def _header(path: Path) -> list[str]:
     with open(path, newline="", encoding="utf-8") as f:
         return next(csv.reader(f))
@@ -176,6 +184,9 @@ def run_merge(region: str, staging: Path, data_base: Path) -> None:
     region_dir = data_base / region
     if not region_dir.is_dir():
         raise click.ClickException(f"archive not mounted: {region_dir} is missing")
+    excluded = _excluded()
+    if region in excluded:
+        raise click.ClickException(f"{region} is excluded (TEXT_COLLECT_EXCLUDE); not merging")
     runs = pending_runs(staging, region)
     if not runs:
         click.echo(f"  No unmerged {region} runs under {staging}.")
@@ -186,9 +197,12 @@ def run_merge(region: str, staging: Path, data_base: Path) -> None:
     try:
         for run in runs:
             click.echo(f"\n  === {run.name} / {region} ===")
-            n_news = n_urls = n_sources = 0
+            n_news = n_urls = n_sources = n_excluded = 0
             run_failed: list[str] = []
             for key, stage_dir in iter_source_dirs(run / region):
+                if key.split("/")[1] in excluded:
+                    n_excluded += 1
+                    continue
                 try:
                     state, a, b = merge_source(
                         stage_dir, region_dir / key, ledger.get(key)
@@ -205,7 +219,8 @@ def run_merge(region: str, staging: Path, data_base: Path) -> None:
                     click.echo(f"  {key}: +{a} news, +{b} urls")
             click.echo(
                 f"  {run.name}: {n_sources} sources, +{n_news:,} news rows, "
-                f"+{n_urls:,} urls rows, {len(run_failed)} failed"
+                f"+{n_urls:,} urls rows, {len(run_failed)} failed, "
+                f"{n_excluded} excluded (not merged)"
             )
             if run_failed:
                 failed.extend(f"{run.name}/{k}" for k in run_failed)

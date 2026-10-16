@@ -10,7 +10,9 @@
 #
 # Env: REGIONS (default "menaap sar eap ssa lac eca"), P (parallel sources,
 #      default 24), CAP (seconds per source, default 300),
-#      STAGING_ROOT (default ~/text_staging), MIN_FREE_GB (default 5).
+#      STAGING_ROOT (default ~/text_staging), MIN_FREE_GB (default 5),
+#      TEXT_COLLECT_EXCLUDE (default ~/text_collect/exclude.txt: regions or
+#      country slugs, one per line, never collected; absent = collect all).
 set -u
 
 REGIONS="${REGIONS:-menaap sar eap ssa lac eca}"
@@ -19,6 +21,7 @@ CAP="${CAP:-300}"
 STAGING_ROOT="${STAGING_ROOT:-$HOME/text_staging}"
 STATE_DIR="${TEXT_STATE_DIR:-$HOME/text_state}"
 MIN_FREE_GB="${MIN_FREE_GB:-5}"
+export TEXT_COLLECT_EXCLUDE="${TEXT_COLLECT_EXCLUDE:-$HOME/text_collect/exclude.txt}"
 S="$(cd "$(dirname "$0")" && pwd)"
 
 mkdir -p "$STAGING_ROOT"
@@ -43,6 +46,11 @@ free_gb() { df -Pk "$STAGING_ROOT" | awk 'NR==2 {print int($4 / 1048576)}'; }
 
 log RUN-START "$STAGING"
 for r in $REGIONS; do
+  if [ -f "$TEXT_COLLECT_EXCLUDE" ] && sed "s/#.*//; s/[[:space:]]//g" "$TEXT_COLLECT_EXCLUDE" | grep -qx -- "$r"; then
+    log SKIP "$r: excluded in $TEXT_COLLECT_EXCLUDE"
+    echo "| $r | | | | | | | SKIPPED: excluded |" >> "$STATUS"
+    continue
+  fi
   if [ ! -s "$STATE_DIR/$r.sqlite" ]; then
     log SKIP "$r: no ledger at $STATE_DIR/$r.sqlite"
     echo "| $r | | | | | | | SKIPPED: no ledger |" >> "$STATUS"
@@ -54,7 +62,11 @@ for r in $REGIONS; do
     break
   fi
   log REGION-START "$r"
-  bash "$S/launch_refresh.sh" "$r" "$P" "$CAP" > /dev/null
+  if ! bash "$S/launch_refresh.sh" "$r" "$P" "$CAP" > /dev/null; then
+    log SKIP "$r: empty queue (all countries excluded?)"
+    echo "| $r | | | | | | | SKIPPED: empty queue |" >> "$STATUS"
+    continue
+  fi
   until grep -q "REFRESH-DONE" "/tmp/refresh_${r}_nohup.log" 2>/dev/null; do sleep 60; done
   ev="/tmp/refresh_${r}_nohup.log"
   cp "$ev" "$STAGING/events_$r.log"
