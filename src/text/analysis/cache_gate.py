@@ -44,8 +44,8 @@ def _dedup_source_counts(
     month as a separate monthly row. The pivot's index only has the 1st of a
     past month, so without the roll-up every day but the 1st was dropped: on
     2026-10-05 September kept ~3% of its articles. Past-month rows are
-    disjoint article sets (incremental annotation starts strictly after each
-    source's cached tail), so summing is exact.
+    disjoint article sets (incremental annotation replaces a source's cells from
+    its start month on), so summing is exact.
     """
     if (
         df is None
@@ -202,38 +202,39 @@ def _ensure_country_source_counts(
 
     # The tail can move backwards, because it follows the newest article rather
     # than the calendar. When it does, the month it lands on is already cached
-    # at monthly grain, and no source has rows past its cached tail, so the
-    # extension check below finds nothing and the daily rows never appear.
+    # at monthly grain, and no month's count has moved, so the lateness check
+    # below finds nothing and the daily rows never appear.
     # Re-annotate that month at daily grain instead. This reads the need off
     # the cache itself rather than a stored tail, so caches written before the
     # tail became data-driven need no migration.
     backfill_cutoff = _daily_backfill_cutoff(cached_df, daily_tail_start)
+    cached_norm = _dedup_source_counts(cached_df, daily_tail_start)
 
-    # Tail-only path: check whether any source has new rows past the cached tail.
+    # Lateness window (TX-23): a source is re-annotated from the first month
+    # whose row count in news.csv differs from its cached A_total. That catches
+    # rows past the tail and rows merged late with a date at or before it.
     sources_to_extend: list[tuple[Path, str, annotate.KeywordBundle, pd.Timestamp]] = []
     bundles = {lang: _bundle_for_language(lang) for lang in languages}
     for fp in news_dirs:
         sk = _source_key(fp)
-        cutoff = None
-        ext = source_counts.tail_extension(fp, cached_params, sk)
-        if ext is not None:
-            ext_cutoff, n_new = ext
-            if ext_cutoff is not None and n_new > 0:
-                cutoff = ext_cutoff
+        start = source_counts.first_stale_month(
+            fp, cached_norm[cached_norm["source_key"] == sk], subset_start, subset_end
+        )
         if backfill_cutoff is not None:
-            cutoff = backfill_cutoff if cutoff is None else min(cutoff, backfill_cutoff)
-        if cutoff is None:
+            backfill_start = backfill_cutoff + pd.Timedelta(days=1)
+            start = backfill_start if start is None else min(start, backfill_start)
+        if start is None:
             continue
         lang = LANGUAGE_ALIASES.get(
             source_languages.get(str(fp), "en"), source_languages.get(str(fp), "en")
         )
-        sources_to_extend.append((fp, sk, bundles[lang], cutoff))
+        sources_to_extend.append((fp, sk, bundles[lang], start))
 
     if not sources_to_extend:
         diagnostics["mode"] = "reused"
         for sk in source_keys:
             _advance(sk)
-        return _dedup_source_counts(cached_df, daily_tail_start)
+        return cached_norm
 
     diagnostics["mode"] = "incremental"
     extended_keys = {sk for _, sk, _, _ in sources_to_extend}
@@ -242,35 +243,38 @@ def _ensure_country_source_counts(
             _advance(sk)
     extended_frames: list[pd.DataFrame] = []
     new_tails = dict(cached_params.tails)
-    for fp, sk, bundle, cutoff in sources_to_extend:
-        # Only annotate rows strictly after the cached tail.
+    cached_dates = pd.to_datetime(cached_norm["ym"].astype(str), format="mixed")
+    replaced = pd.Series(False, index=cached_norm.index)
+    for fp, sk, bundle, start in sources_to_extend:
         df_new, diag = annotate.annotate_source(
             fp,
             sk,
             bundle,
             daily_tail_start=daily_tail_start,
-            subset_start=cutoff + pd.Timedelta(days=1),
+            subset_start=start if subset_start is None else max(start, subset_start),
             subset_end=subset_end,
         )
         diagnostics["sources"][sk] = diag
         diagnostics["total_articles"] += diag.get("n_total", 0)
         _advance(sk)
         extended_frames.append(df_new)
-        if diag.get("max_date") is not None:
-            new_tails[sk] = {
-                "last_date": diag["max_date"].strftime("%Y-%m-%d"),
-                # n_total counts the whole deduped file, before the subset
-                # filter, so it replaces the cached count rather than adding to it.
-                "n_rows": int(diag.get("n_total", 0)),
-            }
+        replaced |= (cached_norm["source_key"] == sk) & (cached_dates >= start)
+        new_tails[sk] = {
+            "last_date": (
+                diag["max_date"].strftime("%Y-%m-%d")
+                if diag.get("max_date") is not None
+                else new_tails.get(sk, {}).get("last_date")
+            ),
+            # n_total counts the whole deduped file, before the subset
+            # filter, so it replaces the cached count rather than adding to it.
+            "n_rows": int(diag.get("n_total", 0)),
+        }
 
-    # Replace the cached tail rows for affected sources with the new ones.
-    if extended_frames:
-        new_rows = pd.concat(extended_frames, ignore_index=True)
-        merged = pd.concat([cached_df, new_rows], ignore_index=True)
-        df_out = _dedup_source_counts(merged, daily_tail_start)
-    else:
-        df_out = _dedup_source_counts(cached_df, daily_tail_start)
+    # Replace, never append: the source's cached cells from its start month on
+    # give way to the re-annotated ones.
+    new_rows = pd.concat(extended_frames, ignore_index=True)
+    merged = pd.concat([cached_norm[~replaced], new_rows], ignore_index=True)
+    df_out = _dedup_source_counts(merged, daily_tail_start)
 
     params_obj = source_counts.SourceCountsParams(
         schema_version=source_counts.SCHEMA_VERSION,
