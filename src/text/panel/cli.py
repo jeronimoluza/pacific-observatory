@@ -86,6 +86,8 @@ STEPS: dict[str, Step] = {
     "ledger": Step("ledger", "4G", _argv("ledger")),
     # The whole xargs pool shares the scope: P python collects at ~300-500M each.
     "collect": Step("collect", "8G", _argv("collect")),
+    # Heavy tier, not in CHAIN: its own timer/run id, e.g. `--run-id <ts>-drain --cap 900 step drain`.
+    "drain": Step("drain", "4G", _argv("drain")),
     # Holds one source's url set; the biggest news.csv is ~8.5 GB on disk.
     "merge": Step("merge", "6G", _argv("merge")),
     "signoff": Step("signoff", "6G", _argv("signoff")),

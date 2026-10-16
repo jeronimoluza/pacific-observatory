@@ -4,6 +4,10 @@
 - collect: staged collect of the panel's enabled sources into <staging-root>/<run_id>/, with
            the refresh-text-region runner.sh (watchdog, per-source cap), STATUS.md and .done
            in the format of staged_collect_all.sh, so graph.observers.text_delta reads it.
+- drain:   the heavy tier (TX-38): the sources in src/configs/panels/text_heavy_sources.yaml
+           again, as a run of its own with a larger --max-articles and cap, at nice/idle IO
+           priority, 2 at a time; a source is not started while a panel collect, merge or
+           signoff or a corpus apply runs, so the backlog drains without holding the chain.
 - merge:   plan, not write: every unplanned run under <staging-root> becomes a sign-off plan
            under <pending-root>/<run_id>/ (text.panel.signoff); refuses if a staged source is
            outside the panel.
@@ -29,6 +33,15 @@ CONFIGS = REPO_ROOT / "src" / "text" / "configs"
 SCRIPTS = REPO_ROOT / ".claude" / "skills" / "refresh-text-region" / "scripts"
 DISABLED = re.compile(r"^enabled:\s*false\b", re.I | re.M)
 STATES = ("DONE", "TIMEOUT", "FAIL", "STUCK")
+HEAVY_FILE = REPO_ROOT / "src" / "configs" / "panels" / "text_heavy_sources.yaml"
+# Chain steps and the corpus apply a drain source must not start beside. Bracketed so the
+# pattern, which sits in xargs' argv, does not match itself.
+YIELD_RE = r"text[.]panel[.]steps (collect|merge|signoff)|apply_plan[.]py"
+# runner.sh, unless one of YIELD_RE runs; then the job is skipped and logged as [YIELD].
+DRAIN_WRAP = (
+    'if pgrep -f "$YIELD_RE" >/dev/null; then echo "[YIELD] ${1/|/__} @ $(date +%s)"; exit 0; fi; '
+    'exec nice -n 19 ionice -c 3 bash "$RUNNER" "$1"'
+)
 EXCLUDE_FILE = REPO_ROOT / "src" / "configs" / "panels" / "text_exclude_sources.yaml"
 
 
@@ -108,6 +121,14 @@ def _staged_rows(region_dir: Path) -> tuple[int, int]:
 
 def step_collect(a) -> int:
     srcs = panel_sources(a.countries)
+    drain = a.step == "drain"
+    if drain:
+        import yaml
+
+        heavy = yaml.safe_load(HEAVY_FILE.read_text()) or {}
+        srcs = {k: [s for s in v if s in heavy.get(k[2], [])] for k, v in srcs.items()}
+        srcs = {k: v for k, v in srcs.items() if v}
+        a.parallel = min(a.parallel, 2)
     regions = _regions(srcs)
     missing = [r for r in regions if not (a.state_dir / f"{r}.sqlite").exists()]
     if missing:
@@ -126,6 +147,10 @@ def step_collect(a) -> int:
         "|---|---|---|---|---|---|---|---|\n"
     )
     env = {"STAGING": str(run_dir), "MAX_SOURCE_SECONDS": str(a.cap), "KILL_SCRIPT": str(SCRIPTS / "kill_collect_python.sh")}
+    cmd = ["bash", str(SCRIPTS / "runner.sh"), "JOB"]
+    if drain:
+        env |= {"MAX_ARTICLES": str(a.drain_articles), "YIELD_RE": YIELD_RE, "RUNNER": str(SCRIPTS / "runner.sh")}
+        cmd = ["bash", "-c", DRAIN_WRAP, "drain", "JOB"]
     for region, entries in regions.items():
         jobs = [f"{c}|{s}" for _, c, ss in entries for s in ss]
         events = run_dir / f"events_{region}.log"
@@ -134,8 +159,7 @@ def step_collect(a) -> int:
             ev.write(f"[REFRESH-START] @ {int(time.time())}\n")
             ev.flush()
             subprocess.run(
-                ["xargs", "-P", str(a.parallel), "-I", "JOB", "env", *[f"{k}={v}" for k, v in env.items()],
-                 "bash", str(SCRIPTS / "runner.sh"), "JOB"],
+                ["xargs", "-P", str(a.parallel), "-I", "JOB", "env", *[f"{k}={v}" for k, v in env.items()], *cmd],
                 input="\n".join(jobs) + "\n", text=True, stdout=ev, stderr=subprocess.STDOUT, cwd=REPO_ROOT,
             )
             ev.write(f"[REFRESH-DONE] @ {int(time.time())}\n")
@@ -309,7 +333,7 @@ def step_check(a) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="text.panel.steps")
-    ap.add_argument("step", choices=["ledger", "collect", "merge", "signoff", "counts", "check"])
+    ap.add_argument("step", choices=["ledger", "collect", "drain", "merge", "signoff", "counts", "check"])
     ap.add_argument("--run-id", required=True)
     ap.add_argument("--countries", required=True)
     ap.add_argument("--corpus-root", type=Path, required=True)
@@ -318,10 +342,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--pending-root", type=Path, required=True)
     ap.add_argument("--parallel", type=int, default=12)
     ap.add_argument("--cap", type=int, default=300)
+    ap.add_argument("--drain-articles", type=int, default=2000, help="drain: --max-articles per heavy source")
     ap.add_argument("--parallel-sources", type=int, default=2, help="counts: --max-parallel-sources of the build")
     a = ap.parse_args(argv)
     a.countries = [c for c in a.countries.split(",") if c]
-    return {"ledger": step_ledger, "collect": step_collect, "merge": step_merge,
+    return {"ledger": step_ledger, "collect": step_collect, "drain": step_collect, "merge": step_merge,
             "signoff": step_signoff, "counts": step_counts, "check": step_check}[a.step](a)
 
 
