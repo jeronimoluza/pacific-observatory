@@ -10,6 +10,14 @@ from prices.weekly.steps._common import py_argv
 STEPS: dict[str, Step] = {
     # Runs nothing: exercises mount check, disk gate, the unit and STATUS end to end.
     "noop": Step("noop", "256M", lambda ctx: ["true"]),
+    # PX-31. One child per source in a fast and a slow lane, each killed alone at its budget.
+    "collect": Step(
+        "collect",
+        "12G",
+        lambda ctx: py_argv("prices.weekly.steps.collect", ctx),
+        plan=lambda ctx: py_argv("prices.weekly.steps.collect", ctx, "--plan"),
+        mem_gate=True,
+    ),
     # PX-10. prepare admits countries by bytes in flight; japan alone is ~13 GB resident.
     "enrich": Step(
         "enrich", "20G", lambda ctx: py_argv("prices.weekly.steps.enrich", ctx)

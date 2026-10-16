@@ -1,5 +1,5 @@
 [Unit]
-Description=po prices weekly over panel36: enrich -> build, after the text panel run
+Description=po prices weekly over panel36: collect -> build, after the text panel run
 Documentation=file:%h/po-worktrees/panel36/scripts/mvp/systemd/INSTALL.md
 After=po-text-panel.service
 
