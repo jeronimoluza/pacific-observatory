@@ -106,9 +106,30 @@ def _parse_xlsx(payload: bytes) -> pd.DataFrame:
     return df
 
 
+# A price more than 3x away from the median of its 2 neighbours on each side is
+# a typo in IPT's sheet (2026-01-09 LPG: 189,000 between 1,188,000 and 1,197,000).
+_SPIKE_FACTOR = 3.0
+
+
+def _spikes(df: pd.DataFrame) -> set[tuple[int, str]]:
+    """(row index, column) of isolated spikes, judged against the full history."""
+    out: set[tuple[int, str]] = set()
+    order = df.assign(_d=df["Date"].map(_coerce_date)).sort_values("_d")
+    for col in _PRODUCT_MAP:
+        prices = order[col].map(_coerce_price).astype(float)
+        before = prices.shift(1).rolling(2, min_periods=1).median()
+        after = prices[::-1].shift(1).rolling(2, min_periods=1).median()[::-1]
+        ref = pd.concat([before, after], axis=1).median(axis=1)
+        ratio = prices / ref
+        for idx in ratio[(ratio > _SPIKE_FACTOR) | (ratio < 1 / _SPIKE_FACTOR)].index:
+            out.add((idx, col))
+    return out
+
+
 def _emit_rows(df: pd.DataFrame, cutoff: date) -> list[dict]:
     rows: list[dict] = []
-    for record in df.to_dict(orient="records"):
+    spikes = _spikes(df)
+    for idx, record in zip(df.index, df.to_dict(orient="records")):
         obs_date = _coerce_date(record.get("Date"))
         if obs_date is None:
             continue
@@ -129,6 +150,15 @@ def _emit_rows(df: pd.DataFrame, cutoff: date) -> list[dict]:
         for raw_col, canonical in _PRODUCT_MAP.items():
             price = _coerce_price(record.get(raw_col))
             if price is None:
+                continue
+            if (idx, raw_col) in spikes:
+                logger.warning(
+                    "IPT %s %s=%s is >%sx off its neighbours; skipped",
+                    obs_date.isoformat(),
+                    raw_col,
+                    price,
+                    _SPIKE_FACTOR,
+                )
                 continue
             rows.append(
                 {

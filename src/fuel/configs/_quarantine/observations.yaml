@@ -8,3 +8,9 @@
 - source_key: bera_bw_monthly
   observation_hash: abde99beb155da6f384dd04b45070d2f7cf715521264d800af4c5b547bf5dbc9
   reason: "ULP 95 95.0 BWP/L on 2026-03-28, same misread"
+- source_key: ipt_weekly
+  observation_hash: 633196b1e4990de0293ce13122afc89416ae909406612c6a31d95f2c26bda4be
+  reason: "Gas (LPG) 189,000 LBP on 2026-01-09 between 1,188,000 and 1,197,000: leading digit lost in IPT's sheet (spike guard added in ipt.py)"
+- source_key: tfp_ps_monthly
+  observation_hash: d886b08249aebcef52d97d0c4d463019b9b8cfeb19890fa042db359485434034
+  reason: "L.P.G (48 kg) 48.00 ILS on 2025-08-01 between 280 and 280: thefuelprice.com entered the cylinder size as the price (guard added in thefuelprice.py)"
