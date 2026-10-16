@@ -680,6 +680,13 @@ _VU_PRODUCTS = [
 
 def fetch_vanuatu_doe(cutoff: date) -> pd.DataFrame:
     """Fetch Vanuatu Department of Energy retail fuel prices."""
+    # Disabled 2026-10-16: the news listing yields unrelated articles and the
+    # date is guessed from the first month name / year in the text (e.g. 2030
+    # from "Vision 2030"), so even with the product regexes fixed it emits
+    # wrong rows. Last valid data: 2025-12-31. Needs a rewrite against DOE's
+    # actual price notices before re-enabling.
+    print("  [vu_doe] Disabled: parser unreliable (see fetch_vanuatu_doe)")
+    return pd.DataFrame()
     print("  [vu_doe] Fetching Vanuatu DOE data...")
     print(f"  [vu_doe] Cutoff: {cutoff}")
 
