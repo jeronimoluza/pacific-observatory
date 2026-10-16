@@ -2488,10 +2488,9 @@ class NewspaperScraper:
                 ]
 
             # Newest-first so time-bounded runs capture recent articles before
-            # older backfill: this run's discoveries first (they may be undated
-            # while the backlog is dated), then by date, last-appended first.
-            pending_thumbnails = sorted(reversed(pending_thumbnails), reverse=True,
-                key=lambda t, f={str(x.url) for x in new_thumbnails}: (str(t.url) in f, getattr(t, "date", "") or ""))
+            # older backfill: this run's discoveries first, in discovery order when undated; the rest by date, last-appended first.
+            pending_thumbnails = [t for _, t in sorted(enumerate(pending_thumbnails), reverse=True, key=lambda p, f={str(x.url) for x in new_thumbnails}: (
+                str(p[1].url) in f, getattr(p[1], "date", "") or "", -p[0] if str(p[1].url) in f else p[0]))]
 
             # Apply max_articles limit if set
             if (
