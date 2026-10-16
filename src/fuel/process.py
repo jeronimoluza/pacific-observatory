@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import functools
 import logging
 from datetime import date
 from pathlib import Path
 
 import click
 import pandas as pd
+import yaml
 
 from core.storage import save_csv
 
@@ -20,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = _PROJECT_ROOT / "data" / "fuel"
+_QUARANTINE_DIR = Path(__file__).resolve().parent / "configs" / "_quarantine"
 OUTPUTS_DIR = _PROJECT_ROOT / "outputs" / "fuel"
 
 _CANONICAL_FAMILY_UNITS = {
@@ -124,12 +127,30 @@ def _normalize_price(price_local: float, spec: ProductSpec) -> tuple[float, str]
     return normalized, unit
 
 
+@functools.lru_cache(maxsize=1)
+def _quarantined() -> dict[str, set[str]]:
+    """{source_key: observation hashes} listed in configs/_quarantine/."""
+    out: dict[str, set[str]] = {}
+    for path in sorted(_QUARANTINE_DIR.glob("*.yaml")):
+        for item in yaml.safe_load(path.read_text(encoding="utf-8")) or []:
+            out.setdefault(item["source_key"], set()).add(item["observation_hash"])
+    return out
+
+
 def _load_source_frame(entry: dict, data_dir: Path = DATA_DIR) -> pd.DataFrame:
     path = _observations_path(entry, base_dir=data_dir)
     if not path.exists():
         return pd.DataFrame()
 
     df = pd.read_csv(path, low_memory=False)
+    held = _quarantined().get(entry["source_key"])
+    if held and "observation_hash" in df.columns:
+        mask = df["observation_hash"].isin(held)
+        if mask.any():
+            logger.warning(
+                "Quarantined %d row(s) of %s", int(mask.sum()), entry["source_key"]
+            )
+            df = df[~mask]
     if df.empty:
         return df
 
