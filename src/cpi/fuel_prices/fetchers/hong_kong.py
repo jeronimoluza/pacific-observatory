@@ -127,6 +127,7 @@ def _fetch_and_parse_csv(
         ("from", from_date.isoformat()),
         ("to", to_date.isoformat()),
         ("auto_fuel_type", fuel_type),
+        ("retail_price[0]", "1"),
         *_COMPANY_PARAMS,
     ]
 
@@ -140,10 +141,22 @@ def _fetch_and_parse_csv(
         return []
 
     try:
-        df = pd.read_csv(io.StringIO(resp.text))
+        # The CSV starts with a UTF-8 BOM, which would otherwise glue onto "Date".
+        df = pd.read_csv(io.StringIO(resp.content.decode("utf-8-sig")))
     except Exception as e:
         print(f"  {tag} CSV parse error: {e}")
         return []
+
+    # Since 2026-08 the CSV has two columns per company: "<Co> (Pump Price)" and
+    # "<Co> (after walk-in discounts less duty)". Keep the pump price, the
+    # posted price consumers pay before discounts.
+    df = df.rename(
+        columns={
+            c: c.replace(" (Pump Price)", "")
+            for c in df.columns
+            if c.endswith(" (Pump Price)")
+        }
+    )
 
     missing = _EXPECTED_COLUMNS - set(df.columns)
     if missing:
@@ -209,8 +222,8 @@ def fetch_hk_consumer_council_petrol(cutoff: date) -> pd.DataFrame:
         from_date=from_date,
         to_date=to_date,
         cutoff=cutoff,
-        price_min=10.0,
-        price_max=35.0,
+        price_min=15.0,
+        price_max=50.0,
         fuel_product="Regular Gasoline",
         fuel_family="gasoline",
         quality_group="regular",
@@ -237,8 +250,8 @@ def fetch_hk_consumer_council_diesel(cutoff: date) -> pd.DataFrame:
         from_date=from_date,
         to_date=to_date,
         cutoff=cutoff,
-        price_min=8.0,
-        price_max=30.0,
+        price_min=15.0,
+        price_max=50.0,
         fuel_product="Diesel",
         fuel_family="diesel",
         quality_group="regular",
