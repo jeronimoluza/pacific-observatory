@@ -11,7 +11,7 @@ products:
   "Fuel diesel":
     series_key: diesel
     fuel_family: diesel
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: standard
   "Fuel gas":
@@ -24,25 +24,25 @@ products:
   "Fuel kerosene":
     series_key: kerosene
     fuel_family: kerosene
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: standard
   "Fuel petrol gasoline":
     series_key: gasoline_regular
     fuel_family: gasoline
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: regular
   "Fuel petrol gasoline 95 octane":
     series_key: gasoline_premium_95
     fuel_family: gasoline
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: premium
     octane_ron: 95
   "Fuel super petrol":
     series_key: gasoline_super
     fuel_family: gasoline
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: super
