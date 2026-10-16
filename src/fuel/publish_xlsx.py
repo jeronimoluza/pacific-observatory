@@ -87,6 +87,35 @@ def _build_data_sheet(
     return wide
 
 
+def _build_freshness_sheet(countries: list[dict]) -> pd.DataFrame:
+    """Per series: the last date with a real observation and the last date the
+    data sheet shows (carried forward within the source's cadence window)."""
+    frames = []
+    for c in countries:
+        path = c["output_dir"] / "fuel_product_local_prices.csv"
+        if not path.exists():
+            continue
+        df = pd.read_csv(path, low_memory=False)
+        if df.empty:
+            continue
+        observed = df["observed_on"].astype(str).str.split(",").str[-1].str[:10]
+        frames.append(
+            df.assign(
+                iso3=df["iso3"].fillna(c.get("iso3", "")),
+                fuel_product=df["label"].fillna(df["series_key"]),
+                observed=observed,
+                shown=df["observation_date"].astype(str).str[:10],
+            )
+            .groupby(["iso3", "fuel_product"], as_index=False)
+            .agg(last_observed=("observed", "max"), last_shown=("shown", "max"))
+        )
+    if not frames:
+        return pd.DataFrame(
+            columns=["iso3", "fuel_product", "last_observed", "last_shown"]
+        )
+    return pd.concat(frames, ignore_index=True).sort_values(["iso3", "fuel_product"])
+
+
 def _build_sources_sheet(region: str, countries: list[dict]) -> pd.DataFrame:
     registry = build_fuel_registry(region=region)
     meta_by_key = {
@@ -154,6 +183,9 @@ def export_region_xlsx(
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
         data_sheet.to_excel(writer, sheet_name="data", index=False)
         sources_sheet.to_excel(writer, sheet_name="sources", index=False)
+        _build_freshness_sheet(countries).to_excel(
+            writer, sheet_name="freshness", index=False
+        )
         for name, sheet in extra.items():
             sheet.to_excel(writer, sheet_name=name, index=False)
 
