@@ -24,12 +24,12 @@ owners:
     dashboards: mac:~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/dashboards/fuel
   panel:
     desc: po text panel (panel36 ∪ EAP) en a8; merge por plan con firma del usuario
-    staging: /mnt/backup5tb/text-panel/staging
+    staging: ~/text_panel/staging
     state: ~/text_panel/state
     pending: /mnt/backup5tb/text-panel/pending
     logs: ~/text_panel/logs
-    cache: /mnt/backup5tb/text-panel/build/cache
-    outputs: /mnt/backup5tb/text-panel/build/outputs
+    cache: ~/text_panel/build/cache
+    outputs: ~/text_panel/build/outputs
 
 nodes:
   text.config:
@@ -73,8 +73,8 @@ nodes:
       - {path: "~/text_staging/<run_id>/STATUS.md", machine: a8, role: status}
       - {path: "~/text_staging/<run_id>/.done", machine: a8, role: status}
       - {path: "~/text_staging/<run_id>/events_<r>.log", machine: a8, role: ledger}
-      - {path: "/mnt/backup5tb/text-panel/staging/<run_id>/<region>/<sub>/<country>/<source>/news.csv", machine: a8}
-      - {path: "/mnt/backup5tb/text-panel/staging/<run_id>/events_<r>.log", machine: a8, role: ledger}
+      - {path: "~/text_panel/staging/<run_id>/<region>/<sub>/<country>/<source>/news.csv", machine: a8}
+      - {path: "~/text_panel/staging/<run_id>/events_<r>.log", machine: a8, role: ledger}
       - {path: "~/text_panel/logs/<run_id>/events.log", machine: a8, role: ledger}   # @sha del collect
     inputs: [text.config, text.ledger]
     partition: dueño × fuente × run (prod lun y vie; panel diario)
@@ -127,7 +127,7 @@ nodes:
       - src/text/analysis/source_counts.py
     paths:
       - {path: "~/wb/pacificobservatory/repo/template-repo/data/text/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: mac}
-      - {path: "/mnt/backup5tb/text-panel/build/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: a8}   # panel
+      - {path: "~/text_panel/build/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: a8}   # panel
     inputs: [text.corpus, text.keywords]
     partition: country
     fingerprint:
@@ -153,7 +153,7 @@ nodes:
     paths:
       - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/<region>/<sub>/<country|_aggregate>/epu/epu.csv", machine: mac}
       - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/<region>/<sub>/<country|_aggregate>/uncertainty_attribution/*.csv", machine: mac}
-      - {path: "/mnt/backup5tb/text-panel/build/outputs/<region>/<sub>/<country>/epu/epu.csv", machine: a8}   # panel
+      - {path: "~/text_panel/build/outputs/<region>/<sub>/<country>/epu/epu.csv", machine: a8}   # panel
     inputs: [text.counts]
     partition: country (los agregados se derivan)
     fingerprint:
