@@ -33,6 +33,7 @@ _COUNTRY = "Liberia"
 _CURRENCY = "USD"
 _SOURCE_KEY = "moci_lr_monthly"
 _THROTTLE_S = 0.2
+_PROBE_WINDOW_DAYS = 62
 _GALLON_TO_LITRE = 3.785411784
 
 _TITLE_RE = re.compile(
@@ -180,6 +181,10 @@ def _site_reachable(session) -> bool:
 def _direct_probe_urls(cutoff: date) -> dict[str, date | None]:
     out: dict[str, date | None] = {}
     today = date.today()
+    # One guessed URL per day: from a stale cutoff (2024-12) that was ~680
+    # requests (~17 min) per run. Circulars older than the window would have
+    # shown up in the index or sitemap anyway.
+    cutoff = max(cutoff, today - timedelta(days=_PROBE_WINDOW_DAYS))
     current = date(cutoff.year, cutoff.month, 1)
     while current <= today:
         month_name = list(_MONTHS.keys())[current.month - 1]
@@ -225,7 +230,7 @@ def _parse_prices(text: str) -> dict[str, float]:
     flat = re.sub(r"\s+", " ", text)
     for label, product_re in _PRODUCT_ALIASES.items():
         section_re = re.compile(
-            rf"{product_re}.{{0,350}}?(?={ '|'.join(_PRODUCT_ALIASES.values()) }|$)",
+            rf"{product_re}.{{0,350}}?(?={'|'.join(_PRODUCT_ALIASES.values())}|$)",
             re.IGNORECASE,
         )
         for section_match in section_re.finditer(flat):
