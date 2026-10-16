@@ -3,12 +3,12 @@
 
 name: "TNTV"
 country: "french_polynesia"
-base_url: "https://www.tntv.pf"
+base_url: "https://www.tntvnews.pf"
 language: "fr"
 
 listing:
   type: "api"
-  url_template: "https://www.tntv.pf/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,title,content,link"
+  url_template: "https://www.tntvnews.pf/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,title,content,link"
   pagination_type: "page"
   page_start: 1
   page_step: 1

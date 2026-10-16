@@ -9,7 +9,7 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://english.khabarhub.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=6,20,4,9&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://english.khabarhub.com/?rest_route=/wp/v2/posts&per_page=100&page={page}&categories=6,20,4,9&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: link
     title: title.rendered

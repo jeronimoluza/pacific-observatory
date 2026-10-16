@@ -1,7 +1,7 @@
 name: Eljacaguero
 language: es
 country: dominican_republic
-base_url: https://eljacaguero.com
+base_url: https://eljacaguero.com.do
 
 # Categories: nacionales(42, 48010), principal(1, 5601), economicas(41, 1134), actualidad(30099, 176)
 listing:
@@ -9,7 +9,7 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://eljacaguero.com/wp-json/wp/v2/posts?per_page=100&categories=42,1,41,30099&page={page}&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://eljacaguero.com.do/wp-json/wp/v2/posts?per_page=100&categories=42,1,41,30099&page={page}&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: link
     title: title.rendered

@@ -1,13 +1,13 @@
 name: Kronos
 language: tr
 country: turkiye
-base_url: https://kronos34.news
+base_url: https://kronos42.news
 listing:
   type: api
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: https://kronos34.news/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title
+  url_template: https://kronos42.news/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title
   json_paths:
     url: link
     title: title.rendered

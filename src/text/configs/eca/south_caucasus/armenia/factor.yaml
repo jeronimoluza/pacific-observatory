@@ -9,7 +9,7 @@ base_url: https://factor.am
 # like https://factor.am/<post-id>.html going back to 2017.
 listing:
   type: sitemap
-  sitemap_index_url: https://factor.am/sitemap.xml
+  sitemap_index_url: https://factor.am/wp-sitemap.xml
   sitemap_regex: "wp-sitemap-posts-post-[0-9]+\\.xml$"
   url_regex: "^https://factor\\.am/[0-9]+\\.html$"
 

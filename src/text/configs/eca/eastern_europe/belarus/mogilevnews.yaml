@@ -8,7 +8,7 @@ base_url: https://mogilevnews.by
 # /sitemap.xml lists two /post-sitemap*.xml files.
 listing:
   type: sitemap
-  sitemap_index_url: https://mogilevnews.by/sitemap.xml
+  sitemap_index_url: https://mogilevnews.by/sitemap_index.xml
   sitemap_regex: "/post-sitemap[0-9]*\\.xml"
   url_regex: "^https://mogilevnews\\.by/news/[0-9-]+/[0-9]+/?$"
 

@@ -1,7 +1,7 @@
 name: El1digital
 language: es
 country: argentina
-base_url: https://www.el1digital.com.ar
+base_url: https://el1.com.ar
 
 # Categories: nacional-politica(76455, 31), economia(3, 13)
 listing:
@@ -9,7 +9,7 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://www.el1digital.com.ar/wp-json/wp/v2/posts?per_page=100&categories=76455,3&page={page}&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://el1.com.ar/wp-json/wp/v2/posts?per_page=100&categories=76455,3&page={page}&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: link
     title: title.rendered

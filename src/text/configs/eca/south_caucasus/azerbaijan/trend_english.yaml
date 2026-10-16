@@ -9,7 +9,7 @@ base_url: https://www.trend.az
 # 2026-10-16 (panel 20261016T0917Z): healthy, queue past the 300s cap (and killed by the trend kill, TX-09); cap the newest-first queue
 listing:
   type: sitemap
-  sitemap_index_url: https://en.trend.az/sitemap_en.xml
+  sitemap_index_url: https://www.trend.az/sitemap_en.xml
   sitemap_regex: "sitemap_archive_en_[0-9]{4}_[0-9]{2}\\.xml$"
   url_regex: "^https://www\\.trend\\.az/[a-z0-9/_\\-]+/[0-9]+\\.html$"
 

@@ -8,7 +8,7 @@ base_url: https://mlyn.by
 # /post-sitemap*.xml files; article URLs follow /DDMMYYYY/<slug>/ pattern.
 listing:
   type: sitemap
-  sitemap_index_url: https://mlyn.by/sitemap.xml
+  sitemap_index_url: https://mlyn.by/sitemap_index.xml
   sitemap_regex: "/post-sitemap[0-9]*\\.xml"
   url_regex: "^https://mlyn\\.by/[0-9]{8}/[a-z0-9-]+/?$"
 

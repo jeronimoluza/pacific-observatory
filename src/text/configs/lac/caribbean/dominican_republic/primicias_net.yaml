@@ -9,7 +9,7 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://primicias.net/?rest_route=/wp/v2/posts&per_page=100&categories=31,152,174,207,47&page={page}&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://primicias.net/web/?rest_route=/wp/v2/posts&per_page=100&categories=31,152,174,207,47&page={page}&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: link
     title: title.rendered

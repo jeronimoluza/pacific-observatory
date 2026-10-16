@@ -7,7 +7,7 @@ base_url: https://74.ru
 # site publishes gzipped per-month article sitemaps covering all content.
 listing:
   type: sitemap
-  sitemap_index_url: https://74.ru/sitemap.xml
+  sitemap_index_url: https://74.ru/sitemaps/index.xml.gz
   sitemap_regex: "articles_20(2[5-9]|[3-9][0-9])_"
   url_regex: "^https://74\\.ru/text/"
 client: http

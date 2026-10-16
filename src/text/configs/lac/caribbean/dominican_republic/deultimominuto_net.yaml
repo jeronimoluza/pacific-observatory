@@ -1,7 +1,7 @@
 name: Deultimominuto
 language: es
 country: dominican_republic
-base_url: https://deultimominuto.net
+base_url: https://deultimominuto.com
 
 # Categories: nacionales(3, 58702), economia(4, 7002), politica(36953, 429)
 listing:
@@ -9,7 +9,7 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://deultimominuto.net/wp-json/wp/v2/posts?per_page=100&categories=3,4,36953&page={page}&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://deultimominuto.com/wp-json/wp/v2/posts?per_page=100&categories=3,4,36953&page={page}&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: link
     title: title.rendered

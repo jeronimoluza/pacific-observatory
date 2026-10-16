@@ -1,7 +1,7 @@
 name: Horizons
 country: mauritania
 language: fr
-base_url: http://fr.ami.mr
+base_url: https://www.ami.mr
 
 # Categories: fil d'actualité(21646), A LA UNE(4910), Economie(2250), Slider Economie(343)
 listing:
@@ -9,7 +9,7 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "http://fr.ami.mr/wp-json/wp/v2/posts?per_page=100&page={page}&categories=63957,63920,9,63922&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://www.ami.mr/fr/wp-json/wp/v2/posts?per_page=100&page={page}&categories=63957,63920,9,63922&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: "link"
     title: "title.rendered"

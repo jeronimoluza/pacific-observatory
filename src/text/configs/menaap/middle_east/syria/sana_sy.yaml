@@ -6,7 +6,7 @@ base_url: https://sana.sy
 listing:
   type: rss
   feed_urls:
-    - "https://sana.sy/en/?feed=rss2"
+    - "https://sana.sy/en/feed/"
   page_param: paged
   body_in_feed: true
 

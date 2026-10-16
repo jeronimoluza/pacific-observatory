@@ -6,7 +6,7 @@ base_url: https://hnonline.sk
 listing:
   type: rss
   feed_urls:
-    - "https://hnonline.sk/rss"
+    - "https://hnonline.sk/feed"
   body_in_feed: true
 
 client: http

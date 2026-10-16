@@ -1,7 +1,7 @@
 name: Ricmais
 language: portuguese
 country: brazil
-base_url: https://ricmais.com.br
+base_url: https://ric.com.br
 
 # Categories: ric-noticias-noite(54078, 7898), ric-noticias-oeste(55806, 5583), ric-noticias-manha(55790, 2023), noticias(1, 1816), jovem-pan-news(55826, 1123)
 listing:
@@ -9,7 +9,7 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://ricmais.com.br/?rest_route=/wp/v2/posts&per_page=100&categories=54078,55806,55790,1,55826&page={page}&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://ric.com.br/?rest_route=/wp/v2/posts&per_page=100&categories=54078,55806,55790,1,55826&page={page}&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: link
     title: title.rendered
