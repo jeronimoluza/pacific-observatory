@@ -105,3 +105,31 @@ def register(fuel_group, opts: dict):
             )
         except ValueError as exc:
             raise click.ClickException(str(exc))
+
+    @fuel_group.command("publish-eap")
+    @click.option(
+        "--legacy-csv",
+        type=click.Path(exists=True, path_type=Path),
+        default=None,
+        help="Legacy retail_series_enriched.csv (default: sibling pacific-observatory)",
+    )
+    @click.option(
+        "--source-inventory",
+        type=click.Path(exists=True, path_type=Path),
+        default=None,
+        help="Legacy fuel_source_inventory.xlsx (default: sibling pacific-observatory)",
+    )
+    @click.option("--out-dir", type=click.Path(path_type=Path), default=None)
+    def fuel_publish_eap(legacy_csv, source_inventory, out_dir):
+        """Write eap_fuel_prices.xlsx from the legacy EAP enriched CSV."""
+        import logging
+
+        from fuel import publish_eap
+
+        logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
+        path = publish_eap.export_eap_xlsx(
+            legacy_csv=legacy_csv or publish_eap.DEFAULT_LEGACY_CSV,
+            source_inventory=source_inventory or publish_eap.DEFAULT_SOURCE_INVENTORY,
+            out_dir=out_dir or publish_eap.DEFAULT_OUT_DIR,
+        )
+        click.echo(f"EAP Excel: {path}")
