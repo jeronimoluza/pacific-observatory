@@ -1,0 +1,43 @@
+source_key: pe_osinergmin_scop_monthly
+module: lac.south_america.peru.osinergmin_scop
+function: fetch_pe_osinergmin_scop
+url: https://www.osinergmin.gob.pe/seccion/centro_documental/hidrocarburos/SCOP/SCOP-DOCS/Reporte-Diario/CL-Registro-precios-DMA-V-CCA-CCE.csv
+fallback_date: 2026-01-01
+priority: 5
+cadence: monthly
+carry_forward: true
+# The CSV holds only the current year (reset each 1 Jan): past years cannot be
+# re-downloaded, so never --rebuild.
+history_irrecoverable: true
+publication: scheduled
+price_basis: retail
+# Osinergmin SCOP register: every pump-price change at every service station
+# (current calendar year only). One raw row per station, product and month =
+# the price in force at month end; the build takes the median of stations
+# within median +- 3 MAD. Wins over the PR1 reference (priority 10) where both
+# cover a series. See fuel/station_aggregate.py.
+station_aggregate: {stat: median, trim: mad, k: 3, min_stations: 5, max_dispersion: 0.25}
+station_type: station
+
+products:
+  "Diesel B5 S-50 UV":
+    label: Diesel B5 S-50 (retail)
+    series_key: diesel_b5_50ppm
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: true
+    grade: standard
+  "GASOHOL REGULAR":
+    label: Gasohol Regular (retail)
+    series_key: gasohol_regular
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular
+  "GASOHOL PREMIUM":
+    label: Gasohol Premium (retail)
+    series_key: gasohol_premium
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: premium
