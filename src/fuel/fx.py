@@ -6,6 +6,7 @@ import functools
 import logging
 import os
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -116,6 +117,99 @@ def _fetch_window(
             time.sleep(65)
 
 
+def sync_fx_cache(
+    currencies: list[str],
+    start_date: pd.Timestamp,
+    end_date: pd.Timestamp,
+    cache_path: Path = DEFAULT_FX_CACHE,
+) -> tuple[pd.DataFrame, int]:
+    """Fetch rates the cache lacks for ``currencies`` over the span.
+
+    Returns the cache rows for ``currencies`` and the number of new
+    ``(currency, date)`` rows written to ``cache_path``.
+    """
+    full_cache = _load_cache(cache_path)
+    cache = full_cache[full_cache["currency"].isin(currencies)].copy()
+    # Compare spans, not days: the provider skips weekends/holidays (the
+    # forward fill in build_fx_table covers those), and dates outside its
+    # coverage window can never be served. Either would otherwise force a
+    # refetch every build.
+    coverage = _provider_coverage()
+    missing_dates: set[pd.Timestamp] = set()
+    for currency in currencies:
+        if currency not in coverage:
+            continue
+        lo, hi = coverage[currency]
+        want_lo = start_date if pd.isna(lo) else max(start_date, lo)
+        want_hi = end_date if pd.isna(hi) else min(end_date, hi)
+        if want_lo > want_hi:
+            continue
+        have = cache.loc[cache["currency"] == currency, "date"]
+        if have.empty:
+            missing_dates.update({want_lo, want_hi})
+            continue
+        if want_lo < have.min() - pd.Timedelta(days=4):
+            missing_dates.update({want_lo, have.min() - pd.Timedelta(days=1)})
+        # Any business day after the cached max is a gap; only weekends are
+        # left to the forward fill. A holiday costs one refetch that adds
+        # nothing, which is cheap next to pricing a week on a stale rate.
+        next_day = have.max() + pd.Timedelta(days=1)
+        if len(pd.bdate_range(next_day, want_hi)):
+            missing_dates.update({next_day, want_hi})
+    if not missing_dates:
+        logger.info(
+            "FX cache current for %d currencies; nothing fetched", len(currencies)
+        )
+        return cache, 0
+    fetch_start = min(missing_dates)
+    fetch_end = max(missing_dates)
+    fetched = _fetch_missing_rates(currencies, fetch_start, fetch_end, coverage)
+    if fetched.empty:
+        logger.info(
+            "FX fetch %s..%s returned no rows", fetch_start.date(), fetch_end.date()
+        )
+        return cache, 0
+    fetched = fetched.copy()
+    fetched["date"] = pd.to_datetime(fetched["date"], errors="coerce").dt.normalize()
+    known = set(zip(full_cache["currency"], full_cache["date"]))
+    n_new = sum(key not in known for key in zip(fetched["currency"], fetched["date"]))
+    cache = pd.concat([cache, fetched], ignore_index=True)
+    cache = cache.drop_duplicates(subset=["currency", "date"], keep="last")
+    # Merge new rates back into full cache (preserve other currencies)
+    other = full_cache[~full_cache["currency"].isin(currencies)]
+    full_cache = pd.concat([other, cache], ignore_index=True)
+    full_cache = full_cache.drop_duplicates(subset=["currency", "date"], keep="last")
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    # Write-then-rename so concurrent writers can't interleave lines.
+    tmp_path = cache_path.with_name(f"{cache_path.name}.{os.getpid()}.tmp")
+    full_cache.sort_values(["currency", "date"]).to_csv(tmp_path, index=False)
+    os.replace(tmp_path, cache_path)
+    logger.info(
+        "FX cache: fetched %s..%s, wrote %d new (currency, date) rows to %s",
+        fetch_start.date(),
+        fetch_end.date(),
+        n_new,
+        cache_path,
+    )
+    return cache, n_new
+
+
+def refresh_fx_cache(
+    currencies: list[str],
+    cache_path: Path = DEFAULT_FX_CACHE,
+    days: int = 60,
+) -> int:
+    """Bring the cache current to today (UTC) for ``currencies``; return rows written."""
+    today = pd.Timestamp(datetime.now(timezone.utc).date())
+    _, n_new = sync_fx_cache(
+        sorted(set(currencies) - {"USD"}),
+        today - pd.Timedelta(days=days),
+        today,
+        cache_path,
+    )
+    return n_new
+
+
 def build_fx_table(
     df: pd.DataFrame,
     cache_path: Path = DEFAULT_FX_CACHE,
@@ -141,49 +235,7 @@ def build_fx_table(
 
     start_date = work["observation_date"].min()
     end_date = work["observation_date"].max()
-
-    full_cache = _load_cache(cache_path)
-    cache = full_cache[full_cache["currency"].isin(currencies)].copy()
-    # Compare spans, not days: the provider skips weekends/holidays (the
-    # forward fill below covers those), and dates outside its coverage window
-    # can never be served. Either would otherwise force a refetch every build.
-    coverage = _provider_coverage()
-    missing_dates: set[pd.Timestamp] = set()
-    for currency in currencies:
-        if currency not in coverage:
-            continue
-        lo, hi = coverage[currency]
-        want_lo = start_date if pd.isna(lo) else max(start_date, lo)
-        want_hi = end_date if pd.isna(hi) else min(end_date, hi)
-        if want_lo > want_hi:
-            continue
-        have = cache.loc[cache["currency"] == currency, "date"]
-        if have.empty:
-            missing_dates.update({want_lo, want_hi})
-            continue
-        if want_lo < have.min() - pd.Timedelta(days=4):
-            missing_dates.update({want_lo, have.min() - pd.Timedelta(days=1)})
-        # Listed end dates can run a few days ahead of served rates (XOF).
-        if want_hi > have.max() + pd.Timedelta(days=4):
-            missing_dates.update({have.max() + pd.Timedelta(days=1), want_hi})
-    if missing_dates:
-        fetch_start = min(missing_dates)
-        fetch_end = max(missing_dates)
-        fetched = _fetch_missing_rates(currencies, fetch_start, fetch_end, coverage)
-        if not fetched.empty:
-            cache = pd.concat([cache, fetched], ignore_index=True)
-            cache = cache.drop_duplicates(subset=["currency", "date"], keep="last")
-            # Merge new rates back into full cache (preserve other currencies)
-            other = full_cache[~full_cache["currency"].isin(currencies)]
-            full_cache = pd.concat([other, cache], ignore_index=True)
-            full_cache = full_cache.drop_duplicates(
-                subset=["currency", "date"], keep="last"
-            )
-            cache_path.parent.mkdir(parents=True, exist_ok=True)
-            # Write-then-rename so concurrent region builds can't interleave lines.
-            tmp_path = cache_path.with_name(f"{cache_path.name}.{os.getpid()}.tmp")
-            full_cache.sort_values(["currency", "date"]).to_csv(tmp_path, index=False)
-            os.replace(tmp_path, cache_path)
+    cache, _ = sync_fx_cache(currencies, start_date, end_date, cache_path)
 
     filled: list[pd.DataFrame] = []
     for currency in currencies:
