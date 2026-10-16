@@ -8,7 +8,10 @@
            under <pending-root>/<run_id>/ (text.panel.signoff); refuses if a staged source is
            outside the panel.
 - signoff: apply that plan to <corpus-root> and the panel ledger, after the user signs.
-- counts:  EPU build per panel country (source_counts cache + outputs) from the corpus.
+- counts:  EPU build per panel country (source_counts cache + outputs) from the corpus, one
+           run per region (one daily tail anchor), countries only.
+- aggregate: subregion/region aggregates the panel holds whole (text.panel.publish).
+- publish: internal dashboards under <publish-root>/<run_id>/ (text.panel.publish).
 - check:   text.counts checks (T23/T26/watermark/hash) and silent zeros of this run.
 """
 
@@ -24,6 +27,7 @@ from pathlib import Path
 
 from prices.weekly.guards import free_gb
 from prices.weekly.step import REPO_ROOT
+from text.panel import publish
 
 CONFIGS = REPO_ROOT / "src" / "text" / "configs"
 SCRIPTS = REPO_ROOT / ".claude" / "skills" / "refresh-text-region" / "scripts"
@@ -216,23 +220,18 @@ def _link_corpus(regions, corpus_root: Path) -> str | None:
     return None
 
 
-def _build_scopes(srcs: dict) -> list[dict]:
-    """run_analysis filters: a region or subregion the panel holds whole is built like
-    `po text build --region/--subregion`, with its aggregates; every other country alone."""
-    from prices.weekly.panels import region_units
-
-    panel = {c for (_, _, c) in srcs}
-    scopes, whole = [], set()
+def _build_scopes(srcs: dict, corpus_root: Path) -> list[dict]:
+    """run_analysis filters: the panel's countries of each region, countries only, so the
+    region shares one daily tail anchor; the aggregates are the `aggregate` step's."""
+    scopes = []
     for region, entries in _regions(srcs).items():
-        if set(region_units(region)) <= panel:
-            scopes.append({"region": region})
-            whole |= {c for _, c, _ in entries}
-            continue
-        for sub in sorted({s for s, _, _ in entries}):
-            if set(region_units(region, sub)) <= panel:
-                scopes.append({"region": region, "subregion": sub})
-                whole |= {c for s, c, _ in entries if s == sub}
-    return scopes + [{"countries": [c]} for (_, _, c) in srcs if c not in whole]
+        have = [c for sub, c, _ in entries if (corpus_root / region / sub / c).is_dir()]
+        for sub, c, _ in entries:
+            if c not in have:
+                print(f"== {region}/{sub}/{c}: not in corpus, skipped", flush=True)
+        if have:
+            scopes.append({"countries": have})
+    return scopes
 
 
 def step_counts(a) -> int:
@@ -245,19 +244,9 @@ def step_counts(a) -> int:
         print(err)
         return 1
     start, end = _validate_baseline_window("2024-01-01", "2024-12-31")
-    paths = {c: (r, s) for (r, s, c) in srcs}
-    discover = build._discover_units
-
-    def no_region_aggregate(dirs, include_aggregates=True):
-        return [u for u in discover(dirs, include_aggregates) if u["level"] != "region"]
-
-    for scope in _build_scopes(srcs):
-        label = scope.get("subregion") or scope.get("region") or scope["countries"][0]
-        if "countries" in scope and not (a.corpus_root / Path(*paths[label]) / label).is_dir():
-            print(f"== {label}: not in corpus, skipped", flush=True)
-            continue
-        # A subregion build would also write its region's aggregate from that one subregion.
-        build._discover_units = no_region_aggregate if "subregion" in scope else discover
+    region_of = {c: r for (r, _, c) in srcs}
+    for scope in _build_scopes(srcs, a.corpus_root):
+        label = region_of[scope["countries"][0]]
         units = build.preview_build_units(**scope)
         t = time.time()
         print(f"== {label}: build, {len(units)} units", flush=True)
@@ -301,9 +290,18 @@ def step_check(a) -> int:
     return 1 if red else 0
 
 
+def step_aggregate(a) -> int:
+    srcs = panel_sources(a.countries)
+    err = _link_corpus(_regions(srcs), a.corpus_root)
+    if err:
+        print(err)
+        return 1
+    return publish.step_aggregate(a, srcs, _regions(srcs))
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="text.panel.steps")
-    ap.add_argument("step", choices=["ledger", "collect", "merge", "signoff", "counts", "check"])
+    ap.add_argument("step", choices=["ledger", "collect", "merge", "signoff", "counts", "check", "aggregate", "publish"])
     ap.add_argument("--run-id", required=True)
     ap.add_argument("--countries", required=True)
     ap.add_argument("--corpus-root", type=Path, required=True)
@@ -313,10 +311,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--parallel", type=int, default=12)
     ap.add_argument("--cap", type=int, default=300)
     ap.add_argument("--parallel-sources", type=int, default=2, help="counts: --max-parallel-sources of the build")
+    ap.add_argument("--publish-root", type=Path)
+    ap.add_argument("--addons-dir", type=Path, default=publish.ADDONS_DIR)
+    ap.add_argument("--trackers", default="fuel,food", help="publish: comma list of fuel, food")
     a = ap.parse_args(argv)
     a.countries = [c for c in a.countries.split(",") if c]
     return {"ledger": step_ledger, "collect": step_collect, "merge": step_merge,
-            "signoff": step_signoff, "counts": step_counts, "check": step_check}[a.step](a)
+            "signoff": step_signoff, "counts": step_counts, "check": step_check,
+            "aggregate": step_aggregate, "publish": publish.step_publish}[a.step](a)
 
 
 if __name__ == "__main__":

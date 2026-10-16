@@ -1,5 +1,6 @@
 """`po text panel`: the text chain over a country panel, collect -> merge (a plan) -> AWAITING_SIGNOFF,
-then `signoff <run_id>` -> counts -> check. Nothing writes the corpus before the user signs off.
+then `signoff <run_id>` -> counts -> check -> aggregate -> publish. Nothing writes the corpus
+before the user signs off; a red check stops aggregate and publish (`step <name>` runs one alone).
 
 Steps run through `prices.weekly.step.run_step`, the `po prices weekly` runner: each one in
 its own `systemd-run --user` scope with a MemoryMax, refused unless the 5TB is mounted,
@@ -28,11 +29,15 @@ STATE_DIR = BACKUP_MOUNT / "text-panel" / "state"
 STAGING_ROOT = BACKUP_MOUNT / "text-panel" / "staging"
 # merge writes sign-off plans here; only `signoff` writes the corpus.
 PENDING_ROOT = BACKUP_MOUNT / "text-panel" / "pending"
+# Internal dashboards (TX-32), one folder per run id; nothing is published outside.
+PUBLISH_ROOT = BACKUP_MOUNT / "text-panel" / "publish"
+# One job over 8G at a time on a8.
+HEAVY_LOCK = Path.home() / "scratch" / "heavy.lock"
 LOGS_ROOT = Path.home() / "text_panel" / "logs"
 # a8 has no poetry; runner.sh calls `poetry run po`, which this shim maps to ~/venv.
 POETRY_SHIM = Path.home() / "text_collect" / "bin"
 CHAIN = ["collect", "merge"]
-AFTER_SIGNOFF = ["signoff", "counts", "check"]
+AFTER_SIGNOFF = ["signoff", "counts", "check", "aggregate", "publish"]
 
 
 @dataclass
@@ -41,13 +46,15 @@ class PanelContext(Context):
     state_dir: Path = STATE_DIR
     staging_root: Path = STAGING_ROOT
     pending_root: Path = PENDING_ROOT
+    publish_root: Path = PUBLISH_ROOT
     parallel: int = 12
     cap: int = 300
 
 
-def _argv(step: str):
+def _argv(step: str, lock: bool = False):
     def argv(c: PanelContext) -> list[str]:
         return [
+            *(["flock", str(HEAVY_LOCK)] if lock else []),
             "env",
             f"PYTHONPATH={REPO_ROOT / 'src'}",
             f"TEXT_STATE_DIR={c.state_dir}",
@@ -71,6 +78,8 @@ def _argv(step: str):
             str(c.staging_root),
             "--pending-root",
             str(c.pending_root),
+            "--publish-root",
+            str(c.publish_root),
             "--parallel",
             str(c.parallel),
             "--cap",
@@ -91,6 +100,10 @@ STEPS: dict[str, Step] = {
     "signoff": Step("signoff", "6G", _argv("signoff")),
     "counts": Step("counts", "8G", _argv("counts")),
     "check": Step("check", "4G", _argv("check")),
+    # Re-reads every news.csv of the region through the cache gate, like `po text build --region`.
+    "aggregate": Step("aggregate", "12G", _argv("aggregate", lock=True)),
+    # Holds dashboard_data.json of every unit and one region's HTML (up to ~80 MB) as strings.
+    "publish": Step("publish", "6G", _argv("publish")),
 }
 
 
@@ -142,12 +155,14 @@ def _under_mount(ctx, param, value: Path) -> Path:
 @click.option("--state-dir", type=click.Path(path_type=Path), default=STATE_DIR, show_default=True, callback=_under_mount)
 @click.option("--staging-root", type=click.Path(path_type=Path), default=STAGING_ROOT, show_default=True, callback=_under_mount)
 @click.option("--pending-root", type=click.Path(path_type=Path), default=PENDING_ROOT, show_default=True, callback=_under_mount)
+@click.option("--publish-root", type=click.Path(path_type=Path), default=PUBLISH_ROOT, show_default=True, callback=_under_mount)
 @click.option("--logs-root", type=click.Path(path_type=Path), default=LOGS_ROOT, show_default=True)
 @click.option("--parallel", "-P", type=int, default=12, show_default=True, help="Parallel sources in collect.")
 @click.option("--cap", type=int, default=300, show_default=True, help="Seconds per source in collect.")
 @click.option("--dry-run", is_flag=True, help="Print the plan; write nothing, run nothing.")
 @click.pass_context
-def panel(ctx, backup_mount, countries, run_id, corpus_root, state_dir, staging_root, pending_root, logs_root, parallel, cap, dry_run):
+def panel(ctx, backup_mount, countries, run_id, corpus_root, state_dir, staging_root, pending_root, publish_root, logs_root,
+          parallel, cap, dry_run):
     """Text over a panel: steps with STATUS_<step>, MemoryMax, 5TB mount check and disk gate.
 
     Without a subcommand, prints the plan (implies --dry-run).
@@ -163,6 +178,7 @@ def panel(ctx, backup_mount, countries, run_id, corpus_root, state_dir, staging_
         state_dir=state_dir,
         staging_root=staging_root,
         pending_root=pending_root,
+        publish_root=publish_root,
         parallel=parallel,
         cap=cap,
     )
@@ -175,7 +191,7 @@ def panel(ctx, backup_mount, countries, run_id, corpus_root, state_dir, staging_
 @click.argument("extra", nargs=-1, type=click.UNPROCESSED)
 @click.pass_obj
 def step_command(c: PanelContext, name: str, extra: tuple[str, ...]):
-    """Run one step (ledger, collect, merge, signoff, counts, check)."""
+    """Run one step (ledger, collect, merge, signoff, counts, check, aggregate, publish)."""
     c.extra = extra
     sys.exit(run_step(STEPS[name], c))
 
@@ -201,7 +217,8 @@ def run_command(c: PanelContext):
 @click.argument("run_id")
 @click.pass_obj
 def signoff_command(c: PanelContext, run_id: str):
-    """Apply the plan <pending-root>/RUN_ID to the corpus and the panel ledger, then counts -> check."""
+    """Apply the plan <pending-root>/RUN_ID to the corpus and the panel ledger, then counts -> check
+    -> aggregate -> publish."""
     c.week = run_id
     status = Status(c.week_dir, "run")
     for name in AFTER_SIGNOFF:
