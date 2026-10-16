@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import fcntl
 import logging
 import sys
 from datetime import date, datetime, timezone
@@ -50,6 +51,21 @@ _HASH_FIELDS = [
 
 def _source_csv_path(entry: dict, base_dir: Path = _DATA_DIR) -> Path:
     return canonical_observations_path_for_entry(entry, base_dir=base_dir)
+
+
+def _write_state_merged(state: dict, initial: dict, path: Path) -> None:
+    """Write only the entries this run changed onto the state as it is on disk now.
+
+    Regional collects run in parallel against one .state.json; writing the
+    whole dict read at start-up dropped the other regions' progress.
+    """
+    changed = {k: v for k, v in state.items() if initial.get(k) != v}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path.with_name(f"{path.name}.lock"), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        on_disk = read_state(path)
+        on_disk.update(changed)
+        write_state(on_disk, path)
 
 
 def _cutoff_from_df(df: pd.DataFrame, fallback: date) -> date:
@@ -121,6 +137,7 @@ def run_collection(
 
     state_path = base_dir / ".state.json"
     state = read_state(state_path)
+    initial = {k: dict(v) for k, v in state.items()}
 
     keys_to_run = [source_key] if source_key else list(registry)
     recorder = FailureRecorder()
@@ -197,7 +214,7 @@ def run_collection(
 
     logging.getLogger().removeHandler(recorder)
     if not dry_run:
-        write_state(state, state_path)
+        _write_state_merged(state, initial, state_path)
         if status_region:
             record_collect(
                 status_region, keys_to_run, recorder.failed, base_dir / "_status"
