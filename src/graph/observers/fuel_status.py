@@ -20,6 +20,8 @@ def observe(node) -> list[dict]:
         drift = []
         if pub.get("status") == "blocked":
             drift.append("blocked: " + ",".join(pub.get("dropped_countries") or []))
+        if pub.get("qa_jumps"):
+            drift.append(f"qa_jumps: {len(pub['qa_jumps'])}")
         if pub.get("new_failures"):
             drift.append("new_failures: " + ",".join(pub["new_failures"]))
         last = st.get("last_published") or {}

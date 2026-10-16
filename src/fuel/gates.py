@@ -127,6 +127,50 @@ def seed_baseline(
     return with_data, _write_status(status, status_dir)
 
 
+QA_JUMP_FACTOR = 3.0
+QA_WINDOW_OBS = 6
+QA_LOOKBACK_DAYS = 365
+
+
+def qa_jumps(countries: list[dict]) -> list[dict]:
+    """Observed prices > 3x (or < 1/3) the median of the series' previous 6
+    observed prices, within the last year. Marks, never drops."""
+    import pandas as pd
+
+    since = (datetime.now(timezone.utc) - pd.Timedelta(days=QA_LOOKBACK_DAYS)).strftime(
+        "%Y-%m-%d"
+    )
+    out: list[dict] = []
+    for c in countries:
+        path = c["output_dir"] / "fuel_product_local_prices.csv"
+        if not path.exists():
+            continue
+        df = pd.read_csv(path, low_memory=False)
+        if "is_forward_filled" in df.columns:
+            df = df[~df["is_forward_filled"].astype(str).str.lower().eq("true")]
+        df = df.sort_values(["series_key", "observation_date"])
+        med = df.groupby("series_key")["price_local"].transform(
+            lambda s: s.shift().rolling(QA_WINDOW_OBS, min_periods=3).median()
+        )
+        ratio = df["price_local"] / med
+        hit = df[
+            ((ratio > QA_JUMP_FACTOR) | (ratio < 1 / QA_JUMP_FACTOR))
+            & (df["observation_date"] >= since)
+        ]
+        for idx, r in hit.iterrows():
+            out.append(
+                {
+                    "country": c["country_slug"],
+                    "series_key": r["series_key"],
+                    "source_key": r.get("source_key"),
+                    "date": str(r["observation_date"])[:10],
+                    "price_local": round(float(r["price_local"]), 4),
+                    "rolling_median": round(float(med[idx]), 4),
+                }
+            )
+    return out
+
+
 def check_publish(
     region: str,
     countries: list[dict],
@@ -170,6 +214,15 @@ def check_publish(
             ", ".join(gate["new_failures"]),
         )
 
+    gate["qa_jumps"] = qa_jumps(countries)
+    if gate["qa_jumps"]:
+        logger.warning(
+            "[gate] %s: %d price jump(s) > %sx the rolling median (marked, not dropped)",
+            region,
+            len(gate["qa_jumps"]),
+            QA_JUMP_FACTOR,
+        )
+
     dropped = prev is not None and len(built) < len(prev)
     if dropped and not allow_country_drop:
         gate["status"] = "blocked"
@@ -182,7 +235,8 @@ def check_publish(
             f"fix the build or rerun with --allow-country-drop. Status: {path}"
         )
     gate["status"] = "published"
-    gate["color"] = "amarillo" if (dropped or gate["new_failures"]) else "verde"
+    yellow = dropped or gate["new_failures"] or gate["qa_jumps"]
+    gate["color"] = "amarillo" if yellow else "verde"
     return gate
 
 

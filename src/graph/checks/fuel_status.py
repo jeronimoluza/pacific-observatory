@@ -2,7 +2,8 @@
 
 - red: publish blocked by the country-count gate;
 - red: no publish (or seeded baseline) newer than 8 days;
-- yellow: source failures not listed in known_failures.md.
+- yellow: source failures not listed in known_failures.md, or price jumps
+  > 3x the rolling median (marked by publish, never dropped).
 """
 
 from __future__ import annotations
@@ -41,9 +42,14 @@ def check(rows: list[dict]) -> list[dict]:
                     "msg": f"sin publish desde {fresh or 'nunca'}",
                 }
             )
-        new = [d for d in r["drift"] if d.startswith("new_failures")]
+        new = [d for d in r["drift"] if d.startswith(("new_failures", "qa_jumps"))]
         if new:
             out.append(
-                {"node": NODE, "partition": part, "color": "amarillo", "msg": new[0]}
+                {
+                    "node": NODE,
+                    "partition": part,
+                    "color": "amarillo",
+                    "msg": "; ".join(new),
+                }
             )
     return out
