@@ -115,7 +115,7 @@ FUEL_PRODUCT_MAP: dict[str, str | None] = {
     "Super": "gasoline_branded",
     "Super Power GSH95": "gasoline_premium",
     "Motor Spirit": "gasoline_branded",
-    "PDL": "gasoline_branded",
+    "PDL": "diesel_premium",
     "Petrol (PMS)": "gasoline_regular",
     "Unleaded": "gasoline_regular",
     "Unleaded Petrol 95RON": "gasoline_midgrade",
