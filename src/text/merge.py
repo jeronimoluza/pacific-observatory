@@ -60,7 +60,7 @@ def _append_new_rows(stage_csv: Path, target_csv: Path) -> tuple[pd.DataFrame, i
             f"{target_csv}: staged columns {extra} missing in archive header"
         )
     target_urls = set(
-        pd.read_csv(target_csv, usecols=["url"], dtype=str, keep_default_na=False)["url"]
+        pd.read_csv(target_csv, usecols=["url"], dtype=str)["url"].dropna().astype(str)
     )
     delta = staged[~staged["url"].isin(target_urls)]
     if delta.empty:
