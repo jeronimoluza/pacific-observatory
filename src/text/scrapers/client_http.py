@@ -179,6 +179,10 @@ class AsyncHttpClient:
                     if e.response.status_code == 404:
                         logger.error(f"404 Not Found for {url} - page doesn't exist")
                         return None, 404
+                    if e.response.status_code == 403 and attempt == 0:
+                        content = await self._retry_403(client, url, method, data)
+                        if content is not None:
+                            return content, 200
 
                     # Log detailed error information for non-404 errors
                     logger.error(f"HTTP {e.response.status_code} for {url}")
@@ -212,6 +216,31 @@ class AsyncHttpClient:
 
             logger.error(f"Failed to retrieve {url} after {retry_count + 1} attempts")
             return None, None
+
+    async def _retry_403(self, client, url, method, data) -> Optional[bytes]:
+        # Some WAFs 403 httpx's header order (User-Agent last) or a browser
+        # User-Agent over a non-browser TLS stack. Retry with the User-Agent
+        # first, then with a plain library User-Agent; keep whichever passes.
+        extra = {k: v for k, v in self.headers.items() if k != "User-Agent"}
+        base = {"Accept": "*/*", "Accept-Encoding": "gzip, deflate"}
+        for ua in (self.headers["User-Agent"], "python-requests/2.32.3"):
+            headers = {"User-Agent": ua, **base, **extra}
+            try:
+                response = await client.request(
+                    method.upper(),
+                    url,
+                    headers=headers,
+                    data=data if method.upper() == "POST" else None,
+                    timeout=self.timeout,
+                    follow_redirects=self.follow_redirects,
+                )
+            except httpx.RequestError:
+                return None
+            if response.status_code == 200:
+                logger.info(f"403 cleared for {url} with User-Agent {ua!r}")
+                self.headers = headers
+                return response.content
+        return None
 
     def parse_content(self, content: bytes) -> Union[BeautifulSoup, etree._Element]:
         """

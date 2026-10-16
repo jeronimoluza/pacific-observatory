@@ -1822,6 +1822,7 @@ class NewspaperScraper:
         all_thumbnails: List[ThumbnailRecord] = []
         previous_batch_data = None
         prev_batch_urls_window: List[set] = []
+        self._listing_urls_seen: set = set()
         no_progress_streak = 0
 
         async for result_batch in self.listing_strategy.discover_and_scrape(
@@ -1895,6 +1896,8 @@ class NewspaperScraper:
                 logger.info(
                     f"Processed batch: {len(result_batch)} pages, {len(batch_thumbnails)} thumbnails"
                 )
+
+            self._listing_urls_seen.update(str(t.url) for t in batch_thumbnails)
 
             # Rule 1: 404/error - handled by listing_strategy (no successful results)
             # Rule 2: Empty thumbnails batch
@@ -2547,6 +2550,8 @@ class NewspaperScraper:
                     "failed_urls": len(self.failed_urls),
                     "failed_news": len(self.failed_news),
                     "skipped_by_ledger": skipped_by_ledger,
+                    "listing_urls_seen": len(self._listing_urls_seen),
+                    "listing_urls_known": len(self._listing_urls_seen & existing_urls),
                 },
             }
 
