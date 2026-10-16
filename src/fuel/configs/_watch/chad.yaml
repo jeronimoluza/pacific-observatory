@@ -1,0 +1,38 @@
+# `po fuel watch --country chad`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. No `levels:` yet: add the manual
+# table's path when it exists; until then GPP changes alert on their own.
+country: chad
+currency: XAF
+broken_after: 3
+lookback_days: 10
+pages:
+- id: tchadinfos_feed
+  allow_empty: true
+  url: https://tchadinfos.com/feed/
+  mode: urls
+  match: carburant|gasoil|prix-du-super|hydrocarbure
+news:
+- q: prix carburant Tchad
+  hl: fr
+  gl: TD
+- q: Tchad prix gasoil super pompe arrêté
+  hl: fr
+  gl: TD
+must:
+- tchad
+- ndjamena
+- n'djamena
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

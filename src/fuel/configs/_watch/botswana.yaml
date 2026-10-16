@@ -1,0 +1,47 @@
+# `po fuel watch --country botswana`. Schema and checks: src/fuel/watch.py.
+country: botswana
+currency: BWP
+broken_after: 3          # consecutive failed fetches of one item -> rojo "vigilancia rota"
+lookback_days: 10        # news items older than this never alert
+
+# Our own levels. Rows in configs/_quarantine/observations.yaml are ignored.
+# Add the documented manual BERA table here when it lands (same columns, or map them
+# with `columns: {date: ..., product: ..., price: ...}`).
+levels:
+  paths:
+    - data/fuel/ssa/southern_africa/botswana/bera/observations.csv
+  stale_months: 3
+
+# GlobalPetrolPrices: REFERENCE ONLY, never data. products: GPP product -> our product.
+gpp:
+  slug: Botswana
+  name: Botswana
+  products:
+    gasoline: "ULP 95"
+    diesel: "Diesel 50ppm"
+  move_pct: 3            # GPP moved this much while our level did not -> "posible ajuste no cargado"
+  diverge_pct: 5         # ours vs GPP beyond this ...
+  diverge_runs: 3        # ... on this many distinct GPP dates -> divergence
+  max_age_days: 45       # an older GPP date means GPP stopped following the country
+
+pages:
+  - id: bera_media
+    url: https://www.bera.co.bw/media.php
+    mode: links
+    match: "fuel|pump price|petroleum products|statutory|gazette|paraffin|lpg"
+  - id: bera_petroleum
+    url: https://www.bera.co.bw/petroleum.php
+    mode: links
+    match: "fuel|pump price|petroleum products|statutory|gazette"
+
+news:
+  - q: 'Botswana fuel price'
+    hl: en-BW
+    gl: BW
+  - q: 'BERA fuel prices adjustment'
+    hl: en-BW
+    gl: BW
+
+# A news title alerts only with one `keywords` term AND one `must` term.
+must: [botswana, bera, gaborone]
+keywords: [fuel price, pump price, petrol price, diesel price, price of petrol, price of diesel, BERA, fuel prices adjustment]

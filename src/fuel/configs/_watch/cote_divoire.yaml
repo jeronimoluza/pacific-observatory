@@ -1,0 +1,49 @@
+# `po fuel watch --country cote_divoire`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: fetcher. No `levels:` yet: add the manual
+# table's path when it exists; until then GPP changes alert on their own.
+# gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
+country: cote_divoire
+currency: XOF
+broken_after: 3
+lookback_days: 10
+gpp:
+  slug: Ivory-Coast
+  name: Ivory Coast
+  products:
+    gasoline: super_sans_plomb
+    diesel: gasoil_moteur
+  move_pct: 3
+  diverge_pct: 5
+  diverge_runs: 3
+  max_age_days: 45
+pages:
+- id: dgh_documentation
+  url: https://apisite.dgh.ci/?section=select%20data&collection=documentation&zone=zone&method=GET
+  mode: urls
+  match: prix.maxima
+news:
+- q: prix carburant Côte d'Ivoire
+  hl: fr
+  gl: CI
+- q: prix maxima produits pétroliers Côte d'Ivoire
+  hl: fr
+  gl: CI
+must:
+- cote d'ivoire
+- ivoirien
+- abidjan
+- dgh
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

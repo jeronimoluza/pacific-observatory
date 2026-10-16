@@ -1,0 +1,53 @@
+# `po fuel watch --country senegal`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: fetcher. No `levels:` yet: add the manual
+# table's path when it exists; until then GPP changes alert on their own.
+# gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
+country: senegal
+currency: XOF
+broken_after: 3
+lookback_days: 10
+gpp:
+  slug: Senegal
+  name: Senegal
+  products:
+    gasoline: supercarburant
+    diesel: gasoil
+  move_pct: 3
+  diverge_pct: 5
+  diverge_runs: 3
+  max_age_days: 45
+pages:
+- id: crse_structures
+  url: https://www.crse.sn/wp-json/wp/v2/crse_document?search=structure&per_page=20
+  mode: urls
+  match: structure
+- id: primature_communiques
+  allow_empty: true
+  url: https://primature.sn/publications/communiques-officiels
+  mode: links
+  match: carburant|prix|petrol|hydrocarbure|energie
+news:
+- q: prix carburant Sénégal
+  hl: fr
+  gl: SN
+- q: prix supercarburant gasoil Sénégal CRSE
+  hl: fr
+  gl: SN
+must:
+- senegal
+- dakar
+- crse
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

@@ -1,0 +1,49 @@
+# `po fuel watch --country gabon`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. No `levels:` yet: add the manual
+# table's path when it exists; until then GPP changes alert on their own.
+# gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
+country: gabon
+currency: XAF
+broken_after: 3
+lookback_days: 10
+gpp:
+  slug: Gabon
+  name: Gabon
+  products:
+    gasoline: Super
+    diesel: Gasoil
+  move_pct: 3
+  diverge_pct: 5
+  diverge_runs: 3
+  max_age_days: 45
+pages:
+- id: agp_search_carburant
+  allow_empty: true
+  url: https://agpgabon.ga/?s=carburant
+  mode: links
+  match: carburant|prix|petrol|gasoil
+news:
+- q: prix carburant Gabon
+  hl: fr
+  gl: GA
+- q: CNPPP prix produits pétroliers Gabon
+  hl: fr
+  gl: GA
+must:
+- gabon
+- libreville
+- cnppp
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

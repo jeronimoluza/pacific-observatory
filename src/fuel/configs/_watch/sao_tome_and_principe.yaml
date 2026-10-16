@@ -1,0 +1,32 @@
+# `po fuel watch --country sao_tome_and_principe`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. No `levels:` yet: add the manual
+# table's path when it exists; until then GPP changes alert on their own.
+country: sao_tome_and_principe
+currency: STN
+broken_after: 3
+lookback_days: 10
+pages:
+- id: stp_press_search
+  url: https://www.stp-press.st/?s=combust%C3%ADveis
+  mode: links
+  match: combust|gasolina|gasoleo|petroleo|preco
+news:
+- q: preço combustíveis São Tomé
+  hl: pt-PT
+  gl: ST
+- q: São Tomé e Príncipe preço gasolina gasóleo
+  hl: pt-PT
+  gl: ST
+must:
+- sao tome
+- santomense
+- stp
+- enco
+keywords:
+- preco dos combustiveis
+- precos dos combustiveis
+- combustiveis
+- combustivel
+- gasolina
+- gasoleo
+- petroleo
