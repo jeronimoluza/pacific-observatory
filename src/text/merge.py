@@ -67,14 +67,16 @@ def _append_new_rows(stage_csv: Path, target_csv: Path) -> tuple[pd.DataFrame, i
         return staged, 0
     delta = delta.reindex(columns=header, fill_value="")
 
+    with open(target_csv, "rb") as f:
+        f.seek(-1, os.SEEK_END)
+        if f.read(1) != b"\n":
+            # Every CSV writer here ends a row with a newline, so a file without
+            # one was cut mid-row (an unflushed write); appending would glue the
+            # next row onto the cut one (newsabah, dandakaranya, 2026-10).
+            raise MergeError(f"{target_csv} ends mid-row (truncated); repair it first")
     shutil.copyfile(target_csv, tmp)
     size_before = tmp.stat().st_size
-    with open(tmp, "rb") as f:
-        f.seek(max(size_before - 1, 0))
-        needs_newline = size_before > 0 and f.read(1) != b"\n"
     with open(tmp, "a", newline="", encoding="utf-8") as f:
-        if needs_newline:
-            f.write("\n")
         delta.to_csv(f, header=False, index=False)
         f.flush()
         os.fsync(f.fileno())
