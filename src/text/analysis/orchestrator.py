@@ -17,6 +17,7 @@ import pandas as pd
 
 from src.text.analysis import annotate, source_counts
 from src.text.analysis.outputs import build_outputs
+from src.text.source_keys import source_key
 from src.text.analysis.standardize import standardize_unit
 from src.text.analysis.utils import (
     LANGUAGE_ALIASES,
@@ -371,9 +372,7 @@ def _ensure_country_source_counts(
 
 def _source_key(news_csv: Path) -> str:
     """Mirror baseline.source_key_for_news_path."""
-    country = news_csv.parent.parent.name
-    newspaper = news_csv.parent.name.replace(country, "").strip("_")
-    return f"{country}_{newspaper}"
+    return source_key(news_csv)
 
 
 # ── Per-unit entry point ─────────────────────────────────────────────

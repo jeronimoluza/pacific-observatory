@@ -7,6 +7,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from ..source_keys import source_key
+
 
 def normalize_bound(value: str | None) -> str | None:
     """Normalize empty string inputs to None."""
@@ -46,9 +48,7 @@ def baseline_mask(
 
 def source_key_for_news_path(news_csv: Path) -> str:
     """Build the canonical source key used in params.json."""
-    country = news_csv.parent.parent.name
-    newspaper = news_csv.parent.name.replace(country, "").strip("_")
-    return f"{country}_{newspaper}"
+    return source_key(news_csv)
 
 
 def cached_baseline_window(params: dict) -> tuple[str | None, str | None]:
