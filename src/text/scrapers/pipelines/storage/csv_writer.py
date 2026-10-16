@@ -158,7 +158,9 @@ class CSVWriter:
         with open(file_path, "rb") as f:
             f.seek(-1, os.SEEK_END)
             if f.read(1) != b"\n":
-                raise ValueError(f"{file_path} ends mid-row (truncated); repair it first")
+                raise ValueError(
+                    f"{file_path} ends mid-row (truncated); repair it first"
+                )
 
         # Append to CSV file
         with open(file_path, "a", newline="", encoding="utf-8") as f:
