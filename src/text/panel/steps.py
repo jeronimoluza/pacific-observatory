@@ -35,7 +35,11 @@ def panel_sources(countries: list[str]) -> dict[tuple[str, str, str], list[str]]
 
     out = {}
     for c in countries:
-        region, sub, _ = get_country_path(c)
+        try:
+            region, sub, _ = get_country_path(c)
+        except ValueError:  # a config folder outside regions.yaml (`pacific`)
+            (d,) = CONFIGS.glob(f"*/*/{c}")
+            region, sub = d.parent.parent.name, d.parent.name
         d = CONFIGS / region / sub / c
         out[(region, sub, c)] = sorted(
             y.stem for y in d.glob("*.yaml") if not y.stem.startswith("_") and not DISABLED.search(y.read_text())
@@ -184,8 +188,27 @@ def _link_corpus(regions, corpus_root: Path) -> str | None:
     return None
 
 
+def _build_scopes(srcs: dict) -> list[dict]:
+    """run_analysis filters: a region or subregion the panel holds whole is built like
+    `po text build --region/--subregion`, with its aggregates; every other country alone."""
+    from prices.weekly.panels import region_units
+
+    panel = {c for (_, _, c) in srcs}
+    scopes, whole = [], set()
+    for region, entries in _regions(srcs).items():
+        if set(region_units(region)) <= panel:
+            scopes.append({"region": region})
+            whole |= {c for _, c, _ in entries}
+            continue
+        for sub in sorted({s for s, _, _ in entries}):
+            if set(region_units(region, sub)) <= panel:
+                scopes.append({"region": region, "subregion": sub})
+                whole |= {c for s, c, _ in entries if s == sub}
+    return scopes + [{"countries": [c]} for (_, _, c) in srcs if c not in whole]
+
+
 def step_counts(a) -> int:
-    from text.analysis.main import run_analysis
+    from text.analysis import main as build
     from text.process import _validate_baseline_window
 
     srcs = panel_sources(a.countries)
@@ -194,21 +217,35 @@ def step_counts(a) -> int:
         print(err)
         return 1
     start, end = _validate_baseline_window("2024-01-01", "2024-12-31")
-    for (region, sub, c) in srcs:
-        if not (a.corpus_root / region / sub / c).is_dir():
-            print(f"== {c}: not in corpus, skipped", flush=True)
+    paths = {c: (r, s) for (r, s, c) in srcs}
+    discover = build._discover_units
+
+    def no_region_aggregate(dirs, include_aggregates=True):
+        return [u for u in discover(dirs, include_aggregates) if u["level"] != "region"]
+
+    for scope in _build_scopes(srcs):
+        label = scope.get("subregion") or scope.get("region") or scope["countries"][0]
+        if "countries" in scope and not (a.corpus_root / Path(*paths[label]) / label).is_dir():
+            print(f"== {label}: not in corpus, skipped", flush=True)
             continue
+        # A subregion build would also write its region's aggregate from that one subregion.
+        build._discover_units = no_region_aggregate if "subregion" in scope else discover
+        units = build.preview_build_units(**scope)
         t = time.time()
-        print(f"== {c}: build", flush=True)
-        run_analysis(countries=[c], cutoff_start_date=start, cutoff_end_date=end,
-                     max_parallel_sources=a.parallel_sources)
+        print(f"== {label}: build, {len(units)} units", flush=True)
+        build.run_analysis(**scope, cutoff_start_date=start, cutoff_end_date=end,
+                           max_parallel_sources=a.parallel_sources)
         # run_analysis logs a failed unit and goes on; a reused cache keeps its old mtime.
-        params = REPO_ROOT / "data" / "text" / "cache" / region / sub / c / "source_counts.params.json"
-        epu = REPO_ROOT / "outputs" / "text" / region / sub / c / "epu" / "epu.csv"
-        if not params.exists() or not epu.exists() or epu.stat().st_mtime < t - 1:
-            print(f"== {c}: build failed (no {params} or no fresh {epu})")
+        bad = []
+        for u in units:
+            epu = u["output_dir"] / "epu" / "epu.csv"
+            params = u["cache_dir"] / "source_counts.params.json"
+            if not epu.exists() or epu.stat().st_mtime < t - 1 or (u["level"] == "country" and not params.exists()):
+                bad.append(u["name"])
+        if bad:
+            print(f"== {label}: build failed for {', '.join(bad)} (no params or no fresh epu.csv)")
             return 1
-        print(f"== {c}: ok {time.time() - t:.0f}s", flush=True)
+        print(f"== {label}: ok {len(units)} units {time.time() - t:.0f}s", flush=True)
     return 0
 
 
