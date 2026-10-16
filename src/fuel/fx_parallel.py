@@ -89,9 +89,14 @@ def refresh_parallel_cache(
     if not frames:
         logger.warning("RTFX: no parallel rates fetched; cache left as is")
         return 0
-    frames += _market_series(session, cache_path)
-    out = pd.concat(frames, ignore_index=True)[_COLUMNS].sort_values(
-        ["currency", "date"]
+    frames = [f for f in frames if f["currency"].iloc[0] not in RTFX_OFFICIAL_LIKE]
+    # WFP VAM first, RTFX only for the months VAM does not cover (ETB after
+    # 2025-06, SSP gaps).
+    frames = _vam_series(session) + frames + _market_series(session, cache_path)
+    out = (
+        pd.concat(frames, ignore_index=True)[_COLUMNS]
+        .drop_duplicates(subset=["currency", "date"], keep="first")
+        .sort_values(["currency", "date"])
     )
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     tmp = cache_path.with_name(f"{cache_path.name}.{os.getpid()}.tmp")
@@ -109,6 +114,58 @@ def refresh_parallel_cache(
 # EAP still runs on the legacy pipeline; RTFX covers these three of its
 # currencies, kept here so the series exists when EAP moves to src/fuel.
 EAP_RTFX = {"MMR": "MMK", "LAO": "LAK", "IDN": "IDR"}
+
+# RTFX's "unofficial" column tracks the official rate for these currencies
+# (MMK: CBM reference ~2,100 flat since 2023 while the CBM market trading rate
+# is ~3,660; MWK 1,757 vs ~4,000; BIF ~3,000 vs ~6,100), so it is not used for
+# them. ETB before 2024-07 has the same problem but WFP VAM covers that span.
+RTFX_OFFICIAL_LIKE = {"MMK", "MWK", "BIF", "LYD", "IQD", "SDG"}
+
+# WFP VAM Economic Explorer: monthly unofficial (market) rate, public API.
+_VAM_URL = (
+    "https://api.vam.wfp.org/economicExplorer/Currency/GetMonthlyUnofficialExchangeRate"
+)
+VAM_CURRENCIES = {
+    "BIF": "BDI",
+    "ETB": "ETH",
+    "IQD": "IRQ",
+    "LBP": "LBN",
+    "LYD": "LBY",
+    "MWK": "MWI",
+    "SDG": "SDN",
+    "SSP": "SSD",
+    "YER": "YEM",
+}
+SOURCE_VAM = "wfp_vam:unofficial-monthly"
+
+
+def _vam_series(session) -> list[pd.DataFrame]:
+    """WFP VAM monthly market rates; they replace RTFX where both exist. YER is
+    the Aden (government-area) rate."""
+    out = []
+    for currency, iso3 in VAM_CURRENCIES.items():
+        try:
+            data = session.get(
+                _VAM_URL, params={"currencyCode": currency}, timeout=60
+            ).json()
+        except Exception as exc:
+            logger.warning("WFP VAM fetch failed for %s: %s", currency, exc)
+            continue
+        values = data.get("values") or []
+        if not values:
+            continue
+        start = pd.Timestamp(year=data["startYear"], month=data["startMonth"], day=1)
+        df = pd.DataFrame(
+            {
+                "date": pd.date_range(start, periods=len(values), freq="MS"),
+                "rate_usd_to_local": pd.to_numeric(pd.Series(values), errors="coerce"),
+            }
+        ).dropna()
+        out.append(
+            df.assign(markets=pd.NA, currency=currency, iso3=iso3, source=SOURCE_VAM)
+        )
+    return out
+
 
 _ARS_BLUE_URL = "https://api.argentinadatos.com/v1/cotizaciones/dolares/blue"
 _BOB_URL = "https://bo.dolarapi.com/v1/dolares"
