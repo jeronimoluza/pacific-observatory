@@ -1,4 +1,6 @@
 name: worlddailynews24.com
+enabled: false
+disabled_reason: "worlddailynews24.com publishes Russian recipes, life hacks and health tips (html lang ru-RU; listing 100% Cyrillic; verified live 2026-10-16). Not Indian news."
 language: en
 country: india
 base_url: https://worlddailynews24.com
