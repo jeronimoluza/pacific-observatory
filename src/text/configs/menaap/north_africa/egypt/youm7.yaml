@@ -33,5 +33,5 @@ selectors:
 cleaning:
   date: handle_mixed_dates
 
-max_pages: 20
+max_pages: 10  # 2026-10-16 verify: body fixed, 20 pages = 800 rows ran past 300 s
 max_articles: null
