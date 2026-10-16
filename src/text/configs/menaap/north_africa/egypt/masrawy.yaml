@@ -13,8 +13,10 @@ base_url: https://www.masrawy.com
 # other categoryids (210 arts, 217 health, 27 sports, 373 autos, 262 islamic)
 # are excluded per the national>economy>politics rule. Archive depth is large
 # (pageIndex=624 reaches back to 2020-11-26).
+# 2026-10-16 (panel 20261016T0917Z): no ledger yet; string order started at pageIndex=501 and walked the whole archive past the cap
 listing:
   type: sitemap
+  sitemap_order: natural_asc
   sitemap_index_url: "https://www.masrawy.com/feeds/sitemap?categoryid=25"
 
 client: http
@@ -36,5 +38,5 @@ selectors:
 cleaning:
   date: parse_date_from_jsonld
 
-max_pages: null
+max_pages: 5
 max_articles: null

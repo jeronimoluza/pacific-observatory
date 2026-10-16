@@ -40,6 +40,8 @@ selectors:
     container: "div.media__text"
     title: "h3.media__title::text"
     url: "a::attr(href)"
+    # epoch seconds; undated thumbnails sort after the dated July backlog, so new rows came last
+    date: "span[d-time]::attr(d-time)"
   article:
     body: "div[class='detail__body-text itp_bodycontent'] p"
     date: "meta[itemprop='datePublished']::attr(content)"
@@ -51,4 +53,4 @@ cleaning:
 
 # Test/debug options
 max_pages: 3
-max_articles: null
+max_articles: 600

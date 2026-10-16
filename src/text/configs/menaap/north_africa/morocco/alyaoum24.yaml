@@ -4,6 +4,7 @@ language: ar
 base_url: https://alyaoum24.com
 
 # Categories: الرئيسية/Home-national(21633), أخبار سياسية/Political(89), أخبار اقتصادية/Economy(91)
+# 2026-10-16 (panel 20261016T0917Z): no ledger yet: API walk of 104+ pages never finished
 listing:
   type: api
   pagination_type: page
@@ -35,5 +36,5 @@ cleaning:
   date: handle_mixed_dates
   body: clean_wp_html_body
 
-max_pages: null
+max_pages: 10
 max_articles: null

@@ -4,6 +4,7 @@ language: fr
 base_url: https://www.lavieeco.com
 
 # Categories: Au Royaume(36), Affaires(7696), Pouvoirs(7709)
+# 2026-10-16 (panel 20261016T0917Z): no ledger yet; the API answers in ~20 s per page, so a full walk never finishes
 listing:
   type: api
   pagination_type: page
@@ -35,5 +36,5 @@ cleaning:
   date: handle_mixed_dates
   body: clean_wp_html_body
 
-max_pages: null
+max_pages: 3
 max_articles: null
