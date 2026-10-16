@@ -105,13 +105,27 @@ def _build_freshness_sheet(countries: list[dict]) -> pd.DataFrame:
                 fuel_product=df["label"].fillna(df["series_key"]),
                 observed=observed,
                 shown=df["observation_date"].astype(str).str[:10],
+                price_basis=df["price_basis"] if "price_basis" in df else "retail",
             )
             .groupby(["iso3", "fuel_product"], as_index=False)
-            .agg(last_observed=("observed", "max"), last_shown=("shown", "max"))
+            .agg(
+                last_observed=("observed", "max"),
+                last_shown=("shown", "max"),
+                price_basis=(
+                    "price_basis",
+                    lambda s: ",".join(sorted(set(s.dropna()))),
+                ),
+            )
         )
     if not frames:
         return pd.DataFrame(
-            columns=["iso3", "fuel_product", "last_observed", "last_shown"]
+            columns=[
+                "iso3",
+                "fuel_product",
+                "last_observed",
+                "last_shown",
+                "price_basis",
+            ]
         )
     return pd.concat(frames, ignore_index=True).sort_values(["iso3", "fuel_product"])
 
@@ -122,6 +136,7 @@ def _build_sources_sheet(region: str, countries: list[dict]) -> pd.DataFrame:
         k: {
             "url": v.get("url", ""),
             "display_name": v.get("display_name") or k,
+            "price_basis": v.get("price_basis", "retail"),
         }
         for k, v in registry.items()
     }
@@ -155,10 +170,11 @@ def _build_sources_sheet(region: str, countries: list[dict]) -> pd.DataFrame:
                     "iso3": iso3,
                     "source": meta.get("display_name") or key,
                     "url": meta.get("url", ""),
+                    "price_basis": meta.get("price_basis", "retail"),
                 }
             )
     if not rows:
-        return pd.DataFrame(columns=["iso3", "source", "url"])
+        return pd.DataFrame(columns=["iso3", "source", "url", "price_basis"])
     return pd.DataFrame(rows).sort_values(["iso3", "source"]).reset_index(drop=True)
 
 

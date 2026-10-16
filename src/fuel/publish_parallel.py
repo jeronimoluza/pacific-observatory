@@ -144,3 +144,48 @@ def inject_parallel_section(html_path, countries: list[dict]) -> bool:
         return False
     html_path.write_text(text[:idx] + section + "\n" + text[idx:], encoding="utf-8")
     return True
+
+
+def price_basis_section_html(countries: list[dict]) -> str:
+    """List the series that are not retail pump prices (labelled fallbacks)."""
+    rows = []
+    for c in countries:
+        path = c["output_dir"] / "fuel_product_local_prices.csv"
+        if not path.exists():
+            continue
+        df = pd.read_csv(path, low_memory=False)
+        if "price_basis" not in df.columns:
+            continue
+        odd = df[df["price_basis"].fillna("retail").ne("retail")]
+        for (label, basis), g in odd.groupby(
+            [odd["label"].fillna(odd["series_key"]), "price_basis"]
+        ):
+            rows.append((c["country"], label, basis, g["source_key"].iloc[0]))
+    if not rows:
+        return ""
+    body = "".join(
+        f"<tr><td>{html.escape(str(a))}</td><td>{html.escape(str(b))}</td>"
+        f"<td>{html.escape(str(p))}</td><td>{html.escape(str(s))}</td></tr>"
+        for a, b, p, s in rows
+    )
+    return (
+        '<section id="price-basis" style="max-width:1100px;margin:24px auto;'
+        'padding:0 16px;font-size:0.9em;overflow-x:auto">'
+        "<h3>Series that are not retail pump prices</h3>"
+        "<p>No retail pump price source was found for these; they are published as "
+        "a labelled fallback and are not comparable to pump prices.</p>"
+        '<table style="border-collapse:collapse;width:100%"><thead><tr>'
+        "<th>Country</th><th>Product</th><th>Price basis</th><th>Source</th>"
+        f"</tr></thead><tbody>{body}</tbody></table></section>"
+    )
+
+
+def inject_section(html_path, section: str) -> bool:
+    if not section:
+        return False
+    text = html_path.read_text(encoding="utf-8")
+    idx = text.rfind("</body>")
+    if idx < 0:
+        return False
+    html_path.write_text(text[:idx] + section + "\n" + text[idx:], encoding="utf-8")
+    return True
