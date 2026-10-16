@@ -2,8 +2,9 @@
 
 A staging run is ``<staging>/<run_id>/<region>/<subregion>/<country>/<source>/``
 holding only what that run collected. Merging a source appends its new
-news.csv/urls.csv rows (deduplicated by url against the archive file), checks
-the bytes it appended parse back to exactly those rows, replaces
+news.csv/urls.csv rows (deduplicated by url against the archive file) to a copy
+of the file, checks the bytes it appended parse back to exactly those rows,
+swaps the copy in with os.replace, replaces
 failed_urls_seen.csv, copies failed/ and metadata/ files, and updates the
 ledger. A region is marked merged in a run with ``<run_id>/<region>/.merged``.
 """
@@ -37,18 +38,23 @@ def _header(path: Path) -> list[str]:
         return next(csv.reader(f))
 
 
-def _append_new_rows(stage_csv: Path, target_csv: Path) -> pd.DataFrame:
-    """Append rows of ``stage_csv`` whose url is not in ``target_csv``; verify; return them."""
-    delta = pd.read_csv(stage_csv, dtype=str, keep_default_na=False)
+def _append_new_rows(stage_csv: Path, target_csv: Path) -> tuple[pd.DataFrame, int]:
+    """Add rows of ``stage_csv`` whose url is not in ``target_csv``, atomically.
+
+    The new file is written beside the target and swapped in with os.replace,
+    so a killed merge leaves the target as it was. Returns the staged rows
+    (deduplicated by url, all now in the target) and how many were appended.
+    """
+    staged = pd.read_csv(stage_csv, dtype=str, keep_default_na=False)
+    staged = staged.drop_duplicates("url")
+    tmp = target_csv.with_suffix(".csv.merging")
     if not target_csv.exists():
-        delta = delta.drop_duplicates("url")
-        tmp = target_csv.with_suffix(".csv.merging")
-        delta.to_csv(tmp, index=False)
+        staged.to_csv(tmp, index=False)
         os.replace(tmp, target_csv)
-        return delta
+        return staged, len(staged)
 
     header = _header(target_csv)
-    extra = [c for c in delta.columns if c not in header]
+    extra = [c for c in staged.columns if c not in header]
     if extra:
         raise MergeError(
             f"{target_csv}: staged columns {extra} missing in archive header"
@@ -56,22 +62,25 @@ def _append_new_rows(stage_csv: Path, target_csv: Path) -> pd.DataFrame:
     target_urls = set(
         pd.read_csv(target_csv, usecols=["url"], dtype=str)["url"].dropna().astype(str)
     )
-    delta = delta[~delta["url"].isin(target_urls)].drop_duplicates("url")
+    delta = staged[~staged["url"].isin(target_urls)]
     if delta.empty:
-        return delta
+        return staged, 0
     delta = delta.reindex(columns=header, fill_value="")
 
-    size_before = target_csv.stat().st_size
-    with open(target_csv, "rb") as f:
+    shutil.copyfile(target_csv, tmp)
+    size_before = tmp.stat().st_size
+    with open(tmp, "rb") as f:
         f.seek(max(size_before - 1, 0))
         needs_newline = size_before > 0 and f.read(1) != b"\n"
-    with open(target_csv, "a", newline="", encoding="utf-8") as f:
+    with open(tmp, "a", newline="", encoding="utf-8") as f:
         if needs_newline:
             f.write("\n")
         delta.to_csv(f, header=False, index=False)
+        f.flush()
+        os.fsync(f.fileno())
 
     # Self-check: the appended bytes parse back to exactly the delta rows.
-    with open(target_csv, "rb") as f:
+    with open(tmp, "rb") as f:
         f.seek(size_before)
         tail = f.read().decode("utf-8")
     back = pd.read_csv(
@@ -81,7 +90,8 @@ def _append_new_rows(stage_csv: Path, target_csv: Path) -> pd.DataFrame:
         raise MergeError(
             f"{target_csv}: appended {len(delta)} rows but read back {len(back)}"
         )
-    return delta
+    os.replace(tmp, target_csv)
+    return staged, len(delta)
 
 
 def _copy_dir_files(stage_dir: Path, target_dir: Path) -> None:
@@ -99,19 +109,30 @@ def _copy_dir_files(stage_dir: Path, target_dir: Path) -> None:
             both.to_csv(tmp, index=False)
             os.replace(tmp, dst)
         elif not dst.exists():
-            shutil.copy2(src, dst)
+            tmp = dst.with_name(dst.name + ".merging")
+            shutil.copy2(src, tmp)
+            os.replace(tmp, dst)
 
 
 def merge_source(
     stage_dir: Path, target_dir: Path, state: SourceState | None
 ) -> tuple[SourceState, int, int]:
-    """Merge one staged source. Returns (new ledger state, news rows, urls rows)."""
+    """Merge one staged source. Returns (new ledger state, news rows, urls rows).
+
+    The ledger state is built from all staged rows, not only the ones appended
+    now, so a retry after a merge killed before ``Ledger.put`` gives the same state.
+    """
     target_dir.mkdir(parents=True, exist_ok=True)
     new_news = new_urls = pd.DataFrame(columns=URL_COLUMNS)
+    n_news = n_urls = 0
     if (stage_dir / "news.csv").exists():
-        new_news = _append_new_rows(stage_dir / "news.csv", target_dir / "news.csv")
+        new_news, n_news = _append_new_rows(
+            stage_dir / "news.csv", target_dir / "news.csv"
+        )
     if (stage_dir / "urls.csv").exists():
-        new_urls = _append_new_rows(stage_dir / "urls.csv", target_dir / "urls.csv")
+        new_urls, n_urls = _append_new_rows(
+            stage_dir / "urls.csv", target_dir / "urls.csv"
+        )
 
     failed_csv = stage_dir / "failed_urls_seen.csv"
     if failed_csv.exists():
@@ -135,7 +156,7 @@ def merge_source(
         failed=failed_csv.read_bytes() if failed_csv.exists() else state.failed,
         watermark=max(marks) if marks else None,
     )
-    return new_state, len(new_news), len(new_urls)
+    return new_state, n_news, n_urls
 
 
 def pending_runs(staging: Path, region: str) -> list[Path]:

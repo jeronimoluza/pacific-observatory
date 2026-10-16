@@ -575,6 +575,9 @@ from prices.enrich.gold_audit.cli import (  # noqa: E402
     gold_audit_group as _prices_gold_audit,
 )
 
+from text.panel.cli import panel as _text_panel  # noqa: E402
+
+text.add_command(_text_panel, name="panel")
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
 prices.add_command(_prices_common_crawl, name="common-crawl")
