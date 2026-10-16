@@ -1,0 +1,5 @@
+# Text panel: panel36 plus every unit of EAP (regions.yaml countries and the `pacific`
+# config folder), so the EAP build makes its subregion and region aggregates.
+# Used by `po text panel --countries text36eap`; prices stays on panel36.
+include: [panel36]
+regions: [eap]
