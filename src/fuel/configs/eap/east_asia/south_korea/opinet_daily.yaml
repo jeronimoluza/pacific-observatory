@@ -1,0 +1,33 @@
+# Ported from legacy pacific-observatory (source_key kr_opinet_daily_avg, FETCHER_REGISTRY fallback 2024-01-01, cadence daily).
+# Legacy does not treat Korea as state-controlled (no forward-fill), hence no carry_forward.
+# Rows are National plus one per sido (subnational_area); the build averages them per date.
+# LPG is in KRW/L; density_l_per_kg = 1/0.54 (legacy LPG_KG_PER_L), required by the schema.
+source_key: kr_opinet_daily_avg
+module: eap.east_asia.south_korea.opinet_daily
+function: fetch_kr_opinet_daily
+url: https://www.opinet.co.kr/user/main/mainView.do
+fallback_date: 2024-01-01
+priority: 10
+cadence: daily
+carry_forward: false
+
+products:
+  "Regular Gasoline":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "LPG":
+    series_key: lpg
+    fuel_family: lpg
+    unit: liter
+    density_l_per_kg: 1.851852
+    include_in_build: true
+    grade: bulk

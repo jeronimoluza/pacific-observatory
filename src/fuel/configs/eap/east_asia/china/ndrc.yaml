@@ -1,0 +1,28 @@
+# Ported from legacy pacific-observatory (source_key cn_ndrc_max_retail_prices_biweekly, FETCHER_REGISTRY fallback 2024-01-01, cadence irregular).
+# Legacy treats China as state-controlled (forward-fill to today), hence carry_forward.
+# NDRC publishes CNY/ton. Legacy (visualize_policy_pills) divides by 1379.0 L/t gasoline
+# and 1197.6 L/t diesel; here amount = litres per ton, so price_local / amount = CNY/L.
+source_key: cn_ndrc_max_retail_prices_biweekly
+module: eap.east_asia.china.ndrc
+function: fetch_cn_ndrc_max_retail_prices
+url: https://www.ndrc.gov.cn/xwdt/xwfb/
+fallback_date: 2024-01-01
+priority: 10
+cadence: irregular
+carry_forward: true
+
+products:
+  "Gasoline (standard)":
+    series_key: gasoline
+    fuel_family: gasoline
+    unit: liter
+    amount: 1379.0
+    include_in_build: true
+    grade: regular
+  "Diesel (standard)":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    amount: 1197.6
+    include_in_build: true
+    grade: regular

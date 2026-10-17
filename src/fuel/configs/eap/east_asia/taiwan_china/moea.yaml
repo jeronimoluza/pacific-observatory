@@ -1,0 +1,40 @@
+# Ported from legacy pacific-observatory (source_key tw_moea_nationwide_avg_monthly, FETCHER_REGISTRY fallback 2003-01-01, cadence monthly, full_refresh).
+# Legacy treats Taiwan as state-controlled (forward-fill to today), hence carry_forward.
+source_key: tw_moea_nationwide_avg_monthly
+module: eap.east_asia.taiwan_china.moea
+function: fetch_tw_moea_nationwide_avg
+url: https://www2.moeaea.gov.tw/oil111/EN/NationwideAvg
+fallback_date: 2003-01-01
+priority: 20
+cadence: monthly
+full_refresh: true
+carry_forward: true
+
+products:
+  "Unleaded 92":
+    series_key: gasoline_92
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+  "Unleaded 95":
+    series_key: gasoline_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: midgrade
+    octane_ron: 95
+  "Unleaded 98":
+    series_key: gasoline_98
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 98
+  "Super Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium

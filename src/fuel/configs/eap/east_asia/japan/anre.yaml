@@ -1,0 +1,38 @@
+# Ported from legacy pacific-observatory (source_key jp_anre_weekly_petroleum_2026, FETCHER_REGISTRY fallback 2020-01-01, cadence weekly).
+# Legacy does not treat Japan as state-controlled (no forward-fill), hence no carry_forward.
+# The fetcher already divides the 18 L kerosene can price by 18. Downloaded *s5.xlsx
+# live under data/fuel/eap/east_asia/japan/anre/japan_prices/ (legacy JAPAN_DIR).
+source_key: jp_anre_weekly_petroleum_2026
+module: eap.east_asia.japan.anre
+function: fetch_jp_anre_excel
+url: https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/
+fallback_date: 2020-01-01
+priority: 10
+cadence: weekly
+carry_forward: false
+
+products:
+  "Regular Gasoline":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "High-octane Gasoline":
+    series_key: gasoline_premium
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Kerosene (retail)":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: regular
