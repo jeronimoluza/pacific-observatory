@@ -1,0 +1,80 @@
+# Indonesia Pertamina non-subsidi announcements (Playwright). Ported from legacy
+# (source_key id_pertamina_pengumuman_non_subsidi, fallback 2023-07-31, irregular).
+# One row per province/FTZ; legacy keeps each province as its own location, the
+# template publishes the provincial median (station_aggregate).
+source_key: id_pertamina_pengumuman_non_subsidi
+module: eap.southeast_asia.indonesia.pertamina
+function: fetch_id_pertamina_pengumuman
+url: https://www.pertamina.com/pengumuman
+fallback_date: 2023-07-31
+priority: 20
+cadence: irregular
+carry_forward: true
+station_aggregate: {stat: median, trim: none, min_stations: 5, max_dispersion: 0.25}
+station_type: region
+currency: IDR
+
+products:
+  "Pertalite":
+    series_key: pertalite
+    label: "Pertalite"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Pertamax":
+    series_key: pertamax
+    label: "Pertamax"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Pertamax Turbo":
+    series_key: pertamax_turbo
+    label: "Pertamax Turbo"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Pertamax Green 95":
+    series_key: pertamax_green_95
+    label: "Pertamax Green 95"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Pertamax di Pertashop":
+    series_key: pertamax_di_pertashop
+    label: "Pertamax di Pertashop"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Dexlite":
+    series_key: dexlite
+    label: "Dexlite"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Pertamina Dex":
+    series_key: pertamina_dex
+    label: "Pertamina Dex"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Biosolar":
+    series_key: biosolar
+    label: "Biosolar"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Biosolar Non-Subsidi":
+    series_key: biosolar_non_subsidi
+    label: "Biosolar Non-Subsidi"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular

@@ -1,0 +1,65 @@
+# Philippines DOE Visayas weekly price monitoring. Ported from legacy (source_key
+# ph_doe_visayas_weekly, fallback 2020-01-01, weekly). One row per city; the
+# rows without a city (location 'Visayas') are regional aggregates and are left
+# out of the city median. Legacy drops Philippines 'RON 97' as untracked.
+source_key: ph_doe_visayas_weekly
+module: eap.southeast_asia.philippines.doe_visayas
+function: fetch_ph_doe_visayas
+url: https://doe.gov.ph/site/vfo/articles/group/liquid-fuels
+fallback_date: 2020-01-01
+priority: 20
+cadence: weekly
+carry_forward: false
+station_aggregate: {stat: median, trim: none, min_stations: 5, max_dispersion: 0.25, exclude: [Visayas]}
+station_type: city
+currency: PHP
+
+products:
+  "RON 91":
+    series_key: ron_91
+    label: "RON 91"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "RON 95":
+    series_key: ron_95
+    label: "RON 95"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "RON 100":
+    series_key: ron_100
+    label: "RON 100"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "RON 97":
+    series_key: ron_97
+    label: "RON 97"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: premium
+  "Diesel":
+    series_key: diesel
+    label: "Diesel"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel Plus":
+    series_key: diesel_plus
+    label: "Diesel Plus"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Kerosene":
+    series_key: kerosene
+    label: "Kerosene"
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true

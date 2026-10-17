@@ -1,0 +1,52 @@
+# Singapore SingStat average retail fuel prices. Ported from legacy (source_key
+# sg_singstat_avg_retail_prices_monthly, fallback 2015-01-01, monthly).
+# LPG is per kg; legacy converts with 0.54 kg/L, i.e. 1/0.54 = 1.851852 L/kg.
+source_key: sg_singstat_avg_retail_prices_monthly
+module: eap.southeast_asia.singapore.singstat
+function: fetch_sg_singstat_avg_retail_prices
+url: https://tablebuilder.singstat.gov.sg/table/TS/M213761
+fallback_date: 2015-01-01
+priority: 10
+cadence: monthly
+carry_forward: false
+currency: SGD
+
+products:
+  "Petrol 92 RON":
+    series_key: petrol_92_ron
+    label: "Petrol 92 RON"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+  "Petrol 95 RON":
+    series_key: petrol_95_ron
+    label: "Petrol 95 RON"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Petrol 98 RON":
+    series_key: petrol_98_ron
+    label: "Petrol 98 RON"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 98
+  "Diesel":
+    series_key: diesel
+    label: "Diesel"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "LPG":
+    series_key: lpg
+    label: "LPG"
+    fuel_family: lpg
+    unit: kilogram
+    density_l_per_kg: 1.851852  # legacy 0.54 kg/L
+    include_in_build: true

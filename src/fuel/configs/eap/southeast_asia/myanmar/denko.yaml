@@ -1,0 +1,39 @@
+# Myanmar Denko all-station daily rates (Playwright). Ported from legacy
+# (source_key mm_denko_station_daily, fallback 2025-01-01, daily, full_refresh).
+# One row per station (town); legacy keeps each as its own location, the
+# template publishes the robust station median.
+source_key: mm_denko_station_daily
+module: eap.southeast_asia.myanmar.denko
+function: fetch_myanmar_denko
+url: https://denkomyanmar.com/all-denko-station-daily-fuel-rates/
+fallback_date: 2025-01-01
+priority: 10
+cadence: daily
+carry_forward: true
+full_refresh: true
+station_aggregate: {stat: median, trim: mad, k: 3, min_stations: 5, max_dispersion: 0.25}
+station_type: station
+currency: MMK
+
+products:
+  "Octane 92":
+    series_key: octane_92
+    label: "Octane 92"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Octane 95":
+    series_key: octane_95
+    label: "Octane 95"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Diesel":
+    series_key: diesel
+    label: "Diesel"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular

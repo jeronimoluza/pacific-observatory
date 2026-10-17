@@ -1,0 +1,46 @@
+# Malaysia MOF weekly petroleum retail prices. Ported from legacy (source_key
+# my_mof_weekly_petroleum, fallback 2023-01-01, weekly). State-controlled.
+# Legacy parses the location out of the product name (_my_loc) and keeps East
+# Malaysia as its own location; the template has one national series per
+# product, so East Malaysia diesel is kept raw but out of the build.
+source_key: my_mof_weekly_petroleum
+module: eap.southeast_asia.malaysia.mof
+function: fetch_malaysia_mof
+url: https://www.mof.gov.my/portal/en/news/press-release/retail-price
+fallback_date: 2023-01-01
+priority: 20
+cadence: weekly
+carry_forward: true
+currency: MYR
+
+products:
+  "RON95":
+    series_key: ron95
+    label: "RON95"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "RON97":
+    series_key: ron97
+    label: "RON97"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 97
+  "Diesel (Peninsular Malaysia)":
+    series_key: diesel
+    label: "Diesel"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel (East Malaysia)":
+    series_key: diesel_east_malaysia
+    label: "Diesel (East Malaysia)"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: false
+    grade: regular

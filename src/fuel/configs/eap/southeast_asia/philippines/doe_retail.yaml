@@ -1,0 +1,56 @@
+# Philippines DOE retail pump prices (NCR). Ported from legacy (source_key
+# ph_doe_retail_pump_prices, fallback 2024-01-01, cadence manual -> disabled).
+source_key: ph_doe_retail_pump_prices
+module: eap.southeast_asia.philippines.doe_retail
+function: fetch_philippines_doe
+url: https://doe.gov.ph/site/vfo/articles/group/liquid-fuels
+enabled: false
+disabled_reason: "Legacy cadence 'manual': the PDF scraper is stale since 2025-09-08 and needs manual review. Ported as-is with its NCR history."
+fallback_date: 2024-01-01
+priority: 10
+cadence: irregular
+carry_forward: false
+currency: PHP
+
+products:
+  "RON 91":
+    series_key: ron_91
+    label: "RON 91"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "RON 95":
+    series_key: ron_95
+    label: "RON 95"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "RON 97/100":
+    series_key: ron_97_100
+    label: "RON 97/100"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Diesel":
+    series_key: diesel
+    label: "Diesel"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel Plus":
+    series_key: diesel_plus
+    label: "Diesel Plus"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Kerosene":
+    series_key: kerosene
+    label: "Kerosene"
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
