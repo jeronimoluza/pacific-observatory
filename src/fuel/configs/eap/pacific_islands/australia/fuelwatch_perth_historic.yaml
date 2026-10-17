@@ -1,0 +1,31 @@
+# Australia FuelWatch WA (Perth) historic monthly CSV. Ported from legacy
+# pacific-observatory (source_key au_fuelwatch_perth_daily_historic, FETCHER_REGISTRY
+# fallback 2026-01-01, cadence "manual" -> irregular here).
+# Disabled: manual one-off backfill in legacy (hardcoded to the 03-2026 file). Its
+# rows carry source_key au_fuelwatch_perth_daily and were already merged into that
+# source's observations, so there is no separate legacy data to move.
+source_key: au_fuelwatch_perth_daily_historic
+module: eap.pacific_islands.australia.fuelwatch_perth_historic
+function: fetch_au_fuelwatch_historic_csv
+url: https://www.fuelwatch.wa.gov.au/retail/historic
+fallback_date: 2026-01-01
+priority: 10
+enabled: false
+cadence: irregular
+carry_forward: false
+currency: AUD
+
+products:
+  "Unleaded":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel

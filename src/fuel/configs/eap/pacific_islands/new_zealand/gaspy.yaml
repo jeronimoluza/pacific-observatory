@@ -1,0 +1,45 @@
+# New Zealand Gaspy daily national average prices. Ported from legacy
+# pacific-observatory (source_key nz_gaspy_stats_daily, FETCHER_REGISTRY fallback
+# 2024-01-01, cadence daily). Not state-controlled in legacy, hence carry_forward
+# false. Legacy renames Unleaded 91/95 to MBIE's Regular Petrol / Premium Petrol
+# 95R; the shared series_key does the same here. Priority 20: MBIE wins shared days.
+# The stats endpoint serves only current averages.
+source_key: nz_gaspy_stats_daily
+module: eap.pacific_islands.new_zealand.gaspy
+function: fetch_nz_gaspy_stats_daily
+url: https://www.gaspy.nz/stats.html
+fallback_date: 2024-01-01
+priority: 20
+cadence: daily
+carry_forward: false
+history_irrecoverable: true
+currency: NZD
+
+products:
+  "Unleaded 91":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Unleaded 95":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_95
+  "Unleaded 98":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 98
+    series_key: gasoline_98
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel

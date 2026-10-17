@@ -155,6 +155,8 @@ def _load_source_frame(entry: dict, data_dir: Path = DATA_DIR) -> pd.DataFrame:
     if df.empty:
         return df
 
+    # A row without a product name cannot be mapped (NSW FuelCheck has ~4k).
+    df = df[df["fuel_product"].notna()]
     raw_products = {str(v).strip() for v in df["fuel_product"].dropna().unique()}
     mapped_products = set(entry["products"].keys())
     missing = sorted(raw_products - mapped_products)
