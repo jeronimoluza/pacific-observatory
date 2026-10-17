@@ -1,0 +1,27 @@
+# Timor-Leste ANP daily fuel price posts (USD/L).
+# Ported from legacy pacific-observatory (source_key tl_anp_daily_fuel_price,
+# FETCHER_REGISTRY fallback 2020-01-01, cadence daily). Legacy does not treat Timor-Leste
+# as state-controlled (no forward fill), hence no carry_forward.
+source_key: tl_anp_daily_fuel_price
+module: eap.southeast_asia.timor_leste.anp
+function: fetch_timor_anp
+url: https://www.anp.tl/category/daily-fuel-price/
+fallback_date: 2020-01-01
+priority: 10
+cadence: daily
+carry_forward: false
+currency: USD
+
+products:
+  "Petrol":
+    series_key: petrol
+    label: Petrol
+    fuel_family: gasoline
+    unit: liter
+    grade: regular
+  "Diesel":
+    series_key: diesel
+    label: Diesel
+    fuel_family: diesel
+    unit: liter
+    grade: regular

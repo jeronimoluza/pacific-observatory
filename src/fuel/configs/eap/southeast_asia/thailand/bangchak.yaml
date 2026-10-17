@@ -1,0 +1,60 @@
+# Bangchak historical retail oil prices (Thailand). Ported from legacy pacific-observatory
+# (source_key th_bangchak_retail_history, FETCHER_REGISTRY fallback 2015-01-01, cadence irregular).
+# Legacy does not treat Thailand as state-controlled (no forward fill), hence no carry_forward.
+# series_key = legacy fuel_product (+ location when not National): the legacy dedup key.
+source_key: th_bangchak_retail_history
+module: eap.southeast_asia.thailand.bangchak
+function: fetch_th_bangchak_retail_history
+url: https://www.bangchak.co.th/en/oilprice/historical
+fallback_date: 2015-01-01
+priority: 10
+cadence: irregular
+carry_forward: false
+currency: THB
+
+products:
+  "E20":
+    series_key: e20
+    label: E20
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+  "E85":
+    series_key: e85
+    label: E85
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+  "Gasohol 91":
+    series_key: gasohol_91
+    label: Gasohol 91
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 91
+  "Gasohol 95":
+    series_key: gasohol_95
+    label: Gasohol 95
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 95
+  "Hi Diesel S":
+    series_key: hi_diesel_s
+    label: Hi Diesel S
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Hi Premium 97":
+    series_key: hi_premium_97
+    label: Hi Premium 97
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 97
+  "Hi Premium Diesel S":
+    series_key: hi_premium_diesel_s
+    label: Hi Premium Diesel S
+    fuel_family: diesel
+    unit: liter
+    grade: premium

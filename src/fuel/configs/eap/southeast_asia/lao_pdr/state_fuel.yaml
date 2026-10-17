@@ -1,0 +1,37 @@
+# Lao State Fuel Company provincial retail prices (18 provinces, averaged by the build).
+# Ported from legacy pacific-observatory (source_key lao_state_fuel_oil_prices,
+# FETCHER_REGISTRY fallback 2023-01-01, cadence irregular). Legacy treats Lao PDR as
+# state-controlled (forward-fill until the next change), hence carry_forward with
+# publication: announcement. Legacy keeps the provinces and the KPL national notices as
+# separate locations, so KPL has its own series keys (kpl.yaml).
+source_key: lao_state_fuel_oil_prices
+module: eap.southeast_asia.lao_pdr.state_fuel
+function: fetch_lao
+url: https://www.laostatefuel.com/en/gas-price.html
+fallback_date: 2023-01-01
+priority: 10
+cadence: irregular
+carry_forward: true
+publication: announcement
+currency: LAK
+
+products:
+  "Gasoline 95":
+    series_key: gasoline_95
+    label: Gasoline 95 (provincial avg)
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95
+  "Regular Gasoline":
+    series_key: regular_gasoline
+    label: Regular Gasoline (provincial avg)
+    fuel_family: gasoline
+    unit: liter
+    grade: regular
+  "Diesel":
+    series_key: diesel
+    label: Diesel (provincial avg)
+    fuel_family: diesel
+    unit: liter
+    grade: regular

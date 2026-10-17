@@ -1,0 +1,54 @@
+# Thailand EPPO Table P04, monthly retail petroleum prices (xls, full refresh).
+# Ported from legacy pacific-observatory (source_key th_eppo_p04_monthly,
+# FETCHER_REGISTRY fallback 2020-01-01, cadence monthly, full_refresh). Not state-controlled
+# in legacy, hence no carry_forward. Kerosene / Diesel (LSD) / Gasohol E20 / E85 are emitted
+# by the fetcher but not yet seen; Gasoline 91 and Gasohol E10 are unmapped in legacy too.
+source_key: th_eppo_p04_monthly
+module: eap.southeast_asia.thailand.eppo_p04
+function: fetch_th_eppo_p04
+url: https://www.eppo.go.th/index.php/en/en-energystatistics/petroleum-statistic
+fallback_date: 2020-01-01
+priority: 10
+cadence: monthly
+full_refresh: true
+carry_forward: false
+currency: THB
+
+products:
+  "Gasoline 95":
+    series_key: gasoline_95
+    label: Gasoline 95
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95
+  "Diesel (HSD)":
+    series_key: diesel_hsd
+    label: Diesel (HSD)
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Diesel (LSD)":
+    series_key: diesel_lsd
+    label: Diesel (LSD)
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Kerosene":
+    series_key: kerosene
+    label: Kerosene
+    fuel_family: kerosene
+    unit: liter
+    grade: regular
+  "Gasohol E20":
+    series_key: gasohol_e20
+    label: Gasohol E20
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+  "Gasohol E85":
+    series_key: gasohol_e85
+    label: Gasohol E85
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol

@@ -1,0 +1,51 @@
+# Vietnam Ministry of Industry and Trade fuel prices, 2025 daily archive (country "Viet Nam"
+# in legacy data dir viet_nam/). Legacy has no registered fetcher for it: the data is kept
+# as-is and the wrapper returns nothing, so collect never adds rows.
+# Legacy normalizes its product names to Petrolimex's (_VN_PRODUCT_NORM) and dedups the
+# two sources on the same date; here it shares the Petrolimex series_key and loses to
+# Petrolimex by priority (20 vs 10). Legacy only forward-fills registered sources, so this
+# one is not carried forward. Mazut is VND/kg.
+source_key: vn_moit_fuel
+module: eap.southeast_asia.vietnam.moit
+function: fetch_vn_moit
+url: https://moit.gov.vn
+fallback_date: 2025-01-01
+priority: 20
+cadence: daily
+carry_forward: false
+history_irrecoverable: true
+currency: VND
+
+products:
+  "RON95-III":
+    series_key: ron95_iii
+    label: RON 95-III
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95
+  "E5RON92":
+    series_key: e5_ron92_ii
+    label: E5 RON 92-II
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 92
+  "Diesel 0.05S":
+    series_key: diesel_005s_ii
+    label: Diesel 0.05S-II
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Mazut 180CST 3.5S":
+    series_key: mazut_n02b_35s
+    label: Mazut N02B (3.5S)
+    fuel_family: fuel_oil
+    unit: kilogram
+    grade: regular
+  "Kerosene":
+    series_key: kerosene_2k
+    label: Kerosene 2-K
+    fuel_family: kerosene
+    unit: liter
+    grade: regular

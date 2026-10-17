@@ -1,0 +1,21 @@
+# Thailand EPPO NGV retail price, Bangkok, THB/kg (monthly HTML table).
+# Ported from legacy pacific-observatory (source_key th_eppo_ngv_bangkok_2025,
+# FETCHER_REGISTRY fallback 2023-01-01, cadence irregular). Not state-controlled in legacy.
+# Kept per kg as in legacy (cng family is not converted to litres).
+source_key: th_eppo_ngv_bangkok_2025
+module: eap.southeast_asia.thailand.eppo_ngv
+function: fetch_thailand_eppo_ngv
+url: https://www.eppo.go.th/index.php/en/en-energystatistics/petroleum-statistic
+fallback_date: 2023-01-01
+priority: 10
+cadence: irregular
+carry_forward: false
+currency: THB
+
+products:
+  "NGV retail price":
+    series_key: ngv_bangkok
+    label: NGV (Bangkok)
+    fuel_family: ngv
+    unit: kilogram
+    grade: regular

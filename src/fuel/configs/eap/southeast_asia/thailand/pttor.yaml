@@ -1,0 +1,69 @@
+# OR (PTT Oil & Retail) current oil prices, Bangkok board via SOAP (daily snapshot).
+# Ported from legacy pacific-observatory (source_key th_or_pttor_current_oil_price_daily,
+# FETCHER_REGISTRY fallback 2024-01-01, cadence daily). Not state-controlled in legacy.
+# Rows are Bangkok, a separate location from the National EPPO/Bangchak series in legacy,
+# so the series keys carry a _bangkok suffix and never overlap them.
+source_key: th_or_pttor_current_oil_price_daily
+module: eap.southeast_asia.thailand.pttor
+function: fetch_th_or_pttor_current_oil_price
+url: https://www.pttor.com/en/for-driver
+fallback_date: 2024-01-01
+priority: 10
+cadence: daily
+carry_forward: false
+history_irrecoverable: true
+currency: THB
+
+products:
+  "Diesel":
+    series_key: diesel_bangkok
+    label: Diesel (Bangkok)
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Premium Diesel":
+    series_key: premium_diesel_bangkok
+    label: Premium Diesel (Bangkok)
+    fuel_family: diesel
+    unit: liter
+    grade: premium
+  "Gasoline 95":
+    series_key: gasoline_95_bangkok
+    label: Gasoline 95 (Bangkok)
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95
+  "Gasohol 95":
+    series_key: gasohol_95_bangkok
+    label: Gasohol 95 (Bangkok)
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 95
+  "Super Power GSH95":
+    series_key: super_power_gsh95_bangkok
+    label: Super Power GSH95 (Bangkok)
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95
+  "Gasohol 91":
+    series_key: gasohol_91_bangkok
+    label: Gasohol 91 (Bangkok)
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 91
+  "Gasohol E20":
+    series_key: gasohol_e20_bangkok
+    label: Gasohol E20 (Bangkok)
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+  "Gasohol E85":
+    series_key: gasohol_e85_bangkok
+    label: Gasohol E85 (Bangkok)
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol

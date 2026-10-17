@@ -1,0 +1,35 @@
+# Cambodia Ministry of Commerce fuel price notices (2025 archive).
+# Ported from legacy pacific-observatory (source_key kh_moc_fuel_notices,
+# FETCHER_REGISTRY fallback 2024-01-01, cadence manual). State-controlled in legacy,
+# hence carry_forward with publication: announcement. Shares series keys with PTT
+# (ptt.yaml) and loses to it by priority, as legacy keeps the source with the latest
+# observation (PTT).
+source_key: kh_moc_fuel_notices
+module: eap.southeast_asia.cambodia.moc
+function: fetch_cambodia_moc
+url: https://moc.gov.kh/en-US/news/
+enabled: false
+disabled_reason: >-
+  Legacy cadence manual: the moc.gov.kh GraphQL endpoint answers 403 without a
+  Bearer token, so the fetcher cannot run unattended. Note that a disabled source
+  is also skipped by the build, so its 2025 archive is not in Cambodia outputs.
+fallback_date: 2024-01-01
+priority: 20
+cadence: irregular
+carry_forward: true
+publication: announcement
+currency: KHR
+
+products:
+  "Regular Gasoline":
+    series_key: regular
+    label: Regular Gasoline (MOC notice)
+    fuel_family: gasoline
+    unit: liter
+    grade: regular
+  "Diesel":
+    series_key: diesel
+    label: Diesel (MOC notice)
+    fuel_family: diesel
+    unit: liter
+    grade: regular

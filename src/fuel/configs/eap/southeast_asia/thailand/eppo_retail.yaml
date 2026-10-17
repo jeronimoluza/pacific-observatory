@@ -1,0 +1,73 @@
+# Thailand EPPO retail fuel prices, daily JSON feed (PTT first, other brands as fallback).
+# Ported from legacy pacific-observatory (source_key th_eppo_retail_daily,
+# FETCHER_REGISTRY fallback 2024-01-01, cadence daily). Thailand is not state-controlled
+# in legacy, hence no carry_forward. Diesel B10 is emitted by the fetcher but not yet seen.
+source_key: th_eppo_retail_daily
+module: eap.southeast_asia.thailand.eppo_retail
+function: fetch_th_eppo_retail_daily
+url: http://www.eppo.go.th/petro/price/index.html
+fallback_date: 2024-01-01
+priority: 10
+cadence: daily
+carry_forward: false
+history_irrecoverable: true
+currency: THB
+
+products:
+  "Benzine 95":
+    series_key: benzine_95
+    label: Benzine 95
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95
+  "Gasohol 95":
+    series_key: gasohol_95
+    label: Gasohol 95
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 95
+  "Gasohol 91":
+    series_key: gasohol_91
+    label: Gasohol 91
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 91
+  "Gasohol E20":
+    series_key: gasohol_e20
+    label: Gasohol E20
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+  "Gasohol E85":
+    series_key: gasohol_e85
+    label: Gasohol E85
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+  "Diesel B7":
+    series_key: diesel_b7
+    label: Diesel B7
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Diesel B10":
+    series_key: diesel_b10
+    label: Diesel B10
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Diesel B20":
+    series_key: diesel_b20
+    label: Diesel B20
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Premium Diesel":
+    series_key: premium_diesel
+    label: Premium Diesel
+    fuel_family: diesel
+    unit: liter
+    grade: premium
