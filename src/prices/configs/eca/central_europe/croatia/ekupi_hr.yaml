@@ -6,6 +6,8 @@ spider: ekupi_hr
 url: https://ekupi.hr/
 language: hr
 currency: EUR
+# Pre-2023 pages priced in kuna; CC rows labelled EUR carry HRK numbers.
+relabel_currency: [{from: EUR, to: HRK, before: "2023-01-01"}]
 cadence: weekly
 channel: dept-store
 archive_prefix: "ekupi.hr/"
