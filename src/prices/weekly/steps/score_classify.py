@@ -1,6 +1,6 @@
 """Step `score_classify` (W42 runbook step 11, was ~/scratch/w42_score/chain.sh + w42_classify/check.py).
 
-1. snapshot: `_hierlex_pred` and `enrich/cache` copied to the 5TB with sha256 per
+1. snapshot: `_hierlex_pred` and `enrich/cache` copied to the 5TB (or --snapshot-root) with sha256 per
    file; refuses when the snapshot target exists and differs (kept when it matches).
 2. score from this week's delta store (append-only; PRICES_EMBED_STORE_DIR is set
    for that process only). Skipped only when the embed step found nothing to embed.
@@ -317,7 +317,7 @@ def run(args, countries: list[str] | None) -> int:
     status = Status(args.week_dir, "score_classify")
     cfg = embed_stores.load(args.week)
     _, _, pred, cache, _ = _paths()
-    snaps = args.backup_mount / "po_snapshots" / REPO_ROOT.name / args.week
+    snaps = (args.snapshot_root or args.backup_mount / "po_snapshots") / REPO_ROOT.name / args.week
     _common.say(status, f"snapshot pred + cache to {snaps}")
     snapshot(pred, snaps / "pred-prescore")
     snapshot(cache, snaps / "cache-preclassify")
@@ -373,6 +373,8 @@ def main() -> int:
     ap = _common.parser("score_classify")
     ap.add_argument("--backup-mount", type=Path, default=Path("/mnt/backup5tb"))
     ap.add_argument("--snapshot", type=Path, default=None)
+    # Default <backup-mount>/po_snapshots; a tree that must not write to the 5TB passes a dir on /.
+    ap.add_argument("--snapshot-root", type=Path, default=None)
     ap.add_argument("--only", default=None)
     args = ap.parse_args()
     countries = _common.countries(args.countries)

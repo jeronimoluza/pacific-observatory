@@ -29,7 +29,8 @@ ROW_KEYS = (
     "drift",
     "extra",
 )
-LOGS_ROOT = Path.home() / "po" / "logs" / "weekly"
+# PO_GRAPH_LOGS_ROOT observes a tree run with its own `prices weekly --logs-root`.
+LOGS_ROOT = Path(os.environ.get("PO_GRAPH_LOGS_ROOT") or Path.home() / "po" / "logs" / "weekly")
 
 
 def week() -> str:
