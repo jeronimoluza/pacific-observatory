@@ -6,6 +6,8 @@ spider: ebag_bg
 url: https://www.ebag.bg/
 language: bg
 currency: EUR
+# Pre-2026 pages priced in BGN; the CC fetcher stamped the declared EUR on them.
+relabel_currency: [{from: EUR, to: BGN, before: "2026-01-01"}]
 cadence: weekly
 channel: supermarket
 archive_prefix: "www.ebag.bg/"

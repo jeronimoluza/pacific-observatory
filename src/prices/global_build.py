@@ -255,6 +255,32 @@ def rtcal_cmd(out: Path):
     rtcal.main(["run", "--label-batch", out.name], standalone_mode=False)
 
 
+def _fill_local(fills: pd.DataFrame, local: pd.Series) -> pd.DataFrame:
+    """Each fill in its country's currency, at Stage B's rate for that month.
+
+    `local` is the country's currency as its trusted rows carry it (Stage B
+    reprices every row into one), and the rate is `stage_b_fx.month_rates`, the
+    same monthly mean the observed rows were converted with. A month whose rate
+    is missing or `fx_suspect` keeps USD only rather than an untrusted figure.
+    """
+    from prices.fx import attach as fx
+    from prices.stage_b_fx import month_rates
+
+    cur = fills["country"].map(local).map(fx.normalize_currency_safe)
+    pm = pd.DataFrame({"currency": cur, "month": fills["period"]}).dropna()
+    rates = month_rates(pm, "USD")
+    key = pd.MultiIndex.from_arrays([cur, fills["period"]])
+    rate = pd.Series(rates["fx_rate"].reindex(key).to_numpy(), index=fills.index, dtype=float)
+    bad = pd.Series(rates["fx_suspect"].reindex(key).to_numpy(), index=fills.index)
+    bad = bad.astype("boolean").fillna(True).astype(bool)
+    usd = cur.eq("USD")
+    rate[usd], bad[usd] = 1.0, False
+    rate = rate.where(~bad & rate.gt(0))
+    return pd.DataFrame(
+        {"currency": cur.where(rate.notna()), "fx_rate": rate, "unit_value_local": fills["usd"] * rate}
+    )
+
+
 @cli.command("merge")
 @click.option("--out", type=click.Path(path_type=Path), required=True)
 def merge(out: Path):
@@ -276,16 +302,29 @@ def merge(out: Path):
     ]:
         schema = schema.append(pa.field(name, typ))
     n_in = n_drop = 0
+    currencies = []
     with pq.ParquetWriter(out / RTCAL_OBS, schema, compression="zstd") as w:
         for batch in src.iter_batches(batch_size=BATCH_ROWS):
             df = batch.to_pandas()
             key = zip(df["country"], df["coicop_code"], df["standard_unit"], df["month"])
             keep = np.fromiter((k not in bad for k in key), bool, len(df))
             n_in, n_drop = n_in + len(df), n_drop + int((~keep).sum())
+            currencies.append(df.groupby(["country", "currency"]).size())
             df = df[keep].assign(imputed=False, rtcal_prob_within_25pct=np.nan, rtcal_missingness_type=None)
             w.write_table(pa.Table.from_pandas(df, schema=schema, preserve_index=False))
+        counts = pd.concat(currencies).groupby(level=[0, 1]).sum()
+        local = counts.sort_values().groupby(level=0).tail(1).reset_index(level=1)["currency"]
+        lc = _fill_local(fills, local)
         f = pd.DataFrame(
             {
+                # One synthetic id per imputed series, never a product's hash.
+                "input_hash": "rtcal_v1:" + fills["country"] + "|" + fills["coicop_code"]
+                + "|" + fills["standard_unit"],
+                "source": "rtcal_v1",
+                "currency": lc["currency"],
+                "currency_quoted": lc["currency"],
+                "fx_rate": lc["fx_rate"],
+                "unit_value_local": lc["unit_value_local"],
                 "country": fills["country"],
                 "coicop_code": fills["coicop_code"],
                 "standard_unit": fills["standard_unit"],
@@ -307,6 +346,10 @@ def merge(out: Path):
     click.echo(
         f"trusted {n_in:,} - {n_drop:,} in {len(pruned):,} pruned cells + {len(fills):,} fills = {n_out:,}"
     )
+    no_fx = lc["fx_rate"].isna()
+    click.echo(f"fills in local currency: {int((~no_fx).sum()):,}; USD only (no or suspect rate): {int(no_fx.sum()):,}")
+    for country, n in fills.loc[no_fx, "country"].value_counts().head(10).items():
+        click.echo(f"  {country}: {n:,} USD-only fills")
 
 
 if __name__ == "__main__":

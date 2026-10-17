@@ -20,11 +20,15 @@ from __future__ import annotations
 
 import pandas as pd
 
+from prices.fx.cache import SOURCE_DERIVED_EUR_PEG
+
 #: ISO code -> units of that currency per 1 EUR, fixed by law.
 EUR_PEGS: dict[str, float] = {
     "XPF": 119.332,
     "XOF": 655.957,
     "XAF": 655.957,
+    "BGN": 1.95583,
+    "HRK": 7.53450,
 }
 
 #: Pegs we actually override the provider on. XOF/XAF match the provider
@@ -57,3 +61,35 @@ def derive_eur_pegged(
     if not frames:
         return pd.DataFrame(columns=["currency", "date", "rate_usd_to_local"])
     return pd.concat(frames, ignore_index=True)
+
+
+#: Currencies the euro REPLACED. The provider stops serving them at the
+#: changeover and the cached history strays off the peg (BGN: a legacy
+#: two-provider mix, 1.924-1.995 per EUR, ending 2026-09). Rows still arrive in
+#: them (pre-changeover history, archived pages, shops still quoting leva), so
+#: every read replaces their cached rates with EUR x peg over the whole EUR
+#: series. The lev was fixed at 1.95583 per EUR from 1999, so this is exact.
+REPLACED_BY_EUR: tuple[str, ...] = ("BGN", "HRK")
+
+#: A replaced code that FLOATED until its changeover keeps its cached market
+#: rates before that day and takes EUR x peg from it. The kuna ran 7.08-7.81
+#: per EUR (2006-2022) and was fixed at 7.53450 on 2023-01-01; the cache has
+#: no 2023 HRK rows and strays 7.43-7.58 after.
+EURO_FROM: dict[str, str] = {"HRK": "2023-01-01"}
+
+
+def peg_replaced(cache: pd.DataFrame) -> pd.DataFrame:
+    """``cache`` with each :data:`REPLACED_BY_EUR` code's rows swapped for
+    EUR x peg on every cached EUR date (from :data:`EURO_FROM` where set)."""
+    eur = cache[cache["currency"].eq("EUR")]
+    if eur.empty:
+        return cache
+    derived = derive_eur_pegged(eur, codes=REPLACED_BY_EUR)
+    derived["source"] = SOURCE_DERIVED_EUR_PEG
+    drop = cache["currency"].isin(REPLACED_BY_EUR)
+    for code, start in EURO_FROM.items():
+        cut = pd.Timestamp(start)
+        drop &= ~(cache["currency"].eq(code) & (cache["date"] < cut))
+        derived = derived[~(derived["currency"].eq(code) & (derived["date"] < cut))]
+    kept = cache[~drop]
+    return pd.concat([kept, derived[kept.columns]], ignore_index=True)

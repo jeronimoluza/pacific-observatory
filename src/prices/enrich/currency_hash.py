@@ -31,6 +31,12 @@ loses its `from` rows whose price equals one of the same product's `to` prices
 (`drop_relabeled`): that number is the seller's `to` price mislabelled, and
 splitting it off would make a second product at the wrong scale (999_md).
 
+In a country whose currency is the euro, a product's rows in a currency the euro
+REPLACED (`pegs.REPLACED_BY_EUR`: BGN, HRK) are first converted to EUR at the
+fixed peg (`euroize_shard`), and every EUR row takes the hash its own fields
+give, so a product's lev or kuna history and its euro prices are ONE series under
+the key it had before any split. A real mix (USD next to EUR) still splits.
+
 A seller registered under two source names (`source_canonical`) sits in two
 shards and is split per shard, not across both.
 """
@@ -48,6 +54,7 @@ import pyarrow.parquet as pq
 
 from core.config import load_countries
 from prices.fx.aliases import normalize_currency_safe
+from prices.fx.pegs import EUR_PEGS, REPLACED_BY_EUR
 from prices.enrich.versioning import input_hash
 
 logger = logging.getLogger(__name__)
@@ -113,6 +120,7 @@ def split_shard(path: Path, country: str) -> int:
     rule = _relabel_rules().get((country, path.stem))
     if rule:
         drop_relabeled(path, *rule)
+    euroize_shard(path, country)
     t = pq.read_table(path, columns=["input_hash", "currency"])
     pairs = t.group_by(["input_hash", "currency"]).aggregate([([], "count_all")])
     hashes = pairs["input_hash"].to_pylist()
@@ -143,6 +151,51 @@ def split_shard(path: Path, country: str) -> int:
         len(mapping),
     )
     return n_split
+
+
+def euroize_shard(path: Path, country: str) -> int:
+    """Convert `path`'s rows in a currency the euro replaced to EUR at the peg,
+    in place, when `country` is in EUR; give every EUR row the hash its fields
+    give. Returns the rows converted (0 leaves the file untouched)."""
+    if _home_currency().get(country) != "EUR":
+        return 0
+    codes = pc.unique(pq.read_table(path, columns=["currency"])["currency"])
+    if not any(_norm(c) in REPLACED_BY_EUR for c in codes.to_pylist()):
+        return 0
+    from prices.enrich.shards import input_hashes
+    from prices.enrich.stages.prepare import parse_price
+
+    t = pq.read_table(path)
+    df = t.to_pandas()
+    norm = df["currency"].map(_norm)
+    n_conv = 0
+    for code in REPLACED_BY_EUR:
+        rows = norm.index[norm.eq(code)]
+        value = [parse_price(p, c) for p, c in zip(df.loc[rows, "price"], df.loc[rows, "currency"])]
+        ok = [i for i, v in zip(rows, value) if v is not None]
+        df.loc[ok, "price"] = [
+            str(round(v / EUR_PEGS[code], 6)) for v in value if v is not None
+        ]
+        df.loc[ok, "currency"] = "EUR"
+        norm.loc[ok] = "EUR"
+        n_conv += len(ok)
+    eur = norm.eq("EUR")
+    old = df.loc[eur, "input_hash"]
+    df.loc[eur, "input_hash"] = input_hashes(df.loc[eur]).to_numpy()
+    moved = old.ne(df.loc[eur, "input_hash"])
+    tmp = path.with_suffix(".euroize.tmp")
+    pq.write_table(
+        pa.Table.from_pandas(df, schema=t.schema, preserve_index=False),
+        tmp,
+        compression="zstd",
+    )
+    os.replace(tmp, path)
+    logger.info(
+        "[currency_hash] %s: %d rows converted to EUR at the peg; %d EUR rows"
+        " (%d keys) back on their own hash",
+        path.name, n_conv, int(moved.sum()), old[moved].nunique(),
+    )
+    return n_conv
 
 
 def remap(hashes: list, currencies: list, counts: list, country: str) -> dict:

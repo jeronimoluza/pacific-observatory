@@ -1,0 +1,3 @@
+# Every unit of every region (regions.yaml countries and config folders such as `pacific`).
+# Used by `po graph status --countries global` for the global text build (mvp/global-text).
+regions: [eap, eca, lac, menaap, sar, ssa]

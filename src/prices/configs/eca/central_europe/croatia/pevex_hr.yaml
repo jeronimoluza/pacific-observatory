@@ -7,6 +7,8 @@ spider: pevex_hr
 url: https://www.pevex.hr/
 language: hr
 currency: EUR
+# Pre-2023 pages priced in kuna; CC rows labelled EUR carry HRK numbers.
+relabel_currency: [{from: EUR, to: HRK, before: "2023-01-01"}]
 cadence: weekly
 archive_prefix: "www.pevex.hr/"
 notes: |

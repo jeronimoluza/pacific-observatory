@@ -5,6 +5,8 @@ coicop_classification: classifier
 spider: konzum_hr
 url: https://www.konzum.hr/kreni-u-kupnju
 language: hr
+# Pre-2023 pages priced in kuna; CC rows labelled EUR carry HRK numbers.
+relabel_currency: [{from: EUR, to: HRK, before: "2023-01-01"}]
 cadence: weekly
 channel: supermarket
 archive_prefix: "www.konzum.hr/web/products/"

@@ -64,6 +64,10 @@ class PriceSourceConfig(BaseModel):
     # labelled the same number `from`. `concatenate` drops a `from` row that
     # equals one of the same product's `to` prices, before the currency split.
     relabel_same_number: dict[str, str] | None = None
+    # Opt-in `[{from: EUR, to: BGN, before: 2026-01-01}]` (or `since:`): rows
+    # labelled `from` and dated in that range carry `to` numbers; `concatenate`
+    # relabels them (`prices.enrich.currency_relabel`). Rows on disk stay as is.
+    relabel_currency: list[dict[str, str | date]] | None = None
     inactive_reason: str | None = None
 
     # Declared in prices, enforced only in the `fuel` pipeline

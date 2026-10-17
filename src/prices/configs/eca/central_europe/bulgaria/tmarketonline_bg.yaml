@@ -5,6 +5,8 @@ coicop_classification: classifier
 spider: tmarketonline_bg
 url: https://tmarketonline.bg/
 language: bg
+# Pre-2026 pages priced in BGN; the CC fetcher stamped the declared EUR on them.
+relabel_currency: [{from: EUR, to: BGN, before: "2026-01-01"}]
 cadence: weekly
 channel: supermarket
 archive_prefix: "tmarketonline.bg/product/"

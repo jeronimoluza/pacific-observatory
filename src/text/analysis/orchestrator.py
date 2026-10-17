@@ -145,9 +145,6 @@ def process_unit_v2(
     # Subset: subset_condition is a pandas-style "date >= ... and date <= ..."
     subset_start, subset_end = _parse_subset_condition(subset_condition)
 
-    all_topics = load_all_groups("topics")
-    all_actors = load_all_groups("actors")
-
     # Country units write directly to their own cache_dir; aggregate units
     # don't have a cache — they read from constituent countries.
     if level == "country":
@@ -205,14 +202,26 @@ def process_unit_v2(
     if "A_total" in df.columns:
         diagnostics["total_articles"] = int(df["A_total"].sum())
 
-    # Standardize and write outputs.
+    write_unit_outputs(df, name, output_dir, cutoff_start_date, cutoff_end_date, current_tail_start)
+    return diagnostics
+
+
+def write_unit_outputs(
+    df: pd.DataFrame,
+    name: str,
+    output_dir: Path,
+    cutoff_start_date: str | None,
+    cutoff_end_date: str | None,
+    daily_tail_start: str,
+) -> None:
+    """Standardize a unit's source_counts and write its outputs."""
     bundle = standardize_unit(
         source_counts=df,
         cutoff_start=cutoff_start_date,
         cutoff_end=cutoff_end_date,
-        daily_tail_start=current_tail_start,
-        topic_keys=list(all_topics.keys()),
-        actor_keys=list(all_actors.keys()),
+        daily_tail_start=daily_tail_start,
+        topic_keys=list(load_all_groups("topics").keys()),
+        actor_keys=list(load_all_groups("actors").keys()),
     )
     build_outputs(
         e_base=bundle["e_base"],
@@ -221,13 +230,12 @@ def process_unit_v2(
         ug_counts_all=bundle["ug_counts_all"],
         cutoff_start_date=cutoff_start_date,
         cutoff_end_date=cutoff_end_date,
-        daily_tail_start=current_tail_start,
+        daily_tail_start=daily_tail_start,
         country_name=name,
         full_write=True,
         replace_from=None,
         output_dir=output_dir,
     )
-    return diagnostics
 
 
 # ── Helpers ──────────────────────────────────────────────────────────

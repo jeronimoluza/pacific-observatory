@@ -50,7 +50,7 @@ _LATEST_COL = {"euro95": 1, "diesel": 2, "heating_oil": 3, "LPG": 6}
 _COUNTRIES: dict[str, tuple[str, str]] = {
     "AT": ("Austria", "EUR"),
     "BE": ("Belgium", "EUR"),
-    "BG": ("Bulgaria", "BGN"),
+    "BG": ("Bulgaria", "EUR"),
     "CY": ("Cyprus", "EUR"),
     "CZ": ("Czechia", "CZK"),
     "DE": ("Germany", "EUR"),
@@ -76,9 +76,6 @@ _COUNTRIES: dict[str, tuple[str, str]] = {
     "SI": ("Slovenia", "EUR"),
     "SK": ("Slovakia", "EUR"),
 }
-# Bulgaria joined the euro on 2026-01-01 and WOB reports its rate as 1 since;
-# the pipeline keeps BGN (countries.yaml), so convert at the irrevocable rate.
-_EURO_CONVERSION = {"BGN": 1 / 1.95583}
 
 
 @functools.lru_cache(maxsize=1)
@@ -127,8 +124,6 @@ def _row(day, cc: str, product: str, price_eur, rate, currency: str, source_key:
             rate = float(rate)
         except (TypeError, ValueError):
             return None
-        if rate == 1 and currency in _EURO_CONVERSION:
-            rate = _EURO_CONVERSION[currency]
         if not rate > 0 or rate == 1:
             return None
         price = price_eur / rate
