@@ -9,6 +9,8 @@ module: _shared.eca.eurostat_energy
 function: fetch_bg_eurostat_electricity
 url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_pc_204
 language: en
+# The 2026-S1 value was fetched before 6789e33c and stamped BGN; NAC is EUR from 2026-S1.
+relabel_currency: [{from: BGN, to: EUR, since: "2026-01-01"}]
 cadence: biannual
 fallback_date: 2015-01-01
 notes: |

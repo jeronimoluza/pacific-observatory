@@ -69,7 +69,7 @@ import pyarrow.parquet as pq
 import yaml
 
 from prices import cc_config, lineage, partition
-from prices.enrich import config, currency_hash, shards
+from prices.enrich import config, currency_hash, currency_relabel, shards
 
 logger = logging.getLogger(__name__)
 
@@ -569,6 +569,7 @@ def _finalise_shard(
     required-field screen, and write the shard. Returns (written, dropped)."""
     channel = _channel_for(country, source)
     restamp = cc_config.restamped_archive_currencies().get((country, source))
+    relabel = currency_relabel.rules().get((country, source))
     n_rows = n_dropped = 0
     writer = None
     try:
@@ -581,6 +582,8 @@ def _finalise_shard(
             # currency still carry the page's own (wrong) label; re-apply it.
             if restamp:
                 df["currency"] = df["currency"].where(df["origin"] == "live", restamp)
+            if relabel:
+                df = currency_relabel.apply(df, relabel, f"{country}/{source}")
 
             # Back-fill currency for rows that lack it, using the modal currency
             # observed in this source's other rows.
