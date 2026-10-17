@@ -1,4 +1,4 @@
-"""`--countries`: comma-separated slugs, or a panel name from src/configs/panels/."""
+"""`--countries`: comma-separated slugs, a panel name from src/configs/panels/, or `all` (countries.yaml)."""
 
 from __future__ import annotations
 
@@ -40,6 +40,8 @@ def resolve_countries(value: str | None) -> list[str] | None:
     if not value:
         return None
     errors = []
+    if value == "all":
+        return list(load_countries())
     if "," not in value and (PANELS_DIR / f"{value}.yaml").exists():
         pairs = _panel_pairs(value, errors)
     else:
