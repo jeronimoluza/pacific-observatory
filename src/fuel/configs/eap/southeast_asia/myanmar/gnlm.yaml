@@ -1,0 +1,41 @@
+# Myanmar Global New Light reference prices (Yangon). Ported from legacy
+# (source_key mm_gnlm_fuel_reference_prices, fallback 2024-01-01, irregular).
+source_key: mm_gnlm_fuel_reference_prices
+module: eap.southeast_asia.myanmar.gnlm
+function: fetch_myanmar_gnlm
+url: https://www.gnlm.com.mm/
+fallback_date: 2024-01-01
+priority: 20
+cadence: irregular
+carry_forward: true
+currency: MMK
+
+products:
+  "Octane 92":
+    series_key: octane_92
+    label: "Octane 92"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Octane 95":
+    series_key: octane_95
+    label: "Octane 95"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Diesel":
+    series_key: diesel
+    label: "Diesel"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Premium Diesel":
+    series_key: premium_diesel
+    label: "Premium Diesel"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium

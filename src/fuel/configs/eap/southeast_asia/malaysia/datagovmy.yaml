@@ -1,0 +1,38 @@
+# Malaysia data.gov.my weekly fuel prices. Ported from legacy (source_key
+# my_datagovmy_weekly_fuelprice, fallback 2017-03-01, weekly). State-controlled.
+# Legacy strips '(Peninsular Malaysia)' from the product into the location
+# (_my_loc); here it is the national diesel series, labelled 'Diesel'.
+source_key: my_datagovmy_weekly_fuelprice
+module: eap.southeast_asia.malaysia.datagovmy
+function: fetch_malaysia_datagovmy
+url: https://data.gov.my/data-catalogue/fuelprice
+fallback_date: 2017-03-01
+priority: 10
+cadence: weekly
+carry_forward: true
+currency: MYR
+
+products:
+  "RON95":
+    series_key: ron95
+    label: "RON95"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "RON97":
+    series_key: ron97
+    label: "RON97"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 97
+  "Diesel (Peninsular Malaysia)":
+    series_key: diesel
+    label: "Diesel"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular

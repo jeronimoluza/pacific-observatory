@@ -1,0 +1,52 @@
+# Indonesia OTO.com monthly Pertamina prices. Ported from legacy pacific-observatory
+# (source_key id_oto_monthly_prices, FETCHER_REGISTRY fallback 2015-01-01, monthly,
+# full_refresh). Legacy treats Indonesia as state-controlled, hence carry_forward.
+# Priority 10 (above Pertamina): legacy elects, per product, the source with the
+# newest observation, which is OTO (2026-09) over Pertamina (2026-08).
+source_key: id_oto_monthly_prices
+module: eap.southeast_asia.indonesia.oto
+function: fetch_id_oto
+url: https://www.oto.com/en/harga-bbm
+fallback_date: 2015-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+full_refresh: true
+currency: IDR
+
+products:
+  "Pertalite":
+    series_key: pertalite
+    label: "Pertalite"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Pertamax":
+    series_key: pertamax
+    label: "Pertamax"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Pertamax Turbo":
+    series_key: pertamax_turbo
+    label: "Pertamax Turbo"
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Dexlite":
+    series_key: dexlite
+    label: "Dexlite"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Pertamina Dex":
+    series_key: pertamina_dex
+    label: "Pertamina Dex"
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
