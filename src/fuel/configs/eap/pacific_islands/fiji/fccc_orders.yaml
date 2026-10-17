@@ -1,0 +1,47 @@
+# Fiji FCCC petroleum Price Control Orders (PDF, OCR fallback). Ported from legacy
+# pacific-observatory (source_key fj_fccc_order_prices, FETCHER_REGISTRY fallback
+# 2020-01-01, cadence irregular). Legacy treats Fiji as state-controlled
+# (forward-fill to today), hence carry_forward.
+source_key: fj_fccc_order_prices
+module: eap.pacific_islands.fiji.fccc_orders
+function: fetch_fj_fccc_orders
+url: https://fccc.gov.fj/petroleum/
+fallback_date: 2020-01-01
+priority: 10
+cadence: irregular
+carry_forward: true
+currency: FJD
+
+products:
+  "Motor Spirit":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: motor_spirit
+  "Premix":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premix
+    series_key: premix
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel
+  "Kerosene":
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: kerosene
+  # The fetcher can emit Autogas; no stored row has it yet. Legacy prices LPG
+  # per kg on the dashboard at 0.54 kg/L, i.e. 1/0.54 L per kg.
+  "Autogas":
+    fuel_family: lpg
+    unit: liter
+    include_in_build: true
+    density_l_per_kg: 1.851852
+    series_key: autogas

@@ -1,0 +1,35 @@
+# PNG ICCC monthly indicative retail prices, Port Moresby (WP REST API; toea -> PGK).
+# Ported from legacy pacific-observatory (source_key pg_iccc_monthly_irp,
+# FETCHER_REGISTRY fallback 2023-01-01, cadence monthly, full_refresh). Legacy treats
+# PNG as state-controlled (forward-fill to today), hence carry_forward. The fetcher
+# itself already expands each month to daily rows.
+source_key: pg_iccc_monthly_irp
+module: eap.pacific_islands.papua_new_guinea.iccc
+function: fetch_png_iccc
+url: https://iccc.gov.pg/prices-regulation/#fuel-prices
+fallback_date: 2023-01-01
+full_refresh: true
+priority: 10
+cadence: monthly
+carry_forward: true
+currency: PGK
+
+products:
+  "Petrol":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: petrol
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel
+  "Kerosene":
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: kerosene

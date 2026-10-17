@@ -1,0 +1,67 @@
+# Fiji FCCC monthly price list, 2025-01..2025-10. Legacy pacific-observatory stored
+# this source (fiji/fiji_fccc_monthly_prices) with no fetcher and no FETCHER_REGISTRY
+# entry, so legacy never carried it forward; the stub fetcher returns nothing.
+# Lower priority than the Price Control Orders, which legacy prefers where both
+# report the same product on the same day.
+source_key: fiji_fccc_monthly_prices
+module: eap.pacific_islands.fiji.fccc_monthly
+function: fetch_fj_fccc_monthly
+url: https://fccc.gov.fj/petroleum/
+fallback_date: 2025-01-01
+priority: 20
+cadence: monthly
+carry_forward: false
+currency: FJD
+
+products:
+  "Motor Spirit":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: motor_spirit
+  "Premix":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premix
+    series_key: premix
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel
+  "Kerosene":
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: kerosene
+  # LPG: legacy dashboard density 0.54 kg/L, i.e. 1/0.54 L per kg.
+  "Autogas":
+    fuel_family: lpg
+    unit: liter
+    include_in_build: true
+    density_l_per_kg: 1.851852
+    series_key: autogas
+  "Bulk LPG":
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: true
+    density_l_per_kg: 1.851852
+    series_key: lpg_bulk
+  "12 Kg Cylinder":
+    fuel_family: lpg
+    unit: cylinder
+    amount: 12
+    include_in_build: true
+    density_l_per_kg: 1.851852
+    series_key: lpg_cylinder_12kg
+  "4.5 Kg Cylinder":
+    fuel_family: lpg
+    unit: cylinder
+    amount: 4.5
+    include_in_build: true
+    density_l_per_kg: 1.851852
+    series_key: lpg_cylinder_4_5kg
