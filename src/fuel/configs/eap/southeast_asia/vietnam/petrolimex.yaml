@@ -1,0 +1,78 @@
+# Petrolimex Vietnam retail price announcements (OCR of the price image; Zone 1, Zone 2,
+# National). Ported from legacy pacific-observatory (source_key vn_petrolimex_retail,
+# FETCHER_REGISTRY fallback 2019-12-31, cadence irregular). Legacy treats Vietnam as
+# state-controlled (forward-fill until the next announcement), hence carry_forward with
+# publication: announcement. Legacy deduplicates this source against vn_moit_fuel (same
+# country, date and normalized product); here both share series_key and this source wins
+# by priority (10 vs 20). Zones are averaged by the template build (legacy keeps them apart).
+# Mazut is VND/kg in the source and stays per kg (fuel_oil is not converted).
+source_key: vn_petrolimex_retail
+module: eap.southeast_asia.vietnam.petrolimex
+function: fetch_vn_petrolimex
+url: https://www.petrolimex.com.vn/ndi/thong-cao-bao-chi.html
+fallback_date: 2019-12-31
+priority: 10
+cadence: irregular
+carry_forward: true
+publication: announcement
+currency: VND
+
+products:
+  "Diesel 0.001S-V":
+    series_key: diesel_0001s_v
+    label: Diesel 0.001S-V
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "Diesel 0.05S-II":
+    series_key: diesel_005s_ii
+    label: Diesel 0.05S-II
+    fuel_family: diesel
+    unit: liter
+    grade: regular
+  "E10 RON 95-III":
+    series_key: e10_ron95_iii
+    label: E10 RON 95-III
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 95
+  "E5 RON 92-II":
+    series_key: e5_ron92_ii
+    label: E5 RON 92-II
+    fuel_family: gasoline
+    unit: liter
+    grade: ethanol
+    octane_ron: 92
+  "Kerosene 2-K":
+    series_key: kerosene_2k
+    label: Kerosene 2-K
+    fuel_family: kerosene
+    unit: liter
+    grade: regular
+  "Mazut 180cst-0.5S":
+    series_key: mazut_180cst_05s
+    label: Mazut 180cst-0.5S
+    fuel_family: fuel_oil
+    unit: kilogram
+    grade: regular
+  "Mazut N02B (3.5S)":
+    series_key: mazut_n02b_35s
+    label: Mazut N02B (3.5S)
+    fuel_family: fuel_oil
+    unit: kilogram
+    grade: regular
+  "RON 95-III":
+    series_key: ron95_iii
+    label: RON 95-III
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95
+  "RON 95-V":
+    series_key: ron95_v
+    label: RON 95-V
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95

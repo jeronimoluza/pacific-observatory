@@ -1,0 +1,36 @@
+# KPL (Lao news agency) MoIC national fuel price notices.
+# Ported from legacy pacific-observatory (source_key lao_kpl_fuel_notices,
+# FETCHER_REGISTRY fallback 2025-12-01, cadence irregular). State-controlled in legacy,
+# hence carry_forward with publication: announcement. National location, kept apart from
+# the provincial Lao State Fuel series as in legacy.
+source_key: lao_kpl_fuel_notices
+module: eap.southeast_asia.lao_pdr.kpl
+function: fetch_lao_kpl
+url: https://kpl.gov.la/En/News.aspx?cat=13
+fallback_date: 2025-12-01
+priority: 10
+cadence: irregular
+carry_forward: true
+publication: announcement
+currency: LAK
+
+products:
+  "Gasoline 95":
+    series_key: gasoline_95_kpl
+    label: Gasoline 95 (KPL notice)
+    fuel_family: gasoline
+    unit: liter
+    grade: premium
+    octane_ron: 95
+  "Regular Gasoline":
+    series_key: regular_gasoline_kpl
+    label: Regular Gasoline (KPL notice)
+    fuel_family: gasoline
+    unit: liter
+    grade: regular
+  "Diesel":
+    series_key: diesel_kpl
+    label: Diesel (KPL notice)
+    fuel_family: diesel
+    unit: liter
+    grade: regular
