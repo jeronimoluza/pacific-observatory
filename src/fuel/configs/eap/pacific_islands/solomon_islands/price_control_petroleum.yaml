@@ -1,0 +1,28 @@
+# Solomon Islands petroleum price control. Ported from legacy pacific-observatory
+# (source_key sb_price_control_petroleum_2025, FETCHER_REGISTRY fallback 2023-01-01,
+# cadence irregular). One legacy fetcher emits this and sb_price_control_lpg_2025;
+# the wrapper keeps this source's rows. Solomon Islands is not state-controlled in
+# legacy (no forward-fill).
+source_key: sb_price_control_petroleum_2025
+module: eap.pacific_islands.solomon_islands.price_control_petroleum
+function: fetch_sb_petroleum
+url: https://solomons.gov.sb/
+fallback_date: 2023-01-01
+priority: 10
+cadence: irregular
+carry_forward: false
+currency: SBD
+
+products:
+  "Petrol (PMS)":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: petrol_pms
+  "Diesel (ADO)":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel_ado

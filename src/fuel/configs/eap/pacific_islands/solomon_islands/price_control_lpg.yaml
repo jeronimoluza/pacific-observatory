@@ -1,0 +1,23 @@
+# Solomon Islands LPG price control, SBD per kg. Ported from legacy
+# pacific-observatory (source_key sb_price_control_lpg_2025, FETCHER_REGISTRY
+# fallback 2023-01-01, cadence irregular). Same legacy fetcher as
+# sb_price_control_petroleum_2025; the wrapper keeps this source's rows. Not
+# state-controlled in legacy (no forward-fill).
+source_key: sb_price_control_lpg_2025
+module: eap.pacific_islands.solomon_islands.price_control_lpg
+function: fetch_sb_lpg
+url: https://solomons.gov.sb/
+fallback_date: 2023-01-01
+priority: 10
+cadence: irregular
+carry_forward: false
+currency: SBD
+
+products:
+  # Legacy dashboard converts LPG at 0.54 kg/L, i.e. 1/0.54 L per kg.
+  "Propane LPG":
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: true
+    density_l_per_kg: 1.851852
+    series_key: lpg

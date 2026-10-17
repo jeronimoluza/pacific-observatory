@@ -1,0 +1,34 @@
+# Tonga MTED monthly maximum petroleum retail prices per island group (PDF notice,
+# OCR with tesseract; seniti -> TOP). Ported from legacy pacific-observatory
+# (source_key to_mted_petroleum_prices_monthly, FETCHER_REGISTRY fallback
+# 2020-01-01, cadence monthly). Tonga is not state-controlled in legacy (no
+# forward-fill); the fetcher itself expands each month to daily rows.
+source_key: to_mted_petroleum_prices_monthly
+module: eap.pacific_islands.tonga.mted
+function: fetch_to_mted_petroleum_prices
+url: https://www.mted.gov.to/
+fallback_date: 2020-01-01
+priority: 10
+cadence: monthly
+carry_forward: false
+currency: TOP
+
+products:
+  "Petrol":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: petrol
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel
+  "Kerosene":
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: kerosene
