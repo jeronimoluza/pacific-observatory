@@ -1,0 +1,20 @@
+# Ported from legacy pacific-observatory (source_key mn_data_mn_diesel_aimags, FETCHER_REGISTRY fallback 2023-01-01, cadence weekly).
+# Legacy treats Mongolia as state-controlled (forward-fill to today), hence carry_forward.
+# Shares fetch_mongolia_data_mn with the other data.mn sources (wrapper keeps this key).
+# Priority 20: mn_nso_aimag_weekly_fuel (current) wins where both cover a date.
+source_key: mn_data_mn_diesel_aimags
+module: eap.east_asia.mongolia.data_mn_diesel_aimags
+function: fetch_mn_data_mn_diesel_aimags
+url: https://data.mn/en/data/weekly-diesel-prices-aimags
+fallback_date: 2023-01-01
+priority: 20
+cadence: weekly
+carry_forward: true
+
+products:
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular

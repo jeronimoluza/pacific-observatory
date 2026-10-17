@@ -1,0 +1,33 @@
+# Ported from legacy pacific-observatory (source_key mn_nso_aimag_weekly_fuel, FETCHER_REGISTRY fallback 2023-12-31, cadence weekly).
+# Legacy treats Mongolia as state-controlled (forward-fill to today), hence carry_forward.
+# Rows are per aimag (subnational_area); the build averages them per date.
+source_key: mn_nso_aimag_weekly_fuel
+module: eap.east_asia.mongolia.nso_aimag
+function: fetch_mn_nso_weekly_aimag
+url: https://data.1212.mn
+fallback_date: 2023-12-31
+priority: 10
+cadence: weekly
+carry_forward: true
+
+products:
+  "Petrol A-92":
+    series_key: gasoline_a92
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+  "Petrol A-80":
+    series_key: gasoline_a80
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 80
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular

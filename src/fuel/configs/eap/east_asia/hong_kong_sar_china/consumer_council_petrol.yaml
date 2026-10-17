@@ -1,0 +1,19 @@
+# Ported from legacy pacific-observatory (source_key hk_consumer_council_petrol_daily, FETCHER_REGISTRY fallback 2020-01-01, cadence daily).
+# Legacy does not treat Hong Kong as state-controlled (no forward-fill), hence no carry_forward.
+# Rows are per oil company (subnational_area); the build averages them per date.
+source_key: hk_consumer_council_petrol_daily
+module: eap.east_asia.hong_kong_sar_china.consumer_council_petrol
+function: fetch_hk_consumer_council_petrol
+url: https://oil-price.consumer.org.hk/en/
+fallback_date: 2020-01-01
+priority: 10
+cadence: daily
+carry_forward: false
+
+products:
+  "Regular Gasoline":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular

@@ -1,0 +1,31 @@
+# Ported from legacy pacific-observatory (source_key kr_opinet_history_weekly, FETCHER_REGISTRY fallback 2014-01-01, cadence weekly).
+# Legacy does not treat Korea as state-controlled (no forward-fill), hence no carry_forward.
+# Priority 20: kr_opinet_daily_avg wins on dates both cover.
+source_key: kr_opinet_history_weekly
+module: eap.east_asia.south_korea.opinet_weekly
+function: fetch_kr_opinet_weekly
+url: https://www.opinet.co.kr/user/doop/doopOilHistory.do
+fallback_date: 2014-01-01
+priority: 20
+cadence: weekly
+carry_forward: false
+
+products:
+  "Regular Gasoline":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Kerosene":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: regular

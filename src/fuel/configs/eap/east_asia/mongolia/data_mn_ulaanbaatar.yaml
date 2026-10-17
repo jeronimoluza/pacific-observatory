@@ -1,0 +1,34 @@
+# Ported from legacy pacific-observatory (source_key mn_data_mn_fuel_ulaanbaatar, FETCHER_REGISTRY fallback 2023-01-01, cadence weekly).
+# Legacy treats Mongolia as state-controlled (forward-fill to today), hence carry_forward.
+# Shares fetch_mongolia_data_mn with the other data.mn sources (wrapper keeps this key).
+# Priority 30: mn_nso_aimag_weekly_fuel (current) wins where both cover a date.
+source_key: mn_data_mn_fuel_ulaanbaatar
+module: eap.east_asia.mongolia.data_mn_ulaanbaatar
+function: fetch_mn_data_mn_fuel_ulaanbaatar
+url: https://data.mn/en/data/weekly-fuel-prices-ulaanbaatar
+fallback_date: 2023-01-01
+priority: 30
+cadence: weekly
+carry_forward: true
+
+products:
+  "Petrol A-92":
+    series_key: gasoline_a92
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+  "Petrol A-80":
+    series_key: gasoline_a80
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 80
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular

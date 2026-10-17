@@ -1,0 +1,19 @@
+# Ported from legacy pacific-observatory (source_key hk_consumer_council_diesel_daily, FETCHER_REGISTRY fallback 2020-01-01, cadence daily).
+# Legacy does not treat Hong Kong as state-controlled (no forward-fill), hence no carry_forward.
+# Rows are per oil company (subnational_area); the build averages them per date.
+source_key: hk_consumer_council_diesel_daily
+module: eap.east_asia.hong_kong_sar_china.consumer_council_diesel
+function: fetch_hk_consumer_council_diesel
+url: https://oil-price.consumer.org.hk/en/diesel/
+fallback_date: 2020-01-01
+priority: 10
+cadence: daily
+carry_forward: false
+
+products:
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
