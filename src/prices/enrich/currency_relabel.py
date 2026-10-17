@@ -2,7 +2,7 @@
 
 A manifest's `relabel_currency: [{from, to, before | since}]` says that rows
 labelled `from` and dated before (or on/after) a day carry `to` numbers. Applied
-in `concatenate` before the modal back-fill, so the shard holds the right
+in `concatenate` after the modal back-fill, so the shard holds the right
 label and the raw scrape on disk is never edited.
 
 Bulgaria: four shops declare EUR, so the Common Crawl fetcher stamped EUR on
