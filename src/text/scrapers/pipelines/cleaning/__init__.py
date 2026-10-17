@@ -168,6 +168,7 @@ from .ukraine import (  # noqa: E402
 )
 from .russian_federation import parse_date_from_jsonld  # noqa: E402
 from .jordan import clean_addustour_date  # noqa: E402
+from .morocco import clean_arc_fusion_body  # noqa: E402
 
 # Legacy compatibility: Provide CLEANING_FUNCTIONS dict
 CLEANING_FUNCTIONS = get_all_registered_functions()

@@ -6,8 +6,10 @@ base_url: https://tengrinews.kz
 # Tengrinews Russian edition. /sitemap-index.xml references ~425 numbered
 # sitemap-news-N.xml sub-sitemaps plus sitemap-other-N.xml (excluded via
 # regex). Article URLs follow /{section}/{slug}-{ID}/. Huge archive.
+# 2026-10-16 (panel 20261016T0917Z): string order read sitemap-news-99 (2013) first and stopped, nothing new since 06-29; 439 is the newest
 listing:
   type: sitemap
+  sitemap_order: natural_desc
   sitemap_index_url: https://tengrinews.kz/sitemap-index.xml
   sitemap_regex: "/sitemap-news-[0-9]+\\.xml$"
   url_regex: "^https://tengrinews\\.kz/[a-z_-]+/.+-[0-9]+/?$"
@@ -39,5 +41,5 @@ selectors:
 cleaning:
   date: handle_mixed_dates
 
-max_pages: null
-max_articles: null
+max_pages: 10
+max_articles: 600  # 2026-10-16 verify: 900 hit the cap

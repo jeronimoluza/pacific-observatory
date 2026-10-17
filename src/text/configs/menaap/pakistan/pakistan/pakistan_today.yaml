@@ -4,6 +4,7 @@ country: pakistan
 base_url: https://www.pakistantoday.com.pk
 
 # Category: National — matches priority-1 national-news rule
+# 2026-10-16 (panel 20261016T0917Z): no ledger yet: 545+ pages walked, nothing kept when killed
 listing:
   type: pagination
   url_template: "https://www.pakistantoday.com.pk/category/national?page={num}"
@@ -28,5 +29,5 @@ selectors:
 cleaning:
   date: handle_mixed_dates
 
-max_pages: null
+max_pages: 20
 max_articles: null

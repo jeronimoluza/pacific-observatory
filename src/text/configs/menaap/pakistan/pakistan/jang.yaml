@@ -4,6 +4,7 @@ country: pakistan
 base_url: https://jang.com.pk
 
 # Category: National (Latest News > National) — matches priority-1 national-news rule
+# 2026-10-16 (panel 20261016T0917Z): no ledger yet: 305+ pages walked, nothing kept when killed
 listing:
   type: pagination
   url_template: "https://jang.com.pk/category/latest-news/national?offset={num}"
@@ -28,5 +29,5 @@ selectors:
 cleaning:
   date: handle_mixed_dates
 
-max_pages: null
+max_pages: 8  # 2026-10-16 verify: 20 pages hit the 300 s cap
 max_articles: null

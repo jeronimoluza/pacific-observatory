@@ -36,6 +36,10 @@ class SitemapStrategy(ListingStrategy):
     - url_replace: dict with "pattern" and "replacement" applied via re.sub to
       each <loc> before yielding. Useful for sites whose sitemap only indexes
       one language variant. (optional)
+    - sitemap_order: "natural_desc" or "natural_asc" sorts sub-sitemaps by
+      their numbers (sitemap-news-439 before sitemap-news-99 descending; use
+      asc where sitemap_1 is the newest); "lastmod_desc" by the index's
+      <lastmod>. Default: plain string descending.
 
     Thumbnail selectors in the YAML should target the <url> container and its
     <loc>/<lastmod> children, e.g.:
@@ -71,6 +75,7 @@ class SitemapStrategy(ListingStrategy):
             re.compile(url_replace["pattern"]) if url_replace.get("pattern") else None
         )
         self.url_replace_repl = url_replace.get("replacement", "")
+        self.sitemap_order = config.get("sitemap_order")
 
     async def _fetch(self, client, url: str) -> Optional[str]:
         async with httpx.AsyncClient() as http_client:
@@ -90,6 +95,7 @@ class SitemapStrategy(ListingStrategy):
 
     async def _resolve_sitemaps(self, client) -> List[str]:
         sitemaps: List[str] = list(self.sitemap_urls)
+        lastmod: Dict[str, str] = {}
 
         if self.sitemap_index_url:
             logger.info(f"Fetching sitemap index: {self.sitemap_index_url}")
@@ -108,8 +114,19 @@ class SitemapStrategy(ListingStrategy):
                     if self.sitemap_regex and not self.sitemap_regex.search(url):
                         continue
                     sitemaps.append(url)
+                    lm = sm_tag.select_one("lastmod")
+                    lastmod[url] = lm.get_text(strip=True) if lm else ""
 
         # Dedupe while preserving none-first then sort newest-first
+        # String order puts page=99 before page=600; discovery stops at the
+        # first fully-known sub-sitemap, so the newest one must come first.
+        def key(u):
+            return [int(p) if p.isdigit() else p for p in re.split(r"(\d+)", u)]
+
+        if self.sitemap_order in ("natural_desc", "natural_asc"):
+            return sorted(set(sitemaps), key=key, reverse=self.sitemap_order == "natural_desc")
+        if self.sitemap_order == "lastmod_desc":  # ties (same-day lastmod) in natural order
+            return sorted(set(sitemaps), key=lambda u: (lastmod.get(u, ""), key(u)), reverse=True)
         sitemaps = sorted(set(sitemaps), reverse=True)
         return sitemaps
 

@@ -1,4 +1,6 @@
 name: Onn24
+enabled: false
+disabled_reason: "onn24.com is now a Thai online casino and football-betting site (html title and every WP post are Thai gambling; verified live 2026-10-16). Not Bangladeshi news."
 language: en
 country: bangladesh
 base_url: http://www.onn24.com

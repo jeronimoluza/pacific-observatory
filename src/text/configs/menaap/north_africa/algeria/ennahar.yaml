@@ -3,6 +3,7 @@ country: algeria
 language: arabic
 base_url: https://www.ennaharonline.com
 
+# 2026-10-16 (panel 20261016T0917Z): max_pages null on a new source (10 rows in ledger): 325 pages walked, nothing kept when killed
 listing:
   type: pagination
   url_template: "https://www.ennaharonline.com/national/page/{num}/"
@@ -28,5 +29,5 @@ cleaning:
   date: handle_mixed_dates
   url: clean_url
 
-max_pages: null
+max_pages: 20
 max_articles: null

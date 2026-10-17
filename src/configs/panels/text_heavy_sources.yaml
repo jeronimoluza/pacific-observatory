@@ -1,0 +1,14 @@
+# Heavy tier (TX-38): sources whose weekly run is capped by max_articles to fit the 300 s
+# cap, so their backlog only drains in `po text panel step drain` (country -> source keys).
+# 2026-10-16: the "e" sources of panel 20261016T0917Z (healthy, more new URLs per week than
+# 300 s scrape) plus the big ledger backlogs whose listing was fixed the same day.
+azerbaijan: [apa, apa_english, apa_russian, axar, azertag, trend, trend_english, teleqraf]
+kazakhstan: [24kz, 24kz_russian, tengrinews_russian, qazaqstan_tv, 365info, azattyq_rferl]
+ukraine: [focus.ua, ukrinform]
+south_korea: [yna, kyunghyang_shinmun]
+vietnam: [vietnamnet]
+china: [economic_daily]
+india: [dandakaranyasamachar_com]
+papua_new_guinea: [the_national]
+indonesia: [detik]
+brazil: [brasilemfolhas_com_br]

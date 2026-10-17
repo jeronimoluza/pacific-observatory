@@ -2254,8 +2254,8 @@ class NewspaperScraper:
             logger.info(f"Pending articles to scrape: {len(pending_thumbnails)}")
 
             # Newest-first so time-bounded runs capture recent articles before
-            # older backfill. Undated thumbnails fall to the tail.
-            pending_thumbnails.sort(
+            # older backfill. Undated ones fall to the tail, last-appended first.
+            pending_thumbnails = sorted(reversed(pending_thumbnails),
                 key=lambda t: getattr(t, "date", "") or "", reverse=True
             )
 
@@ -2491,10 +2491,9 @@ class NewspaperScraper:
                 ]
 
             # Newest-first so time-bounded runs capture recent articles before
-            # older backfill. Undated thumbnails fall to the tail.
-            pending_thumbnails.sort(
-                key=lambda t: getattr(t, "date", "") or "", reverse=True
-            )
+            # older backfill: this run's discoveries first, in discovery order when undated; the rest by date, last-appended first.
+            pending_thumbnails = [t for _, t in sorted(enumerate(pending_thumbnails), reverse=True, key=lambda p, f={str(x.url) for x in new_thumbnails}: (
+                str(p[1].url) in f, getattr(p[1], "date", "") or "", -p[0] if str(p[1].url) in f else p[0]))]
 
             # Apply max_articles limit if set
             if (

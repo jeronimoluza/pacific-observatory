@@ -1,0 +1,10 @@
+# Slow lane (country -> source keys): left out of the weekly collect, run only by
+# `po text panel step drain` (nice, idle IO, yields to the chain). Configs stay enabled.
+# 2026-10-16, user decision ("carril lento las lentas"):
+# - runrun_es: HTTP 503 at 9 s/article, then connect timeouts from a8 all day.
+# - theinformant247: 20-28 s per request; only ~15 articles fit 300 s.
+venezuela_rb: [runrun_es]
+nigeria: [theinformant247]
+# - antara: was in text_exclude_sources (tarpit); re-run 15:58 UTC answered (66 rows, newest 10-16) but
+#   too slow for 300 s, so slow lane instead of parked.
+indonesia: [antara]

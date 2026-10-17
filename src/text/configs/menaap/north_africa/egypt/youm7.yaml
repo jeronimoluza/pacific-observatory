@@ -3,6 +3,7 @@ language: arabic
 country: egypt
 base_url: https://www.youm7.com
 
+# 2026-10-16 (panel 20261016T0917Z): watermark 07-03: discovery walked 170+ pages back to it past the cap and kept nothing
 listing:
   type: pagination
   url_template:
@@ -23,11 +24,14 @@ selectors:
     title: "h3 a::text"
     url: "h3 a::attr(href)"
   article:
-    body: "div#articleBody div"
+    body:
+      # 2026-10-16: paragraphs are now direct <p> children (426/470 empty bodies with div)
+      - "div#articleBody p"
+      - "div#articleBody div"
     date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:
   date: handle_mixed_dates
 
-max_pages: null
+max_pages: 10  # 2026-10-16 verify: body fixed, 20 pages = 800 rows ran past 300 s
 max_articles: null

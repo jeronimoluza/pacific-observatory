@@ -7,6 +7,7 @@ base_url: https://24.kz
 # "news-sitemap" variants. Each per-language urlset (/ru/sitemap, /kz/sitemap)
 # is flat and lists /{lang}/{section}/{sub}/{id}-{slug} articles with lastmod.
 # Articles have no meta article:published_time; date text is in div.post-date.
+# 2026-10-16 (panel 20261016T0917Z): healthy, queue past the 300s cap; cap the newest-first queue
 listing:
   type: sitemap
   sitemap_urls:
@@ -41,4 +42,4 @@ cleaning:
   date: handle_mixed_dates
 
 max_pages: null
-max_articles: null
+max_articles: 500

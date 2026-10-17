@@ -4,6 +4,7 @@ country: mexico
 base_url: http://www.vallartadaily.com
 
 # Categories: puerto-vallarta-news(10, 5047), mexico-news(2, 3729), almost-news(3102, 11)
+# 2026-10-16 (panel 20261016T0917Z): article pages are paywalled (pfa-content-preview, 2 p); new posts come whole from the API prefetch, so the 18k HTML backlog only burns the cap
 listing:
   type: api
   pagination_type: page
@@ -36,4 +37,4 @@ cleaning:
   body: clean_wp_html_body
 
 max_pages: null
-max_articles: null
+max_articles: 0

@@ -6,6 +6,7 @@ base_url: https://actualitati.md
 # WP REST API is present but blocked (?categories=&_fields= -> 403
 # nfw_rest_api_access_restricted); use the tagDiv theme's HTML pagination
 # instead. Site publishes in Russian despite the .md domain.
+# 2026-10-16 (panel 20261016T0917Z): max_pages null walked the whole archive (14 rows in ledger) past the 300s cap
 listing:
   type: pagination
   url_template: "https://actualitati.md/category/economie/page/{num}/"
@@ -31,5 +32,5 @@ cleaning:
   date: handle_mixed_dates
   url: clean_url
 
-max_pages: null
+max_pages: 20
 max_articles: null

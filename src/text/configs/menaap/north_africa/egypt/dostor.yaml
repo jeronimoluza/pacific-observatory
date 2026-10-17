@@ -7,6 +7,7 @@ base_url: https://www.dostor.org
 # (Cloudflare-proxied domain, but only the root path is affected) -- use
 # /default1.aspx or /category/N pages instead, which return full content and
 # are NOT blocked. Categories: مصر/Egypt(1), اقتصاد/Economy(5), سياسي/Politics(9).
+# 2026-10-16 (panel 20261016T0917Z): site redesign: listing container div.item-li and body div.paragraph-list are gone (0 matches, 726 empty bodies)
 listing:
   type: pagination
   url_template:
@@ -24,11 +25,11 @@ retry_seconds: 2.0
 
 selectors:
   thumbnail:
-    container: "div.item-li"
-    title: "h3::text"
-    url: "a::attr(href)"
+    container: "div.article"
+    title: "a.mostReadingHeadLine::text"
+    url: "a.mostReadingHeadLine::attr(href)"
   article:
-    body: "div.paragraph-list p"
+    body: "div.articleContent p"
     date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:
@@ -36,4 +37,4 @@ cleaning:
   url: clean_url
 
 max_pages: null
-max_articles: null
+max_articles: 300

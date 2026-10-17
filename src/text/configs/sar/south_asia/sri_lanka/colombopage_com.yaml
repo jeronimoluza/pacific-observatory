@@ -1,4 +1,6 @@
 name: Colombopage
+enabled: false
+disabled_reason: "colombopage.com is now a Thai UFABET football-betting site (html lang th; every WP post is Thai gambling; verified live 2026-10-16). Not Sri Lankan news."
 language: en
 country: sri_lanka
 base_url: http://www.colombopage.com

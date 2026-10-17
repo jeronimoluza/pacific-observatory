@@ -9,8 +9,10 @@ base_url: https://www.azattyq.org
 # Article URLs follow /a/{slug-or-id}/{id}.html. RFE/RL templates use the
 # standard .wsw block for article body (not c-mmp-article-body) and expose
 # the date via <time datetime=...> with a pubdate attribute.
+# 2026-10-16 (panel 20261016T0917Z): string order read sitemap_5_9 (2008-2013) first and stopped, nothing new since 2024-08; sitemap_5_1 is the newest
 listing:
   type: sitemap
+  sitemap_order: natural_asc
   sitemap_index_url: https://www.azattyq.org/sitemap.xml
   sitemap_regex: "sitemap_5_[0-9]+\\.xml\\.gz$"
   url_regex: "^https://www\\.azattyq\\.org/a/.+[0-9]+\\.html$"
@@ -42,5 +44,6 @@ selectors:
 cleaning:
   date: handle_mixed_dates
 
-max_pages: null
-max_articles: null
+# 2026-10-16: every 20k-URL sub-sitemap holds new URLs, so discovery walked all 9; _5_1 is the newest
+max_pages: 1
+max_articles: 800

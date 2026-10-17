@@ -7,6 +7,7 @@ language: "en"
 base_url: "https://en.antaranews.com"
 
 # Listing discovery configuration
+# 2026-10-16 (panel 20261016T0917Z): listing 429s at concurrency 10 / rate 0.01; max_pages caps the unbounded walk
 listing:
   type: "pagination"
   url_template: "https://en.antaranews.com/latest-news/{num}"
@@ -16,8 +17,8 @@ listing:
 
 # Client configuration
 client: "http"  # Use HTTP client (not browser-based)
-concurrency: 10  # Maximum concurrent requests (default: 10)
-rate_limit: 0.01  # Minimum delay between requests in seconds (0.01 = 100 req/sec max)
+concurrency: 2
+rate_limit: 1.0
 retries: 3       # Number of retry attempts for failed requests
 retry_seconds: 2.0  # Wait time in seconds between retry attempts
 
@@ -33,7 +34,7 @@ selectors:
     tags: ".blog-tags a::text"    # Article tags/categories
 
 # Test/debug options
-max_pages: null
+max_pages: 20
 max_articles: null
 
 cleaning:

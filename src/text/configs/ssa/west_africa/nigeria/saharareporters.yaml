@@ -3,6 +3,7 @@ country: nigeria
 language: en
 base_url: https://saharareporters.com
 
+# 2026-10-16 (panel 20261016T0917Z): small ledger (427 rows): max_pages null walked the archive past the cap, nothing kept
 listing:
   type: pagination
   url_template: "https://saharareporters.com/articles?page={num}"
@@ -28,5 +29,5 @@ cleaning:
   date: handle_mixed_dates
   url: clean_url
 
-max_pages: null
-max_articles: null
+max_pages: 5  # 2026-10-16 verify: 20 pages (720 URLs) still hit the 300 s cap
+max_articles: 120

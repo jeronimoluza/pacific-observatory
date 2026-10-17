@@ -1,9 +1,10 @@
 name: www.dandakaranyasamachar.com
-language: en
+language: hindi
 country: india
 base_url: http://www.dandakaranyasamachar.com
 
 # Categories: state(14852), national(3210), politics(1190), business(885)
+# 2026-10-16 (panel 20261016T0917Z): healthy, 19k-URL ledger backlog at ~3.3/s; cap the newest-first queue
 listing:
   type: api
   pagination_type: page
@@ -36,4 +37,4 @@ cleaning:
   body: clean_wp_html_body
 
 max_pages: null
-max_articles: null
+max_articles: 550  # 2026-10-16 verify: 800 still hit the 300 s cap

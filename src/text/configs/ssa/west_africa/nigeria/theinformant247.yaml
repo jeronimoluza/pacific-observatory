@@ -3,6 +3,7 @@ country: nigeria
 language: en
 base_url: https://theinformant247.com
 
+# 2026-10-16 (panel 20261016T0917Z): site answers in 20-28 s per page (14.5 s/article); only a small capped run fits 300s
 listing:
   type: pagination
   url_template: "https://theinformant247.com/latest-news/page/{num}/"
@@ -28,5 +29,5 @@ cleaning:
   date: handle_mixed_dates
   url: clean_url
 
-max_pages: null
-max_articles: null
+max_pages: 2
+max_articles: 15

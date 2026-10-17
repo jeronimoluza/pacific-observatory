@@ -23,10 +23,14 @@ if [ -z "$COUNTRY" ]; then
   exit 2
 fi
 
+# Anchor each name at a space or end of line: unanchored, killing `trend` also
+# killed `trend_english` (and `niger` would kill `nigeria`). Dots are escaped
+# because pgrep -f takes a regex (actualitati.md, 24tv.ua).
+esc() { printf "%s" "$1" | sed "s/[.]/[.]/g"; }
 if [ -n "$SOURCE" ]; then
-  PATTERN="text collect --country $COUNTRY --source $SOURCE"
+  PATTERN="text collect --country $(esc "$COUNTRY") --source $(esc "$SOURCE")( |\$)"
 else
-  PATTERN="text collect --country $COUNTRY"
+  PATTERN="text collect --country $(esc "$COUNTRY")( |\$)"
 fi
 
 # Match on the subcommand and its arguments, not on the entrypoint. The console

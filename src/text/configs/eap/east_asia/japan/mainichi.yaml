@@ -7,6 +7,7 @@ base_url: "https://mainichi.jp/english"
 
 # Listing discovery configuration
 # /english/japan/{num}/ is the national-news section archive (page-numbered, verified distinct content per page)
+# 2026-10-16 (panel 20261016T0917Z): max_pages null walked the whole archive (21 rows in ledger) past the 300s cap
 listing:
   type: "pagination"
   url_template: "https://mainichi.jp/english/japan/{num}/"
@@ -35,5 +36,5 @@ cleaning:
   date: handle_mixed_dates
   url: clean_url
 
-max_pages: null
+max_pages: 10
 max_articles: null
