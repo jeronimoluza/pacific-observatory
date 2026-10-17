@@ -4,6 +4,8 @@ function: fetch_autotraveler_bg
 url: https://autotraveler.ru/en/bulgaria/trend-price-fuel-bulgaria.html
 fallback_date: 2011-08-01
 priority: 50
+# Disabled 2026-10: superseded by eu_wob (EU Weekly Oil Bulletin); autotraveler.ru (unofficial aggregator) has stalled.
+enabled: false
 cadence: daily
 carry_forward: false
 

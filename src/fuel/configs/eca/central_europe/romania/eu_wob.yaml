@@ -1,0 +1,42 @@
+source_key: eu_wob_ro_weekly
+module: eca.central_europe.romania.eu_wob
+function: fetch_eu_wob_ro
+url: https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en
+fallback_date: 2005-01-01
+priority: 20
+cadence: weekly
+carry_forward: false
+price_basis: retail  # WOB "prices with taxes" = consumer prices; the without-taxes sheet is never read
+station_type: national  # one national average per week, no station data
+
+products:
+  "Euro-super 95":
+    series_key: gasoline_95
+    fuel_family: gasoline
+    unit: liter
+    amount: 1000
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+  "Automotive gas oil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    amount: 1000
+    include_in_build: true
+    grade: standard
+  "LPG motor fuel":
+    series_key: lpg
+    fuel_family: lpg
+    unit: liter
+    amount: 1000
+    include_in_build: true
+    grade: standard
+    density_l_per_kg: 1.96  # unused: WOB reports LPG per 1000 L
+  "Heating gas oil":
+    series_key: heating_oil
+    fuel_family: heating_oil  # household heating gas oil, not kerosene
+    unit: liter
+    amount: 1000
+    include_in_build: true
+    grade: standard
