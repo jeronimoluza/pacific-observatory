@@ -26,6 +26,11 @@ finished shard, not per batch; readers that take `input_hash` from the shard
 per-row recompute (`prepare._row_input_dict` when a frame has no hash,
 `merge.py`, the CSV-monolith fallback in build) does not apply it.
 
+Before the split, a source whose manifest sets `relabel_same_number: {from, to}`
+loses its `from` rows whose price equals one of the same product's `to` prices
+(`drop_relabeled`): that number is the seller's `to` price mislabelled, and
+splitting it off would make a second product at the wrong scale (999_md).
+
 A seller registered under two source names (`source_canonical`) sits in two
 shards and is split per shard, not across both.
 """
@@ -38,6 +43,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import pyarrow as pa
+import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 from core.config import load_countries
@@ -46,6 +52,43 @@ from prices.enrich.versioning import input_hash
 
 logger = logging.getLogger(__name__)
 BATCH_ROWS = 200_000
+
+
+@lru_cache(maxsize=1)
+def _relabel_rules() -> dict[tuple[str, str], tuple[str, str]]:
+    from prices.config import PriceSourceConfig, discover_prices_configs
+
+    out = {}
+    for path in discover_prices_configs():
+        try:
+            cfg = PriceSourceConfig.load(path)
+        except Exception:  # noqa: BLE001 - unloadable manifest
+            continue
+        r = cfg.relabel_same_number
+        if r:
+            out[(cfg.country, cfg.source)] = (_norm(r["from"]), _norm(r["to"]))
+    return out
+
+
+def drop_relabeled(path: Path, frm: str, to: str) -> int:
+    """Drop `frm` rows whose price equals a `to` price of the same input_hash.
+    Rewrites `path` in place; returns the rows dropped."""
+    t = pq.read_table(path)
+    price = pc.cast(t["price"], pa.float64(), safe=False).to_pylist()
+    hashes = t["input_hash"].to_pylist()
+    curs = [_norm(c) for c in t["currency"].to_pylist()]
+    to_prices = {(h, p) for h, c, p in zip(hashes, curs, price) if c == to and p is not None}
+    keep = [not (c == frm and (h, p) in to_prices) for h, c, p in zip(hashes, curs, price)]
+    n = keep.count(False)
+    if n:
+        tmp = path.with_suffix(".relabel.tmp")
+        pq.write_table(t.filter(pa.array(keep)), tmp, compression="zstd")
+        os.replace(tmp, path)
+        logger.info(
+            "[currency_hash] %s: dropped %d %s rows equal to a %s price",
+            path.name, n, frm, to,
+        )
+    return n
 
 
 @lru_cache(maxsize=1)
@@ -67,6 +110,9 @@ def split_shard(path: Path, country: str) -> int:
     number of products split (0 leaves the file untouched)."""
     if not path.exists():
         return 0
+    rule = _relabel_rules().get((country, path.stem))
+    if rule:
+        drop_relabeled(path, *rule)
     t = pq.read_table(path, columns=["input_hash", "currency"])
     pairs = t.group_by(["input_hash", "currency"]).aggregate([([], "count_all")])
     hashes = pairs["input_hash"].to_pylist()

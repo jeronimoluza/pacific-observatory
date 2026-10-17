@@ -60,6 +60,10 @@ class PriceSourceConfig(BaseModel):
     # were parsed before that currency was stamped at fetch time. Not a default:
     # many sources' archives legitimately carry other currencies (IRT, BGN->EUR).
     restamp_archive_currency: bool = False
+    # Opt-in `{from: MDL, to: EUR}`: the seller priced in `to` and a scrape
+    # labelled the same number `from`. `concatenate` drops a `from` row that
+    # equals one of the same product's `to` prices, before the currency split.
+    relabel_same_number: dict[str, str] | None = None
     inactive_reason: str | None = None
 
     # Declared in prices, enforced only in the `fuel` pipeline
