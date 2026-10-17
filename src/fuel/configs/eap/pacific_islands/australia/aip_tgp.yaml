@@ -1,0 +1,35 @@
+# Australia AIP terminal gate prices. Ported from legacy pacific-observatory
+# (source_key au_aip_tgp_weekly, FETCHER_REGISTRY fallback 2015-01-01, cadence
+# weekly, full_refresh). Legacy _AU_SOURCE_RANK = 2 (after FuelWatch/NSW = 0 and
+# ACCC = 1), translated to priority 30. Australia is not state-controlled in
+# legacy (no forward fill), hence carry_forward false.
+# One row per capital (7) beside AIP's national average, kept in the raw but
+# excluded here: the national price is the median of the capitals.
+source_key: au_aip_tgp_weekly
+module: eap.pacific_islands.australia.aip_tgp
+function: fetch_au_aip_tgp
+url: https://www.aip.com.au/historical-ulp-and-diesel-tgp-data
+fallback_date: 2015-01-01
+full_refresh: true
+priority: 30
+cadence: weekly
+carry_forward: false
+price_basis: wholesale
+station_aggregate: {stat: median, trim: none, min_stations: 5, max_dispersion: 0.25, exclude: [National]}
+station_type: city
+currency: AUD
+
+products:
+  "Unleaded":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel

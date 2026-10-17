@@ -1,0 +1,28 @@
+# Australia ACCC quarterly retail averages (5 largest cities). Ported from legacy
+# pacific-observatory (source_key au_accc_5largestcities_quarterly, FETCHER_REGISTRY
+# fallback 2019-01-01, cadence quarterly). Legacy _AU_SOURCE_RANK = 1, translated
+# to priority 20. Not state-controlled in legacy, hence carry_forward false.
+source_key: au_accc_5largestcities_quarterly
+module: eap.pacific_islands.australia.accc
+function: fetch_accc
+url: https://www.accc.gov.au/by-industry/petrol-and-fuel
+fallback_date: 2019-01-01
+priority: 20
+cadence: quarterly
+carry_forward: false
+currency: AUD
+
+products:
+  "ULP 91 average":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Diesel average":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel

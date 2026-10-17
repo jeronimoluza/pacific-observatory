@@ -1,0 +1,37 @@
+# New Zealand MBIE weekly fuel price monitoring. Ported from legacy
+# pacific-observatory (source_key nz_mbie_weekly_fuel, FETCHER_REGISTRY fallback
+# 2020-01-01, cadence weekly, full_refresh). Not state-controlled in legacy, hence
+# carry_forward false. Legacy ranks MBIE and Gaspy equally and keeps an arbitrary
+# one where both report the same day; here the official MBIE series wins (10 < 20).
+source_key: nz_mbie_weekly_fuel
+module: eap.pacific_islands.new_zealand.mbie
+function: fetch_nz_mbie_weekly
+url: https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-statistics-and-modelling/energy-statistics/weekly-fuel-price-monitoring/
+fallback_date: 2020-01-01
+full_refresh: true
+priority: 10
+cadence: weekly
+carry_forward: false
+currency: NZD
+
+products:
+  "Regular Petrol":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Premium Petrol 95R":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_95
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel
