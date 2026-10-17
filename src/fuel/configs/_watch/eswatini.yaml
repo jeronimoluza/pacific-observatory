@@ -1,0 +1,47 @@
+# `po fuel watch --country eswatini`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+# gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
+country: eswatini
+currency: SZL
+levels:
+  paths:
+  - src/fuel/configs/_manual/eswatini_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+gpp:
+  slug: Swaziland
+  name: Swaziland
+  products:
+    gasoline: ULP 95
+    diesel: Diesel 50ppm
+  move_pct: 3
+  diverge_pct: 5
+  diverge_runs: 3
+  max_age_days: 45
+pages:
+- id: enpc_home_prices
+  url: https://www.enpc.co.sz/
+  mode: text
+news:
+- q: Eswatini fuel price
+  hl: en
+  gl: SZ
+- q: Eswatini fuel price adjustment Ministry of Natural Resources
+  hl: en
+  gl: SZ
+must:
+- eswatini
+- swaziland
+- mbabane
+- manzini
+- mnre
+- enpc
+keywords:
+- fuel price
+- pump price
+- petrol price
+- diesel price
+- price of petrol
+- price of diesel
+- fuel prices

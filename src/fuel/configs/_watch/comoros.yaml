@@ -1,0 +1,47 @@
+# `po fuel watch --country comoros`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+country: comoros
+currency: KMF
+levels:
+  paths:
+  - src/fuel/configs/_manual/comoros_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+pages:
+- id: beit_salam_home
+  allow_empty: true
+  url: https://www.beit-salam.km/
+  mode: links
+  match: carburant|hydrocarbure|prix|essence
+- id: alwatwan_home
+  allow_empty: true
+  url: https://alwatwan.net/
+  mode: links
+  match: carburant|hydrocarbure|prix|essence|sch
+news:
+- q: prix carburant Comores
+  hl: fr
+  gl: KM
+- q: SCH Comores prix essence gasoil
+  hl: fr
+  gl: KM
+must:
+- comores
+- comorien
+- moroni
+- sch
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

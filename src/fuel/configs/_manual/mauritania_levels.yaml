@@ -1,0 +1,204 @@
+# Mauritania: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: Comision Nacional de Hidrocarburos (Commission/Comite national des hydrocarbures, decisiones numeradas "القرار رقم NN/2026" que fijan precios maximos por ciudad), bajo el Ministerio del Petroleo y la Energia; nuevo mecanismo de fijacion desde fines de 2025 (decreto del Consejo de Ministros 8-ene-2026), tope de +5% por revision salvo decision del Gobierno. Regimen: administrado, subsidiado, revisiones casi mensuales en 2026. Canales: no se hallo pagina oficial con los precios (petrole.gov.mr / energie.gov.mr inaccesibles); la decision se conoce por prensa: Sahara Medias, Attaqa, Le360 (corresponsal en Nouakchott). AMI no publico las cifras en lo que se pudo consultar.
+# UNIDADES: price_local en OUGUIYA NUEVA (MRU). La prensa arabe da casi siempre ouguiya antigua (MRO, "أوقية قديمة"), 1 MRU = 10 MRO: 621.3 MRO = 62.13 MRU. Cada note dice que unidad trae la fuente y como se convirtio.
+# Locality: precios de Nouakchott; las decisiones fijan precios distintos por ciudad del interior (Nouadhibou, Nema, Zouerate, etc.) que no se cargan.
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos: (1) nivel vigente al 2024-01-01 NO encontrado en fuente fechada: el ultimo cambio previo hallado es la suba del 15-jul-2022 (Ministerio del Petroleo, Sahara Medias 190750) que solo da incrementos (+11.5 MRU gasoil, +13 MRU essence), no niveles. Las variaciones de feb-2026 que publica Le360 (-1.21 = -2.42%, -2.9 = -5.12%) implican 50.00 gasoil y 56.64 essence antes del 2-feb-2026, pero es una deduccion y no se carga. No se halló ningun cambio en 2023-2025.
+#   (2) petrole lampant (kerosene): solo el nivel de jun-2026; antes, sin cifras.
+#   (3) la vigencia del 31-mar-2026 no es explicita en la fuente de la fila; Le360 5-may-2026 dice 'une precedente augmentation intervenue le 31 mars' y fecha la de mayo el lunes 4-may (pompista: 'hier 563,5... ce matin 591,7').
+#   (5) entre 2024-01-01 y 2026-02-01 no hay ninguna fila (ni cambio ni confirmacion fechada): tramo de 25 meses sin dato. 2 busquedas extra (fr/ar) sin resultado.
+#   (4) despues del 2-jun-2026 no se halló ningun cambio; Sahara Medias 17-sep-2026 da como vigente el nivel de la "cuarta suba" (gasoil 621.3, essence 650.2 MRO) y el Primer Ministro promete no subir mas: cargado como fila de confirmacion 2026-09-17 (essence, gasoil; el kerosene no se menciona). Sin evidencia fechada hoy, por eso no hay last_checked.
+source_key: manual_mr_levels
+country: Mauritania
+currency: MRU
+unit: MRU_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Essence":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Petrole":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+levels:
+- effective: 2026-02-02
+  product: Gasoil
+  locality: Nouakchott
+  price_local: 48.79
+  source_type: press
+  url: https://afrique.le360.ma/afrique-du-nord/mauritanie/mauritanie-hydrocarbures-le-gouvernement-baisse-le-prix-de-produits-devenus-rares_N2ZUO7NHVRGL5FDTZT7JY4LAZI/
+  archive_url: http://web.archive.org/web/20260214083014/https://afrique.le360.ma/afrique-du-nord/mauritanie/mauritanie-hydrocarbures-le-gouvernement-baisse-le-prix-de-produits-devenus-rares_N2ZUO7NHVRGL5FDTZT7JY4LAZI/
+  sha256: fd96d6ad1a7227b93557eb53d8a563389e9f00e4a2f114b0c15f419708462cfd
+  file: fd96d6ad1a72_le360_3.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Le360 (corresponsal en Nouakchott, 4-feb-2026): 'le prix des hydrocarbures devraient connaitre une baisse a partir du 2 fevrier... le gasoil est vendu a 48,79 ouguiyas le litre, soit une baisse de 1,21 ouguiyas (-2,42%)'. Cifras en MRU (nueva) en la fuente, sin conversion. Confirmado de forma independiente por Attaqa 4-mar-2026 y Sahara Medias 17-sep-2026 (gasoil previo a la suba de marzo: 487.9 MRO = 48.79 MRU). Primera revision del nuevo mecanismo."
+- effective: 2026-02-02
+  product: Essence
+  locality: Nouakchott
+  price_local: 53.80
+  source_type: press
+  url: https://afrique.le360.ma/afrique-du-nord/mauritanie/mauritanie-hydrocarbures-le-gouvernement-baisse-le-prix-de-produits-devenus-rares_N2ZUO7NHVRGL5FDTZT7JY4LAZI/
+  archive_url: http://web.archive.org/web/20260214083014/https://afrique.le360.ma/afrique-du-nord/mauritanie/mauritanie-hydrocarbures-le-gouvernement-baisse-le-prix-de-produits-devenus-rares_N2ZUO7NHVRGL5FDTZT7JY4LAZI/
+  sha256: fd96d6ad1a7227b93557eb53d8a563389e9f00e4a2f114b0c15f419708462cfd
+  file: fd96d6ad1a72_le360_3.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Le360: 'L essence coute 53,8 ouguiyas, soit une baisse de 2,9 ouguiyas (-5,12%)' (MRU). Solo esta nota da 53.80 explicito; Attaqa 4-mar-2026 lo corrobora en forma aproximada ('baja de 26-27 MRO por segundo mes': 538 -> 511.2 MRO)."
+- effective: 2026-03-04
+  product: Essence
+  locality: Nouakchott
+  price_local: 51.12
+  source_type: press
+  url: https://attaqa.net/2026/03/04/%d8%aa%d8%ad%d8%b1%d9%8a%d9%83-%d8%a3%d8%b3%d8%b9%d8%a7%d8%b1-%d8%a7%d9%84%d9%85%d8%ad%d8%b1%d9%88%d9%82%d8%a7%d8%aa-%d9%81%d9%8a-%d9%85%d9%88%d8%b1%d9%8a%d8%aa%d8%a7%d9%86%d9%8a%d8%a7-%d8%b2%d9%8a/
+  archive_url: http://web.archive.org/web/20260304162550/https://attaqa.net/2026/03/04/%D8%AA%D8%AD%D8%B1%D9%8A%D9%83-%D8%A3%D8%B3%D8%B9%D8%A7%D8%B1-%D8%A7%D9%84%D9%85%D8%AD%D8%B1%D9%88%D9%82%D8%A7%D8%AA-%D9%81%D9%8A-%D9%85%D9%88%D8%B1%D9%8A%D8%AA%D8%A7%D9%86%D9%8A%D8%A7-%D8%B2%D9%8A/
+  sha256: 6e0333acab097997e28406713edfaf16716f157f75fd83c30a7447e6aa792a17
+  file: 6e0333acab09_attaqa_6.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Attaqa (4-mar-2026) cita la decision de la Comision Nacional de Hidrocarburos, en vigor 'desde las 12:00 de la medianoche del martes 3 de marzo' (ambiguo: se toma el miercoles 4; Le360 5-mar dice que el gasoil 'a augmente le 4 mars'). Tabla por ciudad en MRU: Nouakchott essence 51.12. Confirmado por Attaqa 2-jun y Sahara Medias 17-sep (511.2 MRO). Le360 5-mar da cifras confusas (essence '56,64 a 51,2'), no usadas."
+- effective: 2026-03-04
+  product: Gasoil
+  locality: Nouakchott
+  price_local: 51.23
+  source_type: press
+  url: https://attaqa.net/2026/03/04/%d8%aa%d8%ad%d8%b1%d9%8a%d9%83-%d8%a3%d8%b3%d8%b9%d8%a7%d8%b1-%d8%a7%d9%84%d9%85%d8%ad%d8%b1%d9%88%d9%82%d8%a7%d8%aa-%d9%81%d9%8a-%d9%85%d9%88%d8%b1%d9%8a%d8%aa%d8%a7%d9%86%d9%8a%d8%a7-%d8%b2%d9%8a/
+  archive_url: http://web.archive.org/web/20260304162550/https://attaqa.net/2026/03/04/%D8%AA%D8%AD%D8%B1%D9%8A%D9%83-%D8%A3%D8%B3%D8%B9%D8%A7%D8%B1-%D8%A7%D9%84%D9%85%D8%AD%D8%B1%D9%88%D9%82%D8%A7%D8%AA-%D9%81%D9%8A-%D9%85%D9%88%D8%B1%D9%8A%D8%AA%D8%A7%D9%86%D9%8A%D8%A7-%D8%B2%D9%8A/
+  sha256: 6e0333acab097997e28406713edfaf16716f157f75fd83c30a7447e6aa792a17
+  file: 6e0333acab09_attaqa_6.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Nouakchott gasoil 51.23 MRU (tabla de la decision). Attaqa 2-jun-2026: gasoil 'de 487.9 a 512.3 MRO' en la primera suba de marzo (= 48.79 -> 51.23 MRU); +5% (tope del mecanismo). Le360 5-mar da '46,8 a 51,12' para el gasoil: error de esa nota, no usado."
+- effective: 2026-03-31
+  product: Gasoil
+  locality: Nouakchott
+  price_local: 56.35
+  source_type: press
+  url: https://saharamedias.net/254744/
+  archive_url: http://web.archive.org/web/20260414210801/https://saharamedias.net/254744/
+  sha256: 9edca11682c164b2c2f37aa93f83ae1a47fef2157e99d6027eba148486b1f70b
+  file: 9edca11682c1_saharamedias_254744.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Ministro de Energia y Petroleo Mohamed ould Khaled en conferencia de prensa (Sahara Medias 1-abr-2026): gasoil +10% a 563.5 MRO/litro (subsidio 282 MRO); convertido 563.5 MRO / 10 = 56.35 MRU. Le360 2-abr coincide (563,5 anciennes ouguiyas). FECHA: Attaqa fecha la decision el 31-mar-2026; ninguna fuente da la hora/fecha de entrada en vigor, puede ser 31-mar o 1-abr."
+- effective: 2026-03-31
+  product: Essence
+  locality: Nouakchott
+  price_local: 58.97
+  source_type: press
+  url: https://saharamedias.net/254744/
+  archive_url: http://web.archive.org/web/20260414210801/https://saharamedias.net/254744/
+  sha256: 9edca11682c164b2c2f37aa93f83ae1a47fef2157e99d6027eba148486b1f70b
+  file: 9edca11682c1_saharamedias_254744.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Ministro: essence +15.3% a 589.7 MRO/litro (subsidio 88 MRO) = 58.97 MRU. Le360 2-abr y Attaqa 4-may coinciden en 589.7; Attaqa 2-jun redondea a '589'. Misma salvedad de fecha que el gasoil."
+- effective: 2026-05-04
+  product: Essence
+  locality: Nouakchott
+  price_local: 61.92
+  source_type: press
+  url: https://attaqa.net/2026/05/04/%d8%a3%d8%b3%d8%b9%d8%a7%d8%b1-%d8%a7%d9%84%d9%85%d8%ad%d8%b1%d9%88%d9%82%d8%a7%d8%aa-%d9%81%d9%8a-%d9%85%d9%88%d8%b1%d9%8a%d8%aa%d8%a7%d9%86%d9%8a%d8%a7-%d8%aa%d8%b1%d8%aa%d9%81%d8%b9-5-%d8%a7/
+  archive_url: ""
+  sha256: f5d6d7c0cb45e49ba470869190ae3ba20d6d3da6cd5ea01a34ff012a3287455a
+  file: f5d6d7c0cb45_attaqa_7.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Attaqa 4-may-2026: la Comision Nacional de Hidrocarburos anuncio los precios de mayo; essence de 589.7 a 619.2 MRO (= 61.92 MRU). Vigencia 4-may confirmada por Le360 5-may-2026 (https://afrique.le360.ma/economie/marche-des-hydrocarbures-a-nouakchott-des-augmentations-toujours-le-produit-quelquefois_VKPOKZXAEJFYZPR7EBXHSGBPK4/, copia 79d9a1f5bd37, captura http://web.archive.org/web/20260519185003/...): 'Le lundi 4 mai... celui de l essence de 599,7 a 619,2' (599,7 = errata de 589,7). Confirmado tambien por Le360 7-jun y Attaqa 2-jun (619.2 como nivel previo a junio). Wayback save fallo."
+- effective: 2026-05-04
+  product: Gasoil
+  locality: Nouakchott
+  price_local: 59.17
+  source_type: press
+  url: https://attaqa.net/2026/05/04/%d8%a3%d8%b3%d8%b9%d8%a7%d8%b1-%d8%a7%d9%84%d9%85%d8%ad%d8%b1%d9%88%d9%82%d8%a7%d8%aa-%d9%81%d9%8a-%d9%85%d9%88%d8%b1%d9%8a%d8%aa%d8%a7%d9%86%d9%8a%d8%a7-%d8%aa%d8%b1%d8%aa%d9%81%d8%b9-5-%d8%a7/
+  archive_url: ""
+  sha256: f5d6d7c0cb45e49ba470869190ae3ba20d6d3da6cd5ea01a34ff012a3287455a
+  file: f5d6d7c0cb45_attaqa_7.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Attaqa 4-may-2026: gasoil de 563.5 a 591.7 MRO (= 59.17 MRU, +5%). Le360 7-jun confirma 59,17 MRU como nivel previo a junio. Vigencia: Le360 5-may-2026 'Le lundi 4 mai, le litre de gasoil est passe de 563,5 a 591,7 anciens ouguiyas'."
+- effective: 2026-06-02
+  product: Essence
+  locality: Nouakchott
+  price_local: 65.02
+  source_type: press
+  url: https://saharamedias.net/257527/
+  archive_url: https://web.archive.org/web/20261016180912/https://saharamedias.net/257527/
+  sha256: 7250902771c5b78aec395e8d8cae947d91549a0e0e4631672e518f5723995d0c
+  file: 7250902771c5_saharamedias_257527.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Sahara Medias 2-jun-2026: la Comision Nacional de Hidrocarburos emitio la noche del lunes al martes (1-2 jun) la decision n.o 05/2026 de precios maximos por ciudad; Nouakchott essence 65.02 'أوقية جديدة' (MRU, sin conversion). Attaqa 2-jun: 619.2 -> 650.2 MRO (= 65.02). Le360 7-jun: 'depuis le 2 juin', pero escribe 65,2 (errata). Sahara Medias 17-sep-2026 lo da aun como vigente."
+- effective: 2026-06-02
+  product: Gasoil
+  locality: Nouakchott
+  price_local: 62.13
+  source_type: press
+  url: https://saharamedias.net/257527/
+  archive_url: https://web.archive.org/web/20261016180912/https://saharamedias.net/257527/
+  sha256: 7250902771c5b78aec395e8d8cae947d91549a0e0e4631672e518f5723995d0c
+  file: 7250902771c5_saharamedias_257527.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Decision 05/2026, Nouakchott gasoil 62.13 MRU. Attaqa 2-jun: 591.7 -> 621.3 MRO; Le360 7-jun: 59,17 -> 62,13. Sahara Medias 17-sep-2026 lo da como vigente (621.3 MRO)."
+- effective: 2026-06-02
+  product: Petrole
+  locality: Nouakchott
+  price_local: 55.22
+  source_type: press
+  url: https://saharamedias.net/257527/
+  archive_url: https://web.archive.org/web/20261016180912/https://saharamedias.net/257527/
+  sha256: 7250902771c5b78aec395e8d8cae947d91549a0e0e4631672e518f5723995d0c
+  file: 7250902771c5_saharamedias_257527.html
+  method: HTML text
+  derived_from: []
+  confidence: media
+  note: "Decision 05/2026: 'سعر لتر البترول (الكيروسين) بـ 55.22 أوقية جديدة' en Nouakchott (MRU). Unica cifra de kerosene hallada; no hay segunda fuente ni nivel previo."
+- effective: 2026-09-17
+  product: Essence
+  locality: Nouakchott
+  price_local: 65.02
+  source_type: press
+  url: https://saharamedias.net/264872/
+  archive_url: http://web.archive.org/web/20260919015521/https://saharamedias.net/264872/
+  sha256: 09a7455d10aca7039ada0a66cd8a9dcddb97e532e6aa02d39745b3299deefc86
+  file: 09a7455d10ac_saharamedias_264872.html
+  method: "confirmation: nota de prensa fechada cita el precio vigente tras la cuarta suba"
+  derived_from: []
+  confidence: media
+  note: "Sahara Medias 17-sep-2026 (el Primer Ministro Mokhtar ould Djay promete mantener estables los precios y evitar nuevas subas): 'tras cuatro subas aprobadas por la Comision de Hidrocarburos... el litro de gasoil en Nouakchott paso de 487.9 MRO en marzo a 621.3 en la cuarta suba, mientras la essence subio de 511.2 a 650.2 MRO'. Essence 650.2 MRO / 10 = 65.02 MRU, igual al nivel del 2-jun-2026. No da precio de kerosene."
+- effective: 2026-09-17
+  product: Gasoil
+  locality: Nouakchott
+  price_local: 62.13
+  source_type: press
+  url: https://saharamedias.net/264872/
+  archive_url: http://web.archive.org/web/20260919015521/https://saharamedias.net/264872/
+  sha256: 09a7455d10aca7039ada0a66cd8a9dcddb97e532e6aa02d39745b3299deefc86
+  file: 09a7455d10ac_saharamedias_264872.html
+  method: "confirmation: nota de prensa fechada cita el precio vigente tras la cuarta suba"
+  derived_from: []
+  confidence: media
+  note: "Sahara Medias 17-sep-2026 (el Primer Ministro Mokhtar ould Djay promete mantener estables los precios y evitar nuevas subas): 'tras cuatro subas aprobadas por la Comision de Hidrocarburos... el litro de gasoil en Nouakchott paso de 487.9 MRO en marzo a 621.3 en la cuarta suba, mientras la essence subio de 511.2 a 650.2 MRO'. Gasoil 621.3 MRO / 10 = 62.13 MRU, igual al nivel del 2-jun-2026. No da precio de kerosene."

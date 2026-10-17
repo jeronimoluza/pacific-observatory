@@ -1,0 +1,9 @@
+# Eritrea: no levels. Kept as a target with its source disabled.
+# Why: 2026-10-16 triage: Eritrean Petroleum Corporation holds the monopoly and prices are effectively frozen; no level 2023-2026 was found in any official or press source (shabait.com has no fuel price content). Nothing to publish or verify.
+source_key: manual_er_levels
+country: Eritrea
+currency: ERN
+unit: ERN_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products: {}
+levels: []

@@ -1,0 +1,53 @@
+# `po fuel watch --country central_african_republic`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+# gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
+country: central_african_republic
+currency: XAF
+levels:
+  paths:
+  - src/fuel/configs/_manual/central_african_republic_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+gpp:
+  slug: Central-African-Republic
+  name: Central African Republic
+  products:
+    gasoline: Super
+    diesel: Gasoil
+  move_pct: 3
+  diverge_pct: 5
+  diverge_runs: 3
+  max_age_days: 45
+pages:
+- id: ndeke_luka_home
+  allow_empty: true
+  url: https://www.radiondekeluka.org/
+  mode: links
+  match: carburant|hydrocarbure|prix|gasoil
+news:
+- q: prix carburant Centrafrique
+  hl: fr
+  gl: CF
+- q: prix du carburant Bangui pompe
+  hl: fr
+  gl: CF
+must:
+- centrafrique
+- centrafricain
+- bangui
+- rca
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

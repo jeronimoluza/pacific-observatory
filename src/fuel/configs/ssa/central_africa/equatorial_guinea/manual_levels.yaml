@@ -1,0 +1,34 @@
+source_key: manual_gq_levels
+module: ssa.central_africa.equatorial_guinea.manual_levels
+function: fetch_manual_gq
+url: ''
+fallback_date: 2020-01-01
+priority: 10
+cadence: yearly
+carry_forward: true
+full_refresh: true
+station_type: national
+
+# Hand-curated levels with provenance, read from configs/_manual/equatorial_guinea_levels.yaml; nothing is scraped.
+# Rows with confidence baja stay in the table for `po fuel watch` but are not emitted.
+# How they were sourced: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+
+products:
+  Gasolina:
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  Gasóleo:
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  Petróleo lampante:
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: domestic

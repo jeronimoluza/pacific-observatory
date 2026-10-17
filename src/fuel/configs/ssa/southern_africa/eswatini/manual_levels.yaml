@@ -1,0 +1,36 @@
+source_key: manual_sz_levels
+module: ssa.southern_africa.eswatini.manual_levels
+function: fetch_manual_sz
+url: ''
+fallback_date: 2020-01-01
+priority: 10
+cadence: quarterly  # ~monthly announcements 4-5 weeks apart; 92-day carry bridges them while
+                    # the undated 2024-09..2026-02 cuts still show as gaps, not a year-old level
+carry_forward: true
+full_refresh: true
+station_type: national
+
+# Hand-curated levels with provenance, read from configs/_manual/eswatini_levels.yaml; nothing is scraped.
+# Rows with confidence baja stay in the table for `po fuel watch` but are not emitted.
+# How they were sourced: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+
+products:
+  ULP 95:
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+  Diesel 50ppm:
+    series_key: diesel_50ppm
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: 50ppm
+  Illuminating Paraffin:
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: domestic

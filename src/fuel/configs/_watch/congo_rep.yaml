@@ -1,0 +1,45 @@
+# `po fuel watch --country congo_rep`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+country: congo_rep
+currency: XAF
+levels:
+  paths:
+  - src/fuel/configs/_manual/congo_rep_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+pages:
+- id: hydrocarbures_feed
+  allow_empty: true
+  url: https://www.hydrocarbures.gouv.cg/feed/
+  mode: urls
+  match: prix|carburant|produits-petroliers
+- id: hydrocarbures_publications
+  url: https://www.hydrocarbures.gouv.cg/documentation/publications-officielles/
+  mode: links
+  match: prix|carburant|petrol
+news:
+- q: prix carburant Congo Brazzaville
+  hl: fr
+  gl: CG
+- q: prix à la pompe Brazzaville essence gasoil
+  hl: fr
+  gl: CG
+must:
+- congo
+- brazzaville
+- pointe-noire
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

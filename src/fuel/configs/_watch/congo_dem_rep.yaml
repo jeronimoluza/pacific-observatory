@@ -1,0 +1,57 @@
+# `po fuel watch --country congo_dem_rep`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+# gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
+country: congo_dem_rep
+currency: CDF
+levels:
+  paths:
+  - src/fuel/configs/_manual/congo_dem_rep_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+gpp:
+  slug: Democratic-Republic-of-the-Congo
+  name: Democratic Republic of the Congo
+  products:
+    gasoline: Essence
+    diesel: Gasoil
+  move_pct: 3
+  diverge_pct: 5
+  diverge_runs: 3
+  max_age_days: 45
+pages:
+- id: economie_verite_prix
+  url: https://economie.gouv.cd/verite_prix_produits_petroliers
+  mode: links
+  match: prix|structure|petrol|carburant
+- id: economie_communiques
+  allow_empty: true
+  url: https://economie.gouv.cd/communiques
+  mode: links
+  match: prix|structure|petrol|carburant
+news:
+- q: prix carburant Kinshasa
+  hl: fr
+  gl: CD
+- q: structure des prix produits pétroliers RDC
+  hl: fr
+  gl: CD
+must:
+- rdc
+- congo
+- kinshasa
+- csppp
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

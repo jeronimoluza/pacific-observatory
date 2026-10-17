@@ -49,6 +49,59 @@ def register(fuel_group, opts: dict):
         n_par = refresh_parallel_cache()
         click.echo(f"Parallel FX cache: {n_par} monthly rows")
 
+    @fuel_group.command("watch")
+    @click.option(
+        "--country",
+        default=None,
+        help="One country slug (default: every _watch config)",
+    )
+    @click.option("--state-dir", type=click.Path(path_type=Path), default=None)
+    @click.option(
+        "--reference-dir",
+        type=click.Path(path_type=Path),
+        default=None,
+        help="Where GPP reference rows go (default data/fuel/_reference/gpp)",
+    )
+    @click.option(
+        "--config-dir",
+        type=click.Path(path_type=Path),
+        default=None,
+        help="Watch configs (default src/fuel/configs/_watch)",
+    )
+    @click.option(
+        "--dry-run",
+        is_flag=True,
+        help="Print alerts instead of sending them; state is not saved",
+    )
+    def fuel_watch(country, state_dir, reference_dir, config_dir, dry_run):
+        """Watch official pages, Google News and GPP (reference only) for manual-table countries."""
+        from fuel import watch
+        from notify.send import notify
+
+        cfgs = watch.load_configs(country, config_dir or watch.CONFIG_DIR)
+        if not cfgs:
+            raise click.ClickException(f"no _watch config for {country!r}")
+        for cfg in cfgs:
+            if not cfg.get("enabled", True):
+                click.echo(
+                    f"{cfg['country']}: disabled ({cfg.get('disabled_reason', 'no reason given')})"
+                )
+                continue
+            alerts, results = watch.watch_country(
+                cfg,
+                state_dir or watch.STATE_DIR,
+                reference_dir or watch.GPP_DIR,
+                save=not dry_run,
+            )
+            for sev, msg in alerts:
+                click.echo(f"{sev.upper()} {msg}" if dry_run else notify(sev, msg))
+            failing = {w: e for w, e in results.items() if e != "ok"}
+            click.echo(
+                f"{cfg['country']}: {len(alerts)} new alert(s), {len(results) - len(failing)}/{len(results)} watched items ok"
+            )
+            for w, e in failing.items():
+                click.echo(f"  FAIL {w}: {e[:150]}")
+
     @fuel_group.command("gate-baseline")
     @region_opt
     @click.option("--seed", is_flag=True, help="Write the baseline (default: show it)")

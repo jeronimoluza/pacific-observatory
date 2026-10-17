@@ -1,0 +1,37 @@
+# `po fuel watch --country equatorial_guinea`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+country: equatorial_guinea
+currency: XAF
+levels:
+  paths:
+  - src/fuel/configs/_manual/equatorial_guinea_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+pages:
+- id: gepress_home
+  allow_empty: true
+  url: https://www.guineaecuatorialpress.com/
+  mode: links
+  match: combustible|carburante|gasolina|gasoil|precio
+news:
+- q: precio combustible Guinea Ecuatorial
+  hl: es
+  gl: GQ
+- q: prix carburant Guinée équatoriale
+  hl: es
+  gl: GQ
+must:
+- guinea ecuatorial
+- malabo
+- bata
+- guinee equatoriale
+keywords:
+- precio del combustible
+- precios del combustible
+- combustible
+- carburante
+- gasolina
+- gasoil
+- prix du carburant
+- prix carburant

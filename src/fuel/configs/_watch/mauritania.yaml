@@ -1,0 +1,39 @@
+# `po fuel watch --country mauritania`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+country: mauritania
+currency: MRU
+levels:
+  paths:
+  - src/fuel/configs/_manual/mauritania_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+pages:
+- id: saharamedias_home
+  allow_empty: true
+  url: https://saharamedias.net/
+  mode: links
+  match: carburant|hydrocarbure|محروقات|الوقود|المحروقات
+news:
+- q: prix carburant Mauritanie
+  hl: fr
+  gl: MR
+- q: أسعار المحروقات موريتانيا
+  hl: ar
+  gl: MR
+must:
+- mauritanie
+- mauritanien
+- nouakchott
+- موريتانيا
+- نواكشوط
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- carburant
+- gasoil
+- المحروقات
+- الوقود
+- أسعار

@@ -1,0 +1,15 @@
+source_key: manual_sd_levels
+module: ssa.east_africa.sudan.manual_levels
+function: fetch_manual_sd
+url: ""
+enabled: false
+disabled_reason: "2026-10-16 triage: no official or stable source. Since the war, prices are set by state with an informal market, quoted per gallon, and only reported by press (Dabanga, AllAfrica); ministry sites do not respond and SUNA returns 403. GPP (SDG 630/L) is ~16x below press reports (SDG 38,805/gallon, White Nile, Sep-2026). A national series would mislead."
+fallback_date: 2023-01-01
+priority: 10
+cadence: yearly
+carry_forward: true
+full_refresh: true
+station_type: national
+
+# Hand-curated levels would live in configs/_manual/sudan_levels.yaml (empty).
+products: {}

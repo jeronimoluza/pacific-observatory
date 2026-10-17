@@ -1,0 +1,107 @@
+# Congo, Rep.: niveles oficiales de precios de combustible, una fila por (vigencia, producto).
+# Autoridad: arrêté conjunto de los ministros de Comercio, Finanzas/Economía, Hidrocarburos y Presupuesto ("prix de vente plafond" de los productos sometidos a la estructura de precios), publicado en el Journal officiel (sgg.cg); anuncios previos del Primer Ministro. Régimen: precios administrados y subsidiados, ajustes ad hoc ligados al programa FMI. Canales: Journal officiel (sgg.cg/JO/<año>/), Les Dépêches de Brazzaville (adiac-congo.com), prensa regional.
+# Productos no listados en una fecha siguen sin cambio desde su fila anterior.
+# Huecos conocidos:
+#   - Gazole 500 -> 625: la nota de la ONG RPDH (16-10-2023, 4a90db0ac826) dice que se aplicó en surtidor "courant octobre 2023" (tras el Consejo de Ministros del 07-10-2023); el primer texto oficial hallado es el arrêté 14335 del 11-11-2023. No se encontró el día exacto de octubre.
+#   - Revisé todos los JO ordinarios 2024, 2025 y 2026 en sgg.cg (146 números) buscando "prix de vente plafond": solo aparece el arrêté 95/2025 (sin cambio de precio). El JO 26-2026 (25-06-2026) todavía cita el arrêté 95 como vigente. No hay evidencia posterior a jun-2026 de que 775/625 siga hoy, así que no pongo last_checked.
+#   - La suba del super a 1050 anunciada para ene-2024 no figura en ningún arrêté publicado (no se aplicó).
+#   - Pétrole lampant (320 FCFA en ambos arrêtés) omitido para mantener solo super/gasoil; Jet A1 y Fioul no aplican.
+#   - Confirmaciones (2a pasada): Supercarburant 775 en 2024-06-07 (Ecomatin) y 2024-11-16 (Dépêches de Brazzaville). El JO 26-2026 cita el arrêté 95 pero NO trae precios: no es confirmación.
+#   - Tramos >12 meses sin fila: Gazole 2023-11-11 -> 2025-02-01 (~15 meses; ninguna fuente fechada accesible da el gasoil: la nota AllAfrica nov-2024 con 625 no responde) y ambos productos 2025-02-01 -> hoy (~20 meses; sin fuente fechada 2025-2026 con el precio, solo un blog no confiable con 525/450).
+source_key: manual_cg_levels
+country: "Congo, Rep."
+currency: XAF
+unit: XAF_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products:
+  "Supercarburant":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gazole national":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+levels:
+- effective: 2023-07-15
+  product: Supercarburant
+  locality: "national"
+  price_local: 775
+  source_type: press
+  url: "https://adiac-congo.com/print/content/assouplissement-149593"
+  archive_url: "https://web.archive.org/web/20261016180454/https://www.adiac-congo.com/print/content/assouplissement-149593"
+  sha256: b665fc58aff5776c4ace572ef4a04f34a5f6d777ec0896894a722983a81b867c
+  file: b665fc58aff5_adiac_assouplissement_149593.html
+  method: "HTML text"
+  derived_from: []
+  confidence: media
+  note: "Les Dépêches de Brazzaville (jul-2023): 'Le prix du litre d'essence à la pompe passe de 625 FCFA à 775 FCFA à compter du 15 juillet', según el gobierno (suspensión progresiva de subsidios). Nivel 775 ratificado luego por los arrêtés 14335/2023 y 95/2025 (JO); Ecomatin 07-06-2024 (410a93e6f9b6) confirma 775 vigente."
+- effective: 2023-11-11
+  product: Gazole national
+  locality: "national"
+  price_local: 625
+  source_type: gazette
+  url: "https://www.sgg.cg/JO/2023/congo-jo-2023-46.pdf"
+  archive_url: "http://web.archive.org/web/20250710013740/https://www.sgg.cg/JO/2023/congo-jo-2023-46.pdf"
+  sha256: dd7c4e0391f8e33f5866a09b3a714974cd909bc32edd8105cfef7ef0db49e266
+  file: dd7c4e0391f8_congo-jo-2023-46.pdf
+  method: "embedded text"
+  derived_from: []
+  confidence: media-alta
+  note: "Arrêté n° 14335 du 11 novembre 2023 portant révision des prix des produits pétroliers finis liquides (JO n° 46 del 16-11-2023, p. 1611-1612), art. 4: Supercarburant 775, Gazole national 625, Pétrole lampant 320 FCFA/L. No trae fecha de entrada en vigor (effective = fecha de firma). Baja a media-alta porque la ONG RPDH dice que el 625 ya se cobraba en surtidor durante octubre de 2023."
+- effective: 2024-06-07
+  product: Supercarburant
+  locality: "national"
+  price_local: 775
+  source_type: press
+  url: "https://ecomatin.net/le-fmi-negocie-la-reduction-des-subventions-de-carburants-avec-le-congo"
+  archive_url: "https://web.archive.org/web/20261016184921/https://ecomatin.net/le-fmi-negocie-la-reduction-des-subventions-de-carburants-avec-le-congo"
+  sha256: 410a93e6f9b6f6c6814e5180eed56f717ec4345ed5a96cd8c42f8df0cfc9e4af
+  file: 410a93e6f9b6_ecomatin_20240607_fmi_subventions_congo.html
+  method: "confirmation: Ecomatin da 775 como precio actual"
+  derived_from: []
+  confidence: media
+  note: "Ecomatin 07-06-2024 (negociación FMI desde el 05-06-2024): \"le litre de carburant devrait passer de 775Fcfa à 1150Fcfa à la pompe\". Confirma que la suba a 1050 anunciada para ene-2024 no se aplicó."
+- effective: 2024-11-16
+  product: Supercarburant
+  locality: "national"
+  price_local: 775
+  source_type: press
+  url: "https://adiac-congo.com/print/content/contrebande-161083"
+  archive_url: "https://web.archive.org/web/20261016184738/https://www.adiac-congo.com/print/content/contrebande-161083"
+  sha256: 8be0f5401426ee98c3ce826501ac0c84ea3696d8c13334158291f6de16a17e50
+  file: 8be0f5401426_adiac_contrebande_161083_20241116.html
+  method: "confirmation: Les Dépêches de Brazzaville da 775 como precio en surtidor"
+  derived_from: []
+  confidence: media
+  note: "Les Dépêches de Brazzaville 16-11-2024 (escasez y contrabando): \"De 775 FCFA, son prix à la pompe, le litre de super grimpe à plus de 1000 FCFA\" en el mercado negro."
+- effective: 2025-02-01
+  product: Supercarburant
+  locality: "national"
+  price_local: 775
+  source_type: gazette
+  url: "https://sgg.cg/JO/2025/congo-jo-2025-07.pdf"
+  archive_url: "http://web.archive.org/web/20260616174826/https://sgg.cg/JO/2025/congo-jo-2025-07.pdf"
+  sha256: ccbf5810e95c44e62b14fe90caad5b216a7301a8688a616bc075b3ce9a0d8065
+  file: ccbf5810e95c_congo-jo-2025-07.pdf
+  method: "embedded text"
+  derived_from: []
+  confidence: alta
+  note: "Arrêté n° 95 du 4 février 2025 (JO n° 7 del 13-02-2025, p. 180-183), art. 4: Supercarburant 775 FCFA/L; art. 12: deroga el arrêté 14335 y 'prend effet à compter du 1er février 2025'. Reconfirma el nivel (sin cambio en surtidor)."
+- effective: 2025-02-01
+  product: Gazole national
+  locality: "national"
+  price_local: 625
+  source_type: gazette
+  url: "https://sgg.cg/JO/2025/congo-jo-2025-07.pdf"
+  archive_url: "http://web.archive.org/web/20260616174826/https://sgg.cg/JO/2025/congo-jo-2025-07.pdf"
+  sha256: ccbf5810e95c44e62b14fe90caad5b216a7301a8688a616bc075b3ce9a0d8065
+  file: ccbf5810e95c_congo-jo-2025-07.pdf
+  method: "embedded text"
+  derived_from: []
+  confidence: alta
+  note: "Arrêté n° 95/2025, art. 4: Gazole national 625 FCFA/L, vigente desde el 01-02-2025. Reconfirma el nivel (sin cambio). El JO 26-2026 (e4724fde9aa5) lo sigue citando como el arrêté de precios de referencia (jun-2026)."

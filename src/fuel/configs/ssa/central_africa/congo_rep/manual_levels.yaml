@@ -1,0 +1,28 @@
+source_key: manual_cg_levels
+module: ssa.central_africa.congo_rep.manual_levels
+function: fetch_manual_cg
+url: ''
+fallback_date: 2020-01-01
+priority: 10
+cadence: yearly
+carry_forward: true
+full_refresh: true
+station_type: national
+
+# Hand-curated levels with provenance, read from configs/_manual/congo_rep_levels.yaml; nothing is scraped.
+# Rows with confidence baja stay in the table for `po fuel watch` but are not emitted.
+# How they were sourced: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+
+products:
+  Supercarburant:
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  Gazole national:
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard

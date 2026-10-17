@@ -1,0 +1,54 @@
+# `po fuel watch --country niger`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+# gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
+country: niger
+currency: XOF
+levels:
+  paths:
+  - src/fuel/configs/_manual/niger_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+gpp:
+  slug: Niger
+  name: Niger
+  products:
+    gasoline: Super 91
+    diesel: Gasoil
+  move_pct: 3
+  diverge_pct: 5
+  diverge_runs: 3
+  max_age_days: 45
+pages:
+- id: arse_tarif
+  url: https://arse.ne/tarif-hydrocarbures/
+  mode: text
+- id: arse_tarif_links
+  url: https://arse.ne/tarif-hydrocarbures/
+  mode: links
+  match: arrete|tarif|prix|hydrocarbure
+news:
+- q: prix carburant Niger
+  hl: fr
+  gl: NE
+- q: prix super gasoil Niamey
+  hl: fr
+  gl: NE
+must:
+- niger
+- niamey
+- arse
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

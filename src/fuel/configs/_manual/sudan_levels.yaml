@@ -1,0 +1,9 @@
+# Sudan: no levels. Kept as a target with its source disabled.
+# Why: 2026-10-16 triage: no official or stable source. Since the war, prices are set by state with an informal market, quoted per gallon, and only reported by press (Dabanga, AllAfrica); ministry sites do not respond and SUNA returns 403. GPP (SDG 630/L) is ~16x below press reports (SDG 38,805/gallon, White Nile, Sep-2026). A national series would mislead.
+source_key: manual_sd_levels
+country: Sudan
+currency: SDG
+unit: SDG_per_litre
+doc: ~/vault/raw/specs/fuel/2026-10-16-ssa-manual-levels.md
+products: {}
+levels: []

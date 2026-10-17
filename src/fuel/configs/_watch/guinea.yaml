@@ -1,0 +1,57 @@
+# `po fuel watch --country guinea`. Schema and checks: src/fuel/watch.py.
+# Triage lane 2026-10-16: manual+alerta. levels: the hand-curated table in configs/_manual/.
+# gpp.products names the product in OUR table for each GPP product (REFERENCE ONLY).
+country: guinea
+currency: GNF
+levels:
+  paths:
+  - src/fuel/configs/_manual/guinea_levels.yaml
+  stale_months: 6
+broken_after: 3
+lookback_days: 10
+gpp:
+  slug: Guinea
+  name: Guinea
+  products:
+    gasoline: Essence
+    diesel: Gasoil
+  move_pct: 3
+  diverge_pct: 5
+  diverge_runs: 3
+  max_age_days: 45
+pages:
+- id: agp_home
+  allow_empty: true
+  url: https://agpguinee.com/
+  mode: links
+  match: carburant|hydrocarbure|prix|sonap
+- id: guineenews_feed
+  allow_empty: true
+  url: https://guineenews.org/feed/
+  mode: urls
+  match: carburant|hydrocarbure|sonap|prix-a-la-pompe
+news:
+- q: prix carburant Guinée
+  hl: fr
+  gl: GN
+- q: SONAP prix à la pompe Guinée
+  hl: fr
+  gl: GN
+must:
+- guinee
+- conakry
+- sonap
+keywords:
+- prix du carburant
+- prix des carburants
+- prix carburant
+- prix a la pompe
+- prix du super
+- prix du gasoil
+- prix de l'essence
+- produits petroliers
+- supercarburant
+- gasoil
+- hausse du prix
+- baisse du prix
+- carburant

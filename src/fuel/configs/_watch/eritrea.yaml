@@ -1,0 +1,13 @@
+# `po fuel watch --country eritrea`: DISABLED, kept so the country stays on the target list.
+country: eritrea
+currency: ERN
+enabled: false
+disabled_reason: "2026-10-16 triage: Eritrean Petroleum Corporation holds the monopoly and prices are effectively frozen; no level 2023-2026 was found in any official or press source (shabait.com has no fuel price content). Nothing to publish or verify."
+broken_after: 3
+lookback_days: 10
+news:
+  - q: 'Eritrea fuel price'
+    hl: en
+    gl: ER
+must: ['eritrea', 'asmara']
+keywords: [fuel, petrol, diesel, gasoline, gallon, الوقود, البنزين, الجازولين]

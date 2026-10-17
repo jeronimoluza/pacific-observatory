@@ -1,0 +1,48 @@
+source_key: crse_sn_4weekly
+module: ssa.west_africa.senegal.crse
+function: fetch_crse_sn
+url: https://www.crse.sn/wp-json/wp/v2/media?search=structure
+fallback_date: 2023-12-31
+priority: 10
+cadence: monthly  # structures every 4 weeks; 31-day carry covers one cycle
+carry_forward: true
+station_type: national
+
+# CRSE "Structure des prix des produits pétroliers", effective every fourth
+# Saturday; scanned PDFs read by OCR (pdftoppm + tesseract, French data).
+# Page 3 row 12 "Prix de vente au consommateur", rounded to F CFA/L. A product
+# whose OCR readings do not agree is dropped for that structure (gap, carried
+# forward). Essence ordinaire / pirogue stay out of the build: the gasoline
+# family is a mean across series and pirogue fuel is a subsidized fishing mix.
+
+products:
+  "Super":
+    series_key: supercarburant
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Essence ordinaire":
+    series_key: essence_ordinaire
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: regular
+  "Essence pirogue":
+    series_key: essence_pirogue
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: pirogue
+  "Pétrole lampant":
+    series_key: petrole_lampant
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Gasoil":
+    series_key: gasoil
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
