@@ -7,8 +7,11 @@ is a question for the ``update-fuel-price-regimes`` skill and a human.
 Detectors:
 
 - ``data``: price changes observed in the last 365 days per published series
-  vs the row in force today (rules below), plus ``publication: announcement``
-  sources against a ``formula``/``market`` row.
+  vs the row in force today, plus ``publication: announcement`` sources against
+  a ``formula``/``market`` row. Only live series count (last collect without
+  errors, or else the last real observation, within the fill-rule horizon).
+  The 0-change rule skips rows that already say the price does not move
+  (``frozen``, or ``administered`` with ``adhoc``/no frequency).
 - ``expiry``: the row in force has ``temporary_until`` or ``valid_to`` within
   ``EXPIRY_DAYS`` (or past), or its text names a temporary measure but no
   ``temporary_until`` is set.
@@ -222,7 +225,8 @@ def detect_data(
         elif (
             n == 0
             and (today - s.first_obs).days > ZERO_ALIVE_DAYS
-            and not (regime == "administered" and freq == "frozen")
+            and freq != "frozen"
+            and not (regime == "administered" and freq in ("", "adhoc"))
         ):
             implied = "administered"
             signal = f"0 changes in 365 d; source alive > {ZERO_ALIVE_DAYS} d"
@@ -349,7 +353,7 @@ def detect_stale_seed(
                 implied_regime=hits[0]["implied_regime"],
                 implied_adjust_freq=hits[0]["implied_adjust_freq"],
                 signal=f"{row['provenance']} row contradicted by data: "
-                + "; ".join(h["signal"] for h in hits),
+                + "; ".join(dict.fromkeys(h["signal"] for h in hits)),
                 evidence_url=hits[0]["evidence_url"],
                 ref=" | ".join(h["ref"] for h in hits),
             )
