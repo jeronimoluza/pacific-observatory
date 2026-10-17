@@ -6,6 +6,7 @@ spider: 999_md
 url: https://999.md/
 language: ru
 cadence: weekly
+relabel_same_number: {from: MDL, to: EUR}
 channel: marketplace
 archive_prefix: "999.md/ru/"
 archive_path_re: '^/ru/\d+/?$'
