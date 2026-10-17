@@ -1,4 +1,4 @@
-"""Click commands for fuel refresh-fx and publish.
+"""Click commands for fuel refresh-fx, publish and regime-check.
 
 Kept out of `cli.py` so it stays under the 500-line cap. `register(fuel_group,
 opts)` attaches the commands, reusing the shared option decorators.
@@ -133,3 +133,26 @@ def register(fuel_group, opts: dict):
             out_dir=out_dir or publish_eap.DEFAULT_OUT_DIR,
         )
         click.echo(f"EAP Excel: {path}")
+
+    @fuel_group.command("regime-check")
+    @click.option(
+        "--date", "on", default=None, help="Check as of YYYY-MM-DD (default: today UTC)"
+    )
+    @click.option("--outputs-dir", type=click.Path(path_type=Path), default=None)
+    def fuel_regime_check(on, outputs_dir):
+        """Alert where data, expiries or sign-off contradict the regime table.
+
+        Writes outputs/fuel/regime_alerts/<date>.csv; never edits regimes.yaml.
+        """
+        import logging
+        from datetime import date
+
+        from fuel import regime_check
+
+        logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
+        path, df = regime_check.run_regime_check(
+            today=date.fromisoformat(on) if on else None,
+            outputs_dir=outputs_dir or regime_check.OUTPUTS_DIR,
+        )
+        counts = df["detector"].value_counts().to_dict() if not df.empty else {}
+        click.echo(f"Regime alerts: {len(df)} {counts} -> {path}")

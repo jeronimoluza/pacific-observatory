@@ -2,7 +2,9 @@
 
 Writes ``outputs/fuel/excels/{region}_fuel_prices.xlsx`` with two sheets:
 
-- ``data``    — wide table: iso3, fuel_product, currency, units + one column per date
+- ``data``    — wide table: iso3, fuel_product, currency, units, price_note + one
+  column per date (price_note = "Best available, not pump price" when the
+  source's price_basis is not retail)
 - ``sources`` — iso3, source, url (one row per (country, source) actually used)
 """
 
@@ -16,10 +18,11 @@ import pandas as pd
 
 from .config import build_fuel_registry
 from .publish_parallel import parallel_sheets, station_stats_sheet
+from .regimes import basis_note
 
 logger = logging.getLogger(__name__)
 
-_DATA_COLS_STATIC = ["iso3", "fuel_product", "currency", "units"]
+_DATA_COLS_STATIC = ["iso3", "fuel_product", "currency", "units", "price_note"]
 
 
 def _load_country_prices(country_dir: Path, cutoff: str) -> pd.DataFrame:
@@ -49,6 +52,9 @@ def _build_data_sheet(
             currency=df["currency"].fillna(c.get("currency", "")),
             fuel_product=df["label"].fillna(df["series_key"]),
             units=df["currency"].astype(str) + "/" + df["unit"].astype(str),
+            price_note=(
+                df["price_basis"].map(basis_note) if "price_basis" in df else ""
+            ),
         )
         frames.append(
             df[
@@ -57,6 +63,7 @@ def _build_data_sheet(
                     "fuel_product",
                     "currency",
                     "units",
+                    "price_note",
                     "observation_date",
                     "price_local",
                 ]
@@ -67,11 +74,11 @@ def _build_data_sheet(
 
     combined = pd.concat(frames, ignore_index=True)
     combined = combined.groupby(
-        ["iso3", "fuel_product", "currency", "units", "observation_date"],
+        _DATA_COLS_STATIC + ["observation_date"],
         as_index=False,
     )["price_local"].mean()
     wide = combined.pivot_table(
-        index=["iso3", "fuel_product", "currency", "units"],
+        index=_DATA_COLS_STATIC,
         columns="observation_date",
         values="price_local",
     )
@@ -117,6 +124,7 @@ def _build_freshness_sheet(countries: list[dict]) -> pd.DataFrame:
                 ),
             )
         )
+        frames[-1]["price_note"] = frames[-1]["price_basis"].map(basis_note)
     if not frames:
         return pd.DataFrame(
             columns=[
@@ -125,6 +133,7 @@ def _build_freshness_sheet(countries: list[dict]) -> pd.DataFrame:
                 "last_observed",
                 "last_shown",
                 "price_basis",
+                "price_note",
             ]
         )
     return pd.concat(frames, ignore_index=True).sort_values(["iso3", "fuel_product"])

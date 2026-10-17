@@ -41,12 +41,27 @@ COLUMNS = [
     "reviewer",
     "reviewed_at",
     "note",
+    "temporary_until",
 ]
+
+# Series whose source is not a retail pump price carry this label in the
+# Excel and the dashboard (price_basis in the source YAML).
+NOT_PUMP_PRICE = "Best available, not pump price"
+
+
+def basis_note(price_basis) -> str:
+    """``NOT_PUMP_PRICE`` unless every basis in a comma list is retail."""
+    parts = {p.strip() for p in str(price_basis or "retail").split(",") if p.strip()}
+    return "" if parts <= {"retail", "nan"} else NOT_PUMP_PRICE
 
 
 def badge(regime: str) -> str:
-    """Two-value badge the dashboard shows: only ``market`` is Market."""
-    return "Market" if regime == "market" else "Price Control"
+    """Badge the dashboard shows: ``market`` is Market, ``floor`` is Reference
+    Price (a regulated minimum, not a controlled pump price), the rest Price
+    Control."""
+    if regime == "market":
+        return "Market"
+    return "Reference Price" if regime == "floor" else "Price Control"
 
 
 def load_regimes(path: Path = REGIMES_PATH) -> pd.DataFrame:
@@ -56,7 +71,7 @@ def load_regimes(path: Path = REGIMES_PATH) -> pd.DataFrame:
     df = pd.DataFrame(rows, columns=COLUMNS)
     df["subsidy"] = df["subsidy"].eq(True)
     df["price_basis"] = df["price_basis"].fillna("retail")
-    for col in ("valid_from", "valid_to"):
+    for col in ("valid_from", "valid_to", "temporary_until"):
         df[col] = pd.to_datetime(df[col], errors="raise")
     bad = df[
         ~df["regime"].isin(REGIMES)

@@ -17,6 +17,7 @@ import yaml
 from core.config import load_countries
 
 from . import gates
+from .regimes import basis_note
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +138,9 @@ def _load_country_fuel_data(
         for _, row in df.iterrows():
             series_key = row.get("series_key", "")
             label = row.get("label", "") or series_key
+            note = basis_note(row.get("price_basis"))
+            if note:
+                label = f"{label} ({note})"
             rec = {
                 "observation_date": row.get("observation_date", ""),
                 "fuel_product": label,

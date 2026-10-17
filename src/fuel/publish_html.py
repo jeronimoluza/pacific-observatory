@@ -390,6 +390,7 @@ def gen_policy_html(
     _BASE_COLORS = {
         "Market": regime_colors.get("Market", "#6c757d"),
         "Price Control": regime_colors.get("Price Control", "#d62728"),
+        "Reference Price": regime_colors.get("Reference Price", "#8c564b"),
         "Unknown": regime_colors.get("Unknown", "#aec7e8"),
     }
     _SUBSIDY_COLOR = "#2196f3"
@@ -580,6 +581,7 @@ def gen_policy_html(
         <ul>
             <li><b>Market</b> — retail price set by suppliers without government control.</li>
             <li><b>Price Controlled</b> — government sets the retail price by regulation.</li>
+            <li><b>Reference Price</b> — the regulator publishes a minimum (floor) price; retailers price freely above it.</li>
             <li><b>Subsidised</b> — IMF Fossil Fuel Subsidies Database (2025 release, 2024 reference year) reports a positive implicit or explicit subsidy. Implicit = retail price below supply cost or excludes externalities and the standard consumption tax.</li>
         </ul>
     </details>
@@ -654,6 +656,9 @@ def gen_policy_html(
             <div class="row-label">Price Controlled</div>
             <div id="fuel-regime-control-sub" class="fuel-regime-cell"></div>
             <div id="fuel-regime-control-nosub" class="fuel-regime-cell"></div>
+            <div class="row-label fuel-regime-ref">Reference Price</div>
+            <div id="fuel-regime-ref-sub" class="fuel-regime-cell fuel-regime-ref"></div>
+            <div id="fuel-regime-ref-nosub" class="fuel-regime-cell fuel-regime-ref"></div>
         </div>
     </div>
     <div class="section-label">Fuel Family:</div>
@@ -1060,7 +1065,7 @@ function renderScatter() {{
                                 let sub;
                                 if (hasSubsidy) {{
                                     sub = '$' + m.subsidies[_scatterProduct].toFixed(2);
-                                }} else if (regime === 'Market' || regime === 'Price Control') {{
+                                }} else if (regime === 'Market' || regime === 'Price Control' || regime === 'Reference Price') {{
                                     sub = 'no subsidies';
                                 }} else {{
                                     sub = 'no data';
@@ -1550,6 +1555,8 @@ function updateFuelRegimeSection(countryName, selectedKeys, keyColors) {{
         marketNoSub: [],
         controlSub: [],
         controlNoSub: [],
+        refSub: [],
+        refNoSub: [],
     }};
     selectedKeys.forEach(function(key) {{
         const row = rows.find(r => chipKey(r) === key);
@@ -1568,6 +1575,8 @@ function updateFuelRegimeSection(countryName, selectedKeys, keyColors) {{
             (isSub ? buckets.marketSub : buckets.marketNoSub).push(entry);
         }} else if (info.regime === 'Price Control') {{
             (isSub ? buckets.controlSub : buckets.controlNoSub).push(entry);
+        }} else if (info.regime === 'Reference Price') {{
+            (isSub ? buckets.refSub : buckets.refNoSub).push(entry);
         }}
     }});
 
@@ -1587,8 +1596,12 @@ function updateFuelRegimeSection(countryName, selectedKeys, keyColors) {{
     renderCell(buckets.marketNoSub, marketNoSub);
     renderCell(buckets.controlSub, controlSub);
     renderCell(buckets.controlNoSub, controlNoSub);
+    renderCell(buckets.refSub, document.getElementById('fuel-regime-ref-sub'));
+    renderCell(buckets.refNoSub, document.getElementById('fuel-regime-ref-nosub'));
+    const nRef = buckets.refSub.length + buckets.refNoSub.length;
+    document.querySelectorAll('.fuel-regime-ref').forEach(function(el) {{ el.style.display = nRef ? '' : 'none'; }});
 
-    const total = buckets.marketSub.length + buckets.marketNoSub.length + buckets.controlSub.length + buckets.controlNoSub.length;
+    const total = buckets.marketSub.length + buckets.marketNoSub.length + buckets.controlSub.length + buckets.controlNoSub.length + nRef;
     section.style.display = total ? '' : 'none';
 }}
 
