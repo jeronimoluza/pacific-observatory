@@ -69,7 +69,7 @@ import pyarrow.parquet as pq
 import yaml
 
 from prices import cc_config, lineage, partition
-from prices.enrich import config, shards
+from prices.enrich import config, currency_hash, shards
 
 logger = logging.getLogger(__name__)
 
@@ -815,6 +815,7 @@ def run(
             if shard_path.exists():
                 new_state[key] = list(sig)
                 n_skipped += 1
+                currency_hash.split_shard(shard_path, country)
                 continue
             # An unchanged source whose shard is still the old CSV: convert it
             # rather than re-walking its raw artifacts. Without this the format
@@ -825,6 +826,7 @@ def run(
                 shards.write_shard(shards.read_shard(legacy), shard_path)
                 new_state[key] = list(sig)
                 n_converted += 1
+                currency_hash.split_shard(shard_path, country)
                 continue
 
         n_rows = _write_source_shard(
@@ -838,6 +840,7 @@ def run(
         )
         if not n_rows:
             continue
+        currency_hash.split_shard(shard_path, country)
         new_state[key] = list(sig)
         n_refreshed += 1
         logger.info("[concatenate] %s: %d rows", key, n_rows)
