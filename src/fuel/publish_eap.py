@@ -141,6 +141,7 @@ def _aggregate(legacy_csv: Path) -> tuple[pd.DataFrame, set[tuple[str, str]]]:
             continue
         chunk["iso3"] = chunk["country"].map(COUNTRY_TO_ISO3)
         chunk["units"] = chunk["currency"].astype(str) + "/L"
+        chunk["price_note"] = ""  # legacy EAP feeds are all retail
         sources.update(zip(chunk["iso3"], chunk["source_key"].astype(str)))
         parts.append(
             chunk.groupby(_KEY, sort=False)["price_local"].agg(["sum", "count"])
