@@ -1284,6 +1284,12 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
             ),
         )
 
+    # GlobalPetrolPrices is reference only and is never published as a price: drop all gpp_* rows.
+    fuel_data = {
+        country: [r for r in records if not str(r.get("source_key", "")).startswith("gpp_")]
+        for country, records in fuel_data.items()
+    }
+
     # Pre-process per-country before slimming.
     # HK: exclude sparse GPP rows (they introduce a duplicate "Gasoline" chip), then
     #     average the per-station Consumer Council data to one price per day.
