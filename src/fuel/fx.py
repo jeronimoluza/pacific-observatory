@@ -12,6 +12,7 @@ from pathlib import Path
 import pandas as pd
 
 from prices.fx import frankfurter
+from prices.fx.pegs import EUR_PEGS, REPLACED_BY_EUR
 
 logger = logging.getLogger(__name__)
 
@@ -335,3 +336,22 @@ def attach_fx_and_usd(
         work.loc[convert_mask, "price_local"] / work.loc[convert_mask, "fx_rate"]
     )
     return work
+
+
+def to_euro(df: pd.DataFrame, currency: str) -> pd.DataFrame:
+    """Raw rows stored in a currency the euro replaced, converted at its peg.
+
+    The build stamps the country's currency (countries.yaml) on every row, so
+    Bulgaria's BGN history, collected before it moved to EUR, would otherwise
+    read 1.96x too high. The peg is fixed by law, not a market rate.
+    """
+    if currency != "EUR" or "currency" not in df.columns:
+        return df
+    old = df["currency"].isin(REPLACED_BY_EUR)
+    if not old.any():
+        return df
+    df = df.copy()
+    peg = df.loc[old, "currency"].map(EUR_PEGS)
+    df.loc[old, "price_local"] = pd.to_numeric(df.loc[old, "price_local"]) / peg
+    df.loc[old, "currency"] = "EUR"
+    return df

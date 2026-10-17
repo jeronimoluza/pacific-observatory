@@ -73,7 +73,7 @@ brunei_darussalam:
 bulgaria:
   name: Bulgaria
   iso3: BGR
-  currency: BGN
+  currency: EUR  # euro since 2026-01-01; BGN history converts at 1.95583
   languages: [en]
 
 cambodia:

@@ -37,7 +37,7 @@ _GAS_URL = (
 # our_cc (ISO 3166-1 alpha-2, lowercase) -> (Eurostat geo code, countries.yaml name, currency)
 _COUNTRIES = {
     "be": ("BE", "Belgium", "EUR"),
-    "bg": ("BG", "Bulgaria", "BGN"),
+    "bg": ("BG", "Bulgaria", "EUR"),  # NAC is EUR from 2026-S1 (BGN before)
     "cz": ("CZ", "Czech Republic", "CZK"),
     "dk": ("DK", "Denmark", "DKK"),
     "de": ("DE", "Germany", "EUR"),

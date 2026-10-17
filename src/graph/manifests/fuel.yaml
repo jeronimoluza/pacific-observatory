@@ -33,3 +33,26 @@ nodes:
       - {color: rojo, desc: publish bloqueado por el gate de países (bajó el conteo)}
       - {color: rojo, desc: sin publish en > 8 días}
       - {color: amarillo, desc: fallas de fuente nuevas (no están en known_failures.md)}
+
+  fuel.country:
+    code_ref: origin/mvp/panel36
+    estado: prod
+    observer: fuel_country
+    inputs: [fuel.publish]
+    code_paths:
+      - src/fuel/process.py
+      - src/fuel/fill_rule.py
+      - src/fuel/regime_check.py
+      - src/fuel/configs/**/*.yaml
+    paths:
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/fuel/<region>/<subregion>/<country>/fuel_family_usd_prices.csv", machine: mac}
+      - {path: "~/po-worktrees/fuel-scale/outputs/fuel/<region>/<subregion>/<country>/fuel_family_usd_prices.csv", machine: a8}
+      - {path: "~/wb/pacificobservatory/repo/template-repo/outputs/fuel/regime_alerts/<date>.csv", machine: mac, role: state}
+      - {path: "~/po-worktrees/fuel-scale/outputs/fuel/regime_alerts/<date>.csv", machine: a8, role: state}
+    partition: country
+    run: po fuel build -r R (por país) y po fuel regime-check (timer diario 07:45 UTC en a8)
+    freshness: último día publicado por familia (con el arrastre de fill_rule) <= 31 días
+    checks:
+      - {color: rojo, desc: país construido sin filas publicadas}
+      - {color: rojo, desc: "ninguna familia vigente (último día publicado, con arrastre, > 31 días)"}
+      - {color: amarillo, desc: "price_basis no retail (fallback rotulado), alguna familia vieja o alertas de regime-check"}

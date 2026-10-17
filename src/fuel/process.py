@@ -17,7 +17,7 @@ from .config import ProductSpec, build_fuel_registry
 from . import gates
 from .family_key import base_family, family_key
 from .fill_rule import carry_end
-from .fx import DEFAULT_FX_CACHE, attach_fx_and_usd
+from .fx import DEFAULT_FX_CACHE, attach_fx_and_usd, to_euro
 from prices.fx.parallel import PARALLEL_CACHE
 
 from .fx_parallel import attach_parallel
@@ -154,6 +154,7 @@ def _load_source_frame(entry: dict, data_dir: Path = DATA_DIR) -> pd.DataFrame:
             df = df[~mask]
     if df.empty:
         return df
+    df = to_euro(df, entry["currency"])
 
     raw_products = {str(v).strip() for v in df["fuel_product"].dropna().unique()}
     mapped_products = set(entry["products"].keys())
