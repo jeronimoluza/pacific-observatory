@@ -30,6 +30,12 @@ owners:
     logs: ~/text_panel/logs
     cache: ~/text_panel/build/cache
     outputs: ~/text_panel/build/outputs
+  global:
+    desc: >-
+      counts de todos los países en a8 (mvp/global-text): un proceso por país con MemoryMax
+      (text.analysis.partition_driver), corpus leído del 5 TB; solo counts y epu, no publica
+    cache: ~/global/text/cache
+    outputs: ~/po-worktrees/global-text/outputs/text
 
 nodes:
   text.config:
@@ -128,6 +134,7 @@ nodes:
     paths:
       - {path: "~/wb/pacificobservatory/repo/template-repo/data/text/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: mac}
       - {path: "~/text_panel/build/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: a8}   # panel
+      - {path: "~/global/text/cache/<region>/<sub>/<country>/source_counts.{parquet,params.json}", machine: a8}   # global
     inputs: [text.corpus, text.keywords]
     partition: country
     fingerprint:
@@ -154,6 +161,7 @@ nodes:
       - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/<region>/<sub>/<country|_aggregate>/epu/epu.csv", machine: mac}
       - {path: "~/wb/pacificobservatory/repo/pacific-observatory/outputs/text/<region>/<sub>/<country|_aggregate>/uncertainty_attribution/*.csv", machine: mac}
       - {path: "~/text_panel/build/outputs/<region>/<sub>/<country>/epu/epu.csv", machine: a8}   # panel
+      - {path: "~/po-worktrees/global-text/outputs/text/<region>/<sub>/<country>/epu/epu.csv", machine: a8}   # global
     inputs: [text.counts]
     partition: country (los agregados se derivan)
     fingerprint:
