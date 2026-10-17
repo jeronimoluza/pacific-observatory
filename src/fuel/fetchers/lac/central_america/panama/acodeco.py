@@ -1,28 +1,27 @@
 """Panama Acodeco monthly historical fuel price fetcher.
 
 Source: Autoridad de Protección al Consumidor y Defensa de la Competencia.
-Listing: https://www.acodeco.gob.pa/inicio/estadisticas-precios/precios-2/
+Listing: https://www.acodeco.gob.pa/estadistica-precio/
 
-Acodeco publishes a single cumulative "HistoricoCombustible_Panama_<MES><YYYY>.pdf"
-file that contains monthly average retail prices (USD/litre) in the
-Panama City + San Miguelito metropolitan area since January 1998. The
-filename's month-year reflects the latest observation included; one
+Acodeco publishes a cumulative "Historico_Combustible_<YYYY>.pdf" (formerly
+"HistoricoCombustible_Panama_<MES><YYYY>.pdf") titled "PRECIO PROMEDIO
+MENSUAL EN LITROS ... EN LOS DISTRITOS DE PANAMÁ Y SAN MIGUELITO, EN
+ESTACIONES DE EXPENDIO DE COMBUSTIBLE": monthly average retail pump prices
+(USD/litre) surveyed at service stations, January 1998 onwards. One
 download covers the entire history.
 
 Pricing context: Panama caps retail prices via biweekly Decreto Ejecutivo
-(state-managed), so we treat the series as carry_forward=true. Currency
-is USD (Panama uses USD alongside the balboa). After 10 April 2017 only
-ultra-low-sulfur diesel is sold; the modern table reports just three
-products (Gasolina 91 Octanos, Gasolina 95 Octanos, Diesel Bajo Azufre)
-which we extract here. Earlier years had additional products
-(Gas Premium/Regular, Diesel Normal/Liviano, LPG) that we skip — the
-table's column-x positions are stable but column populations shift
-across regimes.
+(state-managed), so we treat the series as carry_forward=true. After
+10 April 2017 only ultra-low-sulfur diesel is sold; from then on only
+Gasolina 91/95 Octanos and Diesel Bajo (en) Azufre carry values, which is
+what we extract.
 
-Extraction relies on pdfplumber's word boxes (extract_words) because
-the PDF's alternating-row shading defeats extract_tables for half the
-months. Rows are grouped by top-Y, then each price word is bucketed
-by its x0 into one of three known column positions (~208, ~266, ~498).
+Extraction relies on pdfplumber's word boxes (extract_words) because the
+PDF's alternating-row shading defeats extract_tables for half the months.
+Column positions are read from each page's two-line header (one column per
+"Gasolina"/"Diesel"/"Gas" anchor) rather than fixed x, since columns move
+when Acodeco adds one (e.g. Gasolina 87 Octanos in 2026). Each price word
+goes to the column whose header centre is nearest.
 """
 
 from __future__ import annotations
@@ -45,9 +44,10 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
-_LISTING_URL = "https://www.acodeco.gob.pa/inicio/estadisticas-precios/precios-2/"
+_LISTING_URL = "https://www.acodeco.gob.pa/estadistica-precio/"
 _PDF_HREF_RE = re.compile(
-    r"href=\"(/inicio/wp-content/uploads/\d{4}/\d{2}/HistoricoCombustible_Panama_[^\"]+\.pdf)\"",
+    r"href=\"((?:https://www\.acodeco\.gob\.pa)?(?:/inicio)?/wp-content/uploads/"
+    r"\d{4}/\d{2}/Historico_?Combustible[^\"]*\.pdf)\"",
     re.IGNORECASE,
 )
 _BASE = "https://www.acodeco.gob.pa"
@@ -59,13 +59,19 @@ _SOURCE_KEY = "pa_acodeco_monthly"
 _DATE_RE = re.compile(r"^(\d{4})/(\d{2})$")
 _FIRST_DATE = date(2017, 4, 1)  # post-regulation: 3 products only
 
-# Column x0 positions empirically determined; ±10 tolerance.
-_COLUMN_TOLERANCE = 12
-_COLUMNS: list[tuple[int, str]] = [
-    (208, "Gasolina 91 Octanos"),
-    (266, "Gasolina 95 Octanos"),
-    (498, "Diesel Bajo Azufre"),
-]
+_ANCHORS = {"Gasolina", "Diesel", "Gas"}
+_MIN_ANCHORS = 5  # the chart legend under the table repeats 2-3 anchors
+_ROW_TOLERANCE = 2  # pt
+_HEADER_GAP = 30  # second header line sits ~15pt below the first
+# Header label (both lines joined) -> YAML product name. Other columns
+# (Premiun, Regular, Normal, Liviano, LPG) are empty after 2017-04.
+_PRODUCTS = {
+    "Gasolina 91 Octanos": "Gasolina 91 Octanos",
+    "Gasolina 95 Octanos": "Gasolina 95 Octanos",
+    "Gasolina 87 Octanos": "Gasolina 87 Octanos",
+    "Diesel Bajo en Azufre": "Diesel Bajo Azufre",
+    "Diesel Bajo Azufre": "Diesel Bajo Azufre",
+}
 
 
 def _normalize(text: str) -> str:
@@ -73,20 +79,41 @@ def _normalize(text: str) -> str:
 
 
 def _find_latest_pdf_url(html: str) -> str | None:
-    """Return the most recent HistoricoCombustible_Panama URL from the listing."""
-    matches = _PDF_HREF_RE.findall(html)
-    if not matches:
+    """Return the most recent Historico combustible PDF URL from the listing."""
+    paths = {m.removeprefix(_BASE) for m in _PDF_HREF_RE.findall(html)}
+    if not paths:
         return None
-    # Sort by the YYYY/MM upload path prefix — newest last.
-    sorted_paths = sorted(matches)
-    return _BASE + sorted_paths[-1]
+    # The /YYYY/MM/ upload prefix sorts chronologically — newest last.
+    return _BASE + sorted(paths)[-1]
 
 
-def _bucket_column(x0: float) -> str | None:
-    for col_x, product in _COLUMNS:
-        if abs(x0 - col_x) <= _COLUMN_TOLERANCE:
-            return product
-    return None
+def _header_columns(rows: dict[int, list[dict]]) -> list[tuple[float, str]]:
+    """Return (x-centre, label) per table column from the page header."""
+    tops = sorted(rows)
+    for i, top in enumerate(tops):
+        line = sorted(rows[top], key=lambda w: w["x0"])
+        anchors = [w for w in line if _normalize(w["text"]) in _ANCHORS]
+        if len(anchors) < _MIN_ANCHORS:
+            continue
+        # Line 1: each anchor plus the words after it ("Gasolina 91", "Diesel
+        # Bajo"); line-2 words join the line-1 column whose centre is nearest.
+        cols: list[tuple[float, list[str]]] = []
+        for j, anchor in enumerate(anchors):
+            hi = anchors[j + 1]["x0"] if j + 1 < len(anchors) else float("inf")
+            words = [w for w in line if anchor["x0"] <= w["x0"] < hi]
+            centre = (words[0]["x0"] + words[-1]["x1"]) / 2
+            cols.append((centre, [_normalize(w["text"]) for w in words]))
+        for t in tops[i + 1 :]:
+            if t - top > _HEADER_GAP:
+                break
+            for w in sorted(rows[t], key=lambda w: w["x0"]):
+                text = _normalize(w["text"])
+                if text.startswith("Año"):
+                    continue
+                centre = (w["x0"] + w["x1"]) / 2
+                min(cols, key=lambda c: abs(c[0] - centre))[1].append(text)
+        return [(centre, " ".join(parts)) for centre, parts in cols]
+    return []
 
 
 def _parse_pdf(pdf_bytes: bytes) -> list[tuple[date, str, float]]:
@@ -97,14 +124,21 @@ def _parse_pdf(pdf_bytes: bytes) -> list[tuple[date, str, float]]:
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
         for page in pdf.pages:
             words = page.extract_words(keep_blank_chars=False)
+            # Cluster by top with a tolerance: a row's words can sit a
+            # fraction of a point apart and straddle a rounding boundary
+            # (2022/06 in the 2026 PDF).
             rows: dict[int, list[dict]] = defaultdict(list)
-            for w in words:
-                rows[round(w["top"])].append(w)
+            anchor_top = None
+            for w in sorted(words, key=lambda w: w["top"]):
+                if anchor_top is None or w["top"] - anchor_top > _ROW_TOLERANCE:
+                    anchor_top = w["top"]
+                rows[round(anchor_top)].append(w)
+            columns = _header_columns(rows)
+            if not columns:
+                continue
 
             for top in sorted(rows.keys()):
                 sw = sorted(rows[top], key=lambda x: x["x0"])
-                if not sw:
-                    continue
                 m = _DATE_RE.match(_normalize(sw[0]["text"]))
                 if not m:
                     continue
@@ -115,7 +149,9 @@ def _parse_pdf(pdf_bytes: bytes) -> list[tuple[date, str, float]]:
                 if obs_date < _FIRST_DATE:
                     continue
                 for w in sw[1:]:
-                    product = _bucket_column(w["x0"])
+                    centre = (w["x0"] + w["x1"]) / 2
+                    _, label = min(columns, key=lambda c: abs(c[0] - centre))
+                    product = _PRODUCTS.get(label)
                     if product is None:
                         continue
                     try:
@@ -178,6 +214,7 @@ def fetch_pa_acodeco(cutoff: date) -> pd.DataFrame | None:
                 "currency": _CURRENCY,
                 "source_key": _SOURCE_KEY,
                 "unit": "L",
+                "city": "Panamá y San Miguelito",
             }
         )
 

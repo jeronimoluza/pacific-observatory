@@ -1,12 +1,17 @@
 source_key: af_aogc
 module: menaap.afghanistan.afghanistan.aogc
 function: fetch_af_aogc
-url: https://aogc.gov.af/en/pricing
+url: https://aogc.gov.af/en/prices-statistics/retail-prices
 fallback_date: 2023-12-01
 priority: 10
 cadence: daily
 carry_forward: true
+# AOGC API returns the latest rate per item and location only: never --rebuild.
+history_irrecoverable: true
 currency: USD
+# AOGC directorate/port rates in USD/ton: a wholesale price, kept as a
+# labelled fallback. The retail pump series is af_wfp_monthly (wfp_hdx.yaml).
+price_basis: wholesale
 
 products:
   "Diesel (Factory)":

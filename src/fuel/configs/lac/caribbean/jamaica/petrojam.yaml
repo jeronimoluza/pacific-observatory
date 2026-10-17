@@ -6,6 +6,13 @@ fallback_date: 2004-02-01
 priority: 10
 cadence: weekly
 carry_forward: true
+# Not a retail pump price (Petrojam publishes ex-refinery prices); published as a labelled fallback.
+price_basis: ex_refinery
+# WATCH: retail alternative = Consumer Affairs Commission petrol station
+# surveys (https://cac.gov.jm/dev/SurveyEnquiry/OutletPrices.php, survey type
+# 4 'Petrol'; monthly, 2010-01..2026-09). Its GetSurveyItems.php /
+# GetSurveyDates.php endpoints return 'MySQL Connection Database Error' (rechecked
+# 2026-10-16); retry and switch to CAC once they answer.
 
 # Petrojam is Jamaica's only petroleum refinery (state-owned) and
 # publishes weekly ex-refinery prices that effectively anchor retail

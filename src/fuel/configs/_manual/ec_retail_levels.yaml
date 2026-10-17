@@ -1,0 +1,1481 @@
+# Source files (by sha256): data/fuel/lac/south_america/ecuador/manual_sources/ (+ manifest.csv)
+# Ecuador precio de venta al publico at service stations, one row per (effective date, product).
+# usd = USD per gallon; GLP domestico = USD per 15 kg cylinder.
+# Extra and Ecopais are always the same price. Band system (DE 308) from 12-Jul-2024,
+# adjusted on the 12th of each month; ARCH's site is down, so values come from press
+# reports (most quote ARCH). Super is liberalised: its row is the monthly referential
+# price, not a cap. Products not listed on a date are unchanged since their previous row.
+# cross_check lists other stored files that state the same value.
+# Built by ec_bo/scripts/build_tables.py; values checked against the stored copies by verify_ec.py.
+source_key: ec_retail_levels
+unit: usd_per_gallon
+levels:
+- effective: 2021-10-23
+  product: "Diésel Premium"
+  usd: 1.9
+  source_type: press
+  url: https://primicias.ec/noticias/economia/ejecutivo-oficializa-congelamiento-precio-gasolina
+  archive_url: https://web.archive.org/web/20260114221727/https://www.primicias.ec/noticias/economia/ejecutivo-oficializa-congelamiento-precio-gasolina/
+  sha256: 103aad9ff70f88e8836330a0b46cdd9fbd85f37001a71c3564699bf49729ad56
+  file: 103aad9ff70f_primicias.ec_ejecutivo-oficializa-congelamiento-precio-gasolina.html
+  method: html text
+  derived_from: []
+  cross_check: [d19ff9c26aa1_primicias.ec_gasolinas-diesel-baja-precio-ecuador.html]
+  confidence: alta
+  note: "DE 231; same price for Diesel 2 and Diesel Premium"
+- effective: 2021-10-23
+  product: "GLP doméstico 15 kg"
+  usd: 1.6
+  source_type: press
+  url: https://primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva
+  archive_url: https://web.archive.org/web/20260615114207/https://www.primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva/
+  sha256: 2f289b12aba87d58d5f459c70aa3e67a3ce3822f06925b752a26166abd2186a6
+  file: 2f289b12aba8_primicias.ec_nuevos-precios-gasolina-extra-ecopais-diesel-iva.html
+  method: html text
+  derived_from: []
+  cross_check: [a7b81f6c602b_primicias.ec_precio-gas-extra-ecopais-diesel-ecuador-noboa.html]
+  confidence: media
+  note: "subsidised price fixed since 2001; row placed at the table start; P4 documents 1.60 as the price before 1-Apr-2024"
+- effective: 2021-10-23
+  product: "Gasolina Ecopaís"
+  usd: 2.55
+  source_type: press
+  url: https://primicias.ec/noticias/economia/ejecutivo-oficializa-congelamiento-precio-gasolina
+  archive_url: https://web.archive.org/web/20260114221727/https://www.primicias.ec/noticias/economia/ejecutivo-oficializa-congelamiento-precio-gasolina/
+  sha256: 103aad9ff70f88e8836330a0b46cdd9fbd85f37001a71c3564699bf49729ad56
+  file: 103aad9ff70f_primicias.ec_ejecutivo-oficializa-congelamiento-precio-gasolina.html
+  method: html text
+  derived_from: []
+  cross_check: [d19ff9c26aa1_primicias.ec_gasolinas-diesel-baja-precio-ecuador.html]
+  confidence: alta
+  note: "same price as Extra; DE 231 (22-Oct-2021) freezes Extra/Ecopais at the band ceiling; band suspended"
+- effective: 2021-10-23
+  product: Gasolina Extra
+  usd: 2.55
+  source_type: press
+  url: https://primicias.ec/noticias/economia/ejecutivo-oficializa-congelamiento-precio-gasolina
+  archive_url: https://web.archive.org/web/20260114221727/https://www.primicias.ec/noticias/economia/ejecutivo-oficializa-congelamiento-precio-gasolina/
+  sha256: 103aad9ff70f88e8836330a0b46cdd9fbd85f37001a71c3564699bf49729ad56
+  file: 103aad9ff70f_primicias.ec_ejecutivo-oficializa-congelamiento-precio-gasolina.html
+  method: html text
+  derived_from: []
+  cross_check: [d19ff9c26aa1_primicias.ec_gasolinas-diesel-baja-precio-ecuador.html]
+  confidence: alta
+  note: "DE 231 (22-Oct-2021) freezes Extra/Ecopais at the band ceiling; band suspended"
+- effective: 2022-06-28
+  product: "Diésel Premium"
+  usd: 1.8
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-diesel-baja-precio-ecuador
+  archive_url: https://web.archive.org/web/20220627180619/https://www.primicias.ec/noticias/economia/gasolinas-diesel-baja-precio-ecuador/
+  sha256: d19ff9c26aa1fd6a8be4ef815544a45c56ef59e6663fe22d3b4c34ffc976c5ed
+  file: d19ff9c26aa1_primicias.ec_gasolinas-diesel-baja-precio-ecuador.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: media
+  note: "DE 462; superseded 3 days later"
+- effective: 2022-06-28
+  product: "Gasolina Ecopaís"
+  usd: 2.45
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-diesel-baja-precio-ecuador
+  archive_url: https://web.archive.org/web/20220627180619/https://www.primicias.ec/noticias/economia/gasolinas-diesel-baja-precio-ecuador/
+  sha256: d19ff9c26aa1fd6a8be4ef815544a45c56ef59e6663fe22d3b4c34ffc976c5ed
+  file: d19ff9c26aa1_primicias.ec_gasolinas-diesel-baja-precio-ecuador.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: media
+  note: "same price as Extra; DE 462 (26-Jun-2022), -0.10 during the June-2022 protests; superseded 3 days later"
+- effective: 2022-06-28
+  product: Gasolina Extra
+  usd: 2.45
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-diesel-baja-precio-ecuador
+  archive_url: https://web.archive.org/web/20220627180619/https://www.primicias.ec/noticias/economia/gasolinas-diesel-baja-precio-ecuador/
+  sha256: d19ff9c26aa1fd6a8be4ef815544a45c56ef59e6663fe22d3b4c34ffc976c5ed
+  file: d19ff9c26aa1_primicias.ec_gasolinas-diesel-baja-precio-ecuador.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: media
+  note: "DE 462 (26-Jun-2022), -0.10 during the June-2022 protests; superseded 3 days later"
+- effective: 2022-07-01
+  product: "Diésel Premium"
+  usd: 1.75
+  source_type: press
+  url: https://www.vistazo.com/politica/nacional/lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-extra-y-ecopais-que-rigen-desde-este-1-de-julio-ME2161178
+  archive_url: https://web.archive.org/web/20220701140822/https://www.vistazo.com/politica/nacional/lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-extra-y-ecopais-que-rigen-desde-este-1-de-julio-ME2161178
+  sha256: 6f5566aff166bd5af6a448a902da0a221bc377b3e6ad5657afc0cfe7e1f1475f
+  file: 6f5566aff166_vistazo.com_lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-ext.html
+  method: html text
+  derived_from: []
+  cross_check: [c38bf4c9c3a8_primicias.ec_gasolina-extra-ecopais-diesel-alza-iva-precios-noboa.html]
+  confidence: alta
+  note: DE 467
+- effective: 2022-07-01
+  product: "Gasolina Ecopaís"
+  usd: 2.4
+  source_type: press
+  url: https://www.vistazo.com/politica/nacional/lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-extra-y-ecopais-que-rigen-desde-este-1-de-julio-ME2161178
+  archive_url: https://web.archive.org/web/20220701140822/https://www.vistazo.com/politica/nacional/lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-extra-y-ecopais-que-rigen-desde-este-1-de-julio-ME2161178
+  sha256: 6f5566aff166bd5af6a448a902da0a221bc377b3e6ad5657afc0cfe7e1f1475f
+  file: 6f5566aff166_vistazo.com_lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-ext.html
+  method: html text
+  derived_from: []
+  cross_check: [c38bf4c9c3a8_primicias.ec_gasolina-extra-ecopais-diesel-alza-iva-precios-noboa.html]
+  confidence: alta
+  note: "same price as Extra; DE 467, maximum prices from 00:00 1-Jul-2022; frozen until the VAT change"
+- effective: 2022-07-01
+  product: Gasolina Extra
+  usd: 2.4
+  source_type: press
+  url: https://www.vistazo.com/politica/nacional/lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-extra-y-ecopais-que-rigen-desde-este-1-de-julio-ME2161178
+  archive_url: https://web.archive.org/web/20220701140822/https://www.vistazo.com/politica/nacional/lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-extra-y-ecopais-que-rigen-desde-este-1-de-julio-ME2161178
+  sha256: 6f5566aff166bd5af6a448a902da0a221bc377b3e6ad5657afc0cfe7e1f1475f
+  file: 6f5566aff166_vistazo.com_lasso-emite-decreto-467-con-precios-maximos-del-diesel-y-gasolinas-ext.html
+  method: html text
+  derived_from: []
+  cross_check: [c38bf4c9c3a8_primicias.ec_gasolina-extra-ecopais-diesel-alza-iva-precios-noboa.html]
+  confidence: alta
+  note: "DE 467, maximum prices from 00:00 1-Jul-2022; frozen until the VAT change"
+- effective: 2024-04-01
+  product: "Diésel Premium"
+  usd: 1.797
+  source_type: press
+  url: https://primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva
+  archive_url: https://web.archive.org/web/20260615114207/https://www.primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva/
+  sha256: 2f289b12aba87d58d5f459c70aa3e67a3ce3822f06925b752a26166abd2186a6
+  file: 2f289b12aba8_primicias.ec_nuevos-precios-gasolina-extra-ecopais-diesel-iva.html
+  method: html text
+  derived_from: []
+  cross_check: [9ec664ce7b5c_primicias.ec_precios-diesel-gasolina-subsidios-daniel-noboa.html]
+  confidence: alta
+  note: "DE 215 VAT 15%; press rounds to 1.79/1.80; unchanged to 12-Sep-2025"
+- effective: 2024-04-01
+  product: "GLP doméstico 15 kg"
+  usd: 1.65
+  source_type: press
+  url: https://primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva
+  archive_url: https://web.archive.org/web/20260615114207/https://www.primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva/
+  sha256: 2f289b12aba87d58d5f459c70aa3e67a3ce3822f06925b752a26166abd2186a6
+  file: 2f289b12aba8_primicias.ec_nuevos-precios-gasolina-extra-ecopais-diesel-iva.html
+  method: html text
+  derived_from: []
+  cross_check: [a7b81f6c602b_primicias.ec_precio-gas-extra-ecopais-diesel-ecuador-noboa.html, 7fb43b66e55a_vistazo.com_nuevos-precios-combustibles-iva-KK7084590.html]
+  confidence: alta
+  note: "DE 215 VAT 15%: 1.60 to 1.65 per 15 kg cylinder; still 1.65 in Jul-2026"
+- effective: 2024-04-01
+  product: "Gasolina Ecopaís"
+  usd: 2.465
+  source_type: press
+  url: https://primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva
+  archive_url: https://web.archive.org/web/20260615114207/https://www.primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva/
+  sha256: 2f289b12aba87d58d5f459c70aa3e67a3ce3822f06925b752a26166abd2186a6
+  file: 2f289b12aba8_primicias.ec_nuevos-precios-gasolina-extra-ecopais-diesel-iva.html
+  method: html text
+  derived_from: []
+  cross_check: [c38bf4c9c3a8_primicias.ec_gasolina-extra-ecopais-diesel-alza-iva-precios-noboa.html]
+  confidence: alta
+  note: "same price as Extra; DE 215: VAT 12% to 15% passed to the pump price (V2 rounds to 2.46)"
+- effective: 2024-04-01
+  product: Gasolina Extra
+  usd: 2.465
+  source_type: press
+  url: https://primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva
+  archive_url: https://web.archive.org/web/20260615114207/https://www.primicias.ec/noticias/economia/nuevos-precios-gasolina-extra-ecopais-diesel-iva/
+  sha256: 2f289b12aba87d58d5f459c70aa3e67a3ce3822f06925b752a26166abd2186a6
+  file: 2f289b12aba8_primicias.ec_nuevos-precios-gasolina-extra-ecopais-diesel-iva.html
+  method: html text
+  derived_from: []
+  cross_check: [c38bf4c9c3a8_primicias.ec_gasolina-extra-ecopais-diesel-alza-iva-precios-noboa.html]
+  confidence: alta
+  note: "DE 215: VAT 12% to 15% passed to the pump price (V2 rounds to 2.46)"
+- effective: 2024-06-12
+  product: "Gasolina Súper"
+  usd: 4.11
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024
+  archive_url: https://web.archive.org/web/20260314082914/https://www.primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024/
+  sha256: 6fff1df556a6d40e9010666d8d300b4716ba82b750bb5b1edd8c21d0c14344fe
+  file: 6fff1df556a6_primicias.ec_gasolinas-nuevos-precios-sistema-bandas-julio2024.html
+  method: html text
+  derived_from: []
+  cross_check: [ad580ba44727_vistazo.com_nuevo-precio-de-las-gasolinas-extra-y-ecopais-desde-este-viernes-12-de.html]
+  confidence: media
+  note: ''
+- effective: 2024-06-28
+  product: "Gasolina Ecopaís"
+  usd: 2.722
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024
+  archive_url: https://web.archive.org/web/20260314082914/https://www.primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024/
+  sha256: 6fff1df556a6d40e9010666d8d300b4716ba82b750bb5b1edd8c21d0c14344fe
+  file: 6fff1df556a6_primicias.ec_gasolinas-nuevos-precios-sistema-bandas-julio2024.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html]
+  confidence: alta
+  note: "same price as Extra; DE 308 phase 1 (subsidy cut), in force until 11-Jul-2024"
+- effective: 2024-06-28
+  product: Gasolina Extra
+  usd: 2.722
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024
+  archive_url: https://web.archive.org/web/20260314082914/https://www.primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024/
+  sha256: 6fff1df556a6d40e9010666d8d300b4716ba82b750bb5b1edd8c21d0c14344fe
+  file: 6fff1df556a6_primicias.ec_gasolinas-nuevos-precios-sistema-bandas-julio2024.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html]
+  confidence: alta
+  note: DE 308 phase 1 (subsidy cut), in force until 11-Jul-2024
+- effective: 2024-07-12
+  product: "Gasolina Ecopaís"
+  usd: 2.753
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024
+  archive_url: https://web.archive.org/web/20260314082914/https://www.primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024/
+  sha256: 6fff1df556a6d40e9010666d8d300b4716ba82b750bb5b1edd8c21d0c14344fe
+  file: 6fff1df556a6_primicias.ec_gasolinas-nuevos-precios-sistema-bandas-julio2024.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html, ad580ba44727_vistazo.com_nuevo-precio-de-las-gasolinas-extra-y-ecopais-desde-este-viernes-12-de.html]
+  confidence: alta
+  note: "same price as Extra; DE 308 band system starts; monthly adjustment on the 12th"
+- effective: 2024-07-12
+  product: Gasolina Extra
+  usd: 2.753
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024
+  archive_url: https://web.archive.org/web/20260314082914/https://www.primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024/
+  sha256: 6fff1df556a6d40e9010666d8d300b4716ba82b750bb5b1edd8c21d0c14344fe
+  file: 6fff1df556a6_primicias.ec_gasolinas-nuevos-precios-sistema-bandas-julio2024.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html, ad580ba44727_vistazo.com_nuevo-precio-de-las-gasolinas-extra-y-ecopais-desde-este-viernes-12-de.html]
+  confidence: alta
+  note: "DE 308 band system starts; monthly adjustment on the 12th"
+- effective: 2024-07-12
+  product: "Gasolina Súper"
+  usd: 3.91
+  source_type: press
+  url: https://primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024
+  archive_url: https://web.archive.org/web/20260314082914/https://www.primicias.ec/noticias/economia/gasolinas-nuevos-precios-sistema-bandas-julio2024/
+  sha256: 6fff1df556a6d40e9010666d8d300b4716ba82b750bb5b1edd8c21d0c14344fe
+  file: 6fff1df556a6_primicias.ec_gasolinas-nuevos-precios-sistema-bandas-julio2024.html
+  method: html text
+  derived_from: []
+  cross_check: [ad580ba44727_vistazo.com_nuevo-precio-de-las-gasolinas-extra-y-ecopais-desde-este-viernes-12-de.html]
+  confidence: media
+  note: ''
+- effective: 2024-08-12
+  product: "Gasolina Ecopaís"
+  usd: 2.766
+  source_type: press
+  url: https://www.primicias.ec/economia/gasolina-extra-ecopais-nuevo-precio-agosto11-76077
+  archive_url: https://web.archive.org/web/20260413172012/https://www.primicias.ec/economia/gasolina-extra-ecopais-nuevo-precio-agosto11-76077/
+  sha256: da34a788168e34fbd4ea812bc53e3695f8a28ae3c5d99dadc288049811f3c3e1
+  file: da34a788168e_primicias.ec_gasolina-extra-ecopais-nuevo-precio-agosto11-76077.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2024-08-12
+  product: Gasolina Extra
+  usd: 2.766
+  source_type: press
+  url: https://www.primicias.ec/economia/gasolina-extra-ecopais-nuevo-precio-agosto11-76077
+  archive_url: https://web.archive.org/web/20260413172012/https://www.primicias.ec/economia/gasolina-extra-ecopais-nuevo-precio-agosto11-76077/
+  sha256: da34a788168e34fbd4ea812bc53e3695f8a28ae3c5d99dadc288049811f3c3e1
+  file: da34a788168e_primicias.ec_gasolina-extra-ecopais-nuevo-precio-agosto11-76077.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html]
+  confidence: alta
+  note: ''
+- effective: 2024-08-12
+  product: "Gasolina Súper"
+  usd: 4.0
+  source_type: press
+  url: https://www.primicias.ec/economia/gasolina-extra-ecopais-nuevo-precio-agosto11-76077
+  archive_url: https://web.archive.org/web/20260413172012/https://www.primicias.ec/economia/gasolina-extra-ecopais-nuevo-precio-agosto11-76077/
+  sha256: da34a788168e34fbd4ea812bc53e3695f8a28ae3c5d99dadc288049811f3c3e1
+  file: da34a788168e_primicias.ec_gasolina-extra-ecopais-nuevo-precio-agosto11-76077.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: baja
+  note: single source
+- effective: 2024-09-12
+  product: "Gasolina Ecopaís"
+  usd: 2.59
+  source_type: press
+  url: https://primicias.ec/economia/baja-precio-gasolinas-extra-ecopais-septiembre12-78418
+  archive_url: https://web.archive.org/web/20251206053041/https://www.primicias.ec/economia/baja-precio-gasolinas-extra-ecopais-septiembre12-78418/
+  sha256: dfbf18999e5a7d37a581bbef4a846b14f6a84b825c87df4acbb42883196df895
+  file: dfbf18999e5a_primicias.ec_baja-precio-gasolinas-extra-ecopais-septiembre12-78418.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html]
+  confidence: media
+  note: "same price as Extra; 2 decimals only"
+- effective: 2024-09-12
+  product: Gasolina Extra
+  usd: 2.59
+  source_type: press
+  url: https://primicias.ec/economia/baja-precio-gasolinas-extra-ecopais-septiembre12-78418
+  archive_url: https://web.archive.org/web/20251206053041/https://www.primicias.ec/economia/baja-precio-gasolinas-extra-ecopais-septiembre12-78418/
+  sha256: dfbf18999e5a7d37a581bbef4a846b14f6a84b825c87df4acbb42883196df895
+  file: dfbf18999e5a_primicias.ec_baja-precio-gasolinas-extra-ecopais-septiembre12-78418.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html]
+  confidence: media
+  note: 2 decimals only
+- effective: 2024-09-12
+  product: "Gasolina Súper"
+  usd: 3.9
+  source_type: press
+  url: https://primicias.ec/economia/baja-precio-gasolinas-extra-ecopais-septiembre12-78418
+  archive_url: https://web.archive.org/web/20251206053041/https://www.primicias.ec/economia/baja-precio-gasolinas-extra-ecopais-septiembre12-78418/
+  sha256: dfbf18999e5a7d37a581bbef4a846b14f6a84b825c87df4acbb42883196df895
+  file: dfbf18999e5a_primicias.ec_baja-precio-gasolinas-extra-ecopais-septiembre12-78418.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: baja
+  note: single source, stated as approximate
+- effective: 2024-10-12
+  product: "Gasolina Ecopaís"
+  usd: 2.562
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-81019
+  archive_url: https://web.archive.org/web/20260316204913/https://www.primicias.ec/economia/precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-81019/
+  sha256: b8d40ed047925340d498a32591952615b3ad8b637d41116a0431a85200c38776
+  file: b8d40ed04792_primicias.ec_precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-810.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html, 9eed9defd5f4_vistazo.com_2024-10-12-nuevos-precios-gasolinas-extra-ecopais-12-octubre-ecuador-N.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2024-10-12
+  product: Gasolina Extra
+  usd: 2.562
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-81019
+  archive_url: https://web.archive.org/web/20260316204913/https://www.primicias.ec/economia/precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-81019/
+  sha256: b8d40ed047925340d498a32591952615b3ad8b637d41116a0431a85200c38776
+  file: b8d40ed04792_primicias.ec_precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-810.html
+  method: html text
+  derived_from: []
+  cross_check: [3a06cf7f5e0e_elmercurio.com.ec_p-1105065.html, 9eed9defd5f4_vistazo.com_2024-10-12-nuevos-precios-gasolinas-extra-ecopais-12-octubre-ecuador-N.html]
+  confidence: alta
+  note: ''
+- effective: 2024-10-12
+  product: "Gasolina Súper"
+  usd: 3.8
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-81019
+  archive_url: https://web.archive.org/web/20260316204913/https://www.primicias.ec/economia/precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-81019/
+  sha256: b8d40ed047925340d498a32591952615b3ad8b637d41116a0431a85200c38776
+  file: b8d40ed04792_primicias.ec_precios-gasolinas-super-extra-y-ecopais-bajaran-ecuador-12-octubre-810.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: baja
+  note: El Mercurio ?p=1137967 says 3.90
+- effective: 2024-11-12
+  product: "Gasolina Ecopaís"
+  usd: 2.679
+  source_type: press
+  url: https://primicias.ec/economia/gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956
+  archive_url: https://web.archive.org/web/20260711173020/https://www.primicias.ec/economia/gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956/
+  sha256: e09c51be22bccc1c157ab2035a16c5e14d0d86e0ae0da9df4c4ea311dfe9dcbb
+  file: e09c51be22bc_primicias.ec_gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956.html
+  method: html text
+  derived_from: []
+  cross_check: [d8c95f126f24_elmercurio.com.ec_p-1137967.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2024-11-12
+  product: Gasolina Extra
+  usd: 2.679
+  source_type: press
+  url: https://primicias.ec/economia/gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956
+  archive_url: https://web.archive.org/web/20260711173020/https://www.primicias.ec/economia/gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956/
+  sha256: e09c51be22bccc1c157ab2035a16c5e14d0d86e0ae0da9df4c4ea311dfe9dcbb
+  file: e09c51be22bc_primicias.ec_gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956.html
+  method: html text
+  derived_from: []
+  cross_check: [d8c95f126f24_elmercurio.com.ec_p-1137967.html]
+  confidence: alta
+  note: ''
+- effective: 2024-11-12
+  product: "Gasolina Súper"
+  usd: 3.49
+  source_type: press
+  url: https://primicias.ec/economia/gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956
+  archive_url: https://web.archive.org/web/20260711173020/https://www.primicias.ec/economia/gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956/
+  sha256: e09c51be22bccc1c157ab2035a16c5e14d0d86e0ae0da9df4c4ea311dfe9dcbb
+  file: e09c51be22bc_primicias.ec_gasolinas-ecuador-extra-ecopais-super-precio-12octubre-82956.html
+  method: html text
+  derived_from: []
+  cross_check: [d8c95f126f24_elmercurio.com.ec_p-1137967.html]
+  confidence: media
+  note: ''
+- effective: 2024-12-12
+  product: "Gasolina Ecopaís"
+  usd: 2.642
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12diciembre-85203
+  archive_url: https://web.archive.org/web/20251216202841/https://www.primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12diciembre-85203/
+  sha256: 8661318145382545f3691e7420a20d65183fd6ea30734635ce91c8761c0b5c47
+  file: 866131814538_primicias.ec_precios-gasolinas-super-ecopais-extra-12diciembre-85203.html
+  method: html text
+  derived_from: []
+  cross_check: [ce613f319a96_vistazo.com_2024-12-12-bajan-precios-gasolinas-extra-ecopais-ecuador-jueves-12-dic.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2024-12-12
+  product: Gasolina Extra
+  usd: 2.642
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12diciembre-85203
+  archive_url: https://web.archive.org/web/20251216202841/https://www.primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12diciembre-85203/
+  sha256: 8661318145382545f3691e7420a20d65183fd6ea30734635ce91c8761c0b5c47
+  file: 866131814538_primicias.ec_precios-gasolinas-super-ecopais-extra-12diciembre-85203.html
+  method: html text
+  derived_from: []
+  cross_check: [ce613f319a96_vistazo.com_2024-12-12-bajan-precios-gasolinas-extra-ecopais-ecuador-jueves-12-dic.html]
+  confidence: alta
+  note: ''
+- effective: 2024-12-12
+  product: "Gasolina Súper"
+  usd: 3.51
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12diciembre-85203
+  archive_url: https://web.archive.org/web/20251216202841/https://www.primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12diciembre-85203/
+  sha256: 8661318145382545f3691e7420a20d65183fd6ea30734635ce91c8761c0b5c47
+  file: 866131814538_primicias.ec_precios-gasolinas-super-ecopais-extra-12diciembre-85203.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: baja
+  note: single source
+- effective: 2025-01-12
+  product: "Gasolina Ecopaís"
+  usd: 2.713
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12enero-87261
+  archive_url: https://web.archive.org/web/20260521192056/https://www.primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12enero-87261/
+  sha256: 76e4f85d17ead1f1958b2942ac88dc0a90a1cfde537bdaecce17a72ee34115c2
+  file: 76e4f85d17ea_primicias.ec_precios-gasolinas-super-ecopais-extra-12enero-87261.html
+  method: html text
+  derived_from: []
+  cross_check: [614416ed0bd2_extra.ec_sube-baja-nuevo-precio-gasolina-ecuador-12-marzo-122851-html.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-01-12
+  product: Gasolina Extra
+  usd: 2.713
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12enero-87261
+  archive_url: https://web.archive.org/web/20260521192056/https://www.primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12enero-87261/
+  sha256: 76e4f85d17ead1f1958b2942ac88dc0a90a1cfde537bdaecce17a72ee34115c2
+  file: 76e4f85d17ea_primicias.ec_precios-gasolinas-super-ecopais-extra-12enero-87261.html
+  method: html text
+  derived_from: []
+  cross_check: [614416ed0bd2_extra.ec_sube-baja-nuevo-precio-gasolina-ecuador-12-marzo-122851-html.html]
+  confidence: alta
+  note: ''
+- effective: 2025-01-12
+  product: "Gasolina Súper"
+  usd: 3.48
+  source_type: press
+  url: https://primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12enero-87261
+  archive_url: https://web.archive.org/web/20260521192056/https://www.primicias.ec/economia/precios-gasolinas-super-ecopais-extra-12enero-87261/
+  sha256: 76e4f85d17ead1f1958b2942ac88dc0a90a1cfde537bdaecce17a72ee34115c2
+  file: 76e4f85d17ea_primicias.ec_precios-gasolinas-super-ecopais-extra-12enero-87261.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: baja
+  note: Feb-2025 articles give the prior price as 3.47
+- effective: 2025-02-12
+  product: "Gasolina Ecopaís"
+  usd: 2.768
+  source_type: press
+  url: https://www.vistazo.com/actualidad/nacional/2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN8791386
+  archive_url: https://web.archive.org/web/20260209145303/https://www.vistazo.com/actualidad/nacional/2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN8791386
+  sha256: ea0b5060476bfaac73e324fb14f02a6818738233b7833764fae73d83a9d19c15
+  file: ea0b5060476b_vistazo.com_2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN.html
+  method: html text
+  derived_from: []
+  cross_check: [ce4d4fde54bb_expreso.ec_precio-gasolina-extra-ecopais-12-febrero-2025-231278.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-02-12
+  product: Gasolina Extra
+  usd: 2.768
+  source_type: press
+  url: https://www.vistazo.com/actualidad/nacional/2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN8791386
+  archive_url: https://web.archive.org/web/20260209145303/https://www.vistazo.com/actualidad/nacional/2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN8791386
+  sha256: ea0b5060476bfaac73e324fb14f02a6818738233b7833764fae73d83a9d19c15
+  file: ea0b5060476b_vistazo.com_2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN.html
+  method: html text
+  derived_from: []
+  cross_check: [ce4d4fde54bb_expreso.ec_precio-gasolina-extra-ecopais-12-febrero-2025-231278.html]
+  confidence: alta
+  note: ''
+- effective: 2025-02-12
+  product: "Gasolina Súper"
+  usd: 3.59
+  source_type: press
+  url: https://www.vistazo.com/actualidad/nacional/2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN8791386
+  archive_url: https://web.archive.org/web/20260209145303/https://www.vistazo.com/actualidad/nacional/2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN8791386
+  sha256: ea0b5060476bfaac73e324fb14f02a6818738233b7833764fae73d83a9d19c15
+  file: ea0b5060476b_vistazo.com_2025-02-12-suben-precios-gasolinas-extra-ecopais-ecuador-12-febrero-LN.html
+  method: html text
+  derived_from: []
+  cross_check: [ce4d4fde54bb_expreso.ec_precio-gasolina-extra-ecopais-12-febrero-2025-231278.html]
+  confidence: media
+  note: ''
+- effective: 2025-03-12
+  product: "Gasolina Ecopaís"
+  usd: 2.673
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424/
+  archive_url: https://web.archive.org/web/20260416235507/https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424/
+  sha256: 0bade32e1b5877923168c71f8eb7c3bbe7a99f543fcecbcda32973b528bc549c
+  file: 0bade32e1b58_primicias.ec_precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424.html
+  method: html text
+  derived_from: []
+  cross_check: [4db48e013b4e_primicias.ec_precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806.html, a59df4eaed94_teleamazonas.com_precio-gasolinas-super-extra-12-marzo.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-03-12
+  product: Gasolina Extra
+  usd: 2.673
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424/
+  archive_url: https://web.archive.org/web/20260416235507/https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424/
+  sha256: 0bade32e1b5877923168c71f8eb7c3bbe7a99f543fcecbcda32973b528bc549c
+  file: 0bade32e1b58_primicias.ec_precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424.html
+  method: html text
+  derived_from: []
+  cross_check: [4db48e013b4e_primicias.ec_precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806.html, a59df4eaed94_teleamazonas.com_precio-gasolinas-super-extra-12-marzo.html]
+  confidence: alta
+  note: ''
+- effective: 2025-03-12
+  product: "Gasolina Súper"
+  usd: 3.52
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424/
+  archive_url: https://web.archive.org/web/20260416235507/https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424/
+  sha256: 0bade32e1b5877923168c71f8eb7c3bbe7a99f543fcecbcda32973b528bc549c
+  file: 0bade32e1b58_primicias.ec_precio-gasolinas-extra-ecopais-super-ecuador-marzo2025-91424.html
+  method: html text
+  derived_from: []
+  cross_check: [a59df4eaed94_teleamazonas.com_precio-gasolinas-super-extra-12-marzo.html]
+  confidence: media
+  note: ''
+- effective: 2025-04-12
+  product: "Gasolina Ecopaís"
+  usd: 2.495
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806
+  archive_url: https://web.archive.org/web/20260214164131/https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806/
+  sha256: 4db48e013b4e5db36f484877eeebf6c6e220ceb5bd7e6289698019f21575990a
+  file: 4db48e013b4e_primicias.ec_precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806.html
+  method: html text
+  derived_from: []
+  cross_check: [fdcf7bf13af1_extra.ec_precio-gasolinas-ecuador-12-abril-pagaras-125747-html.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-04-12
+  product: Gasolina Extra
+  usd: 2.495
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806
+  archive_url: https://web.archive.org/web/20260214164131/https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806/
+  sha256: 4db48e013b4e5db36f484877eeebf6c6e220ceb5bd7e6289698019f21575990a
+  file: 4db48e013b4e_primicias.ec_precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806.html
+  method: html text
+  derived_from: []
+  cross_check: [fdcf7bf13af1_extra.ec_precio-gasolinas-ecuador-12-abril-pagaras-125747-html.html]
+  confidence: alta
+  note: ''
+- effective: 2025-04-12
+  product: "Gasolina Súper"
+  usd: 3.52
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806
+  archive_url: https://web.archive.org/web/20260214164131/https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806/
+  sha256: 4db48e013b4e5db36f484877eeebf6c6e220ceb5bd7e6289698019f21575990a
+  file: 4db48e013b4e_primicias.ec_precio-gasolinas-extra-ecopais-super-ecuador-abril2025-93806.html
+  method: html text
+  derived_from: []
+  cross_check: [fdcf7bf13af1_extra.ec_precio-gasolinas-ecuador-12-abril-pagaras-125747-html.html]
+  confidence: media
+  note: ''
+- effective: 2025-05-12
+  product: "Gasolina Ecopaís"
+  usd: 2.466
+  source_type: press
+  url: https://elmercurio.com.ec/economia/2025/05/12/precios-gasolinas-2025-mayo-junio/
+  archive_url: https://web.archive.org/web/20261016222403/https://elmercurio.com.ec/economia/2025/05/12/precios-gasolinas-2025-mayo-junio/
+  sha256: 08b7d72830b85c10c70f22af7db9307bdcc96e408a3f76da05a69d42e944cbd4
+  file: 08b7d72830b8_elmercurio.com.ec_precios-gasolinas-2025-mayo-junio.html
+  method: html text
+  derived_from: []
+  cross_check: [b5a1b88b575c_primicias.ec_precios-gasolinas-ecuador-12mayo-extra-ecopais-super-95919.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-05-12
+  product: Gasolina Extra
+  usd: 2.466
+  source_type: press
+  url: https://elmercurio.com.ec/economia/2025/05/12/precios-gasolinas-2025-mayo-junio/
+  archive_url: https://web.archive.org/web/20261016222403/https://elmercurio.com.ec/economia/2025/05/12/precios-gasolinas-2025-mayo-junio/
+  sha256: 08b7d72830b85c10c70f22af7db9307bdcc96e408a3f76da05a69d42e944cbd4
+  file: 08b7d72830b8_elmercurio.com.ec_precios-gasolinas-2025-mayo-junio.html
+  method: html text
+  derived_from: []
+  cross_check: [b5a1b88b575c_primicias.ec_precios-gasolinas-ecuador-12mayo-extra-ecopais-super-95919.html]
+  confidence: alta
+  note: ''
+- effective: 2025-05-12
+  product: "Gasolina Súper"
+  usd: 3.433
+  source_type: press
+  url: https://elmercurio.com.ec/economia/2025/05/12/precios-gasolinas-2025-mayo-junio/
+  archive_url: https://web.archive.org/web/20261016222403/https://elmercurio.com.ec/economia/2025/05/12/precios-gasolinas-2025-mayo-junio/
+  sha256: 08b7d72830b85c10c70f22af7db9307bdcc96e408a3f76da05a69d42e944cbd4
+  file: 08b7d72830b8_elmercurio.com.ec_precios-gasolinas-2025-mayo-junio.html
+  method: html text
+  derived_from: []
+  cross_check: [b5a1b88b575c_primicias.ec_precios-gasolinas-ecuador-12mayo-extra-ecopais-super-95919.html]
+  confidence: media
+  note: ''
+- effective: 2025-06-12
+  product: "Gasolina Ecopaís"
+  usd: 2.521
+  source_type: press
+  url: https://www.vistazo.com/actualidad/nacional/2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mire-nuevo-valor-GH9494239
+  archive_url: https://web.archive.org/web/20260512193014/https://www.vistazo.com/actualidad/nacional/2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mire-nuevo-valor-GH9494239
+  sha256: 4626b97fb8af112de2fce4ce88f5ca771f65a1ce6379e42a2b84691c789c2729
+  file: 4626b97fb8af_vistazo.com_2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mir.html
+  method: html text
+  derived_from: []
+  cross_check: [d80a8ef95adf_primicias.ec_nuevo-precio-gasolina-ecuador-julio-extra-super-100443.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-06-12
+  product: Gasolina Extra
+  usd: 2.521
+  source_type: press
+  url: https://www.vistazo.com/actualidad/nacional/2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mire-nuevo-valor-GH9494239
+  archive_url: https://web.archive.org/web/20260512193014/https://www.vistazo.com/actualidad/nacional/2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mire-nuevo-valor-GH9494239
+  sha256: 4626b97fb8af112de2fce4ce88f5ca771f65a1ce6379e42a2b84691c789c2729
+  file: 4626b97fb8af_vistazo.com_2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mir.html
+  method: html text
+  derived_from: []
+  cross_check: [d80a8ef95adf_primicias.ec_nuevo-precio-gasolina-ecuador-julio-extra-super-100443.html]
+  confidence: alta
+  note: ''
+- effective: 2025-06-12
+  product: "Gasolina Súper"
+  usd: 3.42
+  source_type: press
+  url: https://www.vistazo.com/actualidad/nacional/2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mire-nuevo-valor-GH9494239
+  archive_url: https://web.archive.org/web/20260512193014/https://www.vistazo.com/actualidad/nacional/2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mire-nuevo-valor-GH9494239
+  sha256: 4626b97fb8af112de2fce4ce88f5ca771f65a1ce6379e42a2b84691c789c2729
+  file: 4626b97fb8af_vistazo.com_2025-06-11-precio-gasolinas-extra-ecopais-aumentara-desde-12-junio-mir.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: baja
+  note: single source
+- effective: 2025-07-12
+  product: "Gasolina Ecopaís"
+  usd: 2.629
+  source_type: press
+  url: https://www.primicias.ec/economia/nuevo-precio-gasolina-ecuador-julio-extra-super-100443/
+  archive_url: https://web.archive.org/web/20260312135033/https://www.primicias.ec/economia/nuevo-precio-gasolina-ecuador-julio-extra-super-100443/
+  sha256: d80a8ef95adf60ff617e422829c05b246655c1d87ee96576abc9a3d3e8a14f69
+  file: d80a8ef95adf_primicias.ec_nuevo-precio-gasolina-ecuador-julio-extra-super-100443.html
+  method: html text
+  derived_from: []
+  cross_check: [7f88b84b4b59_eluniverso.com_nuevo-precio-gasolina-en-ecuador-extra-agosto-2025-nota.html, 1d3972c3c9d9_elmercurio.com.ec_p-1213504.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-07-12
+  product: Gasolina Extra
+  usd: 2.629
+  source_type: press
+  url: https://www.primicias.ec/economia/nuevo-precio-gasolina-ecuador-julio-extra-super-100443/
+  archive_url: https://web.archive.org/web/20260312135033/https://www.primicias.ec/economia/nuevo-precio-gasolina-ecuador-julio-extra-super-100443/
+  sha256: d80a8ef95adf60ff617e422829c05b246655c1d87ee96576abc9a3d3e8a14f69
+  file: d80a8ef95adf_primicias.ec_nuevo-precio-gasolina-ecuador-julio-extra-super-100443.html
+  method: html text
+  derived_from: []
+  cross_check: [7f88b84b4b59_eluniverso.com_nuevo-precio-gasolina-en-ecuador-extra-agosto-2025-nota.html, 1d3972c3c9d9_elmercurio.com.ec_p-1213504.html]
+  confidence: alta
+  note: ''
+- effective: 2025-07-12
+  product: "Gasolina Súper"
+  usd: 3.48
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/nuevos-precios-de-gasolina-desde-el-12-de-agosto-de-2025-en-ecuador/
+  archive_url: https://web.archive.org/web/20250915102013/https://www.elcomercio.com/actualidad/negocios/nuevos-precios-de-gasolina-desde-el-12-de-agosto-de-2025-en-ecuador/
+  sha256: 1cf65576cfca8cc360c9e71e66a94743e959f51b087fcafea6605f778b059641
+  file: 1cf65576cfca_elcomercio.com_nuevos-precios-de-gasolina-desde-el-12-de-agosto-de-2025-en-ecuador.html
+  method: html text
+  derived_from: []
+  cross_check: [9e44a1d0fb1c_primicias.ec_precios-gasolina-extra-ecopais-super-12agosto-102608.html]
+  confidence: media
+  note: stated as the prior price in Aug-2025 articles
+- effective: 2025-08-12
+  product: "Gasolina Ecopaís"
+  usd: 2.751
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolina-extra-ecopais-super-12agosto-102608/
+  archive_url: https://web.archive.org/web/20260311071936/https://www.primicias.ec/economia/precios-gasolina-extra-ecopais-super-12agosto-102608/
+  sha256: 9e44a1d0fb1ceb3bb47a0f0fa03201e91fc4b58aae5f3af1789c82d969b779a1
+  file: 9e44a1d0fb1c_primicias.ec_precios-gasolina-extra-ecopais-super-12agosto-102608.html
+  method: html text
+  derived_from: []
+  cross_check: [f627382d7a7f_primicias.ec_precios-gasolinas-extra-ecopais-super-ecuador-104984.html, 1d3972c3c9d9_elmercurio.com.ec_p-1213504.html, 1cf65576cfca_elcomercio.com_nuevos-precios-de-gasolina-desde-el-12-de-agosto-de-2025-en-ecuador.html]
+  confidence: alta
+  note: "same price as Extra; DE 83 (11-Aug-2025) band reform"
+- effective: 2025-08-12
+  product: Gasolina Extra
+  usd: 2.751
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolina-extra-ecopais-super-12agosto-102608/
+  archive_url: https://web.archive.org/web/20260311071936/https://www.primicias.ec/economia/precios-gasolina-extra-ecopais-super-12agosto-102608/
+  sha256: 9e44a1d0fb1ceb3bb47a0f0fa03201e91fc4b58aae5f3af1789c82d969b779a1
+  file: 9e44a1d0fb1c_primicias.ec_precios-gasolina-extra-ecopais-super-12agosto-102608.html
+  method: html text
+  derived_from: []
+  cross_check: [f627382d7a7f_primicias.ec_precios-gasolinas-extra-ecopais-super-ecuador-104984.html, 1d3972c3c9d9_elmercurio.com.ec_p-1213504.html, 1cf65576cfca_elcomercio.com_nuevos-precios-de-gasolina-desde-el-12-de-agosto-de-2025-en-ecuador.html]
+  confidence: alta
+  note: DE 83 (11-Aug-2025) band reform
+- effective: 2025-08-12
+  product: "Gasolina Súper"
+  usd: 3.57
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolina-extra-ecopais-super-12agosto-102608/
+  archive_url: https://web.archive.org/web/20260311071936/https://www.primicias.ec/economia/precios-gasolina-extra-ecopais-super-12agosto-102608/
+  sha256: 9e44a1d0fb1ceb3bb47a0f0fa03201e91fc4b58aae5f3af1789c82d969b779a1
+  file: 9e44a1d0fb1c_primicias.ec_precios-gasolina-extra-ecopais-super-12agosto-102608.html
+  method: html text
+  derived_from: []
+  cross_check: [1cf65576cfca_elcomercio.com_nuevos-precios-de-gasolina-desde-el-12-de-agosto-de-2025-en-ecuador.html]
+  confidence: media
+  note: ''
+- effective: 2025-09-12
+  product: "Gasolina Ecopaís"
+  usd: 2.879
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolinas-extra-ecopais-super-ecuador-104984/
+  archive_url: https://web.archive.org/web/20260616191753/https://www.primicias.ec/economia/precios-gasolinas-extra-ecopais-super-ecuador-104984/
+  sha256: f627382d7a7f90579505c7cb0c0a37ef6dc5e68c71ccb72b99b586df16c808ff
+  file: f627382d7a7f_primicias.ec_precios-gasolinas-extra-ecopais-super-ecuador-104984.html
+  method: html text
+  derived_from: []
+  cross_check: [1d3972c3c9d9_elmercurio.com.ec_p-1213504.html, ad09e54dffbd_elmercurio.com.ec_p-1218484.html, ec9391578396_expreso.ec_gasolina-extra-y-ecopais-precio-exacto-del-galon-en-ecuador-noviembre.html, 734b0692d47a_vistazo.com_2025-09-11-nuevo-ajuste-precios-combustibles-rige-12-de-septiembre-ecu.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-09-12
+  product: Gasolina Extra
+  usd: 2.879
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolinas-extra-ecopais-super-ecuador-104984/
+  archive_url: https://web.archive.org/web/20260616191753/https://www.primicias.ec/economia/precios-gasolinas-extra-ecopais-super-ecuador-104984/
+  sha256: f627382d7a7f90579505c7cb0c0a37ef6dc5e68c71ccb72b99b586df16c808ff
+  file: f627382d7a7f_primicias.ec_precios-gasolinas-extra-ecopais-super-ecuador-104984.html
+  method: html text
+  derived_from: []
+  cross_check: [1d3972c3c9d9_elmercurio.com.ec_p-1213504.html, ad09e54dffbd_elmercurio.com.ec_p-1218484.html, ec9391578396_expreso.ec_gasolina-extra-y-ecopais-precio-exacto-del-galon-en-ecuador-noviembre.html, 734b0692d47a_vistazo.com_2025-09-11-nuevo-ajuste-precios-combustibles-rige-12-de-septiembre-ecu.html]
+  confidence: alta
+  note: ''
+- effective: 2025-09-12
+  product: "Gasolina Súper"
+  usd: 3.47
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolinas-extra-ecopais-super-ecuador-104984/
+  archive_url: https://web.archive.org/web/20260616191753/https://www.primicias.ec/economia/precios-gasolinas-extra-ecopais-super-ecuador-104984/
+  sha256: f627382d7a7f90579505c7cb0c0a37ef6dc5e68c71ccb72b99b586df16c808ff
+  file: f627382d7a7f_primicias.ec_precios-gasolinas-extra-ecopais-super-ecuador-104984.html
+  method: html text
+  derived_from: []
+  cross_check: [734b0692d47a_vistazo.com_2025-09-11-nuevo-ajuste-precios-combustibles-rige-12-de-septiembre-ecu.html]
+  confidence: media
+  note: ''
+- effective: 2025-09-13
+  product: "Diésel Premium"
+  usd: 2.8
+  source_type: press
+  url: https://www.primicias.ec/economia/nuevo-precio-diesel-13septiembre-eliminacion-subsidio-105110/
+  archive_url: https://web.archive.org/web/20260216074522/https://www.primicias.ec/economia/nuevo-precio-diesel-13septiembre-eliminacion-subsidio-105110/
+  sha256: a7624db1e6afa36a741edf61e335b773742244901b32b4ae14693990abb590f6
+  file: a7624db1e6af_primicias.ec_nuevo-precio-diesel-13septiembre-eliminacion-subsidio-105110.html
+  method: html text
+  derived_from: []
+  cross_check: [2f37a45b84a9_elcomercio.com_nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025.html]
+  confidence: media
+  note: "DE 126 (12-Sep-2025) removes the diesel subsidy from 00:00 13-Sep; 2 decimals; unchanged Oct/Nov-2025"
+- effective: 2025-10-12
+  product: "Gasolina Ecopaís"
+  usd: 2.911
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025/
+  archive_url: https://web.archive.org/web/20251014045930/https://www.elcomercio.com/actualidad/negocios/nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025/
+  sha256: 2f37a45b84a91d17947e669d98682419655e1e8049ddf956c490df3e48dcddf3
+  file: 2f37a45b84a9_elcomercio.com_nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025.html
+  method: html text
+  derived_from: []
+  cross_check: [ad09e54dffbd_elmercurio.com.ec_p-1218484.html, ec9391578396_expreso.ec_gasolina-extra-y-ecopais-precio-exacto-del-galon-en-ecuador-noviembre.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2025-10-12
+  product: Gasolina Extra
+  usd: 2.911
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025/
+  archive_url: https://web.archive.org/web/20251014045930/https://www.elcomercio.com/actualidad/negocios/nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025/
+  sha256: 2f37a45b84a91d17947e669d98682419655e1e8049ddf956c490df3e48dcddf3
+  file: 2f37a45b84a9_elcomercio.com_nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025.html
+  method: html text
+  derived_from: []
+  cross_check: [ad09e54dffbd_elmercurio.com.ec_p-1218484.html, ec9391578396_expreso.ec_gasolina-extra-y-ecopais-precio-exacto-del-galon-en-ecuador-noviembre.html]
+  confidence: alta
+  note: ''
+- effective: 2025-10-12
+  product: "Gasolina Súper"
+  usd: 3.55
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025/
+  archive_url: https://web.archive.org/web/20251014045930/https://www.elcomercio.com/actualidad/negocios/nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025/
+  sha256: 2f37a45b84a91d17947e669d98682419655e1e8049ddf956c490df3e48dcddf3
+  file: 2f37a45b84a9_elcomercio.com_nuevos-precios-gasolinas-ecuador-rigen-desde-12-octubre-2025.html
+  method: html text
+  derived_from: []
+  cross_check: [ad09e54dffbd_elmercurio.com.ec_p-1218484.html, ec9391578396_expreso.ec_gasolina-extra-y-ecopais-precio-exacto-del-galon-en-ecuador-noviembre.html]
+  confidence: media
+  note: ''
+- effective: 2025-11-12
+  product: "Gasolina Ecopaís"
+  usd: 2.84
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-baja-noviembre2025-109236/
+  archive_url: https://web.archive.org/web/20260509164246/https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-baja-noviembre2025-109236/
+  sha256: 2d6502fe90d03d2011fed35602e13cc2c53f3d3c880679887d152141afd3495f
+  file: 2d6502fe90d0_primicias.ec_precio-gasolinas-extra-ecopais-baja-noviembre2025-109236.html
+  method: html text
+  derived_from: []
+  cross_check: [3bebea222ca0_teleamazonas.com_gasolinas-extra-ecopais-bajaran-precio-12-noviembre-ecuador-106131.html]
+  confidence: media
+  note: "same price as Extra; 2 decimals; El Diario gives 2.834 (page body not storable); DE 209 raised station margin 0.16 to 0.19"
+- effective: 2025-11-12
+  product: Gasolina Extra
+  usd: 2.84
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-baja-noviembre2025-109236/
+  archive_url: https://web.archive.org/web/20260509164246/https://www.primicias.ec/economia/precio-gasolinas-extra-ecopais-baja-noviembre2025-109236/
+  sha256: 2d6502fe90d03d2011fed35602e13cc2c53f3d3c880679887d152141afd3495f
+  file: 2d6502fe90d0_primicias.ec_precio-gasolinas-extra-ecopais-baja-noviembre2025-109236.html
+  method: html text
+  derived_from: []
+  cross_check: [3bebea222ca0_teleamazonas.com_gasolinas-extra-ecopais-bajaran-precio-12-noviembre-ecuador-106131.html]
+  confidence: media
+  note: "2 decimals; El Diario gives 2.834 (page body not storable); DE 209 raised station margin 0.16 to 0.19"
+- effective: 2025-11-12
+  product: "Gasolina Súper"
+  usd: 3.4
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  archive_url: https://web.archive.org/web/20261016222454/https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  sha256: 12618eb4051aa4d4667e3dfbae2d82169e6c7ac06e632aa09cc7330a8ce23ddb
+  file: 12618eb4051a_primicias.ec_precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599.html
+  method: html text
+  derived_from: []
+  cross_check: [e5c6f775c465_extra.ec_precio-de-la-gasolina-en-ecuador-desde-hoy-12-de-diciembre-estos-son-l.html]
+  confidence: media
+  note: stated as the prior price in Dec-2025 articles
+- effective: 2025-12-12
+  product: "Diésel Premium"
+  usd: 2.768
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  archive_url: https://web.archive.org/web/20261016222454/https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  sha256: 12618eb4051aa4d4667e3dfbae2d82169e6c7ac06e632aa09cc7330a8ce23ddb
+  file: 12618eb4051a_primicias.ec_precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599.html
+  method: html text
+  derived_from: []
+  cross_check: [e5c6f775c465_extra.ec_precio-de-la-gasolina-en-ecuador-desde-hoy-12-de-diciembre-estos-son-l.html, 91a5cae20a94_elmercurio.com.ec_precio-diesel-ecuador-disminuye.html]
+  confidence: alta
+  note: "DE 242 (11-Dec-2025) diesel formula; El Diario says 2.78"
+- effective: 2025-12-12
+  product: "Gasolina Ecopaís"
+  usd: 2.72
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  archive_url: https://web.archive.org/web/20261016222454/https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  sha256: 12618eb4051aa4d4667e3dfbae2d82169e6c7ac06e632aa09cc7330a8ce23ddb
+  file: 12618eb4051a_primicias.ec_precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599.html
+  method: html text
+  derived_from: []
+  cross_check: [e5c6f775c465_extra.ec_precio-de-la-gasolina-en-ecuador-desde-hoy-12-de-diciembre-estos-son-l.html]
+  confidence: media
+  note: "same price as Extra; 2 decimals; El Mercurio ?p=1230190 says 2.78 (likely the diesel figure); Jan-2026 articles give the prior price as 2.72"
+- effective: 2025-12-12
+  product: Gasolina Extra
+  usd: 2.72
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  archive_url: https://web.archive.org/web/20261016222454/https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  sha256: 12618eb4051aa4d4667e3dfbae2d82169e6c7ac06e632aa09cc7330a8ce23ddb
+  file: 12618eb4051a_primicias.ec_precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599.html
+  method: html text
+  derived_from: []
+  cross_check: [e5c6f775c465_extra.ec_precio-de-la-gasolina-en-ecuador-desde-hoy-12-de-diciembre-estos-son-l.html]
+  confidence: media
+  note: "2 decimals; El Mercurio ?p=1230190 says 2.78 (likely the diesel figure); Jan-2026 articles give the prior price as 2.72"
+- effective: 2025-12-12
+  product: "Gasolina Súper"
+  usd: 3.53
+  source_type: press
+  url: https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  archive_url: https://web.archive.org/web/20261016222454/https://www.primicias.ec/economia/precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599/
+  sha256: 12618eb4051aa4d4667e3dfbae2d82169e6c7ac06e632aa09cc7330a8ce23ddb
+  file: 12618eb4051a_primicias.ec_precio-gasolinas-ecuador-12diciembre-extra-ecopais-111599.html
+  method: html text
+  derived_from: []
+  cross_check: [e5c6f775c465_extra.ec_precio-de-la-gasolina-en-ecuador-desde-hoy-12-de-diciembre-estos-son-l.html]
+  confidence: media
+  note: ''
+- effective: 2026-01-12
+  product: "Diésel Premium"
+  usd: 2.712
+  source_type: press
+  url: https://www.eluniverso.com/noticias/economia/precios-gasolinas-diesel-ecuador-enero-2026-nota/
+  archive_url: https://web.archive.org/web/20260218232550/https://www.eluniverso.com/noticias/economia/precios-gasolinas-diesel-ecuador-enero-2026-nota/
+  sha256: b00b27280b21be41d8a52bf9c02fc1d96595aea0cc4773ec6e4b7e65c97c6fcd
+  file: b00b27280b21_eluniverso.com_precios-gasolinas-diesel-ecuador-enero-2026-nota.html
+  method: html text
+  derived_from: []
+  cross_check: [9eb1ca7b20f3_vistazo.com_2026-01-12-gasolinas-ecuador-extra-ecopais-diesel-super-bajan-precio-e.html]
+  confidence: alta
+  note: ''
+- effective: 2026-01-12
+  product: "Gasolina Ecopaís"
+  usd: 2.671
+  source_type: press
+  url: https://www.eluniverso.com/noticias/economia/precios-gasolinas-diesel-ecuador-enero-2026-nota/
+  archive_url: https://web.archive.org/web/20260218232550/https://www.eluniverso.com/noticias/economia/precios-gasolinas-diesel-ecuador-enero-2026-nota/
+  sha256: b00b27280b21be41d8a52bf9c02fc1d96595aea0cc4773ec6e4b7e65c97c6fcd
+  file: b00b27280b21_eluniverso.com_precios-gasolinas-diesel-ecuador-enero-2026-nota.html
+  method: html text
+  derived_from: []
+  cross_check: [9eb1ca7b20f3_vistazo.com_2026-01-12-gasolinas-ecuador-extra-ecopais-diesel-super-bajan-precio-e.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2026-01-12
+  product: Gasolina Extra
+  usd: 2.671
+  source_type: press
+  url: https://www.eluniverso.com/noticias/economia/precios-gasolinas-diesel-ecuador-enero-2026-nota/
+  archive_url: https://web.archive.org/web/20260218232550/https://www.eluniverso.com/noticias/economia/precios-gasolinas-diesel-ecuador-enero-2026-nota/
+  sha256: b00b27280b21be41d8a52bf9c02fc1d96595aea0cc4773ec6e4b7e65c97c6fcd
+  file: b00b27280b21_eluniverso.com_precios-gasolinas-diesel-ecuador-enero-2026-nota.html
+  method: html text
+  derived_from: []
+  cross_check: [9eb1ca7b20f3_vistazo.com_2026-01-12-gasolinas-ecuador-extra-ecopais-diesel-super-bajan-precio-e.html]
+  confidence: alta
+  note: ''
+- effective: 2026-01-12
+  product: "Gasolina Súper"
+  usd: 3.36
+  source_type: press
+  url: https://www.eluniverso.com/noticias/economia/precios-gasolinas-diesel-ecuador-enero-2026-nota/
+  archive_url: https://web.archive.org/web/20260218232550/https://www.eluniverso.com/noticias/economia/precios-gasolinas-diesel-ecuador-enero-2026-nota/
+  sha256: b00b27280b21be41d8a52bf9c02fc1d96595aea0cc4773ec6e4b7e65c97c6fcd
+  file: b00b27280b21_eluniverso.com_precios-gasolinas-diesel-ecuador-enero-2026-nota.html
+  method: html text
+  derived_from: []
+  cross_check: [9eb1ca7b20f3_vistazo.com_2026-01-12-gasolinas-ecuador-extra-ecopais-diesel-super-bajan-precio-e.html]
+  confidence: media
+  note: ''
+- effective: 2026-02-12
+  product: "Diésel Premium"
+  usd: 2.7
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/precios-de-gasolinas-y-diesel-cambian-desde-este-12-de-febrero-en-ecuador/
+  archive_url: https://web.archive.org/web/20260212125940/https://www.elcomercio.com/actualidad/negocios/precios-de-gasolinas-y-diesel-cambian-desde-este-12-de-febrero-en-ecuador/
+  sha256: f08dfeaea33d6aa84ab8c9de113010dd23886dba5531007d01baabc2eae5f0c7
+  file: f08dfeaea33d_elcomercio.com_precios-de-gasolinas-y-diesel-cambian-desde-este-12-de-febrero-en-ecua.html
+  method: html text
+  derived_from: []
+  cross_check: [5995e689e624_teleamazonas.com_precio-diesel-gasolinas-extra-ecopais-modificaron-12-febrero-110591.html, 9a20a34b4c93_teleamazonas.com_daniel-noboa-modifica-temporalmente-formula-calcular-valor-diesel-1105.html]
+  confidence: media
+  note: "DE 303 (11-Feb-2026) temporary formula; 2 decimals"
+- effective: 2026-02-12
+  product: "Gasolina Ecopaís"
+  usd: 2.763
+  source_type: press
+  url: https://elmercurio.com.ec/economia/2026/02/12/precio-combustibles-extra-eco-diesel-febrero-marzo/
+  archive_url: https://web.archive.org/web/20260305112822/https://elmercurio.com.ec/economia/2026/02/12/precio-combustibles-extra-eco-diesel-febrero-marzo/
+  sha256: bb1fc70cf2e1245e22f7d95d717010d1bee327f7d76ec53048094db71a819220
+  file: bb1fc70cf2e1_elmercurio.com.ec_precio-combustibles-extra-eco-diesel-febrero-marzo.html
+  method: html text
+  derived_from: []
+  cross_check: [5995e689e624_teleamazonas.com_precio-diesel-gasolinas-extra-ecopais-modificaron-12-febrero-110591.html, f08dfeaea33d_elcomercio.com_precios-de-gasolinas-y-diesel-cambian-desde-este-12-de-febrero-en-ecua.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2026-02-12
+  product: Gasolina Extra
+  usd: 2.763
+  source_type: press
+  url: https://elmercurio.com.ec/economia/2026/02/12/precio-combustibles-extra-eco-diesel-febrero-marzo/
+  archive_url: https://web.archive.org/web/20260305112822/https://elmercurio.com.ec/economia/2026/02/12/precio-combustibles-extra-eco-diesel-febrero-marzo/
+  sha256: bb1fc70cf2e1245e22f7d95d717010d1bee327f7d76ec53048094db71a819220
+  file: bb1fc70cf2e1_elmercurio.com.ec_precio-combustibles-extra-eco-diesel-febrero-marzo.html
+  method: html text
+  derived_from: []
+  cross_check: [5995e689e624_teleamazonas.com_precio-diesel-gasolinas-extra-ecopais-modificaron-12-febrero-110591.html, f08dfeaea33d_elcomercio.com_precios-de-gasolinas-y-diesel-cambian-desde-este-12-de-febrero-en-ecua.html]
+  confidence: alta
+  note: ''
+- effective: 2026-02-12
+  product: "Gasolina Súper"
+  usd: 3.19
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/precios-de-gasolinas-y-diesel-cambian-desde-este-12-de-febrero-en-ecuador/
+  archive_url: https://web.archive.org/web/20260212125940/https://www.elcomercio.com/actualidad/negocios/precios-de-gasolinas-y-diesel-cambian-desde-este-12-de-febrero-en-ecuador/
+  sha256: f08dfeaea33d6aa84ab8c9de113010dd23886dba5531007d01baabc2eae5f0c7
+  file: f08dfeaea33d_elcomercio.com_precios-de-gasolinas-y-diesel-cambian-desde-este-12-de-febrero-en-ecua.html
+  method: html text
+  derived_from: []
+  cross_check: []
+  confidence: baja
+  note: single source
+- effective: 2026-03-12
+  product: "Diésel Premium"
+  usd: 2.828
+  source_type: press
+  url: https://www.extra.ec/noticia/economia/nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-marzo-148857.html
+  archive_url: https://web.archive.org/web/20260316192439/https://www.extra.ec/noticia/economia/nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-marzo-148857.html
+  sha256: 4fd476b340608a222d156b10cb6db5d3c90966207af5ccd346de7a28ddd8fc88
+  file: 4fd476b34060_extra.ec_nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-mar.html
+  method: html text
+  derived_from: []
+  cross_check: [6e7473e48028_eluniverso.com_precios-gasolinas-extra-super-diesel-ecopais-abril-nota.html, 5c2fcc842691_teleamazonas.com_sube-precio-gasolina-extra-super-diesel-ecuador-112064.html]
+  confidence: alta
+  note: ''
+- effective: 2026-03-12
+  product: "Gasolina Ecopaís"
+  usd: 2.89
+  source_type: press
+  url: https://www.extra.ec/noticia/economia/nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-marzo-148857.html
+  archive_url: https://web.archive.org/web/20260316192439/https://www.extra.ec/noticia/economia/nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-marzo-148857.html
+  sha256: 4fd476b340608a222d156b10cb6db5d3c90966207af5ccd346de7a28ddd8fc88
+  file: 4fd476b34060_extra.ec_nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-mar.html
+  method: html text
+  derived_from: []
+  cross_check: [5c2fcc842691_teleamazonas.com_sube-precio-gasolina-extra-super-diesel-ecuador-112064.html, 6e7473e48028_eluniverso.com_precios-gasolinas-extra-super-diesel-ecopais-abril-nota.html]
+  confidence: media
+  note: "same price as Extra; no source prints a 3rd decimal; 3.024 - 0.134 = 2.890"
+- effective: 2026-03-12
+  product: Gasolina Extra
+  usd: 2.89
+  source_type: press
+  url: https://www.extra.ec/noticia/economia/nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-marzo-148857.html
+  archive_url: https://web.archive.org/web/20260316192439/https://www.extra.ec/noticia/economia/nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-marzo-148857.html
+  sha256: 4fd476b340608a222d156b10cb6db5d3c90966207af5ccd346de7a28ddd8fc88
+  file: 4fd476b34060_extra.ec_nuevos-precios-gasolina-ecuador-asi-quedan-extra-ecopais-diesel-12-mar.html
+  method: html text
+  derived_from: []
+  cross_check: [5c2fcc842691_teleamazonas.com_sube-precio-gasolina-extra-super-diesel-ecuador-112064.html, 6e7473e48028_eluniverso.com_precios-gasolinas-extra-super-diesel-ecopais-abril-nota.html]
+  confidence: media
+  note: "no source prints a 3rd decimal; 3.024 - 0.134 = 2.890"
+- effective: 2026-03-12
+  product: "Gasolina Súper"
+  usd: 3.62
+  source_type: press
+  url: https://www.teleamazonas.com/actualidad/noticias/economia/sube-precio-gasolina-extra-super-diesel-ecuador-112064/
+  archive_url: https://web.archive.org/web/20260418195821/https://www.teleamazonas.com/actualidad/noticias/economia/sube-precio-gasolina-extra-super-diesel-ecuador-112064/
+  sha256: 5c2fcc84269133e2fabbdc2ab3b7f2e586c4371bf818bd70ae2c8f50d6246c2e
+  file: 5c2fcc842691_teleamazonas.com_sube-precio-gasolina-extra-super-diesel-ecuador-112064.html
+  method: html text
+  derived_from: []
+  cross_check: [6e7473e48028_eluniverso.com_precios-gasolinas-extra-super-diesel-ecopais-abril-nota.html]
+  confidence: baja
+  note: Extra (X4) says 3.41
+- effective: 2026-04-12
+  product: "Diésel Premium"
+  usd: 2.962
+  source_type: press
+  url: https://www.eluniverso.com/noticias/economia/precios-gasolinas-extra-super-diesel-ecopais-abril-nota/
+  archive_url: https://web.archive.org/web/20260520231354/https://www.eluniverso.com/noticias/economia/precios-gasolinas-extra-super-diesel-ecopais-abril-nota/
+  sha256: 6e7473e48028842f04be3ef424ba85a875b85ba90679f5549618708911af6718
+  file: 6e7473e48028_eluniverso.com_precios-gasolinas-extra-super-diesel-ecopais-abril-nota.html
+  method: html text
+  derived_from: []
+  cross_check: [062477f238f5_teleamazonas.com_precio-gasolina-incrementa-12-abril-114366.html]
+  confidence: alta
+  note: ''
+- effective: 2026-04-12
+  product: "Gasolina Ecopaís"
+  usd: 3.024
+  source_type: press
+  url: https://www.eluniverso.com/noticias/economia/precios-gasolinas-extra-super-diesel-ecopais-abril-nota/
+  archive_url: https://web.archive.org/web/20260520231354/https://www.eluniverso.com/noticias/economia/precios-gasolinas-extra-super-diesel-ecopais-abril-nota/
+  sha256: 6e7473e48028842f04be3ef424ba85a875b85ba90679f5549618708911af6718
+  file: 6e7473e48028_eluniverso.com_precios-gasolinas-extra-super-diesel-ecopais-abril-nota.html
+  method: html text
+  derived_from: []
+  cross_check: [062477f238f5_teleamazonas.com_precio-gasolina-incrementa-12-abril-114366.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2026-04-12
+  product: Gasolina Extra
+  usd: 3.024
+  source_type: press
+  url: https://www.eluniverso.com/noticias/economia/precios-gasolinas-extra-super-diesel-ecopais-abril-nota/
+  archive_url: https://web.archive.org/web/20260520231354/https://www.eluniverso.com/noticias/economia/precios-gasolinas-extra-super-diesel-ecopais-abril-nota/
+  sha256: 6e7473e48028842f04be3ef424ba85a875b85ba90679f5549618708911af6718
+  file: 6e7473e48028_eluniverso.com_precios-gasolinas-extra-super-diesel-ecopais-abril-nota.html
+  method: html text
+  derived_from: []
+  cross_check: [062477f238f5_teleamazonas.com_precio-gasolina-incrementa-12-abril-114366.html]
+  confidence: alta
+  note: ''
+- effective: 2026-04-12
+  product: "Gasolina Súper"
+  usd: 4.57
+  source_type: press
+  url: https://www.eluniverso.com/noticias/economia/precios-gasolinas-extra-super-diesel-ecopais-abril-nota/
+  archive_url: https://web.archive.org/web/20260520231354/https://www.eluniverso.com/noticias/economia/precios-gasolinas-extra-super-diesel-ecopais-abril-nota/
+  sha256: 6e7473e48028842f04be3ef424ba85a875b85ba90679f5549618708911af6718
+  file: 6e7473e48028_eluniverso.com_precios-gasolinas-extra-super-diesel-ecopais-abril-nota.html
+  method: html text
+  derived_from: []
+  cross_check: [062477f238f5_teleamazonas.com_precio-gasolina-incrementa-12-abril-114366.html]
+  confidence: media
+  note: ''
+- effective: 2026-05-12
+  product: "Diésel Premium"
+  usd: 3.103
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasolineras-quito-122386/
+  archive_url: https://web.archive.org/web/20261012102053/https://www.primicias.ec/economia/precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasolineras-quito-122386/
+  sha256: 1fb87332d3adce497d196078cd430f523c0dee39de1ceac890ba0c5eb82c8868
+  file: 1fb87332d3ad_primicias.ec_precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasol.html
+  method: html text
+  derived_from: []
+  cross_check: [e70bdd376e08_vistazo.com_gasolina-extra-sube-de-precio-estos-son-los-nuevos-costos-oficiales-de.html, 0c7ab9138f98_elmercurio.com.ec_p-1256347.html]
+  confidence: alta
+  note: ''
+- effective: 2026-05-12
+  product: "Gasolina Ecopaís"
+  usd: 3.164
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasolineras-quito-122386/
+  archive_url: https://web.archive.org/web/20261012102053/https://www.primicias.ec/economia/precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasolineras-quito-122386/
+  sha256: 1fb87332d3adce497d196078cd430f523c0dee39de1ceac890ba0c5eb82c8868
+  file: 1fb87332d3ad_primicias.ec_precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasol.html
+  method: html text
+  derived_from: []
+  cross_check: [e70bdd376e08_vistazo.com_gasolina-extra-sube-de-precio-estos-son-los-nuevos-costos-oficiales-de.html, 0c7ab9138f98_elmercurio.com.ec_p-1256347.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2026-05-12
+  product: Gasolina Extra
+  usd: 3.164
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasolineras-quito-122386/
+  archive_url: https://web.archive.org/web/20261012102053/https://www.primicias.ec/economia/precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasolineras-quito-122386/
+  sha256: 1fb87332d3adce497d196078cd430f523c0dee39de1ceac890ba0c5eb82c8868
+  file: 1fb87332d3ad_primicias.ec_precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasol.html
+  method: html text
+  derived_from: []
+  cross_check: [e70bdd376e08_vistazo.com_gasolina-extra-sube-de-precio-estos-son-los-nuevos-costos-oficiales-de.html, 0c7ab9138f98_elmercurio.com.ec_p-1256347.html]
+  confidence: alta
+  note: ''
+- effective: 2026-05-12
+  product: "Gasolina Súper"
+  usd: 4.81
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasolineras-quito-122386/
+  archive_url: https://web.archive.org/web/20261012102053/https://www.primicias.ec/economia/precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasolineras-quito-122386/
+  sha256: 1fb87332d3adce497d196078cd430f523c0dee39de1ceac890ba0c5eb82c8868
+  file: 1fb87332d3ad_primicias.ec_precios-gasolinas-extra-super-diesel-ecuador-combustibles-guerra-gasol.html
+  method: html text
+  derived_from: []
+  cross_check: [0c7ab9138f98_elmercurio.com.ec_p-1256347.html]
+  confidence: media
+  note: ''
+- effective: 2026-06-12
+  product: "Diésel Premium"
+  usd: 3.251
+  source_type: press
+  url: https://elmercurio.com.ec/principal/2026/06/11/nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel/
+  archive_url: https://web.archive.org/web/20261016222139/https://elmercurio.com.ec/principal/2026/06/11/nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel/
+  sha256: 744b3defa2109b7182b63f465fc07561fae21a61bc9eab2b2fc4b150e7a222a3
+  file: 744b3defa210_elmercurio.com.ec_nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel.html
+  method: html text
+  derived_from: []
+  cross_check: [cc91a197ed52_elcomercio.com_nueva-alza-gasolina-regira-ecuador-junio.html]
+  confidence: alta
+  note: ''
+- effective: 2026-06-12
+  product: "Gasolina Ecopaís"
+  usd: 3.312
+  source_type: press
+  url: https://elmercurio.com.ec/principal/2026/06/11/nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel/
+  archive_url: https://web.archive.org/web/20261016222139/https://elmercurio.com.ec/principal/2026/06/11/nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel/
+  sha256: 744b3defa2109b7182b63f465fc07561fae21a61bc9eab2b2fc4b150e7a222a3
+  file: 744b3defa210_elmercurio.com.ec_nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel.html
+  method: html text
+  derived_from: []
+  cross_check: [cc91a197ed52_elcomercio.com_nueva-alza-gasolina-regira-ecuador-junio.html, cecb3025a323_vistazo.com_2026-06-12-precios-oficiales-extra-super-diesesl-combustibles-12-junio.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2026-06-12
+  product: Gasolina Extra
+  usd: 3.312
+  source_type: press
+  url: https://elmercurio.com.ec/principal/2026/06/11/nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel/
+  archive_url: https://web.archive.org/web/20261016222139/https://elmercurio.com.ec/principal/2026/06/11/nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel/
+  sha256: 744b3defa2109b7182b63f465fc07561fae21a61bc9eab2b2fc4b150e7a222a3
+  file: 744b3defa210_elmercurio.com.ec_nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel.html
+  method: html text
+  derived_from: []
+  cross_check: [cc91a197ed52_elcomercio.com_nueva-alza-gasolina-regira-ecuador-junio.html, cecb3025a323_vistazo.com_2026-06-12-precios-oficiales-extra-super-diesesl-combustibles-12-junio.html]
+  confidence: alta
+  note: ''
+- effective: 2026-06-12
+  product: "Gasolina Súper"
+  usd: 5.7
+  source_type: press
+  url: https://www.vistazo.com/negocios/economia/2026-06-12-precios-oficiales-extra-super-diesesl-combustibles-12-junio-2026-ecuador-LF11053190
+  archive_url: https://web.archive.org/web/20261016222652/https://www.vistazo.com/negocios/economia/2026-06-12-precios-oficiales-extra-super-diesesl-combustibles-12-junio-2026-ecuador-LF11053190
+  sha256: cecb3025a3238594ca077eed650005911cdfab7ea93c4767c71939692cc0ab53
+  file: cecb3025a323_vistazo.com_2026-06-12-precios-oficiales-extra-super-diesesl-combustibles-12-junio.html
+  method: html text
+  derived_from: []
+  cross_check: [cc91a197ed52_elcomercio.com_nueva-alza-gasolina-regira-ecuador-junio.html, 744b3defa210_elmercurio.com.ec_nuevamente-se-eleva-el-precio-de-las-gasolinas-y-el-diesel.html]
+  confidence: media
+  note: ''
+- effective: 2026-07-12
+  product: "Diésel Premium"
+  usd: 3.204
+  source_type: press
+  url: https://elmercurio.com.ec/principal/2026/07/12/precio-gasolina-ecuador-julio/
+  archive_url: https://web.archive.org/web/20261016222318/https://elmercurio.com.ec/principal/2026/07/12/precio-gasolina-ecuador-julio/
+  sha256: d68e6ac62b8a29dc516c8b90cbb843a2a121584f910fa753068640dbe6527d40
+  file: d68e6ac62b8a_elmercurio.com.ec_precio-gasolina-ecuador-julio.html
+  method: html text
+  derived_from: []
+  cross_check: [431978610d4e_eloriente.com_57965.html, 72ae500ba18c_elcomercio.com_gasolinas-bajan-ecuador-super-cae-87-centavos.html]
+  confidence: alta
+  note: "DE 444; ARCH figure"
+- effective: 2026-07-12
+  product: "Gasolina Ecopaís"
+  usd: 3.265
+  source_type: press
+  url: https://elmercurio.com.ec/principal/2026/07/12/precio-gasolina-ecuador-julio/
+  archive_url: https://web.archive.org/web/20261016222318/https://elmercurio.com.ec/principal/2026/07/12/precio-gasolina-ecuador-julio/
+  sha256: d68e6ac62b8a29dc516c8b90cbb843a2a121584f910fa753068640dbe6527d40
+  file: d68e6ac62b8a_elmercurio.com.ec_precio-gasolina-ecuador-julio.html
+  method: html text
+  derived_from: []
+  cross_check: [431978610d4e_eloriente.com_57965.html, 72ae500ba18c_elcomercio.com_gasolinas-bajan-ecuador-super-cae-87-centavos.html]
+  confidence: alta
+  note: "same price as Extra; DE 444 (9-Jul-2026) exceptional reduction mechanism; ARCH figure"
+- effective: 2026-07-12
+  product: Gasolina Extra
+  usd: 3.265
+  source_type: press
+  url: https://elmercurio.com.ec/principal/2026/07/12/precio-gasolina-ecuador-julio/
+  archive_url: https://web.archive.org/web/20261016222318/https://elmercurio.com.ec/principal/2026/07/12/precio-gasolina-ecuador-julio/
+  sha256: d68e6ac62b8a29dc516c8b90cbb843a2a121584f910fa753068640dbe6527d40
+  file: d68e6ac62b8a_elmercurio.com.ec_precio-gasolina-ecuador-julio.html
+  method: html text
+  derived_from: []
+  cross_check: [431978610d4e_eloriente.com_57965.html, 72ae500ba18c_elcomercio.com_gasolinas-bajan-ecuador-super-cae-87-centavos.html]
+  confidence: alta
+  note: "DE 444 (9-Jul-2026) exceptional reduction mechanism; ARCH figure"
+- effective: 2026-07-12
+  product: "Gasolina Súper"
+  usd: 5.61
+  source_type: press
+  url: https://www.primicias.ec/economia/precios-gasolina-super-extra-ecopais-diesel-ecuador-julio-127717/
+  archive_url: https://web.archive.org/web/20260911054942/https://www.primicias.ec/economia/precios-gasolina-super-extra-ecopais-diesel-ecuador-julio-127717/
+  sha256: 99bb3ca018f56b9c9e900d8868895619ef5b66586ad351bb356eb98315b78e82
+  file: 99bb3ca018f5_primicias.ec_precios-gasolina-super-extra-ecopais-diesel-ecuador-julio-127717.html
+  method: html text
+  derived_from: []
+  cross_check: [8d37320c0e3d_expreso.ec_extra-ecopais-diesel-super-bajan-ecuador-12-julio-son-precios-288913-h.html]
+  confidence: media
+  note: ''
+- effective: 2026-08-12
+  product: "Diésel Premium"
+  usd: 3.181
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/gasolinas-bajan-ecuador-super-cae-87-centavos/
+  archive_url: https://web.archive.org/web/20260813061037/https://www.elcomercio.com/actualidad/negocios/gasolinas-bajan-ecuador-super-cae-87-centavos/
+  sha256: 72ae500ba18cc3e95187f0f5e46b598519803e6cea26f5e3190e9437f7618bc0
+  file: 72ae500ba18c_elcomercio.com_gasolinas-bajan-ecuador-super-cae-87-centavos.html
+  method: html text
+  derived_from: []
+  cross_check: [6ead78ccdb16_eluniverso.com_precio-gasolina-super-ecuador-agosto-2026-combustibles-nota.html]
+  confidence: alta
+  note: DE 468
+- effective: 2026-08-12
+  product: "Gasolina Ecopaís"
+  usd: 3.242
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/gasolinas-bajan-ecuador-super-cae-87-centavos/
+  archive_url: https://web.archive.org/web/20260813061037/https://www.elcomercio.com/actualidad/negocios/gasolinas-bajan-ecuador-super-cae-87-centavos/
+  sha256: 72ae500ba18cc3e95187f0f5e46b598519803e6cea26f5e3190e9437f7618bc0
+  file: 72ae500ba18c_elcomercio.com_gasolinas-bajan-ecuador-super-cae-87-centavos.html
+  method: html text
+  derived_from: []
+  cross_check: [6ead78ccdb16_eluniverso.com_precio-gasolina-super-ecuador-agosto-2026-combustibles-nota.html]
+  confidence: alta
+  note: "same price as Extra; DE 468 (11-Aug-2026) reduction factor on the terminal price"
+- effective: 2026-08-12
+  product: Gasolina Extra
+  usd: 3.242
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/gasolinas-bajan-ecuador-super-cae-87-centavos/
+  archive_url: https://web.archive.org/web/20260813061037/https://www.elcomercio.com/actualidad/negocios/gasolinas-bajan-ecuador-super-cae-87-centavos/
+  sha256: 72ae500ba18cc3e95187f0f5e46b598519803e6cea26f5e3190e9437f7618bc0
+  file: 72ae500ba18c_elcomercio.com_gasolinas-bajan-ecuador-super-cae-87-centavos.html
+  method: html text
+  derived_from: []
+  cross_check: [6ead78ccdb16_eluniverso.com_precio-gasolina-super-ecuador-agosto-2026-combustibles-nota.html]
+  confidence: alta
+  note: DE 468 (11-Aug-2026) reduction factor on the terminal price
+- effective: 2026-08-12
+  product: "Gasolina Súper"
+  usd: 4.74
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/gasolinas-bajan-ecuador-super-cae-87-centavos/
+  archive_url: https://web.archive.org/web/20260813061037/https://www.elcomercio.com/actualidad/negocios/gasolinas-bajan-ecuador-super-cae-87-centavos/
+  sha256: 72ae500ba18cc3e95187f0f5e46b598519803e6cea26f5e3190e9437f7618bc0
+  file: 72ae500ba18c_elcomercio.com_gasolinas-bajan-ecuador-super-cae-87-centavos.html
+  method: html text
+  derived_from: []
+  cross_check: [6ead78ccdb16_eluniverso.com_precio-gasolina-super-ecuador-agosto-2026-combustibles-nota.html]
+  confidence: media
+  note: ''
+- effective: 2026-09-12
+  product: "Diésel Premium"
+  usd: 3.151
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre/
+  archive_url: https://web.archive.org/web/20260913153725/https://www.elcomercio.com/actualidad/negocios/gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre/
+  sha256: f5dee448280509dcd727b09643e1136086f0cff74893611d86166baea88b43d7
+  file: f5dee4482805_elcomercio.com_gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre.html
+  method: html text
+  derived_from: []
+  cross_check: [5373585a7860_kchcomunicacion.com_p-559801.html, 32edc768cc2d_vistazo.com_2026-09-11-gasolina-ecuador-bajan-precios-extra-ecopais-diesel-desde-1.html]
+  confidence: alta
+  note: ''
+- effective: 2026-09-12
+  product: "Gasolina Ecopaís"
+  usd: 3.212
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre/
+  archive_url: https://web.archive.org/web/20260913153725/https://www.elcomercio.com/actualidad/negocios/gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre/
+  sha256: f5dee448280509dcd727b09643e1136086f0cff74893611d86166baea88b43d7
+  file: f5dee4482805_elcomercio.com_gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre.html
+  method: html text
+  derived_from: []
+  cross_check: [5373585a7860_kchcomunicacion.com_p-559801.html, 32edc768cc2d_vistazo.com_2026-09-11-gasolina-ecuador-bajan-precios-extra-ecopais-diesel-desde-1.html]
+  confidence: alta
+  note: same price as Extra
+- effective: 2026-09-12
+  product: Gasolina Extra
+  usd: 3.212
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre/
+  archive_url: https://web.archive.org/web/20260913153725/https://www.elcomercio.com/actualidad/negocios/gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre/
+  sha256: f5dee448280509dcd727b09643e1136086f0cff74893611d86166baea88b43d7
+  file: f5dee4482805_elcomercio.com_gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre.html
+  method: html text
+  derived_from: []
+  cross_check: [5373585a7860_kchcomunicacion.com_p-559801.html, 32edc768cc2d_vistazo.com_2026-09-11-gasolina-ecuador-bajan-precios-extra-ecopais-diesel-desde-1.html]
+  confidence: alta
+  note: ''
+- effective: 2026-09-12
+  product: "Gasolina Súper"
+  usd: 4.89
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre/
+  archive_url: https://web.archive.org/web/20260913153725/https://www.elcomercio.com/actualidad/negocios/gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre/
+  sha256: f5dee448280509dcd727b09643e1136086f0cff74893611d86166baea88b43d7
+  file: f5dee4482805_elcomercio.com_gasolina-cambia-precio-en-ecuador-desde-este-12-septiembre.html
+  method: html text
+  derived_from: []
+  cross_check: [1f360b4691b6_primicias.ec_nuevo-precio-referencial-gasolina-super-ecuador-134716.html]
+  confidence: media
+  note: ''
+- effective: 2026-10-12
+  product: "Diésel Premium"
+  usd: 3.113
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/precio-combustibles-baja-ecuador-desde-octubre/
+  archive_url: https://web.archive.org/web/20261012150014/https://www.elcomercio.com/actualidad/negocios/precio-combustibles-baja-ecuador-desde-octubre/
+  sha256: 176ba34115a6c25a007a089e0f4d8bc8c576186206241676c3a0cafb7e56170b
+  file: 176ba34115a6_elcomercio.com_precio-combustibles-baja-ecuador-desde-octubre.html
+  method: html text
+  derived_from: []
+  cross_check: [5373585a7860_kchcomunicacion.com_p-559801.html, 92dcfb807531_primicias.ec_precios-gasolina-super-extra-diesel-guerra-medio-oriente-iran-134649.html]
+  confidence: alta
+  note: "ARCH via El Comercio; valid to 11-Nov-2026"
+- effective: 2026-10-12
+  product: "Gasolina Ecopaís"
+  usd: 3.175
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/precio-combustibles-baja-ecuador-desde-octubre/
+  archive_url: https://web.archive.org/web/20261012150014/https://www.elcomercio.com/actualidad/negocios/precio-combustibles-baja-ecuador-desde-octubre/
+  sha256: 176ba34115a6c25a007a089e0f4d8bc8c576186206241676c3a0cafb7e56170b
+  file: 176ba34115a6_elcomercio.com_precio-combustibles-baja-ecuador-desde-octubre.html
+  method: html text
+  derived_from: []
+  cross_check: [5373585a7860_kchcomunicacion.com_p-559801.html, 92dcfb807531_primicias.ec_precios-gasolina-super-extra-diesel-guerra-medio-oriente-iran-134649.html, ad9cc0e83c4e_vistazo.com_2026-10-12-precios-gasolinas-extra-ecopais-diesel-desde-12-octubre-HF1.html]
+  confidence: alta
+  note: "same price as Extra; ARCH via El Comercio; valid to 11-Nov-2026"
+- effective: 2026-10-12
+  product: Gasolina Extra
+  usd: 3.175
+  source_type: press
+  url: https://www.elcomercio.com/actualidad/negocios/precio-combustibles-baja-ecuador-desde-octubre/
+  archive_url: https://web.archive.org/web/20261012150014/https://www.elcomercio.com/actualidad/negocios/precio-combustibles-baja-ecuador-desde-octubre/
+  sha256: 176ba34115a6c25a007a089e0f4d8bc8c576186206241676c3a0cafb7e56170b
+  file: 176ba34115a6_elcomercio.com_precio-combustibles-baja-ecuador-desde-octubre.html
+  method: html text
+  derived_from: []
+  cross_check: [5373585a7860_kchcomunicacion.com_p-559801.html, 92dcfb807531_primicias.ec_precios-gasolina-super-extra-diesel-guerra-medio-oriente-iran-134649.html, ad9cc0e83c4e_vistazo.com_2026-10-12-precios-gasolinas-extra-ecopais-diesel-desde-12-octubre-HF1.html]
+  confidence: alta
+  note: "ARCH via El Comercio; valid to 11-Nov-2026"
+- effective: 2026-10-12
+  product: "Gasolina Súper"
+  usd: 5.42
+  source_type: press
+  url: https://www.primicias.ec/economia/nuevo-precio-referencial-gasolina-super-ecuador-134716/
+  archive_url: https://web.archive.org/web/20261016222622/https://www.primicias.ec/economia/nuevo-precio-referencial-gasolina-super-ecuador-134716/
+  sha256: 1f360b4691b6f59615dc9b1093b42575ee29e5374c80745acecab13df76e74d7
+  file: 1f360b4691b6_primicias.ec_nuevo-precio-referencial-gasolina-super-ecuador-134716.html
+  method: html text
+  derived_from: []
+  cross_check: [92dcfb807531_primicias.ec_precios-gasolina-super-extra-diesel-guerra-medio-oriente-iran-134649.html]
+  confidence: baja
+  note: "Petroecuador circular via Primicias; El Universo says 5.47, Vistazo 5.17"

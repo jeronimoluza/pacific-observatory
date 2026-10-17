@@ -4,7 +4,7 @@ function: fetch_autotraveler_by
 url: https://autotraveler.ru/en/belarus/trend-price-fuel-belarus.html
 fallback_date: 2011-08-01
 priority: 50
-cadence: daily
+cadence: weekly  # was daily; observed gaps (2026-10 audit)
 carry_forward: true
 
 products:

@@ -20,31 +20,31 @@ products:
     series_key: heavy_fuel_oil_3_5pct
     fuel_family: fuel_oil
     unit: ton
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
 
   "Heavy Mazut 1%S":
     series_key: heavy_mazut_1pct
     fuel_family: fuel_oil
     unit: ton
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
 
   "Heavy Mazut 0.5%S":
     series_key: heavy_mazut_0_5pct
     fuel_family: fuel_oil
     unit: ton
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
 
   "Light Mazut 1%S":
     series_key: light_mazut_1pct
     fuel_family: fuel_oil
     unit: ton
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
 
   "Light Mazut 0.5%S":
     series_key: light_mazut_0_5pct
     fuel_family: fuel_oil
     unit: ton
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
 
   "Bitumen 80/100":
     series_key: bitumen_80_100

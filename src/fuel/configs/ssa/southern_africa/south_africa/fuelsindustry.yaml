@@ -6,11 +6,14 @@ fallback_date: 2012-01-01
 priority: 10
 cadence: monthly
 carry_forward: true
+# Two regulated pricing zones (Coastal, Gauteng): no trim, and the median
+# of two is their mean, as the fetcher used to emit.
+station_aggregate: {stat: median, trim: none, min_stations: 2, max_dispersion: 0.25}
+station_type: region
 
 # FIASA publishes a per-year TablePress grid of South African pump
 # prices. The fetcher keeps only the retail 95 ULP rows (marked *)
-# and emits a monthly average across the Coastal and Gauteng regions
-# in ZAR/litre.
+# and emits one monthly price per zone (Coastal, Gauteng) in ZAR/litre.
 
 products:
   "Petrol 95":

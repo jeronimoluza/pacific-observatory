@@ -20,8 +20,12 @@ NUM = r"([\d,]+)"
 def read_report(path: Path) -> dict:
     head = "\n".join(path.read_text(errors="replace").splitlines()[:3])
     out = {}
-    for key, pat in (("rows", rf"^rows {NUM}"), ("product_months", rf"product-months {NUM}"),
-                     ("products", rf"products {NUM}"), ("trusted", rf"^trusted {NUM}")):
+    for key, pat in (
+        ("rows", rf"^rows {NUM}"),
+        ("product_months", rf"product-months {NUM}"),
+        ("products", rf"products {NUM}"),
+        ("trusted", rf"^trusted {NUM}"),
+    ):
         m = re.search(pat, head, re.M)
         out[key] = int(m.group(1).replace(",", "")) if m else None
     return out
@@ -33,7 +37,9 @@ def observe(node) -> list[dict]:
         return []
     sha = step_status("stageb")["sha"]
     out = []
-    for country_dir in sorted(p for p in root.iterdir() if p.is_dir() and not p.name.startswith(("_", "."))):
+    for country_dir in sorted(
+        p for p in root.iterdir() if p.is_dir() and not p.name.startswith(("_", "."))
+    ):
         for scope, sub in SCOPES.items():
             d = country_dir / sub if sub else country_dir
             report = d / "report.txt"
@@ -49,6 +55,16 @@ def observe(node) -> list[dict]:
                 drift.append(f"rows: report {rep['rows']} != parquet {obs}")
             if rep and trusted is not None and rep["trusted"] != trusted:
                 drift.append(f"trusted: report {rep['trusted']} != parquet {trusted}")
-            out.append(row(node, f"{country_dir.name}/{scope}", bool(rep), rep.get("rows"), mtime(report),
-                           sha, drift, {**rep, "obs_parquet_rows": obs, "trusted_parquet_rows": trusted}))
+            out.append(
+                row(
+                    node,
+                    f"{country_dir.name}/{scope}",
+                    bool(rep),
+                    rep.get("rows"),
+                    mtime(report),
+                    sha,
+                    drift,
+                    {**rep, "obs_parquet_rows": obs, "trusted_parquet_rows": trusted},
+                )
+            )
     return out

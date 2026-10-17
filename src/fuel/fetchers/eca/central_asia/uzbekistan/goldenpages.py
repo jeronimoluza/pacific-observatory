@@ -172,6 +172,7 @@ def _parse_year_html(html: str, cutoff: date) -> list[dict]:
                         "unit": "L",
                         "city": _CITY,
                         "address": station,
+                        "station": station,
                     }
                 )
     return rows

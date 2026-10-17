@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import fcntl
 import logging
 import sys
 from datetime import date, datetime, timezone
@@ -13,7 +14,8 @@ from core.hashing import observation_hash
 from core.state import read_state, set_checked, set_last_data_date, write_state
 from core.storage import load_csv, save_csv
 
-from .fx import build_fx_table
+from .gates import FailureRecorder, record_collect
+from .station_aggregate import fill_station, hash_fields
 from .paths import canonical_observations_path_for_entry
 
 logger = logging.getLogger(__name__)
@@ -32,6 +34,8 @@ COLUMNS = [
     "subnational_area",
     "city",
     "address",
+    "station",
+    "station_type",
     "scrape_ts",
     "observation_hash",
 ]
@@ -50,6 +54,21 @@ _HASH_FIELDS = [
 
 def _source_csv_path(entry: dict, base_dir: Path = _DATA_DIR) -> Path:
     return canonical_observations_path_for_entry(entry, base_dir=base_dir)
+
+
+def _write_state_merged(state: dict, initial: dict, path: Path) -> None:
+    """Write only the entries this run changed onto the state as it is on disk now.
+
+    Regional collects run in parallel against one .state.json; writing the
+    whole dict read at start-up dropped the other regions' progress.
+    """
+    changed = {k: v for k, v in state.items() if initial.get(k) != v}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path.with_name(f"{path.name}.lock"), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        on_disk = read_state(path)
+        on_disk.update(changed)
+        write_state(on_disk, path)
 
 
 def _cutoff_from_df(df: pd.DataFrame, fallback: date) -> date:
@@ -102,7 +121,7 @@ def run_collection(
     force: bool = False,
     rebuild: bool = False,
     dry_run: bool = False,
-    refresh_fx: bool = False,
+    status_region: str | None = None,
 ) -> None:
     """Fetch new data from one or all configured fuel sources.
 
@@ -113,7 +132,7 @@ def run_collection(
         force: Run even if source has enabled=false.
         rebuild: Delete existing observations and re-fetch from fallback_date.
         dry_run: Print plan without writing data.
-        refresh_fx: Also refresh FX cache for currencies in the registry.
+        status_region: Record failed sources in data/fuel/_status/<region>.json.
     """
     if rebuild and not source_key:
         logger.error("--rebuild requires --source KEY")
@@ -121,11 +140,23 @@ def run_collection(
 
     state_path = base_dir / ".state.json"
     state = read_state(state_path)
+    initial = {k: dict(v) for k, v in state.items()}
 
     keys_to_run = [source_key] if source_key else list(registry)
+    recorder = FailureRecorder()
+    returned_rows: set[str] = set()
+    logging.getLogger().addHandler(recorder)
 
     if rebuild and source_key:
         entry = registry[source_key]
+        if entry.get("history_irrecoverable"):
+            logger.error(
+                "Refusing --rebuild of %s: history_irrecoverable is set (the source "
+                "serves only its latest prices, so deleting observations.csv would "
+                "lose history that cannot be re-downloaded). Collect appends only.",
+                source_key,
+            )
+            sys.exit(1)
         out_path = _source_csv_path(entry, base_dir=base_dir)
         if out_path.exists():
             out_path.unlink()
@@ -141,7 +172,11 @@ def run_collection(
 
         out_path = _source_csv_path(entry, base_dir=base_dir)
         existing = load_csv(out_path, columns=COLUMNS)
-        cutoff = _cutoff_from_df(existing, entry["fallback_date"])
+        cutoff = (
+            entry["fallback_date"]
+            if entry.get("full_refresh")
+            else _cutoff_from_df(existing, entry["fallback_date"])
+        )
 
         if dry_run:
             logger.info(
@@ -155,26 +190,32 @@ def run_collection(
         logger.info("--- %s (cutoff: %s) ---", key, cutoff)
         run_ts = datetime.now(tz=timezone.utc)
 
+        recorder.current = key
         try:
             new_df = entry["fn"](cutoff)
         except Exception:
             logger.exception("Fetcher %s failed", key)
             set_checked(state, key, run_ts)
             continue
+        finally:
+            recorder.current = None
 
         set_checked(state, key, run_ts)
 
+        if new_df is not None and not new_df.empty:
+            returned_rows.add(key)
         if new_df is None or new_df.empty:
             logger.info("No new rows for %s", key)
             continue
 
         new_df = new_df.copy()
         new_df["scrape_ts"] = run_ts.isoformat()
+        new_df = fill_station(new_df, entry.get("station_type"))
         new_df["observation_hash"] = new_df.apply(
-            lambda row: observation_hash(row, _HASH_FIELDS), axis=1
+            lambda row: observation_hash(row, hash_fields(row, _HASH_FIELDS)), axis=1
         )
 
-        if entry.get("full_refresh"):
+        if entry.get("full_refresh") and not entry.get("history_irrecoverable"):
             existing = pd.DataFrame(columns=existing.columns)
 
         merged = _merge_new_rows(existing, new_df)
@@ -190,34 +231,16 @@ def run_collection(
                 except (ValueError, TypeError):
                     pass
 
+    logging.getLogger().removeHandler(recorder)
     if not dry_run:
-        write_state(state, state_path)
-
-    # Refresh FX cache for non-USD currencies in the registry
-    if not dry_run and refresh_fx:
-        currencies = sorted(
-            {
-                entry.get("currency", "")
-                for entry in registry.values()
-                if entry.get("currency") and entry["currency"] != "USD"
-            }
-        )
-        if currencies:
-            logger.info("Refreshing FX cache for %d currencies ...", len(currencies))
-            try:
-                today = pd.Timestamp.now().normalize()
-                window_start = today - pd.Timedelta(days=60)
-                span = pd.date_range(window_start, today, freq="D")
-                dummy = pd.DataFrame(
-                    [
-                        {"observation_date": d.strftime("%Y-%m-%d"), "currency": c}
-                        for c in currencies
-                        for d in (span[0], span[-1])
-                    ]
-                )
-                build_fx_table(dummy, cache_path=base_dir / "fx_cache.csv")
-                logger.info("FX cache updated.")
-            except Exception:
-                logger.exception("FX refresh failed (non-fatal)")
+        _write_state_merged(state, initial, state_path)
+        if status_region:
+            record_collect(
+                status_region,
+                keys_to_run,
+                recorder.failed,
+                base_dir / "_status",
+                returned_rows=returned_rows,
+            )
 
     logger.info("Done.")

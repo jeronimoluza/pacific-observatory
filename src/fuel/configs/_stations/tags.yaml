@@ -1,0 +1,14 @@
+# Free tags per station/market, keyed by source_key and the `station` value of
+# the raw rows. Build copies them into stations.csv (tags column, ";"-joined).
+# Add a tag only with a verifiable criterion, and say which in `criteria`.
+#
+# Taxonomy (keep it short):
+#   capital            national capital (city or one of its markets)
+#   urban              other city with an urban-area definition behind it
+#   remote             far from supply routes / road-access constrained
+#   conflict_affected  inside an area flagged by a dated conflict source
+#   border             border crossing or border town
+#   port               sea/river port
+#   island             on an island off the mainland network
+criteria: {}
+sources: {}

@@ -57,8 +57,14 @@ def own_hash(node: Node) -> dict:
         reused = getattr(importlib.import_module(module), func)()
         h.update(str(reused).encode())
     h.update(json.dumps(missing).encode())
-    return {"own": h.hexdigest()[:16], "n_files": len(paths), "deps": versions,
-            "reuse": reused, "missing": missing, "warnings": warnings}
+    return {
+        "own": h.hexdigest()[:16],
+        "n_files": len(paths),
+        "deps": versions,
+        "reuse": reused,
+        "missing": missing,
+        "warnings": warnings,
+    }
 
 
 def fingerprints(nodes: dict[str, Node]) -> dict[str, dict]:

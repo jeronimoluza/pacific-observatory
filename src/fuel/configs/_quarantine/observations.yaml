@@ -1,0 +1,16 @@
+# Stored observations the build ignores, without deleting them from data/ or
+# disabling their source. One entry per row: source_key, observation_hash, reason.
+# Remove an entry to let the row back in.
+
+- source_key: bera_bw_monthly
+  observation_hash: 05cd7bcda0c5b973079f2bd9cb6876ba42ce6018f23578dfa4921ec2c0547561
+  reason: "Diesel 50ppm 95.0 BWP/L on 2026-03-28 is 'ULP 95' misread as a price (fixed in 7bd7b482); pump price was ~P25"
+- source_key: bera_bw_monthly
+  observation_hash: abde99beb155da6f384dd04b45070d2f7cf715521264d800af4c5b547bf5dbc9
+  reason: "ULP 95 95.0 BWP/L on 2026-03-28, same misread"
+- source_key: ipt_weekly
+  observation_hash: 633196b1e4990de0293ce13122afc89416ae909406612c6a31d95f2c26bda4be
+  reason: "Gas (LPG) 189,000 LBP on 2026-01-09 between 1,188,000 and 1,197,000: leading digit lost in IPT's sheet (spike guard added in ipt.py)"
+- source_key: tfp_ps_monthly
+  observation_hash: d886b08249aebcef52d97d0c4d463019b9b8cfeb19890fa042db359485434034
+  reason: "L.P.G (48 kg) 48.00 ILS on 2025-08-01 between 280 and 280: thefuelprice.com entered the cylinder size as the price (guard added in thefuelprice.py)"

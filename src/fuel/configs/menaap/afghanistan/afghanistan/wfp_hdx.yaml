@@ -1,0 +1,24 @@
+source_key: af_wfp_monthly
+module: menaap.afghanistan.afghanistan.wfp_hdx
+function: fetch_af_wfp
+url: https://data.humdata.org/dataset/wfp-food-prices-for-afghanistan
+# Continuous monthly coverage starts 2014-01 (2000-2004 is sparse and
+# predates AFN coverage in the FX cache).
+fallback_date: 2013-12-01
+priority: 5
+cadence: monthly
+carry_forward: false
+price_basis: retail
+# WFP VAM retail price per litre in one market per province (34 since 2020);
+# the national price is their robust median.
+station_aggregate: {stat: median, trim: mad, k: 3, min_stations: 5, max_dispersion: 0.25}
+station_type: market
+
+products:
+  "Fuel (diesel)":
+    label: Diesel
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard

@@ -204,7 +204,7 @@ def _discover_articles() -> list[tuple[str, date | None]]:
         logger.info("[erb_zm] index page=%d new=%d total=%d", page, page_new, len(out))
         if page_new == 0:
             break
-    return sorted(out.items(), key=lambda kv: (kv[1] or date.min), reverse=True)
+    return sorted(out.items(), key=lambda kv: kv[1] or date.min, reverse=True)
 
 
 def _extract_prices(pdf_bytes: bytes) -> tuple[date | None, dict[str, float]]:

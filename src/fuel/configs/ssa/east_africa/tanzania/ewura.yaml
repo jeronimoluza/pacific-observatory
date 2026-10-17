@@ -6,11 +6,15 @@ fallback_date: 2024-01-01
 priority: 10
 cadence: monthly
 carry_forward: true
+# Regulated cap prices per town (3 ports + ~190 towns): no trim, since a
+# remote town's cap is a real price, not an outlier; the median town.
+station_aggregate: {stat: median, trim: none, min_stations: 5, max_dispersion: 0.25}
+station_type: city
 
 # EWURA publishes a public-notice PDF on the first Wednesday of every
 # month. Each PDF's first page contains Table 1: Retail Prices — TZS/Litre
-# for Dar es Salaam, Tanga, and Mtwara. Per-town granularity (Table 3,
-# 190+ towns) is intentionally out of scope for this fetcher.
+# for Dar es Salaam, Tanga, and Mtwara; the following pages list the cap
+# price for ~190 towns. Both are kept, one row per town.
 
 products:
   "Petrol":

@@ -25,12 +25,22 @@ from pathlib import Path
 from graph.ledger.store import frame, iso_week, plausible, utc
 
 HOME = Path.home()
-LEDGER_GLOBS = ["po-worktrees/*/logs/prices/_fullrun_*/status.jsonl", "po/logs/prices/_fullrun_*/status.jsonl"]
+LEDGER_GLOBS = [
+    "po-worktrees/*/logs/prices/_fullrun_*/status.jsonl",
+    "po/logs/prices/_fullrun_*/status.jsonl",
+]
 WEEKLY_LOGS = HOME / "po/logs/weekly"
 DATA_ROOT = HOME / "po/data/prices"
 UTC_STAMPS_FROM = datetime(2026, 6, 1, tzinfo=timezone.utc)
-STATUS = {"ok": "DONE", "ok_norows": "ZERO", "timeout": "TIMEOUT", "fail": "FAIL",
-          "runner_error": "FAIL", "blocked": "BLOCKED", "stalled": "STALLED"}
+STATUS = {
+    "ok": "DONE",
+    "ok_norows": "ZERO",
+    "timeout": "TIMEOUT",
+    "fail": "FAIL",
+    "runner_error": "FAIL",
+    "blocked": "BLOCKED",
+    "stalled": "STALLED",
+}
 _LOG_TS = re.compile(rb"^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d) ")
 _STATS = re.compile(rb"Crawled (\d+) pages .*scraped (\d+) items")
 _REQS = re.compile(rb"'downloader/request_count': (\d+)")
@@ -53,7 +63,9 @@ def weekly_ledgers() -> dict[str, str]:
 
 
 def _ts(raw: bytes) -> datetime:
-    return datetime.strptime(raw.decode(), "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    return datetime.strptime(raw.decode(), "%Y-%m-%d %H:%M:%S").replace(
+        tzinfo=timezone.utc
+    )
 
 
 def read_log(path: Path) -> dict:
@@ -93,7 +105,9 @@ def read_log(path: Path) -> dict:
 def ledger_rows(ledger: Path, week_of: dict[str, str]) -> list[dict]:
     run_id = ledger.parent.name
     m = _DIR_TS.search(run_id)
-    run_start = datetime.strptime(m[1] + m[2], "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc)
+    run_start = datetime.strptime(m[1] + m[2], "%Y%m%d%H%M%S").replace(
+        tzinfo=timezone.utc
+    )
     weekly = str(ledger) in week_of
     week = week_of.get(str(ledger)) or iso_week(run_start)
     rows = []
@@ -102,21 +116,37 @@ def ledger_rows(ledger: Path, week_of: dict[str, str]) -> list[dict]:
             continue
         e = json.loads(line)
         log = Path(e["log"]) if e.get("log") else None
-        info = read_log(log) if log else {"start": None, "requests": None, "max_stall_s": None}
+        info = (
+            read_log(log)
+            if log
+            else {"start": None, "requests": None, "max_stall_s": None}
+        )
         secs = e.get("secs")
         start = info["start"]
         if start is None and log and log.exists() and secs is not None:
             start = utc(log.stat().st_mtime - secs)
         end = utc(start.timestamp() + secs) if start and secs is not None else None
-        rows.append({
-            "pipeline": "prices", "run_id": run_id, "region": e.get("region"),
-            "country": e.get("country"), "source": e.get("source"), "week": week,
-            "start_utc": start, "end_utc": end, "duration_s": secs,
-            "new_rows": e.get("new_rows"), "status": STATUS.get(e.get("status"), str(e.get("status")).upper()),
-            "rc": e.get("rc"), "requests": info["requests"],
-            "max_stall_s": e.get("stall_s", info["max_stall_s"]),
-            "weekly": weekly, "origin": "ledger", "log": str(log) if log else None,
-        })
+        rows.append(
+            {
+                "pipeline": "prices",
+                "run_id": run_id,
+                "region": e.get("region"),
+                "country": e.get("country"),
+                "source": e.get("source"),
+                "week": week,
+                "start_utc": start,
+                "end_utc": end,
+                "duration_s": secs,
+                "new_rows": e.get("new_rows"),
+                "status": STATUS.get(e.get("status"), str(e.get("status")).upper()),
+                "rc": e.get("rc"),
+                "requests": info["requests"],
+                "max_stall_s": e.get("stall_s", info["max_stall_s"]),
+                "weekly": weekly,
+                "origin": "ledger",
+                "log": str(log) if log else None,
+            }
+        )
     return rows
 
 
@@ -136,10 +166,16 @@ def _fetcher_weeks(csv_path: Path) -> dict[str, int]:
     header = csv_path.open(encoding="utf-8").readline().strip().split(",")
     if "scrape_ts" not in header:
         return {}
-    t = pcsv.read_csv(csv_path, convert_options=pcsv.ConvertOptions(
-        include_columns=["scrape_ts"], column_types={"scrape_ts": pa.string()}))
+    t = pcsv.read_csv(
+        csv_path,
+        convert_options=pcsv.ConvertOptions(
+            include_columns=["scrape_ts"], column_types={"scrape_ts": pa.string()}
+        ),
+    )
     weeks: dict[str, int] = {}
-    for v in pc.value_counts(pc.utf8_slice_codeunits(t["scrape_ts"], 0, 10)).to_pylist():
+    for v in pc.value_counts(
+        pc.utf8_slice_codeunits(t["scrape_ts"], 0, 10)
+    ).to_pylist():
         try:
             wk = iso_week(datetime.fromisoformat(v["values"]))
         except (TypeError, ValueError):
@@ -160,7 +196,13 @@ def raw_rows(cache, data_root: Path = DATA_ROOT) -> tuple[list[dict], list[dict]
         if c and c["size"] == st.st_size and c["mtime"] == st.st_mtime:
             new_cache.append(c)
             return c
-        c = {"path": str(p), "size": st.st_size, "mtime": st.st_mtime, "lines": None, "weeks_json": None}
+        c = {
+            "path": str(p),
+            "size": st.st_size,
+            "mtime": st.st_mtime,
+            "lines": None,
+            "weeks_json": None,
+        }
         c.update(fn(p))
         new_cache.append(c)
         return c
@@ -169,7 +211,9 @@ def raw_rows(cache, data_root: Path = DATA_ROOT) -> tuple[list[dict], list[dict]
     for sdir in sorted(data_root.glob("*/*/*/*")):
         if sdir.name.startswith("_") or sdir.parts[-4].startswith("_"):
             continue
-        if not ((sdir / "raw_items").is_dir() or (sdir / "price_observations.csv").exists()):
+        if not (
+            (sdir / "raw_items").is_dir() or (sdir / "price_observations.csv").exists()
+        ):
             continue
         region, _, country, source = sdir.parts[-4:]
         best: dict[str, dict] = {}
@@ -177,14 +221,20 @@ def raw_rows(cache, data_root: Path = DATA_ROOT) -> tuple[list[dict], list[dict]
             m = _RUN_TS.search(f.name)
             if not m:
                 continue
-            start = datetime.strptime(m[1], "%Y%m%d_%H%M%S").replace(tzinfo=timezone.utc)
+            start = datetime.strptime(m[1], "%Y%m%d_%H%M%S").replace(
+                tzinfo=timezone.utc
+            )
             c = counted(f, lambda p: {"lines": _lines(p)})
             wk = iso_week(start)
             if wk not in best or c["lines"] > best[wk]["rows"]:
                 end = utc(c["mtime"])
                 ok = start >= UTC_STAMPS_FROM
-                best[wk] = {"rows": c["lines"], "start": start if ok else None, "end": end if ok else None,
-                            "log": str(f)}
+                best[wk] = {
+                    "rows": c["lines"],
+                    "start": start if ok else None,
+                    "end": end if ok else None,
+                    "log": str(f),
+                }
         csv = sdir / "price_observations.csv"
         if csv.exists():
             c = counted(csv, lambda p: {"weeks_json": json.dumps(_fetcher_weeks(p))})
@@ -192,13 +242,27 @@ def raw_rows(cache, data_root: Path = DATA_ROOT) -> tuple[list[dict], list[dict]
                 if wk not in best or n > best[wk]["rows"]:
                     best[wk] = {"rows": n, "start": None, "end": None, "log": str(csv)}
         for wk, b in best.items():
-            rows.append({
-                "pipeline": "prices", "run_id": f"raw:{wk}", "region": region, "country": country,
-                "source": source, "week": wk, "start_utc": b["start"], "end_utc": b["end"],
-                "duration_s": plausible(b["start"], b["end"]), "new_rows": b["rows"],
-                "status": "DONE" if b["rows"] else "ZERO", "rc": None, "requests": None,
-                "max_stall_s": None, "weekly": None, "origin": "raw_items", "log": b["log"],
-            })
+            rows.append(
+                {
+                    "pipeline": "prices",
+                    "run_id": f"raw:{wk}",
+                    "region": region,
+                    "country": country,
+                    "source": source,
+                    "week": wk,
+                    "start_utc": b["start"],
+                    "end_utc": b["end"],
+                    "duration_s": plausible(b["start"], b["end"]),
+                    "new_rows": b["rows"],
+                    "status": "DONE" if b["rows"] else "ZERO",
+                    "rc": None,
+                    "requests": None,
+                    "max_stall_s": None,
+                    "weekly": None,
+                    "origin": "raw_items",
+                    "log": b["log"],
+                }
+            )
     return rows, new_cache
 
 
@@ -214,8 +278,12 @@ def ingest(known: dict, cache, refresh: bool = False, log=print):
         if not refresh and known.get(("prices", ledger.parent.name)) == n:
             continue
         got = ledger_rows(ledger, week_of)
-        log(f"prices {ledger.parent.name}: {len(got)} fuentes ({ledger.parent.parent.parent.parent.name})")
+        log(
+            f"prices {ledger.parent.name}: {len(got)} fuentes ({ledger.parent.parent.parent.parent.name})"
+        )
         rows += got
     raw, new_cache = raw_rows(cache)
     log(f"prices raw: {len(raw)} fuente-semanas de {len(new_cache)} archivos")
-    return frame(rows + raw), pd.DataFrame(new_cache, columns=["path", "size", "mtime", "lines", "weeks_json"])
+    return frame(rows + raw), pd.DataFrame(
+        new_cache, columns=["path", "size", "mtime", "lines", "weeks_json"]
+    )

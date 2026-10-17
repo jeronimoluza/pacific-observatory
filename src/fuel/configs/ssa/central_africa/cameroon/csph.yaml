@@ -3,9 +3,16 @@ module: ssa.central_africa.cameroon.csph
 function: fetch_csph_cm
 url: https://www.csph.cm/
 fallback_date: 2024-01-01
+# Disabled 2026-10: superseded by csph_cm_retail (retail line of the same PDFs).
+# This wholesale reader is frozen at 2025-03 (CSPH renamed the files).
+enabled: false
 priority: 10
 cadence: monthly
+publication: announcement  # published only when the price changes
 carry_forward: true
+# Not a retail pump price (CSPH line read is the depot outlet price, not the pump price (pump fixed since 2024-02)); published as a labelled fallback.
+price_basis: wholesale
+station_type: city
 
 products:
   "Super":

@@ -28,15 +28,29 @@ def _glob_regex(pattern: str) -> re.Pattern:
 
 
 def ref_exists(ref: str) -> bool:
-    r = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}"],
-                       capture_output=True)
+    r = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(REPO_ROOT),
+            "rev-parse",
+            "--verify",
+            "--quiet",
+            f"{ref}^{{commit}}",
+        ],
+        capture_output=True,
+    )
     return r.returncode == 0
 
 
 @lru_cache(maxsize=None)
 def _tree_files(ref: str) -> tuple[str, ...]:
-    r = subprocess.run(["git", "-C", str(REPO_ROOT), "ls-tree", "-r", "--name-only", ref],
-                       capture_output=True, text=True, check=True)
+    r = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "ls-tree", "-r", "--name-only", ref],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
     return tuple(r.stdout.splitlines())
 
 
@@ -46,7 +60,8 @@ def repo_files(pattern: str, ref: str | None = None) -> list[str]:
         rx = _glob_regex(pattern)
         return sorted(f for f in _tree_files(ref) if rx.match(f))
     return sorted(
-        str(p.relative_to(REPO_ROOT)) for p in REPO_ROOT.glob(pattern)
+        str(p.relative_to(REPO_ROOT))
+        for p in REPO_ROOT.glob(pattern)
         if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
     )
 
@@ -55,7 +70,11 @@ def _braces(path: str) -> list[str]:
     m = re.search(r"\{([^{}]*)\}", path)
     if not m:
         return [path]
-    return [x for alt in m.group(1).split(",") for x in _braces(path[:m.start()] + alt + path[m.end():])]
+    return [
+        x
+        for alt in m.group(1).split(",")
+        for x in _braces(path[: m.start()] + alt + path[m.end() :])
+    ]
 
 
 def data_globs(path: str) -> list[str]:

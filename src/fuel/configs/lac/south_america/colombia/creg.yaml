@@ -5,7 +5,13 @@ url: https://creg.gov.co/publicaciones/15565/precios-de-combustibles-liquidos/
 fallback_date: 2022-03-01
 priority: 10
 cadence: irregular
+publication: announcement  # published only when the price changes
 carry_forward: true
+# One row per city and price event (13-18 cities). Regulated prices: city
+# differences are set freight/tax components, not outliers, so no trim;
+# the national price is the median city.
+station_aggregate: {stat: median, trim: none, min_stations: 10, max_dispersion: 0.25}
+station_type: city
 
 products:
   "GASOLINA MC":

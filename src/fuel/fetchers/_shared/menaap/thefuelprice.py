@@ -206,35 +206,45 @@ def _scrape_date_page(session, cc: str, obs_date: date, meta: dict) -> list[dict
     first_row_only = meta.get("first_row_only", False)
     default_unit = meta["unit"]
 
+    # Only the dated price table ("Type | Price (...) | Unit | Change | Starting
+    # from"). The page also carries a "Current / 1 year ago / Highest" summary
+    # and a change history whose cells, read as name/price pairs, gave rows
+    # like ("Liter", 0.11) or today's price stamped on an old date.
     for table in soup.find_all("table"):
-        tds = table.find_all("td")
-        if len(tds) < 2:
+        first = table.find("tr")
+        header = (
+            [c.get_text(strip=True).lower() for c in first.find_all(["th", "td"])]
+            if first
+            else []
+        )
+        if len(header) < 2 or header[0] != "type" or not header[1].startswith("price"):
             continue
-
-        # Look for rows with product name + price pattern
-        # Tables on thefuelprice.com have product name in one cell, price in next
-        i = 0
-        while i < len(tds) - 1:
-            cell_text = tds[i].get_text(strip=True)
-            price_text = tds[i + 1].get_text(strip=True)
-
-            price = _parse_price(price_text)
-            if price is None or not cell_text or price <= 0:
-                i += 1
+        for tr in table.find_all("tr"):
+            cells = [td.get_text(strip=True) for td in tr.find_all("td")]
+            if len(cells) < 2:
                 continue
-
-            product_name = cell_text
+            product_name, price = cells[0], _parse_price(cells[1])
+            if price is None or not product_name or price <= 0:
+                continue
             if _is_excluded(product_name):
-                i += 2
                 continue
-
             # Yemen dedup: skip if we've already seen this product name
             if first_row_only and product_name in seen_products:
-                i += 2
                 continue
             seen_products.add(product_name)
 
             unit = _resolve_unit(product_name, default_unit)
+            # The site sometimes enters the cylinder size as the price
+            # (West Bank 2025-08-01: "L.P.G (48 kg)" 48.00 between 280 and 280).
+            size = re.search(r"\((\d+(?:\.\d+)?)\s*kg\)", product_name, re.I)
+            if unit == "cylinder" and size and price == float(size.group(1)):
+                logger.warning(
+                    "[%s] %s %s: price equals the cylinder size; skipped",
+                    cc,
+                    obs_date,
+                    product_name,
+                )
+                continue
 
             rows_out.append(
                 {
@@ -247,7 +257,7 @@ def _scrape_date_page(session, cc: str, obs_date: date, meta: dict) -> list[dict
                     "unit": unit,
                 }
             )
-            i += 2
+        break
 
     return rows_out
 

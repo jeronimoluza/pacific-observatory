@@ -20,6 +20,8 @@ from pydantic import (
 
 from core.config import discover_pipeline_configs, load_countries, parse_config_path
 
+from .station_aggregate import StationAggregate
+
 logger = logging.getLogger(__name__)
 
 _FUEL_CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
@@ -157,6 +159,22 @@ class FuelSourceConfig(BaseModel):
         "irregular",
     ]
     carry_forward: bool = False
+    station_aggregate: StationAggregate | None = None
+    # The source serves only its latest prices: stored history cannot be
+    # re-downloaded, so collect only appends (no --rebuild, no full_refresh).
+    history_irrecoverable: bool = False
+    # announcement: published only when the price changes; scheduled: on a
+    # calendar. Sets how far a price is carried forward (fuel/fill_rule.py).
+    publication: Literal["announcement", "scheduled"] = "scheduled"
+    # What one raw row's location is; rows without one are "national".
+    # What the published price is. Retail pump prices are the target; where no
+    # retail source exists a labelled fallback is published instead.
+    price_basis: Literal[
+        "retail", "wholesale", "ex_refinery", "floor", "indicative"
+    ] = "retail"
+    station_type: Literal[
+        "station", "market", "city", "region", "national"
+    ] | None = None
     products: dict[str, ProductSpec]  # raw_product_name → ProductSpec
 
     # Resolved from path + countries.yaml (not in YAML file)
@@ -377,6 +395,11 @@ def build_fuel_registry(
             "priority": cfg.priority,
             "cadence": cfg.cadence,
             "carry_forward": cfg.carry_forward,
+            "station_aggregate": cfg.station_aggregate,
+            "station_type": cfg.station_type,
+            "price_basis": cfg.price_basis,
+            "history_irrecoverable": cfg.history_irrecoverable,
+            "publication": cfg.publication,
             "country_slug": cfg.country_slug,
             "country_name": cfg.country_name,
             "iso3": cfg.iso3,

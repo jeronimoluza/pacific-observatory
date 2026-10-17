@@ -30,10 +30,21 @@ def observe(node) -> list[dict]:
         if not fp:
             drift.append("fingerprint_missing")
         elif fp.get("scorer_version") != pred_dir.name:
-            drift.append(f"scorer_version {fp.get('scorer_version')} != {pred_dir.name}")
+            drift.append(
+                f"scorer_version {fp.get('scorer_version')} != {pred_dir.name}"
+            )
         if not (pred_dir / "_pairs" / f"pairs_{b:03d}.parquet").exists():
             drift.append("pairs_missing")
-        out.append(row(node, f"bucket_{b:03d}", pred.exists(), parquet_rows(pred) if pred.exists() else None,
-                       mtime(pred), (fp.get("bundle_sha") or "")[:12] or None, drift,
-                       {"blocks": [blk[0] for blk in fp.get("blocks", [])]}))
+        out.append(
+            row(
+                node,
+                f"bucket_{b:03d}",
+                pred.exists(),
+                parquet_rows(pred) if pred.exists() else None,
+                mtime(pred),
+                (fp.get("bundle_sha") or "")[:12] or None,
+                drift,
+                {"blocks": [blk[0] for blk in fp.get("blocks", [])]},
+            )
+        )
     return out

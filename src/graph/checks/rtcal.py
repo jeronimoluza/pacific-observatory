@@ -27,8 +27,11 @@ LOCAL = ["unit_value_local", "fx_rate", "currency"]
 def dnr_types(build: Path) -> set[str]:
     path = build / "rtcal" / "selected_release_thresholds.csv"
     with open(path, newline="") as fh:
-        return {r["missingness_type"] for r in csv.DictReader(fh)
-                if r["production_action"].startswith("do_not_release")}
+        return {
+            r["missingness_type"]
+            for r in csv.DictReader(fh)
+            if r["production_action"].startswith("do_not_release")
+        }
 
 
 def read(build: Path, countries: list[str] | None = None) -> list[dict]:
@@ -45,34 +48,62 @@ def read(build: Path, countries: list[str] | None = None) -> list[dict]:
         imputed = pc.fill_null(b.column("imputed"), False)
         flags = {
             "n_imputed": imputed,
-            "n_dnr": pc.and_(imputed, pc.fill_null(
-                pc.is_in(pc.cast(b.column("rtcal_missingness_type"), pa.string()), dnr), False)),
+            "n_dnr": pc.and_(
+                imputed,
+                pc.fill_null(
+                    pc.is_in(
+                        pc.cast(b.column("rtcal_missingness_type"), pa.string()), dnr
+                    ),
+                    False,
+                ),
+            ),
             **{f"null_{c}": pc.is_null(b.column(c)) for c in REQUIRED},
         }
         flags["n_missing"] = flags[f"null_{REQUIRED[0]}"]
         for c in REQUIRED[1:]:
             flags["n_missing"] = pc.or_(flags["n_missing"], flags[f"null_{c}"])
-        usd_only = pc.and_(imputed, pc.and_(pc.invert(flags["null_source"]), pc.invert(flags["null_input_hash"])))
+        usd_only = pc.and_(
+            imputed,
+            pc.and_(
+                pc.invert(flags["null_source"]), pc.invert(flags["null_input_hash"])
+            ),
+        )
         for c in LOCAL:
             usd_only = pc.and_(usd_only, flags[f"null_{c}"])
         flags["n_usd_only"] = usd_only
         flags["n_missing"] = pc.and_(flags["n_missing"], pc.invert(usd_only))
-        t = pa.table({"country": pc.cast(b.column("country"), pa.string()), **{k: pc.cast(v, pa.int64()) for k, v in flags.items()}})
-        g = t.group_by("country").aggregate([(k, "sum") for k in flags] + [("country", "count")])
+        t = pa.table(
+            {
+                "country": pc.cast(b.column("country"), pa.string()),
+                **{k: pc.cast(v, pa.int64()) for k, v in flags.items()},
+            }
+        )
+        g = t.group_by("country").aggregate(
+            [(k, "sum") for k in flags] + [("country", "count")]
+        )
         for r in g.to_pylist():
             a = acc.setdefault(r["country"], {k: 0 for k in [*flags, "n_rows"]})
             a["n_rows"] += r["country_count"]
             for k in flags:
                 a[k] += r[f"{k}_sum"]
-    return [{"country": c, "n_trusted": a["n_rows"] - a["n_imputed"], **a} for c, a in sorted(acc.items())]
+    return [
+        {"country": c, "n_trusted": a["n_rows"] - a["n_imputed"], **a}
+        for c, a in sorted(acc.items())
+    ]
 
 
 def check(rows: list[dict]) -> list[dict]:
     """Registry hook: no observer reads the rtcal rows, so this only points at the direct run."""
     if not any(r["node"] == NODE for r in rows):
         return []
-    return [{"node": NODE, "partition": "*", "color": "amarillo",
-             "msg": "#1/#2 requieren corrida directa: python -m graph.checks.rtcal --build <build_wNN>"}]
+    return [
+        {
+            "node": NODE,
+            "partition": "*",
+            "color": "amarillo",
+            "msg": "#1/#2 requieren corrida directa: python -m graph.checks.rtcal --build <build_wNN>",
+        }
+    ]
 
 
 def evaluate(rows: list[dict]) -> list[dict]:
@@ -81,36 +112,67 @@ def evaluate(rows: list[dict]) -> list[dict]:
     missing = sum(r["n_missing"] for r in rows)
     fills = sum(r["n_imputed"] for r in rows)
     if dnr:
-        top = ", ".join(f"{r['country']} {r['n_dnr']:,}" for r in sorted(rows, key=lambda r: -r["n_dnr"])[:5]
-                        if r["n_dnr"])
-        out.append({"node": NODE, "partition": "*", "color": "rojo",
-                    "msg": f"#1 {dnr:,} de {fills:,} fills do_not_release mergeados ({top})"})
+        top = ", ".join(
+            f"{r['country']} {r['n_dnr']:,}"
+            for r in sorted(rows, key=lambda r: -r["n_dnr"])[:5]
+            if r["n_dnr"]
+        )
+        out.append(
+            {
+                "node": NODE,
+                "partition": "*",
+                "color": "rojo",
+                "msg": f"#1 {dnr:,} de {fills:,} fills do_not_release mergeados ({top})",
+            }
+        )
     if missing:
         cols = ", ".join(f"{c} {sum(r[f'null_{c}'] for r in rows):,}" for c in REQUIRED)
-        out.append({"node": NODE, "partition": "*", "color": "rojo",
-                    "msg": f"#2 {missing:,} filas sin moneda local/fx/fuente/input_hash "
-                           f"({fills:,} imputadas; nulos: {cols})"})
+        out.append(
+            {
+                "node": NODE,
+                "partition": "*",
+                "color": "rojo",
+                "msg": f"#2 {missing:,} filas sin moneda local/fx/fuente/input_hash "
+                f"({fills:,} imputadas; nulos: {cols})",
+            }
+        )
     usd = sum(r["n_usd_only"] for r in rows)
     if usd:
-        top = ", ".join(f"{r['country']} {r['n_usd_only']:,}"
-                        for r in sorted(rows, key=lambda r: -r["n_usd_only"])[:5] if r["n_usd_only"])
-        out.append({"node": NODE, "partition": "*", "color": "amarillo",
-                    "msg": f"#2 {usd:,} fills solo en USD (sin tasa o FX sospechoso; {top})"})
+        top = ", ".join(
+            f"{r['country']} {r['n_usd_only']:,}"
+            for r in sorted(rows, key=lambda r: -r["n_usd_only"])[:5]
+            if r["n_usd_only"]
+        )
+        out.append(
+            {
+                "node": NODE,
+                "partition": "*",
+                "color": "amarillo",
+                "msg": f"#2 {usd:,} fills solo en USD (sin tasa o FX sospechoso; {top})",
+            }
+        )
     return out
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m graph.checks.rtcal")
-    ap.add_argument("--build", type=Path, required=True, help="build dir, e.g. .../build_w42")
-    ap.add_argument("--countries", help="comma-separated slugs or a panel name (panel36)")
+    ap.add_argument(
+        "--build", type=Path, required=True, help="build dir, e.g. .../build_w42"
+    )
+    ap.add_argument(
+        "--countries", help="comma-separated slugs or a panel name (panel36)"
+    )
     a = ap.parse_args(argv)
     countries = None
     if a.countries:
         from prices.weekly.panels import resolve_countries
+
         countries = resolve_countries(a.countries)
     rows = read(a.build, countries)
-    print(f"{a.build / RTCAL_OBS}: {sum(r['n_rows'] for r in rows):,} filas, "
-          f"{sum(r['n_imputed'] for r in rows):,} imputadas, {len(rows)} países")
+    print(
+        f"{a.build / RTCAL_OBS}: {sum(r['n_rows'] for r in rows):,} filas, "
+        f"{sum(r['n_imputed'] for r in rows):,} imputadas, {len(rows)} países"
+    )
     findings = evaluate(rows)
     for f in findings:
         print(f"{f['color']:<8} {f['node']}  {f['partition']:<6} {f['msg']}")

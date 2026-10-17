@@ -2,18 +2,24 @@
 
 from __future__ import annotations
 
+import functools
 import logging
+import os
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
-from cpi.analysis.core.forex import fetch_fx_rates
+from prices.fx import frankfurter
 
 logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_FX_CACHE = _PROJECT_ROOT / "data" / "fuel" / "fx_cache.csv"
+# v2 = Frankfurter v2. The old fx_cache.csv mixed providers (and SYP old/new pound).
+DEFAULT_FX_CACHE = _PROJECT_ROOT / "data" / "fuel" / "fx_cache_v2.csv"
 _FX_COLUMNS = ["currency", "date", "rate_usd_to_local"]
+_RATE_LIMITED_BEFORE = pd.Timestamp("2021-01-01")
 
 
 def _load_cache(cache_path: Path) -> pd.DataFrame:
@@ -33,37 +39,175 @@ def _load_cache(cache_path: Path) -> pd.DataFrame:
     return cache.dropna(subset=["currency", "date"]).copy()
 
 
+@functools.lru_cache(maxsize=1)
+def _provider_coverage() -> dict[str, tuple[pd.Timestamp, pd.Timestamp]]:
+    """Frankfurter v2 coverage window per currency; empty if unreachable."""
+    try:
+        served = frankfurter.list_currencies(scope_all=True)
+    except Exception as exc:
+        logger.warning("FX coverage lookup failed: %s", exc)
+        return {}
+    return {
+        row.iso_code: (row.start_date, row.end_date)
+        for row in served.itertuples(index=False)
+    }
+
+
 def _fetch_missing_rates(
     currencies: list[str],
     start_date: pd.Timestamp,
     end_date: pd.Timestamp,
+    coverage: dict[str, tuple[pd.Timestamp, pd.Timestamp]],
 ) -> pd.DataFrame:
-    if not currencies:
+    accepted, rejected = frankfurter.screen_quotes(currencies, set(coverage))
+    if rejected:
+        logger.warning("No FX provider coverage for %s; USD left blank", rejected)
+    if not accepted:
         return pd.DataFrame(columns=_FX_COLUMNS)
+    # Batches of 25 x 2-year windows: one response for ~80 currencies gets
+    # truncated (IncompleteRead), and ranges starting before 2021 are limited
+    # to 10 requests/minute per IP (429), so those requests are paced.
+    accepted.sort(key=lambda c: coverage[c][0])
+    frames: list[pd.DataFrame] = []
     try:
-        raw = fetch_fx_rates(
-            start_date.strftime("%Y-%m-%d"),
-            end_date.strftime("%Y-%m-%d"),
-            currencies,
-        )
+        for i in range(0, len(accepted), 25):
+            batch = accepted[i : i + 25]
+            window_start = max(start_date, coverage[batch[0]][0])
+            while window_start <= end_date:
+                window_end = min(
+                    window_start + pd.DateOffset(years=2) - pd.Timedelta(days=1),
+                    end_date,
+                )
+                frames.append(_fetch_window(batch, window_start, window_end))
+                if window_start < _RATE_LIMITED_BEFORE:
+                    time.sleep(6.5)
+                window_start = window_end + pd.Timedelta(days=1)
     except Exception as exc:
         logger.warning(
             "FX fetch unavailable; USD comparisons may be incomplete: %s", exc
         )
         return pd.DataFrame(columns=_FX_COLUMNS)
+    return (
+        pd.concat(frames, ignore_index=True)
+        if frames
+        else pd.DataFrame(columns=_FX_COLUMNS)
+    )
 
-    rows: list[dict[str, object]] = []
-    for date_str, day_rates in raw.items():
-        obs_date = pd.Timestamp(date_str).normalize()
-        for currency, rate in day_rates.items():
-            rows.append(
-                {
-                    "currency": currency,
-                    "date": obs_date,
-                    "rate_usd_to_local": rate,
-                }
+
+def _fetch_window(
+    batch: list[str], start: pd.Timestamp, end: pd.Timestamp
+) -> pd.DataFrame:
+    for attempt in range(2):
+        try:
+            return frankfurter.fetch_rates(
+                batch,
+                start.strftime("%Y-%m-%d"),
+                end.strftime("%Y-%m-%d"),
+                chunk_years=100,
             )
-    return pd.DataFrame(rows, columns=_FX_COLUMNS)
+        except Exception as exc:
+            if attempt:
+                raise
+            logger.warning(
+                "FX window %s..%s failed (%s); retrying in 65s",
+                start.date(),
+                end.date(),
+                exc,
+            )
+            time.sleep(65)
+
+
+def sync_fx_cache(
+    currencies: list[str],
+    start_date: pd.Timestamp,
+    end_date: pd.Timestamp,
+    cache_path: Path = DEFAULT_FX_CACHE,
+) -> tuple[pd.DataFrame, int]:
+    """Fetch rates the cache lacks for ``currencies`` over the span.
+
+    Returns the cache rows for ``currencies`` and the number of new
+    ``(currency, date)`` rows written to ``cache_path``.
+    """
+    full_cache = _load_cache(cache_path)
+    cache = full_cache[full_cache["currency"].isin(currencies)].copy()
+    # Compare spans, not days: the provider skips weekends/holidays (the
+    # forward fill in build_fx_table covers those), and dates outside its
+    # coverage window can never be served. Either would otherwise force a
+    # refetch every build.
+    coverage = _provider_coverage()
+    missing_dates: set[pd.Timestamp] = set()
+    for currency in currencies:
+        if currency not in coverage:
+            continue
+        lo, hi = coverage[currency]
+        want_lo = start_date if pd.isna(lo) else max(start_date, lo)
+        want_hi = end_date if pd.isna(hi) else min(end_date, hi)
+        if want_lo > want_hi:
+            continue
+        have = cache.loc[cache["currency"] == currency, "date"]
+        if have.empty:
+            missing_dates.update({want_lo, want_hi})
+            continue
+        if want_lo < have.min() - pd.Timedelta(days=4):
+            missing_dates.update({want_lo, have.min() - pd.Timedelta(days=1)})
+        # Any business day after the cached max is a gap; only weekends are
+        # left to the forward fill. A holiday costs one refetch that adds
+        # nothing, which is cheap next to pricing a week on a stale rate.
+        next_day = have.max() + pd.Timedelta(days=1)
+        if len(pd.bdate_range(next_day, want_hi)):
+            missing_dates.update({next_day, want_hi})
+    if not missing_dates:
+        logger.info(
+            "FX cache current for %d currencies; nothing fetched", len(currencies)
+        )
+        return cache, 0
+    fetch_start = min(missing_dates)
+    fetch_end = max(missing_dates)
+    fetched = _fetch_missing_rates(currencies, fetch_start, fetch_end, coverage)
+    if fetched.empty:
+        logger.info(
+            "FX fetch %s..%s returned no rows", fetch_start.date(), fetch_end.date()
+        )
+        return cache, 0
+    fetched = fetched.copy()
+    fetched["date"] = pd.to_datetime(fetched["date"], errors="coerce").dt.normalize()
+    known = set(zip(full_cache["currency"], full_cache["date"]))
+    n_new = sum(key not in known for key in zip(fetched["currency"], fetched["date"]))
+    cache = pd.concat([cache, fetched], ignore_index=True)
+    cache = cache.drop_duplicates(subset=["currency", "date"], keep="last")
+    # Merge new rates back into full cache (preserve other currencies)
+    other = full_cache[~full_cache["currency"].isin(currencies)]
+    full_cache = pd.concat([other, cache], ignore_index=True)
+    full_cache = full_cache.drop_duplicates(subset=["currency", "date"], keep="last")
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    # Write-then-rename so concurrent writers can't interleave lines.
+    tmp_path = cache_path.with_name(f"{cache_path.name}.{os.getpid()}.tmp")
+    full_cache.sort_values(["currency", "date"]).to_csv(tmp_path, index=False)
+    os.replace(tmp_path, cache_path)
+    logger.info(
+        "FX cache: fetched %s..%s, wrote %d new (currency, date) rows to %s",
+        fetch_start.date(),
+        fetch_end.date(),
+        n_new,
+        cache_path,
+    )
+    return cache, n_new
+
+
+def refresh_fx_cache(
+    currencies: list[str],
+    cache_path: Path = DEFAULT_FX_CACHE,
+    days: int = 60,
+) -> int:
+    """Bring the cache current to today (UTC) for ``currencies``; return rows written."""
+    today = pd.Timestamp(datetime.now(timezone.utc).date())
+    _, n_new = sync_fx_cache(
+        sorted(set(currencies) - {"USD"}),
+        today - pd.Timedelta(days=days),
+        today,
+        cache_path,
+    )
+    return n_new
 
 
 def build_fx_table(
@@ -91,33 +235,7 @@ def build_fx_table(
 
     start_date = work["observation_date"].min()
     end_date = work["observation_date"].max()
-
-    full_cache = _load_cache(cache_path)
-    cache = full_cache[full_cache["currency"].isin(currencies)].copy()
-    expected_dates = pd.date_range(start_date, end_date, freq="D").normalize()
-    expected_set = set(expected_dates)
-    missing_dates: set[pd.Timestamp] = set()
-    if cache.empty:
-        missing_dates = set(expected_set)
-    else:
-        for currency in currencies:
-            have = set(cache.loc[cache["currency"] == currency, "date"])
-            missing_dates.update(expected_set - have)
-    if missing_dates:
-        fetch_start = min(missing_dates)
-        fetch_end = max(missing_dates)
-        fetched = _fetch_missing_rates(currencies, fetch_start, fetch_end)
-        if not fetched.empty:
-            cache = pd.concat([cache, fetched], ignore_index=True)
-            cache = cache.drop_duplicates(subset=["currency", "date"], keep="last")
-            # Merge new rates back into full cache (preserve other currencies)
-            other = full_cache[~full_cache["currency"].isin(currencies)]
-            full_cache = pd.concat([other, cache], ignore_index=True)
-            full_cache = full_cache.drop_duplicates(
-                subset=["currency", "date"], keep="last"
-            )
-            cache_path.parent.mkdir(parents=True, exist_ok=True)
-            full_cache.sort_values(["currency", "date"]).to_csv(cache_path, index=False)
+    cache, _ = sync_fx_cache(currencies, start_date, end_date, cache_path)
 
     filled: list[pd.DataFrame] = []
     for currency in currencies:

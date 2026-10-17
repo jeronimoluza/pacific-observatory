@@ -7,8 +7,9 @@ Parses two layers of the public 'fuel-prices-current-past' page:
   Coastal, ``#table_2`` for Gauteng) populated by JS, so we render the
   page with Playwright before parsing.
 
-The fetcher keeps only the retail 95 ULP rows (marked '*') and emits a
-monthly national-average price in ZAR/L (mean of Coastal and Gauteng).
+The fetcher keeps only the retail 95 ULP rows (marked '*') and emits one
+monthly price in ZAR/L per pricing zone (``subnational_area`` Coastal and
+Gauteng); the build takes their median.
 """
 
 from __future__ import annotations
@@ -200,26 +201,31 @@ def _parse_current_tables(html: str) -> dict[date, tuple[float | None, float | N
     return {k: (coastal.get(k), gauteng.get(k)) for k in keys}
 
 
+def _zone_rows(dt: date, c: float | None, g: float | None) -> list[dict]:
+    if c is None or g is None:
+        return []
+    return [
+        {
+            "observation_date": dt.isoformat(),
+            "country": _COUNTRY,
+            "fuel_product": "Petrol 95",
+            "price_local": round(cents / 100.0, 4),
+            "currency": _CURRENCY,
+            "source_key": _SOURCE_KEY,
+            "unit": "litre",
+            "subnational_area": zone,
+        }
+        for zone, cents in (("Coastal", c), ("Gauteng", g))
+    ]
+
+
 def _to_rows(
     year: int,
     monthly: dict[int, tuple[float | None, float | None]],
 ) -> list[dict]:
     rows: list[dict] = []
     for month, (c, g) in monthly.items():
-        if c is None or g is None:
-            continue
-        avg_cents = (c + g) / 2.0
-        rows.append(
-            {
-                "observation_date": date(year, month, 1).isoformat(),
-                "country": _COUNTRY,
-                "fuel_product": "Petrol 95",
-                "price_local": round(avg_cents / 100.0, 4),
-                "currency": _CURRENCY,
-                "source_key": _SOURCE_KEY,
-                "unit": "litre",
-            }
-        )
+        rows.extend(_zone_rows(date(year, month, 1), c, g))
     return rows
 
 
@@ -231,20 +237,7 @@ def fetch_fuelsindustry_za(cutoff: date) -> pd.DataFrame | None:
         rows.extend(_to_rows(year, _parse_year_table(year, m.group("body"))))
     current = _parse_current_tables(html)
     for dt, (c, g) in current.items():
-        if c is None or g is None:
-            continue
-        avg_cents = (c + g) / 2.0
-        rows.append(
-            {
-                "observation_date": dt.isoformat(),
-                "country": _COUNTRY,
-                "fuel_product": "Petrol 95",
-                "price_local": round(avg_cents / 100.0, 4),
-                "currency": _CURRENCY,
-                "source_key": _SOURCE_KEY,
-                "unit": "litre",
-            }
-        )
+        rows.extend(_zone_rows(dt, c, g))
     cutoff_iso = cutoff.isoformat()
     rows = [r for r in rows if r["observation_date"] > cutoff_iso]
     if not rows:
@@ -252,7 +245,9 @@ def fetch_fuelsindustry_za(cutoff: date) -> pd.DataFrame | None:
         return None
     df = (
         pd.DataFrame(rows)
-        .drop_duplicates(subset=["observation_date", "fuel_product"])
+        .drop_duplicates(
+            subset=["observation_date", "fuel_product", "subnational_area"]
+        )
         .sort_values("observation_date")
         .reset_index(drop=True)
     )

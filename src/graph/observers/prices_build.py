@@ -18,7 +18,9 @@ from graph.observe import mtime, parquet_rows, row, week, week_tag
 def declared(node, suffixes: tuple[str, ...] = ()) -> list[Path]:
     out = []
     for p in node.paths:
-        for g in files.data_globs(p["path"].replace("<wk>", week()).replace("wNN", week_tag())):
+        for g in files.data_globs(
+            p["path"].replace("<wk>", week()).replace("wNN", week_tag())
+        ):
             if not suffixes or g.endswith(suffixes):
                 out.append(Path(g))
     return out
@@ -27,8 +29,12 @@ def declared(node, suffixes: tuple[str, ...] = ()) -> list[Path]:
 def _extra(path: Path) -> dict:
     if path.name == "promotion.json":
         d = json.loads(path.read_text())
-        return {"promoted": d.get("promoted"),
-                "failed_checks": [c.get("check") for c in d.get("drift_checks", []) if not c.get("passed")]}
+        return {
+            "promoted": d.get("promoted"),
+            "failed_checks": [
+                c.get("check") for c in d.get("drift_checks", []) if not c.get("passed")
+            ],
+        }
     return {"bytes": path.stat().st_size} if path.is_file() else {}
 
 
@@ -36,8 +42,15 @@ def observe(node) -> list[dict]:
     out = []
     for path in declared(node):
         exists = path.exists()
-        out.append(row(node, f"{path.parent.name}/{path.name}", exists,
-                       parquet_rows(path) if exists and path.suffix == ".parquet" else None,
-                       mtime(path), drift=[] if exists else ["missing"],
-                       extra=_extra(path) if exists else {}))
+        out.append(
+            row(
+                node,
+                f"{path.parent.name}/{path.name}",
+                exists,
+                parquet_rows(path) if exists and path.suffix == ".parquet" else None,
+                mtime(path),
+                drift=[] if exists else ["missing"],
+                extra=_extra(path) if exists else {},
+            )
+        )
     return out

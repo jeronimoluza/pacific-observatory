@@ -23,7 +23,11 @@ def observe(node) -> list[dict]:
     status_file = week_dir / "STATUS"
     status = status_file.read_text().strip() if status_file.exists() else None
     ledger_list = week_dir / "ledger_path"
-    ledgers = [Path(p) for p in ledger_list.read_text().strip().split(",") if p] if ledger_list.exists() else []
+    ledgers = (
+        [Path(p) for p in ledger_list.read_text().strip().split(",") if p]
+        if ledger_list.exists()
+        else []
+    )
     week_drift = [] if ledgers else ["no_ledger_path"]
     by_source: dict[str, dict] = {}
     for ledger in ledgers:
@@ -35,13 +39,37 @@ def observe(node) -> list[dict]:
             if not line.strip():
                 continue
             e = json.loads(line)
-            s = by_source.setdefault(f"{e['region']}/{e['country']}/{e['source']}", {"rows": 0, "runs": 0})
+            s = by_source.setdefault(
+                f"{e['region']}/{e['country']}/{e['source']}", {"rows": 0, "runs": 0}
+            )
             s["rows"] += e.get("new_rows") or 0
             s["runs"] += 1
-            s.update(status=e.get("status"), rc=e.get("rc"), secs=e.get("secs"), ts=ts, ledger=ledger.parent.name)
-    rows = [row(node, "_week", bool(status and " DONE " in f" {status} "), freshness=mtime(status_file),
-                drift=week_drift, extra={"STATUS": status, "ledgers": [str(p) for p in ledgers]})]
+            s.update(
+                status=e.get("status"),
+                rc=e.get("rc"),
+                secs=e.get("secs"),
+                ts=ts,
+                ledger=ledger.parent.name,
+            )
+    rows = [
+        row(
+            node,
+            "_week",
+            bool(status and " DONE " in f" {status} "),
+            freshness=mtime(status_file),
+            drift=week_drift,
+            extra={"STATUS": status, "ledgers": [str(p) for p in ledgers]},
+        )
+    ]
     for key, s in sorted(by_source.items()):
-        rows.append(row(node, key, s["status"] in DONE_STATUSES, s["rows"], iso(s["ts"]),
-                        extra={k: s[k] for k in ("status", "rc", "secs", "runs", "ledger")}))
+        rows.append(
+            row(
+                node,
+                key,
+                s["status"] in DONE_STATUSES,
+                s["rows"],
+                iso(s["ts"]),
+                extra={k: s[k] for k in ("status", "rc", "secs", "runs", "ledger")},
+            )
+        )
     return rows

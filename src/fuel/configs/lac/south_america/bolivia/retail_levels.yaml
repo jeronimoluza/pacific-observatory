@@ -1,0 +1,55 @@
+source_key: bo_retail_levels
+module: lac.south_america.bolivia.retail_levels
+function: fetch_bo_retail_levels
+url: https://www.anh.gob.bo/
+fallback_date: 2000-01-01
+priority: 5
+cadence: yearly
+publication: announcement  # a level holds until the next one
+carry_forward: true
+full_refresh: true
+price_basis: retail
+
+# Hand-curated domestic (Bolivian-plate) pump prices from decrees, ANH
+# resolutions and press, read from configs/_manual/bo_retail_levels.yaml;
+# nothing is scraped (ANH shows them only as images). Series keys match
+# bo_anh_monthly (foreign-plate price, priority 50), so these win per date.
+
+products:
+  "Gasolina Especial":
+    label: Gasoline Especial
+    series_key: gasoline_especial
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasolina Premium":
+    label: Gasoline Premium
+    series_key: gasoline_premium
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false  # niche grade; pre-2025 level weakly documented
+    grade: premium
+  "Diésel Oil":
+    label: Diesel
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "GNV":
+    label: CNG
+    series_key: cng
+    fuel_family: cng
+    unit: m3
+    include_in_build: true
+    grade: standard
+  "GLP garrafa 10 kg":
+    label: LPG household (10 kg)
+    series_key: lpg_household
+    fuel_family: lpg
+    unit: cylinder
+    amount: 10
+    density_l_per_kg: 1.96
+    include_in_build: true
+    grade: subsidized

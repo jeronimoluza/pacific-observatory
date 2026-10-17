@@ -6,6 +6,8 @@ fallback_date: 2023-01-01
 priority: 10
 cadence: weekly
 carry_forward: true
+# Not a retail pump price (Osinergmin PR1 reference: import parity before ISC/IGV/margin); published as a labelled fallback.
+price_basis: indicative
 
 # IMPORTANT: These are Osinergmin's PR1 reference prices (Soles/galón, ex-plant,
 # no ISC/IGV/rodaje and no commercial margin) — NOT consumer retail prices.

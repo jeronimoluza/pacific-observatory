@@ -20,7 +20,10 @@ def observe(node) -> list[dict]:
     if not state_file.exists():
         return []
     state = json.loads(state_file.read_text())
-    on_disk = {str(p.relative_to(shard_root))[: -len(".parquet")]: p for p in shard_root.glob("*/*/*/*.parquet")}
+    on_disk = {
+        str(p.relative_to(shard_root))[: -len(".parquet")]: p
+        for p in shard_root.glob("*/*/*/*.parquet")
+    }
     sha = step_status("enrich")["sha"]
     out = []
     for key in sorted(set(state) | set(on_disk)):
@@ -35,6 +38,16 @@ def observe(node) -> list[dict]:
         if sig and ts is not None and ts < sig[0]:
             drift.append("shard_older_than_raw")
         extra = {"raw_newest": iso(sig[0]), "raw_files": sig[1]} if sig else {}
-        out.append(row(node, key, shard is not None, parquet_rows(shard) if shard else None, ts,
-                       sha, drift, extra))
+        out.append(
+            row(
+                node,
+                key,
+                shard is not None,
+                parquet_rows(shard) if shard else None,
+                ts,
+                sha,
+                drift,
+                extra,
+            )
+        )
     return out

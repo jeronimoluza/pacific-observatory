@@ -5,6 +5,7 @@ url: https://pra.gov.sl/
 fallback_date: 2024-03-01
 priority: 10
 cadence: weekly
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:
@@ -30,5 +31,5 @@ products:
     series_key: fuel_oil
     fuel_family: fuel_oil
     unit: liter
-    include_in_build: true
+    include_in_build: false  # not a consumer road fuel; kept in raw
     grade: standard

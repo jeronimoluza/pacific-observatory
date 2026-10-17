@@ -6,6 +6,8 @@ fallback_date: 2018-01-01
 priority: 10
 cadence: monthly
 carry_forward: true
+# Not a retail pump price (Petroecuador 'Estructura de Precios en Terminal' (terminal price)); published as a labelled fallback.
+price_basis: wholesale
 
 # EP Petroecuador (state oil company) publishes a monthly "Estructura
 # de Precios en Terminal" PDF — wholesale prices that authorized

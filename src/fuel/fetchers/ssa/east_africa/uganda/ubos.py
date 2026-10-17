@@ -123,6 +123,37 @@ def _extract_prices(pdf_bytes: bytes) -> dict[str, float]:
     return out
 
 
+_MEDIA_PDF_RE = re.compile(r"/CPI-PUBLICATION-(?:FOR-)?([A-Z]+)-(\d{4})\.pdf$", re.I)
+
+
+def _media_pdf_urls(start: date) -> dict[tuple[int, int], str] | None:
+    """CPI publication PDFs uploaded since ``start``, from the WordPress media API.
+
+    One request instead of five filename guesses per month (UBOS has published
+    nothing since 2025-12, so the guesses were ~50 requests of 404s per run).
+    None when the API is unavailable, so the caller falls back to guessing.
+    """
+    after = (start - pd.DateOffset(months=1)).strftime("%Y-%m-%dT00:00:00")
+    resp = _get(
+        f"{_BASE_URL}/wp-json/wp/v2/media?search=CPI-PUBLICATION&per_page=100&after={after}"
+    )
+    if resp is None or resp.status_code != 200:
+        return None
+    try:
+        items = resp.json()
+    except ValueError:
+        return None
+    out: dict[tuple[int, int], str] = {}
+    for item in items:
+        url = str(item.get("source_url", ""))
+        m = _MEDIA_PDF_RE.search(url)
+        if m and m.group(1).upper() in _MONTHS:
+            out.setdefault(
+                (int(m.group(2)), _MONTHS.index(m.group(1).upper()) + 1), url
+            )
+    return out
+
+
 def _iter_months(start: date, end: date):
     """Yield (year, month_index) tuples from start to end, inclusive."""
     y, m = start.year, start.month
@@ -142,8 +173,15 @@ def fetch_ubos_ug(cutoff: date) -> pd.DataFrame | None:
     start_month = 1 if cutoff.month == 12 else cutoff.month + 1
     start = date(start_year, start_month, 1)
 
+    media = _media_pdf_urls(start)
     for year, month_idx in _iter_months(start, today):
-        for url in _candidate_urls(year, month_idx):
+        if media is None:
+            candidates = _candidate_urls(year, month_idx)
+        else:
+            candidates = (
+                [media[(year, month_idx)]] if (year, month_idx) in media else []
+            )
+        for url in candidates:
             time.sleep(_THROTTLE_S)
             resp = _get(url)
             if resp is None or resp.status_code != 200:

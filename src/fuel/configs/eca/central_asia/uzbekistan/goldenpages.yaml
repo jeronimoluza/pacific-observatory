@@ -6,6 +6,10 @@ fallback_date: 2020-01-01
 priority: 10
 cadence: biweekly
 carry_forward: false
+# Tashkent stations price freely (AI-95 IQR ~18% of the median), so no trim:
+# the median of all stations, flagged under 5 stations or above 35% spread.
+station_aggregate: {stat: median, trim: none, min_stations: 5, max_dispersion: 0.35}
+station_type: station
 currency: UZS
 
 products:

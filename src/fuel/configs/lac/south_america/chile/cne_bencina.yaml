@@ -6,6 +6,11 @@ fallback_date: 2012-01-01
 priority: 10
 cadence: monthly
 carry_forward: false
+# Per-station events -> national month: last price per station, drop stations
+# outside median +- 3 MAD (the files carry 99999.999 placeholders that lifted
+# the plain mean 6-12%), median of the rest. See fuel/station_aggregate.py.
+station_aggregate: {stat: median, trim: mad, k: 3, min_stations: 5, max_dispersion: 0.25}
+station_type: station
 
 products:
   "93":

@@ -23,11 +23,23 @@ RAW_CACHE = "raw_files.parquet"
 # (non-zero exit, or text STUCK), BLOCKED (prices blocklist; the
 # source was not run). origin: where the row came from.
 COLUMNS = {
-    "pipeline": "string", "run_id": "string", "region": "string", "country": "string",
-    "source": "string", "week": "string", "start_utc": "datetime64[us, UTC]",
-    "end_utc": "datetime64[us, UTC]", "duration_s": "float64", "new_rows": "Int64",
-    "status": "string", "rc": "Int64", "requests": "Int64", "max_stall_s": "float64",
-    "weekly": "boolean", "origin": "string", "log": "string",
+    "pipeline": "string",
+    "run_id": "string",
+    "region": "string",
+    "country": "string",
+    "source": "string",
+    "week": "string",
+    "start_utc": "datetime64[us, UTC]",
+    "end_utc": "datetime64[us, UTC]",
+    "duration_s": "float64",
+    "new_rows": "Int64",
+    "status": "string",
+    "rc": "Int64",
+    "requests": "Int64",
+    "max_stall_s": "float64",
+    "weekly": "boolean",
+    "origin": "string",
+    "log": "string",
 }
 
 
@@ -37,7 +49,9 @@ def iso_week(d: date | datetime) -> str:
 
 def week_monday(week: str) -> datetime:
     y, w = week.split("-W")
-    return datetime.combine(date.fromisocalendar(int(y), int(w), 1), datetime.min.time(), timezone.utc)
+    return datetime.combine(
+        date.fromisocalendar(int(y), int(w), 1), datetime.min.time(), timezone.utc
+    )
 
 
 def utc(ts: float | None) -> datetime | None:
@@ -49,7 +63,11 @@ def frame(rows: list[dict]):
 
     df = pd.DataFrame(rows, columns=list(COLUMNS))
     for c, t in COLUMNS.items():
-        df[c] = pd.to_datetime(df[c], utc=True) if t.startswith("datetime") else df[c].astype(t)
+        df[c] = (
+            pd.to_datetime(df[c], utc=True)
+            if t.startswith("datetime")
+            else df[c].astype(t)
+        )
     return df
 
 
@@ -80,8 +98,12 @@ def append_runs(new, ledger_dir: Path = LEDGER_DIR) -> tuple[int, int]:
         hit = [k in keys for k in zip(old["pipeline"], old["run_id"])]
         replaced = sum(hit)
         old = old[[not h for h in hit]]
-    out = new if old is None or not len(old) else pd.concat([old, new], ignore_index=True)
-    out = out.sort_values(["pipeline", "run_id", "country", "source"], ignore_index=True)
+    out = (
+        new if old is None or not len(old) else pd.concat([old, new], ignore_index=True)
+    )
+    out = out.sort_values(
+        ["pipeline", "run_id", "country", "source"], ignore_index=True
+    )
     write(out, RUNS, ledger_dir)
     return replaced, len(out)
 
@@ -94,7 +116,9 @@ def known_runs(ledger_dir: Path = LEDGER_DIR) -> dict[tuple[str, str], int]:
     return old.groupby(["pipeline", "run_id"]).size().to_dict()
 
 
-def plausible(start: datetime | None, end: datetime | None, max_h: float = 48) -> float | None:
+def plausible(
+    start: datetime | None, end: datetime | None, max_h: float = 48
+) -> float | None:
     if start is None or end is None:
         return None
     d = (end - start).total_seconds()

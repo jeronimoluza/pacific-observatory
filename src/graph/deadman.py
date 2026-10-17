@@ -49,15 +49,25 @@ def check_run(name: str, e: dict, now: datetime) -> tuple[str, str] | None:
         due = last_due(e["at"], due - timedelta(minutes=1))
     newest = _newest(e["status"])
     if newest is None or newest[1] < due:
-        seen = f"newest {newest[0]} at {newest[1]:%Y-%m-%dT%H:%MZ}" if newest else f"no {e['status']}"
+        seen = (
+            f"newest {newest[0]} at {newest[1]:%Y-%m-%dT%H:%MZ}"
+            if newest
+            else f"no {e['status']}"
+        )
         return f"missing:{name}:{due:%Y-%m-%dT%H:%MZ}", (
-            f"deadman {name}: no run since {due:%Y-%m-%dT%H:%MZ} ({e['at']} + {e.get('grace_hours', 2)}h grace); {seen}")
+            f"deadman {name}: no run since {due:%Y-%m-%dT%H:%MZ} ({e['at']} + {e.get('grace_hours', 2)}h grace); {seen}"
+        )
     path, mtime = newest
     line = path.read_text().strip()
     parts = line.split()
-    if len(parts) > 1 and parts[1] == "RUNNING" and now - mtime > timedelta(hours=e.get("max_hours", 24)):
+    if (
+        len(parts) > 1
+        and parts[1] == "RUNNING"
+        and now - mtime > timedelta(hours=e.get("max_hours", 24))
+    ):
         return f"stuck:{name}:{path}:{mtime:%Y-%m-%dT%H:%MZ}", (
-            f"deadman {name}: RUNNING for over {e.get('max_hours', 24)}h: {path}: {line}")
+            f"deadman {name}: RUNNING for over {e.get('max_hours', 24)}h: {path}: {line}"
+        )
     return None
 
 
@@ -70,17 +80,26 @@ def check_host(d: dict, backup_mount: Path, now: datetime) -> list[tuple[str, st
         out.append((f"mount:{backup_mount}:{day}", f"deadman: {e}"))
     free = free_gb(Path("/"))
     if free < d.get("min_free_gb", 15):
-        out.append((f"disk:/:{day}", f"deadman: / has {free}G free < {d.get('min_free_gb', 15)}G"))
+        out.append(
+            (
+                f"disk:/:{day}",
+                f"deadman: / has {free}G free < {d.get('min_free_gb', 15)}G",
+            )
+        )
     return out
 
 
-def run_deadman(cfg: dict, overrides: dict[str, str], backup_mount: Path | None, echo=print) -> int:
+def run_deadman(
+    cfg: dict, overrides: dict[str, str], backup_mount: Path | None, echo=print
+) -> int:
     d = cfg["deadman"]
     now = datetime.now(timezone.utc)
     expect = {k: dict(v) for k, v in d["expect"].items()}
     for name, at in overrides.items():
         if name not in expect:
-            raise ValueError(f"--expect {name}: not in deadman.expect ({', '.join(expect)})")
+            raise ValueError(
+                f"--expect {name}: not in deadman.expect ({', '.join(expect)})"
+            )
         expect[name]["at"] = at
     reds = check_host(d, backup_mount or Path(d["backup_mount"]), now)
     for name, e in expect.items():
@@ -99,5 +118,7 @@ def run_deadman(cfg: dict, overrides: dict[str, str], backup_mount: Path | None,
         sent[key] = f"{now:%Y-%m-%dT%H:%M:%SZ}"
     cutoff = f"{now - timedelta(days=KEEP_DAYS):%Y-%m-%dT%H:%M:%SZ}"
     state_path.parent.mkdir(parents=True, exist_ok=True)
-    state_path.write_text(json.dumps({k: v for k, v in sent.items() if v >= cutoff}, indent=1) + "\n")
+    state_path.write_text(
+        json.dumps({k: v for k, v in sent.items() if v >= cutoff}, indent=1) + "\n"
+    )
     return 1 if reds else 0

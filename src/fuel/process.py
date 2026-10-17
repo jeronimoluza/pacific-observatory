@@ -2,23 +2,36 @@
 
 from __future__ import annotations
 
+import functools
 import logging
 from datetime import date
 from pathlib import Path
 
 import click
 import pandas as pd
+import yaml
 
 from core.storage import save_csv
 
 from .config import ProductSpec, build_fuel_registry
+from . import gates
+from .fill_rule import carry_end
 from .fx import DEFAULT_FX_CACHE, attach_fx_and_usd
+from prices.fx.parallel import PARALLEL_CACHE
+
+from .fx_parallel import attach_parallel
+from .station_aggregate import (
+    STATION_COLUMNS,
+    attach_station_stats,
+    station_outputs,
+)
 from .paths import canonical_observations_path_for_entry
 
 logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = _PROJECT_ROOT / "data" / "fuel"
+_QUARANTINE_DIR = Path(__file__).resolve().parent / "configs" / "_quarantine"
 OUTPUTS_DIR = _PROJECT_ROOT / "outputs" / "fuel"
 
 _CANONICAL_FAMILY_UNITS = {
@@ -28,15 +41,6 @@ _CANONICAL_FAMILY_UNITS = {
     "lpg": "L",
 }
 _FAMILY_USD_FAMILIES = {"gasoline", "diesel", "kerosene", "lpg"}
-_CADENCE_DAYS = {
-    "daily": 1,
-    "weekly": 7,
-    "biweekly": 14,
-    "monthly": 31,
-    "quarterly": 92,
-    "yearly": 366,
-    "irregular": 1,
-}
 _PRODUCT_COLUMNS = [
     "observation_date",
     "region",
@@ -70,6 +74,8 @@ _FAMILY_COLUMNS = [
     "fx_rate",
     "fx_rate_date",
     "price_usd",
+    "fx_rate_parallel",
+    "price_usd_parallel",
 ]
 
 
@@ -121,12 +127,30 @@ def _normalize_price(price_local: float, spec: ProductSpec) -> tuple[float, str]
     return normalized, unit
 
 
+@functools.lru_cache(maxsize=1)
+def _quarantined() -> dict[str, set[str]]:
+    """{source_key: observation hashes} listed in configs/_quarantine/."""
+    out: dict[str, set[str]] = {}
+    for path in sorted(_QUARANTINE_DIR.glob("*.yaml")):
+        for item in yaml.safe_load(path.read_text(encoding="utf-8")) or []:
+            out.setdefault(item["source_key"], set()).add(item["observation_hash"])
+    return out
+
+
 def _load_source_frame(entry: dict, data_dir: Path = DATA_DIR) -> pd.DataFrame:
     path = _observations_path(entry, base_dir=data_dir)
     if not path.exists():
         return pd.DataFrame()
 
     df = pd.read_csv(path, low_memory=False)
+    held = _quarantined().get(entry["source_key"])
+    if held and "observation_hash" in df.columns:
+        mask = df["observation_hash"].isin(held)
+        if mask.any():
+            logger.warning(
+                "Quarantined %d row(s) of %s", int(mask.sum()), entry["source_key"]
+            )
+            df = df[~mask]
     if df.empty:
         return df
 
@@ -173,9 +197,9 @@ def _load_source_frame(entry: dict, data_dir: Path = DATA_DIR) -> pd.DataFrame:
     df["cadence"] = entry["cadence"]
     source_default = entry["carry_forward"]
     df["carry_forward"] = df["product_spec"].map(
-        lambda spec: source_default
-        if spec.carry_forward is None
-        else spec.carry_forward
+        lambda spec: (
+            source_default if spec.carry_forward is None else spec.carry_forward
+        )
     )
     return df
 
@@ -210,7 +234,10 @@ def _collapse_source_rows(df: pd.DataFrame) -> pd.DataFrame:
     return collapsed
 
 
-def _expand_with_carry_forward(df: pd.DataFrame) -> pd.DataFrame:
+def _expand_with_carry_forward(
+    df: pd.DataFrame, rules: dict[str, tuple[str, pd.Timestamp | None]]
+) -> pd.DataFrame:
+    """``rules``: source_key -> (publication, last_ok); see fill_rule."""
     if df.empty:
         return df
     today = pd.Timestamp(date.today()).normalize()
@@ -218,18 +245,14 @@ def _expand_with_carry_forward(df: pd.DataFrame) -> pd.DataFrame:
     group_cols = ["country_slug", "source_key", "series_key"]
     for _, group in df.groupby(group_cols, dropna=False, sort=False):
         ordered = group.sort_values("observation_date").reset_index(drop=True)
+        dates = [pd.Timestamp(d).normalize() for d in ordered["observation_date"]]
         for idx, row in ordered.iterrows():
-            start = pd.Timestamp(row["observation_date"]).normalize()
+            start = dates[idx]
             end = start
             if bool(row["carry_forward"]):
-                window = max(_CADENCE_DAYS[row["cadence"]] - 1, 0)
-                end = start + pd.Timedelta(days=window)
-                if idx + 1 < len(ordered):
-                    next_date = pd.Timestamp(
-                        ordered.iloc[idx + 1]["observation_date"]
-                    ).normalize()
-                    end = min(end, next_date - pd.Timedelta(days=1))
-                end = min(end, today)
+                publication, last_ok = rules.get(row["source_key"], ("scheduled", None))
+                nxt = dates[idx + 1] if idx + 1 < len(dates) else None
+                end = carry_end(start, nxt, row["cadence"], publication, last_ok, today)
             for obs_date in pd.date_range(start, end, freq="D"):
                 item = row.to_dict()
                 item["observation_date"] = obs_date
@@ -283,7 +306,9 @@ def _resolve_overlaps(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _build_family_output(
-    df: pd.DataFrame, fx_cache_path: Path = DEFAULT_FX_CACHE
+    df: pd.DataFrame,
+    fx_cache_path: Path = DEFAULT_FX_CACHE,
+    parallel_cache_path: Path = PARALLEL_CACHE,
 ) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=_FAMILY_COLUMNS)
@@ -314,6 +339,7 @@ def _build_family_output(
     )
     grouped["unit"] = grouped["fuel_family"].map(_CANONICAL_FAMILY_UNITS)
     with_fx = attach_fx_and_usd(grouped, cache_path=fx_cache_path)
+    with_fx = attach_parallel(with_fx, cache_path=parallel_cache_path)
     with_fx["observation_date"] = pd.to_datetime(
         with_fx["observation_date"], errors="coerce"
     ).dt.strftime("%Y-%m-%d")
@@ -328,6 +354,7 @@ def build_country_outputs(
     data_dir: Path = DATA_DIR,
     outputs_dir: Path = OUTPUTS_DIR,
     fx_cache_path: Path = DEFAULT_FX_CACHE,
+    parallel_cache_path: Path = PARALLEL_CACHE,
 ) -> dict[str, Path | int]:
     enabled_entries = [entry for entry in entries if entry.get("enabled", True)]
     skipped = [
@@ -381,13 +408,47 @@ def build_country_outputs(
         return {"product_path": product_path, "family_path": family_path, "rows": 0}
 
     combined = pd.concat(frames, ignore_index=True)
+    combined, station_stats = station_outputs(combined, enabled_entries, out_dir)
     collapsed = _collapse_source_rows(combined)
-    expanded = _expand_with_carry_forward(collapsed)
+    region = enabled_entries[0]["region"]
+    last_ok = gates.read_status(region, data_dir / "_status").get("last_ok", {})
+    rules = {
+        e["source_key"]: (
+            e.get("publication", "scheduled"),
+            pd.Timestamp(last_ok[e["source_key"]][:10])
+            if e["source_key"] in last_ok
+            else None,
+        )
+        for e in enabled_entries
+    }
+    expanded = _expand_with_carry_forward(collapsed, rules)
     resolved = _resolve_overlaps(expanded)
-    family = _build_family_output(resolved, fx_cache_path=fx_cache_path)
+    family = _build_family_output(
+        resolved, fx_cache_path=fx_cache_path, parallel_cache_path=parallel_cache_path
+    )
 
-    save_csv(resolved, product_path, columns=_PRODUCT_COLUMNS)
-    save_csv(family, family_path, columns=_FAMILY_COLUMNS)
+    resolved = attach_station_stats(resolved, station_stats)
+    basis = {e["source_key"]: e.get("price_basis", "retail") for e in enabled_entries}
+    resolved["price_basis"] = (
+        resolved["source_key"].astype(str).str.split(",").str[0].map(basis)
+    )
+    # Per date: a family is "retail" on the days all its series are retail.
+    day = pd.to_datetime(resolved["observation_date"]).dt.strftime("%Y-%m-%d")
+    family_basis = (
+        resolved.assign(_d=day)
+        .groupby(["_d", "fuel_family"])["price_basis"]
+        .agg(lambda s: ",".join(sorted(set(s.dropna()))))
+    )
+    family["price_basis"] = [
+        family_basis.get((d, f))
+        for d, f in zip(family["observation_date"], family["fuel_family"])
+    ]
+    save_csv(
+        resolved,
+        product_path,
+        columns=_PRODUCT_COLUMNS + STATION_COLUMNS + ["price_basis"],
+    )
+    save_csv(family, family_path, columns=_FAMILY_COLUMNS + ["price_basis"])
     return {
         "product_path": product_path,
         "family_path": family_path,
@@ -403,6 +464,7 @@ def run_build(
     data_dir: Path = DATA_DIR,
     outputs_dir: Path = OUTPUTS_DIR,
     fx_cache_path: Path = DEFAULT_FX_CACHE,
+    parallel_cache_path: Path = PARALLEL_CACHE,
 ) -> list[dict[str, Path | int]]:
     registry = build_fuel_registry(region=region, subregion=subregion, country=country)
     if not registry:
@@ -425,6 +487,7 @@ def run_build(
                 data_dir=data_dir,
                 outputs_dir=outputs_dir,
                 fx_cache_path=fx_cache_path,
+                parallel_cache_path=parallel_cache_path,
             )
             results.append(result)
         except Exception:

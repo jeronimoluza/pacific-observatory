@@ -1,0 +1,1014 @@
+# How these were sourced and how to add a new BERA adjustment:
+# ~/vault/raw/specs/fuel/2026-10-16-botswana-bera-prices.md
+# Source files (by sha256): data/fuel/ssa/southern_africa/botswana/bera_sources/
+# Botswana BERA regulated pump prices, one row per (effective date, product).
+# Gaborone zone until 2025-11-07; single national price from 2025-11-08.
+# Products not listed on a date are unchanged since their previous row.
+# Built by bw_manual/scripts/build_yaml.py; validated by bw_manual/scripts/validate_chain.py.
+source_key: bera_bw_levels
+doc: ~/vault/raw/specs/fuel/2026-10-16-botswana-bera-prices.md
+unit: thebe_per_litre
+levels:
+- effective: 2020-04-21
+  product: ULP 93
+  locality: Gaborone
+  thebe: 927
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 2020.pdf
+  archive_url: https://web.archive.org/web/20240630193042/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%202020.pdf
+  sha256: 06ecce63c7d01de3ac9827ff7e88a1e3e3c17eff3d070a7ee9450a537b609320
+  file: 06ecce63c7d0_Extraordinary Gazette 2020.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 69 of 2020 (Control of Goods... Petroleum Prices, Cap. 43:08); gazette 17-Apr-2020, commencement 21-Apr-2020; only SI with Diesel 500ppm
+- effective: 2020-04-21
+  product: ULP 95
+  locality: Gaborone
+  thebe: 939
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 2020.pdf
+  archive_url: https://web.archive.org/web/20240630193042/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%202020.pdf
+  sha256: 06ecce63c7d01de3ac9827ff7e88a1e3e3c17eff3d070a7ee9450a537b609320
+  file: 06ecce63c7d0_Extraordinary Gazette 2020.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 69 of 2020 (Control of Goods... Petroleum Prices, Cap. 43:08); gazette 17-Apr-2020, commencement 21-Apr-2020; only SI with Diesel 500ppm
+- effective: 2020-04-21
+  product: Diesel 500ppm
+  locality: Gaborone
+  thebe: 933
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 2020.pdf
+  archive_url: https://web.archive.org/web/20240630193042/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%202020.pdf
+  sha256: 06ecce63c7d01de3ac9827ff7e88a1e3e3c17eff3d070a7ee9450a537b609320
+  file: 06ecce63c7d0_Extraordinary Gazette 2020.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 69 of 2020 (Control of Goods... Petroleum Prices, Cap. 43:08); gazette 17-Apr-2020, commencement 21-Apr-2020; only SI with Diesel 500ppm
+- effective: 2020-04-21
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 938
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 2020.pdf
+  archive_url: https://web.archive.org/web/20240630193042/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%202020.pdf
+  sha256: 06ecce63c7d01de3ac9827ff7e88a1e3e3c17eff3d070a7ee9450a537b609320
+  file: 06ecce63c7d0_Extraordinary Gazette 2020.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 69 of 2020 (Control of Goods... Petroleum Prices, Cap. 43:08); gazette 17-Apr-2020, commencement 21-Apr-2020; only SI with Diesel 500ppm
+- effective: 2020-04-21
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 795
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 2020.pdf
+  archive_url: https://web.archive.org/web/20240630193042/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%202020.pdf
+  sha256: 06ecce63c7d01de3ac9827ff7e88a1e3e3c17eff3d070a7ee9450a537b609320
+  file: 06ecce63c7d0_Extraordinary Gazette 2020.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 69 of 2020 (Control of Goods... Petroleum Prices, Cap. 43:08); gazette 17-Apr-2020, commencement 21-Apr-2020; only SI with Diesel 500ppm
+- effective: 2022-03-29
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1376
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraodinary Gazette 28th March 2022.pdf
+  archive_url: http://web.archive.org/web/20240702185944/https://www.bera.co.bw/downloads/Petroleum/Extraodinary%20Gazette%2028th%20March%202022.pdf
+  sha256: 5b886fc1a7234563cd20de4e454667a3edd3937b5784c09800441f915161a87a
+  file: 5b886fc1a723_Extraodinary Gazette 28th March 2022.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 26 of 2022; commencement 29-Mar-2022; PR 28-Mar-2022 deltas +126/+125/+149/+174
+- effective: 2022-03-29
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1389
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraodinary Gazette 28th March 2022.pdf
+  archive_url: http://web.archive.org/web/20240702185944/https://www.bera.co.bw/downloads/Petroleum/Extraodinary%20Gazette%2028th%20March%202022.pdf
+  sha256: 5b886fc1a7234563cd20de4e454667a3edd3937b5784c09800441f915161a87a
+  file: 5b886fc1a723_Extraodinary Gazette 28th March 2022.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 26 of 2022; commencement 29-Mar-2022; PR 28-Mar-2022 deltas +126/+125/+149/+174
+- effective: 2022-03-29
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1390
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraodinary Gazette 28th March 2022.pdf
+  archive_url: http://web.archive.org/web/20240702185944/https://www.bera.co.bw/downloads/Petroleum/Extraodinary%20Gazette%2028th%20March%202022.pdf
+  sha256: 5b886fc1a7234563cd20de4e454667a3edd3937b5784c09800441f915161a87a
+  file: 5b886fc1a723_Extraodinary Gazette 28th March 2022.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 26 of 2022; commencement 29-Mar-2022; PR 28-Mar-2022 deltas +126/+125/+149/+174
+- effective: 2022-03-29
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 938
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraodinary Gazette 28th March 2022.pdf
+  archive_url: http://web.archive.org/web/20240702185944/https://www.bera.co.bw/downloads/Petroleum/Extraodinary%20Gazette%2028th%20March%202022.pdf
+  sha256: 5b886fc1a7234563cd20de4e454667a3edd3937b5784c09800441f915161a87a
+  file: 5b886fc1a723_Extraodinary Gazette 28th March 2022.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 26 of 2022; commencement 29-Mar-2022; PR 28-Mar-2022 deltas +126/+125/+149/+174
+- effective: 2022-09-11
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1617
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Statutory instrument-09102022105443.pdf
+  archive_url: http://web.archive.org/web/20251108002503/https://www.bera.co.bw/downloads/Petroleum/Statutory%20instrument-09102022105443.pdf
+  sha256: e0a89bd2af00841014e61bd27e00958722949dbae789871b4e2c43b5e2f98f37
+  file: e0a89bd2af00_Statutory instrument-09102022105443.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: media-alta
+  note: unnumbered draft SI (scanned), commencement 11-Sep-2022 = PR 10-Sep-2022 (-100/-100/-23/-8); Gaborone 58/58 town votes agree; SI->SI diff to 27-Oct-2022 equals PR deltas exactly
+- effective: 2022-09-11
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1647
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Statutory instrument-09102022105443.pdf
+  archive_url: http://web.archive.org/web/20251108002503/https://www.bera.co.bw/downloads/Petroleum/Statutory%20instrument-09102022105443.pdf
+  sha256: e0a89bd2af00841014e61bd27e00958722949dbae789871b4e2c43b5e2f98f37
+  file: e0a89bd2af00_Statutory instrument-09102022105443.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: media-alta
+  note: unnumbered draft SI (scanned), commencement 11-Sep-2022 = PR 10-Sep-2022 (-100/-100/-23/-8); Gaborone 58/58 town votes agree; SI->SI diff to 27-Oct-2022 equals PR deltas exactly
+- effective: 2022-09-11
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1769
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Statutory instrument-09102022105443.pdf
+  archive_url: http://web.archive.org/web/20251108002503/https://www.bera.co.bw/downloads/Petroleum/Statutory%20instrument-09102022105443.pdf
+  sha256: e0a89bd2af00841014e61bd27e00958722949dbae789871b4e2c43b5e2f98f37
+  file: e0a89bd2af00_Statutory instrument-09102022105443.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: media-alta
+  note: unnumbered draft SI (scanned), commencement 11-Sep-2022 = PR 10-Sep-2022 (-100/-100/-23/-8); Gaborone 58/58 town votes agree; SI->SI diff to 27-Oct-2022 equals PR deltas exactly
+- effective: 2022-09-11
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1503
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Statutory instrument-09102022105443.pdf
+  archive_url: http://web.archive.org/web/20251108002503/https://www.bera.co.bw/downloads/Petroleum/Statutory%20instrument-09102022105443.pdf
+  sha256: e0a89bd2af00841014e61bd27e00958722949dbae789871b4e2c43b5e2f98f37
+  file: e0a89bd2af00_Statutory instrument-09102022105443.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: media-alta
+  note: unnumbered draft SI (scanned), commencement 11-Sep-2022 = PR 10-Sep-2022 (-100/-100/-23/-8); Gaborone 58/58 town votes agree; SI->SI diff to 27-Oct-2022 equals PR deltas exactly
+- effective: 2022-10-27
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1442
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/STATUTORY ISTRUMENT - 2022.pdf
+  archive_url: http://web.archive.org/web/20261011042844/https://www.bera.co.bw/downloads/Petroleum/STATUTORY%20ISTRUMENT%20-%202022.pdf
+  sha256: ab6aef7db0ce305a2a1b198273cdfb50aada566908a9b67d4eeebaf8e2a591b6
+  file: ab6aef7db0ce_STATUTORY ISTRUMENT - 2022.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI (scanned), commencement 27-Oct-2022; 172/172 votes
+- effective: 2022-10-27
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1464
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/STATUTORY ISTRUMENT - 2022.pdf
+  archive_url: http://web.archive.org/web/20261011042844/https://www.bera.co.bw/downloads/Petroleum/STATUTORY%20ISTRUMENT%20-%202022.pdf
+  sha256: ab6aef7db0ce305a2a1b198273cdfb50aada566908a9b67d4eeebaf8e2a591b6
+  file: ab6aef7db0ce_STATUTORY ISTRUMENT - 2022.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI (scanned), commencement 27-Oct-2022; 172/172 votes
+- effective: 2022-10-27
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1754
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/STATUTORY ISTRUMENT - 2022.pdf
+  archive_url: http://web.archive.org/web/20261011042844/https://www.bera.co.bw/downloads/Petroleum/STATUTORY%20ISTRUMENT%20-%202022.pdf
+  sha256: ab6aef7db0ce305a2a1b198273cdfb50aada566908a9b67d4eeebaf8e2a591b6
+  file: ab6aef7db0ce_STATUTORY ISTRUMENT - 2022.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI (scanned), commencement 27-Oct-2022; 172/172 votes
+- effective: 2022-10-27
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1433
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/STATUTORY ISTRUMENT - 2022.pdf
+  archive_url: http://web.archive.org/web/20261011042844/https://www.bera.co.bw/downloads/Petroleum/STATUTORY%20ISTRUMENT%20-%202022.pdf
+  sha256: ab6aef7db0ce305a2a1b198273cdfb50aada566908a9b67d4eeebaf8e2a591b6
+  file: ab6aef7db0ce_STATUTORY ISTRUMENT - 2022.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI (scanned), commencement 27-Oct-2022; 172/172 votes
+- effective: 2022-12-22
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1710
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - Fuel Prices Adjustment.pdf
+  archive_url: http://web.archive.org/web/20240630003252/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20Fuel%20Prices%20Adjustment.pdf
+  sha256: 31c2076f678436e56a833b492368fcef3b3cbb5112c23801aaa7e8e5042c5291
+  file: 31c2076f6784_Press Release - Fuel Prices Adjustment.pdf
+  method: 'chained delta from 2022-10-27 (press_release: -44 thebe)'
+  delta_thebe: -44
+  derived_from:
+  - 2022-10-27 Diesel 50ppm
+  confidence: alta
+  note: 'PR 21-Dec-2022, petrol unchanged; closure: 2022-10-27 SI + this + Jan-2023 PR = 2023-01-13 SI exactly'
+- effective: 2022-12-22
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1425
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - Fuel Prices Adjustment.pdf
+  archive_url: http://web.archive.org/web/20240630003252/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20Fuel%20Prices%20Adjustment.pdf
+  sha256: 31c2076f678436e56a833b492368fcef3b3cbb5112c23801aaa7e8e5042c5291
+  file: 31c2076f6784_Press Release - Fuel Prices Adjustment.pdf
+  method: 'chained delta from 2022-10-27 (press_release: -8 thebe)'
+  delta_thebe: -8
+  derived_from:
+  - 2022-10-27 Illuminating Paraffin
+  confidence: alta
+  note: 'PR 21-Dec-2022, petrol unchanged; closure: 2022-10-27 SI + this + Jan-2023 PR = 2023-01-13 SI exactly'
+- effective: 2023-01-13
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1346
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 13th January 2023.pdf
+  archive_url: http://web.archive.org/web/20260520223253/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%2013th%20January%202023.pdf
+  sha256: 7fccaa41deead3f7fc3aca72c1475855ea68b11b0fbaca07e6f39b97bc03cf66
+  file: 7fccaa41deea_Extraordinary Gazette 13th January 2023.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 4 of 2023; commencement 13-Jan-2023
+- effective: 2023-01-13
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1368
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 13th January 2023.pdf
+  archive_url: http://web.archive.org/web/20260520223253/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%2013th%20January%202023.pdf
+  sha256: 7fccaa41deead3f7fc3aca72c1475855ea68b11b0fbaca07e6f39b97bc03cf66
+  file: 7fccaa41deea_Extraordinary Gazette 13th January 2023.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 4 of 2023; commencement 13-Jan-2023
+- effective: 2023-01-13
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1561
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 13th January 2023.pdf
+  archive_url: http://web.archive.org/web/20260520223253/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%2013th%20January%202023.pdf
+  sha256: 7fccaa41deead3f7fc3aca72c1475855ea68b11b0fbaca07e6f39b97bc03cf66
+  file: 7fccaa41deea_Extraordinary Gazette 13th January 2023.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 4 of 2023; commencement 13-Jan-2023
+- effective: 2023-01-13
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1301
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Extraordinary Gazette 13th January 2023.pdf
+  archive_url: http://web.archive.org/web/20260520223253/https://www.bera.co.bw/downloads/Petroleum/Extraordinary%20Gazette%2013th%20January%202023.pdf
+  sha256: 7fccaa41deead3f7fc3aca72c1475855ea68b11b0fbaca07e6f39b97bc03cf66
+  file: 7fccaa41deea_Extraordinary Gazette 13th January 2023.pdf
+  method: embedded text
+  derived_from: []
+  confidence: alta
+  note: S.I. No. 4 of 2023; commencement 13-Jan-2023
+- effective: 2023-03-01
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1441
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/SI-02282023133924.pdf
+  archive_url: http://web.archive.org/web/20240608215220/https://www.bera.co.bw/downloads/Petroleum/SI-02282023133924.pdf
+  sha256: d792842b61766479a5f661ff1130efd68bbef729fa676063c3b171184b465116
+  file: d792842b6176_SI-02282023133924.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI (No. 2) 2023 (scanned); commencement "1st March 2023" (tesseract reads "18 March"; checked on image + PR Feb-2023); 164/164 votes
+- effective: 2023-03-01
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1460
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/SI-02282023133924.pdf
+  archive_url: http://web.archive.org/web/20240608215220/https://www.bera.co.bw/downloads/Petroleum/SI-02282023133924.pdf
+  sha256: d792842b61766479a5f661ff1130efd68bbef729fa676063c3b171184b465116
+  file: d792842b6176_SI-02282023133924.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI (No. 2) 2023 (scanned); commencement "1st March 2023" (tesseract reads "18 March"; checked on image + PR Feb-2023); 164/164 votes
+- effective: 2023-03-01
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1617
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/SI-02282023133924.pdf
+  archive_url: http://web.archive.org/web/20240608215220/https://www.bera.co.bw/downloads/Petroleum/SI-02282023133924.pdf
+  sha256: d792842b61766479a5f661ff1130efd68bbef729fa676063c3b171184b465116
+  file: d792842b6176_SI-02282023133924.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI (No. 2) 2023 (scanned); commencement "1st March 2023" (tesseract reads "18 March"; checked on image + PR Feb-2023); 164/164 votes
+- effective: 2023-03-01
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1373
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/SI-02282023133924.pdf
+  archive_url: http://web.archive.org/web/20240608215220/https://www.bera.co.bw/downloads/Petroleum/SI-02282023133924.pdf
+  sha256: d792842b61766479a5f661ff1130efd68bbef729fa676063c3b171184b465116
+  file: d792842b6176_SI-02282023133924.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI (No. 2) 2023 (scanned); commencement "1st March 2023" (tesseract reads "18 March"; checked on image + PR Feb-2023); 164/164 votes
+- effective: 2023-06-21
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1419
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Fuel Adjustments June 2023/Statutory Instrument No. of 2023.pdf
+  archive_url: https://web.archive.org/web/20261011045953/https://www.bera.co.bw/downloads/Petroleum/Fuel%20Adjustments%20June%202023/Statutory%20Instrument%20No.%20of%202023.pdf
+  sha256: d5c6d21e45db8c7caf2fea822352ae5155dccee4957d6827cff3361038c34f03
+  file: d5c6d21e45db_Statutory Instrument No. of 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 21-Jun-2023; 168/168 votes
+- effective: 2023-06-21
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1446
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Fuel Adjustments June 2023/Statutory Instrument No. of 2023.pdf
+  archive_url: https://web.archive.org/web/20261011045953/https://www.bera.co.bw/downloads/Petroleum/Fuel%20Adjustments%20June%202023/Statutory%20Instrument%20No.%20of%202023.pdf
+  sha256: d5c6d21e45db8c7caf2fea822352ae5155dccee4957d6827cff3361038c34f03
+  file: d5c6d21e45db_Statutory Instrument No. of 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 21-Jun-2023; 168/168 votes
+- effective: 2023-06-21
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1390
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Fuel Adjustments June 2023/Statutory Instrument No. of 2023.pdf
+  archive_url: https://web.archive.org/web/20261011045953/https://www.bera.co.bw/downloads/Petroleum/Fuel%20Adjustments%20June%202023/Statutory%20Instrument%20No.%20of%202023.pdf
+  sha256: d5c6d21e45db8c7caf2fea822352ae5155dccee4957d6827cff3361038c34f03
+  file: d5c6d21e45db_Statutory Instrument No. of 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 21-Jun-2023; 168/168 votes
+- effective: 2023-06-21
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1132
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Fuel Adjustments June 2023/Statutory Instrument No. of 2023.pdf
+  archive_url: https://web.archive.org/web/20261011045953/https://www.bera.co.bw/downloads/Petroleum/Fuel%20Adjustments%20June%202023/Statutory%20Instrument%20No.%20of%202023.pdf
+  sha256: d5c6d21e45db8c7caf2fea822352ae5155dccee4957d6827cff3361038c34f03
+  file: d5c6d21e45db_Statutory Instrument No. of 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 21-Jun-2023; 168/168 votes
+- effective: 2023-09-13
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1552
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 12 Sept. 2023.pdf
+  archive_url: https://web.archive.org/web/20240804191507/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2012%20Sept.%202023.pdf
+  sha256: f722ca124bcdd5c6c3009202e319079190c3b5cf96534e59e83bd73306a7e2ec
+  file: f722ca124bcd_Press Relase - Fuel Prices Adjustment 12 Sept. 2023.pdf
+  method: 'chained delta from 2023-06-21 (press_release: +133 thebe)'
+  delta_thebe: 133
+  derived_from:
+  - 2023-06-21 ULP 93
+  confidence: alta
+  note: 'PR 12-Sep-2023, no SI found; closure: 2023-06-21 SI + this + Oct-2023 PR = 2023-10-25 SI exactly'
+- effective: 2023-09-13
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1586
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 12 Sept. 2023.pdf
+  archive_url: https://web.archive.org/web/20240804191507/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2012%20Sept.%202023.pdf
+  sha256: f722ca124bcdd5c6c3009202e319079190c3b5cf96534e59e83bd73306a7e2ec
+  file: f722ca124bcd_Press Relase - Fuel Prices Adjustment 12 Sept. 2023.pdf
+  method: 'chained delta from 2023-06-21 (press_release: +140 thebe)'
+  delta_thebe: 140
+  derived_from:
+  - 2023-06-21 ULP 95
+  confidence: alta
+  note: 'PR 12-Sep-2023, no SI found; closure: 2023-06-21 SI + this + Oct-2023 PR = 2023-10-25 SI exactly'
+- effective: 2023-09-13
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1649
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 12 Sept. 2023.pdf
+  archive_url: https://web.archive.org/web/20240804191507/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2012%20Sept.%202023.pdf
+  sha256: f722ca124bcdd5c6c3009202e319079190c3b5cf96534e59e83bd73306a7e2ec
+  file: f722ca124bcd_Press Relase - Fuel Prices Adjustment 12 Sept. 2023.pdf
+  method: 'chained delta from 2023-06-21 (press_release: +259 thebe)'
+  delta_thebe: 259
+  derived_from:
+  - 2023-06-21 Diesel 50ppm
+  confidence: alta
+  note: 'PR 12-Sep-2023, no SI found; closure: 2023-06-21 SI + this + Oct-2023 PR = 2023-10-25 SI exactly'
+- effective: 2023-09-13
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1378
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 12 Sept. 2023.pdf
+  archive_url: https://web.archive.org/web/20240804191507/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2012%20Sept.%202023.pdf
+  sha256: f722ca124bcdd5c6c3009202e319079190c3b5cf96534e59e83bd73306a7e2ec
+  file: f722ca124bcd_Press Relase - Fuel Prices Adjustment 12 Sept. 2023.pdf
+  method: 'chained delta from 2023-06-21 (press_release: +246 thebe)'
+  delta_thebe: 246
+  derived_from:
+  - 2023-06-21 Illuminating Paraffin
+  confidence: alta
+  note: 'PR 12-Sep-2023, no SI found; closure: 2023-06-21 SI + this + Oct-2023 PR = 2023-10-25 SI exactly'
+- effective: 2023-10-25
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1613
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 24 Oct. 2023/Statutory Instrument No of 24-1023.pdf
+  archive_url: https://web.archive.org/web/20240717075918/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2024%20Oct.%202023/Statutory%20Instrument%20No%20of%2024-1023.pdf
+  sha256: 8d00c1856693b03a6fd6b0aa1a82be0cae99055a4ce6595e8a24edbcac76d181
+  file: 8d00c1856693_Statutory Instrument No of 24-1023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 25-Oct-2023; ULP 149-150/156 votes (Moshaneng/Oxeham misreads)
+- effective: 2023-10-25
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1647
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 24 Oct. 2023/Statutory Instrument No of 24-1023.pdf
+  archive_url: https://web.archive.org/web/20240717075918/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2024%20Oct.%202023/Statutory%20Instrument%20No%20of%2024-1023.pdf
+  sha256: 8d00c1856693b03a6fd6b0aa1a82be0cae99055a4ce6595e8a24edbcac76d181
+  file: 8d00c1856693_Statutory Instrument No of 24-1023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 25-Oct-2023; ULP 149-150/156 votes (Moshaneng/Oxeham misreads)
+- effective: 2023-10-25
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1755
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 24 Oct. 2023/Statutory Instrument No of 24-1023.pdf
+  archive_url: https://web.archive.org/web/20240717075918/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2024%20Oct.%202023/Statutory%20Instrument%20No%20of%2024-1023.pdf
+  sha256: 8d00c1856693b03a6fd6b0aa1a82be0cae99055a4ce6595e8a24edbcac76d181
+  file: 8d00c1856693_Statutory Instrument No of 24-1023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 25-Oct-2023; ULP 149-150/156 votes (Moshaneng/Oxeham misreads)
+- effective: 2023-10-25
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1475
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 24 Oct. 2023/Statutory Instrument No of 24-1023.pdf
+  archive_url: https://web.archive.org/web/20240717075918/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2024%20Oct.%202023/Statutory%20Instrument%20No%20of%2024-1023.pdf
+  sha256: 8d00c1856693b03a6fd6b0aa1a82be0cae99055a4ce6595e8a24edbcac76d181
+  file: 8d00c1856693_Statutory Instrument No of 24-1023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 25-Oct-2023; ULP 149-150/156 votes (Moshaneng/Oxeham misreads)
+- effective: 2023-11-15
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1481
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 14 November 2023/Statutory Instrument No of 2023 14 Nov 2023.pdf
+  archive_url: http://web.archive.org/web/20240609041404/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2014%20November%202023/Statutory%20Instrument%20No%20of%202023%2014%20Nov%202023.pdf
+  sha256: 625c4041769cd86e1f5b016b4b55717b13fb9da103623f50b8ae2c75a2162fc1
+  file: 625c4041769c_Statutory Instrument No of 2023 14 Nov 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 15-Nov-2023; Gaborone ULP95 read directly as 1012 (OCR), vote 1512 (149/155), consistent with PR -135
+- effective: 2023-11-15
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1512
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 14 November 2023/Statutory Instrument No of 2023 14 Nov 2023.pdf
+  archive_url: http://web.archive.org/web/20240609041404/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2014%20November%202023/Statutory%20Instrument%20No%20of%202023%2014%20Nov%202023.pdf
+  sha256: 625c4041769cd86e1f5b016b4b55717b13fb9da103623f50b8ae2c75a2162fc1
+  file: 625c4041769c_Statutory Instrument No of 2023 14 Nov 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 15-Nov-2023; Gaborone ULP95 read directly as 1012 (OCR), vote 1512 (149/155), consistent with PR -135
+- effective: 2023-11-15
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1698
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 14 November 2023/Statutory Instrument No of 2023 14 Nov 2023.pdf
+  archive_url: http://web.archive.org/web/20240609041404/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2014%20November%202023/Statutory%20Instrument%20No%20of%202023%2014%20Nov%202023.pdf
+  sha256: 625c4041769cd86e1f5b016b4b55717b13fb9da103623f50b8ae2c75a2162fc1
+  file: 625c4041769c_Statutory Instrument No of 2023 14 Nov 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 15-Nov-2023; Gaborone ULP95 read directly as 1012 (OCR), vote 1512 (149/155), consistent with PR -135
+- effective: 2023-11-15
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1408
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 14 November 2023/Statutory Instrument No of 2023 14 Nov 2023.pdf
+  archive_url: http://web.archive.org/web/20240609041404/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2014%20November%202023/Statutory%20Instrument%20No%20of%202023%2014%20Nov%202023.pdf
+  sha256: 625c4041769cd86e1f5b016b4b55717b13fb9da103623f50b8ae2c75a2162fc1
+  file: 625c4041769c_Statutory Instrument No of 2023 14 Nov 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 15-Nov-2023; Gaborone ULP95 read directly as 1012 (OCR), vote 1512 (149/155), consistent with PR -135
+- effective: 2023-12-21
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1444
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 20 December 2023/Statutory Instrument 20 December 2023.pdf
+  archive_url: http://web.archive.org/web/20240717180607/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2020%20December%202023/Statutory%20Instrument%2020%20December%202023.pdf
+  sha256: d2471dc1e17da03538c39d0c242e90c627a948b614344b529397f1e79714a892
+  file: d2471dc1e17d_Statutory Instrument 20 December 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 21-Dec-2023; 153-159/159 votes
+- effective: 2023-12-21
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1477
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 20 December 2023/Statutory Instrument 20 December 2023.pdf
+  archive_url: http://web.archive.org/web/20240717180607/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2020%20December%202023/Statutory%20Instrument%2020%20December%202023.pdf
+  sha256: d2471dc1e17da03538c39d0c242e90c627a948b614344b529397f1e79714a892
+  file: d2471dc1e17d_Statutory Instrument 20 December 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 21-Dec-2023; 153-159/159 votes
+- effective: 2023-12-21
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1573
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 20 December 2023/Statutory Instrument 20 December 2023.pdf
+  archive_url: http://web.archive.org/web/20240717180607/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2020%20December%202023/Statutory%20Instrument%2020%20December%202023.pdf
+  sha256: d2471dc1e17da03538c39d0c242e90c627a948b614344b529397f1e79714a892
+  file: d2471dc1e17d_Statutory Instrument 20 December 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 21-Dec-2023; 153-159/159 votes
+- effective: 2023-12-21
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1314
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Relase - Fuel Prices Adjustment 20 December 2023/Statutory Instrument 20 December 2023.pdf
+  archive_url: http://web.archive.org/web/20240717180607/https://www.bera.co.bw/downloads/Petroleum/Press%20Relase%20-%20Fuel%20Prices%20Adjustment%2020%20December%202023/Statutory%20Instrument%2020%20December%202023.pdf
+  sha256: d2471dc1e17da03538c39d0c242e90c627a948b614344b529397f1e79714a892
+  file: d2471dc1e17d_Statutory Instrument 20 December 2023.pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2023 (scanned); commencement 21-Dec-2023; 153-159/159 votes
+- effective: 2024-04-19
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1557
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/SI - Fuel Price adjustment April 2024 (002).pdf
+  archive_url: http://web.archive.org/web/20251107015544/https://www.bera.co.bw/downloads/Petroleum/SI%20-%20Fuel%20Price%20adjustment%20April%202024%20(002).pdf
+  sha256: 32675fa9c765995a2e6ab7e8a2750a36ef6ffea16119a9a68092c301f638b342
+  file: 32675fa9c765_SI - Fuel Price adjustment April 2024 (002).pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2024 under BERA Act Cap. 74:11 (Petroleum Products regs), first SI of the new regime; commencement 19-Apr-2024; 147/147 votes; IK unchanged per PR
+- effective: 2024-04-19
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1582
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/SI - Fuel Price adjustment April 2024 (002).pdf
+  archive_url: http://web.archive.org/web/20251107015544/https://www.bera.co.bw/downloads/Petroleum/SI%20-%20Fuel%20Price%20adjustment%20April%202024%20(002).pdf
+  sha256: 32675fa9c765995a2e6ab7e8a2750a36ef6ffea16119a9a68092c301f638b342
+  file: 32675fa9c765_SI - Fuel Price adjustment April 2024 (002).pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2024 under BERA Act Cap. 74:11 (Petroleum Products regs), first SI of the new regime; commencement 19-Apr-2024; 147/147 votes; IK unchanged per PR
+- effective: 2024-04-19
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1589
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/SI - Fuel Price adjustment April 2024 (002).pdf
+  archive_url: http://web.archive.org/web/20251107015544/https://www.bera.co.bw/downloads/Petroleum/SI%20-%20Fuel%20Price%20adjustment%20April%202024%20(002).pdf
+  sha256: 32675fa9c765995a2e6ab7e8a2750a36ef6ffea16119a9a68092c301f638b342
+  file: 32675fa9c765_SI - Fuel Price adjustment April 2024 (002).pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2024 under BERA Act Cap. 74:11 (Petroleum Products regs), first SI of the new regime; commencement 19-Apr-2024; 147/147 votes; IK unchanged per PR
+- effective: 2024-04-19
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1314
+  source_type: SI
+  url: https://www.bera.co.bw/downloads/Petroleum/SI - Fuel Price adjustment April 2024 (002).pdf
+  archive_url: http://web.archive.org/web/20251107015544/https://www.bera.co.bw/downloads/Petroleum/SI%20-%20Fuel%20Price%20adjustment%20April%202024%20(002).pdf
+  sha256: 32675fa9c765995a2e6ab7e8a2750a36ef6ffea16119a9a68092c301f638b342
+  file: 32675fa9c765_SI - Fuel Price adjustment April 2024 (002).pdf
+  method: OCR vote (psm 6+4, template differentials)
+  derived_from: []
+  confidence: alta
+  note: unnumbered SI 2024 under BERA Act Cap. 74:11 (Petroleum Products regs), first SI of the new regime; commencement 19-Apr-2024; 147/147 votes; IK unchanged per PR
+- effective: 2024-09-11
+  product: ULP 93
+  locality: Gaborone
+  thebe: 1451
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - REVIEW OF PETROLEUM PRODUCTS PUMP PRICES FOR AUGUST 2024 signed.pdf
+  archive_url: http://web.archive.org/web/20251106235812/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20REVIEW%20OF%20PETROLEUM%20PRODUCTS%20PUMP%20PRICES%20FOR%20AUGUST%202024%20signed.pdf
+  sha256: 1641f2d3d67e91beecd0a657153aa3c499faac7498abc77cba0bf822d8a1ae03
+  file: 1641f2d3d67e_Press Release - REVIEW OF PETROLEUM PRODUCTS PUMP PRICES FOR AUGUST 2024 signed.pdf
+  method: 'chained delta from 2024-04-19 (press_release: -106 thebe)'
+  delta_thebe: -106
+  derived_from:
+  - 2024-04-19 ULP 93
+  confidence: alta
+  note: BERA PR (Aug-2024 review) + BOL letter (Fuel Pump Price adjustment letter.pdf) same deltas; no SI published after Apr-2024
+- effective: 2024-09-11
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1475
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - REVIEW OF PETROLEUM PRODUCTS PUMP PRICES FOR AUGUST 2024 signed.pdf
+  archive_url: http://web.archive.org/web/20251106235812/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20REVIEW%20OF%20PETROLEUM%20PRODUCTS%20PUMP%20PRICES%20FOR%20AUGUST%202024%20signed.pdf
+  sha256: 1641f2d3d67e91beecd0a657153aa3c499faac7498abc77cba0bf822d8a1ae03
+  file: 1641f2d3d67e_Press Release - REVIEW OF PETROLEUM PRODUCTS PUMP PRICES FOR AUGUST 2024 signed.pdf
+  method: 'chained delta from 2024-04-19 (press_release: -107 thebe)'
+  delta_thebe: -107
+  derived_from:
+  - 2024-04-19 ULP 95
+  confidence: alta
+  note: BERA PR (Aug-2024 review) + BOL letter (Fuel Pump Price adjustment letter.pdf) same deltas; no SI published after Apr-2024
+- effective: 2024-09-11
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1494
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - REVIEW OF PETROLEUM PRODUCTS PUMP PRICES FOR AUGUST 2024 signed.pdf
+  archive_url: http://web.archive.org/web/20251106235812/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20REVIEW%20OF%20PETROLEUM%20PRODUCTS%20PUMP%20PRICES%20FOR%20AUGUST%202024%20signed.pdf
+  sha256: 1641f2d3d67e91beecd0a657153aa3c499faac7498abc77cba0bf822d8a1ae03
+  file: 1641f2d3d67e_Press Release - REVIEW OF PETROLEUM PRODUCTS PUMP PRICES FOR AUGUST 2024 signed.pdf
+  method: 'chained delta from 2024-04-19 (press_release: -95 thebe)'
+  delta_thebe: -95
+  derived_from:
+  - 2024-04-19 Diesel 50ppm
+  confidence: alta
+  note: BERA PR (Aug-2024 review) + BOL letter (Fuel Pump Price adjustment letter.pdf) same deltas; no SI published after Apr-2024
+- effective: 2024-09-11
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1112
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - REVIEW OF PETROLEUM PRODUCTS PUMP PRICES FOR AUGUST 2024 signed.pdf
+  archive_url: http://web.archive.org/web/20251106235812/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20REVIEW%20OF%20PETROLEUM%20PRODUCTS%20PUMP%20PRICES%20FOR%20AUGUST%202024%20signed.pdf
+  sha256: 1641f2d3d67e91beecd0a657153aa3c499faac7498abc77cba0bf822d8a1ae03
+  file: 1641f2d3d67e_Press Release - REVIEW OF PETROLEUM PRODUCTS PUMP PRICES FOR AUGUST 2024 signed.pdf
+  method: 'chained delta from 2024-04-19 (press_release: -202 thebe)'
+  delta_thebe: -202
+  derived_from:
+  - 2024-04-19 Illuminating Paraffin
+  confidence: alta
+  note: BERA PR (Aug-2024 review) + BOL letter (Fuel Pump Price adjustment letter.pdf) same deltas; no SI published after Apr-2024
+- effective: 2024-12-13
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1448
+  source_type: inferred_delta
+  url: https://www.botswanaoil.co.bw/petroleum-product-retail-pump-prices-adjustments-december-2024
+  archive_url: http://web.archive.org/web/20260614192617/https://www.botswanaoil.co.bw/petroleum-product-retail-pump-prices-adjustments-december-2024
+  sha256: 94325b6231272b02c5b1ecc6833e650b7142c68cdef5919f9109c8b32daa05e8
+  file: 94325b623127_petroleum-product-retail-pump-prices-adjustments-december-2024.html
+  method: 'chained delta from 2024-09-11 (inferred_delta: -27 thebe)'
+  delta_thebe: -27
+  derived_from:
+  - 2024-09-11 ULP 95
+  confidence: media-alta
+  note: 'BOL notice: petrol grades + diesel adjusted, IK not; BERA letter PDF 404. Deltas inferred from 4x4community forum levels P14.48/P14.84 (Cloudflare, not stored). Independent checks: LECHA Jul-2025
+    "diesel Gaborone ~P14.84" (June-2025 build-up); LECHA Nov-2025 ULP95 15.47 "down 32 thebe" implies 1579 = 1448+131. ULP93 Dec-2024 delta unknown'
+- effective: 2024-12-13
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1484
+  source_type: inferred_delta
+  url: https://www.botswanaoil.co.bw/petroleum-product-retail-pump-prices-adjustments-december-2024
+  archive_url: http://web.archive.org/web/20260614192617/https://www.botswanaoil.co.bw/petroleum-product-retail-pump-prices-adjustments-december-2024
+  sha256: 94325b6231272b02c5b1ecc6833e650b7142c68cdef5919f9109c8b32daa05e8
+  file: 94325b623127_petroleum-product-retail-pump-prices-adjustments-december-2024.html
+  method: 'chained delta from 2024-09-11 (inferred_delta: -10 thebe)'
+  delta_thebe: -10
+  derived_from:
+  - 2024-09-11 Diesel 50ppm
+  confidence: media-alta
+  note: 'BOL notice: petrol grades + diesel adjusted, IK not; BERA letter PDF 404. Deltas inferred from 4x4community forum levels P14.48/P14.84 (Cloudflare, not stored). Independent checks: LECHA Jul-2025
+    "diesel Gaborone ~P14.84" (June-2025 build-up); LECHA Nov-2025 ULP95 15.47 "down 32 thebe" implies 1579 = 1448+131. ULP93 Dec-2024 delta unknown'
+- effective: 2025-02-01
+  product: ULP 93
+  locality: Gaborone
+  thebe: null
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/DISCONTINUATION OF THE SALE AND USE OF UNLEADED PETROL 93 IN BOTSWANA.pdf
+  archive_url: http://web.archive.org/web/20251107044156/https://www.bera.co.bw/downloads/Petroleum/DISCONTINUATION%20OF%20THE%20SALE%20AND%20USE%20OF%20UNLEADED%20PETROL%2093%20IN%20BOTSWANA.pdf
+  sha256: babb76b9ba78f0b0bfc1173c8b9562d381ce262e44726bcb5081ddf2123a3535
+  file: babb76b9ba78_DISCONTINUATION OF THE SALE AND USE OF UNLEADED PETROL 93 IN BOTSWANA.pdf
+  method: embedded text
+  derived_from:
+  - 2024-09-11 ULP 93
+  confidence: alta
+  note: ULP 93 discontinued from 1-Feb-2025 (BERA PR 11-Oct-2024); thebe null = series end. Last known level 1451 (2024-09-11); Dec-2024 ULP93 change unknown
+- effective: 2025-09-15
+  product: ULP 95
+  locality: Gaborone
+  thebe: 1579
+  source_type: letter
+  url: https://www.botswanaoil.co.bw/sites/default/files/BOL Sept 2025 (part 1) - signed.pdf
+  archive_url: https://web.archive.org/web/20261016170323/https://www.botswanaoil.co.bw/sites/default/files/BOL%20Sept%202025%20(part%201)%20-%20signed.pdf
+  sha256: 0f679b7d589e7431d6ab2232f13ece3cc9f8ca6170aa664096c26faae4cb6c1b
+  file: 0f679b7d589e_BOL Sept 2025 (part 1) - signed.pdf
+  method: 'chained delta from 2024-12-13 (letter: +131 thebe)'
+  delta_thebe: 131
+  derived_from:
+  - 2024-12-13 ULP 95
+  confidence: media-alta
+  note: 'BERA letter to BOL 12-Sep-2025 (CBERA 8/1/5/II (95)); bases: ULP95/D50 from 2024-12-13 (inferred), IK from 2024-09-11 (IK unchanged in Dec-2024)'
+- effective: 2025-09-15
+  product: Diesel 50ppm
+  locality: Gaborone
+  thebe: 1626
+  source_type: letter
+  url: https://www.botswanaoil.co.bw/sites/default/files/BOL Sept 2025 (part 1) - signed.pdf
+  archive_url: https://web.archive.org/web/20261016170323/https://www.botswanaoil.co.bw/sites/default/files/BOL%20Sept%202025%20(part%201)%20-%20signed.pdf
+  sha256: 0f679b7d589e7431d6ab2232f13ece3cc9f8ca6170aa664096c26faae4cb6c1b
+  file: 0f679b7d589e_BOL Sept 2025 (part 1) - signed.pdf
+  method: 'chained delta from 2024-12-13 (letter: +142 thebe)'
+  delta_thebe: 142
+  derived_from:
+  - 2024-12-13 Diesel 50ppm
+  confidence: media-alta
+  note: 'BERA letter to BOL 12-Sep-2025 (CBERA 8/1/5/II (95)); bases: ULP95/D50 from 2024-12-13 (inferred), IK from 2024-09-11 (IK unchanged in Dec-2024)'
+- effective: 2025-09-15
+  product: Illuminating Paraffin
+  locality: Gaborone
+  thebe: 1320
+  source_type: letter
+  url: https://www.botswanaoil.co.bw/sites/default/files/BOL Sept 2025 (part 1) - signed.pdf
+  archive_url: https://web.archive.org/web/20261016170323/https://www.botswanaoil.co.bw/sites/default/files/BOL%20Sept%202025%20(part%201)%20-%20signed.pdf
+  sha256: 0f679b7d589e7431d6ab2232f13ece3cc9f8ca6170aa664096c26faae4cb6c1b
+  file: 0f679b7d589e_BOL Sept 2025 (part 1) - signed.pdf
+  method: 'chained delta from 2024-09-11 (letter: +208 thebe)'
+  delta_thebe: 208
+  derived_from:
+  - 2024-09-11 Illuminating Paraffin
+  confidence: media-alta
+  note: 'BERA letter to BOL 12-Sep-2025 (CBERA 8/1/5/II (95)); bases: ULP95/D50 from 2024-12-13 (inferred), IK from 2024-09-11 (IK unchanged in Dec-2024)'
+- effective: 2025-11-08
+  product: ULP 95
+  locality: national
+  thebe: 1547
+  source_type: secondary
+  url: https://lecha-sales.beehiiv.com/p/overview-of-unitary-pricing-in-botswana
+  archive_url: https://web.archive.org/web/20261016170552/https://lecha-sales.beehiiv.com/p/overview-of-unitary-pricing-in-botswana
+  sha256: b13e0c64f06b05bf9023229fbd73f893dec1f359e0203d43dbe3276049b91dae
+  file: b13e0c64f06b_overview-of-unitary-pricing-in-botswana.html
+  method: embedded text
+  derived_from: []
+  confidence: media-alta
+  note: 'Unitary (single national) pricing from 8-Nov-2025, replaces zonal Gaborone-based schedule; no BERA primary doc found (Sunday Standard also reported). Forward chain with primary deltas (Mar-2026,
+    Jul-2026) reproduces Daily News Jul-2026 levels exactly, which validates these levels. Vs Gaborone chain: -32/+2/-9'
+- effective: 2025-11-08
+  product: Diesel 50ppm
+  locality: national
+  thebe: 1628
+  source_type: secondary
+  url: https://lecha-sales.beehiiv.com/p/overview-of-unitary-pricing-in-botswana
+  archive_url: https://web.archive.org/web/20261016170552/https://lecha-sales.beehiiv.com/p/overview-of-unitary-pricing-in-botswana
+  sha256: b13e0c64f06b05bf9023229fbd73f893dec1f359e0203d43dbe3276049b91dae
+  file: b13e0c64f06b_overview-of-unitary-pricing-in-botswana.html
+  method: embedded text
+  derived_from: []
+  confidence: media-alta
+  note: 'Unitary (single national) pricing from 8-Nov-2025, replaces zonal Gaborone-based schedule; no BERA primary doc found (Sunday Standard also reported). Forward chain with primary deltas (Mar-2026,
+    Jul-2026) reproduces Daily News Jul-2026 levels exactly, which validates these levels. Vs Gaborone chain: -32/+2/-9'
+- effective: 2025-11-08
+  product: Illuminating Paraffin
+  locality: national
+  thebe: 1311
+  source_type: secondary
+  url: https://lecha-sales.beehiiv.com/p/overview-of-unitary-pricing-in-botswana
+  archive_url: https://web.archive.org/web/20261016170552/https://lecha-sales.beehiiv.com/p/overview-of-unitary-pricing-in-botswana
+  sha256: b13e0c64f06b05bf9023229fbd73f893dec1f359e0203d43dbe3276049b91dae
+  file: b13e0c64f06b_overview-of-unitary-pricing-in-botswana.html
+  method: embedded text
+  derived_from: []
+  confidence: media-alta
+  note: 'Unitary (single national) pricing from 8-Nov-2025, replaces zonal Gaborone-based schedule; no BERA primary doc found (Sunday Standard also reported). Forward chain with primary deltas (Mar-2026,
+    Jul-2026) reproduces Daily News Jul-2026 levels exactly, which validates these levels. Vs Gaborone chain: -32/+2/-9'
+- effective: 2026-03-28
+  product: ULP 95
+  locality: national
+  thebe: 2052
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - FUEL PRICES ADJUSTMENT Mar.26/Press Release - FUEL PRICES ADJUSTMENT Mar.26 (part 1) - signed.pdf
+  archive_url: http://web.archive.org/web/20260419025005/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26%20(part%201)%20-%20signed.pdf
+  sha256: 5016140e71cdc24f5c23fdbfc4a56a27e85480bd596c42d07ccc2925b6c01be9
+  file: 5016140e71cd_Press Release - FUEL PRICES ADJUSTMENT Mar.26 (part 1) - signed.pdf
+  method: 'chained delta from 2025-11-08 (press_release: +505 thebe)'
+  delta_thebe: 505
+  derived_from:
+  - 2025-11-08 ULP 95
+  confidence: alta
+  note: BERA PR Mar-2026; ULP95 2052 corroborated by Bloomberg Law ("20.52 pula a litre on March 28")
+- effective: 2026-03-28
+  product: Diesel 50ppm
+  locality: national
+  thebe: 2505
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - FUEL PRICES ADJUSTMENT Mar.26/Press Release - FUEL PRICES ADJUSTMENT Mar.26 (part 1) - signed.pdf
+  archive_url: http://web.archive.org/web/20260419025005/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26%20(part%201)%20-%20signed.pdf
+  sha256: 5016140e71cdc24f5c23fdbfc4a56a27e85480bd596c42d07ccc2925b6c01be9
+  file: 5016140e71cd_Press Release - FUEL PRICES ADJUSTMENT Mar.26 (part 1) - signed.pdf
+  method: 'chained delta from 2025-11-08 (press_release: +877 thebe)'
+  delta_thebe: 877
+  derived_from:
+  - 2025-11-08 Diesel 50ppm
+  confidence: alta
+  note: BERA PR Mar-2026; ULP95 2052 corroborated by Bloomberg Law ("20.52 pula a litre on March 28")
+- effective: 2026-03-28
+  product: Illuminating Paraffin
+  locality: national
+  thebe: 2366
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - FUEL PRICES ADJUSTMENT Mar.26/Press Release - FUEL PRICES ADJUSTMENT Mar.26 (part 1) - signed.pdf
+  archive_url: http://web.archive.org/web/20260419025005/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26%20(part%201)%20-%20signed.pdf
+  sha256: 5016140e71cdc24f5c23fdbfc4a56a27e85480bd596c42d07ccc2925b6c01be9
+  file: 5016140e71cd_Press Release - FUEL PRICES ADJUSTMENT Mar.26 (part 1) - signed.pdf
+  method: 'chained delta from 2025-11-08 (press_release: +1055 thebe)'
+  delta_thebe: 1055
+  derived_from:
+  - 2025-11-08 Illuminating Paraffin
+  confidence: alta
+  note: BERA PR Mar-2026; ULP95 2052 corroborated by Bloomberg Law ("20.52 pula a litre on March 28")
+- effective: 2026-04-08
+  product: ULP 95
+  locality: national
+  thebe: 2052
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - FUEL PRICES ADJUSTMENT Mar.26/BERA statement final version (part 1) - signed.pdf
+  archive_url: http://web.archive.org/web/20260520223514/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26/BERA%20statement%20final%20version%20(part%201)%20-%20signed.pdf
+  sha256: 21d91402116a6c45596b633772d6ce55b3f879dec38d009299788ca5bee34529
+  file: 21d91402116a_BERA statement final version (part 1) - signed.pdf
+  method: 'chained delta from 2026-03-28 (press_release: +0 thebe)'
+  delta_thebe: 0
+  derived_from:
+  - 2026-03-28 ULP 95
+  confidence: alta
+  note: 'BERA clarification 8-Apr-2026: FL/RFL/SSM levies suspended (Gazette No. 51 of 2026) but no pump price change; zero-delta row documents the event'
+- effective: 2026-04-08
+  product: Diesel 50ppm
+  locality: national
+  thebe: 2505
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - FUEL PRICES ADJUSTMENT Mar.26/BERA statement final version (part 1) - signed.pdf
+  archive_url: http://web.archive.org/web/20260520223514/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26/BERA%20statement%20final%20version%20(part%201)%20-%20signed.pdf
+  sha256: 21d91402116a6c45596b633772d6ce55b3f879dec38d009299788ca5bee34529
+  file: 21d91402116a_BERA statement final version (part 1) - signed.pdf
+  method: 'chained delta from 2026-03-28 (press_release: +0 thebe)'
+  delta_thebe: 0
+  derived_from:
+  - 2026-03-28 Diesel 50ppm
+  confidence: alta
+  note: 'BERA clarification 8-Apr-2026: FL/RFL/SSM levies suspended (Gazette No. 51 of 2026) but no pump price change; zero-delta row documents the event'
+- effective: 2026-04-08
+  product: Illuminating Paraffin
+  locality: national
+  thebe: 2366
+  source_type: press_release
+  url: https://www.bera.co.bw/downloads/Petroleum/Press Release - FUEL PRICES ADJUSTMENT Mar.26/BERA statement final version (part 1) - signed.pdf
+  archive_url: http://web.archive.org/web/20260520223514/https://www.bera.co.bw/downloads/Petroleum/Press%20Release%20-%20FUEL%20PRICES%20ADJUSTMENT%20Mar.26/BERA%20statement%20final%20version%20(part%201)%20-%20signed.pdf
+  sha256: 21d91402116a6c45596b633772d6ce55b3f879dec38d009299788ca5bee34529
+  file: 21d91402116a_BERA statement final version (part 1) - signed.pdf
+  method: 'chained delta from 2026-03-28 (press_release: +0 thebe)'
+  delta_thebe: 0
+  derived_from:
+  - 2026-03-28 Illuminating Paraffin
+  confidence: alta
+  note: 'BERA clarification 8-Apr-2026: FL/RFL/SSM levies suspended (Gazette No. 51 of 2026) but no pump price change; zero-delta row documents the event'
+- effective: 2026-07-07
+  product: ULP 95
+  locality: national
+  thebe: 1821
+  source_type: daily_news
+  url: https://dailynews.gov.bw/news-detail/92117
+  archive_url: https://web.archive.org/web/20261016170920/https://dailynews.gov.bw/news-detail/92117
+  sha256: b1a6b7e283e7ffd1dbafdd5994e36634a90c9abde902719f4f5dcd36f6a35e54
+  file: b1a6b7e283e7_92117.html
+  method: embedded text
+  delta_thebe: -231
+  derived_from:
+  - 2026-04-08 ULP 95
+  confidence: alta
+  note: Daily News (BOPA) 6-Jul-2026 quoting BERA PR (BERA PDF "Press Release July 2026 pump price.pdf" returns HTML/404); absolute levels published, delta also given; chain reproduces exactly
+- effective: 2026-07-07
+  product: Diesel 50ppm
+  locality: national
+  thebe: 2093
+  source_type: daily_news
+  url: https://dailynews.gov.bw/news-detail/92117
+  archive_url: https://web.archive.org/web/20261016170920/https://dailynews.gov.bw/news-detail/92117
+  sha256: b1a6b7e283e7ffd1dbafdd5994e36634a90c9abde902719f4f5dcd36f6a35e54
+  file: b1a6b7e283e7_92117.html
+  method: embedded text
+  delta_thebe: -412
+  derived_from:
+  - 2026-04-08 Diesel 50ppm
+  confidence: alta
+  note: Daily News (BOPA) 6-Jul-2026 quoting BERA PR (BERA PDF "Press Release July 2026 pump price.pdf" returns HTML/404); absolute levels published, delta also given; chain reproduces exactly
+- effective: 2026-07-07
+  product: Illuminating Paraffin
+  locality: national
+  thebe: 1833
+  source_type: daily_news
+  url: https://dailynews.gov.bw/news-detail/92117
+  archive_url: https://web.archive.org/web/20261016170920/https://dailynews.gov.bw/news-detail/92117
+  sha256: b1a6b7e283e7ffd1dbafdd5994e36634a90c9abde902719f4f5dcd36f6a35e54
+  file: b1a6b7e283e7_92117.html
+  method: embedded text
+  delta_thebe: -533
+  derived_from:
+  - 2026-04-08 Illuminating Paraffin
+  confidence: alta
+  note: Daily News (BOPA) 6-Jul-2026 quoting BERA PR (BERA PDF "Press Release July 2026 pump price.pdf" returns HTML/404); absolute levels published, delta also given; chain reproduces exactly

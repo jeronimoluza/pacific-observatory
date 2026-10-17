@@ -16,7 +16,9 @@ a price-change event for one station, with columns:
   es_gasolinera.
 
 Strategy: download every year file >= cutoff.year, aggregate to national
-monthly means per product, return rows with observation_date > cutoff.
+one row per station, product and month (the station's last report; code in
+``station``), return rows with observation_date > cutoff. The build turns
+stations into a national price (``station_aggregate`` in the YAML).
 """
 
 from __future__ import annotations
@@ -51,6 +53,7 @@ _DOWNLOAD_URL = f"{_TENANT}/personal/infoestadistica_cne_cl/_layouts/15/download
 _COUNTRY = "Chile"
 _CURRENCY = "CLP"
 _SOURCE_KEY = "cl_cne_bencina_monthly"
+_PLACEHOLDER_PRICE = 99_999.0
 
 _PRODUCT_UNITS = {
     "93": "L",
@@ -124,16 +127,28 @@ def _download_year(session, file_name: str) -> pd.DataFrame | None:
         df = pd.read_csv(
             io.BytesIO(raw),
             sep=sep,
-            usecols=["combustible", "precio", "fecha_actualizacion"],
-            dtype={"combustible": "string", "fecha_actualizacion": "string"},
+            # Station id: `codigo` from 2023, `id` before.
+            usecols=lambda c: (
+                c in {"codigo", "id", "combustible", "precio", "fecha_actualizacion"}
+            ),
+            dtype={
+                "codigo": "string",
+                "id": "string",
+                "combustible": "string",
+                "fecha_actualizacion": "string",
+            },
         )
     except Exception:
         logger.exception("[cl_cne_bencina] Failed to parse %s", file_name)
         return None
 
+    df = df.rename(columns={"id": "codigo"})
     df["combustible"] = df["combustible"].replace(_LEGACY_PRODUCT_MAP)
     df["precio"] = pd.to_numeric(df["precio"], errors="coerce")
     df = df.dropna(subset=["combustible", "precio", "fecha_actualizacion"])
+    # 99999.999 is CNE's "no price" placeholder; with one or two stations the
+    # MAD trim cannot catch it (GNC 2026-08: 2 stations -> 50,453 CLP/m3).
+    df = df[df["precio"] < _PLACEHOLDER_PRICE]
     df = df[df["combustible"].isin(_PRODUCT_UNITS)]
     return df
 
@@ -169,38 +184,29 @@ def fetch_cl_cne_bencina(cutoff: date) -> pd.DataFrame | None:
     df = df.assign(fecha=fecha).dropna(subset=["fecha"])
     df["month"] = df["fecha"].dt.to_period("M").dt.to_timestamp().dt.date
 
-    grouped = (
-        df.groupby(["month", "combustible"], as_index=False)["precio"]
-        .mean()
-        .rename(columns={"precio": "price_local", "combustible": "fuel_product"})
-    )
-
-    rows: list[dict] = []
-    for _, r in grouped.iterrows():
-        obs_date: date = r["month"]
-        if obs_date <= cutoff:
-            continue
-        product = str(r["fuel_product"])
-        rows.append(
-            {
-                "observation_date": obs_date.strftime("%Y-%m-%d"),
-                "country": _COUNTRY,
-                "fuel_product": product,
-                "price_local": round(float(r["price_local"]), 4),
-                "currency": _CURRENCY,
-                "source_key": _SOURCE_KEY,
-                "unit": _PRODUCT_UNITS[product],
-            }
-        )
-
-    if not rows:
+    # One row per station and month (its last report), station code kept, so
+    # the raw keeps every station; the build aggregates them robustly
+    # (station_aggregate in the YAML).
+    df = df[df["month"] > cutoff]
+    if df.empty:
         logger.info("[cl_cne_bencina] No new rows after cutoff %s", cutoff)
         return None
-
-    out = (
-        pd.DataFrame(rows)
-        .sort_values(["observation_date", "fuel_product"])
-        .reset_index(drop=True)
+    last = (
+        df.sort_values("fecha")
+        .groupby(["month", "combustible", "codigo"], as_index=False)["precio"]
+        .last()
     )
+    out = pd.DataFrame(
+        {
+            "observation_date": pd.to_datetime(last["month"]).dt.strftime("%Y-%m-%d"),
+            "country": _COUNTRY,
+            "fuel_product": last["combustible"].astype(str),
+            "price_local": last["precio"].astype(float).round(4),
+            "currency": _CURRENCY,
+            "source_key": _SOURCE_KEY,
+            "unit": last["combustible"].astype(str).map(_PRODUCT_UNITS),
+            "station": last["codigo"].astype(str),
+        }
+    ).sort_values(["observation_date", "fuel_product", "station"])
     logger.info("[cl_cne_bencina] Returning %d rows (cutoff: %s)", len(out), cutoff)
-    return out
+    return out.reset_index(drop=True)

@@ -1,0 +1,33 @@
+source_key: csph_cm_retail
+module: ssa.central_africa.cameroon.csph_retail
+function: fetch_csph_cm_retail
+url: https://csph.cm/dashboard/assets/uploads/pdfs/
+fallback_date: 2016-01-01
+priority: 5
+cadence: monthly
+publication: announcement  # regulated pump price, changes by decree
+carry_forward: true
+# '14 - Prix de détail TTC' of the Douala depot page in CSPH's monthly
+# price-structure PDF (OCR; kept only when two readings agree).
+price_basis: retail
+station_type: city
+
+products:
+  "Super":
+    series_key: gasoline_super
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole Lampant":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

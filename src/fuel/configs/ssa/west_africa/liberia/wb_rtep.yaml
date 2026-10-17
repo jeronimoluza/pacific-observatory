@@ -6,12 +6,16 @@ fallback_date: 2007-01-01
 priority: 20
 cadence: monthly
 carry_forward: false
+# One row per RTEP market; the national price is their robust median, and the
+# RTEP national-average rows are left out (they are aggregates themselves).
+station_aggregate: {stat: median, trim: mad, k: 3, min_stations: 5, max_dispersion: 0.25, exclude: [national_avg, "Market Average"]}
+station_type: market
 
 products:
   "Fuel diesel":
     series_key: diesel
     fuel_family: diesel
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: standard
   "Fuel gas":
@@ -24,25 +28,25 @@ products:
   "Fuel kerosene":
     series_key: kerosene
     fuel_family: kerosene
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: standard
   "Fuel petrol gasoline":
     series_key: gasoline_regular
     fuel_family: gasoline
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: regular
   "Fuel petrol gasoline 95 octane":
     series_key: gasoline_premium_95
     fuel_family: gasoline
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: premium
     octane_ron: 95
   "Fuel super petrol":
     series_key: gasoline_super
     fuel_family: gasoline
-    unit: liter
+    unit: gallon
     include_in_build: true
     grade: super

@@ -189,4 +189,4 @@ def fetch_aramco(cutoff: date) -> pd.DataFrame | None:
     if not all_rows:
         return None
 
-    return pd.DataFrame(all_rows)
+    return pd.DataFrame(all_rows).drop_duplicates(ignore_index=True)

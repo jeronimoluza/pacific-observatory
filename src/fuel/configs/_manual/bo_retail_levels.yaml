@@ -1,0 +1,253 @@
+# Source files (by sha256): data/fuel/lac/south_america/bolivia/manual_sources/ (+ manifest.csv)
+# Bolivia domestic (Bolivian-plate) pump prices, one row per (effective date, product).
+# bs = Bs per litre (unit L); GNV Bs per m3 (M3); GLP Bs per 10 kg garrafa (KG10).
+# Frozen 2005-2025 except the 6-day 'gasolinazo' (DS 748, 26-31 Dec 2010).
+# DS 5503 (Dec-2025) removed the subsidy; DS 5516 (Jan-2026) re-enacted the same prices;
+# DS 5716 (Sep-2026) moved diesel to import parity at 17.95. ANH publishes these only
+# as images; the foreign-plate 'Internacional' series is bo_anh_monthly.
+# Products not listed on a date are unchanged since their previous row.
+# cross_check lists other stored files that state the same value.
+# Built by ec_bo/scripts/build_tables.py; values checked against the stored copies by verify_bo.py.
+source_key: bo_retail_levels
+unit: bs_per_litre
+levels:
+- effective: 2004-12-30
+  product: Gasolina Especial
+  bs: 3.74
+  unit: L
+  instrument: DS 27959
+  source_type: study
+  url: https://www.inesad.edu.bo/pdf/wp2024/wp01_2024.pdf
+  archive_url: https://web.archive.org/web/20260914121603/https://www.inesad.edu.bo/pdf/wp2024/wp01_2024.pdf
+  sha256: 60f61630b1434e99b5ccbc0e3f020bb41c2dee8c8a1a897655770fd01dc8a97d
+  file: 60f61630b143_inesad_wp01_2024.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [0b50f879fbc1_reduno_20251218_precios.html, e2366f2ee420_cedib_transfondo_gasolinazo.pdf]
+  confidence: media
+  note: "level set with the DS 27959 adjustment (30-Dec-2004) and frozen by DS 27992 (28-Jan-2005); no primary text carries the Bs price, exact day not established"
+- effective: 2005-01-20
+  product: "Diésel Oil"
+  bs: 3.72
+  unit: L
+  instrument: DS 27983
+  source_type: study
+  url: https://www.inesad.edu.bo/pdf/wp2024/wp01_2024.pdf
+  archive_url: https://web.archive.org/web/20260914121603/https://www.inesad.edu.bo/pdf/wp2024/wp01_2024.pdf
+  sha256: 60f61630b1434e99b5ccbc0e3f020bb41c2dee8c8a1a897655770fd01dc8a97d
+  file: 60f61630b143_inesad_wp01_2024.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [035ee9d19329_cedib_cronologia_hidrocarburos_2005.pdf, 0b50f879fbc1_reduno_20251218_precios.html]
+  confidence: baja
+  note: "level alta (INESAD, Red Uno 'antes 3,72'); date inferred: +23% on 30-Dec-2004 (DS 27959) then a 6% cut (DS 27983, Gaceta 19-Jan-2005, in force the next day), frozen by DS 27992 (28-Jan-2005)"
+- effective: 2005-01-28
+  product: GLP garrafa 10 kg
+  bs: 22.5
+  unit: KG10
+  instrument: DS 27992
+  source_type: press
+  url: https://correodelsur.com/economia/20251217/ya-rigen-los-nuevos-precios-de-los-combustibles-tras-el-fin-de-la-subvencion.html
+  archive_url: ''
+  sha256: 4f835a1e4ddd0a9ffd265c0039ad6f5009e3323ac5559074faa1b98bddb724bb
+  file: 4f835a1e4ddd_correodelsur_20251217_nuevos_precios.html
+  method: html text
+  derived_from: []
+  cross_check: [60f61630b143_inesad_wp01_2024.pdf, 5d6c1691d271_ds5503.pdf, 5d3b90c87f1f_ds5516.pdf]
+  confidence: media
+  note: "Bs 22.50 per 10 kg garrafa (2.25 Bs/kg); unchanged by DS 5503/5516; start date not established (row placed at the 2005 freeze)"
+- effective: 2005-01-28
+  product: GNV
+  bs: 1.66
+  unit: M3
+  instrument: DS 27992
+  source_type: study
+  url: https://www.inesad.edu.bo/pdf/wp2024/wp01_2024.pdf
+  archive_url: https://web.archive.org/web/20260914121603/https://www.inesad.edu.bo/pdf/wp2024/wp01_2024.pdf
+  sha256: 60f61630b1434e99b5ccbc0e3f020bb41c2dee8c8a1a897655770fd01dc8a97d
+  file: 60f61630b143_inesad_wp01_2024.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [0b50f879fbc1_reduno_20251218_precios.html]
+  confidence: media
+  note: "level documented in force through Dec-2025; start date not established (row placed at the 2005 freeze)"
+- effective: 2005-01-28
+  product: Gasolina Premium
+  bs: 4.79
+  unit: L
+  instrument: DS 27992
+  source_type: study
+  url: https://www.inesad.edu.bo/pdf/wp2024/wp01_2024.pdf
+  archive_url: https://web.archive.org/web/20260914121603/https://www.inesad.edu.bo/pdf/wp2024/wp01_2024.pdf
+  sha256: 60f61630b1434e99b5ccbc0e3f020bb41c2dee8c8a1a897655770fd01dc8a97d
+  file: 60f61630b143_inesad_wp01_2024.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [e2366f2ee420_cedib_transfondo_gasolinazo.pdf]
+  confidence: media
+  note: "level in force at the 2005 freeze (DS 27992); start date not established"
+- effective: 2010-12-26
+  product: "Diésel Oil"
+  bs: 6.8
+  unit: L
+  instrument: DS 748
+  source_type: study
+  url: https://www.cedib.org/wp-content/uploads/2012/03/Transfondo-del-gasolizano-hidrocarburos.pdf
+  archive_url: https://web.archive.org/web/20240627001354/https://www.cedib.org/wp-content/uploads/2012/03/Transfondo-del-gasolizano-hidrocarburos.pdf
+  sha256: e2366f2ee420d1a4da0d8472b9b06df68d71042ea87622e493996b587a461d10
+  file: e2366f2ee420_cedib_transfondo_gasolinazo.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: []
+  confidence: media
+  note: "'gasolinazo' DS 748; eju.tv says 'about 7'; reverted 6 days later"
+- effective: 2010-12-26
+  product: Gasolina Especial
+  bs: 6.47
+  unit: L
+  instrument: DS 748
+  source_type: study
+  url: https://www.cedib.org/wp-content/uploads/2012/03/Transfondo-del-gasolizano-hidrocarburos.pdf
+  archive_url: https://web.archive.org/web/20240627001354/https://www.cedib.org/wp-content/uploads/2012/03/Transfondo-del-gasolizano-hidrocarburos.pdf
+  sha256: e2366f2ee420d1a4da0d8472b9b06df68d71042ea87622e493996b587a461d10
+  file: e2366f2ee420_cedib_transfondo_gasolinazo.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [ea5c7042de9c_eju_117215_gasolinazo.html]
+  confidence: alta
+  note: "'gasolinazo': DS 748 removes the subsidy; reverted 6 days later"
+- effective: 2010-12-26
+  product: Gasolina Premium
+  bs: 7.51
+  unit: L
+  instrument: DS 748
+  source_type: study
+  url: https://www.cedib.org/wp-content/uploads/2012/03/Transfondo-del-gasolizano-hidrocarburos.pdf
+  archive_url: https://web.archive.org/web/20240627001354/https://www.cedib.org/wp-content/uploads/2012/03/Transfondo-del-gasolizano-hidrocarburos.pdf
+  sha256: e2366f2ee420d1a4da0d8472b9b06df68d71042ea87622e493996b587a461d10
+  file: e2366f2ee420_cedib_transfondo_gasolinazo.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: []
+  confidence: media
+  note: DS 748
+- effective: 2011-01-01
+  product: "Diésel Oil"
+  bs: 3.72
+  unit: L
+  instrument: DS 759
+  source_type: decree
+  url: https://www.lexivox.org/norms/BO-DS-N759.html
+  archive_url: https://web.archive.org/web/20260422030234/https://www.lexivox.org/norms/BO-DS-N759.html
+  sha256: 2f6cb98867e15d139d81b5ddc613a46101effb753e28e0ebfb5f3da12307b508
+  file: 2f6cb98867e1_lexivox_ds759.html
+  method: "derived: abrogation restores the previous level"
+  derived_from: [60f61630b143_inesad_wp01_2024.pdf]
+  cross_check: [60f61630b143_inesad_wp01_2024.pdf]
+  confidence: alta
+  note: DS 759 abrogates DS 748 from 00:00 1-Jan-2011 (reversion to the pre-DS-748 price)
+- effective: 2011-01-01
+  product: Gasolina Especial
+  bs: 3.74
+  unit: L
+  instrument: DS 759
+  source_type: decree
+  url: https://www.lexivox.org/norms/BO-DS-N759.html
+  archive_url: https://web.archive.org/web/20260422030234/https://www.lexivox.org/norms/BO-DS-N759.html
+  sha256: 2f6cb98867e15d139d81b5ddc613a46101effb753e28e0ebfb5f3da12307b508
+  file: 2f6cb98867e1_lexivox_ds759.html
+  method: "derived: abrogation restores the previous level"
+  derived_from: [60f61630b143_inesad_wp01_2024.pdf]
+  cross_check: [60f61630b143_inesad_wp01_2024.pdf]
+  confidence: alta
+  note: "DS 759 abrogates DS 748 from 00:00 1-Jan-2011; the return to 3.74 is the pre-DS-748 price (decree text abrogates, does not restate it)"
+- effective: 2011-01-01
+  product: Gasolina Premium
+  bs: 4.79
+  unit: L
+  instrument: DS 759
+  source_type: decree
+  url: https://www.lexivox.org/norms/BO-DS-N759.html
+  archive_url: https://web.archive.org/web/20260422030234/https://www.lexivox.org/norms/BO-DS-N759.html
+  sha256: 2f6cb98867e15d139d81b5ddc613a46101effb753e28e0ebfb5f3da12307b508
+  file: 2f6cb98867e1_lexivox_ds759.html
+  method: "derived: abrogation restores the previous level"
+  derived_from: [60f61630b143_inesad_wp01_2024.pdf]
+  cross_check: []
+  confidence: media
+  note: DS 759 abrogates DS 748 (reversion inferred)
+- effective: 2025-12-18
+  product: "Diésel Oil"
+  bs: 9.8
+  unit: L
+  instrument: DS 5503
+  source_type: decree
+  url: https://cd1.eju.tv/wp-content/uploads/2025/12/Decreto-Supremo-5503-que-declara-emergencia-economica-nacional.pdf
+  archive_url: ''
+  sha256: 5d6c1691d271ce99eea795e74f144b30641233f0f993ed6fb65663dd2ecef7a0
+  file: 5d6c1691d271_ds5503.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [0b50f879fbc1_reduno_20251218_precios.html, 4f835a1e4ddd_correodelsur_20251217_nuevos_precios.html, 5d3b90c87f1f_ds5516.pdf]
+  confidence: alta
+  note: "DS 5503 Art. 76; re-enacted by DS 5516; GRACOS (large consumers) alone paid 18.00 from 16-Aug-2026 (DS 5676) and 16.50 from ~3-Sep, not retail"
+- effective: 2025-12-18
+  product: GNV
+  bs: 2.73
+  unit: M3
+  instrument: DS 5503
+  source_type: decree
+  url: https://cd1.eju.tv/wp-content/uploads/2025/12/Decreto-Supremo-5503-que-declara-emergencia-economica-nacional.pdf
+  archive_url: ''
+  sha256: 5d6c1691d271ce99eea795e74f144b30641233f0f993ed6fb65663dd2ecef7a0
+  file: 5d6c1691d271_ds5503.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [0b50f879fbc1_reduno_20251218_precios.html, 4f835a1e4ddd_correodelsur_20251217_nuevos_precios.html, 5d3b90c87f1f_ds5516.pdf]
+  confidence: alta
+  note: "DS 5503 Art. 71; DS 5516 Art. 115-I"
+- effective: 2025-12-18
+  product: Gasolina Especial
+  bs: 6.96
+  unit: L
+  instrument: DS 5503
+  source_type: decree
+  url: https://cd1.eju.tv/wp-content/uploads/2025/12/Decreto-Supremo-5503-que-declara-emergencia-economica-nacional.pdf
+  archive_url: ''
+  sha256: 5d6c1691d271ce99eea795e74f144b30641233f0f993ed6fb65663dd2ecef7a0
+  file: 5d6c1691d271_ds5503.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [0b50f879fbc1_reduno_20251218_precios.html, 4f835a1e4ddd_correodelsur_20251217_nuevos_precios.html, 5d3b90c87f1f_ds5516.pdf]
+  confidence: alta
+  note: "DS 5503 Art. 76 (17-Dec-2025, in force on publication; Red Uno: from Thursday 18-Dec); re-enacted unchanged by DS 5516 (13-Jan-2026); frozen to 12-Jan-2027 by DS 5652 (9-Jul-2026); still 6.96 in Oct-2026"
+- effective: 2025-12-18
+  product: Gasolina Premium
+  bs: 11.0
+  unit: L
+  instrument: DS 5503
+  source_type: decree
+  url: https://cd1.eju.tv/wp-content/uploads/2025/12/Decreto-Supremo-5503-que-declara-emergencia-economica-nacional.pdf
+  archive_url: ''
+  sha256: 5d6c1691d271ce99eea795e74f144b30641233f0f993ed6fb65663dd2ecef7a0
+  file: 5d6c1691d271_ds5503.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [0b50f879fbc1_reduno_20251218_precios.html, 5d3b90c87f1f_ds5516.pdf]
+  confidence: alta
+  note: "DS 5503 Art. 76; Red Uno compares with ANH-adjusted Premium+ at 7.22, not 4.79"
+- effective: 2026-09-19
+  product: "Diésel Oil"
+  bs: 17.95
+  unit: L
+  instrument: DS 5716
+  source_type: decree
+  url: https://eju.tv/wp-content/uploads/2026/09/DS57162100NCPP-1.pdf
+  archive_url: ''
+  sha256: 7c6d7d12b69688f3bae61cc9187bad06b0f2d5f68ef107ab201037f411cde9e8
+  file: 7c6d7d12b696_ds5716.pdf
+  method: pdf text
+  derived_from: []
+  cross_check: [ca56d9f2837a_opinion_20260919_diesel_1795.html, 9744d62dbaee_elpais_20261007_ds5741.html, 581593466538_lapatria_precio_combustibles.html]
+  confidence: alta
+  note: "DS 5716 (signed 18-Sep-2026) sets 17.95 incl. IVA for all consumers from publication (press 19-Sep; day +/-1), then import parity with a +/-5% band; DS 5741 (5-Oct-2026) changes the FX conversion only, price unchanged to mid-Oct"

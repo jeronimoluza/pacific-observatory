@@ -36,8 +36,7 @@ _DATA_DIR = _PROJECT_ROOT / "data" / "fuel" / "ssa"
 _SOURCE_DIR = "wb_rtep"
 
 _API_URL = (
-    "https://microdata.worldbank.org/index.php/api/tables/data/FCV/"
-    "WLD_2023_RTEP_v01_M"
+    "https://microdata.worldbank.org/index.php/api/tables/data/FCV/WLD_2023_RTEP_v01_M"
 )
 _CATALOG_URL = "https://microdata.worldbank.org/index.php/catalog/6134"
 _PAGE_SIZE = 10000
@@ -372,6 +371,7 @@ def _scrape_country(cc: str, meta: dict, cutoff: date) -> pd.DataFrame | None:
                     "unit": unit,
                     "city": city,
                     "subnational_area": subnational,
+                    "station": city,
                 }
             )
 

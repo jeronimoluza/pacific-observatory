@@ -5,6 +5,7 @@ url: https://www.iptgroup.com.lb/Sub.aspx?pageid=22
 fallback_date: 2008-01-01
 priority: 10
 cadence: irregular
+publication: announcement  # published only when the price changes
 carry_forward: true
 
 products:

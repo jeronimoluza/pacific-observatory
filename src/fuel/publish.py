@@ -16,6 +16,8 @@ import yaml
 
 from core.config import load_countries
 
+from . import gates
+
 logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -390,9 +392,18 @@ def run_publish(
     data_dir: Path = _DATA_DIR,
     outputs_dir: Path = _OUTPUTS_DIR,
     cache_dir: Path = _REFERENCE_CACHE,
+    allow_country_drop: bool = False,
+    status_dir: Path = gates.STATUS_DIR,
+    known_failures: Path = gates.KNOWN_FAILURES,
 ) -> None:
-    """Generate fuel policy dashboards for one or all regions."""
+    """Generate fuel policy dashboards and Excels for one or all regions."""
     from .publish_html import gen_policy_html
+    from .publish_xlsx import export_region_xlsx
+    from .publish_parallel import (
+        inject_parallel_section,
+        inject_section,
+        price_basis_section_html,
+    )
 
     if region:
         regions_to_publish = [region]
@@ -413,6 +424,15 @@ def run_publish(
         countries = discover_publish_countries(
             outputs_dir, region=reg, subregion=subregion
         )
+        with_data = set(gates.countries_with_data(reg, countries))
+        stale = sorted(
+            c["country_slug"] for c in countries if c["country_slug"] not in with_data
+        )
+        if stale:
+            logger.warning(
+                "Skipping %s countries without current data: %s", reg, ", ".join(stale)
+            )
+        countries = [c for c in countries if c["country_slug"] in with_data]
         if not countries:
             logger.warning("No countries with build outputs for region=%s", reg)
             continue
@@ -423,6 +443,15 @@ def run_publish(
 
         names = ", ".join(c["country"] for c in countries)
         click.echo(f"Publishing {reg} dashboard ({len(countries)} countries: {names})")
+        gate = None
+        if not subregion:
+            gate = gates.check_publish(
+                reg,
+                countries,
+                allow_country_drop=allow_country_drop,
+                status_dir=status_dir,
+                known_failures=known_failures,
+            )
 
         logger.info("Assembling data for %s ...", reg)
         data = assemble_publish_data(
@@ -444,4 +473,16 @@ def run_publish(
             out=out_path,
             region_label=region_label,
         )
+        if inject_parallel_section(out_path, countries):
+            logger.info("Added the official vs parallel FX section")
+        if inject_section(out_path, price_basis_section_html(countries)):
+            logger.info("Added the non-retail price basis section")
         logger.info("Dashboard written to %s", out_path)
+        xlsx_path = export_region_xlsx(
+            reg, countries, outputs_dir / "excels", history_years=history_years
+        )
+        if gate is not None:
+            status_path = gates.record_publish(
+                reg, gate, {"dashboard": out_path, "excel": xlsx_path}, status_dir
+            )
+            logger.info("[gate] %s %s -> %s", reg, gate["color"], status_path)
