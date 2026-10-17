@@ -1,7 +1,7 @@
 """Step `score_classify` (W42 runbook step 11, was ~/scratch/w42_score/chain.sh + w42_classify/check.py).
 
 1. snapshot: `_hierlex_pred` and `enrich/cache` copied to the 5TB with sha256 per
-   file; refuses when the snapshot target exists.
+   file; refuses when the snapshot target exists and differs (kept when it matches).
 2. score from this week's delta store (append-only; PRICES_EMBED_STORE_DIR is set
    for that process only). Skipped only when the embed step found nothing to embed.
 3. extract: names of pairs still unscored are old names in new (name, country) pairs;
@@ -69,8 +69,16 @@ def _shas(root: Path) -> dict[str, str]:
 
 
 def snapshot(src: Path, dst: Path) -> None:
+    if not src.exists():
+        # A fresh tree (first classify) has no cache yet: nothing to protect.
+        print(f"snapshot {src}: absent, nothing to copy", flush=True)
+        return
     if dst.exists():
-        raise SystemExit(f"snapshot target exists: {dst}")
+        # A re-run after a later phase failed: keep a snapshot that still matches.
+        if _shas(src) == _shas(dst):
+            print(f"snapshot {dst} exists and matches {src}, kept", flush=True)
+            return
+        raise SystemExit(f"snapshot target exists and differs: {dst}")
     dst.mkdir(parents=True)
     subprocess.run(["rsync", "-rt", f"{src}/", f"{dst}/"], check=True)
     a, b = _shas(src), _shas(dst)
