@@ -37,7 +37,7 @@ pssh "$host" "$port" "
 echo "$id launch buckets $lo-$hi $(date -u +%T)"
 ssh -f -n $SSH_OPTS -p "$port" "root@$host" "
   cd $REMOTE_REPO && mkdir -p $REMOTE_LOG &&
-  setsid nohup env PYTHONPATH=src HF_HOME=/workspace/hf EMBED_UNIVERSE=$UNIVERSE \
+  setsid nohup env PYTHONPATH=src HF_HOME=/workspace/hf PRICES_EMBED_DELTA_DIR=data/prices/enrich/_embed_store EMBED_UNIVERSE=$UNIVERSE \
     $REMOTE_VENV/bin/python src/prices/enrich/gpu/gpu_embed_bf16.py \
       --models $MODELS --bucket-lo $lo --bucket-hi $hi \
     > $REMOTE_LOG/$id.log 2>&1 < /dev/null &"

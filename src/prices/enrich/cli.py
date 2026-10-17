@@ -1,10 +1,11 @@
+import os
 import shutil
 
 import click
 
 from prices import partition
 from prices.enrich import config, prepare_shards
-from prices.enrich.classifier import backends, batch_embed
+from prices.enrich.classifier import backends, batch_embed, embed_store
 from prices.enrich.stages import classify as classify_stage
 from prices.enrich.stages import decisions_store
 from prices.enrich.stages import concatenate as concatenate_stage
@@ -308,3 +309,29 @@ def embed_command(backend, only, pods, region, subregion, country):
         selectors=_selectors(only, region, subregion, country),
         pods=pods,
     )
+
+
+@click.command(name="embed-merge")
+@click.option("--tag", "tags", multiple=True, help="Only these blocks. Repeatable.")
+@click.option("--yes", is_flag=True, help="Write. Without it, print the plan only.")
+def embed_merge_command(tags, yes):
+    """Fold the delta embed store into the main store (monthly, run by hand).
+
+    Every delta bucket rewrites its whole main bucket, on the 5TB that is slow,
+    so without --yes this only prints what would be rewritten.
+    """
+    if os.path.realpath(embed_store.DELTA_DIR) == os.path.realpath(
+        embed_store.STORE_DIR
+    ):
+        raise click.ClickException("delta and main are the same directory")
+    click.echo(f"delta {embed_store.DELTA_DIR} -> main {embed_store.STORE_DIR}")
+    plan = embed_store.merge(list(tags) or None, apply=yes)
+    for tag, t in plan.items():
+        click.echo(
+            f"  {tag}: {t['buckets']} buckets, {t['names']} delta names, "
+            f"{t['rewrite_bytes'] / 2**30:.1f} GiB of main to rewrite"
+        )
+    if not plan:
+        click.echo("  nothing to merge")
+    elif not yes:
+        click.echo("dry run; --yes to write")

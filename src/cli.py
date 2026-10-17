@@ -537,6 +537,7 @@ from prices.cc_cli import common_crawl_command as _prices_common_crawl  # noqa: 
 from prices.cc_fleet_cli import cc_fleet_command as _prices_cc_fleet  # noqa: E402
 from prices.cc_table_cli import cc_table_group as _prices_cc_table  # noqa: E402
 from prices.enrich.cli import embed_command as _prices_embed  # noqa: E402
+from prices.enrich.cli import embed_merge_command as _prices_embed_merge  # noqa: E402
 from prices.enrich.cli import process_command as _prices_process  # noqa: E402
 from prices.enrich.eval.cli import eval_command as _prices_eval  # noqa: E402
 from prices.enrich.match_record_view import (  # noqa: E402
@@ -583,6 +584,7 @@ prices.add_command(_prices_cc_table, name="cc-table")
 prices.add_command(_prices_cc_fleet, name="cc-fleet")
 prices.add_command(_prices_process, name="process")
 prices.add_command(_prices_embed, name="embed")
+prices.add_command(_prices_embed_merge, name="embed-merge")
 prices.add_command(_prices_eval, name="eval")
 prices.add_command(_prices_match_record, name="match-record")
 prices.add_command(_prices_census, name="census")
