@@ -817,7 +817,7 @@ def _deduplicate(df: pd.DataFrame) -> pd.DataFrame:
     df["_source_rank"] = df.apply(_compute_source_rank, axis=1)
 
     # Step 1: sort so groupby "first" captures the best-ranked row
-    df = df.sort_values(["_source_rank", "observation_date"])
+    df = df.sort_values(["_source_rank", "observation_date"], kind="stable")
 
     # Step 2: average prices within same (source, location, date, series)
     agg_cols = [c for c in _AGG_GROUP_COLS if c in df.columns]
@@ -831,7 +831,7 @@ def _deduplicate(df: pd.DataFrame) -> pd.DataFrame:
     # Step 3: pick best source for each (country, date, location, series_key)
     dedup_key = [c for c in _DEDUP_KEY if c in df.columns]
     if len(dedup_key) >= 3:
-        df = df.sort_values(["_source_rank"])
+        df = df.sort_values(["_source_rank"], kind="stable")
         df = df.drop_duplicates(subset=dedup_key, keep="first")
 
     return _strip_internal(df).reset_index(drop=True)
@@ -956,7 +956,7 @@ def _run_pipeline_stages(df: pd.DataFrame) -> pd.DataFrame:
 def apply_data_quality_rules(df: pd.DataFrame) -> pd.DataFrame:
     """Apply data quality rules: product drops, low-priority source drops, country renames."""
     df = _apply_data_quality_rules(df)
-    return _strip_internal(df).sort_values("observation_date").reset_index(drop=True)
+    return _strip_internal(df).sort_values("observation_date", kind="stable").reset_index(drop=True)
 
 
 def build_enriched_frame(
