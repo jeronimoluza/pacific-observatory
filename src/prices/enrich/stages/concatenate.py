@@ -582,8 +582,6 @@ def _finalise_shard(
             # currency still carry the page's own (wrong) label; re-apply it.
             if restamp:
                 df["currency"] = df["currency"].where(df["origin"] == "live", restamp)
-            if relabel:
-                df = currency_relabel.apply(df, relabel, f"{country}/{source}")
 
             # Back-fill currency for rows that lack it, using the modal currency
             # observed in this source's other rows.
@@ -592,6 +590,10 @@ def _finalise_shard(
                 df["currency"] = currency.where(
                     currency.notna() & (currency.str.len() > 0), modal_currency
                 )
+            # After the back-fill: a blank cell filled with the modal label is as
+            # wrong as a stamped one (konzum_hr's pre-2023 pages).
+            if relabel:
+                df = currency_relabel.apply(df, relabel, f"{country}/{source}")
 
             df["country"] = country
             df["source"] = source
