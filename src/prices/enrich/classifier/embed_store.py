@@ -37,14 +37,41 @@ STORE_DIR = Path(
 )
 N_BUCKETS = 256
 
+# New names go to a small delta store on a8 `/`, never into the main store: an
+# append rewrites the whole bucket, and a weekly delta touches almost every bucket,
+# so appending to main on the 5TB (SMR over USB) rewrites ~580G. Reads see delta
+# then main; `merge` folds the delta into main, by hand, monthly. Setting the delta
+# to the main store's own path (the RunPod pods do) restores in-place appends.
+DELTA_DIR = Path(
+    os.path.expanduser(os.environ.get("PRICES_EMBED_DELTA_DIR") or "~/data/embed_delta")
+)
+PROTECTED = Path("/mnt/backup5tb")
+_MERGING = False
+
 
 def bucket_of(name: str) -> int:
     h = hashlib.sha1(str(name).encode("utf-8")).digest()
     return int.from_bytes(h[:4], "big") % N_BUCKETS
 
 
-def _bucket_path(tag: str, b: int) -> Path:
-    return STORE_DIR / tag / f"bucket_{b:03d}.npz"
+def _bucket_path(tag: str, b: int, root: Path | None = None) -> Path:
+    return (root or STORE_DIR) / tag / f"bucket_{b:03d}.npz"
+
+
+def _roots() -> list[Path]:
+    """Delta first, then main; one root when both are the same directory."""
+    if os.path.realpath(DELTA_DIR) == os.path.realpath(STORE_DIR):
+        return [STORE_DIR]
+    return [DELTA_DIR, STORE_DIR]
+
+
+def _check_writable(p: Path) -> None:
+    real = Path(os.path.realpath(p))
+    if not _MERGING and (real == PROTECTED or PROTECTED in real.parents):
+        raise RuntimeError(
+            f"refusing to write {p} (resolves to {real}, under {PROTECTED}); "
+            "only `prices embed-merge` writes there"
+        )
 
 
 def _pack_keys(keys: list[str]) -> tuple[np.ndarray, np.ndarray]:
@@ -69,8 +96,7 @@ def decode_keys(z) -> list[str]:
     return [str(k) for k in z["keys"]]
 
 
-def _load_bucket(tag: str, b: int) -> dict[str, np.ndarray]:
-    p = _bucket_path(tag, b)
+def _read(p: Path) -> dict[str, np.ndarray]:
     if not p.exists():
         return {}
     with np.load(p, allow_pickle=False) as z:
@@ -78,8 +104,18 @@ def _load_bucket(tag: str, b: int) -> dict[str, np.ndarray]:
     return {k: mat[i] for i, k in enumerate(keys)}
 
 
-def _save_bucket(tag: str, b: int, store: dict[str, np.ndarray]) -> None:
-    p = _bucket_path(tag, b)
+def _load_bucket(tag: str, b: int) -> dict[str, np.ndarray]:
+    store: dict[str, np.ndarray] = {}
+    for root in reversed(_roots()):  # main, then delta over it
+        store.update(_read(_bucket_path(tag, b, root)))
+    return store
+
+
+def _save_bucket(
+    tag: str, b: int, store: dict[str, np.ndarray], root: Path | None = None
+) -> None:
+    p = _bucket_path(tag, b, root)
+    _check_writable(p)
     p.parent.mkdir(parents=True, exist_ok=True)
     keys = list(store.keys())
     mat = (
@@ -122,11 +158,13 @@ def keys_of(tag: str, b: int) -> set[str]:
     An npz member is only read on access, so this touches ``keys_blob``/
     ``keys_off`` and never ``mat``.
     """
-    p = _bucket_path(tag, b)
-    if not p.exists():
-        return set()
-    with np.load(p, allow_pickle=False) as z:
-        return set(decode_keys(z))
+    keys: set[str] = set()
+    for root in _roots():
+        p = _bucket_path(tag, b, root)
+        if p.exists():
+            with np.load(p, allow_pickle=False) as z:
+                keys |= set(decode_keys(z))
+    return keys
 
 
 def missing_keys(tag: str, bucket_names: dict[int, list[str]]) -> dict[int, list[str]]:
@@ -145,9 +183,9 @@ def missing_keys(tag: str, bucket_names: dict[int, list[str]]) -> dict[int, list
     return out
 
 
-def _tag_manifest_path(tag: str) -> Path:
+def _tag_manifest_path(tag: str, root: Path | None = None) -> Path:
     # Beside the tag directory, not in it: tag directories are mode 555.
-    return STORE_DIR / f"{tag}.TAG.json"
+    return (root or STORE_DIR) / f"{tag}.TAG.json"
 
 
 def _declared(block: dict) -> dict:
@@ -171,8 +209,11 @@ def check_tag(block: dict) -> None:
     first with no error. A wrong vector is a valid array; only this catches it.
     """
     path = _tag_manifest_path(block["tag"])
+    if not path.exists():
+        path = _tag_manifest_path(block["tag"], DELTA_DIR)
     declared = _declared(block)
     if not path.exists():
+        _check_writable(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(declared, indent=2) + "\n", encoding="utf-8")
         return
@@ -186,10 +227,47 @@ def check_tag(block: dict) -> None:
 def append(block: dict, b: int, names, vecs: np.ndarray) -> None:
     tag = block["tag"]
     check_tag(block)
-    store = _load_bucket(tag, b)
+    store = _read(_bucket_path(tag, b, DELTA_DIR))
     for n, v in zip(names, vecs):
         store[str(n)] = np.asarray(v, dtype=np.float16)
-    _save_bucket(tag, b, store)
+    _save_bucket(tag, b, store, DELTA_DIR)
+
+
+def merge(tags=None, apply: bool = False) -> dict:
+    """Fold the delta into the main store: each delta bucket rewrites its main bucket.
+
+    The only write allowed under PROTECTED. Without `apply` it reads keys only and
+    returns the plan. The delta is left in place; reads stay correct either way.
+    """
+    global _MERGING
+    if not DELTA_DIR.is_dir():
+        return {}
+    tags = tags or sorted(p.name for p in DELTA_DIR.iterdir() if p.is_dir())
+    plan: dict = {}
+    for tag in tags:
+        for p in sorted((DELTA_DIR / tag).glob("bucket_*.npz")):
+            b = int(p.stem.split("_")[1])
+            with np.load(p, allow_pickle=False) as z:
+                delta = set(decode_keys(z))
+            main = _bucket_path(tag, b, STORE_DIR)
+            t = plan.setdefault(tag, {"buckets": 0, "names": 0, "rewrite_bytes": 0})
+            t["buckets"] += 1
+            t["names"] += len(delta)
+            t["rewrite_bytes"] += main.stat().st_size if main.exists() else 0
+    if not apply:
+        return plan
+    _MERGING = True
+    try:
+        for tag in plan:
+            for p in sorted((DELTA_DIR / tag).glob("bucket_*.npz")):
+                b = int(p.stem.split("_")[1])
+                store = _read(_bucket_path(tag, b, STORE_DIR))
+                store.update(_read(p))
+                _save_bucket(tag, b, store, STORE_DIR)
+                print(f"[embed-merge {tag}] bucket {b}", flush=True)
+    finally:
+        _MERGING = False
+    return plan
 
 
 def gather(tag: str, b: int, names) -> np.ndarray:

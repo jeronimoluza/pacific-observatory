@@ -287,6 +287,10 @@ def _store_list(cfg: embed_stores.Stores) -> list[tuple[str, Path]]:
     stores = list(cfg.stores)
     if cfg.week_store.is_dir():
         stores.append(("week", cfg.week_store))
+    from prices.enrich.classifier.embed_store import DELTA_DIR
+
+    if DELTA_DIR.is_dir():
+        stores.append(("delta", DELTA_DIR))
     return stores
 
 

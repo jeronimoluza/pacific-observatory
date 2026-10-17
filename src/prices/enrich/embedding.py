@@ -272,11 +272,7 @@ def covered_mask(names: Sequence[str]) -> np.ndarray:
     for tag in tags:
         seen: set[str] = set()
         for b, bucket_names in bmap.items():
-            path = embed_store._bucket_path(tag, b)
-            if not path.exists():
-                continue
-            with np.load(path, allow_pickle=False) as z:
-                seen |= set(embed_store.decode_keys(z)) & set(bucket_names)
+            seen |= embed_store.keys_of(tag, b) & set(bucket_names)
         have = seen if have is None else (have & seen)
     return np.array([n in have for n in names], bool)
 
