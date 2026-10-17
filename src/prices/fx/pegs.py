@@ -20,11 +20,14 @@ from __future__ import annotations
 
 import pandas as pd
 
+from prices.fx.cache import SOURCE_DERIVED_EUR_PEG
+
 #: ISO code -> units of that currency per 1 EUR, fixed by law.
 EUR_PEGS: dict[str, float] = {
     "XPF": 119.332,
     "XOF": 655.957,
     "XAF": 655.957,
+    "BGN": 1.95583,
 }
 
 #: Pegs we actually override the provider on. XOF/XAF match the provider
@@ -57,3 +60,24 @@ def derive_eur_pegged(
     if not frames:
         return pd.DataFrame(columns=["currency", "date", "rate_usd_to_local"])
     return pd.concat(frames, ignore_index=True)
+
+
+#: Currencies the euro REPLACED. The provider stops serving them at the
+#: changeover and the cached history strays off the peg (BGN: a legacy
+#: two-provider mix, 1.924-1.995 per EUR, ending 2026-09). Rows still arrive in
+#: them (pre-changeover history, archived pages, shops still quoting leva), so
+#: every read replaces their cached rates with EUR x peg over the whole EUR
+#: series. The lev was fixed at 1.95583 per EUR from 1999, so this is exact.
+REPLACED_BY_EUR: tuple[str, ...] = ("BGN",)
+
+
+def peg_replaced(cache: pd.DataFrame) -> pd.DataFrame:
+    """``cache`` with each :data:`REPLACED_BY_EUR` code's rows swapped for
+    EUR x peg on every cached EUR date."""
+    eur = cache[cache["currency"].eq("EUR")]
+    if eur.empty:
+        return cache
+    derived = derive_eur_pegged(eur, codes=REPLACED_BY_EUR)
+    derived["source"] = SOURCE_DERIVED_EUR_PEG
+    kept = cache[~cache["currency"].isin(REPLACED_BY_EUR)]
+    return pd.concat([kept, derived[kept.columns]], ignore_index=True)

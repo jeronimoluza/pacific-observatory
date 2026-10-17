@@ -23,6 +23,7 @@ from prices.fx.aliases import normalize_currency_safe
 from prices.fx.audit import flag_rate_outliers
 from prices.fx.cache import load_cache
 from prices.fx.paths import PRICES_FX_CACHE
+from prices.fx.pegs import peg_replaced
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ def build_fx_table(
     start_date = work["observation_date"].min()
     end_date = work["observation_date"].max()
 
-    cache = load_cache(Path(cache_path))
+    cache = peg_replaced(load_cache(Path(cache_path)))
     cache = cache[cache["currency"].isin(currencies)]
 
     filled: list[pd.DataFrame] = []
@@ -112,7 +113,7 @@ def _fill_from_latest_rate(out: pd.DataFrame, cache_path: Path) -> pd.DataFrame:
     if not missing.any():
         return out
 
-    cache = load_cache(Path(cache_path))
+    cache = peg_replaced(load_cache(Path(cache_path)))
     if cache.empty:
         return out
 
@@ -146,7 +147,7 @@ def _mark_suspect_rates(out: pd.DataFrame, cache_path: Path) -> pd.DataFrame:
     deliberately does not catch.
     """
     out["fx_suspect"] = False
-    cache = load_cache(Path(cache_path))
+    cache = peg_replaced(load_cache(Path(cache_path)))
     if cache.empty or "fx_rate_date" not in out.columns:
         return out
     suspect = cache[flag_rate_outliers(cache)]
