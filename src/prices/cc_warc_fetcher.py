@@ -31,6 +31,7 @@ from .cc_index import choose_family
 from .cc_samples import SampleKeeper
 from .cc_index import query_prefix
 from .backfill import _load_spider_parse_html
+from .fx.pegs import REPLACED_BY_EUR
 from .price_scraping.archived_ladder import decode, parse_rows
 
 logger = logging.getLogger(__name__)
@@ -220,7 +221,13 @@ class CommonCrawlScraper:
             # gets multiplied by FX downstream. Where nothing is declared the
             # page value stands — concatenate.py's modal back-fill only ever
             # fills a BLANK cell, so it cannot correct a wrong one.
-            if self.declared_currency:
+            # Except a page in a currency the euro replaced: Bulgarian shops
+            # that declare EUR priced in BGN before 2026, and stamping EUR on
+            # those numbers made them 1.96x too high.
+            page = str(payload.get("currency") or "").strip().upper()
+            if self.declared_currency and not (
+                self.declared_currency == "EUR" and page in REPLACED_BY_EUR
+            ):
                 payload["currency"] = self.declared_currency
             payloads.append(json.dumps(payload, ensure_ascii=False))
         if not payloads:
