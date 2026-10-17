@@ -130,6 +130,10 @@ def run_step(step: Step, ctx: Context) -> int:
         status.write("BLOCKED", f"{e}; {step.name} not started")
         click.echo(f"BLOCKED {e}", err=True)
         return 1
+    # A scope that failed (e.g. OOM) stays loaded and systemd-run refuses the same name.
+    subprocess.run(
+        ["systemctl", "--user", "reset-failed", f"{unit}.scope"], stderr=subprocess.DEVNULL
+    )
     for a in alerts:
         status.event(f"ALERT {a}")
     log = ctx.week_dir / f"{step.name}.log"
