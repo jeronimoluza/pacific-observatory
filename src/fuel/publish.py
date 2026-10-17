@@ -17,6 +17,7 @@ import yaml
 from core.config import load_countries
 
 from . import gates
+from .regimes import basis_note
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +138,9 @@ def _load_country_fuel_data(
         for _, row in df.iterrows():
             series_key = row.get("series_key", "")
             label = row.get("label", "") or series_key
+            note = basis_note(row.get("price_basis"))
+            if note:
+                label = f"{label} ({note})"
             rec = {
                 "observation_date": row.get("observation_date", ""),
                 "fuel_product": label,
@@ -208,6 +212,7 @@ def assemble_publish_data(
     from .reference.commodities import load_commodity_series
     from .reference.gdp import load_gdp
     from .reference.population import load_population
+    from .regimes import apply_regime_table
     from .reference.subsidies import (
         PRODUCTS,
         REGIME_COLORS,
@@ -232,6 +237,12 @@ def assemble_publish_data(
     regime_csv = cache_dir / "worldbank" / "subsidies_price_controls.csv"
     df_regime, product_regimes = load_regime_data(
         regime_csv, overrides=regime_overrides
+    )
+    df_regime, product_regimes = apply_regime_table(
+        df_regime,
+        product_regimes,
+        {c["iso3"] for c in countries if c.get("iso3")},
+        regime_notes,
     )
 
     logger.info("Loading IMF subsidies ...")

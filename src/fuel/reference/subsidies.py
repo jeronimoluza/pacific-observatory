@@ -27,6 +27,8 @@ REGIME_COLORS = {
     "Market Prices with Subsidies": "#2196f3",
     "Price Control": "#d62728",
     "Price Control with Subsidies": "#e6ab02",
+    "Reference Price": "#8c564b",
+    "Reference Price + Subsidies": "#c49c94",
     "Unknown": "#aec7e8",
 }
 
