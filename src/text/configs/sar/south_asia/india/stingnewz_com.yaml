@@ -1,4 +1,6 @@
 name: www.stingnewz.com
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on http://www.stingnewz.com/?rest_route=/wp/v2/posts&per_page=100&page=1&categories=4,3&_fields=id,date,link,title,excerpt,content (HTTP 404); failing since 2026-10-16T22:49:29Z, probes 2026-10-16T22:49:29Z, 2026-10-16T23:33:03Z, 2026-10-17T05:03:29Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: en
 country: india
 base_url: http://www.stingnewz.com

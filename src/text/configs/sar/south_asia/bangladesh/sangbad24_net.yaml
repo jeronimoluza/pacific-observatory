@@ -1,4 +1,6 @@
 name: Sangbad24
+enabled: false
+disabled_reason: "source-health 2026-10-17: dns_dead on http://www.sangbad24.net/wp-json/wp/v2/posts?per_page=100&categories=17&page=1&_fields=id,date,link,title,excerpt,content (no DNS record for www.sangbad24.net); failing since 2026-10-16T22:35:08Z, probes 2026-10-16T22:35:08Z, 2026-10-16T23:30:30Z, 2026-10-17T05:01:15Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: en
 country: bangladesh
 base_url: http://www.sangbad24.net

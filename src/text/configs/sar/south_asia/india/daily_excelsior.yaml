@@ -1,4 +1,6 @@
 name: Daily Excelsior
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://www.dailyexcelsior.com/wp-json/wp/v2/posts?per_page=100&page=1&categories=18,42&_fields=id,date,link,title,excerpt,content (HTTP 410; ?rest_route= variant not_found); failing since 2026-10-16T22:55:13Z, probes 2026-10-16T22:55:13Z, 2026-10-16T23:35:02Z, 2026-10-17T05:04:59Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: en
 country: india
 base_url: https://www.dailyexcelsior.com

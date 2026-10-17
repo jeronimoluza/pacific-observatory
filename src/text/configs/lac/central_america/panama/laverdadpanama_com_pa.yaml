@@ -1,4 +1,6 @@
 name: Laverdadpanama
+enabled: false
+disabled_reason: "source-health 2026-10-17: dns_dead on https://www.laverdadpanama.com.pa/wp-json/wp/v2/posts?per_page=100&categories=3&page=1&_fields=id,date,link,title,excerpt,content (no DNS record for www.laverdadpanama.com.pa); failing since 2026-10-16T22:32:50Z, probes 2026-10-16T22:32:50Z, 2026-10-16T23:29:45Z, 2026-10-17T05:00:33Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: es
 country: panama
 base_url: https://www.laverdadpanama.com.pa

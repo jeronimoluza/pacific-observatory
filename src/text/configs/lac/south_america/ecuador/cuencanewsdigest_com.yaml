@@ -1,4 +1,6 @@
 name: Cuencanewsdigest
+enabled: false
+disabled_reason: "source-health 2026-10-17: dns_dead on http://www.cuencanewsdigest.com/wp-json/wp/v2/posts?per_page=100&page=1&_fields=id,date,link,title,excerpt,content (no DNS record for www.cuencanewsdigest.com); failing since 2026-10-16T22:33:44Z, probes 2026-10-16T22:33:44Z, 2026-10-16T23:30:02Z, 2026-10-17T05:00:52Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: es
 country: ecuador
 base_url: http://www.cuencanewsdigest.com

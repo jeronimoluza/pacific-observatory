@@ -1,4 +1,6 @@
 name: Economiahoy
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on http://www.economiahoy.com/wp-json/wp/v2/posts?per_page=100&page=1&_fields=id,date,link,title,excerpt,content (HTTP 404 after redirect to https://www.economiahoy.com/wp-json/wp/v2/posts?per_page=100&page=1&_fields=id,date,link,title,excerpt,content; ?rest_route= variant empty_listing); failing since 2026-10-16T22:54:30Z, probes 2026-10-16T22:54:30Z, 2026-10-16T23:34:39Z, 2026-10-17T05:04:37Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: es
 country: venezuela_rb
 base_url: http://www.economiahoy.com

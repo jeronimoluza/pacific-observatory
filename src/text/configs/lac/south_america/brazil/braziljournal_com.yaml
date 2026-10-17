@@ -1,4 +1,6 @@
 name: Braziljournal
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://braziljournal.com/wp-json/wp/v2/posts?per_page=100&categories=1421,1422&page=1&_fields=id,date,link,title,excerpt,content (HTTP 404; ?rest_route= variant empty_listing); failing since 2026-10-16T22:54:10Z, probes 2026-10-16T22:54:10Z, 2026-10-16T23:34:31Z, 2026-10-17T05:04:26Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: portuguese
 country: brazil
 base_url: https://braziljournal.com

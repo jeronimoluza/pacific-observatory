@@ -1,4 +1,6 @@
 name: 24horas
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on http://www.24horas.com.do/wp-json/wp/v2/posts?per_page=100&categories=2,10,5,1,6&page=1&_fields=id,date,link,title,excerpt,content (redirects to a parked/suspended page https://recaptcha.cloud/?template=cpg&server=198.251.81.49&ip=191.80.104.0&http=); failing since 2026-10-16T22:40:47Z, probes 2026-10-16T22:40:47Z, 2026-10-16T23:31:52Z, 2026-10-17T05:02:15Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: es
 country: dominican_republic
 base_url: http://www.24horas.com.do

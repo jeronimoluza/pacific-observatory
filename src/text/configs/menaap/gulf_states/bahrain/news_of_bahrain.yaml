@@ -1,4 +1,6 @@
 name: News of Bahrain
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://www.newsofbahrain.com/bahrain/page/1/ (HTTP 404 after redirect to https://www.newsofbahrain.com/en/bahrain/page/1); failing since 2026-10-16T22:46:25Z, probes 2026-10-16T22:46:25Z, 2026-10-16T23:32:35Z, 2026-10-17T05:03:00Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: en
 country: bahrain
 base_url: https://www.newsofbahrain.com

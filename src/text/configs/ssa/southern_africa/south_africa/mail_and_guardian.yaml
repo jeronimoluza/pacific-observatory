@@ -1,4 +1,6 @@
 name: Mail and Guardian
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://mg.co.za/wp-json/wp/v2/posts?per_page=100&page=1&categories=3,12,23&_fields=id,date,link,title,excerpt,content (HTTP 404 after redirect to https://mg.co.za/wp-json/wp/v2/posts/?per_page=100&page=1&categories=3%2C12%2C23&_fields=id%2Cdate%2Clink%2Ctitle%2Cexcerpt%2Ccontent; ?rest_route= variant empty_listing); failing since 2026-10-16T22:55:34Z, probes 2026-10-16T22:55:34Z, 2026-10-16T23:35:29Z, 2026-10-17T05:05:17Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 country: south_africa
 language: en
 base_url: https://mg.co.za

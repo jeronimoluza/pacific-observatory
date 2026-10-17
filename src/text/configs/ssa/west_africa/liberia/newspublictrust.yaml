@@ -1,4 +1,6 @@
 name: News Public Trust
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on http://newspublictrust.com/wp-json/wp/v2/posts?per_page=100&page=1&categories=28,607,30&_fields=id,date,link,title,excerpt,content (redirects to a parked/suspended page https://newspublictrust.com/cgi-sys/suspendedpage.cgi?per_page=100&page=1&catego); failing since 2026-10-16T22:51:59Z, probes 2026-10-16T22:51:59Z, 2026-10-16T23:33:38Z, 2026-10-17T05:03:50Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 country: liberia
 language: en
 base_url: http://newspublictrust.com

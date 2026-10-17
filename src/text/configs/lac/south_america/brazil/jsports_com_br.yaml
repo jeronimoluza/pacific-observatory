@@ -1,4 +1,6 @@
 name: Jsports
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on http://www.jsports.com.br/wp-json/wp/v2/posts?per_page=100&categories=3&page=1&_fields=id,date,link,title,excerpt,content (redirects to gambling site efbet365.com.br); failing since 2026-10-16T22:44:22Z, probes 2026-10-16T22:44:22Z, 2026-10-16T23:32:13Z, 2026-10-17T05:02:39Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: portuguese
 country: brazil
 base_url: http://www.jsports.com.br

@@ -1,4 +1,6 @@
 name: Tnh
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://tnh.gob.hn/wp-json/wp/v2/posts?per_page=100&categories=105,1&page=1&_fields=id,date,link,title,excerpt,content (HTTP 410; ?rest_route= variant redirect_moved); failing since 2026-10-16T22:54:01Z, probes 2026-10-16T22:54:01Z, 2026-10-16T23:34:25Z, 2026-10-17T05:04:20Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: es
 country: honduras
 base_url: https://tnh.gob.hn

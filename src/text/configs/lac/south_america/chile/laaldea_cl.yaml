@@ -1,4 +1,6 @@
 name: Laaldea
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on http://www.laaldea.cl/?rest_route=/wp/v2/posts&per_page=100&page=1&_fields=id,date,link,title,excerpt,content (redirects to gambling site adu88slot.com); failing since 2026-10-16T22:44:45Z, probes 2026-10-16T22:44:45Z, 2026-10-16T23:32:20Z, 2026-10-17T05:02:41Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: es
 country: chile
 base_url: http://www.laaldea.cl

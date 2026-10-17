@@ -1,4 +1,6 @@
 name: Antigua News
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://antigua.news/wp-json/wp/v2/posts?per_page=100&page=1&categories=13,20,14&_fields=id,date,link,title,excerpt,content (HTTP 404; ?rest_route= variant empty_listing); failing since 2026-10-16T22:53:36Z, probes 2026-10-16T22:53:36Z, 2026-10-16T23:33:55Z, 2026-10-17T05:04:02Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 country: antigua_and_barbuda
 language: en
 base_url: https://antigua.news

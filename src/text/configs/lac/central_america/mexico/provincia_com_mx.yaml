@@ -1,4 +1,6 @@
 name: Provincia
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on http://www.provincia.com.mx/wp-json/wp/v2/posts?per_page=100&page=1&_fields=id,date,link,title,excerpt,content (HTTP 404; ?rest_route= variant hijacked); failing since 2026-10-16T22:54:03Z, probes 2026-10-16T22:54:03Z, 2026-10-16T23:34:26Z, 2026-10-17T05:04:20Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: es
 country: mexico
 base_url: http://www.provincia.com.mx

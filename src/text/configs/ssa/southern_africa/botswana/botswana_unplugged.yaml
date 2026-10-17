@@ -1,4 +1,6 @@
 name: Botswana Unplugged
+enabled: false
+disabled_reason: "source-health 2026-10-17: dns_dead on https://botswanaunplugged.com/wp-json/wp/v2/posts?per_page=100&page=1&categories=41&_fields=id,date,link,title,excerpt,content (no DNS record for botswanaunplugged.com); failing since 2026-10-16T22:36:28Z, probes 2026-10-16T22:36:28Z, 2026-10-16T23:30:43Z, 2026-10-17T05:01:35Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 country: botswana
 language: en
 base_url: https://botswanaunplugged.com

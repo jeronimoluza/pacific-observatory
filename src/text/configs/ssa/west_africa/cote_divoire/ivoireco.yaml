@@ -1,4 +1,6 @@
 name: Ivoireco
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on https://cynomedia.com/wp-json/wp/v2/posts?per_page=100&page=1&_fields=id,date,link,title,excerpt,content (gambling terms in 62/89 posts); failing since 2026-10-16T22:51:46Z, probes 2026-10-16T22:51:46Z, 2026-10-16T23:33:34Z, 2026-10-17T05:03:44Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 country: cote_divoire
 language: fr
 base_url: https://cynomedia.com

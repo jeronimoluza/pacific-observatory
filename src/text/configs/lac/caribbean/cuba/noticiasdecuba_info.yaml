@@ -1,4 +1,6 @@
 name: Noticiasdecuba
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on https://www.noticiasdecuba.info/wp-json/wp/v2/posts?per_page=100&categories=6,2&page=1&_fields=id,date,link,title,excerpt,content (redirects to a parked/suspended page https://expireddomains.com/domain/noticiasdecuba.info?utm_source=redi); failing since 2026-10-16T22:40:45Z, probes 2026-10-16T22:40:45Z, 2026-10-16T23:31:29Z, 2026-10-17T05:02:02Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: es
 country: cuba
 base_url: https://www.noticiasdecuba.info

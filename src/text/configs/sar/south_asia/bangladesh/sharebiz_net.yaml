@@ -1,4 +1,6 @@
 name: sharebiz.net
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://sharebiz.net/wp-json/wp/v2/posts?per_page=100&page=1&categories=4,13,11&_fields=id,date,link,title,excerpt,content (HTTP 404 after redirect to https://www.sharebiz.net/wp-json/wp/v2/posts?per_page=100&page=1&categories=4,13,11&_fields=id,date,link,title,excerpt,content; ?rest_route= variant empty_listing); failing since 2026-10-16T22:55:01Z, probes 2026-10-16T22:55:01Z, 2026-10-16T23:34:58Z, 2026-10-17T05:05:01Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: bn
 country: bangladesh
 base_url: https://sharebiz.net

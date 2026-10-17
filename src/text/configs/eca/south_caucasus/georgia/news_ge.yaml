@@ -1,4 +1,6 @@
 name: News.ge
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://news.ge/wp-json/wp/v2/posts?per_page=100&page=1&categories=1,42,40&_fields=id,date,link,title,excerpt,content (HTTP 404; ?rest_route= variant empty_listing); failing since 2026-10-16T22:53:21Z, probes 2026-10-16T22:53:21Z, 2026-10-16T23:33:50Z, 2026-10-17T05:04:01Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 country: georgia
 language: ka
 base_url: https://news.ge

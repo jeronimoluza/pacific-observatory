@@ -1,4 +1,6 @@
 name: www.newtimes24.com
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on http://www.newtimes24.com/wp-json/wp/v2/posts?per_page=100&page=1&categories=9,4,15&_fields=id,date,link,title,excerpt,content (HTTP 404 after redirect to https://www.newtimes24.com/wp-json/wp/v2/posts?per_page=100&page=1&categories=9,4,15&_fields=id,date,link,title,excerpt,content; ?rest_route= variant empty_listing); failing since 2026-10-16T22:54:59Z, probes 2026-10-16T22:54:59Z, 2026-10-16T23:34:56Z, 2026-10-17T05:04:53Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: en
 country: bangladesh
 base_url: http://www.newtimes24.com

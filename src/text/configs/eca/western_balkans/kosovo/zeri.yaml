@@ -1,4 +1,6 @@
 name: Zeri
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://zeri.info/ (HTTP 404); failing since 2026-10-16T22:53:31Z, probes 2026-10-16T22:53:31Z, 2026-10-16T23:33:59Z, 2026-10-17T05:03:58Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: sq
 country: kosovo
 base_url: https://zeri.info

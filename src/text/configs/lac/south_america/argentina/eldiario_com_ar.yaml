@@ -1,4 +1,6 @@
 name: Eldiario
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on http://www.eldiario.com.ar/wp-json/wp/v2/posts?per_page=100&categories=107,71,74,63&page=1&_fields=id,date,link,title,excerpt,content (HTTP 404 after redirect to https://www.eldiario.com.ar/wp-json/wp/v2/posts?per_page=100&categories=107,71,74,63&page=1&_fields=id,date,link,title,excerpt,content; ?rest_route= variant empty_listing); failing since 2026-10-16T22:54:06Z, probes 2026-10-16T22:54:06Z, 2026-10-16T23:34:28Z, 2026-10-17T05:04:24Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: es
 country: argentina
 base_url: http://www.eldiario.com.ar

@@ -1,4 +1,6 @@
 name: Egemen
+enabled: false
+disabled_reason: "source-health 2026-10-17: dns_dead on https://egemen.kg/index.php?rest_route=/wp/v2/posts&per_page=100&page=1 (no DNS record for egemen.kg); failing since 2026-10-16T22:29:24Z, probes 2026-10-16T22:29:24Z, 2026-10-16T23:29:13Z, 2026-10-17T05:00:04Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: ky
 country: kyrgyz_republic
 base_url: https://egemen.kg

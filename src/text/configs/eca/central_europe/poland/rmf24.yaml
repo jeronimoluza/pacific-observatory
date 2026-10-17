@@ -1,4 +1,6 @@
 name: RMF24
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://www.rmf24.pl/sitemap/www.rmf24.pl-siteindex-21.xml.gz (HTTP 404); failing since 2026-10-16T22:38:08Z, probes 2026-10-16T22:38:08Z, 2026-10-16T23:31:02Z, 2026-10-17T05:01:47Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: pl
 country: poland
 base_url: https://www.rmf24.pl

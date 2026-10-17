@@ -1,4 +1,6 @@
 name: Sud Quotidien
+enabled: false
+disabled_reason: "source-health 2026-10-17: dns_dead on https://www.sudquotidien.sn/wp-json/wp/v2/posts?per_page=100&page=1&categories=80,74&_fields=id,date,link,title,excerpt,content (no DNS record for www.sudquotidien.sn); failing since 2026-10-16T22:37:06Z, probes 2026-10-16T22:37:06Z, 2026-10-16T23:30:49Z, 2026-10-17T05:01:42Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 country: senegal
 language: fr
 base_url: https://www.sudquotidien.sn

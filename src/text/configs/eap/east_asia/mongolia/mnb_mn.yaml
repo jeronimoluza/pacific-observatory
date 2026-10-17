@@ -1,4 +1,6 @@
 name: "Mongolian National Broadcaster"
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://www.mnb.mn/c/41?page=1 (HTTP 404); failing since 2026-10-16T22:39:47Z, probes 2026-10-16T22:39:47Z, 2026-10-16T23:30:55Z, 2026-10-17T05:01:41Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 country: "mongolia"
 language: "mn"
 base_url: "https://www.mnb.mn"

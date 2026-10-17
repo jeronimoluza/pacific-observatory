@@ -1,4 +1,6 @@
 name: Catholicnews Tt
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on http://www.catholicnews-tt.net/wp-json/wp/v2/posts?per_page=100&categories=8,9,10&page=1&_fields=id,date,link,title,excerpt,content (gambling terms in 100/100 posts); failing since 2026-10-16T22:41:37Z, probes 2026-10-16T22:41:37Z, 2026-10-16T23:31:36Z, 2026-10-17T05:02:22Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: en
 country: trinidad_and_tobago
 base_url: http://www.catholicnews-tt.net

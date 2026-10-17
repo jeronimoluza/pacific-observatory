@@ -1,4 +1,6 @@
 name: Anb24
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on http://www.anb24.net/wp-json/wp/v2/posts?per_page=100&categories=1004,1005,1003,1012&page=1&_fields=id,date,link,title,excerpt,content (redirects to a parked/suspended page http://www.anb24.net/cgi-sys/suspendedpage.cgi?per_page=100&categories=1004,1005); failing since 2026-10-16T22:55:17Z, probes 2026-10-16T22:55:17Z, 2026-10-16T23:33:01Z, 2026-10-17T05:03:33Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: en
 country: bangladesh
 base_url: http://www.anb24.net

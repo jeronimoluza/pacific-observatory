@@ -1,4 +1,6 @@
 name: 7info Côte d'Ivoire
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://www.7info.ci/wp-json/wp/v2/posts?per_page=100&page=1&categories=8,1681,25 (HTTP 404 after redirect to https://7info.ci/wp-json/wp/v2/posts?per_page=100&page=1&categories=8,1681,25; ?rest_route= variant empty_listing); failing since 2026-10-16T22:55:36Z, probes 2026-10-16T22:55:36Z, 2026-10-16T23:35:29Z, 2026-10-17T05:05:19Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 country: cote_divoire
 language: fr
 base_url: https://www.7info.ci

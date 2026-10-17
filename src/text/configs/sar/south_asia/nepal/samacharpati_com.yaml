@@ -1,4 +1,6 @@
 name: www.samacharpati.com
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on http://www.samacharpati.com/wp-json/wp/v2/posts?per_page=100&page=1&categories=1,45,7,5,6&_fields=id,date,link,title,excerpt,content (HTTP 404 after redirect to https://www.samacharpati.com/wp-json/wp/v2/posts?per_page=100&page=1&categories=1,45,7,5,6&_fields=id,date,link,title,excerpt,content; ?rest_route= variant empty_listing); failing since 2026-10-16T22:55:26Z, probes 2026-10-16T22:55:26Z, 2026-10-16T23:35:22Z, 2026-10-17T05:05:13Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 language: ne
 country: nepal
 base_url: http://www.samacharpati.com

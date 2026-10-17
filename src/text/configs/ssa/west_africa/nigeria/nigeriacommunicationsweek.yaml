@@ -1,4 +1,6 @@
 name: Nigeria Communications Week
+enabled: false
+disabled_reason: "source-health 2026-10-17: not_found on https://www.nigeriacommunicationsweek.com.ng/wp-json/wp/v2/posts?per_page=100&page=1&categories=9784,9783&_fields=id,date,link,title,excerpt,content (HTTP 404; ?rest_route= variant empty_listing); failing since 2026-10-16T22:55:40Z, probes 2026-10-16T22:55:40Z, 2026-10-16T23:35:32Z, 2026-10-17T05:05:20Z. Homepage still answers 200 (2026-10-17): the outlet lives, its listing is gone; re-onboard with a new listing URL."
 country: nigeria
 language: en
 base_url: https://www.nigeriacommunicationsweek.com.ng

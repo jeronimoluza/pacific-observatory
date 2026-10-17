@@ -1,4 +1,6 @@
 name: Guadalajarareporter
+enabled: false
+disabled_reason: "source-health 2026-10-17: hijacked on http://guadalajarareporter.com/wp-json/wp/v2/posts?per_page=100&page=1&_fields=id,date,link,title,excerpt,content (gambling terms in 3/4 posts); failing since 2026-10-16T22:42:49Z, probes 2026-10-16T22:42:49Z, 2026-10-16T23:31:49Z, 2026-10-17T05:02:25Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: es
 country: mexico
 base_url: http://guadalajarareporter.com

@@ -1,4 +1,6 @@
 name: www.meelparvai.net
+enabled: false
+disabled_reason: "source-health 2026-10-17: dns_dead on http://www.meelparvai.net/?rest_route=/wp/v2/posts&per_page=100&page=1&categories=302,301,306,310,305&_fields=id,date,link,title,excerpt,content (no DNS record for www.meelparvai.net); failing since 2026-10-16T22:35:54Z, probes 2026-10-16T22:35:54Z, 2026-10-16T23:30:40Z, 2026-10-17T05:01:27Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: en
 country: sri_lanka
 base_url: http://www.meelparvai.net

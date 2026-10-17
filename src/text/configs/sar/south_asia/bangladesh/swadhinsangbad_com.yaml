@@ -1,4 +1,6 @@
 name: Swadhinsangbad
+enabled: false
+disabled_reason: "source-health 2026-10-17: dns_dead on http://www.swadhinsangbad.com/wp-json/wp/v2/posts?per_page=100&categories=2,4,3&page=1&_fields=id,date,link,title,excerpt,content (no DNS record for www.swadhinsangbad.com); failing since 2026-10-16T22:35:12Z, probes 2026-10-16T22:35:12Z, 2026-10-16T23:30:29Z, 2026-10-17T05:01:17Z. Re-enable when the URL answers (`po text source-health --source <key>`)."
 language: en
 country: bangladesh
 base_url: http://www.swadhinsangbad.com
